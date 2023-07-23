@@ -1,0 +1,30 @@
+version: '3'
+
+vars:
+  VERSION: v1.0.0
+  COMMIT:
+    sh: git rev-parse --short HEAD
+
+tasks:
+  default:
+    cmds:
+      - task: mac
+      - task: windows
+  dev:
+    cmds:
+      - wails dev
+  mac:
+    cmds:
+      - wails build  -platform darwin/universal -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+  macdebug:
+    cmds:
+      - wails build  -platform darwin -debug -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+  windows:
+    cmds:
+      - wails build  -platform windows/amd64 -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+  windebug:
+    cmds:
+      - wails build  -platform windows/amd64 -debug -clean -windowsconsole -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+  clean:
+    cmds:
+      - rm -rf build/bin/twsnmpfk*
