@@ -1,6 +1,6 @@
-module changeme
+module github.com/twsnmp/twsnmpfk
 
-go 1.18
+go 1.20
 
 require github.com/wailsapp/wails/v2 v2.5.1
 

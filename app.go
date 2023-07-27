@@ -7,12 +7,23 @@ import (
 
 // App struct
 type App struct {
-	ctx context.Context
+	ctx      context.Context
+	settings Settings
+}
+
+type Settings struct {
+	Kiosk bool `json:"Kiosk"`
+	Lock  bool `json:"Lock"`
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{}
+	return &App{
+		settings: Settings{
+			Kiosk: kiosk,
+			Lock:  lock,
+		},
+	}
 }
 
 // startup is called when the app starts. The context is saved
@@ -21,7 +32,12 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
+// GetVersin returns version
+func (a *App) GetVersion() string {
+	return fmt.Sprintf("%s(%s)", version, commit)
+}
+
+// GetSettings returns settings
+func (a *App) GetSettings() Settings {
+	return a.settings
 }

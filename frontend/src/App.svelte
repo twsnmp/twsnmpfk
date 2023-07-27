@@ -11,15 +11,21 @@
   import { mdiMoonWaxingCrescent,mdiWeatherSunny } from "@mdi/js";
   import { setMAP, showMAP, setMapContextMenu } from "./lib/map";
   import { onMount, tick } from "svelte";
+  import {GetSettings, GetVersion} from "../wailsjs/go/main/App"
+  let version = "";
+  let settings :any = undefined;
   let map: any;
 	let dark: boolean = false;
   onMount(async () => {
+    version = await GetVersion();
+    settings = await GetSettings();
     await tick();
     showMAP(map);
 		maptest();
     setMapContextMenu(true);
   });
-	const maptest = () => {
+	const maptest = async() => {
+    await tick();
     setMAP(
       {
         Nodes: {
@@ -67,7 +73,7 @@
         },
       },
 			dark,
-      false
+      settings.Lock,
     );
 	}
 	const toggleDark = () => {
@@ -82,11 +88,11 @@
   <NavBrand href="/">
     <img
       src="{logo}"
-      class="mr-3 h-6 sm:h-9"
+      class="mr-3 h-12"
       alt="TWSNMP FK Logo"
     />
     <span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-      TWSNMP FK
+      TWSNMP FK {version}
     </span>
   </NavBrand>
   <NavUl>
