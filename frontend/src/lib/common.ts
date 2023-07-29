@@ -68,8 +68,6 @@ export const typeList = [
   { text: 'NTP', value: 'ntp' },
   { text: 'SYSLOG', value: 'syslog' },
   { text: 'SNMP TRAP', value: 'trap' },
-  { text: 'NetFlow', value: 'netflow' },
-  { text: 'IPFIX', value: 'ipfix' },
   { text: 'ARP Log', value: 'arplog' },
   { text: 'Command', value: 'cmd' },
   { text: 'SSH', value: 'ssh' },

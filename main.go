@@ -17,22 +17,23 @@ var version = "vx.x.x"
 var commit = ""
 
 var dataStorePath = ""
-var backupPath = ""
+var pingMode string
 var kiosk = false
 var lock = false
 
 func init() {
 	flag.StringVar(&dataStorePath, "datastore", "./datastore", "Path to Data Store directory")
-	flag.StringVar(&backupPath, "backup", "", "Backup path")
 	flag.BoolVar(&kiosk, "kiosk", false, "Kisok mode(Frameless and Full screen)")
 	flag.BoolVar(&lock, "lock", false, "Lock mad edit")
-	flag.VisitAll(func(f *flag.Flag) {
-		log.Printf("args %s=%s", f.Name, f.Value)
-	})
+	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
 	flag.Parse()
 }
 
 func main() {
+	flag.VisitAll(func(f *flag.Flag) {
+		log.Printf("args %s=%s", f.Name, f.Value)
+	})
+
 	// Create an instance of the app structure
 	app := NewApp()
 
@@ -48,6 +49,7 @@ func main() {
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup:        app.startup,
+		OnShutdown:       app.shutdown,
 		Bind: []interface{}{
 			app,
 		},

@@ -1,0 +1,272 @@
+package datastore
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
+
+	"go.etcd.io/bbolt"
+)
+
+type backImage struct {
+	Path   string
+	X      int
+	Y      int
+	Width  int
+	Height int
+	Color  string
+}
+
+// MapConfEnt :  マップ設定
+type MapConfEnt struct {
+	MapName        string
+	BackImage      backImage
+	PollInt        int
+	Timeout        int
+	Retry          int
+	LogDays        int
+	LogDispSize    int
+	LogTimeout     int
+	SnmpMode       string
+	Community      string
+	SnmpUser       string
+	SnmpPassword   string
+	EnableSyslogd  bool
+	EnableTrapd    bool
+	EnableArpWatch bool
+	AILevel        string
+	AIThreshold    int
+	GeoIPInfo      string
+	FontSize       int
+	AutoCharCode   bool
+}
+
+func initConf() {
+	MapConf.Community = "public"
+	MapConf.PollInt = 60
+	MapConf.Retry = 1
+	MapConf.Timeout = 1
+	MapConf.LogDispSize = 5000
+	MapConf.LogTimeout = 15
+	MapConf.LogDays = 14
+	MapConf.AILevel = "info"
+	MapConf.AIThreshold = 81
+	MapConf.Community = "public"
+	MapConf.EnableArpWatch = true
+	MapConf.FontSize = 12
+	DiscoverConf.Retry = 1
+	DiscoverConf.Timeout = 1
+	NotifyConf.InsecureSkipVerify = true
+	NotifyConf.Interval = 60
+	NotifyConf.Subject = "TWSNMPからの通知"
+	NotifyConf.Level = "none"
+}
+
+func loadConf() error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	bSaveConf := false
+	err := db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		v := b.Get([]byte("mapConf"))
+		if v == nil {
+			bSaveConf = true
+			return nil
+		}
+		if err := json.Unmarshal(v, &MapConf); err != nil {
+			return err
+		}
+		v = b.Get([]byte("discoverConf"))
+		if v == nil {
+			return nil
+		}
+		if err := json.Unmarshal(v, &DiscoverConf); err != nil {
+			return err
+		}
+		v = b.Get([]byte("notifyConf"))
+		if v == nil {
+			return nil
+		}
+		if err := json.Unmarshal(v, &NotifyConf); err != nil {
+			return err
+		}
+		v = b.Get([]byte("icons"))
+		if v != nil {
+			if err := json.Unmarshal(v, &icons); err != nil {
+				log.Printf("load icons err=%v", err)
+			}
+		}
+		return nil
+	})
+	if err == nil && bSaveConf {
+		if err := SaveMapConf(); err != nil {
+			log.Printf("load conf err=%v", err)
+		}
+		if err := SaveNotifyConf(); err != nil {
+			log.Printf("load conf err=%v", err)
+		}
+		if err := SaveDiscoverConf(); err != nil {
+			log.Printf("load conf err=%v", err)
+		}
+	}
+	return err
+}
+
+func SaveBackImage(img []byte) error {
+	st := time.Now()
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		log.Printf("SaveBackImage dur=%v", time.Since(st))
+		return b.Put([]byte("backImage"), img)
+	})
+}
+
+func GetBackImage() ([]byte, error) {
+	var r []byte
+	if db == nil {
+		return r, ErrDBNotOpen
+	}
+	return r, db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		r = b.Get([]byte("backImage"))
+		return nil
+	})
+}
+
+var imageListCache = []string{}
+
+func SaveImage(path string, img []byte) error {
+	st := time.Now()
+	imageListCache = []string{}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("images"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		log.Printf("SaveImage dur=%v", time.Since(st))
+		return b.Put([]byte(path), img)
+	})
+}
+
+func DelteImage(path string) error {
+	st := time.Now()
+	imageListCache = []string{}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("images"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		log.Printf("DeleteImage dur=%v", time.Since(st))
+		return b.Delete([]byte(path))
+	})
+}
+
+func GetImageList() []string {
+	if db == nil || len(imageListCache) > 0 {
+		return imageListCache
+	}
+	db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("images"))
+		if b == nil {
+			return fmt.Errorf("bucket iamges is nil")
+		}
+		return b.ForEach(func(k, v []byte) error {
+			imageListCache = append(imageListCache, string(k))
+			return nil
+		})
+	})
+	return imageListCache
+}
+
+func GetImage(path string) ([]byte, error) {
+	var r []byte
+	if db == nil {
+		return r, ErrDBNotOpen
+	}
+	return r, db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("images"))
+		if b == nil {
+			return fmt.Errorf("bucket iamges is nil")
+		}
+		r = b.Get([]byte(path))
+		return nil
+	})
+}
+
+func SaveMapConf() error {
+	st := time.Now()
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	s, err := json.Marshal(MapConf)
+	if err != nil {
+		return err
+	}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		log.Printf("SaveMapConf dur=%v", time.Since(st))
+		return b.Put([]byte("mapConf"), s)
+	})
+}
+
+type IconEnt struct {
+	Text string
+	Icon string
+	Code int64
+}
+
+var icons []*IconEnt
+
+func GetIcons() []*IconEnt {
+	return icons
+}
+
+func AddOrUpdateIcon(i *IconEnt) error {
+	for _, e := range icons {
+		if e.Icon == i.Icon {
+			e.Text = i.Text
+			e.Code = i.Code
+			return saveIcons()
+		}
+	}
+	icons = append(icons, i)
+	return saveIcons()
+}
+
+func DeleteIcon(icon string) error {
+	tmp := icons
+	icons = []*IconEnt{}
+	for _, i := range tmp {
+		if i.Icon != icon {
+			icons = append(icons, i)
+		}
+	}
+	return saveIcons()
+}
+
+func saveIcons() error {
+	st := time.Now()
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	s, err := json.Marshal(icons)
+	if err != nil {
+		return err
+	}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		log.Printf("saveIcons dur=%v", time.Since(st))
+		return b.Put([]byte("icons"), s)
+	})
+}

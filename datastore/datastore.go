@@ -1,0 +1,290 @@
+// Package datastore : データ保存
+package datastore
+
+import (
+	"context"
+	"embed"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"sync"
+	"time"
+
+	"github.com/oschwald/geoip2-golang"
+	gomibdb "github.com/twsnmp/go-mibdb"
+	"go.etcd.io/bbolt"
+)
+
+//go:embed conf
+var conf embed.FS
+
+var (
+	db          *bbolt.DB
+	dspath      string
+	prevDBStats bbolt.Stats
+	dbOpenTime  time.Time
+	// Conf Data on Memory
+	MapConf      MapConfEnt
+	NotifyConf   NotifyConfEnt
+	DiscoverConf DiscoverConfEnt
+	Yasumi       string
+	// Restrt snmptrapd
+	RestartSnmpTrapd bool
+	// Map Data on Memory
+	nodes    sync.Map
+	items    sync.Map
+	lines    sync.Map
+	pollings sync.Map
+	// Report Data on Memory
+	devices sync.Map
+	users   sync.Map
+	flows   sync.Map
+	servers sync.Map
+	ips     sync.Map
+	// MAP Changed check
+	stateChangedNodes sync.Map
+	lastLogAdded      time.Time
+	lastNodeChanged   time.Time
+	//
+	MIBDB        *gomibdb.MIBDB
+	stopBackup   bool
+	nextBackup   int64
+	dbBackupSize int64
+	dstDB        *bbolt.DB
+	dstTx        *bbolt.Tx
+	eventLogCh   chan *EventLogEnt
+	pollingLogCh chan *PollingLogEnt
+
+	protMap    map[int]string
+	serviceMap map[string]string
+	geoip      *geoip2.Reader
+	geoipMap   map[string]string
+	ouiMap     map[string]string
+
+	logSize      int64
+	compLogSize  int64
+	mailTemplate map[string]string
+)
+
+const (
+	// MaxDispLog : ログの検索結果の最大値
+	MaxDispLog = 20000
+)
+
+// Define errors
+var (
+	ErrNoPayload     = fmt.Errorf("no payload")
+	ErrInvalidNode   = fmt.Errorf("invalid node")
+	ErrInvalidParams = fmt.Errorf("invald params")
+	ErrDBNotOpen     = fmt.Errorf("db not open")
+	ErrInvalidID     = fmt.Errorf("invalid id")
+)
+
+func Init(ctx context.Context, path string, wg *sync.WaitGroup) error {
+	dspath = path
+	eventLogCh = make(chan *EventLogEnt, 100)
+	pollingLogCh = make(chan *PollingLogEnt, 1000)
+	protMap = map[int]string{
+		1:   "icmp",
+		2:   "igmp",
+		6:   "tcp",
+		8:   "egp",
+		17:  "udp",
+		112: "vrrp",
+	}
+	serviceMap = make(map[string]string)
+	geoipMap = make(map[string]string)
+	ouiMap = make(map[string]string)
+	if err := loadDataFromFS(); err != nil {
+		return err
+	}
+	wg.Add(1)
+	go eventLogger(ctx, wg)
+	wg.Add(1)
+	go oldLogChecker(ctx, wg)
+	return nil
+}
+
+func loadDataFromFS() error {
+	if dspath == "" {
+		return fmt.Errorf("no data base path")
+	}
+	// BBoltをオープン
+	if err := openDB(filepath.Join(dspath, "twsnmpfk.db")); err != nil {
+		return err
+	}
+	// MIBDB
+	loadMIBDB()
+	// サービスの定義ファイル、ユーザー指定があれば利用、なければ内蔵
+	if r, err := os.Open(filepath.Join(dspath, "services.txt")); err == nil {
+		loadServiceMap(r)
+	} else {
+		if r, err := conf.Open("conf/services.txt"); err == nil {
+			loadServiceMap(r)
+		} else {
+			return err
+		}
+	}
+	// OUIの定義
+	if r, err := os.Open(filepath.Join(dspath, "mac-vendors-export.csv")); err == nil {
+		loadOUIMap(r)
+	} else {
+		if r, err := conf.Open("conf/mac-vendors-export.csv"); err == nil {
+			loadOUIMap(r)
+		} else {
+			return err
+		}
+	}
+	// 休みの定義
+	if r, err := os.Open(filepath.Join(dspath, "yasumi.txt")); err == nil {
+		if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
+			Yasumi = string(b)
+		}
+		r.Close()
+	}
+	if Yasumi == "" {
+		if r, err := conf.Open("conf/yasumi.txt"); err == nil {
+			if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
+				Yasumi = string(b)
+			}
+			r.Close()
+		} else {
+			log.Printf("open yasumi.txt err=%v", err)
+		}
+	}
+	p := filepath.Join(dspath, "geoip.mmdb")
+	if _, err := os.Stat(p); err == nil {
+		openGeoIP(p)
+	}
+	loadGrokMap()
+	if r, err := conf.Open("conf/polling.json"); err == nil {
+		if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
+			if err := loadPollingTemplate(b); err != nil {
+				log.Printf("load polling template err=%v", err)
+			}
+		}
+		r.Close()
+	} else {
+		log.Printf("open polling template err=%v", err)
+	}
+	if r, err := os.Open(filepath.Join(dspath, "polling.json")); err == nil {
+		if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
+			if err := loadPollingTemplate(b); err != nil {
+				log.Printf("load polling template err=%v", err)
+			}
+		}
+		r.Close()
+	}
+	mailTemplate = make(map[string]string)
+	loadMailTemplateToMap("test")
+	loadMailTemplateToMap("notify")
+	loadMailTemplateToMap("report")
+	return nil
+}
+
+func loadMailTemplateToMap(t string) {
+	if r, err := conf.Open("conf/mail_" + t + ".html"); err == nil {
+		if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
+			log.Printf("load mail template=%s", t)
+			mailTemplate[t] = string(b)
+		}
+		r.Close()
+	}
+}
+
+func openDB(path string) error {
+	log.Println("start openDB")
+	var err error
+	db, err = bbolt.Open(path, 0600, nil)
+	if err != nil {
+		return err
+	}
+	log.Println("db.Stats")
+	prevDBStats = db.Stats()
+	dbOpenTime = time.Now()
+	log.Println("initDB")
+	err = initDB()
+	if err != nil {
+		db.Close()
+		return err
+	}
+	log.Println("loadConf")
+	err = loadConf()
+	if err != nil {
+		db.Close()
+		return err
+	}
+	log.Println("loadMapData")
+	err = loadMapData()
+	if err != nil {
+		db.Close()
+		return err
+	}
+	log.Println("end openDB")
+	return nil
+}
+
+func initDB() error {
+	buckets := []string{
+		"config", "nodes", "items", "lines", "pollings", "logs", "pollingLogs",
+		"syslog", "trap", "arplog", "arp", "ai", "grok", "images",
+	}
+	initConf()
+	return db.Update(func(tx *bbolt.Tx) error {
+		for _, b := range buckets {
+			_, err := tx.CreateBucketIfNotExists([]byte(b))
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+// CloseDB : DBをクローズする
+func CloseDB() {
+	if db == nil {
+		return
+	}
+	if err := saveAllNodes(); err != nil {
+		log.Printf("saveAllNodes err=%v", err)
+	}
+	if err := saveAllPollings(); err != nil {
+		log.Printf("saveAllPollings err=%v", err)
+	}
+	db.Close()
+	db = nil
+}
+
+// SaveMapData:  24時間毎にマップのデータをDBへ保存する
+func SaveMapData() {
+	if db == nil {
+		return
+	}
+	if err := saveAllNodes(); err != nil {
+		log.Printf("saveAllNodes err=%v", err)
+	}
+	if err := saveAllPollings(); err != nil {
+		log.Printf("saveAllPollings err=%v", err)
+	}
+}
+
+// bboltに保存する場合のキーを時刻から生成する。
+func makeKey() string {
+	return fmt.Sprintf("%016x", time.Now().UnixNano())
+}
+
+// Data Storeのパスを返す、何かと必要なので
+func GetDataStorePath() string {
+	return dspath
+}
+
+func GetPrivateKey() []byte {
+	key, err := os.ReadFile("/home/user/.ssh/id_rsa")
+	if err != nil {
+		log.Printf("unable to read private key: %v", err)
+	}
+	return key
+}

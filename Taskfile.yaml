@@ -12,7 +12,7 @@ tasks:
       - task: windows
   dev:
     cmds:
-      - wails dev
+      - wails dev -appargs "-datastore ./tmp/"
   mac:
     cmds:
       - wails build  -platform darwin/universal -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
