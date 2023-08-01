@@ -27,8 +27,11 @@ var (
 	dbOpenTime  time.Time
 	// Conf Data on Memory
 	MapConf      MapConfEnt
+	BackImage    BackImageEnt
 	NotifyConf   NotifyConfEnt
 	DiscoverConf DiscoverConfEnt
+	AIConf       []AIConfEnt
+	AutoCharCode bool
 	Yasumi       string
 	// Restrt snmptrapd
 	RestartSnmpTrapd bool

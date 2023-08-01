@@ -33,7 +33,7 @@ func syslogd(stopCh chan bool) {
 			}
 		case sl := <-syslogCh:
 			{
-				if datastore.MapConf.AutoCharCode {
+				if datastore.AutoCharCode {
 					if c, ok := sl["content"].(string); ok {
 						sl["content"] = CheckCharCode(c)
 					}

@@ -218,10 +218,21 @@ func calcAIScore(req *AIReq) {
 	}
 	if len(res.ScoreData) > 0 {
 		ls := res.ScoreData[len(res.ScoreData)-1][1]
-		if ls > float64(datastore.MapConf.AIThreshold) {
+		level := ""
+		for _, c := range datastore.AIConf {
+			if ls > c.Threshold {
+				if level == "" || level == "warn" || c.Level == "high" {
+					level = c.Level
+				}
+				if level == "high" {
+					break
+				}
+			}
+		}
+		if level != "" {
 			datastore.AddEventLog(&datastore.EventLogEnt{
 				Type:     "ai",
-				Level:    datastore.MapConf.AILevel,
+				Level:    level,
 				NodeID:   pe.NodeID,
 				NodeName: n.Name,
 				Event:    fmt.Sprintf("AI分析レポート:%s(%s):%f", pe.Name, pe.Type, ls),

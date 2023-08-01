@@ -46,7 +46,6 @@ export const setMAP = (m:any,d:boolean,ro:boolean) => {
   lines = m.Lines;
   items = m.Items || {};
   backImage = m.MapConf.BackImage;
-  fontSize = m.MapConf.FontSize || 12;
   backImage.Image = null;
   if (backImage.Data){
     _ImageP5.loadImage(backImage.Data,(img)=>{

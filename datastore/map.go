@@ -9,37 +9,28 @@ import (
 	"go.etcd.io/bbolt"
 )
 
-type backImage struct {
-	Path   string
-	X      int
-	Y      int
-	Width  int
-	Height int
-	Color  string
+type BackImageEnt struct {
+	X      int    `json:"X"`
+	Y      int    `json:"Y"`
+	Width  int    `json:"Width"`
+	Height int    `json:"Height"`
+	Data   string `json:"MapName"`
 }
 
 // MapConfEnt :  マップ設定
 type MapConfEnt struct {
-	MapName        string
-	BackImage      backImage
-	PollInt        int
-	Timeout        int
-	Retry          int
-	LogDays        int
-	LogDispSize    int
-	LogTimeout     int
-	SnmpMode       string
-	Community      string
-	SnmpUser       string
-	SnmpPassword   string
-	EnableSyslogd  bool
-	EnableTrapd    bool
-	EnableArpWatch bool
-	AILevel        string
-	AIThreshold    int
-	GeoIPInfo      string
-	FontSize       int
-	AutoCharCode   bool
+	MapName        string `json:"MapName"`
+	PollInt        int    `json:"PollInt"`
+	Timeout        int    `json:"Timeout"`
+	Retry          int    `json:"Retry"`
+	LogDays        int    `json:"LogDays"`
+	SnmpMode       string `json:"SnmpMode"`
+	Community      string `json:"Community"`
+	SnmpUser       string `json:"SnmpUser"`
+	SnmpPassword   string `json:"SnmpPassword"`
+	EnableSyslogd  bool   `json:"EnableSyslogd"`
+	EnableTrapd    bool   `json:"EnableTrapd"`
+	EnableArpWatch bool   `json:"EnableArpWatch"`
 }
 
 func initConf() {
@@ -47,14 +38,9 @@ func initConf() {
 	MapConf.PollInt = 60
 	MapConf.Retry = 1
 	MapConf.Timeout = 1
-	MapConf.LogDispSize = 5000
-	MapConf.LogTimeout = 15
 	MapConf.LogDays = 14
-	MapConf.AILevel = "info"
-	MapConf.AIThreshold = 81
 	MapConf.Community = "public"
 	MapConf.EnableArpWatch = true
-	MapConf.FontSize = 12
 	DiscoverConf.Retry = 1
 	DiscoverConf.Timeout = 1
 	NotifyConf.InsecureSkipVerify = true
@@ -77,6 +63,10 @@ func loadConf() error {
 		}
 		if err := json.Unmarshal(v, &MapConf); err != nil {
 			return err
+		}
+		v = b.Get([]byte("backImage"))
+		if v != nil {
+			json.Unmarshal(v, &BackImage)
 		}
 		v = b.Get([]byte("discoverConf"))
 		if v == nil {
@@ -112,30 +102,6 @@ func loadConf() error {
 		}
 	}
 	return err
-}
-
-func SaveBackImage(img []byte) error {
-	st := time.Now()
-	return db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("config"))
-		if b == nil {
-			return fmt.Errorf("bucket config is nil")
-		}
-		log.Printf("SaveBackImage dur=%v", time.Since(st))
-		return b.Put([]byte("backImage"), img)
-	})
-}
-
-func GetBackImage() ([]byte, error) {
-	var r []byte
-	if db == nil {
-		return r, ErrDBNotOpen
-	}
-	return r, db.View(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("config"))
-		r = b.Get([]byte("backImage"))
-		return nil
-	})
 }
 
 var imageListCache = []string{}
@@ -214,6 +180,25 @@ func SaveMapConf() error {
 		}
 		log.Printf("SaveMapConf dur=%v", time.Since(st))
 		return b.Put([]byte("mapConf"), s)
+	})
+}
+
+func SaveBackImage() error {
+	st := time.Now()
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	s, err := json.Marshal(BackImage)
+	if err != nil {
+		return err
+	}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		log.Printf("SaveBackImage dur=%v", time.Since(st))
+		return b.Put([]byte("backImage"), s)
 	})
 }
 

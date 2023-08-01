@@ -9,6 +9,11 @@ import (
 	"go.etcd.io/bbolt"
 )
 
+type AIConfEnt struct {
+	Threshold float64
+	Level     string
+}
+
 type AIResult struct {
 	PollingID string
 	LastTime  int64

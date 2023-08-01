@@ -118,7 +118,7 @@ func snmptrapd(stopCh chan bool) {
 						}
 					case "DisplayString":
 						val = getSnmpString(vb.Value)
-						if datastore.MapConf.AutoCharCode {
+						if datastore.AutoCharCode {
 							val = CheckCharCode(val)
 						}
 					case "DateAndTime":
@@ -128,7 +128,7 @@ func snmptrapd(stopCh chan bool) {
 					}
 				} else {
 					val = getSnmpString(vb.Value)
-					if datastore.MapConf.AutoCharCode {
+					if datastore.AutoCharCode {
 						val = CheckCharCode(val)
 					}
 				}
