@@ -13,22 +13,18 @@ import (
 )
 
 type NotifyConfEnt struct {
-	MailServer         string
-	User               string
-	Password           string
-	InsecureSkipVerify bool
-	MailTo             string
-	MailFrom           string
-	Subject            string
-	AddNodeName        bool
-	Interval           int
-	Level              string
-	Report             bool
-	CheckUpdate        bool
-	NotifyRepair       bool
-	URL                string
-	HTMLMail           bool
-	ExecCmd            string
+	MailServer         string `json:"MailServer"`
+	InsecureSkipVerify bool   `json:"InsecureSkipVerify"`
+	User               string `json:"User"`
+	Password           string `json:"Password"`
+	MailTo             string `json:"MailTo"`
+	MailFrom           string `json:"MailFrom"`
+	Subject            string `json:"Subject"`
+	Interval           int    `json:"Interval"`
+	Level              string `json:"Level"`
+	Report             bool   `json:"Report"`
+	NotifyRepair       bool   `json:"NotifyRepair"`
+	ExecCmd            string `json:"ExecCmd"`
 }
 
 func SaveNotifyConf() error {

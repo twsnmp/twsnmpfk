@@ -6,6 +6,10 @@ export function GetMapConf() {
   return window['go']['main']['App']['GetMapConf']();
 }
 
+export function GetNotifyConf() {
+  return window['go']['main']['App']['GetNotifyConf']();
+}
+
 export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
@@ -16,4 +20,12 @@ export function GetVersion() {
 
 export function SetMapConf(arg1) {
   return window['go']['main']['App']['SetMapConf'](arg1);
+}
+
+export function SetNotifyConf(arg1) {
+  return window['go']['main']['App']['SetNotifyConf'](arg1);
+}
+
+export function TestNotifyConf(arg1) {
+  return window['go']['main']['App']['TestNotifyConf'](arg1);
 }

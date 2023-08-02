@@ -34,6 +34,40 @@ export namespace datastore {
 	        this.EnableArpWatch = source["EnableArpWatch"];
 	    }
 	}
+	export class NotifyConfEnt {
+	    MailServer: string;
+	    InsecureSkipVerify: boolean;
+	    User: string;
+	    Password: string;
+	    MailTo: string;
+	    MailFrom: string;
+	    Subject: string;
+	    Interval: number;
+	    Level: string;
+	    Report: boolean;
+	    NotifyRepair: boolean;
+	    ExecCmd: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new NotifyConfEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.MailServer = source["MailServer"];
+	        this.InsecureSkipVerify = source["InsecureSkipVerify"];
+	        this.User = source["User"];
+	        this.Password = source["Password"];
+	        this.MailTo = source["MailTo"];
+	        this.MailFrom = source["MailFrom"];
+	        this.Subject = source["Subject"];
+	        this.Interval = source["Interval"];
+	        this.Level = source["Level"];
+	        this.Report = source["Report"];
+	        this.NotifyRepair = source["NotifyRepair"];
+	        this.ExecCmd = source["ExecCmd"];
+	    }
+	}
 
 }
 

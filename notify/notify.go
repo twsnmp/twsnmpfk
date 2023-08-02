@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"regexp"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -68,6 +66,8 @@ func getLevelNum(l string) int {
 		return 1
 	case "warn":
 		return 2
+	case "none":
+		return -1
 	}
 	return 3
 }
@@ -91,37 +91,6 @@ func checkNotify(last int64) int64 {
 		return lastLogTime
 	}
 	return time.Now().UnixNano()
-}
-
-var notifySchedulePat = regexp.MustCompile(`(\S+)\s+(\d{2}):(\d{2})-(\d{2}):(\d{2})`)
-
-func isExcludeTime(sc string, t int64) bool {
-	tm := time.Unix(0, t)
-	wd := tm.Format("Mon")
-	md := tm.Format("2")
-	for _, s := range strings.Split(sc, ",") {
-		a := notifySchedulePat.FindStringSubmatch(s)
-		if len(a) == 6 {
-			if wd == a[1] || md == a[1] || a[1] == "*" || (a[1] == "Last" && isLastDayOfMonth(tm)) {
-				sh, _ := strconv.Atoi(a[2])
-				sm, _ := strconv.Atoi(a[3])
-				st := sh*60 + sm
-				eh, _ := strconv.Atoi(a[4])
-				em, _ := strconv.Atoi(a[5])
-				et := eh*60 + em
-				t := tm.Hour()*60 + tm.Minute()
-				if st <= t && t <= et {
-					return true
-				}
-			}
-		}
-	}
-	return false
-}
-
-func isLastDayOfMonth(t time.Time) bool {
-	lastDay := time.Date(t.Year(), t.Month()+1, 0, 0, 0, 0, 0, time.Local)
-	return t.Day() == lastDay.Day()
 }
 
 type notifyData struct {
@@ -168,16 +137,12 @@ func getNotifyData(list []*datastore.EventLogEnt, nl int) notifyData {
 	if len(failure) > 0 {
 		f = eventLogListToString(false, failure)
 		fs = datastore.NotifyConf.Subject + "(障害)"
-		if datastore.NotifyConf.AddNodeName {
-			fs += ":" + getNodes(fNodeMap)
-		}
+		fs += ":" + getNodes(fNodeMap)
 	}
 	if len(repair) > 0 {
 		r = eventLogListToString(true, repair)
 		rs = datastore.NotifyConf.Subject + "(復帰)"
-		if datastore.NotifyConf.AddNodeName {
-			rs += ":" + getNodes(rNodeMap)
-		}
+		rs += ":" + getNodes(rNodeMap)
 	}
 	return notifyData{
 		failureSubject: fs,
@@ -202,19 +167,6 @@ func getNodes(m map[string]int) string {
 
 // eventLogListToString : イベントログを通知メールの本文に変換する
 func eventLogListToString(repair bool, list []*datastore.EventLogEnt) string {
-	if !datastore.NotifyConf.HTMLMail {
-		r := []string{}
-		if repair {
-			r = append(r, "【復帰リスト】")
-		} else {
-			r = append(r, "【障害リスト】")
-		}
-		for _, l := range list {
-			ts := time.Unix(0, l.Time).Local().Format(time.RFC3339Nano)
-			r = append(r, fmt.Sprintf("%s,%s,%s,%s,%s", l.Level, ts, l.Type, l.NodeName, l.Event))
-		}
-		return strings.Join(r, "\r\n")
-	}
 	title := datastore.NotifyConf.Subject + "(障害)"
 	if repair {
 		title = datastore.NotifyConf.Subject + "(復帰)"
@@ -230,7 +182,6 @@ func eventLogListToString(repair bool, list []*datastore.EventLogEnt) string {
 	buffer := new(bytes.Buffer)
 	if err = t.Execute(buffer, map[string]interface{}{
 		"Title": title,
-		"URL":   datastore.NotifyConf.URL,
 		"Logs":  list,
 	}); err != nil {
 		return fmt.Sprintf("メール作成エラー err=%v", err)

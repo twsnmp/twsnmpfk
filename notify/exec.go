@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -49,9 +48,6 @@ func ExecNotifyCmd(cmd string, level int) error {
 	if len(cl) < 1 {
 		return fmt.Errorf("notify ExecCmd is empty")
 	}
-	if filepath.Base(cl[0]) != cl[0] {
-		return fmt.Errorf("notify ExecCmd has path")
-	}
 	strLevel := fmt.Sprintf("%d", level)
 	for i, v := range cl {
 		if v == "$level" {
@@ -62,16 +58,10 @@ func ExecNotifyCmd(cmd string, level int) error {
 		Duration:  60 * time.Second,
 		KillAfter: 5 * time.Second,
 	}
-	if filepath.Ext(cl[0]) == ".sh" {
-		cl[0] = filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
-		tio.Cmd = exec.Command("/bin/sh", "-c", strings.Join(cl, " "))
+	if len(cl) == 1 {
+		tio.Cmd = exec.Command(cl[0])
 	} else {
-		exe := filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
-		if len(cl) == 1 {
-			tio.Cmd = exec.Command(exe)
-		} else {
-			tio.Cmd = exec.Command(exe, cl[1:]...)
-		}
+		tio.Cmd = exec.Command(cl[0], cl[1:]...)
 	}
 	_, _, _, err := tio.Run()
 	return err

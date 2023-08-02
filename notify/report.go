@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -16,40 +15,7 @@ import (
 )
 
 func sendReport() {
-	if datastore.NotifyConf.HTMLMail {
-		sendReportHTML()
-	} else {
-		sendReportPlain()
-	}
-}
-
-func sendReportPlain() {
-	body := []string{}
-	body = append(body, "【現在のマップ情報】")
-	body = append(body, getMapInfo(false)...)
-	body = append(body, "")
-	body = append(body, "")
-	body = append(body, "【システムリソース情報】(Min/Mean/Max)")
-	body = append(body, getResInfo(false)...)
-	body = append(body, "")
-	logSum, _, _ := getLastEventLog()
-	body = append(body, "【最新24時間のログ集計】")
-	body = append(body, logSum...)
-	body = append(body, "")
-	body = append(body, "【AI分析情報】")
-	body = append(body, getAIInfo()...)
-	body = append(body, "")
-
-	subject := fmt.Sprintf("%s(定期レポート) at %s", datastore.NotifyConf.Subject, time.Now().Format(time.RFC3339))
-	if err := sendMail(subject, strings.Join(body, "\r\n")); err != nil {
-		log.Printf("send report mail err=%v", err)
-	} else {
-		datastore.AddEventLog(&datastore.EventLogEnt{
-			Type:  "system",
-			Level: "info",
-			Event: "定期レポートメール送信",
-		})
-	}
+	sendReportHTML()
 }
 
 func getLastEventLog() ([]string, []string, []*datastore.EventLogEnt) {
@@ -355,7 +321,6 @@ func sendReportHTML() {
 	body := new(bytes.Buffer)
 	if err = t.Execute(body, map[string]interface{}{
 		"Title":  title,
-		"URL":    datastore.NotifyConf.URL,
 		"Info":   info,
 		"Logs":   logs,
 		"AIList": getAIList(),

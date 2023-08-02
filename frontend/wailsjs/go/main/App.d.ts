@@ -5,8 +5,14 @@ import {main} from '../models';
 
 export function GetMapConf():Promise<datastore.MapConfEnt>;
 
+export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
+
 export function GetSettings():Promise<main.Settings>;
 
 export function GetVersion():Promise<string>;
 
 export function SetMapConf(arg1:datastore.MapConfEnt):Promise<boolean>;
+
+export function SetNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
+
+export function TestNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;

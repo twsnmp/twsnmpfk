@@ -119,7 +119,7 @@ func sendMail(subject, body string) error {
 	}
 	defer w.Close()
 	body = convNewline(body, "\r\n")
-	message := makeMailMessage(datastore.NotifyConf.MailFrom, datastore.NotifyConf.MailTo, subject, body, datastore.NotifyConf.HTMLMail)
+	message := makeMailMessage(datastore.NotifyConf.MailFrom, datastore.NotifyConf.MailTo, subject, body)
 	_, _ = w.Write([]byte(message))
 	_ = c.Quit()
 	log.Printf("send mail to %s", datastore.NotifyConf.MailTo)
@@ -189,48 +189,34 @@ func SendTestMail(testConf *datastore.NotifyConfEnt) error {
 		return err
 	}
 	defer w.Close()
-	body := "Test Mail.\r\n試験メール.\r\n"
-	if testConf.HTMLMail {
-		t, err := template.New("test").Parse(datastore.LoadMailTemplate("test"))
-		if err != nil {
-			log.Printf("send test mail err=%s", err)
-			return err
-		}
-		buffer := new(bytes.Buffer)
-		if err = t.Execute(buffer, map[string]interface{}{
-			"Title": testConf.Subject + "(試験メール）",
-			"URL":   testConf.URL,
-		}); err != nil {
-			return err
-		}
-		body = buffer.String()
+	t, err := template.New("test").Parse(datastore.LoadMailTemplate("test"))
+	if err != nil {
+		log.Printf("send test mail err=%s", err)
+		return err
 	}
-	message := makeMailMessage(testConf.MailFrom, testConf.MailTo, testConf.Subject, body, testConf.HTMLMail)
+	buffer := new(bytes.Buffer)
+	if err = t.Execute(buffer, map[string]interface{}{
+		"Title": testConf.Subject + "(試験メール）",
+	}); err != nil {
+		return err
+	}
+	body := buffer.String()
+	message := makeMailMessage(testConf.MailFrom, testConf.MailTo, testConf.Subject, body)
 	_, _ = w.Write([]byte(message))
 	_ = c.Quit()
 	return nil
 }
 
-func makeMailMessage(from, to, subject, body string, bHTML bool) string {
+func makeMailMessage(from, to, subject, body string) string {
 	var header bytes.Buffer
 	header.WriteString("From: " + from + "\r\n")
 	header.WriteString("To: " + to + "\r\n")
 	header.WriteString(encodeSubject(subject))
 	header.WriteString("MIME-Version: 1.0\r\n")
-	if bHTML {
-		header.WriteString("Content-Type: text/html; charset=\"utf-8\"\r\n")
-		var message bytes.Buffer = header
-		message.WriteString("\r\n")
-		message.WriteString(body)
-		return message.String()
-	}
-	header.WriteString("Content-Type: text/plain; charset=\"utf-8\"\r\n")
-	header.WriteString("Content-Transfer-Encoding: base64\r\n")
-
+	header.WriteString("Content-Type: text/html; charset=\"utf-8\"\r\n")
 	var message bytes.Buffer = header
 	message.WriteString("\r\n")
-	message.WriteString(add76crlf(base64.StdEncoding.EncodeToString([]byte(body))))
-
+	message.WriteString(body)
 	return message.String()
 }
 

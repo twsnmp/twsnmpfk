@@ -10,6 +10,7 @@
     DropdownItem,
     Modal, Label, Input, Checkbox,
     Select,
+    Alert,
   } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import { 
@@ -19,23 +20,37 @@
     mdiCalendarCheck,
     mdiBrain,
     mdiCog,
-    mdiEmail,
     mdiContentSave,
     mdiCancel,
     mdiMoonWaxingCrescent,
     mdiWeatherSunny,
+    mdiEmail,
+    mdiExclamation,
   } from "@mdi/js";
   import { setMAP, showMAP, setMapContextMenu } from "./lib/map";
   import { onMount, tick } from "svelte";
-  import {GetMapConf, GetSettings, GetVersion,SetMapConf} from "../wailsjs/go/main/App"
+  import {
+    GetMapConf, 
+    GetSettings, 
+    GetVersion,
+    SetMapConf,
+    GetNotifyConf,
+    SetNotifyConf,
+    TestNotifyConf,
+  } from "../wailsjs/go/main/App"
   import { snmpModeList } from "./lib/common";
   import type { datastore} from "wailsjs/go/models";
+
   let version = "";
   let settings :any = undefined;
   let map: any;
 	let dark: boolean = false;
   let showMapConf :boolean= false;
   let mapConf: datastore.MapConfEnt | undefined = undefined;
+  let showNotifyConf :boolean= false;
+  let notifyConf: datastore.NotifyConfEnt | undefined = undefined;
+  let showTestNotifyError : boolean = false;
+  let showTestNotifyOk : boolean = false;
 
   let page = "map";
 
@@ -44,19 +59,42 @@
     mapConf.Timeout *=1;
     mapConf.Retry *=1;
     mapConf.LogDays *=1;
-    console.log(mapConf);
     await SetMapConf(mapConf);
     showMapConf = false;
   }
+
+  const notifyLevelList = [
+    {name:"通知しない", value:"none"},
+    {name:"注意", value:"warn"},
+    {name:"軽度", value:"low"},
+    {name:"重度", value:"high"},
+  ];
+ 
+  const saveNotifyConf = async () => {
+    notifyConf.Interval *=1;
+    await SetNotifyConf(notifyConf);
+    showNotifyConf = false;
+  }
+
+  const testNotifyConf = async () => {
+    showTestNotifyError = false;
+    notifyConf.Interval *=1;
+    const ok = await TestNotifyConf(notifyConf);
+    showTestNotifyError = !ok;
+    showTestNotifyOk = ok;
+  }
+
   onMount(async () => {
     version = await GetVersion();
     settings = await GetSettings();
     mapConf = await GetMapConf();
+    notifyConf = await GetNotifyConf();
     await tick();
     showMAP(map);
 		maptest();
     setMapContextMenu(true);
   });
+
 	const maptest = async() => {
     await tick();
     setMAP(
@@ -157,7 +195,11 @@
       <DropdownItem on:click={()=> {showMapConf = true}}>
         マップ
       </DropdownItem>
-      <DropdownItem>
+      <DropdownItem on:click={()=> {
+          showNotifyConf = true;
+          showTestNotifyOk = false;
+          showTestNotifyError = false;
+        }}>
         通知
       </DropdownItem>
       <DropdownItem>
@@ -177,13 +219,13 @@
 <div bind:this={map} class="w-full h-screen" />
 
 <Modal bind:open={showMapConf} size="lg" autoclose={false} class="w-full">
-  <form class="flex flex-col space-y-6" action="#">
+  <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">マップ設定</h3>
     <Label class="space-y-2">
       <span>マップ名</span>
       <Input bind:value={mapConf.MapName} placeholder="マップ名" required  size="sm"/>
     </Label>
-    <div class="flex justify-between">
+    <div class="grid gap-4 mb-4 md:grid-cols-4">
       <Label class="space-y-2">
         <span>
           ポーリング間隔(秒)
@@ -209,7 +251,7 @@
         <Input type="number" min={1} max={365*5} step={1} bind:value={mapConf.LogDays}  size="sm"/>
       </Label>
     </div>
-    <div class="flex justify-between">
+    <div class="grid gap-4  md:grid-cols-3">
       <Label class="space-y-2">
         <span>
           SNMPモード
@@ -232,7 +274,7 @@
         </Label>
       {/if}
     </div>
-    <div class="flex justify-between">
+    <div class="grid gap-4 mb-4 md:grid-cols-3">
         <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog受信</Checkbox>
         <Checkbox bind:checked={mapConf.EnableTrapd}>SNMP TRAP受信</Checkbox>
         <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP監視</Checkbox>
@@ -243,6 +285,97 @@
         保存
       </Button>
       <Button type="button"color="alternative"  on:click={()=>{showMapConf = false}} size="sm" >
+        <Icon path={mdiCancel} size={1} />
+        キャンセル
+      </Button>
+    </div>
+  </form>
+</Modal>
+
+<Modal bind:open={showNotifyConf} size="lg" autoclose={false} class="w-full">
+  <form class="flex flex-col space-y-4" action="#">
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">通知設定</h3>
+    {#if showTestNotifyError }
+      <Alert color="red" dismissable>
+        <div class="flex">
+          <Icon path={mdiExclamation} size={1} />
+          通知メールの送信テストに失敗しました
+        </div>
+      </Alert>
+    {/if}
+    {#if showTestNotifyOk }
+      <Alert class="flex" color="blue" dismissable>
+        <div class="flex">
+          <Icon path={mdiExclamation} size={1} />
+          通知メールの送信テストに成功しました
+        </div>
+      </Alert>
+    {/if}
+    <div class="grid gap-4 md:grid-cols-2">
+      <Label class="space-y-2">
+        <span>メールサーバー</span>
+        <Input bind:value={notifyConf.MailServer} placeholder="host|ip:port" required  size="sm"/>
+      </Label>
+      <Checkbox bind:checked={notifyConf.InsecureSkipVerify}>サーバー証明書をチェックしない</Checkbox>
+    </div>
+    <div class="grid gap-4 md:grid-cols-2">
+      <Label class="space-y-2">
+        <span>ユーザー</span>
+        <Input bind:value={notifyConf.User} placeholder="smtp user"  size="sm" />
+      </Label>
+      <Label class="space-y-2">
+        <span>パスワード</span>
+        <Input type="password" bind:value={notifyConf.Password}  placeholder="•••••"   size="sm" />
+      </Label>
+    </div>
+    <div class="grid gap-4 md:grid-cols-2">
+      <Label class="space-y-2">
+        <span>送信元</span>
+        <Input bind:value={notifyConf.MailFrom} placeholder="送信元メールアドレス"  size="sm" />
+      </Label>
+      <Label class="space-y-2">
+        <span>宛先</span>
+        <Input bind:value={notifyConf.MailTo}  placeholder="宛先メールアドレス"   size="sm" />
+      </Label>
+    </div>
+    <Label class="space-y-2">
+      <span>
+        件名
+      </span>
+      <Input  bind:value={notifyConf.Subject}  size="sm"/>
+    </Label>
+    <div class="grid gap-4 md:grid-cols-4">
+      <Label class="space-y-2">
+        <span>
+          通知レベル
+        </span>
+        <Select items={notifyLevelList} bind:value={notifyConf.Level} placeholder="通知レベルを選択" size="sm"/>
+      </Label>
+      <Label class="space-y-2">
+        <span>
+          通知間隔(秒)
+        </span>
+        <Input type="number" min={60} max={3600*24} step={10} bind:value={notifyConf.Interval}  size="sm" />
+      </Label>
+      <Checkbox bind:checked={notifyConf.Report}>定期レポート</Checkbox>
+      <Checkbox bind:checked={notifyConf.NotifyRepair}>復帰通知</Checkbox>
+    </div>
+    <Label class="space-y-2">
+      <span>
+        コマンド実行
+      </span>
+      <Input  class="w-full" bind:value={notifyConf.ExecCmd}  size="sm"/>
+    </Label>
+    <div class="flex space-x-3">
+      <Button type="button" on:click={saveNotifyConf} size="sm" >
+        <Icon path={mdiContentSave} size={1} />
+        保存
+      </Button>
+      <Button type="button" color="red" on:click={testNotifyConf} size="sm" >
+        <Icon path={mdiEmail} size={1} />
+        テスト
+      </Button>
+      <Button type="button" color="alternative"  on:click={()=>{showNotifyConf = false}} size="sm" >
         <Icon path={mdiCancel} size={1} />
         キャンセル
       </Button>

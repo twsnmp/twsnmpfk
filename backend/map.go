@@ -191,7 +191,7 @@ func updateLineState() bool {
 }
 
 func checkNewVersion() {
-	if !datastore.NotifyConf.CheckUpdate || versionCheckState > 1 {
+	if versionCheckState > 1 {
 		return
 	}
 	url := "https://lhx98.linkclub.jp/twise.co.jp/cgi-bin/twsnmpfk.cgi?ver=" + versionNum
