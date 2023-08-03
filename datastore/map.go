@@ -62,6 +62,7 @@ func loadConf() error {
 			return nil
 		}
 		if err := json.Unmarshal(v, &MapConf); err != nil {
+			bSaveConf = true
 			return err
 		}
 		v = b.Get([]byte("backImage"))
@@ -69,18 +70,16 @@ func loadConf() error {
 			json.Unmarshal(v, &BackImage)
 		}
 		v = b.Get([]byte("discoverConf"))
-		if v == nil {
-			return nil
-		}
-		if err := json.Unmarshal(v, &DiscoverConf); err != nil {
-			return err
+		if v != nil {
+			json.Unmarshal(v, &DiscoverConf)
 		}
 		v = b.Get([]byte("notifyConf"))
-		if v == nil {
-			return nil
+		if v != nil {
+			json.Unmarshal(v, &NotifyConf)
 		}
-		if err := json.Unmarshal(v, &NotifyConf); err != nil {
-			return err
+		v = b.Get([]byte("aiConf"))
+		if v != nil {
+			json.Unmarshal(v, &AIConf)
 		}
 		v = b.Get([]byte("icons"))
 		if v != nil {
@@ -92,13 +91,16 @@ func loadConf() error {
 	})
 	if err == nil && bSaveConf {
 		if err := SaveMapConf(); err != nil {
-			log.Printf("load conf err=%v", err)
+			log.Printf("save map conf err=%v", err)
 		}
 		if err := SaveNotifyConf(); err != nil {
-			log.Printf("load conf err=%v", err)
+			log.Printf("save notify conf err=%v", err)
 		}
 		if err := SaveDiscoverConf(); err != nil {
-			log.Printf("load conf err=%v", err)
+			log.Printf("save discover conf err=%v", err)
+		}
+		if err := SaveAIConf(); err != nil {
+			log.Printf("save ai conf err=%v", err)
 		}
 	}
 	return err

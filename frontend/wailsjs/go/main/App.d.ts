@@ -3,6 +3,8 @@
 import {datastore} from '../models';
 import {main} from '../models';
 
+export function GetAIConf():Promise<datastore.AIConfEnt>;
+
 export function GetMapConf():Promise<datastore.MapConfEnt>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
@@ -10,6 +12,8 @@ export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
 export function GetSettings():Promise<main.Settings>;
 
 export function GetVersion():Promise<string>;
+
+export function SetAIConf(arg1:datastore.AIConfEnt):Promise<boolean>;
 
 export function SetMapConf(arg1:datastore.MapConfEnt):Promise<boolean>;
 

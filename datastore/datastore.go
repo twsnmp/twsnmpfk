@@ -30,7 +30,7 @@ var (
 	BackImage    BackImageEnt
 	NotifyConf   NotifyConfEnt
 	DiscoverConf DiscoverConfEnt
-	AIConf       []AIConfEnt
+	AIConf       AIConfEnt
 	AutoCharCode bool
 	Yasumi       string
 	// Restrt snmptrapd

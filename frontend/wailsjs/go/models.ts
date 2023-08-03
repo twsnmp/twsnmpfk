@@ -1,5 +1,21 @@
 export namespace datastore {
 	
+	export class AIConfEnt {
+	    HighThreshold: number;
+	    LowThreshold: number;
+	    WarnThreshold: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new AIConfEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.HighThreshold = source["HighThreshold"];
+	        this.LowThreshold = source["LowThreshold"];
+	        this.WarnThreshold = source["WarnThreshold"];
+	    }
+	}
 	export class MapConfEnt {
 	    MapName: string;
 	    PollInt: number;

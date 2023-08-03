@@ -219,15 +219,12 @@ func calcAIScore(req *AIReq) {
 	if len(res.ScoreData) > 0 {
 		ls := res.ScoreData[len(res.ScoreData)-1][1]
 		level := ""
-		for _, c := range datastore.AIConf {
-			if ls > c.Threshold {
-				if level == "" || level == "warn" || c.Level == "high" {
-					level = c.Level
-				}
-				if level == "high" {
-					break
-				}
-			}
+		if datastore.AIConf.HighThreshold > 0 && ls > datastore.AIConf.HighThreshold {
+			level = "high"
+		} else if datastore.AIConf.LowThreshold > 0 && ls > datastore.AIConf.LowThreshold {
+			level = "low"
+		} else if datastore.AIConf.WarnThreshold > 0 && ls > datastore.AIConf.WarnThreshold {
+			level = "warn"
 		}
 		if level != "" {
 			datastore.AddEventLog(&datastore.EventLogEnt{

@@ -10,14 +10,34 @@ import (
 )
 
 type AIConfEnt struct {
-	Threshold float64
-	Level     string
+	HighThreshold float64 `json:"HighThreshold"`
+	LowThreshold  float64 `json:"LowThreshold"`
+	WarnThreshold float64 `json:"WarnThreshold"`
 }
 
 type AIResult struct {
-	PollingID string
-	LastTime  int64
-	ScoreData [][]float64
+	PollingID string      `json:"PollingID"`
+	LastTime  int64       `json:"LastTime"`
+	ScoreData [][]float64 `json:"ScoreData"`
+}
+
+func SaveAIConf() error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	s, err := json.Marshal(AIConf)
+	if err != nil {
+		return err
+	}
+	st := time.Now()
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		log.Printf("SaveAIConf dur=%v", time.Since(st))
+		return b.Put([]byte("aiConf"), s)
+	})
 }
 
 func SaveAIResult(res *AIResult) error {

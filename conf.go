@@ -31,3 +31,14 @@ func (a *App) SetNotifyConf(n datastore.NotifyConfEnt) bool {
 func (a *App) TestNotifyConf(n datastore.NotifyConfEnt) bool {
 	return notify.SendTestMail(&n) == nil
 }
+
+// GetAIConf returns AI config
+func (a *App) GetAIConf() datastore.AIConfEnt {
+	return datastore.AIConf
+}
+
+// SetAIConf save AI config
+func (a *App) SetAIConf(ai datastore.AIConfEnt) bool {
+	datastore.AIConf = ai
+	return datastore.SaveAIConf() == nil
+}

@@ -37,6 +37,8 @@
     GetNotifyConf,
     SetNotifyConf,
     TestNotifyConf,
+    GetAIConf,
+    SetAIConf,
   } from "../wailsjs/go/main/App"
   import { snmpModeList } from "./lib/common";
   import type { datastore} from "wailsjs/go/models";
@@ -51,6 +53,8 @@
   let notifyConf: datastore.NotifyConfEnt | undefined = undefined;
   let showTestNotifyError : boolean = false;
   let showTestNotifyOk : boolean = false;
+  let showAIConf :boolean= false;
+  let aiConf: datastore.AIConfEnt | undefined = undefined;
 
   let page = "map";
 
@@ -84,11 +88,33 @@
     showTestNotifyOk = ok;
   }
 
+  const aiLevelList = [
+    {name:"判定しない", value:0},
+    {name:"10億回に1回の確率", value:110.8},
+    {name:"1億回に1回の確率", value:106.1},
+    {name:"1000万回に1回の確率", value:101.9},
+    {name:"100万回に1回の確率", value:97.5},
+    {name:"10万回に1回の確率", value:92.6},
+    {name:"1万回に1回の確率", value:86.8},
+    {name:"1000回に1回の確率", value:80.8},
+    {name:"100回に1回の確率", value:73.2},
+    {name:"10回に1回の確率", value:62.8},
+  ];
+ 
+  const saveAIConf = async () => {
+    aiConf.HighThreshold *=1;
+    aiConf.LowThreshold *=1;
+    aiConf.WarnThreshold *=1;
+    await SetAIConf(aiConf);
+    showAIConf = false;
+  }
+
   onMount(async () => {
     version = await GetVersion();
     settings = await GetSettings();
     mapConf = await GetMapConf();
     notifyConf = await GetNotifyConf();
+    aiConf = await GetAIConf();
     await tick();
     showMAP(map);
 		maptest();
@@ -202,7 +228,7 @@
         }}>
         通知
       </DropdownItem>
-      <DropdownItem>
+      <DropdownItem  on:click={()=> {showAIConf = true}} >
         AI分析
       </DropdownItem>
     </Dropdown>    
@@ -376,6 +402,42 @@
         テスト
       </Button>
       <Button type="button" color="alternative"  on:click={()=>{showNotifyConf = false}} size="sm" >
+        <Icon path={mdiCancel} size={1} />
+        キャンセル
+      </Button>
+    </div>
+  </form>
+</Modal>
+
+<Modal bind:open={showAIConf} size="lg" autoclose={false} class="w-full">
+  <form class="flex flex-col space-y-4" action="#">
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">AI分析設定</h3>
+    <div class="grid gap-4  md:grid-cols-3">
+      <Label class="space-y-2">
+        <span>
+          重度と判定するレベル
+        </span>
+        <Select items={aiLevelList} bind:value={aiConf.HighThreshold} placeholder="レベルを選択" size="sm"/>
+      </Label>
+      <Label class="space-y-2">
+        <span>
+          軽度と判定するレベル
+        </span>
+        <Select items={aiLevelList} bind:value={aiConf.LowThreshold} placeholder="レベルを選択" size="sm"/>
+      </Label>
+      <Label class="space-y-2">
+        <span>
+          注意と判定するレベル
+        </span>
+        <Select items={aiLevelList} bind:value={aiConf.WarnThreshold} placeholder="レベルを選択" size="sm"/>
+      </Label>
+    </div>
+    <div class="flex space-x-2">
+      <Button type="button" on:click={saveAIConf} size="sm" >
+        <Icon path={mdiContentSave} size={1} />
+        保存
+      </Button>
+      <Button type="button"color="alternative"  on:click={()=>{showAIConf = false}} size="sm" >
         <Icon path={mdiCancel} size={1} />
         キャンセル
       </Button>
