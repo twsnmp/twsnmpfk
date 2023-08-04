@@ -6,6 +6,10 @@ export function GetAIConf() {
   return window['go']['main']['App']['GetAIConf']();
 }
 
+export function GetLastEventLogs(arg1) {
+  return window['go']['main']['App']['GetLastEventLogs'](arg1);
+}
+
 export function GetMapConf() {
   return window['go']['main']['App']['GetMapConf']();
 }

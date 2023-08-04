@@ -112,12 +112,8 @@ func getNotifyData(list []*datastore.EventLogEnt, nl int) notifyData {
 			continue
 		}
 		if datastore.NotifyConf.NotifyRepair && l.Level == "repair" {
-			a := strings.Split(l.Event, ":")
-			if len(a) < 2 {
-				continue
-			}
 			// 復帰前の状態を確認する
-			np := getLevelNum(a[len(a)-1])
+			np := getLevelNum(l.LastLevel)
 			if np > nl {
 				continue
 			}

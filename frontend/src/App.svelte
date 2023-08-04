@@ -27,7 +27,6 @@
     mdiEmail,
     mdiExclamation,
   } from "@mdi/js";
-  import { setMAP, showMAP, setMapContextMenu } from "./lib/map";
   import { onMount, tick } from "svelte";
   import {
     GetMapConf, 
@@ -42,6 +41,8 @@
   } from "../wailsjs/go/main/App"
   import { snmpModeList } from "./lib/common";
   import type { datastore} from "wailsjs/go/models";
+  import Map from "./lib/Map.svelte";
+  import Log from "./lib/Log.svelte";
 
   let version = "";
   let settings :any = undefined;
@@ -115,69 +116,12 @@
     mapConf = await GetMapConf();
     notifyConf = await GetNotifyConf();
     aiConf = await GetAIConf();
-    await tick();
-    showMAP(map);
-		maptest();
-    setMapContextMenu(true);
   });
 
-	const maptest = async() => {
-    await tick();
-    setMAP(
-      {
-        Nodes: {
-          node1: {
-            ID: "node1",
-            X: 100,
-            Y: 200,
-            Icon: "mdi-microsoft-windows",
-            State: "normal",
-            Name: "Node1",
-          },
-          node2: {
-            ID: "node2",
-            X: 160,
-            Y: 200,
-            Icon: "mdi-linux",
-            State: "low",
-            Name: "Node2",
-          },
-        },
-        Lines: {
-          line1: {
-            ID: "line1",
-            NodeID1: "node1",
-            NodeID2: "node2",
-            State1: "normal",
-            State2: "low",
-          },
-        },
-        Items: {
-          item1: {
-            ID: "item1",
-            Type: 2,
-            Size: 24,
-            X: 50,
-            Y: 100,
-            Text: "test",
-            Color: "red",
-          },
-        },
-        MapConf: {
-          BackImage: {
-             Color: dark ? "black" : "white",
-          },
-        },
-      },
-			dark,
-      settings.Lock,
-    );
-	}
 	const toggleDark = () => {
 		const e = document.querySelector('html');
 		e.classList.toggle('dark');
 		dark = e.classList.contains('dark');
-		maptest();
 	}
 </script>
 
@@ -242,7 +186,17 @@
 	</Button>
 </Navbar>
 
-<div bind:this={map} class="w-full h-screen" />
+
+{#if page =="map"}
+<div class="grid grid-rows-4 grid-cols-1 gap-0  w-full" style="height:{window.innerHeight - 96}px;">
+  <div class="row-span-3">
+    <Map {dark}></Map>
+  </div>
+  <div class="row-span-1">
+    <Log></Log>
+  </div>
+</div>
+{/if}
 
 <Modal bind:open={showMapConf} size="lg" autoclose={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">

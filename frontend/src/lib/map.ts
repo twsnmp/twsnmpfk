@@ -30,7 +30,7 @@ const selectedItems = [];
 const iconCodeMap = {};
 const imageMap = {};
 
-const _ImageP5 = new P5(()=>{})
+let _mapP5 :P5 | undefined  = undefined;
 
 const setIconCodeMap = (list:any) => {
   list.forEach((e :any) => {
@@ -47,8 +47,8 @@ export const setMAP = (m:any,d:boolean,ro:boolean) => {
   items = m.Items || {};
   backImage = m.MapConf.BackImage;
   backImage.Image = null;
-  if (backImage.Data){
-    _ImageP5.loadImage(backImage.Data,(img)=>{
+  if (backImage.Data && _mapP5 != undefined){
+    _mapP5.loadImage(backImage.Data,(img)=>{
       backImage.Image = img;
       mapRedraw = true;
     })
@@ -57,8 +57,8 @@ export const setMAP = (m:any,d:boolean,ro:boolean) => {
   for(const k in items) {
     switch (items[k].Type) {
     case 3:
-      if (!imageMap[items[k].Data]) {
-        _ImageP5.loadImage(items[k].Data,(img)=>{
+      if (!imageMap[items[k].Data] && _mapP5 != undefined) {
+        _mapP5.loadImage(items[k].Data,(img)=>{
           imageMap[items[k].Path] = img;
           mapRedraw = true;
         })
@@ -117,12 +117,17 @@ const mapMain = (p5:P5) => {
   p5.setup = () => {
     const c = p5.createCanvas(MAP_SIZE_X, MAP_SIZE_Y);
     c.mousePressed(canvasMousePressed);
+    p5.push();
+    p5.textFont('Material Design Icons')
+    p5.textFont('Roboto')
+    p5.pop();
   }
 
   p5.draw = () => {
     if (!mapRedraw){
       return;
     }
+    console.log("p5.draw");
     mapRedraw = false;
     p5.background(backImage.Color ||  23 );
     if(backImage.Image){
@@ -618,23 +623,21 @@ const mapMain = (p5:P5) => {
   }
 }
 
-let  hasMAP = false
 let  contextMenu = true
 export const showMAP = (div:HTMLElement) => {
   setIconCodeMap(iconList);
   setStateColorMap(stateList);
-  mapRedraw = true
-  contextMenu = false
-  if (hasMAP) {
+  mapRedraw = false;
+  contextMenu = false;
+  if (_mapP5 != undefined) {
     return
   }
   document.oncontextmenu = (e) => {
     if (!contextMenu) {
       e.preventDefault()
     }
-  }  
-  new P5(mapMain, div)
-  hasMAP = true
+  }
+  _mapP5 = new P5(mapMain, div)
 }
 
 export const setMapContextMenu = (e:boolean) => {

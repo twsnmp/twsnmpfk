@@ -1,19 +1,20 @@
-import * as echarts from 'echarts'
+import * as echarts from 'echarts';
+import * as icons from '@mdi/js';
 
 export const stateList = [
-  { text: '重度', color: '#e31a1c', icon: 'mdi-alert-circle', value: 'high' },
-  { text: '軽度', color: '#fb9a99', icon: 'mdi-alert-circle', value: 'low' },
-  { text: '注意', color: '#dfdf22', icon: 'mdi-alert', value: 'warn' },
-  { text: '正常', color: '#33a02c', icon: 'mdi-check-circle', value: 'normal' },
-  { text: 'Up', color: '#33a02c', icon: 'mdi-check-circle', value: 'up' },
-  { text: '復帰', color: '#1f78b4', icon: 'mdi-autorenew', value: 'repair' },
-  { text: '情報', color: '#1f78b4', icon: 'mdi-information', value: 'info' },
-  { text: '新規', color: '#1f78b4', icon: 'mdi-information', value: 'New' },
-  { text: '変化', color: '#e31a1c', icon: 'mdi-autorenew', value: 'Change' },
-  { text: 'エラー', color: '#e31a1c', icon: 'mdi-alert-circle', value: 'error' },
-  { text: 'Down', color: '#e31a1c', icon: 'mdi-alert-circle', value: 'down' },
-  { text: '停止', color: '#777', icon: 'mdi-stop', value: 'off' },
-  { text: 'Debug', color: '#777', icon: 'mdi-bug', value: 'debug' },
+  { text: '重度', color: '#e31a1c', icon: icons.mdiAlertCircle, value: 'high' },
+  { text: '軽度', color: '#fb9a99', icon: icons.mdiAlertCircle, value: 'low' },
+  { text: '注意', color: '#dfdf22', icon: icons.mdiAlert, value: 'warn' },
+  { text: '正常', color: '#33a02c', icon: icons.mdiCheckCircle, value: 'normal' },
+  { text: 'Up', color: '#33a02c', icon:  icons.mdiCheckCircle, value: 'up' },
+  { text: '復帰', color: '#1f78b4', icon: icons.mdiAutorenew, value: 'repair' },
+  { text: '情報', color: '#1f78b4', icon: icons.mdiInformation, value: 'info' },
+  { text: '新規', color: '#1f78b4', icon: icons.mdiInformation, value: 'New' },
+  { text: '変化', color: '#e31a1c', icon: icons.mdiAutorenew, value: 'Change' },
+  { text: 'エラー', color: '#e31a1c', icon: icons.mdiAlertCircle, value: 'error' },
+  { text: 'Down', color: '#e31a1c', icon: icons.mdiAlertCircle, value: 'down' },
+  { text: '停止', color: '#777', icon: icons.mdiStop, value: 'off' },
+  { text: 'Debug', color: '#777', icon: icons.mdiBug, value: 'debug' },
 ]
 
 export const stateMap = {}
@@ -22,16 +23,16 @@ stateList.forEach((e:any) => {
   stateMap[e.value] = e
 })
 
-export const getStateColor = (state:string) => {
+export const getStateColor = (state:string) :string => {
   return stateMap[state] ? stateMap[state].color : 'gray'
 }
 
-export const getStateName = (state:string) => {
+export const getStateName = (state:string) : string => {
   return stateMap[state] ? stateMap[state].text : '不明'
 }
 
-export const getStateIconName = (state:string) => {
-  return stateMap[state] ? stateMap[state].icon : 'mdi-comment-question-outline'
+export const getStateIcon = (state:string) => {
+  return stateMap[state] ? stateMap[state].icon :  icons.mdiCommentQuestionOutline;
 }
 
 export const levelList = [
@@ -154,8 +155,8 @@ iconList.forEach((e) => {
   iconMap[e.value] = e.icon
 })
 
-export const getIconName = (icon:string) => {
-  return iconMap[icon] ? iconMap[icon] : 'mdi-comment-question-outline'
+export const getIconName = (icon:string) : string => {
+  return iconMap[icon] ? iconMap[icon] : 'mdi-comment-question-outline';
 }
 
 export const setIcon = (e:any) => {

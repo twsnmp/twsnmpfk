@@ -22,12 +22,13 @@ const (
 )
 
 type EventLogEnt struct {
-	Time     int64 // UnixNano()
-	Type     string
-	Level    string
-	NodeName string
-	NodeID   string
-	Event    string
+	Time      int64  `json:"Time"`
+	Type      string `json:"Type"`
+	Level     string `json:"Level"`
+	NodeName  string `json:"NodeName"`
+	NodeID    string `json:"NodeID"`
+	Event     string `json:"Event"`
+	LastLevel string `json:"LastLevel"`
 }
 
 type LogEnt struct {

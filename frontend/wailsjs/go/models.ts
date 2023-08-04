@@ -16,6 +16,30 @@ export namespace datastore {
 	        this.WarnThreshold = source["WarnThreshold"];
 	    }
 	}
+	export class EventLogEnt {
+	    Time: number;
+	    Type: string;
+	    Level: string;
+	    NodeName: string;
+	    NodeID: string;
+	    Event: string;
+	    LastLevel: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new EventLogEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.Type = source["Type"];
+	        this.Level = source["Level"];
+	        this.NodeName = source["NodeName"];
+	        this.NodeID = source["NodeID"];
+	        this.Event = source["Event"];
+	        this.LastLevel = source["LastLevel"];
+	    }
+	}
 	export class MapConfEnt {
 	    MapName: string;
 	    PollInt: number;

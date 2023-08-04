@@ -233,11 +233,12 @@ func setPollingState(pe *datastore.PollingEnt, newState string) {
 		}
 		datastore.SetNodeStateChanged(pe.NodeID)
 		l := &datastore.EventLogEnt{
-			Type:     "polling",
-			Level:    pe.State,
-			NodeID:   pe.NodeID,
-			NodeName: nodeName,
-			Event:    fmt.Sprintf("ポーリング状態変化:%s(%s):%s", pe.Name, pe.Type, oldState),
+			Type:      "polling",
+			Level:     pe.State,
+			NodeID:    pe.NodeID,
+			NodeName:  nodeName,
+			LastLevel: oldState,
+			Event:     fmt.Sprintf("ポーリング状態変化:%s(%s)", pe.Name, pe.Type),
 		}
 		datastore.AddEventLog(l)
 	}

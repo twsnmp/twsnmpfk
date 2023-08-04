@@ -5,6 +5,8 @@ import {main} from '../models';
 
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 
+export function GetLastEventLogs(arg1:number):Promise<Array<datastore.EventLogEnt>>;
+
 export function GetMapConf():Promise<datastore.MapConfEnt>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
