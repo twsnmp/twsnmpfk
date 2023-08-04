@@ -56,6 +56,7 @@
   let showTestNotifyOk : boolean = false;
   let showAIConf :boolean= false;
   let aiConf: datastore.AIConfEnt | undefined = undefined;
+  let mainHeight = 0;
 
   let page = "map";
 
@@ -116,6 +117,8 @@
     mapConf = await GetMapConf();
     notifyConf = await GetNotifyConf();
     aiConf = await GetAIConf();
+    await tick();
+    mainHeight = window.innerHeight - 96;
   });
 
 	const toggleDark = () => {
@@ -124,6 +127,8 @@
 		dark = e.classList.contains('dark');
 	}
 </script>
+
+<svelte:window on:resize={() => mainHeight = window.innerHeight - 96} />
 
 <Navbar let:hidden let:toggle style="--wails-draggable:drag">
   <NavBrand href="/">
@@ -188,7 +193,7 @@
 
 
 {#if page =="map"}
-<div class="grid grid-rows-4 grid-cols-1 gap-0  w-full" style="height:{window.innerHeight - 96}px;">
+<div class="grid grid-rows-4 grid-cols-1 gap-0  w-full" style="height:{mainHeight}px;">
   <div class="row-span-3">
     <Map {dark}></Map>
   </div>

@@ -24,7 +24,7 @@
   });
 </script>
 
-<Table divClass="relative overflow-x-auto overflow-y-auto h-full text-xs">
+<Table divClass="relative overflow-x-auto overflow-y-auto h-full text-xs" hoverable >
   <TableHead theadClass="p-1 text-xs">
     <TableHeadCell padding="p-2">状態</TableHeadCell>
     <TableHeadCell padding="p-2">発生日時</TableHeadCell>
