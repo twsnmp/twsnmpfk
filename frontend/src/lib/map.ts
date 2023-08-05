@@ -78,10 +78,6 @@ export const setMAP = (m:any,d:boolean,ro:boolean) => {
   mapRedraw = true;
 }
 
-export const setCallback = (cb:any) => {
-  mapCallBack = cb;
-}
-
 const getIconCode = (icon) => {
   return iconCodeMap[icon] ? iconCodeMap[icon] : iconCodeMap["unknown"];
 }
@@ -623,26 +619,20 @@ const mapMain = (p5:P5) => {
   }
 }
 
-let  contextMenu = true
-export const showMAP = (div:HTMLElement) => {
+export const showMAP = (div:HTMLElement,cb :any) => {
+  mapCallBack =cb;
   setIconCodeMap(iconList);
   setStateColorMap(stateList);
   mapRedraw = false;
-  contextMenu = false;
   if (_mapP5 != undefined) {
     return
   }
-  document.oncontextmenu = (e) => {
-    if (!contextMenu) {
-      e.preventDefault()
-    }
+  div.oncontextmenu = (e) => {
+    e.preventDefault()
   }
   _mapP5 = new P5(mapMain, div)
 }
 
-export const setMapContextMenu = (e:boolean) => {
-  contextMenu = e
-}
 
 export const refreshMAP = () => {
   if (mapCallBack) {
