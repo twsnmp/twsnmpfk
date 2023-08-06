@@ -16,6 +16,26 @@ export namespace datastore {
 	        this.WarnThreshold = source["WarnThreshold"];
 	    }
 	}
+	export class BackImageEnt {
+	    X: number;
+	    Y: number;
+	    Width: number;
+	    Height: number;
+	    Data: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new BackImageEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.X = source["X"];
+	        this.Y = source["Y"];
+	        this.Width = source["Width"];
+	        this.Height = source["Height"];
+	        this.Data = source["Data"];
+	    }
+	}
 	export class EventLogEnt {
 	    Time: number;
 	    Type: string;
@@ -38,6 +58,40 @@ export namespace datastore {
 	        this.NodeID = source["NodeID"];
 	        this.Event = source["Event"];
 	        this.LastLevel = source["LastLevel"];
+	    }
+	}
+	export class LineEnt {
+	    ID: string;
+	    NodeID1: string;
+	    PollingID1: string;
+	    State1: string;
+	    NodeID2: string;
+	    PollingID2: string;
+	    State2: string;
+	    PollingID: string;
+	    Width: number;
+	    State: string;
+	    Info: string;
+	    Port: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LineEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.NodeID1 = source["NodeID1"];
+	        this.PollingID1 = source["PollingID1"];
+	        this.State1 = source["State1"];
+	        this.NodeID2 = source["NodeID2"];
+	        this.PollingID2 = source["PollingID2"];
+	        this.State2 = source["State2"];
+	        this.PollingID = source["PollingID"];
+	        this.Width = source["Width"];
+	        this.State = source["State"];
+	        this.Info = source["Info"];
+	        this.Port = source["Port"];
 	    }
 	}
 	export class MapConfEnt {

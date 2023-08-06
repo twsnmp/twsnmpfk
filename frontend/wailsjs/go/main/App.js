@@ -6,12 +6,28 @@ export function GetAIConf() {
   return window['go']['main']['App']['GetAIConf']();
 }
 
+export function GetBackImage() {
+  return window['go']['main']['App']['GetBackImage']();
+}
+
+export function GetDrawItems() {
+  return window['go']['main']['App']['GetDrawItems']();
+}
+
 export function GetLastEventLogs(arg1) {
   return window['go']['main']['App']['GetLastEventLogs'](arg1);
 }
 
+export function GetLines() {
+  return window['go']['main']['App']['GetLines']();
+}
+
 export function GetMapConf() {
   return window['go']['main']['App']['GetMapConf']();
+}
+
+export function GetNodes() {
+  return window['go']['main']['App']['GetNodes']();
 }
 
 export function GetNotifyConf() {

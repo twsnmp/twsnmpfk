@@ -14,7 +14,7 @@ type BackImageEnt struct {
 	Y      int    `json:"Y"`
 	Width  int    `json:"Width"`
 	Height int    `json:"Height"`
-	Data   string `json:"MapName"`
+	Data   string `json:"Data"`
 }
 
 // MapConfEnt :  マップ設定

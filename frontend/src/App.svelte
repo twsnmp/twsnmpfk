@@ -46,7 +46,6 @@
 
   let version = "";
   let settings :any = undefined;
-  let map: any;
 	let dark: boolean = false;
   let showMapConf :boolean= false;
   let mapConf: datastore.MapConfEnt | undefined = undefined;

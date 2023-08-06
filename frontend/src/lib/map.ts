@@ -1,5 +1,14 @@
 import P5 from 'p5';
 import {iconList,stateList} from  './common'
+import {
+  GetSettings,
+  GetNodes,
+  GetLines,
+  GetDrawItems,
+  GetBackImage,
+} from "../../wailsjs/go/main/App"
+import type { datastore } from 'wailsjs/go/models';
+
 
 const MAP_SIZE_X = 2500;
 const MAP_SIZE_Y = 5000;
@@ -12,15 +21,14 @@ let mapCallBack = undefined;
 let nodes = {};
 let lines = [];
 let items = {}
-let backImage = {
+let backImage: datastore.BackImageEnt = {
   X:0,
   Y:0,
   Width:0,
   Height: 0,
   Data: '',
-  Color: 23,
-  Image: null,
 };
+let _backImage:any = undefined; 
 
 let fontSize = 12;
 
@@ -32,28 +40,35 @@ const imageMap = {};
 
 let _mapP5 :P5 | undefined  = undefined;
 
-const setIconCodeMap = (list:any) => {
-  list.forEach((e :any) => {
-    iconCodeMap[e.value] = String.fromCodePoint(e.code)
-  })
-  iconCodeMap["unknown"] = String.fromCodePoint(0xF0A39)
+export const initMAP = async (div:HTMLElement,cb :any) => {
+  const settings = await GetSettings();
+  mapCallBack =cb;
+  readOnly = settings.Lock;
+  setIconCodeMap(iconList);
+  setStateColorMap(stateList);
+  mapRedraw = false;
+  if (_mapP5 != undefined) {
+    return
+  }
+  div.oncontextmenu = (e) => {
+    e.preventDefault()
+  }
+  _mapP5 = new P5(mapMain, div)
 }
 
-export const setMAP = (m:any,d:boolean,ro:boolean) => {
-  readOnly = ro;
+export const updateMAP = async (d:boolean) => {
   dark = d;
-  nodes = m.Nodes;
-  lines = m.Lines;
-  items = m.Items || {};
-  backImage = m.MapConf.BackImage;
-  backImage.Image = null;
+  nodes = await GetNodes();
+  lines = await GetLines();
+  items = await GetDrawItems() || {};
+  backImage = await GetBackImage();
+  _backImage = null;
   if (backImage.Data && _mapP5 != undefined){
     _mapP5.loadImage(backImage.Data,(img)=>{
-      backImage.Image = img;
+      _backImage = img;
       mapRedraw = true;
     })
   }
-
   for(const k in items) {
     switch (items[k].Type) {
     case 3:
@@ -76,6 +91,13 @@ export const setMAP = (m:any,d:boolean,ro:boolean) => {
     } 
   }
   mapRedraw = true;
+}
+
+const setIconCodeMap = (list:any) => {
+  list.forEach((e :any) => {
+    iconCodeMap[e.value] = String.fromCodePoint(e.code)
+  })
+  iconCodeMap["unknown"] = String.fromCodePoint(0xF0A39)
 }
 
 const getIconCode = (icon) => {
@@ -123,14 +145,13 @@ const mapMain = (p5:P5) => {
     if (!mapRedraw){
       return;
     }
-    console.log("p5.draw");
     mapRedraw = false;
-    p5.background(backImage.Color ||  23 );
-    if(backImage.Image){
+    p5.background(dark ? 23 : 252 );
+    if(_backImage){
       if(backImage.Width){
-        p5.image(backImage.Image,backImage.X,backImage.Y,backImage.Width,backImage.Height);
+        p5.image(_backImage,backImage.X,backImage.Y,backImage.Width,backImage.Height);
       }else {
-        p5.image(backImage.Image,backImage.X,backImage.Y);
+        p5.image(_backImage,backImage.X,backImage.Y);
       }
     }
     for (const k in lines) {
@@ -214,7 +235,7 @@ const mapMain = (p5:P5) => {
             p5.fill(items[k].Color);
             p5.arc(x, y, r0, r0, 5*p5.QUARTER_PI, -p5.QUARTER_PI - (p5.HALF_PI - p5.HALF_PI * items[k].Value/100));
           }
-          p5.fill(backImage.Color || 23);
+          p5.fill(dark ? 23 :252);
           p5.arc(x, y, r1, r1, -p5.PI, 0);
           p5.textAlign(p5.CENTER);
           p5.textSize(8);
@@ -619,35 +640,5 @@ const mapMain = (p5:P5) => {
   }
 }
 
-export const showMAP = (div:HTMLElement,cb :any) => {
-  mapCallBack =cb;
-  setIconCodeMap(iconList);
-  setStateColorMap(stateList);
-  mapRedraw = false;
-  if (_mapP5 != undefined) {
-    return
-  }
-  div.oncontextmenu = (e) => {
-    e.preventDefault()
-  }
-  _mapP5 = new P5(mapMain, div)
-}
 
-
-export const refreshMAP = () => {
-  if (mapCallBack) {
-    mapCallBack({
-      Cmd: 'refresh',
-      Param: '',
-    });
-  }
-}
-
-export const selectNode = (id :string) => {
-  if( nodes[id] ) {
-    selectedNodes.length = 0
-    selectedNodes.push(id)
-    mapRedraw = true
-  }
-}
 

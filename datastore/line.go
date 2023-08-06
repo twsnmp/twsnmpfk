@@ -9,18 +9,18 @@ import (
 )
 
 type LineEnt struct {
-	ID         string
-	NodeID1    string
-	PollingID1 string
-	State1     string
-	NodeID2    string
-	PollingID2 string
-	State2     string
-	PollingID  string
-	Width      int
-	State      string
-	Info       string
-	Port       string
+	ID         string `json:"ID"`
+	NodeID1    string `json:"NodeID1"`
+	PollingID1 string `json:"PollingID1"`
+	State1     string `json:"State1"`
+	NodeID2    string `json:"NodeID2"`
+	PollingID2 string `json:"PollingID2"`
+	State2     string `json:"State2"`
+	PollingID  string `json:"PollingID"`
+	Width      int    `json:"Width"`
+	State      string `json:"State"`
+	Info       string `json:"Info"`
+	Port       string `json:"Port"`
 }
 
 func AddLine(l *LineEnt) error {

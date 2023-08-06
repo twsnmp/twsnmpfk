@@ -11,25 +11,25 @@ import (
 )
 
 type NodeEnt struct {
-	ID        string
-	Name      string
-	Descr     string
-	Icon      string
-	State     string
-	X         int
-	Y         int
-	IP        string
-	IPv6      string
-	MAC       string
-	SnmpMode  string
-	Community string
-	User      string
-	Password  string
-	PublicKey string
-	URL       string
-	Type      string
-	AddrMode  string
-	AutoAck   bool
+	ID        string `json:"ID"`
+	Name      string `json:"Name"`
+	Descr     string `json:"Descr"`
+	Icon      string `json:"Icon"`
+	State     string `json:"State"`
+	X         int    `json:"X"`
+	Y         int    `json:"Y"`
+	IP        string `json:"IP"`
+	IPv6      string `json:"IPv6"`
+	MAC       string `json:"MAC"`
+	SnmpMode  string `json:"SnmpMode"`
+	Community string `json:"Community"`
+	User      string `json:"User"`
+	Password  string `json:"Password"`
+	PublicKey string `json:"PublicKey"`
+	URL       string `json:"URL"`
+	Type      string `json:"Type"`
+	AddrMode  string `json:"AddrMode"`
+	AutoAck   bool   `json:"AutoAck"`
 }
 
 type DrawItemType int
@@ -44,21 +44,21 @@ const (
 )
 
 type DrawItemEnt struct {
-	ID        string
-	Type      DrawItemType
-	X         int
-	Y         int
-	W         int // Width
-	H         int // Higeht
-	Color     string
-	Path      string
-	Text      string
-	Size      int     // Font Size | GaugeSize
-	PollingID string  // Polling ID
-	VarName   string  // Pollingから取得する項目
-	Format    string  // 表示フォーマット
-	Value     float64 // Gaugeの値
-	Scale     float64 // 値の補正倍率
+	ID        string       `json:"ID"`
+	Type      DrawItemType `json:"Type"`
+	X         int          `json:"X"`
+	Y         int          `json:"Y"`
+	W         int          `json:"W"`
+	H         int          `json:"H"`
+	Color     string       `json:"Color"`
+	Path      string       `json:"Path"`
+	Text      string       `json:"Text"`
+	Size      int          `json:"Size"`
+	PollingID string       `json:"PollingID"`
+	VarName   string       `json:"VarName"`
+	Format    string       `json:"Format"`
+	Value     float64      `json:"Value"`
+	Scale     float64      `json:"Scale"`
 }
 
 func loadMapData() error {

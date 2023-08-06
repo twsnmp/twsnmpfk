@@ -5,9 +5,17 @@ import {main} from '../models';
 
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 
+export function GetBackImage():Promise<datastore.BackImageEnt>;
+
+export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
+
 export function GetLastEventLogs(arg1:number):Promise<Array<datastore.EventLogEnt>>;
 
+export function GetLines():Promise<Array<datastore.LineEnt>>;
+
 export function GetMapConf():Promise<datastore.MapConfEnt>;
+
+export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
 

@@ -148,3 +148,38 @@ func (a *App) GetLastEventLogs(count int) []datastore.EventLogEnt {
 	})
 	return ret
 }
+
+// GetNodes retunrs map nodes
+func (a *App) GetNodes() map[string]datastore.NodeEnt {
+	ret := make(map[string]datastore.NodeEnt)
+	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+		ret[n.ID] = *n
+		return true
+	})
+	return ret
+}
+
+// GetLines retunrs map lines
+func (a *App) GetLines() []datastore.LineEnt {
+	ret := []datastore.LineEnt{}
+	datastore.ForEachLines(func(l *datastore.LineEnt) bool {
+		ret = append(ret, *l)
+		return true
+	})
+	return ret
+}
+
+// GetDrawItems retunrs map draw items
+func (a *App) GetDrawItems() map[string]datastore.DrawItemEnt {
+	ret := make(map[string]datastore.DrawItemEnt)
+	datastore.ForEachItems(func(i *datastore.DrawItemEnt) bool {
+		ret[i.ID] = *i
+		return true
+	})
+	return ret
+}
+
+// GetDrawItems retunrs map backgrand image
+func (a *App) GetBackImage() datastore.BackImageEnt {
+	return datastore.BackImage
+}
