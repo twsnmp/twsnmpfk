@@ -10,13 +10,13 @@ import (
 )
 
 type DiscoverConfEnt struct {
-	StartIP         string `validate:"required,ipv4"`
-	EndIP           string `validate:"required,ipv4"`
-	AutoAddPollings []string
-	Timeout         int `validate:"required,gte=1,lte=10"`
-	Retry           int `validate:"required,gte=0,lte=5"`
-	X               int
-	Y               int
+	StartIP    string `json:"StartIP"`
+	EndIP      string `json:"EndIP"`
+	Timeout    int    `json:"Timeout"`
+	Retry      int    `json:"Retry"`
+	X          int    `json:"X"`
+	Y          int    `json:"Y"`
+	AddPolling bool   `json:"AddPolling"`
 }
 
 func SaveDiscoverConf() error {

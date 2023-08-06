@@ -36,6 +36,30 @@ export namespace datastore {
 	        this.Data = source["Data"];
 	    }
 	}
+	export class DiscoverConfEnt {
+	    StartIP: string;
+	    EndIP: string;
+	    Timeout: number;
+	    Retry: number;
+	    X: number;
+	    Y: number;
+	    AddPolling: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new DiscoverConfEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.StartIP = source["StartIP"];
+	        this.EndIP = source["EndIP"];
+	        this.Timeout = source["Timeout"];
+	        this.Retry = source["Retry"];
+	        this.X = source["X"];
+	        this.Y = source["Y"];
+	        this.AddPolling = source["AddPolling"];
+	    }
+	}
 	export class EventLogEnt {
 	    Time: number;
 	    Type: string;
@@ -160,6 +184,47 @@ export namespace datastore {
 	        this.Report = source["Report"];
 	        this.NotifyRepair = source["NotifyRepair"];
 	        this.ExecCmd = source["ExecCmd"];
+	    }
+	}
+
+}
+
+export namespace discover {
+	
+	export class DiscoverStat {
+	    Running: boolean;
+	    Total: number;
+	    Sent: number;
+	    Found: number;
+	    Snmp: number;
+	    Web: number;
+	    Mail: number;
+	    SSH: number;
+	    File: number;
+	    RDP: number;
+	    LDAP: number;
+	    StartTime: number;
+	    Now: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new DiscoverStat(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Running = source["Running"];
+	        this.Total = source["Total"];
+	        this.Sent = source["Sent"];
+	        this.Found = source["Found"];
+	        this.Snmp = source["Snmp"];
+	        this.Web = source["Web"];
+	        this.Mail = source["Mail"];
+	        this.SSH = source["SSH"];
+	        this.File = source["File"];
+	        this.RDP = source["RDP"];
+	        this.LDAP = source["LDAP"];
+	        this.StartTime = source["StartTime"];
+	        this.Now = source["Now"];
 	    }
 	}
 

@@ -4,6 +4,7 @@
   import {Modal,GradientButton} from "flowbite-svelte";
   import * as icons from '@mdi/js';
   import Icon from "mdi-svelte";
+  import Discover from "./Dsicover.svelte";
 
   let map: any;
   let posX:number = 0;
@@ -11,6 +12,7 @@
   let showMapMenu :boolean= false;
   let showNodeMenu :boolean= false;
   let showDrawItemMenu :boolean= false;
+  let showDiscover :boolean= false;
 
 	export let dark: boolean = false;
 
@@ -44,7 +46,6 @@
   let oldDark = false;
 	const refreshMap = async() => {
     if (count < 3|| count % 5 == 0 || dark != oldDark) {
-      console.log(dark);
       updateMAP(dark);
       oldDark = dark;
     }
@@ -53,9 +54,7 @@
 	}
 </script>
 
-
 <div bind:this={map} class="h-full w-full overflow-scroll"/>
-
 
 <Modal bind:open={showMapMenu} size="xs"  outsideclose>
   <div class="flex flex-col space-y-2">
@@ -71,7 +70,11 @@
       <Icon path={icons.mdiCached}></Icon>
       全て再確認
     </GradientButton>
-    <GradientButton color="cyan" class="w-full">
+    <GradientButton color="cyan" class="w-full" on:click={() => {
+        showMapMenu = false;
+        showDiscover =true;
+      }
+      }>
       <Icon path={icons.mdiFileFind}></Icon>
       自動発見
     </GradientButton>
@@ -119,3 +122,9 @@
     </GradientButton>
   </div>
 </Modal>
+
+{#if showDiscover}
+
+<Discover on:close={()=>{showDiscover = false}}></Discover>
+
+{/if}

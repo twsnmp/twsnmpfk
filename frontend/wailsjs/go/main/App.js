@@ -10,6 +10,14 @@ export function GetBackImage() {
   return window['go']['main']['App']['GetBackImage']();
 }
 
+export function GetDiscoverConf() {
+  return window['go']['main']['App']['GetDiscoverConf']();
+}
+
+export function GetDiscoverStats() {
+  return window['go']['main']['App']['GetDiscoverStats']();
+}
+
 export function GetDrawItems() {
   return window['go']['main']['App']['GetDrawItems']();
 }
@@ -52,6 +60,14 @@ export function SetMapConf(arg1) {
 
 export function SetNotifyConf(arg1) {
   return window['go']['main']['App']['SetNotifyConf'](arg1);
+}
+
+export function StartDiscover(arg1) {
+  return window['go']['main']['App']['StartDiscover'](arg1);
+}
+
+export function StopDiscover() {
+  return window['go']['main']['App']['StopDiscover']();
 }
 
 export function TestNotifyConf(arg1) {

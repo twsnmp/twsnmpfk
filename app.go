@@ -8,6 +8,7 @@ import (
 
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/discover"
 	"github.com/twsnmp/twsnmpfk/logger"
 	"github.com/twsnmp/twsnmpfk/notify"
 	"github.com/twsnmp/twsnmpfk/ping"
@@ -182,4 +183,33 @@ func (a *App) GetDrawItems() map[string]datastore.DrawItemEnt {
 // GetDrawItems retunrs map backgrand image
 func (a *App) GetBackImage() datastore.BackImageEnt {
 	return datastore.BackImage
+}
+
+// GetDiscoverConf retunrs discover config
+func (a *App) GetDiscoverConf() datastore.DiscoverConfEnt {
+	return datastore.DiscoverConf
+}
+
+// GetDiscoverStats restunrs discover stats
+func (a *App) GetDiscoverStats() discover.DiscoverStat {
+	return discover.Stat
+}
+
+// StartDiscover start discover
+func (a *App) StartDiscover(dc datastore.DiscoverConfEnt) bool {
+	datastore.DiscoverConf = dc
+	if err := datastore.SaveDiscoverConf(); err != nil {
+		log.Println(err)
+		return false
+	}
+	if err := discover.StartDiscover(); err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+// StopDiscover stop discover
+func (a *App) StopDiscover() {
+	discover.StopDiscover()
 }

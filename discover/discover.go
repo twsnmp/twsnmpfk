@@ -18,7 +18,6 @@ import (
 	"github.com/signalsciences/ipv4"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/ping"
-	"github.com/twsnmp/twsnmpfk/polling"
 )
 
 // GRID : 自動発見時にノードを配置する間隔
@@ -32,19 +31,19 @@ var (
 )
 
 type DiscoverStat struct {
-	Running   bool
-	Total     uint32
-	Sent      uint32
-	Found     uint32
-	Snmp      uint32
-	Web       uint32
-	Mail      uint32
-	SSH       uint32
-	File      uint32
-	RDP       uint32
-	LDAP      uint32
-	StartTime int64
-	Now       int64
+	Running   bool   `json:"Running"`
+	Total     uint32 `json:"Total"`
+	Sent      uint32 `json:"Sent"`
+	Found     uint32 `json:"Found"`
+	Snmp      uint32 `json:"Snmp"`
+	Web       uint32 `json:"Web"`
+	Mail      uint32 `json:"Mail"`
+	SSH       uint32 `json:"SSH"`
+	File      uint32 `json:"File"`
+	RDP       uint32 `json:"RDP"`
+	LDAP      uint32 `json:"LDAP"`
+	StartTime int64  `json:"StartTime"`
+	Now       int64  `json:"Now"`
 }
 
 type discoverInfoEnt struct {
@@ -325,55 +324,13 @@ func addFoundNode(dent *discoverInfoEnt) {
 		NodeName: n.Name,
 		Event:    "自動発見により追加",
 	})
-	if len(datastore.DiscoverConf.AutoAddPollings) < 1 {
+	if !datastore.DiscoverConf.AddPolling {
 		return
 	}
-	if datastore.DiscoverConf.AutoAddPollings[0] == "basic" {
-		addBasicPolling(dent, &n)
-		return
-	}
-	autoAddPollings(&n)
+	addPolling(dent, &n)
 }
 
-func autoAddPollings(n *datastore.NodeEnt) {
-	for _, id := range datastore.DiscoverConf.AutoAddPollings {
-		pt := datastore.GetPollingTemplate(id)
-		if pt == nil {
-			log.Printf("add polling template not found id=%s", id)
-			continue
-		}
-		if pt.AutoMode == "disable" {
-			continue
-		}
-		if pt.AutoMode != "" {
-			// インデックスの展開などを行う並列で処理する
-			go polling.AutoAddPolling(n, pt)
-			continue
-		}
-		p := new(datastore.PollingEnt)
-		p.Name = pt.Name
-		p.NodeID = n.ID
-		p.Type = pt.Type
-		p.Params = pt.Params
-		p.Mode = pt.Mode
-		p.Script = pt.Script
-		p.Extractor = pt.Extractor
-		p.Filter = pt.Filter
-		p.Level = pt.Level
-		p.PollInt = datastore.MapConf.PollInt
-		p.Timeout = datastore.MapConf.Timeout
-		p.Retry = datastore.MapConf.Timeout
-		p.LogMode = 0
-		p.NextTime = 0
-		p.State = "unknown"
-		if err := datastore.AddPolling(p); err != nil {
-			log.Printf("discover err=%v", err)
-			return
-		}
-	}
-}
-
-func addBasicPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
+func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 	p := &datastore.PollingEnt{
 		NodeID:  n.ID,
 		Name:    "PING監視",
