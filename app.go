@@ -288,8 +288,8 @@ func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
 	return true
 }
 
-// DeleteNode delete node
-func (a *App) DeleteNode(ids []string) {
+// DeleteNodes delete node
+func (a *App) DeleteNodes(ids []string) {
 	for _, id := range ids {
 		n := datastore.GetNode(id)
 		if n != nil {
@@ -439,8 +439,8 @@ func (a *App) UpdateDrawItem(di datastore.DrawItemEnt) bool {
 	return true
 }
 
-// DeleteDrawItem delete draw item
-func (a *App) DeleteDrawItem(ids []string) {
+// DeleteDrawItems delete draw items
+func (a *App) DeleteDrawItems(ids []string) {
 	for _, id := range ids {
 		datastore.DeleteDrawItem(id)
 	}

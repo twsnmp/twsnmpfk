@@ -10,11 +10,11 @@ export function AddLine(arg1:datastore.LineEnt):Promise<boolean>;
 
 export function AddNode(arg1:datastore.NodeEnt):Promise<boolean>;
 
-export function DeleteDrawItem(arg1:Array<string>):Promise<void>;
+export function DeleteDrawItems(arg1:Array<string>):Promise<void>;
 
 export function DeleteLine(arg1:string):Promise<boolean>;
 
-export function DeleteNode(arg1:Array<string>):Promise<void>;
+export function DeleteNodes(arg1:Array<string>):Promise<void>;
 
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 

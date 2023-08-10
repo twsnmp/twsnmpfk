@@ -14,16 +14,16 @@ export function AddNode(arg1) {
   return window['go']['main']['App']['AddNode'](arg1);
 }
 
-export function DeleteDrawItem(arg1) {
-  return window['go']['main']['App']['DeleteDrawItem'](arg1);
+export function DeleteDrawItems(arg1) {
+  return window['go']['main']['App']['DeleteDrawItems'](arg1);
 }
 
 export function DeleteLine(arg1) {
   return window['go']['main']['App']['DeleteLine'](arg1);
 }
 
-export function DeleteNode(arg1) {
-  return window['go']['main']['App']['DeleteNode'](arg1);
+export function DeleteNodes(arg1) {
+  return window['go']['main']['App']['DeleteNodes'](arg1);
 }
 
 export function GetAIConf() {

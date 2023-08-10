@@ -35,7 +35,7 @@ let _backImage:any = undefined;
 let fontSize = 12;
 
 const selectedNodes = [];
-const selectedItems = [];
+const selectedDrawItems = [];
 
 const iconCodeMap = {};
 const imageMap = {};
@@ -190,7 +190,7 @@ const mapMain = (p5:P5) => {
     for (const k in items) {
       p5.push();
       p5.translate(items[k].X, items[k].Y);
-      if (selectedItems.includes(items[k].ID) ) {
+      if (selectedDrawItems.includes(items[k].ID) ) {
         if(dark) {
           p5.fill('rgba(23,23,23,0.9)');
           p5.stroke('#ccc');
@@ -321,7 +321,7 @@ const mapMain = (p5:P5) => {
       return true
     }
     if (dragMode === 0) {
-      if (selectedNodes.length > 0 || selectedItems.length > 0 ){
+      if (selectedNodes.length > 0 || selectedDrawItems.length > 0 ){
         dragMode = 2
       } else {
         dragMode = 1
@@ -370,15 +370,15 @@ const mapMain = (p5:P5) => {
     mapRedraw = true
     if(!clickInCanvas){
       selectedNodes.length = 0
-      selectedItems.length = 0
+      selectedDrawItems.length = 0
       return true
     }
-    if(p5.mouseButton === p5.RIGHT && (selectedNodes.length + selectedItems.length) < 2 ) {
+    if(p5.mouseButton === p5.RIGHT && (selectedNodes.length + selectedDrawItems.length) < 2 ) {
       if (mapCallBack) {
         mapCallBack({
           Cmd: 'contextMenu',
           Node: selectedNodes[0] || '',
-          Item: selectedItems[0] || '',
+          DrawItem: selectedDrawItems[0] || '',
           x: p5.winMouseX,
           y: p5.winMouseY,
         })
@@ -390,7 +390,7 @@ const mapMain = (p5:P5) => {
       return false
     }
     if (dragMode === 1) {
-      if (selectedNodes.length > 0 || selectedItems.length > 0 ){
+      if (selectedNodes.length > 0 || selectedDrawItems.length > 0 ){
         dragMode = 3
       } else {
         dragMode = 0
@@ -414,7 +414,7 @@ const mapMain = (p5:P5) => {
       // Delete
       if (selectedNodes.length > 0){
         deleteNodes();
-      } else if(selectedItems.length > 0 ) {
+      } else if(selectedDrawItems.length > 0 ) {
         deleteDrawItems();
       }
     }
@@ -427,7 +427,7 @@ const mapMain = (p5:P5) => {
   p5.doubleClicked = () => {
     if (selectedNodes.length === 1 ){
       nodeDoubleClicked()
-    } else if (selectedItems.length === 1 ){
+    } else if (selectedDrawItems.length === 1 ){
       itemDoubleClicked()
     }
     return true
@@ -471,7 +471,7 @@ const mapMain = (p5:P5) => {
         }
       }
     })
-    selectedItems.forEach((id) => {
+    selectedDrawItems.forEach((id) => {
       if (items[id]) {
         items[id].X += p5.mouseX - lastMouseX
         items[id].Y += p5.mouseY - lastMouseY
@@ -500,7 +500,7 @@ const mapMain = (p5:P5) => {
         selectedNodes.push(nodes[k].ID)
       }
     }
-    selectedItems.length = 0
+    selectedDrawItems.length = 0
     for (const k in items) {
       if (
         items[k].X > sx &&
@@ -508,7 +508,7 @@ const mapMain = (p5:P5) => {
         items[k].Y > sy &&
         items[k].Y < ly
       ) {
-        selectedItems.push(items[k].ID)
+        selectedDrawItems.push(items[k].ID)
       }
     }
     mapRedraw = true
@@ -549,14 +549,14 @@ const mapMain = (p5:P5) => {
         items[k].Y + h > p5.mouseY &&
         items[k].Y - 10 < p5.mouseY
       ) {
-        if (selectedItems.includes(items[k].ID)) {
+        if (selectedDrawItems.includes(items[k].ID)) {
           return
         }
-        selectedItems.push(items[k].ID)
+        selectedDrawItems.push(items[k].ID)
         return
       }
     }
-    selectedItems.length = 0
+    selectedDrawItems.length = 0
   }
   // ノードを削除する
   const deleteNodes = () => {
@@ -573,9 +573,9 @@ const mapMain = (p5:P5) => {
     if (mapCallBack){
       mapCallBack({
         Cmd: 'deleteItems',
-        Param: selectedItems,
+        Param: selectedDrawItems,
       })
-      selectedItems.length = 0
+      selectedDrawItems.length = 0
     }
   }
   // Nodeの位置を保存する
@@ -624,7 +624,7 @@ const mapMain = (p5:P5) => {
     if (mapCallBack) {
       mapCallBack({
         Cmd: 'itemDoubleClicked',
-        Param: selectedItems[0],
+        Param: selectedDrawItems[0],
       })
     }
   }
