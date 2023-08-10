@@ -5,6 +5,7 @@
   import * as icons from '@mdi/js';
   import Icon from "mdi-svelte";
   import Discover from "./Dsicover.svelte";
+  import {DeleteDrawItem,DeleteNode} from "../../wailsjs/go/main/App";
 
   let map: any;
   let posX:number = 0;
@@ -26,7 +27,7 @@
     console.log("onDestroy map");
   });
 
-  const callBack = async (p) => {
+  const callBack = (p) => {
     console.log(p);
     switch(p.Cmd){
     case "contextMenu":
@@ -39,6 +40,19 @@
       } else {
         showMapMenu = true;
       }
+      break;
+    case "editLine":
+      break;
+    case "nodeDoubleClicked":
+    case "itemDoubleClicked":
+      break;
+    case "deleteNodes":
+      DeleteNode(p.Param).then((r=>{
+        count = 2;
+      }));
+      break;
+    case "deletItems":
+       DeleteDrawItem(p.Param);
       break;
     }
   }

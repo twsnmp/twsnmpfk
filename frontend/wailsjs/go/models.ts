@@ -60,6 +60,46 @@ export namespace datastore {
 	        this.AddPolling = source["AddPolling"];
 	    }
 	}
+	export class DrawItemEnt {
+	    ID: string;
+	    Type: number;
+	    X: number;
+	    Y: number;
+	    W: number;
+	    H: number;
+	    Color: string;
+	    Path: string;
+	    Text: string;
+	    Size: number;
+	    PollingID: string;
+	    VarName: string;
+	    Format: string;
+	    Value: number;
+	    Scale: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new DrawItemEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Type = source["Type"];
+	        this.X = source["X"];
+	        this.Y = source["Y"];
+	        this.W = source["W"];
+	        this.H = source["H"];
+	        this.Color = source["Color"];
+	        this.Path = source["Path"];
+	        this.Text = source["Text"];
+	        this.Size = source["Size"];
+	        this.PollingID = source["PollingID"];
+	        this.VarName = source["VarName"];
+	        this.Format = source["Format"];
+	        this.Value = source["Value"];
+	        this.Scale = source["Scale"];
+	    }
+	}
 	export class EventLogEnt {
 	    Time: number;
 	    Type: string;
@@ -150,6 +190,54 @@ export namespace datastore {
 	        this.EnableSyslogd = source["EnableSyslogd"];
 	        this.EnableTrapd = source["EnableTrapd"];
 	        this.EnableArpWatch = source["EnableArpWatch"];
+	    }
+	}
+	export class NodeEnt {
+	    ID: string;
+	    Name: string;
+	    Descr: string;
+	    Icon: string;
+	    State: string;
+	    X: number;
+	    Y: number;
+	    IP: string;
+	    IPv6: string;
+	    MAC: string;
+	    SnmpMode: string;
+	    Community: string;
+	    User: string;
+	    Password: string;
+	    PublicKey: string;
+	    URL: string;
+	    Type: string;
+	    AddrMode: string;
+	    AutoAck: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Descr = source["Descr"];
+	        this.Icon = source["Icon"];
+	        this.State = source["State"];
+	        this.X = source["X"];
+	        this.Y = source["Y"];
+	        this.IP = source["IP"];
+	        this.IPv6 = source["IPv6"];
+	        this.MAC = source["MAC"];
+	        this.SnmpMode = source["SnmpMode"];
+	        this.Community = source["Community"];
+	        this.User = source["User"];
+	        this.Password = source["Password"];
+	        this.PublicKey = source["PublicKey"];
+	        this.URL = source["URL"];
+	        this.Type = source["Type"];
+	        this.AddrMode = source["AddrMode"];
+	        this.AutoAck = source["AutoAck"];
 	    }
 	}
 	export class NotifyConfEnt {
@@ -244,6 +332,22 @@ export namespace main {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Kiosk = source["Kiosk"];
 	        this.Lock = source["Lock"];
+	    }
+	}
+	export class UpdatePosEnt {
+	    ID: string;
+	    X: number;
+	    Y: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new UpdatePosEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.X = source["X"];
+	        this.Y = source["Y"];
 	    }
 	}
 

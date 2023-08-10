@@ -4,6 +4,18 @@ import {datastore} from '../models';
 import {discover} from '../models';
 import {main} from '../models';
 
+export function AddDrawItem(arg1:datastore.DrawItemEnt):Promise<boolean>;
+
+export function AddLine(arg1:datastore.LineEnt):Promise<boolean>;
+
+export function AddNode(arg1:datastore.NodeEnt):Promise<boolean>;
+
+export function DeleteDrawItem(arg1:Array<string>):Promise<void>;
+
+export function DeleteLine(arg1:string):Promise<boolean>;
+
+export function DeleteNode(arg1:Array<string>):Promise<void>;
+
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 
 export function GetBackImage():Promise<datastore.BackImageEnt>;
@@ -39,3 +51,13 @@ export function StartDiscover(arg1:datastore.DiscoverConfEnt):Promise<boolean>;
 export function StopDiscover():Promise<void>;
 
 export function TestNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
+
+export function UpateLine(arg1:datastore.LineEnt):Promise<boolean>;
+
+export function UpdateDrawItem(arg1:datastore.DrawItemEnt):Promise<boolean>;
+
+export function UpdateDrawItemPos(arg1:Array<main.UpdatePosEnt>):Promise<void>;
+
+export function UpdateNode(arg1:datastore.NodeEnt):Promise<boolean>;
+
+export function UpdateNodePos(arg1:Array<main.UpdatePosEnt>):Promise<void>;

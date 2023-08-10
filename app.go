@@ -213,3 +213,240 @@ func (a *App) StartDiscover(dc datastore.DiscoverConfEnt) bool {
 func (a *App) StopDiscover() {
 	discover.StopDiscover()
 }
+
+type UpdatePosEnt struct {
+	ID string `json:"ID"`
+	X  int    `json:"X"`
+	Y  int    `json:"Y"`
+}
+
+// UpdateNodePos update node positons
+func (a *App) UpdateNodePos(list []UpdatePosEnt) {
+	for _, e := range list {
+		n := datastore.GetNode(e.ID)
+		if n != nil {
+			n.X = e.X
+			n.Y = e.Y
+		}
+	}
+}
+
+// UpdateDrawItemPos update node positons
+func (a *App) UpdateDrawItemPos(list []UpdatePosEnt) {
+	for _, e := range list {
+		n := datastore.GetDrawItem(e.ID)
+		if n != nil {
+			n.X = e.X
+			n.Y = e.Y
+		}
+	}
+}
+
+// AddNode add node
+func (a *App) AddNode(n datastore.NodeEnt) bool {
+	if err := datastore.AddNode(&n); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeName: n.Name,
+		NodeID:   n.ID,
+		Event:    "ノードを追加しました",
+	})
+	return true
+}
+
+// UpdateNode update node
+func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
+	n := datastore.GetNode(nu.ID)
+	if n == nil {
+		log.Printf("node not found id=%s", nu.ID)
+		return false
+	}
+	n.Name = nu.Name
+	n.Descr = nu.Descr
+	n.IP = nu.IP
+	n.Icon = nu.Icon
+	n.SnmpMode = nu.SnmpMode
+	n.Community = nu.Community
+	n.User = nu.User
+	n.Password = nu.Password
+	n.PublicKey = nu.PublicKey
+	n.URL = nu.URL
+	n.Type = nu.Type
+	n.AddrMode = nu.AddrMode
+	n.AutoAck = nu.AutoAck
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeName: n.Name,
+		NodeID:   n.ID,
+		Event:    "ノードを更新しました",
+	})
+	return true
+}
+
+// DeleteNode delete node
+func (a *App) DeleteNode(ids []string) {
+	for _, id := range ids {
+		n := datastore.GetNode(id)
+		if n != nil {
+			datastore.DeleteNode(id)
+			datastore.AddEventLog(&datastore.EventLogEnt{
+				Type:     "user",
+				Level:    "info",
+				NodeName: n.Name,
+				NodeID:   n.ID,
+				Event:    "ノードを削除しました",
+			})
+		}
+	}
+}
+
+func setLineState(l *datastore.LineEnt) {
+	l.State1 = "unknown"
+	if l.PollingID1 != "" {
+		if p := datastore.GetPolling(l.PollingID1); p != nil {
+			l.State1 = p.State
+		}
+	}
+	l.State2 = l.State1
+	if l.PollingID2 != "" {
+		if p := datastore.GetPolling(l.PollingID2); p != nil {
+			l.State2 = p.State
+		}
+	}
+}
+
+// AddLine add line
+func (a *App) AddLine(lu datastore.LineEnt) bool {
+	setLineState(&lu)
+	if err := datastore.AddLine(&lu); err != nil {
+		log.Printf("post line err=%v", err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeID:   lu.NodeID1,
+		NodeName: getNodeName(lu.NodeID1),
+		Event:    "ラインを追加しました",
+	})
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeID:   lu.NodeID2,
+		NodeName: getNodeName(lu.NodeID2),
+		Event:    "ラインを追加しました",
+	})
+	return true
+}
+
+// UpdateLine upadte line
+func (a *App) UpateLine(lu datastore.LineEnt) bool {
+	setLineState(&lu)
+	l := datastore.GetLine(lu.ID)
+	if l == nil {
+		log.Printf("line not found id=%s", lu.ID)
+		return false
+	}
+	l.NodeID1 = lu.NodeID1
+	l.NodeID2 = lu.NodeID2
+	l.PollingID1 = lu.PollingID1
+	l.PollingID2 = lu.PollingID2
+	l.State1 = lu.State1
+	l.State2 = lu.State2
+	l.Info = lu.Info
+	l.PollingID = lu.PollingID
+	l.Width = lu.Width
+	l.Port = lu.Port
+	if err := datastore.UpdateLine(l); err != nil {
+		log.Printf("post line err=%v", err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeID:   lu.NodeID1,
+		NodeName: getNodeName(lu.NodeID1),
+		Event:    "ラインを更新しました",
+	})
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeID:   lu.NodeID2,
+		NodeName: getNodeName(lu.NodeID2),
+		Event:    "ラインを更新しました",
+	})
+	return true
+}
+
+// UpdateLine upadte line
+func (a *App) DeleteLine(id string) bool {
+	if err := datastore.DeleteLine(id); err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func getNodeName(id string) string {
+	if n := datastore.GetNode(id); n != nil {
+		return n.Name
+	}
+	return ""
+}
+
+// AddDrawItem add draw item
+func (a *App) AddDrawItem(di datastore.DrawItemEnt) bool {
+	if err := datastore.AddDrawItem(&di); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: "描画アイテムを追加しました",
+	})
+	return true
+}
+
+// UpdateDrawItem update draw item
+func (a *App) UpdateDrawItem(di datastore.DrawItemEnt) bool {
+	odi := datastore.GetDrawItem(di.ID)
+	if odi == nil {
+		log.Printf("draw item not found id=%s", di.ID)
+		return false
+	}
+	odi.Type = di.Type
+	odi.W = di.W
+	odi.H = di.H
+	odi.Path = di.Path
+	odi.Text = di.Text
+	odi.Size = di.Size
+	odi.Color = di.Color
+	odi.Format = di.Format
+	odi.VarName = di.VarName
+	odi.PollingID = di.PollingID
+	odi.Scale = di.Scale
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: "描画アイテムを更新しました",
+	})
+	return true
+}
+
+// DeleteDrawItem delete draw item
+func (a *App) DeleteDrawItem(ids []string) {
+	for _, id := range ids {
+		datastore.DeleteDrawItem(id)
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: fmt.Sprintf("描画を削除しました %d件", len(ids)),
+	})
+}

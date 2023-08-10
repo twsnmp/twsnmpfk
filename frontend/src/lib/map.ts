@@ -6,6 +6,8 @@ import {
   GetLines,
   GetDrawItems,
   GetBackImage,
+  UpdateDrawItemPos,
+  UpdateNodePos,
 } from "../../wailsjs/go/main/App"
 import type { datastore } from 'wailsjs/go/models';
 
@@ -411,7 +413,9 @@ const mapMain = (p5:P5) => {
     if (p5.keyCode === p5.DELETE || p5.keyCode === p5.BACKSPACE) {
       // Delete
       if (selectedNodes.length > 0){
-        deleteNodes()
+        deleteNodes();
+      } else if(selectedItems.length > 0 ) {
+        deleteDrawItems();
       }
     }
     if (p5.keyCode === p5.ENTER) {
@@ -564,6 +568,16 @@ const mapMain = (p5:P5) => {
       selectedNodes.length = 0
     }
   }
+  // 描画アイテムを削除する
+  const deleteDrawItems = () => {
+    if (mapCallBack){
+      mapCallBack({
+        Cmd: 'deleteItems',
+        Param: selectedItems,
+      })
+      selectedItems.length = 0
+    }
+  }
   // Nodeの位置を保存する
   const updateNodesPos = () => {
     const list  = []
@@ -577,12 +591,7 @@ const mapMain = (p5:P5) => {
         })
       }
     })
-    if (mapCallBack) {
-      mapCallBack({
-        Cmd: 'updateNodesPos',
-        Param: list,
-      })
-    }
+    UpdateNodePos(list);
     draggedNodes.length = 0
   }
   // 描画アイテムの位置を保存する
@@ -598,12 +607,7 @@ const mapMain = (p5:P5) => {
         })
       }
     })
-    if (mapCallBack) {
-      mapCallBack({
-        Cmd: 'updateItemsPos',
-        Param: list,
-      })
-    }
+    UpdateDrawItemPos(list);
     draggedItems.length = 0
   }
   // nodeをダブルクリックした場合

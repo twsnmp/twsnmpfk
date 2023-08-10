@@ -173,17 +173,8 @@ func DeleteNode(nodeID string) error {
 	if db == nil {
 		return ErrDBNotOpen
 	}
-	if n, ok := nodes.Load(nodeID); !ok {
+	if _, ok := nodes.Load(nodeID); !ok {
 		return ErrInvalidID
-	} else {
-		nn := n.(*NodeEnt)
-		AddEventLog(&EventLogEnt{
-			Type:     "user",
-			Level:    "info",
-			NodeName: nn.Name,
-			NodeID:   nn.ID,
-			Event:    "ノードを削除しました",
-		})
 	}
 	db.Batch(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("nodes"))
@@ -198,7 +189,7 @@ func DeleteNode(nodeID string) error {
 		return true
 	})
 	DeletePollings(delList)
-	log.Printf("DeletNode dur=%v", time.Since(st))
+	log.Printf("DeleteNode dur=%v", time.Since(st))
 	return nil
 }
 
@@ -209,12 +200,6 @@ func DeleteDrawItem(id string) error {
 	}
 	if _, ok := items.Load(id); !ok {
 		return ErrInvalidID
-	} else {
-		AddEventLog(&EventLogEnt{
-			Type:  "user",
-			Level: "info",
-			Event: "描画アイテムを削除しました",
-		})
 	}
 	db.Batch(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("items"))
