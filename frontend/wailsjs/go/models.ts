@@ -209,7 +209,6 @@ export namespace datastore {
 	    Password: string;
 	    PublicKey: string;
 	    URL: string;
-	    Type: string;
 	    AddrMode: string;
 	    AutoAck: boolean;
 	
@@ -235,7 +234,6 @@ export namespace datastore {
 	        this.Password = source["Password"];
 	        this.PublicKey = source["PublicKey"];
 	        this.URL = source["URL"];
-	        this.Type = source["Type"];
 	        this.AddrMode = source["AddrMode"];
 	        this.AutoAck = source["AutoAck"];
 	    }

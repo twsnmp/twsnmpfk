@@ -32,6 +32,8 @@ export function GetLines():Promise<Array<datastore.LineEnt>>;
 
 export function GetMapConf():Promise<datastore.MapConfEnt>;
 
+export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
+
 export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;

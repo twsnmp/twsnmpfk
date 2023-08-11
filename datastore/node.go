@@ -27,7 +27,6 @@ type NodeEnt struct {
 	Password  string `json:"Password"`
 	PublicKey string `json:"PublicKey"`
 	URL       string `json:"URL"`
-	Type      string `json:"Type"`
 	AddrMode  string `json:"AddrMode"`
 	AutoAck   bool   `json:"AutoAck"`
 }

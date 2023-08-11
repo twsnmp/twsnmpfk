@@ -242,6 +242,14 @@ func (a *App) UpdateDrawItemPos(list []UpdatePosEnt) {
 	}
 }
 
+func (a *App) GetNode(id string) datastore.NodeEnt {
+	n := datastore.GetNode(id)
+	if n == nil {
+		return datastore.NodeEnt{}
+	}
+	return *n
+}
+
 // AddNode add node
 func (a *App) AddNode(n datastore.NodeEnt) bool {
 	if err := datastore.AddNode(&n); err != nil {
@@ -275,7 +283,6 @@ func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
 	n.Password = nu.Password
 	n.PublicKey = nu.PublicKey
 	n.URL = nu.URL
-	n.Type = nu.Type
 	n.AddrMode = nu.AddrMode
 	n.AutoAck = nu.AutoAck
 	datastore.AddEventLog(&datastore.EventLogEnt{

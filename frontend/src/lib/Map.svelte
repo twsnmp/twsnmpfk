@@ -5,6 +5,7 @@
   import * as icons from '@mdi/js';
   import Icon from "mdi-svelte";
   import Discover from "./Dsicover.svelte";
+  import Node from "./Node.svelte";
   import {DeleteDrawItems,DeleteNodes} from "../../wailsjs/go/main/App";
 
   let map: any;
@@ -97,7 +98,11 @@
 
 <Modal bind:open={showMapMenu} size="xs"  outsideclose>
   <div class="flex flex-col space-y-2">
-    <GradientButton color="blue" class="w-full">
+    <GradientButton color="blue" class="w-full" on:click={()=>{
+      selectedNode = "";
+      showEditNode = true;
+      showMapMenu = false;
+    }}>
       <Icon path={icons.mdiPlus}></Icon>
       新規ノード
     </GradientButton>
@@ -126,7 +131,10 @@
 
 <Modal bind:open={showNodeMenu} size="xs"  outsideclose>
   <div class="flex flex-col space-y-2">
-    <GradientButton color="blue" class="w-full">
+    <GradientButton color="blue" class="w-full" on:click={()=>{
+      showNodeMenu = false;
+      showEditNode = true;
+    }}>
       <Icon path={icons.mdiPencil}></Icon>
       編集
     </GradientButton>
@@ -165,3 +173,11 @@
 {#if showDiscover}
 <Discover on:close={()=>{showDiscover = false}}></Discover>
 {/if}
+
+{#if showEditNode}
+<Node nodeID={selectedNode} posX={posX} posY={posY} on:close={(e)=>{
+  showEditNode = false;
+  count = 1;
+  }}></Node>
+{/if}
+

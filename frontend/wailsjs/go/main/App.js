@@ -58,6 +58,10 @@ export function GetMapConf() {
   return window['go']['main']['App']['GetMapConf']();
 }
 
+export function GetNode(arg1) {
+  return window['go']['main']['App']['GetNode'](arg1);
+}
+
 export function GetNodes() {
   return window['go']['main']['App']['GetNodes']();
 }
