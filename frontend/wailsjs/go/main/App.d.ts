@@ -4,12 +4,6 @@ import {datastore} from '../models';
 import {discover} from '../models';
 import {main} from '../models';
 
-export function AddDrawItem(arg1:datastore.DrawItemEnt):Promise<boolean>;
-
-export function AddLine(arg1:datastore.LineEnt):Promise<boolean>;
-
-export function AddNode(arg1:datastore.NodeEnt):Promise<boolean>;
-
 export function DeleteDrawItems(arg1:Array<string>):Promise<void>;
 
 export function DeleteLine(arg1:string):Promise<boolean>;
@@ -28,6 +22,8 @@ export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
 
 export function GetLastEventLogs(arg1:number):Promise<Array<datastore.EventLogEnt>>;
 
+export function GetLine(arg1:string,arg2:string):Promise<datastore.LineEnt>;
+
 export function GetLines():Promise<Array<datastore.LineEnt>>;
 
 export function GetMapConf():Promise<datastore.MapConfEnt>;
@@ -37,6 +33,8 @@ export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
 export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
+
+export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 
 export function GetSettings():Promise<main.Settings>;
 
@@ -54,11 +52,11 @@ export function StopDiscover():Promise<void>;
 
 export function TestNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
 
-export function UpateLine(arg1:datastore.LineEnt):Promise<boolean>;
-
 export function UpdateDrawItem(arg1:datastore.DrawItemEnt):Promise<boolean>;
 
 export function UpdateDrawItemPos(arg1:Array<main.UpdatePosEnt>):Promise<void>;
+
+export function UpdateLine(arg1:datastore.LineEnt):Promise<boolean>;
 
 export function UpdateNode(arg1:datastore.NodeEnt):Promise<boolean>;
 

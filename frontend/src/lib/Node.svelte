@@ -8,7 +8,7 @@
     Button,
   } from 'flowbite-svelte';
   import { onMount,onDestroy,createEventDispatcher } from "svelte";
-  import { GetNode,AddNode,UpdateNode } from '../../wailsjs/go/main/App';
+  import { GetNode,UpdateNode } from '../../wailsjs/go/main/App';
   import Icon from "mdi-svelte";
   import * as icons from '@mdi/js';
   import type { datastore } from 'wailsjs/go/models';
@@ -58,12 +58,8 @@
   };
 
   const save = async () => {
-    let r = false;
-    if(node.ID) {
-      r = await UpdateNode(node);
-    } else {
-      r = await AddNode(node);
-    }
+
+    const r = await UpdateNode(node);
     if (r) {
       close();
     } else {
@@ -74,7 +70,7 @@
 
 <Modal bind:open={show} size="lg" autoclose={false} class="w-full" on:on:close={close}>
   <form class="flex flex-col space-y-4" action="#">
-    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">自動発見</h3>
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">ノードの編集</h3>
     <div class="grid gap-4 mb-4 md:grid-cols-3">
       <Label class="space-y-2">
         <span>名前</span>
@@ -139,8 +135,8 @@
       <Input bind:value={node.Descr} placeholder="説明"  size="sm" />
     </Label>
     <div class="flex space-x-2">
-      <Button type="button" on:click={save} size="sm" >
-        <Icon path={icons.mdiRun} size={1} />
+      <Button color="blue" type="button" on:click={save} size="sm" >
+        <Icon path={icons.mdiContentSave} size={1} />
         保存
       </Button>
       <Button type="button"color="alternative"  on:click={close} size="sm" >

@@ -11,31 +11,31 @@ import (
 )
 
 type PollingEnt struct {
-	ID        string
-	Name      string
-	NodeID    string
-	Type      string
-	Mode      string
-	Params    string
-	Filter    string
-	Extractor string
-	Script    string
-	Level     string
-	PollInt   int
-	Timeout   int
-	Retry     int
-	LogMode   int
-	NextTime  int64
-	LastTime  int64
-	Result    map[string]interface{}
-	State     string
+	ID        string                 `json:"ID"`
+	Name      string                 `json:"Name"`
+	NodeID    string                 `json:"NodeID"`
+	Type      string                 `json:"Type"`
+	Mode      string                 `json:"Mode"`
+	Params    string                 `json:"Params"`
+	Filter    string                 `json:"Filter"`
+	Extractor string                 `json:"Extractor"`
+	Script    string                 `json:"Script"`
+	Level     string                 `json:"Level"`
+	PollInt   int                    `json:"PollInt"`
+	Timeout   int                    `json:"Timeout"`
+	Retry     int                    `json:"Retry"`
+	LogMode   int                    `json:"LogMode"`
+	NextTime  int64                  `json:"NextTime"`
+	LastTime  int64                  `json:"LastTime"`
+	Result    map[string]interface{} `json:"Result"`
+	State     string                 `json:"Sate"`
 }
 
 type PollingLogEnt struct {
-	Time      int64 // UnixNano()
-	PollingID string
-	State     string
-	Result    map[string]interface{}
+	Time      int64                  `json:"Time"`
+	PollingID string                 `json:"PollingID"`
+	State     string                 `json:"State"`
+	Result    map[string]interface{} `json:"Result"`
 }
 
 // AddPolling : ポーリングを追加する

@@ -272,6 +272,52 @@ export namespace datastore {
 	        this.ExecCmd = source["ExecCmd"];
 	    }
 	}
+	export class PollingEnt {
+	    ID: string;
+	    Name: string;
+	    NodeID: string;
+	    Type: string;
+	    Mode: string;
+	    Params: string;
+	    Filter: string;
+	    Extractor: string;
+	    Script: string;
+	    Level: string;
+	    PollInt: number;
+	    Timeout: number;
+	    Retry: number;
+	    LogMode: number;
+	    NextTime: number;
+	    LastTime: number;
+	    Result: {[key: string]: any};
+	    Sate: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PollingEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.NodeID = source["NodeID"];
+	        this.Type = source["Type"];
+	        this.Mode = source["Mode"];
+	        this.Params = source["Params"];
+	        this.Filter = source["Filter"];
+	        this.Extractor = source["Extractor"];
+	        this.Script = source["Script"];
+	        this.Level = source["Level"];
+	        this.PollInt = source["PollInt"];
+	        this.Timeout = source["Timeout"];
+	        this.Retry = source["Retry"];
+	        this.LogMode = source["LogMode"];
+	        this.NextTime = source["NextTime"];
+	        this.LastTime = source["LastTime"];
+	        this.Result = source["Result"];
+	        this.Sate = source["Sate"];
+	    }
+	}
 
 }
 

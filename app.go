@@ -250,8 +250,8 @@ func (a *App) GetNode(id string) datastore.NodeEnt {
 	return *n
 }
 
-// AddNode add node
-func (a *App) AddNode(n datastore.NodeEnt) bool {
+// addNode add node
+func (a *App) addNode(n datastore.NodeEnt) bool {
 	if err := datastore.AddNode(&n); err != nil {
 		log.Println(err)
 		return false
@@ -270,8 +270,11 @@ func (a *App) AddNode(n datastore.NodeEnt) bool {
 func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
 	n := datastore.GetNode(nu.ID)
 	if n == nil {
-		log.Printf("node not found id=%s", nu.ID)
-		return false
+		if nu.ID != "" {
+			log.Printf("node not found id=%s", nu.ID)
+		}
+		nu.ID = ""
+		return a.addNode(nu)
 	}
 	n.Name = nu.Name
 	n.Descr = nu.Descr
@@ -327,9 +330,29 @@ func setLineState(l *datastore.LineEnt) {
 	}
 }
 
-// AddLine add line
-func (a *App) AddLine(lu datastore.LineEnt) bool {
-	setLineState(&lu)
+// GetLine retunrs line
+func (a *App) GetLine(node1, node2 string) datastore.LineEnt {
+	ret := datastore.LineEnt{
+		NodeID1: node1,
+		NodeID2: node2,
+		Width:   2,
+	}
+	datastore.ForEachLines(func(l *datastore.LineEnt) bool {
+		if l.NodeID1 == node1 && l.NodeID2 == node2 {
+			ret = *l
+			return false
+		}
+		if l.NodeID2 == node1 && l.NodeID1 == node2 {
+			ret = *l
+			return false
+		}
+		return true
+	})
+	return ret
+}
+
+// addLine add line
+func (a *App) addLine(lu datastore.LineEnt) bool {
 	if err := datastore.AddLine(&lu); err != nil {
 		log.Printf("post line err=%v", err)
 		return false
@@ -351,13 +374,15 @@ func (a *App) AddLine(lu datastore.LineEnt) bool {
 	return true
 }
 
-// UpdateLine upadte line
-func (a *App) UpateLine(lu datastore.LineEnt) bool {
+// UpdateLine update line
+func (a *App) UpdateLine(lu datastore.LineEnt) bool {
 	setLineState(&lu)
 	l := datastore.GetLine(lu.ID)
 	if l == nil {
-		log.Printf("line not found id=%s", lu.ID)
-		return false
+		if lu.ID != "" {
+			log.Printf("line not found id=%s", lu.ID)
+		}
+		return a.addLine(lu)
 	}
 	l.NodeID1 = lu.NodeID1
 	l.NodeID2 = lu.NodeID2
@@ -406,8 +431,8 @@ func getNodeName(id string) string {
 	return ""
 }
 
-// AddDrawItem add draw item
-func (a *App) AddDrawItem(di datastore.DrawItemEnt) bool {
+// addDrawItem add draw item
+func (a *App) addDrawItem(di datastore.DrawItemEnt) bool {
 	if err := datastore.AddDrawItem(&di); err != nil {
 		log.Println(err)
 		return false
@@ -424,8 +449,10 @@ func (a *App) AddDrawItem(di datastore.DrawItemEnt) bool {
 func (a *App) UpdateDrawItem(di datastore.DrawItemEnt) bool {
 	odi := datastore.GetDrawItem(di.ID)
 	if odi == nil {
-		log.Printf("draw item not found id=%s", di.ID)
-		return false
+		if di.ID != "" {
+			log.Printf("draw item not found id=%s", di.ID)
+		}
+		return a.addDrawItem(di)
 	}
 	odi.Type = di.Type
 	odi.W = di.W
@@ -456,4 +483,16 @@ func (a *App) DeleteDrawItems(ids []string) {
 		Level: "info",
 		Event: fmt.Sprintf("描画を削除しました %d件", len(ids)),
 	})
+}
+
+// GetPollings retunrs polling list
+func (a *App) GetPollings(node string) []datastore.PollingEnt {
+	ret := []datastore.PollingEnt{}
+	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
+		if node == "" || node == p.NodeID {
+			ret = append(ret, *p)
+		}
+		return true
+	})
+	return ret
 }

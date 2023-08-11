@@ -6,6 +6,7 @@
   import Icon from "mdi-svelte";
   import Discover from "./Dsicover.svelte";
   import Node from "./Node.svelte";
+  import Line from "./Line.svelte";
   import {DeleteDrawItems,DeleteNodes} from "../../wailsjs/go/main/App";
 
   let map: any;
@@ -179,5 +180,12 @@
   showEditNode = false;
   count = 1;
   }}></Node>
+{/if}
+
+{#if showEditLine}
+<Line nodeID1={selectedLineNode1} nodeID2={selectedLineNode2}  on:close={(e)=>{
+  showEditLine = false;
+  count = 1;
+  }}></Line>
 {/if}
 
