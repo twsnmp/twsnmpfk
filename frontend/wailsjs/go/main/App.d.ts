@@ -28,6 +28,8 @@ export function GetLines():Promise<Array<datastore.LineEnt>>;
 
 export function GetMapConf():Promise<datastore.MapConfEnt>;
 
+export function GetMapName():Promise<string>;
+
 export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
 
 export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
@@ -40,17 +42,13 @@ export function GetSettings():Promise<main.Settings>;
 
 export function GetVersion():Promise<string>;
 
-export function SetAIConf(arg1:datastore.AIConfEnt):Promise<boolean>;
-
-export function SetMapConf(arg1:datastore.MapConfEnt):Promise<boolean>;
-
-export function SetNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
-
 export function StartDiscover(arg1:datastore.DiscoverConfEnt):Promise<boolean>;
 
 export function StopDiscover():Promise<void>;
 
 export function TestNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
+
+export function UpdateAIConf(arg1:datastore.AIConfEnt):Promise<boolean>;
 
 export function UpdateDrawItem(arg1:datastore.DrawItemEnt):Promise<boolean>;
 
@@ -58,6 +56,10 @@ export function UpdateDrawItemPos(arg1:Array<main.UpdatePosEnt>):Promise<void>;
 
 export function UpdateLine(arg1:datastore.LineEnt):Promise<boolean>;
 
+export function UpdateMapConf(arg1:datastore.MapConfEnt):Promise<boolean>;
+
 export function UpdateNode(arg1:datastore.NodeEnt):Promise<boolean>;
 
 export function UpdateNodePos(arg1:Array<main.UpdatePosEnt>):Promise<void>;
+
+export function UpdateNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;

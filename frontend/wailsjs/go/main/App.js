@@ -50,6 +50,10 @@ export function GetMapConf() {
   return window['go']['main']['App']['GetMapConf']();
 }
 
+export function GetMapName() {
+  return window['go']['main']['App']['GetMapName']();
+}
+
 export function GetNode(arg1) {
   return window['go']['main']['App']['GetNode'](arg1);
 }
@@ -74,18 +78,6 @@ export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
 }
 
-export function SetAIConf(arg1) {
-  return window['go']['main']['App']['SetAIConf'](arg1);
-}
-
-export function SetMapConf(arg1) {
-  return window['go']['main']['App']['SetMapConf'](arg1);
-}
-
-export function SetNotifyConf(arg1) {
-  return window['go']['main']['App']['SetNotifyConf'](arg1);
-}
-
 export function StartDiscover(arg1) {
   return window['go']['main']['App']['StartDiscover'](arg1);
 }
@@ -96,6 +88,10 @@ export function StopDiscover() {
 
 export function TestNotifyConf(arg1) {
   return window['go']['main']['App']['TestNotifyConf'](arg1);
+}
+
+export function UpdateAIConf(arg1) {
+  return window['go']['main']['App']['UpdateAIConf'](arg1);
 }
 
 export function UpdateDrawItem(arg1) {
@@ -110,10 +106,18 @@ export function UpdateLine(arg1) {
   return window['go']['main']['App']['UpdateLine'](arg1);
 }
 
+export function UpdateMapConf(arg1) {
+  return window['go']['main']['App']['UpdateMapConf'](arg1);
+}
+
 export function UpdateNode(arg1) {
   return window['go']['main']['App']['UpdateNode'](arg1);
 }
 
 export function UpdateNodePos(arg1) {
   return window['go']['main']['App']['UpdateNodePos'](arg1);
+}
+
+export function UpdateNotifyConf(arg1) {
+  return window['go']['main']['App']['UpdateNotifyConf'](arg1);
 }
