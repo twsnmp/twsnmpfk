@@ -1,26 +1,18 @@
 <script lang="ts">
-	import logo from "./assets/images/appicon.png"; 
+  import logo from "./assets/images/appicon.png";
   import {
     Navbar,
     NavBrand,
     NavLi,
     NavUl,
-		Button,
+    Button,
     Dropdown,
     DropdownItem,
-    Modal, Label, Input, Checkbox,
-    Select,
-    Alert,
   } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
-  import {
-    GetSettings, 
-    GetVersion,
-    GetMapName,
-  } from "../wailsjs/go/main/App"
-  import type { datastore} from "wailsjs/go/models";
+  import { GetSettings, GetVersion, GetMapName } from "../wailsjs/go/main/App";
   import Map from "./lib/Map.svelte";
   import Log from "./lib/Log.svelte";
   import MapConf from "./lib/MapConf.svelte";
@@ -28,18 +20,18 @@
   import AIConf from "./lib/AIConf.svelte";
 
   let version = "";
-  let settings :any = undefined;
-	let dark: boolean = false;
-  let showMapConf :boolean= false;
-  let showNotifyConf :boolean= false;
-  let showAIConf :boolean= false;
+  let settings: any = undefined;
+  let dark: boolean = false;
+  let showMapConf: boolean = false;
+  let showNotifyConf: boolean = false;
+  let showAIConf: boolean = false;
   let mainHeight = 0;
   let mapName = "";
   let page = "map";
 
   const updateMapName = async () => {
     mapName = await GetMapName();
-  }
+  };
 
   onMount(async () => {
     version = await GetVersion();
@@ -49,101 +41,117 @@
     updateMapName();
   });
 
-	const toggleDark = () => {
-		const e = document.querySelector('html');
-		e.classList.toggle('dark');
-		dark = e.classList.contains('dark');
-	}
-
+  const toggleDark = () => {
+    const e = document.querySelector("html");
+    e.classList.toggle("dark");
+    dark = e.classList.contains("dark");
+  };
 </script>
 
-<svelte:window on:resize={() => mainHeight = window.innerHeight - 96} />
+<svelte:window on:resize={() => (mainHeight = window.innerHeight - 96)} />
 
 <Navbar let:hidden let:toggle style="--wails-draggable:drag">
   <NavBrand href="/">
-    <img
-      src="{logo}"
-      class="mr-3 h-12"
-      alt="TWSNMP FK Logo"
-    />
-    <span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+    <img src={logo} class="mr-3 h-12" alt="TWSNMP FK Logo" />
+    <span
+      class="self-center whitespace-nowrap text-xl font-semibold dark:text-white"
+    >
       TWSNMP FK - {mapName}
     </span>
   </NavBrand>
   <NavUl>
-    <NavLi active={page=="map"}>
-			<Icon path={icons.mdiLan} size={1} />
+    <NavLi active={page == "map"}>
+      <Icon path={icons.mdiLan} size={1} />
       マップ
     </NavLi>
-    <NavLi >
-			<Icon path={icons.mdiLaptop} size={1} />
+    <NavLi>
+      <Icon path={icons.mdiLaptop} size={1} />
       ノード
     </NavLi>
-    <NavLi >
-			<Icon path={icons.mdiLanCheck} size={1} />
+    <NavLi>
+      <Icon path={icons.mdiLanCheck} size={1} />
       ポーリング
     </NavLi>
-    <NavLi >
+    <NavLi>
       <Icon path={icons.mdiCalendarCheck} size={1} />
       ログ
     </NavLi>
     <NavLi>
-			<Icon path={icons.mdiBrain} size={1} />
+      <Icon path={icons.mdiBrain} size={1} />
       AI分析
     </NavLi>
     <NavLi id="nav-config">
-			<Icon path={icons.mdiCog} size={1} />
+      <Icon path={icons.mdiCog} size={1} />
       設定
     </NavLi>
     <Dropdown triggeredBy="#nav-config" class="w-44 z-20">
-      <DropdownItem on:click={()=> {showMapConf = true}}>
+      <DropdownItem
+        on:click={() => {
+          showMapConf = true;
+        }}
+      >
         マップ
       </DropdownItem>
-      <DropdownItem on:click={()=> {showNotifyConf = true;}}>
+      <DropdownItem
+        on:click={() => {
+          showNotifyConf = true;
+        }}
+      >
         通知
       </DropdownItem>
-      <DropdownItem  on:click={()=> {showAIConf = true}} >
+      <DropdownItem
+        on:click={() => {
+          showAIConf = true;
+        }}
+      >
         AI分析
       </DropdownItem>
-    </Dropdown>    
+    </Dropdown>
   </NavUl>
-	<Button class="!p-2" color="alternative" on:click={toggleDark} >
-		{#if dark}
-			<Icon path={icons.mdiWeatherSunny} size={1} />
-		{:else}
-			<Icon path={icons.mdiMoonWaxingCrescent} size={1} />
-		{/if}
-	</Button>
+  <Button class="!p-2" color="alternative" on:click={toggleDark}>
+    {#if dark}
+      <Icon path={icons.mdiWeatherSunny} size={1} />
+    {:else}
+      <Icon path={icons.mdiMoonWaxingCrescent} size={1} />
+    {/if}
+  </Button>
 </Navbar>
 
-
-{#if page =="map"}
-<div class="grid grid-rows-4 grid-cols-1 gap-0  w-full" style="height:{mainHeight}px;">
-  <div class="row-span-3">
-    <Map {dark}></Map>
+{#if page == "map"}
+  <div
+    class="grid grid-rows-4 grid-cols-1 gap-0 w-full"
+    style="height:{mainHeight}px;"
+  >
+    <div class="row-span-3">
+      <Map {dark} />
+    </div>
+    <div class="row-span-1">
+      <Log />
+    </div>
   </div>
-  <div class="row-span-1">
-    <Log></Log>
-  </div>
-</div>
 {/if}
 
 {#if showMapConf}
-  <MapConf on:close={()=>{
-    updateMapName();
-    showMapConf = false;
-  }}></MapConf>
+  <MapConf
+    on:close={() => {
+      updateMapName();
+      showMapConf = false;
+    }}
+  />
 {/if}
 
 {#if showNotifyConf}
-  <NotifyConf on:close={()=>{
-    showNotifyConf = false;
-  }}></NotifyConf>
+  <NotifyConf
+    on:close={() => {
+      showNotifyConf = false;
+    }}
+  />
 {/if}
 
 {#if showAIConf}
-  <AIConf on:close={()=>{
-    showAIConf = false;
-  }}></AIConf>
+  <AIConf
+    on:close={() => {
+      showAIConf = false;
+    }}
+  />
 {/if}
-
