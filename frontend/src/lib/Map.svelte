@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { initMAP, updateMAP,resetMap } from "./map";
+  import { initMAP, updateMAP, resetMap, grid } from "./map";
   import { onMount, onDestroy } from "svelte";
-  import { Modal, GradientButton } from "flowbite-svelte";
+  import { Modal, GradientButton, Button, Label, Input } from "flowbite-svelte";
   import * as icons from "@mdi/js";
   import Icon from "mdi-svelte";
   import Discover from "./Dsicover.svelte";
@@ -24,6 +24,8 @@
   let showEditDrawItem: boolean = false;
   let selectedDrawItem: string = "";
   let showDiscover: boolean = false;
+  let showGrid: boolean = false;
+  let gridSize: number = 40;
 
   export let dark: boolean = false;
 
@@ -110,10 +112,10 @@
       <Icon path={icons.mdiPlus} />
       新規ノード
     </GradientButton>
-    <GradientButton 
-      color="blue" 
+    <GradientButton
+      color="blue"
       class="w-full"
-      on:click={()=>{
+      on:click={() => {
         selectedDrawItem = "";
         showEditDrawItem = true;
         showMapMenu = false;
@@ -137,15 +139,22 @@
       <Icon path={icons.mdiFileFind} />
       自動発見
     </GradientButton>
-    <GradientButton color="red" class="w-full">
+    <GradientButton color="red" class="w-full" on:click={()=>{
+      showMapMenu = false;
+      showGrid = true;
+    }}>
       <Icon path={icons.mdiGrid} />
       グリッド整列
     </GradientButton>
-    <GradientButton color="teal" class="w-full" on:click={()=>{
-      resetMap();
-      count = 1;
-      showMapMenu = false;
-    }}>
+    <GradientButton
+      color="teal"
+      class="w-full"
+      on:click={() => {
+        resetMap();
+        count = 1;
+        showMapMenu = false;
+      }}
+    >
       <Icon path={icons.mdiRecycle} />
       更新
     </GradientButton>
@@ -188,11 +197,12 @@
 
 <Modal bind:open={showDrawItemMenu} size="xs" outsideclose>
   <div class="flex flex-col space-y-2">
-    <GradientButton 
-      color="blue" class="w-full"
-      on:click={()=>{
+    <GradientButton
+      color="blue"
+      class="w-full"
+      on:click={() => {
         showDrawItemMenu = false;
-        showEditDrawItem =true;
+        showEditDrawItem = true;
       }}
     >
       <Icon path={icons.mdiPencil} />
@@ -249,11 +259,65 @@
 {#if showEditDrawItem}
   <DrawItem
     id={selectedDrawItem}
-    posX={posX}
-    posY={posY}
+    {posX}
+    {posY}
     on:close={(e) => {
       showEditDrawItem = false;
       count = 1;
     }}
   />
 {/if}
+
+<Modal bind:open={showGrid} size="sm" permanent class="w-full">
+  <form class="flex flex-col space-y-4" action="#">
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">グリッド整列</h3>
+    <Label class="space-y-2">
+      <span>グリッドサイズ </span>
+      <Input
+        type="number"
+        min={20}
+        max={120}
+        step={1}
+        bind:value={gridSize}
+        size="sm"
+      />
+    </Label>
+    <div class="flex space-x-2">
+      <Button
+        color="red"
+        type="button"
+        on:click={() => {
+          showGrid = false;
+          grid(gridSize, false);
+        }}
+        size="sm"
+      >
+        <Icon path={icons.mdiRun} size={1} />
+        実行
+      </Button>
+      <Button
+        color="blue"
+        type="button"
+        on:click={() => {
+          showGrid = false;
+          grid(gridSize, true);
+        }}
+        size="sm"
+      >
+        <Icon path={icons.mdiTestTube} size={1} />
+        テスト
+      </Button>
+      <Button
+        color="alternative"
+        type="button"
+        on:click={() => {
+          showGrid = false;
+        }}
+        size="sm"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        キャンセル
+      </Button>
+    </div>
+  </form>
+</Modal>

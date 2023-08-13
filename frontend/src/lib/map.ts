@@ -107,6 +107,46 @@ export const resetMap = () => {
   }
 }
 
+export const grid = (g:number,test:boolean) => {
+  const list = [];
+  const mx = Math.ceil(MAP_SIZE_X/g); 
+  const my = Math.ceil(MAP_SIZE_Y/g);
+  const m = new Array(mx);
+  for(let x = 0; x<m.length;x++) {
+    m[x] = new Array(my);
+    for(let y=0;y < m[x].length;y++) {
+      m[x][y] = false;
+    }
+  }
+  for (const id in nodes) {
+    let x =  Math.max(Math.min(Math.ceil((nodes[id].X * 1.0) / g),mx-1),0);
+    let y =  Math.max(Math.min(Math.ceil((nodes[id].Y * 1.0) / g),my-1),0);
+    while(m[x][y]) {
+      x++;
+      if (x >= mx) {
+        y++;
+        x = 0;
+        if(y >= my) {
+          y = 0;
+          break;
+        }
+      }
+    }
+    m[x][y] = true;
+    nodes[id].X = x *  g;
+    nodes[id].Y = y *  g;
+    list.push({
+      ID: id,
+      X: nodes[id].X,
+      Y: nodes[id].Y,
+    })
+  }
+  if (!test && list.length > 0) {
+    UpdateNodePos(list);
+  }
+  mapRedraw = true;
+};
+
 const setIconCodeMap = (list:any) => {
   list.forEach((e :any) => {
     iconCodeMap[e.value] = String.fromCodePoint(e.code)
