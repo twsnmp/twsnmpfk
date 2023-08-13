@@ -8,6 +8,7 @@ import {
   GetBackImage,
   UpdateDrawItemPos,
   UpdateNodePos,
+  GetImage,
 } from "../../wailsjs/go/main/App"
 import type { datastore } from 'wailsjs/go/models';
 
@@ -74,8 +75,8 @@ export const updateMAP = async (d:boolean) => {
   for(const k in items) {
     switch (items[k].Type) {
     case 3:
-      if (!imageMap[items[k].Data] && _mapP5 != undefined) {
-        _mapP5.loadImage(items[k].Data,(img)=>{
+      if (!imageMap[items[k].Path] && _mapP5 != undefined) {
+        _mapP5.loadImage(await GetImage(items[k].Path),(img)=>{
           imageMap[items[k].Path] = img;
           mapRedraw = true;
         })
@@ -85,6 +86,9 @@ export const updateMAP = async (d:boolean) => {
     case 4:
       items[k].W = items[k].Size *  items[k].Text.length;
       items[k].H = items[k].Size;
+      if(!dark) {
+        items[k].Color = items[k].Color != "#eee" ? items[k].Color : "#333";
+      }
       break
     case 5:
       items[k].H = items[k].Size * 10;
@@ -231,7 +235,7 @@ const mapMain = (p5:P5) => {
           const r1 = (items[k].W - items[k].Size);
           const r2 = (items[k].W - items[k].Size *4)
           p5.noStroke();
-          p5.fill('#eee');
+          p5.fill(dark ? '#eee' : '#333');
           p5.arc(x, y, r0, r0, 5*p5.QUARTER_PI, -p5.QUARTER_PI);
           if(items[k].Value > 0){
             p5.fill(items[k].Color);
@@ -241,7 +245,7 @@ const mapMain = (p5:P5) => {
           p5.arc(x, y, r1, r1, -p5.PI, 0);
           p5.textAlign(p5.CENTER);
           p5.textSize(8);
-          p5.fill('#fff');
+          p5.fill(dark ? '#eee' :'#333');
           p5.text( items[k].Value + '%', x, y - 10 );
           p5.textSize(items[k].Size);
           p5.text( items[k].Text || "", x, y + 5);
@@ -572,7 +576,7 @@ const mapMain = (p5:P5) => {
   const deleteDrawItems = () => {
     if (mapCallBack){
       mapCallBack({
-        Cmd: 'deleteItems',
+        Cmd: 'deleteDrawItems',
         Param: selectedDrawItems,
       })
       selectedDrawItems.length = 0

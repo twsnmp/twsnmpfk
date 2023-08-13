@@ -72,7 +72,7 @@
   };
 </script>
 
-<Modal bind:open={showConf} size="lg" autoclose={false} class="w-full">
+<Modal bind:open={showConf} size="lg" permanent class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">自動発見</h3>
     <div class="grid gap-4 mb-4 md:grid-cols-2">
@@ -132,7 +132,7 @@
     </div>
   </form>
 </Modal>
-<Modal bind:open={showStats} size="lg" autoclose={false} class="w-full">
+<Modal bind:open={showStats} size="lg" permanent class="w-full">
   <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
     自動発見の進行状況
   </h3>

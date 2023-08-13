@@ -8,7 +8,7 @@
     Checkbox,
   } from "flowbite-svelte";
 
-  import { onMount, createEventDispatcher } from "svelte";
+  import { onMount, createEventDispatcher,onDestroy } from "svelte";
   import { GetMapConf, UpdateMapConf } from "../../wailsjs/go/main/App";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -23,7 +23,6 @@
     conf = await GetMapConf();
     show = true;
   });
-
   const close = () => {
     show = false;
     dispatch("close", {});
@@ -42,7 +41,7 @@
 <Modal
   bind:open={show}
   size="lg"
-  autoclose={false}
+  permanent
   class="w-full"
   on:on:close={close}
 >

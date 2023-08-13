@@ -45,7 +45,7 @@
 <Modal
   bind:open={show}
   size="lg"
-  autoclose={false}
+  permanent
   class="w-full"
   on:on:close={close}
 >

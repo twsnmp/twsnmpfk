@@ -18,7 +18,11 @@ export function GetDiscoverConf():Promise<datastore.DiscoverConfEnt>;
 
 export function GetDiscoverStats():Promise<discover.DiscoverStat>;
 
+export function GetDrawItem(arg1:string):Promise<datastore.DrawItemEnt>;
+
 export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
+
+export function GetImage(arg1:string):Promise<string>;
 
 export function GetLastEventLogs(arg1:number):Promise<Array<datastore.EventLogEnt>>;
 
@@ -41,6 +45,8 @@ export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 export function GetSettings():Promise<main.Settings>;
 
 export function GetVersion():Promise<string>;
+
+export function SelectFile(arg1:string,arg2:boolean):Promise<string>;
 
 export function StartDiscover(arg1:datastore.DiscoverConfEnt):Promise<boolean>;
 

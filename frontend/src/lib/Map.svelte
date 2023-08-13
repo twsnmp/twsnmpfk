@@ -7,6 +7,7 @@
   import Discover from "./Dsicover.svelte";
   import Node from "./Node.svelte";
   import Line from "./Line.svelte";
+  import DrawItem from "./DrawItem.svelte";
   import { DeleteDrawItems, DeleteNodes } from "../../wailsjs/go/main/App";
 
   let map: any;
@@ -65,7 +66,7 @@
       case "deleteNodes":
         deleteNodes(p.Param);
         break;
-      case "deletItems":
+      case "deleteDrawItems":
         deleteDrawItems(p.Param);
         break;
     }
@@ -110,7 +111,15 @@
       <Icon path={icons.mdiPlus} />
       新規ノード
     </GradientButton>
-    <GradientButton color="blue" class="w-full">
+    <GradientButton 
+      color="blue" 
+      class="w-full"
+      on:click={()=>{
+        selectedDrawItem = "";
+        showEditDrawItem = true;
+        showMapMenu = false;
+      }}
+    >
       <Icon path={icons.mdiDrawing} />
       描画アイテム
     </GradientButton>
@@ -172,7 +181,13 @@
 
 <Modal bind:open={showDrawItemMenu} size="xs" outsideclose>
   <div class="flex flex-col space-y-2">
-    <GradientButton color="blue" class="w-full">
+    <GradientButton 
+      color="blue" class="w-full"
+      on:click={()=>{
+        showDrawItemMenu = false;
+        showEditDrawItem =true;
+      }}
+    >
       <Icon path={icons.mdiPencil} />
       編集
     </GradientButton>
@@ -219,6 +234,18 @@
     nodeID2={selectedLineNode2}
     on:close={(e) => {
       showEditLine = false;
+      count = 1;
+    }}
+  />
+{/if}
+
+{#if showEditDrawItem}
+  <DrawItem
+    id={selectedDrawItem}
+    posX={posX}
+    posY={posY}
+    on:close={(e) => {
+      showEditDrawItem = false;
       count = 1;
     }}
   />

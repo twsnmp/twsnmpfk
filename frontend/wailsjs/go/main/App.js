@@ -30,8 +30,16 @@ export function GetDiscoverStats() {
   return window['go']['main']['App']['GetDiscoverStats']();
 }
 
+export function GetDrawItem(arg1) {
+  return window['go']['main']['App']['GetDrawItem'](arg1);
+}
+
 export function GetDrawItems() {
   return window['go']['main']['App']['GetDrawItems']();
+}
+
+export function GetImage(arg1) {
+  return window['go']['main']['App']['GetImage'](arg1);
 }
 
 export function GetLastEventLogs(arg1) {
@@ -76,6 +84,10 @@ export function GetSettings() {
 
 export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
+}
+
+export function SelectFile(arg1, arg2) {
+  return window['go']['main']['App']['SelectFile'](arg1, arg2);
 }
 
 export function StartDiscover(arg1) {

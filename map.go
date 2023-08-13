@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 
+	"github.com/dustin/go-humanize"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/discover"
 )
@@ -42,10 +44,137 @@ func (a *App) GetLines() []datastore.LineEnt {
 func (a *App) GetDrawItems() map[string]datastore.DrawItemEnt {
 	ret := make(map[string]datastore.DrawItemEnt)
 	datastore.ForEachItems(func(i *datastore.DrawItemEnt) bool {
+		checkDrawItem(i)
 		ret[i.ID] = *i
 		return true
 	})
 	return ret
+}
+
+func checkDrawItem(di *datastore.DrawItemEnt) {
+	if di.Type < 4 || di.PollingID == "" {
+		return
+	}
+	if di.Type == 4 {
+		di.Text = "No Value"
+	}
+	if di.Type == 5 {
+		di.Value = 0.0
+	}
+	p := datastore.GetPolling(di.PollingID)
+	if p == nil {
+		return
+	}
+	varName, format, scale := autoGetPollingSetting(di, p)
+	i, ok := p.Result[varName]
+	if !ok {
+		return
+	}
+	text := ""
+	val := 0.0
+	switch v := i.(type) {
+	case string:
+		if format == "" {
+			text = v
+		} else {
+			text = fmt.Sprintf(format, v)
+		}
+	case float64:
+		v *= scale
+		if format == "" {
+			text = fmt.Sprintf("%f", v)
+		} else if strings.Contains(format, "BPS") {
+			bps := humanize.Bytes(uint64(v)) + "PS"
+			text = strings.Replace(format, "BPS", bps, 1)
+		} else if strings.Contains(format, "PPS") {
+			pps := humanize.Commaf(v) + "PPS"
+			text = strings.Replace(format, "PPS", pps, 1)
+		} else {
+			text = fmt.Sprintf(format, v)
+		}
+		val = v
+	}
+	if text == "" {
+		text = "No Value"
+	}
+	switch di.Type {
+	case datastore.DrawItemTypePollingGauge:
+		if val > 100.0 {
+			val = 100.0
+		}
+		if val > 90.0 {
+			di.Color = "#e31a1c"
+		} else if val > 80.0 {
+			di.Color = "#dfdf22"
+		} else {
+			di.Color = "#1f78b4"
+		}
+		di.Value = val
+	case datastore.DrawItemTypePollingText:
+		di.Text = text
+		switch p.State {
+		case "high":
+			di.Color = "#e31a1c"
+		case "low":
+			di.Color = "#fb9a99"
+		case "warn":
+			di.Color = "#dfdf22"
+		default:
+			di.Color = "#eee"
+		}
+		di.Value = val
+	}
+}
+
+func autoGetPollingSetting(di *datastore.DrawItemEnt, p *datastore.PollingEnt) (varName, format string, scale float64) {
+	varName = di.VarName
+	format = di.Format
+	scale = di.Scale
+	if scale == 0.0 {
+		scale = 1.0
+	}
+	// ポーリングだけ選択して変数が空欄なら自動で設定する
+	if varName != "" {
+		return
+	}
+	// 値があるものを優先的に返す
+	if _, ok := p.Result["bps"]; ok {
+		varName = "bps"
+		if format == "" {
+			format = "BPS"
+		}
+		scale = 1.0
+		return
+	}
+	if _, ok := p.Result["rtt"]; ok {
+		varName = "rtt"
+		if format == "" {
+			format = "RTT=%.3fSec"
+		}
+		scale = 0.000000001
+		return
+	}
+	if _, ok := p.Result["state"]; ok {
+		varName = "state"
+		format = "%s"
+		return
+	}
+	if _, ok := p.Result["avg"]; ok {
+		varName = "avg"
+		if format == "" {
+			format = "AVG=%.2f"
+		}
+		return
+	}
+	if _, ok := p.Result["count"]; ok {
+		varName = "count"
+		if format == "" {
+			format = "COUNT=%.0f"
+		}
+		return
+	}
+	// 自動選択できないものは、値なしを表示する
+	return
 }
 
 // GetDrawItems retunrs map backgrand image
@@ -311,6 +440,21 @@ func (a *App) addDrawItem(di datastore.DrawItemEnt) bool {
 		Event: "描画アイテムを追加しました",
 	})
 	return true
+}
+
+// GetDrawItem returns draw item
+func (a *App) GetDrawItem(id string) datastore.DrawItemEnt {
+	di := datastore.GetDrawItem(id)
+	if di == nil {
+		return datastore.DrawItemEnt{
+			W:     100,
+			H:     32,
+			Size:  24,
+			Scale: 1.0,
+			Color: "#888",
+		}
+	}
+	return *di
 }
 
 // UpdateDrawItem update draw item

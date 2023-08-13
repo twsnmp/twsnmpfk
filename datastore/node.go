@@ -159,7 +159,7 @@ func AddDrawItem(di *DrawItemEnt) error {
 		return err
 	}
 	db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("nodes"))
+		b := tx.Bucket([]byte("items"))
 		return b.Put([]byte(di.ID), s)
 	})
 	items.Store(di.ID, di)

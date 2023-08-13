@@ -2,9 +2,14 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"sync"
+
+	wails "github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
@@ -99,4 +104,37 @@ func (a *App) GetVersion() string {
 // GetSettings returns settings
 func (a *App) GetSettings() Settings {
 	return a.settings
+}
+
+// SelectFile returns select local file
+func (a *App) SelectFile(title string, image bool) string {
+	filter := []wails.FileFilter{}
+	if image {
+		filter = append(filter, wails.FileFilter{
+			DisplayName: "Image File(*.png,*.jpg)",
+			Pattern:     "*.png;*.jpg;",
+		})
+	}
+	file, err := wails.OpenFileDialog(a.ctx, wails.OpenDialogOptions{
+		Title:   title,
+		Filters: filter,
+	})
+	if err != nil {
+		log.Printf("SelectFile err=%v", err)
+	}
+	return file
+}
+
+// GetImage returns image data
+func (a *App) GetImage(path string) string {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	t := "png"
+	if filepath.Ext(path) == "jpg" {
+		t = "jpeg"
+	}
+	return fmt.Sprintf("data:image/%s;base64,%s", t, base64.StdEncoding.EncodeToString(b))
 }
