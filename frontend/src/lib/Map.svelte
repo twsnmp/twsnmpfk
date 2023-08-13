@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { initMAP, updateMAP } from "./map";
+  import { initMAP, updateMAP,resetMap } from "./map";
   import { onMount, onDestroy } from "svelte";
   import { Modal, GradientButton } from "flowbite-svelte";
   import * as icons from "@mdi/js";
@@ -38,7 +38,6 @@
   });
 
   const callBack = (p) => {
-    console.log(p);
     switch (p.Cmd) {
       case "contextMenu":
         posX = p.x;
@@ -141,6 +140,14 @@
     <GradientButton color="red" class="w-full">
       <Icon path={icons.mdiGrid} />
       グリッド整列
+    </GradientButton>
+    <GradientButton color="teal" class="w-full" on:click={()=>{
+      resetMap();
+      count = 1;
+      showMapMenu = false;
+    }}>
+      <Icon path={icons.mdiRecycle} />
+      更新
     </GradientButton>
   </div>
 </Modal>

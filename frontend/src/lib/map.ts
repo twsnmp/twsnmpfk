@@ -99,6 +99,14 @@ export const updateMAP = async (d:boolean) => {
   mapRedraw = true;
 }
 
+export const resetMap = () => {
+  for (const key in imageMap) {
+    if (imageMap.hasOwnProperty(key)) {
+      delete imageMap[key];
+    }
+  }
+}
+
 const setIconCodeMap = (list:any) => {
   list.forEach((e :any) => {
     iconCodeMap[e.value] = String.fromCodePoint(e.code)
