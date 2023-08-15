@@ -18,6 +18,7 @@
   import MapConf from "./lib/MapConf.svelte";
   import NotifyConf from "./lib/NotifyConf.svelte";
   import AIConf from "./lib/AIConf.svelte";
+  import NodeList from "./lib/NodeList.svelte";
 
   let version = "";
   let settings: any = undefined;
@@ -60,11 +61,11 @@
     </span>
   </NavBrand>
   <NavUl>
-    <NavLi active={page == "map"}>
+    <NavLi active={page == "map"} on:click={()=>{page="map"}}>
       <Icon path={icons.mdiLan} size={1} />
       マップ
     </NavLi>
-    <NavLi>
+    <NavLi active={page == "node"} on:click={()=>{page="node"}}>
       <Icon path={icons.mdiLaptop} size={1} />
       ノード
     </NavLi>
@@ -129,6 +130,8 @@
       <Log />
     </div>
   </div>
+{:else if page="node"}
+  <NodeList></NodeList>
 {/if}
 
 {#if showMapConf}

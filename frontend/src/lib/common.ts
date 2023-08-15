@@ -242,6 +242,26 @@ export const cmpIP = (a :string,b:string) => {
   return 0;
 }
 
+const  levelNum = (s :string) :number => {
+	switch (s) {
+	case "high":
+		return 0;
+	case "low":
+		return 1;
+	case "warn":
+		return 2;
+	case "normal":
+		return 4
+	case "repair":
+		return 3
+	}
+	return 5
+}
+
+export const cmpState = (a :string,b:string) => {
+  return levelNum(a) - levelNum(b);
+}
+
 export const getLogModeName = (m) => {
   switch(m){
     case 0:

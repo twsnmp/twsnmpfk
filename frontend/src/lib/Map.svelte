@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { initMAP, updateMAP, resetMap, grid } from "./map";
+  import { initMAP, updateMAP, resetMap,deleteMap, grid } from "./map";
   import { onMount, onDestroy } from "svelte";
   import { Modal, GradientButton, Button, Label, Input } from "flowbite-svelte";
   import * as icons from "@mdi/js";
@@ -28,6 +28,7 @@
   let gridSize: number = 40;
 
   export let dark: boolean = false;
+  let timer = undefined;
 
   onMount(async () => {
     initMAP(map, callBack);
@@ -37,6 +38,11 @@
 
   onDestroy(() => {
     console.log("onDestroy map");
+    if (timer) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
+    deleteMap();
   });
 
   const callBack = (p) => {
@@ -80,7 +86,7 @@
       oldDark = dark;
     }
     count++;
-    setTimeout(refreshMap, 1000);
+    timer = setTimeout(refreshMap, 1000);
   };
 
   const deleteNodes = async (ids: string[]) => {
@@ -94,6 +100,7 @@
     count = 1;
     showDrawItemMenu = false;
   };
+
 </script>
 
 <div bind:this={map} class="h-full w-full overflow-scroll" />
