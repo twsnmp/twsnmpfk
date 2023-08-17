@@ -4,11 +4,15 @@ import {datastore} from '../models';
 import {discover} from '../models';
 import {main} from '../models';
 
+export function CheckPolling(arg1:string):Promise<boolean>;
+
 export function DeleteDrawItems(arg1:Array<string>):Promise<void>;
 
 export function DeleteLine(arg1:string):Promise<boolean>;
 
 export function DeleteNodes(arg1:Array<string>):Promise<void>;
+
+export function ExportNodes(arg1:string):Promise<string>;
 
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 

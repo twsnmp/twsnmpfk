@@ -8,6 +8,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/discover"
+	"github.com/twsnmp/twsnmpfk/polling"
 )
 
 // GetLastEventLogs retunrs last event logs
@@ -507,4 +508,14 @@ func (a *App) GetPollings(node string) []datastore.PollingEnt {
 		return true
 	})
 	return ret
+}
+
+// CheckPolling check node polling
+func (a *App) CheckPolling(node string) bool {
+	if node == "all" {
+		polling.CheckAllPoll()
+	} else {
+		polling.PollNowNode(node)
+	}
+	return true
 }

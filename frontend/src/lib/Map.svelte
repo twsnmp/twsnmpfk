@@ -8,7 +8,7 @@
   import Node from "./Node.svelte";
   import Line from "./Line.svelte";
   import DrawItem from "./DrawItem.svelte";
-  import { DeleteDrawItems, DeleteNodes } from "../../wailsjs/go/main/App";
+  import { CheckPolling, DeleteDrawItems, DeleteNodes } from "../../wailsjs/go/main/App";
 
   let map: any;
   let posX: number = 0;
@@ -181,7 +181,10 @@
       <Icon path={icons.mdiPencil} />
       編集
     </GradientButton>
-    <GradientButton color="teal" class="w-full">
+    <GradientButton color="teal" class="w-full" on:click={()=>{
+      showNodeMenu = false;
+      CheckPolling(selectedNode);
+    }}>
       <Icon path={icons.mdiCached} />
       再確認
     </GradientButton>
