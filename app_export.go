@@ -52,6 +52,43 @@ func (a *App) ExportNodes(t string) string {
 	return ""
 }
 
+func (a *App) ExportPollings(t string) string {
+	data := ExportData{
+		Title:  "TWSNMP Polling List",
+		Header: []string{"State", "Node Name", "Name", "Level", "Type", "Log Mode", "Last Time"},
+	}
+	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
+		n := datastore.GetNode(p.NodeID)
+		if n == nil {
+			return true
+		}
+		l := []any{}
+		l = append(l, p.State)
+		l = append(l, n.Name)
+		l = append(l, p.Name)
+		l = append(l, p.Level)
+		l = append(l, p.Type)
+		l = append(l, p.LogMode)
+		l = append(l, time.Unix(0, p.LastTime).Format("2006/01/02 15:04:05"))
+		data.Data = append(data.Data, l)
+		return true
+	})
+	var err error
+	switch t {
+	case "excel":
+		err = a.exportExcel(&data)
+	case "csv":
+		err = a.exportCSV(&data)
+	default:
+		return "not suppoerted"
+	}
+	if err != nil {
+		log.Printf("ExportTable err=%v", err)
+		return fmt.Sprintf("export err=%v", err)
+	}
+	return ""
+}
+
 func (a *App) exportExcel(data *ExportData) error {
 	d := time.Now().Format("20060102150405")
 	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{

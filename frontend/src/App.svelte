@@ -19,6 +19,7 @@
   import NotifyConf from "./lib/NotifyConf.svelte";
   import AIConf from "./lib/AIConf.svelte";
   import NodeList from "./lib/NodeList.svelte";
+  import PollingList from "./lib/PollingList.svelte";
 
   let version = "";
   let settings: any = undefined;
@@ -61,15 +62,30 @@
     </span>
   </NavBrand>
   <NavUl>
-    <NavLi active={page == "map"} on:click={()=>{page="map"}}>
+    <NavLi
+      active={page == "map"}
+      on:click={() => {
+        page = "map";
+      }}
+    >
       <Icon path={icons.mdiLan} size={1} />
       マップ
     </NavLi>
-    <NavLi active={page == "node"} on:click={()=>{page="node"}}>
+    <NavLi
+      active={page == "node"}
+      on:click={() => {
+        page = "node";
+      }}
+    >
       <Icon path={icons.mdiLaptop} size={1} />
       ノード
     </NavLi>
-    <NavLi>
+    <NavLi
+      active={page == "polling"}
+      on:click={() => {
+        page = "polling";
+      }}
+    >
       <Icon path={icons.mdiLanCheck} size={1} />
       ポーリング
     </NavLi>
@@ -130,8 +146,10 @@
       <Log />
     </div>
   </div>
-{:else if page="node"}
-  <NodeList></NodeList>
+{:else if page == "node"}
+  <NodeList />
+{:else if page == "polling"}
+  <PollingList />
 {/if}
 
 {#if showMapConf}

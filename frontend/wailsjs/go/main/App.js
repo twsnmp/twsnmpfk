@@ -18,8 +18,16 @@ export function DeleteNodes(arg1) {
   return window['go']['main']['App']['DeleteNodes'](arg1);
 }
 
+export function DeletePollings(arg1) {
+  return window['go']['main']['App']['DeletePollings'](arg1);
+}
+
 export function ExportNodes(arg1) {
   return window['go']['main']['App']['ExportNodes'](arg1);
+}
+
+export function ExportPollings(arg1) {
+  return window['go']['main']['App']['ExportPollings'](arg1);
 }
 
 export function GetAIConf() {
@@ -44,6 +52,10 @@ export function GetDrawItem(arg1) {
 
 export function GetDrawItems() {
   return window['go']['main']['App']['GetDrawItems']();
+}
+
+export function GetGroks() {
+  return window['go']['main']['App']['GetGroks']();
 }
 
 export function GetImage(arg1) {
@@ -80,6 +92,10 @@ export function GetNodes() {
 
 export function GetNotifyConf() {
   return window['go']['main']['App']['GetNotifyConf']();
+}
+
+export function GetPolling(arg1) {
+  return window['go']['main']['App']['GetPolling'](arg1);
 }
 
 export function GetPollings(arg1) {
@@ -140,4 +156,8 @@ export function UpdateNodePos(arg1) {
 
 export function UpdateNotifyConf(arg1) {
   return window['go']['main']['App']['UpdateNotifyConf'](arg1);
+}
+
+export function UpdatePolling(arg1) {
+  return window['go']['main']['App']['UpdatePolling'](arg1);
 }

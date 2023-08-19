@@ -9,11 +9,11 @@ import (
 )
 
 type GrokEnt struct {
-	ID    string
-	Name  string
-	Descr string
-	Pat   string
-	Ok    string
+	ID    string `json:"ID"`
+	Name  string `json:"Name"`
+	Descr string `json:"Decr"`
+	Pat   string `json:"Pat"`
+	Ok    string `json:"Ok"`
 }
 
 var defGrockList = []GrokEnt{
@@ -119,21 +119,13 @@ var defGrockList = []GrokEnt{
 	},
 }
 
-/*
-2021/07/18 06:49:40.040 info:local5 twpcap type=Stats,total=265577589,count=621830,ps=10363.83
-2021/07/18 06:25:40.040 info:local5 twpcap type=EtherType,0x0806=1356,0x8899=599,0x0800=2317179,0x88cc=1,0x86dd=5086
-2021/07/18 07:14:40.040 info:local5 twpcap type=IPToMAC,ip=240d:2:6306:6700:d048:a63a:bbfc:2dab,mac=48:b0:2d:2e:29:19,count=2941,change=0,dhcp=0,ft=2021-07-17T07:34:42+09:00,lt=2021-07-18T07:14:25+09:00
-2021/07/18 09:27:40.040 info:local5 twpcap type=DNS,DNSType=Unknown,Name=token.safebrowsing.apple,count=2,change=1,lastIP=240d:2:6306:6700:225:36ff:feab:7753,lastMAC=00:25:36:ab:77:53,ft=2021-07-18T09:27:15+09:00,lt=2021-07-18T09:27:15+09:00
-2021/07/18 09:32:40.040 info:local5 twpcap type=DHCP,ip=192.168.1.1,count=246,offer=10,ack=236,nak=0,ft=2021-07-17T07:41:16+09:00,lt=2021-07-18T09:24:04+09:00
-2021/07/18 09:38:40.040 info:local5 twpcap type=NTP,ip=17.253.114.125,count=1,change=0,client=192.168.1.9,version=4,stratum=1,refid=0x53484d00,ft=2021-07-18T09:15:51+09:00,lt=2021-07-18T09:15:51+09:00
-2021-07-18T00:51:56+00:00  twpcap: type=RADIUS,cl=10.30.1.102,sv=10.30.2.67,count=560,req=272,accept=32,reject=0,challenge=256,ft=2021-07-17T21:00:20Z,lt=2021-07-18T00:39:39Z
-2021-07-18T00:49:56+00:00  twpcap: type=TLSFlow,cl=10.30.175.1,sv=35.171.172.30,serv=HTTPS,count=7,handshake=6,alert=0,minver=TLS 1.2,maxver=TLS 1.2,cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,ft=2021-07-18T00:38:20Z,lt=2021-07-18T00:38:20Z
-*/
-
 var grokMap = make(map[string]*GrokEnt)
 
 func loadGrokMap() {
 	loadGrokFromDB()
+	if len(grokMap) < 1 {
+		LoadDefGrokEnt()
+	}
 }
 
 func loadGrokFromDB() error {

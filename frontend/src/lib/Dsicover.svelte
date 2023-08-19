@@ -34,7 +34,6 @@
       timer = undefined;
       return;
     }
-    console.log(showStats);
     timer = setTimeout(() => {
       updateDiscover();
     }, 2 * 1000);
@@ -60,7 +59,6 @@
 
   const start = async () => {
     const r = await StartDiscover(conf);
-    console.log(r);
     if (r) {
       close();
     }

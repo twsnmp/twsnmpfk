@@ -12,7 +12,11 @@ export function DeleteLine(arg1:string):Promise<boolean>;
 
 export function DeleteNodes(arg1:Array<string>):Promise<void>;
 
+export function DeletePollings(arg1:Array<string>):Promise<void>;
+
 export function ExportNodes(arg1:string):Promise<string>;
+
+export function ExportPollings(arg1:string):Promise<string>;
 
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 
@@ -25,6 +29,8 @@ export function GetDiscoverStats():Promise<discover.DiscoverStat>;
 export function GetDrawItem(arg1:string):Promise<datastore.DrawItemEnt>;
 
 export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
+
+export function GetGroks():Promise<Array<datastore.GrokEnt>>;
 
 export function GetImage(arg1:string):Promise<string>;
 
@@ -43,6 +49,8 @@ export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
 export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
+
+export function GetPolling(arg1:string):Promise<datastore.PollingEnt>;
 
 export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 
@@ -73,3 +81,5 @@ export function UpdateNode(arg1:datastore.NodeEnt):Promise<boolean>;
 export function UpdateNodePos(arg1:Array<main.UpdatePosEnt>):Promise<void>;
 
 export function UpdateNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
+
+export function UpdatePolling(arg1:datastore.PollingEnt):Promise<boolean>;

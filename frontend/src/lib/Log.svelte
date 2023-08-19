@@ -14,7 +14,7 @@
     getStateColor,
     getStateIcon,
     getStateName,
-    timeFormat,
+    formatTimeFromNano,
   } from "./common";
   let logs = [];
   let timer: number | undefined = undefined;
@@ -51,18 +51,14 @@
       <TableBodyRow>
         <TableBodyCell tdClass="text-xs p-1">
           <div class="flex">
-            <Icon
-              path={getStateIcon(l.Level)}
-              color={getStateColor(l.Level)}
-              size={1}
-            />
+            <span class="mdi {getStateIcon(l.Level)} text-xl" style="color: {getStateColor(l.Level)};"/>
             <span class="text-xs mt-1 ml-1">
               {getStateName(l.Level)}
             </span>
           </div>
         </TableBodyCell>
         <TableBodyCell tdClass="text-xs p-1"
-          >{timeFormat(new Date(l.Time / (1000 * 1000)), "")}</TableBodyCell
+          >{formatTimeFromNano(l.Time)}</TableBodyCell
         >
         <TableBodyCell tdClass="text-xs p-1">{l.Type}</TableBodyCell>
         <TableBodyCell tdClass="text-xs p-1">{l.NodeName}</TableBodyCell>

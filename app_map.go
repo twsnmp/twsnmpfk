@@ -8,18 +8,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/discover"
-	"github.com/twsnmp/twsnmpfk/polling"
 )
-
-// GetLastEventLogs retunrs last event logs
-func (a *App) GetLastEventLogs(count int) []datastore.EventLogEnt {
-	ret := []datastore.EventLogEnt{}
-	datastore.ForEachLastEventLog(0, func(l *datastore.EventLogEnt) bool {
-		ret = append(ret, *l)
-		return len(ret) < count
-	})
-	return ret
-}
 
 // GetNodes retunrs map nodes
 func (a *App) GetNodes() map[string]datastore.NodeEnt {
@@ -496,26 +485,4 @@ func (a *App) DeleteDrawItems(ids []string) {
 		Level: "info",
 		Event: fmt.Sprintf("描画を削除しました %d件", len(ids)),
 	})
-}
-
-// GetPollings retunrs polling list
-func (a *App) GetPollings(node string) []datastore.PollingEnt {
-	ret := []datastore.PollingEnt{}
-	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
-		if node == "" || node == p.NodeID {
-			ret = append(ret, *p)
-		}
-		return true
-	})
-	return ret
-}
-
-// CheckPolling check node polling
-func (a *App) CheckPolling(node string) bool {
-	if node == "all" {
-		polling.CheckAllPoll()
-	} else {
-		polling.PollNowNode(node)
-	}
-	return true
 }

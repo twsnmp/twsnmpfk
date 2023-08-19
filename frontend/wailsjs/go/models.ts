@@ -124,6 +124,26 @@ export namespace datastore {
 	        this.LastLevel = source["LastLevel"];
 	    }
 	}
+	export class GrokEnt {
+	    ID: string;
+	    Name: string;
+	    Decr: string;
+	    Pat: string;
+	    Ok: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new GrokEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Decr = source["Decr"];
+	        this.Pat = source["Pat"];
+	        this.Ok = source["Ok"];
+	    }
+	}
 	export class LineEnt {
 	    ID: string;
 	    NodeID1: string;
@@ -290,7 +310,7 @@ export namespace datastore {
 	    NextTime: number;
 	    LastTime: number;
 	    Result: {[key: string]: any};
-	    Sate: string;
+	    State: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new PollingEnt(source);
@@ -315,7 +335,7 @@ export namespace datastore {
 	        this.NextTime = source["NextTime"];
 	        this.LastTime = source["LastTime"];
 	        this.Result = source["Result"];
-	        this.Sate = source["Sate"];
+	        this.State = source["State"];
 	    }
 	}
 

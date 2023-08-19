@@ -1,37 +1,42 @@
 <script lang="ts">
-  import { Button,Select,Label } from "flowbite-svelte";
+  import { Button, Select } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import Grid from "gridjs-svelte";
-  import { h, html, type UserConfig } from "gridjs";
+  import { h, html } from "gridjs";
   import { onMount } from "svelte";
   import jaJP from "./gridjsJaJP";
-  import { GetNodes, DeleteNodes, ExportNodes,CheckPolling } from "../../wailsjs/go/main/App";
   import {
-    cmpIP,
+    GetNodes,
+    GetPollings,
+    DeletePollings,
+    ExportPollings,
+  } from "../../wailsjs/go/main/App";
+  import {
     cmpState,
-    getIcon,
+    getStateIcon,
     getStateColor,
     getStateName,
+    formatTimeFromNano,
+    getLogModeName,
   } from "./common";
-  import Node from "./Node.svelte";
+  import Polling from "./Polling.svelte";
 
   let data = [];
-  let showEditNode = false;
-  let selectedNode = "";
+  let nodes = {};
+  let showEditPolling = false;
+  let selectedPolling = "";
 
-  const refreshNodes = async () => {
+  const refreshPollings = async () => {
     data = [];
-    const nodes = await GetNodes();
-    for (const k in nodes) {
-      data.push(nodes[k]);
-    }
+    nodes = await GetNodes();
+    data = await GetPollings("");
   };
 
-  const formatState = (state, row) => {
+  const formatState = (state) => {
     return html(
       `<span class="mdi ` +
-        getIcon(row._cells[1].data) +
+        getStateIcon(state) +
         ` text-xl" style="color:` +
         getStateColor(state) +
         `;" /><span class="ml-2 text-xs text-black dark:text-white">` +
@@ -40,17 +45,17 @@
     );
   };
 
-  const editNode = (id: string) => {
+  const editPolling = (id: string) => {
     if (!id) {
       return;
     }
-    selectedNode = id;
-    showEditNode = true;
+    selectedPolling = id;
+    showEditPolling = true;
   };
 
-  const deleteNode = async (id: string) => {
-    await DeleteNodes([id]);
-    refreshNodes();
+  const deletePolling = async (id: string) => {
+    await DeletePollings([id]);
+    refreshPollings();
   };
 
   const columns = [
@@ -64,45 +69,51 @@
       },
     },
     {
-      id: "Icon",
-      name: "",
-      hidden: true,
+      id: "NodeID",
+      name: "ノード名",
+      width: "15%",
+      formatter: (id) => nodes[id].Name,
     },
     {
       id: "Name",
       name: "名前",
-      width: "20%",
+      width: "25%",
     },
     {
-      id: "IP",
-      name: "IPアドレス",
+      id: "Level",
+      name: "レベル",
+      width: "10%",
+      formatter: formatState,
+    },
+    {
+      id: "Type",
+      name: "種別",
+      width: "8%",
+    },
+    {
+      id: "LogMode",
+      name: "ログ",
+      width: "7%",
+      formatter: getLogModeName,
+    },
+    {
+      id: "LastTime",
+      name: "最終確認",
       width: "15%",
-      sort: {
-        compare: cmpIP,
-      },
-    },
-    {
-      id: "MAC",
-      name: "MACアドレス",
-      width: "15%",
-    },
-    {
-      id: "Descr",
-      name: "説明",
-      width: "30%",
+      formatter: formatTimeFromNano,
     },
     {
       id: "ID",
       name: "編集",
       sort: false,
       width: "5%",
-      formatter: (id) => {
+      formatter: (id: string) => {
         return h(
           "button",
           {
             className: "",
             onClick: () => {
-              editNode(id);
+              editPolling(id);
             },
           },
           html(`<span class="mdi mdi-pencil text-lg" />`)
@@ -119,7 +130,7 @@
           {
             className: "",
             onClick: () => {
-              deleteNode(id);
+              deletePolling(id);
             },
           },
           html(`<span class="mdi mdi-delete text-red-600 text-lg" />`)
@@ -129,31 +140,26 @@
   ];
 
   onMount(() => {
-    refreshNodes();
+    refreshPollings();
   });
 
-  const checkAll = () => {
-    CheckPolling("all");
-  }
-
   const saveCSV = () => {
-    ExportNodes("csv");
-  }
+    ExportPollings("csv");
+  };
 
   const saveExcel = () => {
-    ExportNodes("excel");
-  }
+    ExportPollings("excel");
+  };
 
-  let pagination: any = {
+  let pagination : any= {
     limit: 10,
   };
   let pp = 10;
   const ppList = [
-    { name:"10",value:10 },
-    { name:"20",value:20 },
-    { name:"100",value:100 },
-  ]
-
+    { name: "10", value: 10 },
+    { name: "20", value: 20 },
+    { name: "100", value: 100 },
+  ];
 </script>
 
 <div class="flex flex-col">
@@ -161,15 +167,16 @@
     <Grid {data} {columns} {pagination} sort search language={jaJP} />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-      <Select class="w-20" items={ppList} bind:value={pp} on:change={()=>{
+    <Select
+      class="w-20"
+      items={ppList}
+      bind:value={pp}
+      on:change={() => {
         pagination = {
-          limit:pp,
-        }
-      }}/>
-    <Button color="blue" type="button" on:click={checkAll} size="xs">
-      <Icon path={icons.mdiCheckAll} size={1} />
-      すべて再確認
-    </Button>
+          limit: pp,
+        };
+      }}
+    />
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
@@ -178,19 +185,25 @@
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
     </Button>
-    <Button type="button" color="alternative" on:click={refreshNodes} size="xs">
+    <Button
+      type="button"
+      color="alternative"
+      on:click={refreshPollings}
+      size="xs"
+    >
       <Icon path={icons.mdiRecycle} size={1} />
       更新
     </Button>
   </div>
 </div>
 
-{#if showEditNode}
-  <Node
-    nodeID={selectedNode}
+{#if showEditPolling}
+  <Polling
+    nodeID=""
+    pollingID={selectedPolling}
     on:close={(e) => {
-      showEditNode = false;
-      refreshNodes();
+      showEditPolling = false;
+      refreshPollings();
     }}
   />
 {/if}

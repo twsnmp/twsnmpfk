@@ -33,11 +33,9 @@
   onMount(async () => {
     initMAP(map, callBack);
     refreshMap();
-    console.log("onMount map");
   });
 
   onDestroy(() => {
-    console.log("onDestroy map");
     if (timer) {
       clearTimeout(timer);
       timer = undefined;

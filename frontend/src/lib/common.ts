@@ -1,20 +1,19 @@
 import * as echarts from 'echarts';
-import * as icons from '@mdi/js';
 
 export const stateList = [
-  { text: '重度', color: '#e31a1c', icon: icons.mdiAlertCircle, value: 'high' },
-  { text: '軽度', color: '#fb9a99', icon: icons.mdiAlertCircle, value: 'low' },
-  { text: '注意', color: '#dfdf22', icon: icons.mdiAlert, value: 'warn' },
-  { text: '正常', color: '#33a02c', icon: icons.mdiCheckCircle, value: 'normal' },
-  { text: 'Up', color: '#33a02c', icon:  icons.mdiCheckCircle, value: 'up' },
-  { text: '復帰', color: '#1f78b4', icon: icons.mdiAutorenew, value: 'repair' },
-  { text: '情報', color: '#1f78b4', icon: icons.mdiInformation, value: 'info' },
-  { text: '新規', color: '#1f78b4', icon: icons.mdiInformation, value: 'New' },
-  { text: '変化', color: '#e31a1c', icon: icons.mdiAutorenew, value: 'Change' },
-  { text: 'エラー', color: '#e31a1c', icon: icons.mdiAlertCircle, value: 'error' },
-  { text: 'Down', color: '#e31a1c', icon: icons.mdiAlertCircle, value: 'down' },
-  { text: '停止', color: '#777', icon: icons.mdiStop, value: 'off' },
-  { text: 'Debug', color: '#777', icon: icons.mdiBug, value: 'debug' },
+  { text: '重度', color: '#e31a1c', icon: "mdi-alert-circle", value: 'high' },
+  { text: '軽度', color: '#fb9a99', icon: "mdi-alert-circle", value: 'low' },
+  { text: '注意', color: '#dfdf22', icon: "mdi-alert", value: 'warn' },
+  { text: '正常', color: '#33a02c', icon: "mdi-check-circle", value: 'normal' },
+  { text: 'Up', color: '#33a02c', icon:  "mdi-check-circle", value: 'up' },
+  { text: '復帰', color: '#1f78b4', icon: "mdi-autorenew", value: 'repair' },
+  { text: '情報', color: '#1f78b4', icon: "mdi-information", value: 'info' },
+  { text: '新規', color: '#1f78b4', icon: "mdi-information", value: 'New' },
+  { text: '変化', color: '#e31a1c', icon: "mdi-autorenew", value: 'Change' },
+  { text: 'エラー', color: '#e31a1c', icon: "mdi-alert-circle", value: 'error' },
+  { text: 'Down', color: '#e31a1c', icon: "mdi-alert-circle", value: 'down' },
+  { text: '停止', color: '#777', icon: "mdi-stop", value: 'off' },
+  { text: 'Debug', color: '#777', icon: "mdi-bug", value: 'debug' },
 ]
 
 export const stateMap = {}
@@ -32,57 +31,57 @@ export const getStateName = (state:string) : string => {
 }
 
 export const getStateIcon = (state:string) => {
-  return stateMap[state] ? stateMap[state].icon :  icons.mdiCommentQuestionOutline;
+  return stateMap[state] ? stateMap[state].icon :  "mdi-comment-question-outline";
 }
 
 export const levelList = [
-  { text: '重度', value: 'high' },
-  { text: '軽度', value: 'low' },
-  { text: '注意', value: 'warn' },
-  { text: '情報', value: 'info' },
-  { text: '停止', value: 'off' },
+  { name: '重度', value: 'high' },
+  { name: '軽度', value: 'low' },
+  { name: '注意', value: 'warn' },
+  { name: '情報', value: 'info' },
+  { name: '停止', value: 'off' },
 ]
 
 export const filterEventLevelList = [
-  { text: '指定しない', value: '' },
-  { text: '重度以上', value: 'high' },
-  { text: '軽度以上', value: 'low' },
-  { text: '注意以上', value: 'warn' },
+  { name: '指定しない', value: '' },
+  { name: '重度以上', value: 'high' },
+  { name: '軽度以上', value: 'low' },
+  { name: '注意以上', value: 'warn' },
 ]
 
 export const filterEventTypeList = [
-  { text: '指定しない', value: '' },
-  { text: 'システム', value: 'system' },
-  { text: 'ポーリング', value: 'polling' },
-  { text: 'AI分析', value: 'ai' },
-  { text: '稼働率', value: 'oprate' },
-  { text: 'ARP監視', value: 'arpwatch' },
+  { name: '指定しない', value: '' },
+  { name: 'システム', value: 'system' },
+  { name: 'ポーリング', value: 'polling' },
+  { name: 'AI分析', value: 'ai' },
+  { name: '稼働率', value: 'oprate' },
+  { name: 'ARP監視', value: 'arpwatch' },
 ]
 
 export const typeList = [
-  { text: 'PING', value: 'ping' },
-  { text: 'SNMP', value: 'snmp' },
-  { text: 'TCP', value: 'tcp' },
-  { text: 'HTTP', value: 'http' },
-  { text: 'TLS', value: 'tls' },
-  { text: 'DNS', value: 'dns' },
-  { text: 'NTP', value: 'ntp' },
-  { text: 'SYSLOG', value: 'syslog' },
-  { text: 'SNMP TRAP', value: 'trap' },
-  { text: 'ARP Log', value: 'arplog' },
-  { text: 'Command', value: 'cmd' },
-  { text: 'SSH', value: 'ssh' },
-  { text: 'Report', value: 'report' },
-  { text: 'TWSNMP', value: 'twsnmp' },
-  { text: 'VMware', value: 'vmware' },
-  { text: 'LXI', value: 'lxi' },
+  { name: 'PING', value: 'ping' },
+  { name: 'SNMP', value: 'snmp' },
+  { name: 'TCP', value: 'tcp' },
+  { name: 'HTTP', value: 'http' },
+  { name: 'TLS', value: 'tls' },
+  { name: 'DNS', value: 'dns' },
+  { name: 'NTP', value: 'ntp' },
+  { name: 'SYSLOG', value: 'syslog' },
+  { name: 'SNMP TRAP', value: 'trap' },
+  { name: 'ARP Log', value: 'arplog' },
+  { name: 'Command', value: 'cmd' },
+  { name: 'SSH', value: 'ssh' },
+  { name: 'Report', value: 'report' },
+  { name: 'TWSNMP', value: 'twsnmp' },
+  { name: 'VMware', value: 'vmware' },
+  { name: 'LXI', value: 'lxi' },
 ]
 
 export const logModeList = [
-  { text: '記録しない', value: 0 },
-  { text: '常に記録', value: 1 },
-  { text: '状態変化時のみ記録', value: 2 },
-  { text: 'AI分析', value: 3 },
+  { name: '記録しない', value: 0 },
+  { name: '常に記録', value: 1 },
+  { name: '状態変化時のみ記録', value: 2 },
+  { name: 'AI分析', value: 3 },
 ]
 
 export const addrModeList = [
@@ -184,11 +183,16 @@ export const delIcon = (icon) => {
   }
 }
 
-export const timeFormat = (date:any, format:string) => {
+export const formatTime = (date:any, format:string) => {
   if (!format) {
       format = '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}'
   }
   return echarts.time.format(date,format,false)
+}
+
+export const formatTimeFromNano = (t:number) => {
+  const d = new Date(t /(1000*1000));
+  return  formatTime(d,"");
 }
 
 export const getScoreColor = (s:number) => {

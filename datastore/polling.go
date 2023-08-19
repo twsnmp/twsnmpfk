@@ -28,7 +28,7 @@ type PollingEnt struct {
 	NextTime  int64                  `json:"NextTime"`
 	LastTime  int64                  `json:"LastTime"`
 	Result    map[string]interface{} `json:"Result"`
-	State     string                 `json:"Sate"`
+	State     string                 `json:"State"`
 }
 
 type PollingLogEnt struct {
