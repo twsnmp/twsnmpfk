@@ -22,6 +22,7 @@
   import PollingList from "./lib/PollingList.svelte";
   import EventLog from "./lib/EventLog.svelte";
   import Syslog from "./lib/Syslog.svelte";
+  import Trap from "./lib/Trap.svelte";
 
   let dark: boolean = false;
   let showMapConf: boolean = false;
@@ -160,6 +161,8 @@
   <EventLog />
 {:else if page == "syslog"}
   <Syslog />
+{:else if page == "trap"}
+  <Trap />
 {/if}
 
 {#if showMapConf}

@@ -364,6 +364,24 @@ export namespace datastore {
 	        this.Facility = source["Facility"];
 	    }
 	}
+	export class TrapEnt {
+	    Time: number;
+	    FromAddress: string;
+	    TrapType: string;
+	    Variables: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TrapEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.FromAddress = source["FromAddress"];
+	        this.TrapType = source["TrapType"];
+	        this.Variables = source["Variables"];
+	    }
+	}
 
 }
 

@@ -124,7 +124,7 @@ func (a *App) ExportEventLogs(t string) string {
 // ExportSyslogs  export syslogs
 func (a *App) ExportSyslogs(t string) string {
 	data := ExportData{
-		Title:  "TWSNMP Syslog Log",
+		Title:  "TWSNMP Syslog",
 		Header: []string{"Level", "Time", "Host", "Type", "Tag", "Message"},
 	}
 	datastore.ForEachLastSyslog(func(l *datastore.SyslogEnt) bool {
@@ -154,10 +154,41 @@ func (a *App) ExportSyslogs(t string) string {
 	return ""
 }
 
+// ExportTrap  export traps
+func (a *App) ExportTraps(t string) string {
+	data := ExportData{
+		Title:  "TWSNMP TRAP",
+		Header: []string{"Time", "From", "Type", "Variables"},
+	}
+	datastore.ForEachLastTraps(func(l *datastore.TrapEnt) bool {
+		e := []any{}
+		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))
+		e = append(e, l.FromAddress)
+		e = append(e, l.TrapType)
+		e = append(e, l.Variables)
+		data.Data = append(data.Data, e)
+		return true
+	})
+	var err error
+	switch t {
+	case "excel":
+		err = a.exportExcel(&data)
+	case "csv":
+		err = a.exportCSV(&data)
+	default:
+		return "not suppoerted"
+	}
+	if err != nil {
+		log.Printf("ExportTable err=%v", err)
+		return fmt.Sprintf("export err=%v", err)
+	}
+	return ""
+}
+
 func (a *App) exportExcel(data *ExportData) error {
 	d := time.Now().Format("20060102150405")
 	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
-		DefaultFilename:      data.Title + "_" + d + ".xlsx",
+		DefaultFilename:      strings.ReplaceAll(data.Title, " ", "_") + "_" + d + ".xlsx",
 		CanCreateDirectories: true,
 		Filters: []wails.FileFilter{{
 			DisplayName: "Excel",
@@ -208,7 +239,7 @@ func (a *App) exportExcel(data *ExportData) error {
 func (a *App) exportCSV(data *ExportData) error {
 	d := time.Now().Format("20060102150405")
 	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
-		DefaultFilename:      data.Title + "_" + d + ".csv",
+		DefaultFilename:      strings.ReplaceAll(data.Title, " ", "_") + "_" + d + ".csv",
 		CanCreateDirectories: true,
 		Filters: []wails.FileFilter{{
 			DisplayName: "CSV",

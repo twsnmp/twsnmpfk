@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"regexp"
 	"sync"
 	"time"
 
@@ -551,6 +552,76 @@ func ForEachLastSyslog(f func(*SyslogEnt) bool) error {
 			re.Type = getSyslogType(int(sv), int(fac))
 			re.Facility = int(fac)
 			re.Severity = int(sv)
+			if !f(re) {
+				break
+			}
+		}
+		return nil
+	})
+}
+
+type TrapEnt struct {
+	Time        int64  `json:"Time"`
+	FromAddress string `json:"FromAddress"`
+	TrapType    string `json:"TrapType"`
+	Variables   string `json:"Variables"`
+}
+
+var trapOidRegexp = regexp.MustCompile(`snmpTrapOID.0=(\S+)`)
+
+// ForEachLastTraps  get TRAP
+func ForEachLastTraps(f func(*TrapEnt) bool) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("trap"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, v := c.Last(); k != nil; k, v = c.Prev() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			var sl = make(map[string]interface{})
+			if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+				continue
+			}
+			var ok bool
+			re := new(TrapEnt)
+			if re.FromAddress, ok = sl["FromAddress"].(string); !ok {
+				continue
+			}
+			if re.Variables, ok = sl["Variables"].(string); !ok {
+				continue
+			}
+			var ent string
+			if ent, ok = sl["Enterprise"].(string); !ok || ent == "" {
+				a := trapOidRegexp.FindStringSubmatch(re.Variables)
+				if len(a) > 1 {
+					re.TrapType = a[1]
+				} else {
+					re.TrapType = ""
+				}
+			} else {
+				var gen float64
+				if gen, ok = sl["GenericTrap"].(float64); !ok {
+					continue
+				}
+				var spe float64
+				if spe, ok = sl["SpecificTrap"].(float64); !ok {
+					continue
+				}
+				re.TrapType = fmt.Sprintf("%s:%d:%d", ent, int(gen), int(spe))
+			}
+			re.Time = l.Time
 			if !f(re) {
 				break
 			}

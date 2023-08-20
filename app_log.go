@@ -29,3 +29,16 @@ func (a *App) GetSyslogs(count int) []datastore.SyslogEnt {
 	})
 	return ret
 }
+
+// GetTraps retunrs syslogs
+func (a *App) GetTraps(count int) []datastore.TrapEnt {
+	if count < 1 {
+		count = 100 * 10000
+	}
+	ret := []datastore.TrapEnt{}
+	datastore.ForEachLastTraps(func(l *datastore.TrapEnt) bool {
+		ret = append(ret, *l)
+		return len(ret) < count
+	})
+	return ret
+}

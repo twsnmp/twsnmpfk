@@ -38,6 +38,10 @@ export function ExportSyslogs(arg1) {
   return window['go']['main']['App']['ExportSyslogs'](arg1);
 }
 
+export function ExportTraps(arg1) {
+  return window['go']['main']['App']['ExportTraps'](arg1);
+}
+
 export function GetAIConf() {
   return window['go']['main']['App']['GetAIConf']();
 }
@@ -116,6 +120,10 @@ export function GetSettings() {
 
 export function GetSyslogs(arg1) {
   return window['go']['main']['App']['GetSyslogs'](arg1);
+}
+
+export function GetTraps(arg1) {
+  return window['go']['main']['App']['GetTraps'](arg1);
 }
 
 export function GetVersion() {
