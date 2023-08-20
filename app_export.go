@@ -89,6 +89,38 @@ func (a *App) ExportPollings(t string) string {
 	return ""
 }
 
+// ExportEventLogs  export event logs
+func (a *App) ExportEventLogs(t string) string {
+	data := ExportData{
+		Title:  "TWSNMP Event Log",
+		Header: []string{"Level", "Time", "Type", "Node Name", "Event"},
+	}
+	datastore.ForEachLastEventLog(0, func(l *datastore.EventLogEnt) bool {
+		e := []any{}
+		e = append(e, l.Level)
+		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))
+		e = append(e, l.Type)
+		e = append(e, l.NodeName)
+		e = append(e, l.Event)
+		data.Data = append(data.Data, e)
+		return true
+	})
+	var err error
+	switch t {
+	case "excel":
+		err = a.exportExcel(&data)
+	case "csv":
+		err = a.exportCSV(&data)
+	default:
+		return "not suppoerted"
+	}
+	if err != nil {
+		log.Printf("ExportTable err=%v", err)
+		return fmt.Sprintf("export err=%v", err)
+	}
+	return ""
+}
+
 func (a *App) exportExcel(data *ExportData) error {
 	d := time.Now().Format("20060102150405")
 	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{

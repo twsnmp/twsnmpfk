@@ -14,6 +14,8 @@ export function DeleteNodes(arg1:Array<string>):Promise<void>;
 
 export function DeletePollings(arg1:Array<string>):Promise<void>;
 
+export function ExportEventLogs(arg1:string):Promise<string>;
+
 export function ExportNodes(arg1:string):Promise<string>;
 
 export function ExportPollings(arg1:string):Promise<string>;
@@ -30,11 +32,11 @@ export function GetDrawItem(arg1:string):Promise<datastore.DrawItemEnt>;
 
 export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
 
+export function GetEventLogs(arg1:number):Promise<Array<datastore.EventLogEnt>>;
+
 export function GetGroks():Promise<Array<datastore.GrokEnt>>;
 
 export function GetImage(arg1:string):Promise<string>;
-
-export function GetLastEventLogs(arg1:number):Promise<Array<datastore.EventLogEnt>>;
 
 export function GetLine(arg1:string,arg2:string):Promise<datastore.LineEnt>;
 

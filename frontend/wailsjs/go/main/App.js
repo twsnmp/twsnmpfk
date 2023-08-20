@@ -22,6 +22,10 @@ export function DeletePollings(arg1) {
   return window['go']['main']['App']['DeletePollings'](arg1);
 }
 
+export function ExportEventLogs(arg1) {
+  return window['go']['main']['App']['ExportEventLogs'](arg1);
+}
+
 export function ExportNodes(arg1) {
   return window['go']['main']['App']['ExportNodes'](arg1);
 }
@@ -54,16 +58,16 @@ export function GetDrawItems() {
   return window['go']['main']['App']['GetDrawItems']();
 }
 
+export function GetEventLogs(arg1) {
+  return window['go']['main']['App']['GetEventLogs'](arg1);
+}
+
 export function GetGroks() {
   return window['go']['main']['App']['GetGroks']();
 }
 
 export function GetImage(arg1) {
   return window['go']['main']['App']['GetImage'](arg1);
-}
-
-export function GetLastEventLogs(arg1) {
-  return window['go']['main']['App']['GetLastEventLogs'](arg1);
 }
 
 export function GetLine(arg1, arg2) {

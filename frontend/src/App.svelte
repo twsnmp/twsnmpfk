@@ -20,9 +20,8 @@
   import AIConf from "./lib/AIConf.svelte";
   import NodeList from "./lib/NodeList.svelte";
   import PollingList from "./lib/PollingList.svelte";
+  import EventLog from "./lib/EventLog.svelte";
 
-  let version = "";
-  let settings: any = undefined;
   let dark: boolean = false;
   let showMapConf: boolean = false;
   let showNotifyConf: boolean = false;
@@ -36,8 +35,6 @@
   };
 
   onMount(async () => {
-    version = await GetVersion();
-    settings = await GetSettings();
     await tick();
     mainHeight = window.innerHeight - 96;
     updateMapName();
@@ -89,10 +86,36 @@
       <Icon path={icons.mdiLanCheck} size={1} />
       ポーリング
     </NavLi>
-    <NavLi>
+    <NavLi
+      id="nav-log"
+      active={page == "eventlog" || page == "syslog" || page == "snmpTrapLog"}
+    >
       <Icon path={icons.mdiCalendarCheck} size={1} />
       ログ
     </NavLi>
+    <Dropdown triggeredBy="#nav-log" class="w-44 z-20">
+      <DropdownItem
+        on:click={() => {
+          page = "eventlog";
+        }}
+      >
+        イベントログ
+      </DropdownItem>
+      <DropdownItem
+        on:click={() => {
+          page = "syslog";
+        }}
+      >
+        syslog
+      </DropdownItem>
+      <DropdownItem
+        on:click={() => {
+          page = "snmpTrapLog";
+        }}
+      >
+        SNMP Trapログ
+      </DropdownItem>
+    </Dropdown>
     <NavLi>
       <Icon path={icons.mdiBrain} size={1} />
       AI分析
@@ -150,6 +173,8 @@
   <NodeList />
 {:else if page == "polling"}
   <PollingList />
+{:else if page == "eventlog"}
+  <EventLog />
 {/if}
 
 {#if showMapConf}

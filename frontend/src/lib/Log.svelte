@@ -8,7 +8,7 @@
     TableHeadCell,
   } from "flowbite-svelte";
   import { onMount, onDestroy } from "svelte";
-  import { GetLastEventLogs } from "../../wailsjs/go/main/App";
+  import { GetEventLogs } from "../../wailsjs/go/main/App";
   import Icon from "mdi-svelte";
   import {
     getStateColor,
@@ -19,7 +19,7 @@
   let logs = [];
   let timer: number | undefined = undefined;
   const updateLogs = async () => {
-    logs = await GetLastEventLogs(100);
+    logs = await GetEventLogs(100);
     timer = setTimeout(() => {
       updateLogs();
     }, 60 * 1000);

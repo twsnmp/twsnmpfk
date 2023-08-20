@@ -27,7 +27,7 @@
   let showEditPolling = false;
   let selectedPolling = "";
 
-  const refreshPollings = async () => {
+  const refresh = async () => {
     data = [];
     nodes = await GetNodes();
     data = await GetPollings("");
@@ -55,7 +55,7 @@
 
   const deletePolling = async (id: string) => {
     await DeletePollings([id]);
-    refreshPollings();
+    refresh();
   };
 
   const columns = [
@@ -140,7 +140,7 @@
   ];
 
   onMount(() => {
-    refreshPollings();
+    refresh();
   });
 
   const saveCSV = () => {
@@ -188,7 +188,7 @@
     <Button
       type="button"
       color="alternative"
-      on:click={refreshPollings}
+      on:click={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />
@@ -203,7 +203,7 @@
     pollingID={selectedPolling}
     on:close={(e) => {
       showEditPolling = false;
-      refreshPollings();
+      refresh();
     }}
   />
 {/if}

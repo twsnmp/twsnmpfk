@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { Button,Select,Label } from "flowbite-svelte";
+  import { Button,Select } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import Grid from "gridjs-svelte";
-  import { h, html, type UserConfig } from "gridjs";
+  import { h, html } from "gridjs";
   import { onMount } from "svelte";
   import jaJP from "./gridjsJaJP";
   import { GetNodes, DeleteNodes, ExportNodes,CheckPolling } from "../../wailsjs/go/main/App";
@@ -20,9 +20,10 @@
   let showEditNode = false;
   let selectedNode = "";
 
-  const refreshNodes = async () => {
-    data = [];
+  const refresh = async () => {
     const nodes = await GetNodes();
+    data = [];
+    console.log(nodes);
     for (const k in nodes) {
       data.push(nodes[k]);
     }
@@ -50,7 +51,7 @@
 
   const deleteNode = async (id: string) => {
     await DeleteNodes([id]);
-    refreshNodes();
+    refresh();
   };
 
   const columns = [
@@ -129,7 +130,7 @@
   ];
 
   onMount(() => {
-    refreshNodes();
+    refresh();
   });
 
   const checkAll = () => {
@@ -178,7 +179,7 @@
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
     </Button>
-    <Button type="button" color="alternative" on:click={refreshNodes} size="xs">
+    <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       更新
     </Button>
@@ -190,7 +191,7 @@
     nodeID={selectedNode}
     on:close={(e) => {
       showEditNode = false;
-      refreshNodes();
+      refresh();
     }}
   />
 {/if}
