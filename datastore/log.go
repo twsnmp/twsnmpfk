@@ -407,3 +407,154 @@ func deCompressLog(s []byte) []byte {
 	}
 	return d
 }
+
+// for syslog
+type SyslogEnt struct {
+	Time     int64  `json:"Time"`
+	Level    string `json:"Level"`
+	Host     string `json:"Host"`
+	Type     string `json:"Type"`
+	Tag      string `json:"Tag"`
+	Message  string `json:"Message"`
+	Severity int    `json:"Severity"`
+	Facility int    `json:"Facility"`
+}
+
+var severityNames = []string{
+	"emerg",
+	"alert",
+	"crit",
+	"err",
+	"warning",
+	"notice",
+	"info",
+	"debug",
+}
+
+var facilityNames = []string{
+	"kern",
+	"user",
+	"mail",
+	"daemon",
+	"auth",
+	"syslog",
+	"lpr",
+	"news",
+	"uucp",
+	"cron",
+	"authpriv",
+	"ftp",
+	"ntp",
+	"logaudit",
+	"logalert",
+	"clock",
+	"local0",
+	"local1",
+	"local2",
+	"local3",
+	"local4",
+	"local5",
+	"local6",
+	"local7",
+}
+
+func getSyslogType(sv, fac int) string {
+	r := ""
+	if sv >= 0 && sv < len(severityNames) {
+		r += severityNames[sv]
+	} else {
+		r += "unknown"
+	}
+	r += ":"
+	if fac >= 0 && fac < len(facilityNames) {
+		r += facilityNames[fac]
+	} else {
+		r += "unknown"
+	}
+	return r
+}
+
+func getLevelFromSeverity(sv int) string {
+	if sv < 3 {
+		return "high"
+	}
+	if sv < 4 {
+		return "low"
+	}
+	if sv == 4 {
+		return "warn"
+	}
+	if sv == 7 {
+		return "debug"
+	}
+	return "info"
+}
+
+// ForEachLastSyslog  get syslogs
+func ForEachLastSyslog(f func(*SyslogEnt) bool) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("syslog"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, v := c.Last(); k != nil; k, v = c.Prev() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			var sl = make(map[string]interface{})
+			if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+				continue
+			}
+			var ok bool
+			re := new(SyslogEnt)
+			var sv float64
+			if sv, ok = sl["severity"].(float64); !ok {
+				continue
+			}
+			var fac float64
+			if fac, ok = sl["facility"].(float64); !ok {
+				continue
+			}
+			if re.Host, ok = sl["hostname"].(string); !ok {
+				continue
+			}
+			if re.Tag, ok = sl["tag"].(string); !ok {
+				if re.Tag, ok = sl["app_name"].(string); !ok {
+					continue
+				}
+				re.Message = ""
+				for i, k := range []string{"proc_id", "msg_id", "message", "structured_data"} {
+					if m, ok := sl[k].(string); ok && m != "" {
+						if i > 0 {
+							re.Message += " "
+						}
+						re.Message += m
+					}
+				}
+			} else {
+				if re.Message, ok = sl["content"].(string); !ok {
+					continue
+				}
+			}
+			re.Time = l.Time
+			re.Level = getLevelFromSeverity(int(sv))
+			re.Type = getSyslogType(int(sv), int(fac))
+			re.Facility = int(fac)
+			re.Severity = int(sv)
+			if !f(re) {
+				break
+			}
+		}
+		return nil
+	})
+}

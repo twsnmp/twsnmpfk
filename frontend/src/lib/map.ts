@@ -50,7 +50,6 @@ export const initMAP = async (div:HTMLElement,cb :any) => {
   setIconCodeMap(iconList);
   setStateColorMap(stateList);
   mapRedraw = false;
-  console.log("initMap",_mapP5);
   if (_mapP5 != undefined) {
     return
   }
@@ -61,7 +60,6 @@ export const initMAP = async (div:HTMLElement,cb :any) => {
 }
 
 export const updateMAP = async (d:boolean) => {
-  console.log("updateMAP");
   dark = d;
   nodes = await GetNodes();
   lines = await GetLines();

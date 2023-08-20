@@ -20,6 +20,8 @@ export function ExportNodes(arg1:string):Promise<string>;
 
 export function ExportPollings(arg1:string):Promise<string>;
 
+export function ExportSyslogs(arg1:string):Promise<string>;
+
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 
 export function GetBackImage():Promise<datastore.BackImageEnt>;
@@ -57,6 +59,8 @@ export function GetPolling(arg1:string):Promise<datastore.PollingEnt>;
 export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 
 export function GetSettings():Promise<main.Settings>;
+
+export function GetSyslogs(arg1:number):Promise<Array<datastore.SyslogEnt>>;
 
 export function GetVersion():Promise<string>;
 

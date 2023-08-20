@@ -23,7 +23,6 @@
   const refresh = async () => {
     const nodes = await GetNodes();
     data = [];
-    console.log(nodes);
     for (const k in nodes) {
       data.push(nodes[k]);
     }

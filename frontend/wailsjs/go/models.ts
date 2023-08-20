@@ -338,6 +338,32 @@ export namespace datastore {
 	        this.State = source["State"];
 	    }
 	}
+	export class SyslogEnt {
+	    Time: number;
+	    Level: string;
+	    Host: string;
+	    Type: string;
+	    Tag: string;
+	    Message: string;
+	    Severity: number;
+	    Facility: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SyslogEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.Level = source["Level"];
+	        this.Host = source["Host"];
+	        this.Type = source["Type"];
+	        this.Tag = source["Tag"];
+	        this.Message = source["Message"];
+	        this.Severity = source["Severity"];
+	        this.Facility = source["Facility"];
+	    }
+	}
 
 }
 

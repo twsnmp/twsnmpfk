@@ -34,6 +34,10 @@ export function ExportPollings(arg1) {
   return window['go']['main']['App']['ExportPollings'](arg1);
 }
 
+export function ExportSyslogs(arg1) {
+  return window['go']['main']['App']['ExportSyslogs'](arg1);
+}
+
 export function GetAIConf() {
   return window['go']['main']['App']['GetAIConf']();
 }
@@ -108,6 +112,10 @@ export function GetPollings(arg1) {
 
 export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
+}
+
+export function GetSyslogs(arg1) {
+  return window['go']['main']['App']['GetSyslogs'](arg1);
 }
 
 export function GetVersion() {

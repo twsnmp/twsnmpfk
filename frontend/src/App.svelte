@@ -21,6 +21,7 @@
   import NodeList from "./lib/NodeList.svelte";
   import PollingList from "./lib/PollingList.svelte";
   import EventLog from "./lib/EventLog.svelte";
+  import Syslog from "./lib/Syslog.svelte";
 
   let dark: boolean = false;
   let showMapConf: boolean = false;
@@ -86,41 +87,23 @@
       <Icon path={icons.mdiLanCheck} size={1} />
       ポーリング
     </NavLi>
-    <NavLi
-      id="nav-log"
-      active={page == "eventlog" || page == "syslog" || page == "snmpTrapLog"}
-    >
+    <NavLi active={page == "eventlog"} on:click={()=> {page= "eventlog"}}>
       <Icon path={icons.mdiCalendarCheck} size={1} />
       ログ
     </NavLi>
-    <Dropdown triggeredBy="#nav-log" class="w-44 z-20">
-      <DropdownItem
-        on:click={() => {
-          page = "eventlog";
-        }}
-      >
-        イベントログ
-      </DropdownItem>
-      <DropdownItem
-        on:click={() => {
-          page = "syslog";
-        }}
-      >
-        syslog
-      </DropdownItem>
-      <DropdownItem
-        on:click={() => {
-          page = "snmpTrapLog";
-        }}
-      >
-        SNMP Trapログ
-      </DropdownItem>
-    </Dropdown>
-    <NavLi>
+    <NavLi active={page == "syslog"} on:click={()=> {page= "syslog"}}>
+      <Icon path={icons.mdiCalendarText} size={1} />
+      syslog
+    </NavLi>
+    <NavLi active={page == "trap"} on:click={()=> {page= "trap"}}>
+      <Icon path={icons.mdiAlert} size={1} />
+      TRAP
+    </NavLi>
+     <NavLi>
       <Icon path={icons.mdiBrain} size={1} />
       AI分析
     </NavLi>
-    <NavLi id="nav-config">
+    <NavLi id="nav-config" active={showMapConf || showNotifyConf || showAIConf}>
       <Icon path={icons.mdiCog} size={1} />
       設定
     </NavLi>
@@ -175,6 +158,8 @@
   <PollingList />
 {:else if page == "eventlog"}
   <EventLog />
+{:else if page == "syslog"}
+  <Syslog />
 {/if}
 
 {#if showMapConf}
