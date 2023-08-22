@@ -3,22 +3,39 @@
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import Grid from "gridjs-svelte";
-  import {  html } from "gridjs";
-  import { onMount } from "svelte";
+  import { onMount,tick } from "svelte";
   import jaJP from "./gridjsJaJP";
   import { GetTraps, ExportTraps } from "../../wailsjs/go/main/App";
   import {
-    cmpState,
-    getStateIcon,
-    getStateColor,
-    getStateName,
     formatTimeFromNano,
   } from "./common";
+  import {showLogCountChart,resizeLogCountChart} from "./chart/logcount";
 
   let data = [];
+  let logs = [];
 
   const refresh = async () => {
-    data = await GetTraps(0);
+    logs = await GetTraps(0);
+    data = [];
+    for (let i =0; i < logs.length;i++) {
+      data.push(logs[i]);
+    }
+    logs.reverse();
+    showChart();
+  };
+
+  const showChart = async () => {
+    tick();
+    showLogCountChart("chart",data,zoomCallBack);
+  }
+
+  const zoomCallBack = (st:number, et:number) => {
+    data = [];
+    for(let i = logs.length -1 ; i >= 0;i--) {
+      if (logs[i].Time >= st && logs[i].Time <= et) {
+        data.push(logs[i]);
+      }
+    }
   };
 
   const columns = [
@@ -71,7 +88,10 @@
 
 </script>
 
+<svelte:window on:resize={resizeLogCountChart} />
+
 <div class="flex flex-col">
+  <div id="chart" style="height: 200px;"></div>
   <div class="m-5 twsnmpfk grow">
     <Grid {data} {columns} {pagination} sort search language={jaJP} />
   </div>

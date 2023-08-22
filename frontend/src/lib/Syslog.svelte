@@ -4,7 +4,7 @@
   import * as icons from "@mdi/js";
   import Grid from "gridjs-svelte";
   import {  html } from "gridjs";
-  import { onMount } from "svelte";
+  import { onMount,tick } from "svelte";
   import jaJP from "./gridjsJaJP";
   import { GetSyslogs, ExportSyslogs } from "../../wailsjs/go/main/App";
   import {
@@ -14,11 +14,33 @@
     getStateName,
     formatTimeFromNano,
   } from "./common";
+  import {showLogLevelChart,resizeLogLevelChart} from "./chart/loglevel";
 
   let data = [];
+  let logs = [];
 
   const refresh = async () => {
-    data = await GetSyslogs(0);
+    logs = await GetSyslogs(0);
+    data = [];
+    for (let i =0; i < logs.length;i++) {
+      data.push(logs[i]);
+    }
+    logs.reverse();
+    showChart();
+  };
+
+  const showChart = async () => {
+    tick();
+    showLogLevelChart("chart",logs,zoomCallBack);
+  }
+
+  const zoomCallBack = (st:number, et:number) => {
+    data = [];
+    for(let i = logs.length -1 ; i >= 0;i--) {
+      if (logs[i].Time >= st && logs[i].Time <= et) {
+        data.push(logs[i]);
+      }
+    }
   };
 
   const formatState = (state) => {
@@ -96,7 +118,10 @@
 
 </script>
 
+<svelte:window on:resize={resizeLogLevelChart} />
+
 <div class="flex flex-col">
+  <div id="chart" style="height: 200px;"></div>
   <div class="m-5 twsnmpfk grow">
     <Grid {data} {columns} {pagination} sort search language={jaJP} />
   </div>
