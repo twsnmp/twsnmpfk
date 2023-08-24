@@ -353,7 +353,7 @@ export const showEventLogTimeChart = (div, type, logs) => {
     },
     yAxis: {
       type: 'value',
-      name: type === '' ? '稼働率%' : '使用率%',
+      name: type === 'oprate' ? '稼働率%' : '使用率%',
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -374,7 +374,7 @@ export const showEventLogTimeChart = (div, type, logs) => {
       {
         color: '#1f78b4',
         type: 'line',
-        name: type === '' ? '稼働率' : '使用率',
+        name: type === 'oprate' ? '稼働率' : '使用率',
         showSymbol: false,
         data: [],
       },
@@ -402,7 +402,7 @@ export const showEventLogTimeChart = (div, type, logs) => {
   chart.resize()
 }
 
-export const getEventLogNodeList = (logs) => {
+const getEventLogNodeList = (logs) => {
   const m = new Map()
   logs.forEach((l) => {
     if (!l.NodeID) {
