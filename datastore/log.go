@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
 
@@ -596,8 +597,19 @@ func ForEachLastTraps(f func(*TrapEnt) bool) error {
 			}
 			var ok bool
 			re := new(TrapEnt)
-			if re.FromAddress, ok = sl["FromAddress"].(string); !ok {
+			if fa, ok := sl["FromAddress"].(string); !ok {
 				continue
+			} else {
+				a := strings.SplitN(fa, ":", 2)
+				if len(a) == 2 {
+					re.FromAddress = a[0]
+					n := FindNodeFromIP(a[0])
+					if n != nil {
+						re.FromAddress += "(" + n.Name + ")"
+					}
+				} else {
+					re.FromAddress = fa
+				}
 			}
 			if re.Variables, ok = sl["Variables"].(string); !ok {
 				continue
