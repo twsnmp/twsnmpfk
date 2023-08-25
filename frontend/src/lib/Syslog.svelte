@@ -15,9 +15,11 @@
     formatTimeFromNano,
   } from "./common";
   import {showLogLevelChart,resizeLogLevelChart} from "./chart/loglevel";
+  import SyslogReport  from "./SyslogReport.svelte";
 
   let data = [];
   let logs = [];
+  let showReport = false;
 
   const refresh = async () => {
     logs = await GetSyslogs(0);
@@ -139,12 +141,26 @@
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
     </Button>
+    <Button type="button" color="green" on:click={() => {showReport=true}} size="xs">
+      <Icon path={icons.mdiChartPie} size={1} />
+      レポート
+    </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       更新
     </Button>
   </div>
 </div>
+
+{#if showReport}
+  <SyslogReport
+   {logs}
+    on:close={() => {
+      showReport = false;
+    }}
+  />
+{/if}
+
 
 <style>
   @import "../assets/css/gridjs.css";

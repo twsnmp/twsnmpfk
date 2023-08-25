@@ -33,6 +33,7 @@
     "echarts": "^5.4.3",
     "echarts-gl": "^2.0.9",
     "echarts-stat": "^1.2.0",
+    "fft-js": "^0.0.12",
     "flowbite": "^1.7.0",
     "flowbite-svelte": "^0.40.1",
     "gridjs": "^5.1.0",
