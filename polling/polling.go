@@ -72,7 +72,7 @@ func PollNowNode(nodeID string) {
 				NodeName: n.Name,
 				Event:    "ポーリング再確認:" + pe.Name,
 			})
-			datastore.UpdatePolling(pe)
+			datastore.UpdatePolling(pe, false)
 			doPollingCh <- pe.ID
 		}
 		return true
@@ -98,7 +98,7 @@ func CheckAllPoll() {
 				Event:    "ポーリング再確認:" + pe.Name,
 			})
 			datastore.SetNodeStateChanged(n.ID)
-			datastore.UpdatePolling(pe)
+			datastore.UpdatePolling(pe, false)
 			doPollingCh <- pe.ID
 		}
 		return true
@@ -187,7 +187,7 @@ func doPolling(pe *datastore.PollingEnt) {
 	case "lxi":
 		doPollingLxi(pe)
 	}
-	datastore.UpdatePolling(pe)
+	datastore.UpdatePolling(pe, false)
 	if pe.LogMode == datastore.LogModeAlways || pe.LogMode == datastore.LogModeAI || (pe.LogMode == datastore.LogModeOnChange && oldState != pe.State) {
 		if err := datastore.AddPollingLog(pe); err != nil {
 			log.Printf("add polling log err=%v %#v", err, pe)

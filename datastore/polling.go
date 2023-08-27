@@ -65,16 +65,23 @@ func AddPolling(p *PollingEnt) error {
 	return nil
 }
 
-func UpdatePolling(p *PollingEnt) error {
+func UpdatePolling(p *PollingEnt, save bool) error {
 	if db == nil {
 		return ErrDBNotOpen
 	}
-	if _, ok := pollings.Load(p.ID); !ok {
-		return ErrInvalidID
-	}
 	p.LastTime = time.Now().UnixNano()
 	pollings.Store(p.ID, p)
-	return nil
+	if !save {
+		return nil
+	}
+	s, err := json.Marshal(p)
+	if err != nil {
+		return err
+	}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("pollings"))
+		return b.Put([]byte(p.ID), s)
+	})
 }
 
 func DeletePollings(ids []string) error {
