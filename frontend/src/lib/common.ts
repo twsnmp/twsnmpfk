@@ -208,7 +208,7 @@ export const getScoreColor = (s:number) => {
   return getStateColor('high')
 }
 
-export const getScoreIconName = (s) => {
+export const getScoreIcon = (s:number) => {
   if (s > 66) {
     return 'mdi-emoticon-excited-outline'
   } else if (s >= 50) {

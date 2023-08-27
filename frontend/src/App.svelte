@@ -23,6 +23,7 @@
   import EventLog from "./lib/EventLog.svelte";
   import Syslog from "./lib/Syslog.svelte";
   import Trap from "./lib/Trap.svelte";
+  import AIList from "./lib/AIList.svelte";
 
   let dark: boolean = false;
   let showMapConf: boolean = false;
@@ -100,7 +101,7 @@
       <Icon path={icons.mdiAlert} size={1} />
       TRAP
     </NavLi>
-     <NavLi>
+     <NavLi active={page == "ai"} on:click={()=> {page= "ai"}}>
       <Icon path={icons.mdiBrain} size={1} />
       AI分析
     </NavLi>
@@ -163,6 +164,8 @@
   <Syslog />
 {:else if page == "trap"}
   <Trap />
+{:else if page == "ai"}
+  <AIList />
 {/if}
 
 {#if showMapConf}

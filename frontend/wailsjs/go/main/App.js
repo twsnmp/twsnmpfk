@@ -6,6 +6,10 @@ export function CheckPolling(arg1) {
   return window['go']['main']['App']['CheckPolling'](arg1);
 }
 
+export function DeeleteAIResult(arg1) {
+  return window['go']['main']['App']['DeeleteAIResult'](arg1);
+}
+
 export function DeleteDrawItems(arg1) {
   return window['go']['main']['App']['DeleteDrawItems'](arg1);
 }
@@ -44,6 +48,14 @@ export function ExportTraps(arg1) {
 
 export function GetAIConf() {
   return window['go']['main']['App']['GetAIConf']();
+}
+
+export function GetAIList() {
+  return window['go']['main']['App']['GetAIList']();
+}
+
+export function GetAIResult(arg1) {
+  return window['go']['main']['App']['GetAIResult'](arg1);
 }
 
 export function GetBackImage() {

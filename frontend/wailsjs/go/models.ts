@@ -16,6 +16,22 @@ export namespace datastore {
 	        this.WarnThreshold = source["WarnThreshold"];
 	    }
 	}
+	export class AIResult {
+	    PollingID: string;
+	    LastTime: number;
+	    ScoreData: number[][];
+	
+	    static createFrom(source: any = {}) {
+	        return new AIResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PollingID = source["PollingID"];
+	        this.LastTime = source["LastTime"];
+	        this.ScoreData = source["ScoreData"];
+	    }
+	}
 	export class BackImageEnt {
 	    X: number;
 	    Y: number;
@@ -428,6 +444,28 @@ export namespace discover {
 
 export namespace main {
 	
+	export class AIList {
+	    ID: string;
+	    Node: string;
+	    Polling: string;
+	    Score: number;
+	    Count: number;
+	    LastTime: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new AIList(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Node = source["Node"];
+	        this.Polling = source["Polling"];
+	        this.Score = source["Score"];
+	        this.Count = source["Count"];
+	        this.LastTime = source["LastTime"];
+	    }
+	}
 	export class Settings {
 	    Kiosk: boolean;
 	    Lock: boolean;
