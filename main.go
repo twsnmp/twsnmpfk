@@ -20,11 +20,15 @@ var dataStorePath = ""
 var pingMode string
 var kiosk = false
 var lock = false
+var trapPort = 162
+var syslogPort = 514
 
 func init() {
 	flag.StringVar(&dataStorePath, "datastore", "./datastore", "Path to Data Store directory")
 	flag.BoolVar(&kiosk, "kiosk", false, "Kisok mode(Frameless and Full screen)")
 	flag.BoolVar(&lock, "lock", false, "Lock mad edit")
+	flag.IntVar(&trapPort, "trapPort", 162, "Lock mad edit")
+	flag.IntVar(&syslogPort, "syslogPort", 514, "Lock mad edit")
 	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
 	flag.Parse()
 }

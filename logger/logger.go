@@ -16,8 +16,12 @@ import (
 )
 
 var logCh = make(chan *datastore.LogEnt, 5000)
+var trapPort = 162
+var syslogPort = 514
 
-func Start(ctx context.Context, wg *sync.WaitGroup) error {
+func Start(ctx context.Context, wg *sync.WaitGroup, _syslogPort, _trapPort int) error {
+	syslogPort = _syslogPort
+	trapPort = _trapPort
 	logCh = make(chan *datastore.LogEnt, 100)
 	wg.Add(1)
 	go logger(ctx, wg)
@@ -68,7 +72,7 @@ func logger(ctx context.Context, wg *sync.WaitGroup) {
 			if datastore.MapConf.EnableSyslogd && !syslogdRunning {
 				stopSyslogd = make(chan bool)
 				syslogdRunning = true
-				go syslogd(stopSyslogd)
+				go syslogd(stopSyslogd, syslogPort)
 			} else if !datastore.MapConf.EnableSyslogd && syslogdRunning {
 				close(stopSyslogd)
 				syslogdRunning = false
@@ -76,7 +80,7 @@ func logger(ctx context.Context, wg *sync.WaitGroup) {
 			if datastore.MapConf.EnableTrapd && !trapdRunning {
 				stopTrapd = make(chan bool)
 				trapdRunning = true
-				go snmptrapd(stopTrapd)
+				go snmptrapd(stopTrapd, trapPort)
 			} else if !datastore.MapConf.EnableTrapd && trapdRunning {
 				close(stopTrapd)
 				trapdRunning = false

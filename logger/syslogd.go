@@ -6,6 +6,7 @@ package logger
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"time"
@@ -14,13 +15,13 @@ import (
 	syslog "gopkg.in/mcuadros/go-syslog.v2"
 )
 
-func syslogd(stopCh chan bool) {
+func syslogd(stopCh chan bool, port int) {
 	syslogCh := make(syslog.LogPartsChannel, 2000)
 	server := syslog.NewServer()
 	server.SetFormat(syslog.Automatic)
 	server.SetHandler(syslog.NewChannelHandler(syslogCh))
-	_ = server.ListenUDP("0.0.0.0:514")
-	_ = server.ListenTCP("0.0.0.0:514")
+	_ = server.ListenUDP(fmt.Sprintf("0.0.0.0:%d", port))
+	_ = server.ListenTCP(fmt.Sprintf("0.0.0.0:%d", port))
 	_ = server.Boot()
 	log.Printf("start syslogd")
 	for {

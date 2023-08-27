@@ -20,10 +20,11 @@ import (
 	"golang.org/x/text/transform"
 )
 
-func snmptrapd(stopCh chan bool) {
+func snmptrapd(stopCh chan bool, port int) {
 	log.Printf("start snmp trapd")
 	tl := gosnmp.NewTrapListener()
 	tl.Params = &gosnmp.GoSNMP{}
+	tl.Params.Port = uint16(port)
 	switch datastore.MapConf.SnmpMode {
 	case "v3auth":
 		tl.Params.Version = gosnmp.Version3
@@ -163,7 +164,7 @@ func snmptrapd(stopCh chan bool) {
 	}
 	defer tl.Close()
 	go func() {
-		if err := tl.Listen("0.0.0.0:162"); err != nil {
+		if err := tl.Listen(fmt.Sprintf("0.0.0.0:%d", port)); err != nil {
 			log.Printf("snmp trap listen err=%v", err)
 		}
 		log.Printf("close snmp trapd")
