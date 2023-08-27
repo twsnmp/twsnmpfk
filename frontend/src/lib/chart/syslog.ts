@@ -150,7 +150,7 @@ const getSyslogHostList = (logs) => {
 export const showSyslogHost3D = (div, logs) => {
   const m = new Map()
   logs.forEach((l) => {
-    const level = getSyslogCategory(l.Level)
+    const level = getSyslogLevel(l.Level)
     const t = new Date(l.Time / (1000 * 1000))
     const e = m.get(l.Host)
     if (!e) {
@@ -291,7 +291,7 @@ export const showSyslogHost3D = (div, logs) => {
   chart.resize()
 }
 
-const getSyslogCategory = (l) => {
+const getSyslogLevel = (l) => {
   switch (l) {
     case 'high':
       return 0
@@ -363,7 +363,6 @@ const getSyslogFFTMap = (logs) => {
   })
   return m
 }
-
 
 export const showSyslogFFT3D = (div, logs) => {
   const fftMap = getSyslogFFTMap(logs);

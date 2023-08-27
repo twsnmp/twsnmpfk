@@ -10,9 +10,11 @@
     formatTimeFromNano,
   } from "./common";
   import {showLogCountChart,resizeLogCountChart} from "./chart/logcount";
+  import TrapReport from "./TrapReport.svelte";
 
   let data = [];
   let logs = [];
+  let showReport = false;
 
   const refresh = async () => {
     logs = await GetTraps(0);
@@ -109,12 +111,25 @@
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
     </Button>
+    <Button type="button" color="green" on:click={() => {showReport=true}} size="xs">
+      <Icon path={icons.mdiChartPie} size={1} />
+      レポート
+    </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       更新
     </Button>
   </div>
 </div>
+
+{#if showReport}
+  <TrapReport
+   {logs}
+    on:close={() => {
+      showReport = false;
+    }}
+  />
+{/if}
 
 <style>
   @import "../assets/css/gridjs.css";
