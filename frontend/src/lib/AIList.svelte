@@ -1,136 +1,140 @@
 <script lang="ts">
-  import { Button,Select } from "flowbite-svelte";
+  import { Button } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import Grid from "gridjs-svelte";
-  import { h, html } from "gridjs";
-  import { onMount } from "svelte";
-  import jaJP from "./gridjsJaJP";
-  import { GetAIList, DeeleteAIResult,GetAIResult } from "../../wailsjs/go/main/App";
+  import { onMount, tick, onDestroy } from "svelte";
   import {
-    formatTimeFromNano,
-    getScoreIcon,
-    getScoreColor,
-  } from "./common";
+    GetAIList,
+    DeeleteAIResult,
+    GetAIResult,
+  } from "../../wailsjs/go/main/App";
+  import { formatTimeFromNano, getScoreIcon, getScoreColor,getTableLang } from "./common";
+  import DataTable from "datatables.net-dt";
+  import "datatables.net-select-dt";
 
+  let table = undefined;
   let data = [];
+  let selectedCount = 0;
+  const lang = getTableLang();
 
-  const refresh = async () => {
-    data = await GetAIList();
-  };
 
-  const formatScore = (score:number) => {
-    return html(
+  const formatScore = (score: number): string => {
+    return (
       `<span class="mdi ` +
-        getScoreIcon(score) +
-        ` text-xl" style="color:` +
-        getScoreColor(score) +
-        `;" /><span class="ml-2 text-xs text-black dark:text-white">` +
-        score +
-        `</span>`
+      getScoreIcon(score) +
+      ` text-xl" style="color:` +
+      getScoreColor(score) +
+      `;"></span><span class="ml-2">` +
+      score.toFixed(2) +
+      `</span>`
     );
   };
 
-  const deleteAI = async (id: string) => {
-    await DeeleteAIResult(id);
+  const clearAIResult = async () => {
+    if(!table) {
+      return;
+    }
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected) {
+      for(let i = 0; i < selected.length;i++) {
+        const id = selected[i];
+        await DeeleteAIResult(id);
+      }
+    }
     refresh();
   };
 
-  const show = async (id: string) => {
-    console.log(id);
+  const show = async () => {
+    if(!table) {
+      return;
+    }
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length == 1) {
+      const id = selected[0];
+    }
   };
 
   const columns = [
     {
-      id: "Score",
-      name: "異常スコア",
+      data: "Score",
+      title: "異常スコア",
       width: "15%",
-      formatter: formatScore,
+      render: (data, type, row, meta) => formatScore(data),
     },
     {
-      id: "Node",
-      name: "ノード名",
+      data: "Node",
+      title: "ノード名",
       width: "20%",
     },
     {
-      id: "Polling",
-      name: "ポーリング",
+      data: "Polling",
+      title: "ポーリング",
       width: "15%",
     },
     {
-      id: "Count",
-      name: "データ数",
+      data: "Count",
+      title: "データ数",
       width: "10%",
     },
     {
-      id: "LastTime",
-      name: "最終確認",
+      data: "LastTime",
+      title: "最終確認",
       width: "15%",
-      formatter: formatTimeFromNano,
-    },
-    {
-      id: "ID",
-      name: "確認",
-      sort: false,
-      width: "5%",
-      formatter: (id) => {
-        return h(
-          "button",
-          {
-            className: "",
-            onClick: () => {
-              show(id);
-            },
-          },
-          html(`<span class="mdi mdi-eye text-lg" />`)
-        );
-      },
-    },
-    {
-      name: "削除",
-      width: "5%",
-      formatter: (_, row) => {
-        const id = row._cells[row._cells.length - 2].data;
-        return h(
-          "button",
-          {
-            className: "",
-            onClick: () => {
-              deleteAI(id);
-            },
-          },
-          html(`<span class="mdi mdi-delete text-red-600 text-lg" />`)
-        );
-      },
+      render: (data, type, row, meta) =>
+        formatTimeFromNano(data * 1000 * 1000 * 1000),
     },
   ];
+
+  const refresh = async () => {
+    data = await GetAIList();
+    if (table) {
+      table.destroy();
+      table = undefined;
+    }
+    table = new DataTable("#table", {
+      columns: columns,
+      data: data,
+      language: lang,
+      select: {
+        style: "multi",
+      },
+    });
+    table.on("select", () => {
+      selectedCount = table.rows({ selected: true }).count();
+    });
+    table.on("deselect", () => {
+      selectedCount = table.rows({ selected: true }).count();
+    });
+  };
 
   onMount(() => {
     refresh();
   });
 
-  let pagination: any = {
-    limit: 10,
-  };
-  let pp = 10;
-  const ppList = [
-    { name:"10",value:10 },
-    { name:"20",value:20 },
-    { name:"100",value:100 },
-  ]
-
+  onDestroy(() => {
+    if (table) {
+      table.destroy();
+    }
+  });
 </script>
 
 <div class="flex flex-col">
   <div class="m-5 twsnmpfk grow">
-    <Grid {data} {columns} {pagination} sort search language={jaJP} />
+    <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-      <Select class="w-20" items={ppList} bind:value={pp} on:change={()=>{
-        pagination = {
-          limit:pp,
-        }
-      }}/>
+  {#if selectedCount == 1}
+    <Button color="green" type="button" on:click={show} size="xs">
+      <Icon path={icons.mdiChartBarStacked} size={1} />
+      レポート
+    </Button>
+  {/if}
+  {#if selectedCount > 0}
+    <Button color="red" type="button" on:click={clearAIResult} size="xs">
+      <Icon path={icons.mdiTrashCan} size={1} />
+      クリア
+    </Button>
+  {/if}
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       更新
@@ -138,7 +142,6 @@
   </div>
 </div>
 
-
 <style>
-  @import "../assets/css/gridjs.css";
+  @import "../assets/css/jquery.dataTables.css";
 </style>
