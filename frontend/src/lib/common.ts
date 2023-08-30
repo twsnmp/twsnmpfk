@@ -1,4 +1,5 @@
 import * as echarts from 'echarts';
+import ja from "datatables.net-plugins/i18n/ja.mjs";
 
 export const stateList = [
   { text: '重度', color: '#e31a1c', icon: "mdi-alert-circle", value: 'high' },
@@ -280,3 +281,23 @@ export const getLogModeName = (m) => {
   return ''
 } 
 
+export const getTableLang = () => {
+  ja.select = {
+    cells: {
+      "0": "",
+      "1": "1 セル選択",
+      _: "%d セル選択",
+    },
+    columns: {
+      "0": "",
+      "1": "1 カラム選択",
+      _: "%d カラム選択",
+    },
+    rows: {
+      "0": "",
+      "1": " 1 行選択",
+      _: " %d 行選択",
+    },
+  };
+  return ja;
+}
