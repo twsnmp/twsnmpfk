@@ -14,7 +14,7 @@
     getStateColor,
     getStateIcon,
     getStateName,
-    formatTimeFromNano,
+    renderTime,
   } from "./common";
   let logs = [];
   let timer: number | undefined = undefined;
@@ -58,7 +58,7 @@
           </div>
         </TableBodyCell>
         <TableBodyCell tdClass="text-xs p-1"
-          >{formatTimeFromNano(l.Time)}</TableBodyCell
+          >{renderTime(l.Time,"")}</TableBodyCell
         >
         <TableBodyCell tdClass="text-xs p-1">{l.Type}</TableBodyCell>
         <TableBodyCell tdClass="text-xs p-1">{l.NodeName}</TableBodyCell>

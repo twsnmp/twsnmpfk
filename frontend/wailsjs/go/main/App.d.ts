@@ -68,9 +68,9 @@ export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 
 export function GetSettings():Promise<main.Settings>;
 
-export function GetSyslogs(arg1:number):Promise<Array<datastore.SyslogEnt>>;
+export function GetSyslogs():Promise<Array<datastore.SyslogEnt>>;
 
-export function GetTraps(arg1:number):Promise<Array<datastore.TrapEnt>>;
+export function GetTraps():Promise<Array<datastore.TrapEnt>>;
 
 export function GetVersion():Promise<string>;
 

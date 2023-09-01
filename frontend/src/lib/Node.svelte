@@ -154,7 +154,7 @@
       <span>説明</span>
       <Input bind:value={node.Descr} placeholder="説明" size="sm" />
     </Label>
-    <div class="flex space-x-2">
+    <div class="flex justify-end  space-x-2 mr-2">
       <Button color="blue" type="button" on:click={save} size="sm">
         <Icon path={icons.mdiContentSave} size={1} />
         保存

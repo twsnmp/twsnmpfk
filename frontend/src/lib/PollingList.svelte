@@ -1,11 +1,8 @@
 <script lang="ts">
-  import { Button, Select } from "flowbite-svelte";
+  import { Button } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import Grid from "gridjs-svelte";
-  import { h, html } from "gridjs";
-  import { onMount } from "svelte";
-  import jaJP from "./gridjsJaJP";
+  import { onMount, onDestroy } from "svelte";
   import {
     GetNodes,
     GetPollings,
@@ -13,134 +10,142 @@
     ExportPollings,
   } from "../../wailsjs/go/main/App";
   import {
-    cmpState,
     getStateIcon,
     getStateColor,
     getStateName,
-    formatTimeFromNano,
+    renderTime,
     getLogModeName,
+    getTableLang,
+    levelNum,
   } from "./common";
   import Polling from "./Polling.svelte";
+  import DataTable from "datatables.net-dt";
+  import "datatables.net-select-dt";
 
   let data = [];
   let nodes = {};
   let showEditPolling = false;
   let selectedPolling = "";
+  let table = undefined;
+  let selectedCount = 0;
+
+  const showTable = () => {
+    if (table) {
+      table.destroy();
+      table = undefined;
+    }
+    table = new DataTable("#table", {
+      columns: columns,
+      data: data,
+      order: [
+        [0, "asc"],
+        [1, "asc"],
+      ],
+      language: getTableLang(),
+      select: {
+        style: "multi",
+      },
+    });
+    table.on("select", () => {
+      selectedCount = table.rows({ selected: true }).count();
+    });
+    table.on("deselect", () => {
+      selectedCount = table.rows({ selected: true }).count();
+    });
+  };
 
   const refresh = async () => {
     data = [];
     nodes = await GetNodes();
     data = await GetPollings("");
+    showTable();
   };
 
-  const formatState = (state) => {
-    return html(
+  const formatState = (state: string, type: string) => {
+    if (type == "sort") {
+      return levelNum(state);
+    }
+    return (
       `<span class="mdi ` +
-        getStateIcon(state) +
-        ` text-xl" style="color:` +
-        getStateColor(state) +
-        `;" /><span class="ml-2 text-xs text-black dark:text-white">` +
-        getStateName(state) +
-        `</span>`
+      getStateIcon(state) +
+      ` text-xl" style="color:` +
+      getStateColor(state) +
+      `;"></span><span class="ml-2">` +
+      getStateName(state) +
+      `</span>`
     );
   };
 
-  const editPolling = (id: string) => {
-    if (!id) {
+  const edit = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
       return;
     }
-    selectedPolling = id;
+    selectedPolling = selected[0];
     showEditPolling = true;
   };
 
-  const deletePolling = async (id: string) => {
-    await DeletePollings([id]);
+  const deletePollings = async () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length < 1) {
+      return;
+    }
+    await DeletePollings(selected);
     refresh();
   };
 
   const columns = [
     {
-      id: "State",
-      name: "状態",
+      data: "State",
+      title: "状態",
       width: "10%",
-      formatter: formatState,
-      sort: {
-        compare: cmpState,
-      },
+      render: formatState,
     },
     {
-      id: "NodeID",
-      name: "ノード名",
+      data: "NodeID",
+      title: "ノード名",
       width: "15%",
-      formatter: (id) => nodes[id].Name,
+      render: (id) => nodes[id].Name,
     },
     {
-      id: "Name",
-      name: "名前",
+      data: "Name",
+      title: "名前",
       width: "25%",
     },
     {
-      id: "Level",
-      name: "レベル",
+      data: "Level",
+      title: "レベル",
       width: "10%",
-      formatter: formatState,
+      render: formatState,
     },
     {
-      id: "Type",
-      name: "種別",
+      data: "Type",
+      title: "種別",
       width: "8%",
     },
     {
-      id: "LogMode",
-      name: "ログ",
+      data: "LogMode",
+      title: "ログ",
       width: "7%",
-      formatter: getLogModeName,
+      render: getLogModeName,
     },
     {
-      id: "LastTime",
-      name: "最終確認",
+      data: "LastTime",
+      title: "最終確認",
       width: "15%",
-      formatter: formatTimeFromNano,
-    },
-    {
-      id: "ID",
-      name: "編集",
-      sort: false,
-      width: "5%",
-      formatter: (id: string) => {
-        return h(
-          "button",
-          {
-            className: "",
-            onClick: () => {
-              editPolling(id);
-            },
-          },
-          html(`<span class="mdi mdi-pencil text-lg" />`)
-        );
-      },
-    },
-    {
-      name: "削除",
-      width: "5%",
-      formatter: (_, row) => {
-        const id = row._cells[row._cells.length - 2].data;
-        return h(
-          "button",
-          {
-            className: "",
-            onClick: () => {
-              deletePolling(id);
-            },
-          },
-          html(`<span class="mdi mdi-delete text-red-600 text-lg" />`)
-        );
-      },
+      render: renderTime,
     },
   ];
 
   onMount(() => {
     refresh();
+  });
+
+  onDestroy(() => {
+    if (table) {
+      table.destroy();
+      table = undefined;
+    }
   });
 
   const saveCSV = () => {
@@ -150,33 +155,25 @@
   const saveExcel = () => {
     ExportPollings("excel");
   };
-
-  let pagination : any= {
-    limit: 10,
-  };
-  let pp = 10;
-  const ppList = [
-    { name: "10", value: 10 },
-    { name: "20", value: 20 },
-    { name: "100", value: 100 },
-  ];
 </script>
 
 <div class="flex flex-col">
-  <div class="m-5 twsnmpfk grow">
-    <Grid {data} {columns} {pagination} sort search language={jaJP} />
+  <div class="m-5 grow">
+    <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-    <Select
-      class="w-20"
-      items={ppList}
-      bind:value={pp}
-      on:change={() => {
-        pagination = {
-          limit: pp,
-        };
-      }}
-    />
+    {#if selectedCount == 1}
+      <Button color="green" type="button" on:click={edit} size="xs">
+        <Icon path={icons.mdiPencil} size={1} />
+        編集
+      </Button>
+    {/if}
+    {#if selectedCount > 0}
+      <Button color="red" type="button" on:click={deletePollings} size="xs">
+        <Icon path={icons.mdiTrashCan} size={1} />
+        削除
+      </Button>
+    {/if}
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
@@ -185,12 +182,7 @@
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
     </Button>
-    <Button
-      type="button"
-      color="alternative"
-      on:click={refresh}
-      size="xs"
-    >
+    <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       更新
     </Button>
@@ -209,5 +201,5 @@
 {/if}
 
 <style>
-  @import "../assets/css/gridjs.css";
+  @import "../assets/css/jquery.dataTables.css";
 </style>

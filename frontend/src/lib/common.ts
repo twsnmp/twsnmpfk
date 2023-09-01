@@ -191,7 +191,10 @@ export const formatTime = (date:any, format:string) => {
   return echarts.time.format(date,format,false)
 }
 
-export const formatTimeFromNano = (t:number) => {
+export const renderTime = (t:number,type:string) => {
+  if (t < 1) {
+    return "";
+  }
   const d = new Date(t /(1000*1000));
   return  formatTime(d,"");
 }
@@ -222,32 +225,14 @@ export const getScoreIcon = (s:number) => {
   return 'mdi-emoticon-dead-outline'
 }
 
-export const cmpIP = (a :string,b:string) => {
-  if (!a.includes(".") || !b.includes(".") ){
-    return a < b  ? -1 : a > b ? 1 : 0 
+export const renderIP = (ip:string,type:string) => {
+  if (type=="sort") {
+    return ip.split(".").reduce((int, v) => (Number(int) * 256  +Number(v)) + "");
   }
-  const pa = a.split('.').map(function(s) {
-    return parseInt(s); 
-  });
-  const pb = b.split('.').map(function(s) {
-    return parseInt(s); 
-  });
-  for(let i =0;i < pa.length;i++){
-    if (i >= pb.length){
-      return -1;
-    }
-    if (pa[i] === pb[i]){
-      continue;
-    }
-    if (pa[i] < pb[i]){
-      return -1;
-    }
-    return 1;
-  }
-  return 0;
+  return ip;
 }
 
-const  levelNum = (s :string) :number => {
+export const  levelNum = (s :string) :number => {
 	switch (s) {
 	case "high":
 		return 0;
@@ -263,9 +248,6 @@ const  levelNum = (s :string) :number => {
 	return 5
 }
 
-export const cmpState = (a :string,b:string) => {
-  return levelNum(a) - levelNum(b);
-}
 
 export const getLogModeName = (m) => {
   switch(m){

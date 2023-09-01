@@ -7,7 +7,7 @@ import (
 // GetEventLogs retunrs  event logs
 func (a *App) GetEventLogs(count int) []datastore.EventLogEnt {
 	if count < 1 {
-		count = 100 * 10000
+		count = maxDispLog
 	}
 	ret := []datastore.EventLogEnt{}
 	datastore.ForEachLastEventLog(0, func(l *datastore.EventLogEnt) bool {
@@ -18,27 +18,21 @@ func (a *App) GetEventLogs(count int) []datastore.EventLogEnt {
 }
 
 // GetSyslogs retunrs syslogs
-func (a *App) GetSyslogs(count int) []datastore.SyslogEnt {
-	if count < 1 {
-		count = 100 * 10000
-	}
+func (a *App) GetSyslogs() []datastore.SyslogEnt {
 	ret := []datastore.SyslogEnt{}
 	datastore.ForEachLastSyslog(func(l *datastore.SyslogEnt) bool {
 		ret = append(ret, *l)
-		return len(ret) < count
+		return len(ret) < maxDispLog
 	})
 	return ret
 }
 
 // GetTraps retunrs syslogs
-func (a *App) GetTraps(count int) []datastore.TrapEnt {
-	if count < 1 {
-		count = 100 * 10000
-	}
+func (a *App) GetTraps() []datastore.TrapEnt {
 	ret := []datastore.TrapEnt{}
 	datastore.ForEachLastTraps(func(l *datastore.TrapEnt) bool {
 		ret = append(ret, *l)
-		return len(ret) < count
+		return len(ret) < maxDispLog
 	})
 	return ret
 }

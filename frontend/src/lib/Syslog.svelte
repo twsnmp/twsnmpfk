@@ -1,38 +1,63 @@
 <script lang="ts">
-  import { Button,Select } from "flowbite-svelte";
+  import { Button } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import Grid from "gridjs-svelte";
-  import {  html } from "gridjs";
-  import { onMount,tick } from "svelte";
-  import jaJP from "./gridjsJaJP";
+  import { onMount,tick,onDestroy } from "svelte";
   import { GetSyslogs, ExportSyslogs } from "../../wailsjs/go/main/App";
   import {
-    cmpState,
     getStateIcon,
     getStateColor,
     getStateName,
-    formatTimeFromNano,
+    renderTime,
+    getTableLang,
+    levelNum,
   } from "./common";
   import {showLogLevelChart,resizeLogLevelChart} from "./chart/loglevel";
   import SyslogReport  from "./SyslogReport.svelte";
+  import DataTable from "datatables.net-dt";
+  import "datatables.net-select-dt";
 
   let data = [];
   let logs = [];
   let showReport = false;
+  let table = undefined;
+  let selectedCount = 0;
+
+  const showTable = () => {
+    if (table) {
+      table.destroy();
+      table = undefined;
+    }
+    table = new DataTable("#table", {
+      columns: columns,
+      data: data,
+      order: [1,"desc"],
+      language: getTableLang(),
+      select: {
+        style: "single",
+      },
+    });
+    table.on("select", () => {
+      selectedCount = table.rows({ selected: true }).count();
+    });
+    table.on("deselect", () => {
+      selectedCount = table.rows({ selected: true }).count();
+    });
+  }
 
   const refresh = async () => {
-    logs = await GetSyslogs(0);
+    logs = await GetSyslogs();
     data = [];
     for (let i =0; i < logs.length;i++) {
       data.push(logs[i]);
     }
     logs.reverse();
+    showTable();
     showChart();
   };
 
   const showChart = async () => {
-    tick();
+    await tick();
     showLogLevelChart("chart",logs,zoomCallBack);
   }
 
@@ -43,60 +68,66 @@
         data.push(logs[i]);
       }
     }
+    showTable();
   };
 
-  const formatState = (state) => {
-    return html(
-      `<span class="mdi ` +
+  const formatState = (state:string,type:string) => {
+    if(type =="sort") {
+      return levelNum(state);
+    }
+    return `<span class="mdi ` +
         getStateIcon(state) +
         ` text-xl" style="color:` +
         getStateColor(state) +
-        `;" /><span class="ml-2 text-xs text-black dark:text-white">` +
+        `;" ></span><span class="ml-2">` +
         getStateName(state) +
-        `</span>`
-    );
+        `</span>`;
   };
 
   const columns = [
     {
-      id: "Level",
-      name: "レベル",
+      data: "Level",
+      title: "レベル",
       width: "10%",
-      formatter: formatState,
-      sort: {
-        compare: cmpState,
-      },
+      render: formatState,
     },
     {
-      id: "Time",
-      name: "日時",
+      data: "Time",
+      title: "日時",
       width: "15%",
-      formatter: formatTimeFromNano,
+      render: renderTime,
     },
     {
-      id: "Host",
-      name: "ホスト",
+      data: "Host",
+      title: "ホスト",
       width: "15%",
     },
     {
-      id: "Type",
-      name: "タイプ",
-      width: "15%",
-    },
-    {
-      id: "Tag",
-      name: "タグ",
+      data: "Type",
+      title: "タイプ",
       width: "10%",
     },
     {
-      id: "Message",
-      name: "メッセージ",
-      width: "50%",
+      data: "Tag",
+      title: "タグ",
+      width: "10%",
+    },
+    {
+      data: "Message",
+      title: "メッセージ",
+      width: "40%",
     },
   ];
 
   onMount(() => {
     refresh();
+  });
+
+  onDestroy(()=>{
+    if(table) {
+      table.destroy();
+      table = undefined;
+    }
   });
 
 
@@ -124,15 +155,10 @@
 
 <div class="flex flex-col">
   <div id="chart" style="height: 200px;"></div>
-  <div class="m-5 twsnmpfk grow">
-    <Grid {data} {columns} {pagination} sort search language={jaJP} />
+  <div class="m-5 grow">
+    <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-      <Select class="w-20" items={ppList} bind:value={pp} on:change={()=>{
-        pagination = {
-          limit:pp,
-        }
-      }}/>
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
@@ -161,7 +187,6 @@
   />
 {/if}
 
-
 <style>
-  @import "../assets/css/gridjs.css";
+  @import "../assets/css/jquery.dataTables.css";
 </style>

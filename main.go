@@ -22,6 +22,7 @@ var kiosk = false
 var lock = false
 var trapPort = 162
 var syslogPort = 514
+var maxDispLog = 10000
 
 func init() {
 	flag.StringVar(&dataStorePath, "datastore", "./datastore", "Path to Data Store directory")
@@ -29,6 +30,7 @@ func init() {
 	flag.BoolVar(&lock, "lock", false, "Lock mad edit")
 	flag.IntVar(&trapPort, "trapPort", 162, "Lock mad edit")
 	flag.IntVar(&syslogPort, "syslogPort", 514, "Lock mad edit")
+	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "max log size to diplay")
 	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
 	flag.Parse()
 }

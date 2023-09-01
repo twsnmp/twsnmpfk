@@ -2,23 +2,37 @@
   import { Button,Select } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import Grid from "gridjs-svelte";
-  import {  html } from "gridjs";
-  import { onMount,tick } from "svelte";
-  import jaJP from "./gridjsJaJP";
+  import { onMount,tick,onDestroy } from "svelte";
   import { GetEventLogs, ExportEventLogs } from "../../wailsjs/go/main/App";
   import {
-    cmpState,
     getStateIcon,
     getStateColor,
     getStateName,
-    formatTimeFromNano,
+    renderTime,
+    getTableLang,
+    levelNum,
   } from "./common";
   import {showLogLevelChart,resizeLogLevelChart} from "./chart/loglevel";
   import EventLogReport from "./EventLogReport.svelte";
   let data = [];
   let logs = [];
   let showReport = false;
+  import DataTable from "datatables.net-dt";
+  import "datatables.net-select-dt";
+  let table = undefined;
+
+  const showTable = () => {
+    if (table) {
+      table.destroy();
+      table = undefined;
+    }
+    table = new DataTable("#table", {
+      columns: columns,
+      data: data,
+      language: getTableLang(),
+      order: [[1,"desc"]],
+    });
+  }
 
   const refresh = async () => {
     logs = await GetEventLogs(0);
@@ -27,11 +41,12 @@
       data.push(logs[i]);
     }
     logs.reverse();
+    showTable();
     showChart();
   };
 
   const showChart = async () => {
-    tick();
+    await tick();
     showLogLevelChart("chart",logs,zoomCallBack);
   };
  
@@ -42,49 +57,48 @@
         data.push(logs[i]);
       }
     }
+    showTable();
   };
 
-  const formatState = (state) => {
-    return html(
-      `<span class="mdi ` +
+  const formatState = (state:string,type:string) => {
+    if(type=="sort") {
+      return levelNum(state);
+    }
+    return `<span class="mdi ` +
         getStateIcon(state) +
         ` text-xl" style="color:` +
         getStateColor(state) +
-        `;" /><span class="ml-2 text-xs text-black dark:text-white">` +
+        `;"></span><span class="ml-2">` +
         getStateName(state) +
-        `</span>`
-    );
+        `</span>`;
   };
 
   const columns = [
     {
-      id: "Level",
-      name: "レベル",
+      data: "Level",
+      title: "レベル",
       width: "10%",
-      formatter: formatState,
-      sort: {
-        compare: cmpState,
-      },
+      render: formatState,
     },
     {
-      id: "Time",
-      name: "発生日時",
+      data: "Time",
+      title: "発生日時",
       width: "15%",
-      formatter: formatTimeFromNano,
+      render: renderTime,
     },
     {
-      id: "Type",
-      name: "種別",
+      data: "Type",
+      title: "種別",
       width: "10%",
     },
     {
-      id: "NodeName",
-      name: "関連ノード",
+      data: "NodeName",
+      title: "関連ノード",
       width: "15%",
     },
     {
-      id: "Event",
-      name: "イベント",
+      data: "Event",
+      title: "イベント",
       width: "50%",
     },
   ];
@@ -93,6 +107,12 @@
     refresh();
   });
 
+  onDestroy(()=>{
+    if(table) {
+      table.destroy();
+      table = undefined;
+    }
+  });
 
   const saveCSV = () => {
     ExportEventLogs("csv");
@@ -102,31 +122,16 @@
     ExportEventLogs("excel");
   }
 
-  let pagination: any = {
-    limit: 10,
-  };
-  let pp = 10;
-  const ppList = [
-    { name:"10",value:10 },
-    { name:"20",value:20 },
-    { name:"100",value:100 },
-  ]
-
 </script>
 
 <svelte:window on:resize={resizeLogLevelChart} />
 
 <div class="flex flex-col">
   <div id="chart" style="height: 200px;"></div>
-  <div class="m-5 twsnmpfk grow">
-    <Grid {data} {columns} {pagination} sort search language={jaJP} />
+  <div class="m-5 grow">
+    <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-      <Select class="w-20" items={ppList} bind:value={pp} on:change={()=>{
-        pagination = {
-          limit:pp,
-        }
-      }}/>
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
@@ -155,7 +160,6 @@
   />
 {/if}
 
-
 <style>
-  @import "../assets/css/gridjs.css";
+  @import "../assets/css/jquery.dataTables.css";
 </style>

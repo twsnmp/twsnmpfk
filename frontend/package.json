@@ -39,8 +39,6 @@
     "fft-js": "^0.0.12",
     "flowbite": "^1.7.0",
     "flowbite-svelte": "^0.40.1",
-    "gridjs": "^5.1.0",
-    "gridjs-svelte": "^2.1.1",
     "mdi-svelte": "^1.1.2",
     "numeral": "^2.0.6",
     "p5": "^1.7.0",

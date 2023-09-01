@@ -1,33 +1,59 @@
 <script lang="ts">
-  import { Button,Select } from "flowbite-svelte";
+  import { Button } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import Grid from "gridjs-svelte";
-  import { onMount,tick } from "svelte";
-  import jaJP from "./gridjsJaJP";
+  import { onMount,tick,onDestroy } from "svelte";
   import { GetTraps, ExportTraps } from "../../wailsjs/go/main/App";
   import {
-    formatTimeFromNano,
+    renderTime,
+    getTableLang,
   } from "./common";
   import {showLogCountChart,resizeLogCountChart} from "./chart/logcount";
   import TrapReport from "./TrapReport.svelte";
+  import DataTable from "datatables.net-dt";
+  import "datatables.net-select-dt";
 
   let data = [];
   let logs = [];
   let showReport = false;
+  let table = undefined;
+  let selectedCount = 0;
+
+  const showTable = () => {
+    if (table) {
+      table.destroy();
+      table = undefined;
+    }
+    table = new DataTable("#table", {
+      columns: columns,
+      data: data,
+      order:[[0,"desc"]],
+      language: getTableLang(),
+      select: {
+        style: "single",
+      },
+    });
+    table.on("select", () => {
+      selectedCount = table.rows({ selected: true }).count();
+    });
+    table.on("deselect", () => {
+      selectedCount = table.rows({ selected: true }).count();
+    });
+  }
 
   const refresh = async () => {
-    logs = await GetTraps(0);
+    logs = await GetTraps();
     data = [];
     for (let i =0; i < logs.length;i++) {
       data.push(logs[i]);
     }
     logs.reverse();
+    showTable();
     showChart();
   };
 
   const showChart = async () => {
-    tick();
+    await tick();
     showLogCountChart("chart",data,zoomCallBack);
   }
 
@@ -38,28 +64,29 @@
         data.push(logs[i]);
       }
     }
+    showTable();
   };
 
   const columns = [
     {
-      id: "Time",
-      name: "日時",
+      data: "Time",
+      title: "日時",
       width: "20%",
-      formatter: formatTimeFromNano,
+      render: renderTime,
     },
     {
-      id: "FromAddress",
-      name: "送信元",
+      data: "FromAddress",
+      title: "送信元",
       width: "15%",
     },
     {
-      id: "TrapType",
-      name: "タイプ",
+      data: "TrapType",
+      title: "タイプ",
       width: "15%",
     },
     {
-      id: "Variables",
-      name: "変数",
+      data: "Variables",
+      title: "変数",
       width: "50%",
     },
   ];
@@ -68,6 +95,12 @@
     refresh();
   });
 
+  onDestroy(()=>{
+    if(table) {
+      table.destroy();
+      table = undefined;
+    }
+  });
 
   const saveCSV = () => {
     ExportTraps("csv");
@@ -77,32 +110,16 @@
     ExportTraps("excel");
   }
 
-  let pagination: any = {
-    limit: 10,
-  };
-
-  let pp = 10;
-  const ppList = [
-    { name:"10",value:10 },
-    { name:"20",value:20 },
-    { name:"100",value:100 },
-  ]
-
 </script>
 
 <svelte:window on:resize={resizeLogCountChart} />
 
 <div class="flex flex-col">
   <div id="chart" style="height: 200px;"></div>
-  <div class="m-5 twsnmpfk grow">
-    <Grid {data} {columns} {pagination} sort search language={jaJP} />
+  <div class="m-5 grow">
+    <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-      <Select class="w-20" items={ppList} bind:value={pp} on:change={()=>{
-        pagination = {
-          limit:pp,
-        }
-      }}/>
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
@@ -132,5 +149,5 @@
 {/if}
 
 <style>
-  @import "../assets/css/gridjs.css";
+  @import "../assets/css/jquery.dataTables.css";
 </style>

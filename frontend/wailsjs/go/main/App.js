@@ -130,12 +130,12 @@ export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
 
-export function GetSyslogs(arg1) {
-  return window['go']['main']['App']['GetSyslogs'](arg1);
+export function GetSyslogs() {
+  return window['go']['main']['App']['GetSyslogs']();
 }
 
-export function GetTraps(arg1) {
-  return window['go']['main']['App']['GetTraps'](arg1);
+export function GetTraps() {
+  return window['go']['main']['App']['GetTraps']();
 }
 
 export function GetVersion() {
