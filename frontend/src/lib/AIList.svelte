@@ -8,14 +8,13 @@
     DeeleteAIResult,
     GetAIResult,
   } from "../../wailsjs/go/main/App";
-  import { formatTimeFromNano, getScoreIcon, getScoreColor,getTableLang } from "./common";
+  import { renderTime, getScoreIcon, getScoreColor,getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
 
   let table = undefined;
   let data = [];
   let selectedCount = 0;
-  const lang = getTableLang();
 
 
   const formatScore = (score: number): string => {
@@ -31,9 +30,6 @@
   };
 
   const clearAIResult = async () => {
-    if(!table) {
-      return;
-    }
     const selected = table.rows({ selected: true }).data().pluck("ID");
     if (selected) {
       for(let i = 0; i < selected.length;i++) {
@@ -45,9 +41,6 @@
   };
 
   const show = async () => {
-    if(!table) {
-      return;
-    }
     const selected = table.rows({ selected: true }).data().pluck("ID");
     if (selected.length == 1) {
       const id = selected[0];
@@ -81,7 +74,7 @@
       title: "最終確認",
       width: "15%",
       render: (data, type, row, meta) =>
-        formatTimeFromNano(data * 1000 * 1000 * 1000),
+        renderTime(data * 1000 * 1000 * 1000,type),
     },
   ];
 
@@ -94,7 +87,7 @@
     table = new DataTable("#table", {
       columns: columns,
       data: data,
-      language: lang,
+      language: getTableLang(),
       select: {
         style: "multi",
       },
@@ -119,7 +112,7 @@
 </script>
 
 <div class="flex flex-col">
-  <div class="m-5 twsnmpfk grow">
+  <div class="m-5 grow">
     <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
