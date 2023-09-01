@@ -152,7 +152,7 @@
         <Input bind:value={line.Port} placeholder="ポート1:ポート2" size="sm" />
       </Label>
     </div>
-    <div class="flex space-x-2">
+    <div class="flex justify-end space-x-2 mr-2">
       {#if line.ID != ""}
         <Button color="red" type="button" on:click={disconnect} size="sm">
           <Icon path={icons.mdiLanDisconnect} size={1} />

@@ -118,7 +118,7 @@
       </Label>
       <Checkbox bind:checked={conf.AddPolling}>ポーリング自動設定</Checkbox>
     </div>
-    <div class="flex space-x-2">
+    <div class="flex justify-end space-x-2 mr-2">
       <Button type="button" on:click={start} size="sm">
         <Icon path={icons.mdiRun} size={1} />
         開始
@@ -151,7 +151,7 @@
       size="h-5"
       labelOutside="Found:{stats.Found + '/' + stats.Total}"
     />
-    <div class="flex space-x-2">
+    <div class="flex justify-end space-x-2 mr-2">
       <Button type="button" on:click={stop} size="sm">
         <Icon path={icons.mdiRun} size={1} />
         停止

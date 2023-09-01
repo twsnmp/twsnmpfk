@@ -215,7 +215,7 @@
         />
       </Label>
     </div>
-    <div class="flex space-x-2">
+    <div class="flex justify-end space-x-2 mr-2">
       <Button color="blue" type="button" on:click={save} size="sm">
         <Icon path={icons.mdiContentSave} size={1} />
         保存

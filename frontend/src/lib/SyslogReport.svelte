@@ -88,7 +88,7 @@
         <div id="fft" style="height: 500px;"></div>
       </TabItem>
     </Tabs>
-    <div class="flex space-x-2">
+    <div class="flex justify-end space-x-2 mr-2">
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
         閉じる

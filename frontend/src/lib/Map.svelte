@@ -290,7 +290,7 @@
         size="sm"
       />
     </Label>
-    <div class="flex space-x-2">
+    <div class="flex justify-end space-x-2 mr-2">
       <Button
         color="red"
         type="button"
