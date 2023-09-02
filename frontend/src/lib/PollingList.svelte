@@ -39,6 +39,7 @@
       table.destroy();
       table = undefined;
     }
+    selectedCount = 0;
     table = new DataTable("#table", {
       columns: columns,
       data: data,
