@@ -14,7 +14,10 @@
     DeleteNodes,
     CopyNode,
     CopyDrawItem,
+    WakeOnLan,
+    GetNode,
   } from "../../wailsjs/go/main/App";
+  import { BrowserOpenURL } from "../../wailsjs/runtime";
 
   let map: any;
   let posX: number = 0;
@@ -32,9 +35,12 @@
   let showDiscover: boolean = false;
   let showGrid: boolean = false;
   let gridSize: number = 40;
+  let showNodeReport: boolean = false;
+  let showPolling: boolean = false;
 
   export let dark: boolean = false;
   let timer = undefined;
+  let urls = [];
 
   onMount(async () => {
     initMAP(map, callBack);
@@ -49,14 +55,20 @@
     deleteMap();
   });
 
+  const showNodeMenuFunc = async (id: string) => {
+    selectedNode = id;
+    urls = [];
+    const n = await GetNode(id);
+    urls = n.URL.split(",");
+    showNodeMenu = true;
+  };
   const callBack = (p) => {
     switch (p.Cmd) {
       case "contextMenu":
         posX = p.x;
         posY = p.y;
         if (p.Node) {
-          showNodeMenu = true;
-          selectedNode = p.Node;
+          showNodeMenuFunc(p.Node);
         } else if (p.DrawItem) {
           showDrawItemMenu = true;
           selectedDrawItem = p.DrawItem;
@@ -72,7 +84,12 @@
         }
         break;
       case "nodeDoubleClicked":
+        selectedNode = p.Param;
+        showNodeReport = true;
+        break;
       case "itemDoubleClicked":
+        selectedDrawItem = p.Param;
+        showEditDrawItem = true;
         break;
       case "deleteNodes":
         deleteNodes(p.Param);
@@ -178,6 +195,28 @@
 <Modal bind:open={showNodeMenu} size="xs" outsideclose>
   <div class="flex flex-col space-y-2">
     <GradientButton
+      color="green"
+      class="w-full"
+      on:click={() => {
+        showNodeMenu = false;
+        showNodeReport = true;
+      }}
+    >
+      <Icon path={icons.mdiChartBarStacked} />
+      レポート
+    </GradientButton>
+    <GradientButton
+      color="cyan"
+      class="w-full"
+      on:click={() => {
+        showNodeMenu = false;
+        WakeOnLan(selectedNode);
+      }}
+    >
+      <Icon path={icons.mdiAlarm} />
+      Wake On Lan
+    </GradientButton>
+    <GradientButton
       color="blue"
       class="w-full"
       on:click={() => {
@@ -187,6 +226,17 @@
     >
       <Icon path={icons.mdiPencil} />
       編集
+    </GradientButton>
+    <GradientButton
+      color="blue"
+      class="w-full"
+      on:click={() => {
+        showNodeMenu = false;
+        showPolling = true;
+      }}
+    >
+      <Icon path={icons.mdiCheck} />
+      ポーリング
     </GradientButton>
     <GradientButton
       color="teal"
@@ -205,7 +255,7 @@
       on:click={async () => {
         showNodeMenu = false;
         await CopyNode(selectedNode);
-        count = 1
+        count = 1;
       }}
     >
       <Icon path={icons.mdiContentCopy} />
@@ -221,6 +271,20 @@
       <Icon path={icons.mdiDelete} />
       削除
     </GradientButton>
+    {#each urls as url}
+      {#if url}
+        <GradientButton
+          color="blue"
+          class="w-full"
+          on:click={() => {
+            BrowserOpenURL(url);
+          }}
+        >
+          <Icon path={icons.mdiLink} />
+          {url}
+        </GradientButton>
+      {/if}
+    {/each}
   </div>
 </Modal>
 
@@ -243,7 +307,7 @@
       on:click={async () => {
         showDrawItemMenu = false;
         await CopyDrawItem(selectedDrawItem);
-        count=1;
+        count = 1;
       }}
     >
       <Icon path={icons.mdiContentCopy} />

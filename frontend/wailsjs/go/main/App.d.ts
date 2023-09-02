@@ -105,3 +105,5 @@ export function UpdateNodePos(arg1:Array<main.UpdatePosEnt>):Promise<void>;
 export function UpdateNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
 
 export function UpdatePolling(arg1:datastore.PollingEnt):Promise<boolean>;
+
+export function WakeOnLan(arg1:string):Promise<boolean>;

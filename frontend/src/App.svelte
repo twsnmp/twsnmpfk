@@ -123,7 +123,7 @@
     <div class="row-span-3">
       <Map {dark} />
     </div>
-    <div class="row-span-1">
+    <div class="row-span-1 ml-2 mr-2">
       <Log />
     </div>
   </div>

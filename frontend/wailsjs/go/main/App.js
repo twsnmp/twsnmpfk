@@ -205,3 +205,7 @@ export function UpdateNotifyConf(arg1) {
 export function UpdatePolling(arg1) {
   return window['go']['main']['App']['UpdatePolling'](arg1);
 }
+
+export function WakeOnLan(arg1) {
+  return window['go']['main']['App']['WakeOnLan'](arg1);
+}

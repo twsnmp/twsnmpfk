@@ -8,6 +8,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/discover"
+	"github.com/twsnmp/twsnmpfk/wol"
 )
 
 // GetNodes retunrs map nodes
@@ -324,17 +325,44 @@ func (a *App) CopyNode(id string) bool {
 	n.URL = ns.URL
 	n.AddrMode = ns.AddrMode
 	n.AutoAck = ns.AutoAck
-	if a.addNode(n) {
-		datastore.AddEventLog(&datastore.EventLogEnt{
-			Type:     "user",
-			Level:    "info",
-			NodeName: n.Name,
-			NodeID:   n.ID,
-			Event:    "ノードをコピーしました",
-		})
-		return true
+	if !a.addNode(n) {
+		log.Printf("fail to copy node id='%s'", id)
+		return false
 	}
-	return false
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeName: n.Name,
+		NodeID:   n.ID,
+		Event:    "ノードをコピーしました",
+	})
+	return true
+}
+
+// WakeOnLan : send wake on lan packet
+func (a *App) WakeOnLan(id string) bool {
+	n := datastore.GetNode(id)
+	if n == nil {
+		log.Printf("WakeOnLan node not found")
+		return false
+	}
+	mac := strings.SplitN(n.MAC, "(", 2)
+	if len(mac) < 1 || mac[0] == "" {
+		log.Printf("WakeOnLan no MAC")
+		return false
+	}
+	if err := wol.SendWakeOnLanPacket(mac[0]); err != nil {
+		log.Printf("WakeOnLan node not found")
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeName: n.Name,
+		NodeID:   n.ID,
+		Event:    fmt.Sprintf("%sにWake ON LANパケットを送信しました", n.MAC),
+	})
+	return true
 }
 
 func setLineState(l *datastore.LineEnt) {
@@ -543,13 +571,14 @@ func (a *App) CopyDrawItem(id string) bool {
 	di.VarName = ds.VarName
 	di.PollingID = ds.PollingID
 	di.Scale = ds.Scale
-	if a.addDrawItem(di) {
-		datastore.AddEventLog(&datastore.EventLogEnt{
-			Type:  "user",
-			Level: "info",
-			Event: "描画アイテムをコピーしました",
-		})
-		return true
+	if !a.addDrawItem(di) {
+		log.Printf("fail to copy draw item id=%s", id)
+		return false
 	}
-	return false
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: "描画アイテムをコピーしました",
+	})
+	return true
 }
