@@ -95,7 +95,7 @@
   });
 </script>
 
-<table id="table" class="display compact" style="width:99%" />
+<table id="table" class="display compact" style="width:98%;" />
 
 <style>
   @import "../assets/css/jquery.dataTables.css";

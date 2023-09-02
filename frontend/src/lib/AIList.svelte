@@ -6,8 +6,8 @@
   import {
     GetAIList,
     DeeleteAIResult,
-    GetAIResult,
   } from "../../wailsjs/go/main/App";
+  import AIReport from "./AIReport.svelte";
   import { renderTime, getScoreIcon, getScoreColor,getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -15,9 +15,14 @@
   let table = undefined;
   let data = [];
   let selectedCount = 0;
+  let selectedID = "";
+  let showReport = false;
 
 
-  const formatScore = (score: number): string => {
+  const formatScore = (score: number,type:string): string => {
+    if (type == "sort") {
+      return score + "";
+    }
     return (
       `<span class="mdi ` +
       getScoreIcon(score) +
@@ -43,7 +48,8 @@
   const show = async () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
     if (selected.length == 1) {
-      const id = selected[0];
+      selectedID = selected[0];
+      showReport = true;
     }
   };
 
@@ -52,7 +58,7 @@
       data: "Score",
       title: "異常スコア",
       width: "15%",
-      render: (data, type, row, meta) => formatScore(data),
+      render: formatScore,
     },
     {
       data: "Node",
@@ -134,6 +140,16 @@
     </Button>
   </div>
 </div>
+
+{#if showReport}
+  <AIReport
+   id={selectedID}
+    on:close={() => {
+      showReport = false;
+    }}
+  />
+{/if}
+
 
 <style>
   @import "../assets/css/jquery.dataTables.css";
