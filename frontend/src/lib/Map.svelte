@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { initMAP, updateMAP, resetMap,deleteMap, grid } from "./map";
+  import { initMAP, updateMAP, resetMap, deleteMap, grid } from "./map";
   import { onMount, onDestroy } from "svelte";
   import { Modal, GradientButton, Button, Label, Input } from "flowbite-svelte";
   import * as icons from "@mdi/js";
@@ -8,7 +8,13 @@
   import Node from "./Node.svelte";
   import Line from "./Line.svelte";
   import DrawItem from "./DrawItem.svelte";
-  import { CheckPolling, DeleteDrawItems, DeleteNodes } from "../../wailsjs/go/main/App";
+  import {
+    CheckPolling,
+    DeleteDrawItems,
+    DeleteNodes,
+    CopyNode,
+    CopyDrawItem,
+  } from "../../wailsjs/go/main/App";
 
   let map: any;
   let posX: number = 0;
@@ -98,7 +104,6 @@
     count = 1;
     showDrawItemMenu = false;
   };
-
 </script>
 
 <div bind:this={map} class="h-full w-full overflow-scroll" />
@@ -144,10 +149,14 @@
       <Icon path={icons.mdiFileFind} />
       自動発見
     </GradientButton>
-    <GradientButton color="red" class="w-full" on:click={()=>{
-      showMapMenu = false;
-      showGrid = true;
-    }}>
+    <GradientButton
+      color="red"
+      class="w-full"
+      on:click={() => {
+        showMapMenu = false;
+        showGrid = true;
+      }}
+    >
       <Icon path={icons.mdiGrid} />
       グリッド整列
     </GradientButton>
@@ -179,14 +188,26 @@
       <Icon path={icons.mdiPencil} />
       編集
     </GradientButton>
-    <GradientButton color="teal" class="w-full" on:click={()=>{
-      showNodeMenu = false;
-      CheckPolling(selectedNode);
-    }}>
+    <GradientButton
+      color="teal"
+      class="w-full"
+      on:click={() => {
+        showNodeMenu = false;
+        CheckPolling(selectedNode);
+      }}
+    >
       <Icon path={icons.mdiCached} />
       再確認
     </GradientButton>
-    <GradientButton color="cyan" class="w-full">
+    <GradientButton
+      color="cyan"
+      class="w-full"
+      on:click={async () => {
+        showNodeMenu = false;
+        await CopyNode(selectedNode);
+        count = 1
+      }}
+    >
       <Icon path={icons.mdiContentCopy} />
       コピー
     </GradientButton>
@@ -216,7 +237,15 @@
       <Icon path={icons.mdiPencil} />
       編集
     </GradientButton>
-    <GradientButton color="cyan" class="w-full">
+    <GradientButton
+      color="cyan"
+      class="w-full"
+      on:click={async () => {
+        showDrawItemMenu = false;
+        await CopyDrawItem(selectedDrawItem);
+        count=1;
+      }}
+    >
       <Icon path={icons.mdiContentCopy} />
       コピー
     </GradientButton>

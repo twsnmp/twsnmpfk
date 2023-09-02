@@ -6,6 +6,14 @@ export function CheckPolling(arg1) {
   return window['go']['main']['App']['CheckPolling'](arg1);
 }
 
+export function CopyDrawItem(arg1) {
+  return window['go']['main']['App']['CopyDrawItem'](arg1);
+}
+
+export function CopyNode(arg1) {
+  return window['go']['main']['App']['CopyNode'](arg1);
+}
+
 export function DeeleteAIResult(arg1) {
   return window['go']['main']['App']['DeeleteAIResult'](arg1);
 }

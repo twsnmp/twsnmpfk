@@ -6,6 +6,10 @@ import {discover} from '../models';
 
 export function CheckPolling(arg1:string):Promise<boolean>;
 
+export function CopyDrawItem(arg1:string):Promise<boolean>;
+
+export function CopyNode(arg1:string):Promise<boolean>;
+
 export function DeeleteAIResult(arg1:string):Promise<boolean>;
 
 export function DeleteDrawItems(arg1:Array<string>):Promise<void>;

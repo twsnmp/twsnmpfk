@@ -302,6 +302,41 @@ func (a *App) DeleteNodes(ids []string) {
 	}
 }
 
+// CopyNode : copy ndde
+func (a *App) CopyNode(id string) bool {
+	ns := datastore.GetNode(id)
+	if ns == nil {
+		return false
+	}
+	n := datastore.NodeEnt{}
+	n.ID = ""
+	n.X = ns.X + 100
+	n.Y = ns.Y
+	n.Name = ns.Name + "-Copy"
+	n.Descr = ns.Descr
+	n.IP = ns.IP
+	n.Icon = ns.Icon
+	n.SnmpMode = ns.SnmpMode
+	n.Community = ns.Community
+	n.User = ns.User
+	n.Password = ns.Password
+	n.PublicKey = ns.PublicKey
+	n.URL = ns.URL
+	n.AddrMode = ns.AddrMode
+	n.AutoAck = ns.AutoAck
+	if a.addNode(n) {
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:     "user",
+			Level:    "info",
+			NodeName: n.Name,
+			NodeID:   n.ID,
+			Event:    "ノードをコピーしました",
+		})
+		return true
+	}
+	return false
+}
+
 func setLineState(l *datastore.LineEnt) {
 	l.State1 = "unknown"
 	if l.PollingID1 != "" {
@@ -485,4 +520,36 @@ func (a *App) DeleteDrawItems(ids []string) {
 		Level: "info",
 		Event: fmt.Sprintf("描画を削除しました %d件", len(ids)),
 	})
+}
+
+// CopyDrawItem : copy ndde
+func (a *App) CopyDrawItem(id string) bool {
+	ds := datastore.GetDrawItem(id)
+	if ds == nil {
+		return false
+	}
+	di := datastore.DrawItemEnt{}
+	di.ID = ""
+	di.X = ds.X + 100
+	di.Y = ds.Y
+	di.Type = ds.Type
+	di.W = ds.W
+	di.H = ds.H
+	di.Path = ds.Path
+	di.Text = ds.Text
+	di.Size = ds.Size
+	di.Color = ds.Color
+	di.Format = ds.Format
+	di.VarName = ds.VarName
+	di.PollingID = ds.PollingID
+	di.Scale = ds.Scale
+	if a.addDrawItem(di) {
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "user",
+			Level: "info",
+			Event: "描画アイテムをコピーしました",
+		})
+		return true
+	}
+	return false
 }
