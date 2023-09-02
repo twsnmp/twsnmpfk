@@ -1,25 +1,82 @@
 <script lang="ts">
-  import {
-    Table,
-    TableBody,
-    TableBodyCell,
-    TableBodyRow,
-    TableHead,
-    TableHeadCell,
-  } from "flowbite-svelte";
   import { onMount, onDestroy } from "svelte";
-  import { GetEventLogs } from "../../wailsjs/go/main/App";
-  import Icon from "mdi-svelte";
+  import { GetAlertEventLogs } from "../../wailsjs/go/main/App";
   import {
     getStateColor,
     getStateIcon,
     getStateName,
     renderTime,
+    getTableLang,
+    levelNum,
   } from "./common";
-  let logs = [];
+  import DataTable from "datatables.net-dt";
+  import "datatables.net-select-dt";
+  let table = undefined;
+  let data = [];
   let timer: number | undefined = undefined;
+
+  const showTable = () => {
+    if (table) {
+      table.destroy();
+      table = undefined;
+    }
+    table = new DataTable("#table", {
+      columns: columns,
+      paging: false,
+      searching:false,
+      scrollY: "200px",
+      data: data,
+      language: getTableLang(),
+      order: [[1,"desc"]],
+    });
+  }
+
+  const formatState = (state:string,type:string) => {
+    if(type=="sort") {
+      return levelNum(state);
+    }
+    return `<span class="mdi ` +
+        getStateIcon(state) +
+        ` text-xl" style="color:` +
+        getStateColor(state) +
+        `;"></span><span class="ml-2">` +
+        getStateName(state) +
+        `</span>`;
+  };
+
+  const columns = [
+    {
+      data: "Level",
+      title: "レベル",
+      width: "10%",
+      render: formatState,
+    },
+    {
+      data: "Time",
+      title: "発生日時",
+      width: "15%",
+      render: renderTime,
+    },
+    {
+      data: "Type",
+      title: "種別",
+      width: "10%",
+    },
+    {
+      data: "NodeName",
+      title: "関連ノード",
+      width: "15%",
+    },
+    {
+      data: "Event",
+      title: "イベント",
+      width: "50%",
+    },
+  ];
+
   const updateLogs = async () => {
-    logs = await GetEventLogs(100);
+    data = await GetAlertEventLogs();
+    showTable();
     timer = setTimeout(() => {
       updateLogs();
     }, 60 * 1000);
@@ -32,38 +89,14 @@
       clearTimeout(timer);
       timer = undefined;
     }
+    if(table) {
+      table.destroy();
+    }
   });
 </script>
 
-<Table
-  divClass="relative overflow-x-auto overflow-y-auto h-full text-xs"
-  hoverable
->
-  <TableHead theadClass="p-1 text-xs">
-    <TableHeadCell padding="p-2">状態</TableHeadCell>
-    <TableHeadCell padding="p-2">発生日時</TableHeadCell>
-    <TableHeadCell padding="p-2">種別</TableHeadCell>
-    <TableHeadCell padding="p-2">関連ノード</TableHeadCell>
-    <TableHeadCell padding="p-2">イベント</TableHeadCell>
-  </TableHead>
-  <TableBody>
-    {#each logs as l}
-      <TableBodyRow>
-        <TableBodyCell tdClass="text-xs p-1">
-          <div class="flex">
-            <span class="mdi {getStateIcon(l.Level)} text-xl" style="color: {getStateColor(l.Level)};"/>
-            <span class="text-xs mt-1 ml-1">
-              {getStateName(l.Level)}
-            </span>
-          </div>
-        </TableBodyCell>
-        <TableBodyCell tdClass="text-xs p-1"
-          >{renderTime(l.Time,"")}</TableBodyCell
-        >
-        <TableBodyCell tdClass="text-xs p-1">{l.Type}</TableBodyCell>
-        <TableBodyCell tdClass="text-xs p-1">{l.NodeName}</TableBodyCell>
-        <TableBodyCell tdClass="text-xs p-1">{l.Event}</TableBodyCell>
-      </TableBodyRow>
-    {/each}
-  </TableBody>
-</Table>
+<table id="table" class="display compact" style="width:99%" />
+
+<style>
+  @import "../assets/css/jquery.dataTables.css";
+</style>

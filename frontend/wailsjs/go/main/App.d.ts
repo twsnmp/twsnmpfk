@@ -36,6 +36,8 @@ export function GetAIList():Promise<Array<main.AIList>>;
 
 export function GetAIResult(arg1:string):Promise<datastore.AIResult>;
 
+export function GetAlertEventLogs():Promise<Array<datastore.EventLogEnt>>;
+
 export function GetBackImage():Promise<datastore.BackImageEnt>;
 
 export function GetDiscoverConf():Promise<datastore.DiscoverConfEnt>;
@@ -46,7 +48,7 @@ export function GetDrawItem(arg1:string):Promise<datastore.DrawItemEnt>;
 
 export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
 
-export function GetEventLogs(arg1:number):Promise<Array<datastore.EventLogEnt>>;
+export function GetEventLogs():Promise<Array<datastore.EventLogEnt>>;
 
 export function GetGroks():Promise<Array<datastore.GrokEnt>>;
 

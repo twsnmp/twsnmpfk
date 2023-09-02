@@ -66,6 +66,10 @@ export function GetAIResult(arg1) {
   return window['go']['main']['App']['GetAIResult'](arg1);
 }
 
+export function GetAlertEventLogs() {
+  return window['go']['main']['App']['GetAlertEventLogs']();
+}
+
 export function GetBackImage() {
   return window['go']['main']['App']['GetBackImage']();
 }
@@ -86,8 +90,8 @@ export function GetDrawItems() {
   return window['go']['main']['App']['GetDrawItems']();
 }
 
-export function GetEventLogs(arg1) {
-  return window['go']['main']['App']['GetEventLogs'](arg1);
+export function GetEventLogs() {
+  return window['go']['main']['App']['GetEventLogs']();
 }
 
 export function GetGroks() {

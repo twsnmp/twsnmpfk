@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button,Select } from "flowbite-svelte";
+  import { Button} from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount,tick,onDestroy } from "svelte";
@@ -35,7 +35,7 @@
   }
 
   const refresh = async () => {
-    logs = await GetEventLogs(0);
+    logs = await GetEventLogs();
     data = [];
     for (let i =0; i < logs.length;i++) {
       data.push(logs[i]);
