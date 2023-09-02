@@ -12,26 +12,22 @@
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
-  import { GetSettings, GetVersion, GetMapName } from "../wailsjs/go/main/App";
+  import { GetMapName } from "../wailsjs/go/main/App";
   import Map from "./lib/Map.svelte";
   import Log from "./lib/Log.svelte";
-  import MapConf from "./lib/MapConf.svelte";
-  import NotifyConf from "./lib/NotifyConf.svelte";
-  import AIConf from "./lib/AIConf.svelte";
   import NodeList from "./lib/NodeList.svelte";
   import PollingList from "./lib/PollingList.svelte";
   import EventLog from "./lib/EventLog.svelte";
   import Syslog from "./lib/Syslog.svelte";
   import Trap from "./lib/Trap.svelte";
   import AIList from "./lib/AIList.svelte";
+  import Config from "./lib/Config.svelte";
 
   let dark: boolean = false;
-  let showMapConf: boolean = false;
-  let showNotifyConf: boolean = false;
-  let showAIConf: boolean = false;
   let mainHeight = 0;
   let mapName = "";
   let page = "map";
+  let showConfig = false;
 
   const updateMapName = async () => {
     mapName = await GetMapName();
@@ -105,33 +101,10 @@
       <Icon path={icons.mdiBrain} size={1} />
       AI分析
     </NavLi>
-    <NavLi id="nav-config" active={showMapConf || showNotifyConf || showAIConf}>
+    <NavLi active={showConfig} on:click={()=>{showConfig = true}}>
       <Icon path={icons.mdiCog} size={1} />
       設定
     </NavLi>
-    <Dropdown triggeredBy="#nav-config" class="w-44 z-20">
-      <DropdownItem
-        on:click={() => {
-          showMapConf = true;
-        }}
-      >
-        マップ
-      </DropdownItem>
-      <DropdownItem
-        on:click={() => {
-          showNotifyConf = true;
-        }}
-      >
-        通知
-      </DropdownItem>
-      <DropdownItem
-        on:click={() => {
-          showAIConf = true;
-        }}
-      >
-        AI分析
-      </DropdownItem>
-    </Dropdown>
   </NavUl>
   <Button class="!p-2" color="alternative" on:click={toggleDark}>
     {#if dark}
@@ -168,27 +141,11 @@
   <AIList />
 {/if}
 
-{#if showMapConf}
-  <MapConf
+{#if showConfig}
+  <Config
     on:close={() => {
       updateMapName();
-      showMapConf = false;
-    }}
-  />
-{/if}
-
-{#if showNotifyConf}
-  <NotifyConf
-    on:close={() => {
-      showNotifyConf = false;
-    }}
-  />
-{/if}
-
-{#if showAIConf}
-  <AIConf
-    on:close={() => {
-      showAIConf = false;
+      showConfig = false;
     }}
   />
 {/if}
