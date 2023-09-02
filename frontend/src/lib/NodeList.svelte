@@ -28,17 +28,19 @@
   let selectedCount = 0;
 
   const showTable = () => {
+    let order = [
+      [0, "asc"],
+      [2, "asc"],
+    ];
     if (table) {
+      order = table.order();
       table.destroy();
       table = undefined;
     }
     table = new DataTable("#table", {
       columns: columns,
       data: data,
-      order: [
-        [0, "asc"],
-        [2, "asc"],
-      ],
+      order: order,
       language: getTableLang(),
       select: {
         style: "multi",
