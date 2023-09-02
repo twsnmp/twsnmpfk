@@ -90,7 +90,7 @@
     if (selected.length < 1) {
       return;
     }
-    await DeletePollings(selected);
+    await DeletePollings(selected.toArray());
     refresh();
   };
 

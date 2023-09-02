@@ -90,7 +90,7 @@
     if (selected.length < 1) {
       return;
     }
-    await DeleteNodes(selected);
+    await DeleteNodes(selected.toArray());
     refresh();
   };
 
