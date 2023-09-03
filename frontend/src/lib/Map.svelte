@@ -8,6 +8,7 @@
   import Node from "./Node.svelte";
   import Line from "./Line.svelte";
   import DrawItem from "./DrawItem.svelte";
+  import NodeReport from "./NodeReport.svelte";
   import {
     CheckPolling,
     DeleteDrawItems,
@@ -365,6 +366,15 @@
     on:close={(e) => {
       showEditDrawItem = false;
       count = 1;
+    }}
+  />
+{/if}
+
+{#if showNodeReport}
+  <NodeReport
+    id={selectedNode}
+    on:close={(e) => {
+      showNodeReport = false;
     }}
   />
 {/if}

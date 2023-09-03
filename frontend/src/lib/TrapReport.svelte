@@ -7,7 +7,7 @@
   import {showTrapFromAddr,showTrapLog3D,showTrapTypeChart } from "./chart/trap";
   import { showLogHeatmap } from "./chart/eventlog";
 
-  export let logs : datastore.SyslogEnt[] | undefined =undefined;
+  export let logs : datastore.TrapEnt[] | undefined =undefined;
   let show: boolean = false;
   const dispatch = createEventDispatcher();
 
