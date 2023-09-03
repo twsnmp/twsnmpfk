@@ -9,14 +9,7 @@
     ExportNodes,
     CheckPolling,
   } from "../../wailsjs/go/main/App";
-  import {
-    getIcon,
-    getStateColor,
-    getStateName,
-    getTableLang,
-    renderIP,
-    levelNum,
-  } from "./common";
+  import { getTableLang, renderState, renderIP } from "./common";
   import Node from "./Node.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -64,21 +57,6 @@
     showTable();
   };
 
-  const formatState = (state, type, row) => {
-    if (type == "sort") {
-      return levelNum(state);
-    }
-    return (
-      `<span class="mdi ` +
-      getIcon(row.Icon) +
-      ` text-xl" style="color:` +
-      getStateColor(state) +
-      `;"></span><span class="ml-2 text-xs text-black dark:text-white">` +
-      getStateName(state) +
-      `</span>`
-    );
-  };
-
   const edit = () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
     if (selected.length != 1) {
@@ -113,7 +91,7 @@
       data: "State",
       title: "状態",
       width: "10%",
-      render: formatState,
+      render: renderState,
     },
     {
       data: "Name",

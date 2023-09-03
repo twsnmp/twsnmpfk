@@ -2,18 +2,11 @@
   import { Button } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import { onMount,tick,onDestroy } from "svelte";
+  import { onMount, tick, onDestroy } from "svelte";
   import { GetSyslogs, ExportSyslogs } from "../../wailsjs/go/main/App";
-  import {
-    getStateIcon,
-    getStateColor,
-    getStateName,
-    renderTime,
-    getTableLang,
-    levelNum,
-  } from "./common";
-  import {showLogLevelChart,resizeLogLevelChart} from "./chart/loglevel";
-  import SyslogReport  from "./SyslogReport.svelte";
+  import { renderState, renderTime, getTableLang } from "./common";
+  import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
+  import SyslogReport from "./SyslogReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
 
@@ -32,7 +25,7 @@
     table = new DataTable("#table", {
       columns: columns,
       data: data,
-      order: [1,"desc"],
+      order: [1, "desc"],
       language: getTableLang(),
       select: {
         style: "single",
@@ -44,12 +37,12 @@
     table.on("deselect", () => {
       selectedCount = table.rows({ selected: true }).count();
     });
-  }
+  };
 
   const refresh = async () => {
     logs = await GetSyslogs();
     data = [];
-    for (let i =0; i < logs.length;i++) {
+    for (let i = 0; i < logs.length; i++) {
       data.push(logs[i]);
     }
     logs.reverse();
@@ -59,12 +52,12 @@
 
   const showChart = async () => {
     await tick();
-    showLogLevelChart("chart",logs,zoomCallBack);
-  }
+    showLogLevelChart("chart", logs, zoomCallBack);
+  };
 
-  const zoomCallBack = (st:number, et:number) => {
+  const zoomCallBack = (st: number, et: number) => {
     data = [];
-    for(let i = logs.length -1 ; i >= 0;i--) {
+    for (let i = logs.length - 1; i >= 0; i--) {
       if (logs[i].Time >= st && logs[i].Time <= et) {
         data.push(logs[i]);
       }
@@ -72,25 +65,12 @@
     showTable();
   };
 
-  const formatState = (state:string,type:string) => {
-    if(type =="sort") {
-      return levelNum(state);
-    }
-    return `<span class="mdi ` +
-        getStateIcon(state) +
-        ` text-xl" style="color:` +
-        getStateColor(state) +
-        `;" ></span><span class="ml-2">` +
-        getStateName(state) +
-        `</span>`;
-  };
-
   const columns = [
     {
       data: "Level",
       title: "レベル",
       width: "10%",
-      render: formatState,
+      render: renderState,
     },
     {
       data: "Time",
@@ -124,38 +104,36 @@
     refresh();
   });
 
-  onDestroy(()=>{
-    if(table) {
+  onDestroy(() => {
+    if (table) {
       table.destroy();
       table = undefined;
     }
   });
 
-
   const saveCSV = () => {
     ExportSyslogs("csv");
-  }
+  };
 
   const saveExcel = () => {
     ExportSyslogs("excel");
-  }
+  };
 
   let pagination: any = {
     limit: 10,
   };
   let pp = 10;
   const ppList = [
-    { name:"10",value:10 },
-    { name:"20",value:20 },
-    { name:"100",value:100 },
-  ]
-
+    { name: "10", value: 10 },
+    { name: "20", value: 20 },
+    { name: "100", value: 100 },
+  ];
 </script>
 
 <svelte:window on:resize={resizeLogLevelChart} />
 
 <div class="flex flex-col">
-  <div id="chart" style="height: 200px;"></div>
+  <div id="chart" style="height: 200px;" />
   <div class="m-5 grow">
     <table id="table" class="display compact" style="width:99%" />
   </div>
@@ -168,7 +146,14 @@
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
     </Button>
-    <Button type="button" color="green" on:click={() => {showReport=true}} size="xs">
+    <Button
+      type="button"
+      color="green"
+      on:click={() => {
+        showReport = true;
+      }}
+      size="xs"
+    >
       <Icon path={icons.mdiChartPie} size={1} />
       レポート
     </Button>
@@ -181,7 +166,7 @@
 
 {#if showReport}
   <SyslogReport
-   {logs}
+    {logs}
     on:close={() => {
       showReport = false;
     }}

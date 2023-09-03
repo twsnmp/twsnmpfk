@@ -3,6 +3,7 @@
 import {datastore} from '../models';
 import {main} from '../models';
 import {discover} from '../models';
+import {backend} from '../models';
 
 export function CheckPolling(arg1:string):Promise<boolean>;
 
@@ -48,7 +49,7 @@ export function GetDrawItem(arg1:string):Promise<datastore.DrawItemEnt>;
 
 export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
 
-export function GetEventLogs():Promise<Array<datastore.EventLogEnt>>;
+export function GetEventLogs(arg1:string):Promise<Array<datastore.EventLogEnt>>;
 
 export function GetGroks():Promise<Array<datastore.GrokEnt>>;
 
@@ -77,6 +78,10 @@ export function GetSettings():Promise<main.Settings>;
 export function GetSyslogs():Promise<Array<datastore.SyslogEnt>>;
 
 export function GetTraps():Promise<Array<datastore.TrapEnt>>;
+
+export function GetVPanelPorts(arg1:string):Promise<Array<backend.VPanelPortEnt>>;
+
+export function GetVPanelPowerInfo(arg1:string):Promise<boolean>;
 
 export function GetVersion():Promise<string>;
 

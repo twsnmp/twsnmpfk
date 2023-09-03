@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/dustin/go-humanize"
+	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/discover"
 	"github.com/twsnmp/twsnmpfk/wol"
@@ -581,4 +582,14 @@ func (a *App) CopyDrawItem(id string) bool {
 		Event: "描画アイテムをコピーしました",
 	})
 	return true
+}
+
+// GetVPanelPorts returns port info of node
+func (a *App) GetVPanelPorts(id string) []backend.VPanelPortEnt {
+	return backend.GetVPanelPorts(id)
+}
+
+// GetVPanelPowerInfo returns power info of node
+func (a *App) GetVPanelPowerInfo(id string) bool {
+	return backend.GetVPanelPowerInfo(id)
 }

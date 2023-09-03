@@ -90,8 +90,8 @@ export function GetDrawItems() {
   return window['go']['main']['App']['GetDrawItems']();
 }
 
-export function GetEventLogs() {
-  return window['go']['main']['App']['GetEventLogs']();
+export function GetEventLogs(arg1) {
+  return window['go']['main']['App']['GetEventLogs'](arg1);
 }
 
 export function GetGroks() {
@@ -148,6 +148,14 @@ export function GetSyslogs() {
 
 export function GetTraps() {
   return window['go']['main']['App']['GetTraps']();
+}
+
+export function GetVPanelPorts(arg1) {
+  return window['go']['main']['App']['GetVPanelPorts'](arg1);
+}
+
+export function GetVPanelPowerInfo(arg1) {
+  return window['go']['main']['App']['GetVPanelPowerInfo'](arg1);
 }
 
 export function GetVersion() {

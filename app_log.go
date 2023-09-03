@@ -5,10 +5,12 @@ import (
 )
 
 // GetEventLogs retunrs  event logs
-func (a *App) GetEventLogs() []datastore.EventLogEnt {
+func (a *App) GetEventLogs(id string) []datastore.EventLogEnt {
 	ret := []datastore.EventLogEnt{}
 	datastore.ForEachLastEventLog(0, func(l *datastore.EventLogEnt) bool {
-		ret = append(ret, *l)
+		if id == "" || id == l.NodeID {
+			ret = append(ret, *l)
+		}
 		return len(ret) < maxDispLog
 	})
 	return ret

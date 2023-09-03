@@ -9,29 +9,30 @@ import (
 )
 
 type VPanelPortEnt struct {
-	Index        int64
-	State        string
-	Name         string
-	Speed        int64
-	OutPacktes   int64
-	OutBytes     int64
-	OutError     int64
-	InPacktes    int64
-	InBytes      int64
-	InError      int64
-	Type         int64
-	Admin        int64
-	Oper         int64
-	MAC          string
+	Index        int64  `json:"Index"`
+	State        string `json:"State"`
+	Name         string `json:"Name"`
+	Speed        int64  `json:"Speed"`
+	OutPacktes   int64  `json:"OutPacktes"`
+	OutBytes     int64  `json:"OutBytes"`
+	OutError     int64  `json:"OutError"`
+	InPacktes    int64  `json:"InPacktes"`
+	InBytes      int64  `json:"InBytes"`
+	InError      int64  `json:"InError"`
+	Type         int64  `json:"Type"`
+	Admin        int64  `json:"Admin"`
+	Oper         int64  `json:"Oper"`
+	MAC          string `json:"MAC"`
 	pollingIndex string
 }
 
 // GetVPanelPowerInfo : パネルの電源状態を取得
-func GetVPanelPowerInfo(n *datastore.NodeEnt) bool {
+func GetVPanelPowerInfo(id string) bool {
+	n := datastore.GetNode(id)
 	// まずはノードの状態を反映
 	state := n.State
 	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
-		if p.NodeID == n.ID && p.Type == "ping" {
+		if p.NodeID == id && p.Type == "ping" {
 			// PINGの状態を反映
 			state = p.State
 			return false
@@ -46,24 +47,24 @@ func GetVPanelPowerInfo(n *datastore.NodeEnt) bool {
 // 1.ポーリングの設定
 // 2.SNMPから取得
 // 3.ラインの設定
-func GetVPanelPorts(n *datastore.NodeEnt) []*VPanelPortEnt {
+func GetVPanelPorts(id string) []VPanelPortEnt {
 	// ポーリングから取得
-	if ports := getPortsFromPolling(n); len(ports) > 0 {
+	if ports := getPortsFromPolling(id); len(ports) > 0 {
 		return ports
 	}
 	// SNMPで取得
-	if ports := getPortsBySNMP(n); len(ports) > 0 {
+	if ports := getPortsBySNMP(id); len(ports) > 0 {
 		return ports
 	}
 	// ラインから取得
-	return getPortsFromLine(n)
+	return getPortsFromLine(id)
 }
 
-func getPortsFromPolling(n *datastore.NodeEnt) []*VPanelPortEnt {
-	ports := []*VPanelPortEnt{}
+func getPortsFromPolling(id string) []VPanelPortEnt {
+	ports := []VPanelPortEnt{}
 	traffPollings := make(map[string]*datastore.PollingEnt)
 	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
-		if p.NodeID == n.ID && p.Type == "snmp" {
+		if p.NodeID == id && p.Type == "snmp" {
 			if p.Mode == "ifOperStatus" && strings.Contains(p.Filter, ":") {
 				a := strings.Split(p.Filter, ":")
 				if len(a) != 2 {
@@ -80,7 +81,7 @@ func getPortsFromPolling(n *datastore.NodeEnt) []*VPanelPortEnt {
 				case "unknown":
 					state = "off"
 				}
-				ports = append(ports, &VPanelPortEnt{
+				ports = append(ports, VPanelPortEnt{
 					Index:        i,
 					Name:         a[1],
 					pollingIndex: p.Params,
@@ -117,11 +118,11 @@ func getTraffData(k string, p *datastore.PollingEnt) int64 {
 	return 0
 }
 
-func getPortsFromLine(n *datastore.NodeEnt) []*VPanelPortEnt {
-	ports := []*VPanelPortEnt{}
+func getPortsFromLine(id string) []VPanelPortEnt {
+	ports := []VPanelPortEnt{}
 	max := int64(0)
 	datastore.ForEachLines(func(l *datastore.LineEnt) bool {
-		if l.NodeID1 != n.ID && l.NodeID2 != n.ID {
+		if l.NodeID1 != id && l.NodeID2 != id {
 			return true
 		}
 		name := ""
@@ -133,7 +134,7 @@ func getPortsFromLine(n *datastore.NodeEnt) []*VPanelPortEnt {
 				max = i
 			}
 			name = a[1]
-		} else if l.NodeID1 == n.ID {
+		} else if l.NodeID1 == id {
 			np := datastore.GetNode(l.NodeID2)
 			if np == nil {
 				return true
@@ -147,7 +148,7 @@ func getPortsFromLine(n *datastore.NodeEnt) []*VPanelPortEnt {
 			name = np.Name
 		}
 		s := l.State1
-		if l.NodeID1 == n.ID {
+		if l.NodeID1 == id {
 			s = l.State2
 		}
 		state := "down"
@@ -157,7 +158,7 @@ func getPortsFromLine(n *datastore.NodeEnt) []*VPanelPortEnt {
 		case "unknown":
 			state = "off"
 		}
-		ports = append(ports, &VPanelPortEnt{
+		ports = append(ports, VPanelPortEnt{
 			Index: i,
 			Name:  name,
 			State: state,

@@ -5,12 +5,9 @@
   import { onMount,tick,onDestroy } from "svelte";
   import { GetEventLogs, ExportEventLogs } from "../../wailsjs/go/main/App";
   import {
-    getStateIcon,
-    getStateColor,
-    getStateName,
+    renderState,
     renderTime,
     getTableLang,
-    levelNum,
   } from "./common";
   import {showLogLevelChart,resizeLogLevelChart} from "./chart/loglevel";
   import EventLogReport from "./EventLogReport.svelte";
@@ -35,7 +32,7 @@
   }
 
   const refresh = async () => {
-    logs = await GetEventLogs();
+    logs = await GetEventLogs("");
     data = [];
     for (let i =0; i < logs.length;i++) {
       data.push(logs[i]);
@@ -60,25 +57,12 @@
     showTable();
   };
 
-  const formatState = (state:string,type:string) => {
-    if(type=="sort") {
-      return levelNum(state);
-    }
-    return `<span class="mdi ` +
-        getStateIcon(state) +
-        ` text-xl" style="color:` +
-        getStateColor(state) +
-        `;"></span><span class="ml-2">` +
-        getStateName(state) +
-        `</span>`;
-  };
-
   const columns = [
     {
       data: "Level",
       title: "レベル",
       width: "10%",
-      render: formatState,
+      render: renderState,
     },
     {
       data: "Time",

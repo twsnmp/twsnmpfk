@@ -2,12 +2,9 @@
   import { onMount, onDestroy } from "svelte";
   import { GetAlertEventLogs } from "../../wailsjs/go/main/App";
   import {
-    getStateColor,
-    getStateIcon,
-    getStateName,
+    renderState,
     renderTime,
     getTableLang,
-    levelNum,
   } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -32,25 +29,12 @@
     });
   }
 
-  const formatState = (state:string,type:string) => {
-    if(type=="sort") {
-      return levelNum(state);
-    }
-    return `<span class="mdi ` +
-        getStateIcon(state) +
-        ` text-xl" style="color:` +
-        getStateColor(state) +
-        `;"></span><span class="ml-2">` +
-        getStateName(state) +
-        `</span>`;
-  };
-
   const columns = [
     {
       data: "Level",
       title: "レベル",
       width: "10%",
-      render: formatState,
+      render: renderState,
     },
     {
       data: "Time",

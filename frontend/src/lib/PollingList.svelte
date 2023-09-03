@@ -10,13 +10,10 @@
     ExportPollings,
   } from "../../wailsjs/go/main/App";
   import {
-    getStateIcon,
-    getStateColor,
-    getStateName,
+    renderState,
     renderTime,
     getLogModeName,
     getTableLang,
-    levelNum,
   } from "./common";
   import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
@@ -31,8 +28,8 @@
 
   const showTable = () => {
     let order = [
-        [0, "asc"],
-        [1, "asc"],
+      [0, "asc"],
+      [1, "asc"],
     ];
     if (table) {
       order = table.order();
@@ -64,21 +61,6 @@
     showTable();
   };
 
-  const formatState = (state: string, type: string) => {
-    if (type == "sort") {
-      return levelNum(state);
-    }
-    return (
-      `<span class="mdi ` +
-      getStateIcon(state) +
-      ` text-xl" style="color:` +
-      getStateColor(state) +
-      `;"></span><span class="ml-2">` +
-      getStateName(state) +
-      `</span>`
-    );
-  };
-
   const edit = () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
     if (selected.length != 1) {
@@ -102,7 +84,7 @@
       data: "State",
       title: "状態",
       width: "10%",
-      render: formatState,
+      render: renderState,
     },
     {
       data: "NodeID",
@@ -119,7 +101,7 @@
       data: "Level",
       title: "レベル",
       width: "10%",
-      render: formatState,
+      render: renderState,
     },
     {
       data: "Type",

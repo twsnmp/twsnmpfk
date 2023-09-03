@@ -1,3 +1,46 @@
+export namespace backend {
+	
+	export class VPanelPortEnt {
+	    Index: number;
+	    State: string;
+	    Name: string;
+	    Speed: number;
+	    OutPacktes: number;
+	    OutBytes: number;
+	    OutError: number;
+	    InPacktes: number;
+	    InBytes: number;
+	    InError: number;
+	    Type: number;
+	    Admin: number;
+	    Oper: number;
+	    MAC: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new VPanelPortEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Index = source["Index"];
+	        this.State = source["State"];
+	        this.Name = source["Name"];
+	        this.Speed = source["Speed"];
+	        this.OutPacktes = source["OutPacktes"];
+	        this.OutBytes = source["OutBytes"];
+	        this.OutError = source["OutError"];
+	        this.InPacktes = source["InPacktes"];
+	        this.InBytes = source["InBytes"];
+	        this.InError = source["InError"];
+	        this.Type = source["Type"];
+	        this.Admin = source["Admin"];
+	        this.Oper = source["Oper"];
+	        this.MAC = source["MAC"];
+	    }
+	}
+
+}
+
 export namespace datastore {
 	
 	export class AIConfEnt {

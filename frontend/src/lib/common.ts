@@ -1,4 +1,5 @@
 import * as echarts from 'echarts';
+import * as numeral from 'numeral';
 import ja from "datatables.net-plugins/i18n/ja.mjs";
 
 export const stateList = [
@@ -225,6 +226,20 @@ export const getScoreIcon = (s:number) => {
   return 'mdi-emoticon-dead-outline'
 }
 
+
+export const renderState = (state:string,type:string) => {
+  if(type=="sort") {
+    return levelNum(state);
+  }
+  return `<span class="mdi ` +
+      getStateIcon(state) +
+      ` text-xl" style="color:` +
+      getStateColor(state) +
+      `;"></span><span class="ml-2">` +
+      getStateName(state) +
+      `</span>`;
+};
+
 export const renderIP = (ip:string,type:string) => {
   if (type=="sort") {
     return ip.split(".").reduce((int, v) => (Number(int) * 256  +Number(v)) + "");
@@ -282,4 +297,25 @@ export const getTableLang = () => {
     },
   };
   return ja;
+}
+
+export const renderSpeed = (n:number,type:string) => {
+  if (type == "sort") {
+    return n;
+  }
+  return numeral(n).format('0b') + 'PS';
+}
+
+export const renderCount = (n:number,type:string) => {
+  if (type == "sort") {
+    return n;
+  }
+  return numeral(n).format('0,0');
+}
+
+export const renderBytes = (n:number,type:string) => {
+  if (type == "sort") {
+    return n;
+  }
+  return numeral(n).format('0.000b');
 }
