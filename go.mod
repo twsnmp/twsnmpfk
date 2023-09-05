@@ -6,11 +6,9 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/Songmu/timeout v0.4.0
 	github.com/beevik/ntp v1.2.0
-	github.com/chewxy/stl v1.3.1
 	github.com/codegaudi/go-iforest v0.0.1
 	github.com/dustin/go-humanize v1.0.1
 	github.com/gosnmp/gosnmp v1.35.0
-	github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
 	github.com/montanaflynn/stats v0.7.1
 	github.com/oschwald/geoip2-golang v1.9.0
 	github.com/robertkrimen/otto v0.2.1
@@ -33,15 +31,8 @@ require (
 	github.com/Songmu/wrapcommander v0.1.0 // indirect
 	github.com/alecthomas/participle v0.4.1 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
-	github.com/apache/arrow/go/arrow v0.0.0-20201229220542-30ce2eb5d4dc // indirect
 	github.com/bep/debounce v1.2.1 // indirect
-	github.com/chewxy/hm v1.0.0 // indirect
-	github.com/chewxy/math32 v1.0.8 // indirect
-	github.com/chewxy/tightywhities v1.0.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/google/flatbuffers v1.12.0 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/labstack/echo/v4 v4.9.0 // indirect
@@ -67,21 +58,12 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/wailsapp/mimetype v1.4.1 // indirect
-	github.com/xtgo/set v1.0.0 // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
-	go4.org/unsafe/assume-no-moving-gc v0.0.0-20230525183740-e7c30c78aeb2 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
-	gonum.org/v1/gonum v0.8.2 // indirect
-	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
-	gorgonia.org/dawson v1.2.0 // indirect
-	gorgonia.org/tensor v0.9.24 // indirect
-	gorgonia.org/vecf32 v0.9.0 // indirect
-	gorgonia.org/vecf64 v0.9.0 // indirect
 )
 
 // replace github.com/wailsapp/wails/v2 v2.5.1 => /Users/ymimacmini/go/pkg/mod

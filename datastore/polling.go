@@ -172,18 +172,17 @@ func AddPollingLog(p *PollingEnt) error {
 	return nil
 }
 
-func ForEachPollingLog(st, et int64, pollingID string, f func(*PollingLogEnt) bool) error {
+func ForEachLastPollingLog(pollingID string, f func(*PollingLogEnt) bool) error {
 	if db == nil {
 		return ErrDBNotOpen
 	}
-	sk := fmt.Sprintf("%016x", st)
 	return db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("pollingLogs"))
 		if b == nil {
 			return nil
 		}
 		c := b.Cursor()
-		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
+		for k, v := c.Last(); k != nil; k, v = c.Prev() {
 			if !bytes.Contains(v, []byte(pollingID)) {
 				continue
 			}
@@ -195,12 +194,6 @@ func ForEachPollingLog(st, et int64, pollingID string, f func(*PollingLogEnt) bo
 			}
 			if e.PollingID != pollingID {
 				continue
-			}
-			if e.Time < st {
-				continue
-			}
-			if e.Time > et {
-				break
 			}
 			if !f(&e) {
 				break

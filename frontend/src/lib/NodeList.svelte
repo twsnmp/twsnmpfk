@@ -11,11 +11,13 @@
   } from "../../wailsjs/go/main/App";
   import { getTableLang, renderState, renderIP } from "./common";
   import Node from "./Node.svelte";
+  import NodeReport from "./NodeReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
 
   let data = [];
   let showEditNode = false;
+  let showNodeReport = false;
   let selectedNode = "";
   let table = undefined;
   let selectedCount = 0;
@@ -64,6 +66,15 @@
     }
     selectedNode = selected[0];
     showEditNode = true;
+  };
+
+  const report = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedNode = selected[0];
+    showNodeReport = true;
   };
 
   const deleteNodes = async () => {
@@ -146,9 +157,13 @@
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1}
-      <Button color="green" type="button" on:click={edit} size="xs">
+      <Button color="blue" type="button" on:click={edit} size="xs">
         <Icon path={icons.mdiPencil} size={1} />
         編集
+      </Button>
+      <Button color="green" type="button" on:click={report} size="xs">
+        <Icon path={icons.mdiChartBar} size={1} />
+        レポート
       </Button>
     {/if}
     {#if selectedCount > 0}
@@ -186,6 +201,15 @@
     on:close={(e) => {
       showEditNode = false;
       refresh();
+    }}
+  />
+{/if}
+
+{#if showNodeReport}
+  <NodeReport
+    id={selectedNode}
+    on:close={(e) => {
+      showNodeReport = false;
     }}
   />
 {/if}

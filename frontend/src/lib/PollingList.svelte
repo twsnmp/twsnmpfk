@@ -18,10 +18,12 @@
   import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import PollingReport from "./PollingReport.svelte";
 
   let data = [];
   let nodes = {};
   let showEditPolling = false;
+  let showPollingReport = false;
   let selectedPolling = "";
   let table = undefined;
   let selectedCount = 0;
@@ -69,6 +71,15 @@
     selectedPolling = selected[0];
     showEditPolling = true;
   };
+
+  const report = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedPolling = selected[0];
+    showPollingReport = true;
+  }
 
   const deletePollings = async () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
@@ -148,9 +159,13 @@
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1}
-      <Button color="green" type="button" on:click={edit} size="xs">
+      <Button color="blue" type="button" on:click={edit} size="xs">
         <Icon path={icons.mdiPencil} size={1} />
         編集
+      </Button>
+      <Button color="green" type="button" on:click={report} size="xs">
+        <Icon path={icons.mdiChartBar} size={1} />
+        レポート
       </Button>
     {/if}
     {#if selectedCount > 0}
@@ -181,6 +196,15 @@
     on:close={(e) => {
       showEditPolling = false;
       refresh();
+    }}
+  />
+{/if}
+
+{#if showPollingReport}
+  <PollingReport
+    id={selectedPolling}
+    on:close={(e) => {
+      showPollingReport = false;
     }}
   />
 {/if}

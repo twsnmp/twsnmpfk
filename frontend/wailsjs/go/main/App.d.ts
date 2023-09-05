@@ -5,6 +5,8 @@ import {main} from '../models';
 import {discover} from '../models';
 import {backend} from '../models';
 
+export function AutoAddPolling(arg1:string,arg2:Array<string>):Promise<boolean>;
+
 export function CheckPolling(arg1:string):Promise<boolean>;
 
 export function CopyDrawItem(arg1:string):Promise<boolean>;
@@ -70,6 +72,10 @@ export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
 
 export function GetPolling(arg1:string):Promise<datastore.PollingEnt>;
+
+export function GetPollingLogs(arg1:string):Promise<Array<datastore.PollingLogEnt>>;
+
+export function GetPollingTemplates():Promise<Array<datastore.PollingTemplateEnt>>;
 
 export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 

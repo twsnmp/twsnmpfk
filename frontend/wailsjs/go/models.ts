@@ -397,6 +397,56 @@ export namespace datastore {
 	        this.State = source["State"];
 	    }
 	}
+	export class PollingLogEnt {
+	    Time: number;
+	    PollingID: string;
+	    State: string;
+	    Result: {[key: string]: any};
+	
+	    static createFrom(source: any = {}) {
+	        return new PollingLogEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.PollingID = source["PollingID"];
+	        this.State = source["State"];
+	        this.Result = source["Result"];
+	    }
+	}
+	export class PollingTemplateEnt {
+	    ID: string;
+	    Name: string;
+	    Level: string;
+	    Type: string;
+	    Mode: string;
+	    Params: string;
+	    Filter: string;
+	    Extractor: string;
+	    Script: string;
+	    Descr: string;
+	    AutoMode: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PollingTemplateEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Level = source["Level"];
+	        this.Type = source["Type"];
+	        this.Mode = source["Mode"];
+	        this.Params = source["Params"];
+	        this.Filter = source["Filter"];
+	        this.Extractor = source["Extractor"];
+	        this.Script = source["Script"];
+	        this.Descr = source["Descr"];
+	        this.AutoMode = source["AutoMode"];
+	    }
+	}
 	export class SyslogEnt {
 	    Time: number;
 	    Level: string;

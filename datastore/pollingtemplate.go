@@ -8,17 +8,17 @@ import (
 )
 
 type PollingTemplateEnt struct {
-	ID        string
-	Name      string
-	Level     string
-	Type      string
-	Mode      string
-	Params    string
-	Filter    string
-	Extractor string
-	Script    string
-	Descr     string
-	AutoMode  string
+	ID        string `json:"ID"`
+	Name      string `json:"Name"`
+	Level     string `json:"Level"`
+	Type      string `json:"Type"`
+	Mode      string `json:"Mode"`
+	Params    string `json:"Params"`
+	Filter    string `json:"Filter"`
+	Extractor string `json:"Extractor"`
+	Script    string `json:"Script"`
+	Descr     string `json:"Descr"`
+	AutoMode  string `json:"AutoMode"`
 }
 
 var pollingTemplateList = make(map[string]*PollingTemplateEnt)

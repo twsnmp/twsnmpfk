@@ -79,6 +79,20 @@ func (a *App) DeletePollings(ids []string) {
 	})
 }
 
+// GetPollingLog returns polling log
+func (a *App) GetPollingLogs(id string) []datastore.PollingLogEnt {
+	ret := []datastore.PollingLogEnt{}
+	polling := datastore.GetPolling(id)
+	if polling == nil {
+		return ret
+	}
+	datastore.ForEachLastPollingLog(id, func(l *datastore.PollingLogEnt) bool {
+		ret = append(ret, *l)
+		return len(ret) <= maxDispLog
+	})
+	return ret
+}
+
 // GetGroks retunrs grok list
 func (a *App) GetGroks() []datastore.GrokEnt {
 	ret := []datastore.GrokEnt{}
@@ -87,4 +101,56 @@ func (a *App) GetGroks() []datastore.GrokEnt {
 		return true
 	})
 	return ret
+}
+
+// GetPollingTemplates returns polling templates
+func (a *App) GetPollingTemplates() []datastore.PollingTemplateEnt {
+	ret := []datastore.PollingTemplateEnt{}
+	datastore.ForEachPollingTemplate(func(pt *datastore.PollingTemplateEnt) bool {
+		ret = append(ret, *pt)
+		return true
+	})
+	return ret
+}
+
+func (a *App) AutoAddPolling(node string, ids []string) bool {
+	n := datastore.GetNode(node)
+	if n == nil {
+		log.Printf("node not found id=%s", node)
+		return false
+	}
+	for _, id := range ids {
+		pt := datastore.GetPollingTemplate(id)
+		if pt == nil {
+			continue
+		}
+		if pt.AutoMode == "disable" {
+			continue
+		}
+		if pt.AutoMode != "" {
+			// インデックスの展開などを行う並列で処理する
+			go polling.AutoAddPolling(n, pt)
+			continue
+		}
+		p := new(datastore.PollingEnt)
+		p.Name = pt.Name
+		p.NodeID = n.ID
+		p.Type = pt.Type
+		p.Params = pt.Params
+		p.Mode = pt.Mode
+		p.Script = pt.Script
+		p.Extractor = pt.Extractor
+		p.Filter = pt.Filter
+		p.Level = pt.Level
+		p.PollInt = datastore.MapConf.PollInt
+		p.Timeout = datastore.MapConf.Timeout
+		p.Retry = datastore.MapConf.Retry
+		p.LogMode = 0
+		p.NextTime = 0
+		p.State = "unknown"
+		if err := datastore.AddPolling(p); err != nil {
+			return false
+		}
+	}
+	return true
 }

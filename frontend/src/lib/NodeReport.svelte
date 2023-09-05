@@ -21,6 +21,7 @@
     GetVPanelPowerInfo,
     GetEventLogs,
     GetPollings,
+    DeletePollings,
   } from "../../wailsjs/go/main/App";
   import {
     getIcon,
@@ -35,9 +36,9 @@
     renderSpeed,
   } from "./common";
   import { deleteVPanel, initVPanel, setVPanel } from "./vpanel";
+  import PollingReport from "./PollingReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import { globals } from "svelte/internal";
 
   export let id = "";
   let node: datastore.NodeEnt | undefined = undefined;
@@ -46,6 +47,7 @@
 
   let logTable = undefined;
   const showLog = async () => {
+    selectedCount = 0;
     if (logTable) {
       logTable.destroy();
       logTable = undefined;
@@ -82,16 +84,23 @@
   };
 
   let pollingTable = undefined;
+  let selectedCount = 0;
+  let showPollingReport = false;
+  let selectedPolling = "";
 
   const showPolling = async () => {
     if (pollingTable) {
       pollingTable.destroy();
       pollingTable = undefined;
     }
+    selectedCount = 0;
     pollingTable = new DataTable("#pollingTable", {
       data: await GetPollings(id),
       language: getTableLang(),
       order: [[1, "desc"]],
+      select: {
+        style: "multi",
+      },
       columns: [
         {
           data: "State",
@@ -129,7 +138,31 @@
         },
       ],
     });
+    pollingTable.on("select", () => {
+      selectedCount = pollingTable.rows({ selected: true }).count();
+    });
+    pollingTable.on("deselect", () => {
+      selectedCount = pollingTable.rows({ selected: true }).count();
+    });
   };
+
+  const report = () => {
+    const selected = pollingTable.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedPolling = selected[0];
+    showPollingReport = true;
+  }
+
+  const deletePollings = async () => {
+    const selected = pollingTable.rows({ selected: true }).data().pluck("ID");
+    if (selected.length < 1) {
+      return;
+    }
+    await DeletePollings(selected.toArray());
+    showPolling();
+  }
 
   let portTable = undefined;
   const showPortTable = (ports) => {
@@ -212,6 +245,7 @@
   };
 
   const showVPanel = async () => {
+    selectedCount = 0;
     initVPanel("vpanel");
     const ports = await GetVPanelPorts(id);
     const power = await GetVPanelPowerInfo(id);
@@ -231,13 +265,22 @@
 
   onDestroy(() => {
     deleteVPanel();
+    if(pollingTable) {
+      pollingTable.destroy();
+    }
+    if(logTable) {
+      logTable.destroy();
+    }
+    if(portTable) {
+      portTable.destroy();
+    }
   });
 </script>
 
 <Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem open on:click={() => {}}>
+      <TabItem open on:click={() => {selectedCount = 0;}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           基本情報
@@ -303,6 +346,18 @@
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
+      {#if selectedCount == 1}
+        <Button type="button" color="green" on:click={report} size="sm">
+          <Icon path={icons.mdiCancel} size={1} />
+          レポート
+        </Button>
+      {/if}
+      {#if selectedCount > 0}
+        <Button type="button" color="red" on:click={deletePollings} size="sm">
+          <Icon path={icons.mdiTrashCan} size={1} />
+          削除
+        </Button>
+      {/if}
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
         閉じる
@@ -310,6 +365,16 @@
     </div>
   </div>
 </Modal>
+
+{#if showPollingReport}
+  <PollingReport
+    id={selectedPolling}
+    on:close={(e) => {
+      showPollingReport = false;
+    }}
+  />
+{/if}
+
 
 <style global>
   #vpanel canvas {
