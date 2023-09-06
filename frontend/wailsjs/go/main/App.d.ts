@@ -5,7 +5,7 @@ import {main} from '../models';
 import {discover} from '../models';
 import {backend} from '../models';
 
-export function AutoAddPolling(arg1:string,arg2:Array<string>):Promise<boolean>;
+export function AutoAddPolling(arg1:string,arg2:string):Promise<boolean>;
 
 export function CheckPolling(arg1:string):Promise<boolean>;
 
@@ -74,6 +74,8 @@ export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
 export function GetPolling(arg1:string):Promise<datastore.PollingEnt>;
 
 export function GetPollingLogs(arg1:string):Promise<Array<datastore.PollingLogEnt>>;
+
+export function GetPollingTemplate(arg1:string):Promise<datastore.PollingTemplateEnt>;
 
 export function GetPollingTemplates():Promise<Array<datastore.PollingTemplateEnt>>;
 

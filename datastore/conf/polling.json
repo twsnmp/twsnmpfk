@@ -209,7 +209,7 @@
     "Params": "URLを指定",
     "Level": "low",
     "Descr": "HTTP接続監視",
-    "AutoMode": "80,443,2181,8080,8888"
+    "AutoMode": "80,443,8080"
   },
   {
     "Name": "HTTPS接続",
@@ -218,7 +218,7 @@
     "Params": "URLを指定",
     "Level": "low",
     "Descr": "HTTPS接続監視",
-    "AutoMode": "443,2181,8080,8888"
+    "AutoMode": "443,8080"
   },
   {
     "Name": "気象情報",
@@ -239,7 +239,7 @@
     "Script": "30",
     "Level": "low",
     "Descr": "サーバー証明書の期限が３０日以内を検知",
-    "AutoMode": "443,2181,8080,8888"
+    "AutoMode": "443,8080"
   },
   {
     "Name": "TLS v1.0 接続検知",
@@ -249,7 +249,7 @@
     "Script": "!1.0",
     "Level": "low",
     "Descr": "TLS v1.0で接続できることを検知",
-    "AutoMode": "443,2181,8080,8888"
+    "AutoMode": "443,8080"
   },
   {
     "Name": "TLS証明書検証",
@@ -418,87 +418,12 @@
     "AutoMode": "disable"
   },
   {
-    "Name": "NetFlowで通信監視",
-    "Type": "netflow",
-    "Filter": "フィルター条件",
-    "Script": "count < 1",
-    "Level": "off",
-    "Descr": "NetFlowで通信監視",
-    "AutoMode": "disable"
-  },
-  {
     "Name": "SYSLOG PRI監視",
     "Type": "syslog",
     "Mode": "pri",
     "Filter": "フィルター条件",
     "Level": "off",
     "Descr": "SYSLOG PRI監視",
-    "AutoMode": "disable"
-  },
-  {
-    "Name": "SSHログからユーザーレポート",
-    "Type": "syslog",
-    "Mode": "user",
-    "Filter": "フィルター条件",
-    "Extractor": "SSHLOGIN",
-    "Level": "off",
-    "Descr": "SSHのログインのログからユーザーレポート作成",
-    "AutoMode": "disable"
-  },
-  {
-    "Name": "Syslogからデバイスレポート",
-    "Type": "syslog",
-    "Mode": "device",
-    "Filter": "フィルター条件",
-    "Extractor": "DEVICE",
-    "Level": "off",
-    "Descr": "Syslogからデバイスレポート作成",
-    "AutoMode": "disable"
-  },
-  {
-    "Name": "WELFログからフローレポート",
-    "Type": "syslog",
-    "Mode": "flow",
-    "Filter": "フィルター条件",
-    "Extractor": "WELFFLOW",
-    "Level": "off",
-    "Descr": "WELFログから通信フローレポート作成",
-    "AutoMode": "disable"
-  },
-  {
-    "Name": "デバイスレポート信用スコア監視",
-    "Type": "report",
-    "Mode": "device",
-    "Level": "low",
-    "Script": "",
-    "Descr": "デバイスレポートの信用スコアを定期的に集計して監視",
-    "AutoMode": "disable"
-  },
-  {
-    "Name": "ユーザーレポート信用スコア監視",
-    "Type": "report",
-    "Mode": "user",
-    "Level": "low",
-    "Script": "",
-    "Descr": "ユーザーレポートの信用スコアを定期的に集計して監視",
-    "AutoMode": "disable"
-  },
-  {
-    "Name": "サーバーレポート信用スコア監視",
-    "Type": "report",
-    "Mode": "server",
-    "Level": "low",
-    "Script": "",
-    "Descr": "サーバーレポートの信用スコアを定期的に集計して監視",
-    "AutoMode": "disable"
-  },
-  {
-    "Name": "通信フローレポート信用スコア監視",
-    "Type": "report",
-    "Mode": "flow",
-    "Level": "low",
-    "Script": "",
-    "Descr": "通信レポートの信用スコアを定期的に集計して監視",
     "AutoMode": "disable"
   },
   {

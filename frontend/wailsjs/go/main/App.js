@@ -142,6 +142,10 @@ export function GetPollingLogs(arg1) {
   return window['go']['main']['App']['GetPollingLogs'](arg1);
 }
 
+export function GetPollingTemplate(arg1) {
+  return window['go']['main']['App']['GetPollingTemplate'](arg1);
+}
+
 export function GetPollingTemplates() {
   return window['go']['main']['App']['GetPollingTemplates']();
 }

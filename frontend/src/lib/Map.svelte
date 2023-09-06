@@ -9,6 +9,7 @@
   import Line from "./Line.svelte";
   import DrawItem from "./DrawItem.svelte";
   import NodeReport from "./NodeReport.svelte";
+  import AddPolling from "./AddPolling.svelte";
   import {
     CheckPolling,
     DeleteDrawItems,
@@ -37,7 +38,7 @@
   let showGrid: boolean = false;
   let gridSize: number = 40;
   let showNodeReport: boolean = false;
-  let showPolling: boolean = false;
+  let showAddPolling: boolean = false;
 
   export let dark: boolean = false;
   let timer = undefined;
@@ -233,10 +234,10 @@
       class="w-full"
       on:click={() => {
         showNodeMenu = false;
-        showPolling = true;
+        showAddPolling = true;
       }}
     >
-      <Icon path={icons.mdiCheck} />
+      <Icon path={icons.mdiLanCheck} />
       ポーリング
     </GradientButton>
     <GradientButton
@@ -375,6 +376,15 @@
     id={selectedNode}
     on:close={(e) => {
       showNodeReport = false;
+    }}
+  />
+{/if}
+
+{#if showAddPolling}
+  <AddPolling
+    nodeID={selectedNode}
+    on:close={(e) => {
+      showAddPolling = false;
     }}
   />
 {/if}

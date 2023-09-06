@@ -12,12 +12,14 @@
   import { getTableLang, renderState, renderIP } from "./common";
   import Node from "./Node.svelte";
   import NodeReport from "./NodeReport.svelte";
+  import AddPolling from "./AddPolling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
 
   let data = [];
   let showEditNode = false;
   let showNodeReport = false;
+  let showAddPolling = false;
   let selectedNode = "";
   let table = undefined;
   let selectedCount = 0;
@@ -75,6 +77,15 @@
     }
     selectedNode = selected[0];
     showNodeReport = true;
+  };
+
+  const polling = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedNode = selected[0];
+    showAddPolling = true;
   };
 
   const deleteNodes = async () => {
@@ -161,6 +172,10 @@
         <Icon path={icons.mdiPencil} size={1} />
         編集
       </Button>
+      <Button color="blue" type="button" on:click={polling} size="xs">
+        <Icon path={icons.mdiLanCheck} size={1} />
+        ポーリング
+      </Button>
       <Button color="green" type="button" on:click={report} size="xs">
         <Icon path={icons.mdiChartBar} size={1} />
         レポート
@@ -210,6 +225,15 @@
     id={selectedNode}
     on:close={(e) => {
       showNodeReport = false;
+    }}
+  />
+{/if}
+
+{#if showAddPolling}
+  <AddPolling
+    nodeID={selectedNode}
+    on:close={(e) => {
+      showAddPolling = false;
     }}
   />
 {/if}

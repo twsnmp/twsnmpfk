@@ -10,10 +10,10 @@
   import { Select, Modal, Label, Input, Button } from "flowbite-svelte";
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import {
-    GetNode,
     GetPolling,
     GetGroks,
     UpdatePolling,
+    GetPollingTemplate,
   } from "../../wailsjs/go/main/App";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -22,7 +22,7 @@
 
   export let nodeID: string = "";
   export let pollingID: string = "";
-  let node: datastore.NodeEnt | undefined = undefined;
+  export let pollingTmpID: string = "";
   let polling: datastore.PollingEnt | undefined = undefined;
   let show: boolean = false;
   let extractorList = [
@@ -40,20 +40,19 @@
   onMount(async () => {
     if (pollingID) {
       polling = await GetPolling(pollingID);
-      node = await GetNode(polling.NodeID);
     } else if (nodeID) {
-      node = await GetNode(nodeID);
+      const tmp = await GetPollingTemplate(pollingTmpID); 
       polling = {
         ID: "",
-        Name: "新規ポーリング",
+        Name: tmp.Name,
         NodeID: nodeID,
-        Type: "ping",
-        Mode: "",
-        Params: "",
-        Filter: "",
-        Extractor: "",
-        Script: "",
-        Level: "",
+        Type: tmp.Type,
+        Mode: tmp.Mode,
+        Params: tmp.Params,
+        Filter: tmp.Filter,
+        Extractor: tmp.Extractor,
+        Script: tmp.Script,
+        Level: tmp.Level,
         PollInt: 60,
         Timeout: 1,
         Retry: 1,
@@ -61,7 +60,7 @@
         NextTime: 0,
         LastTime: 0,
         Result: {},
-        State: "unkown",
+        State: "unknown",
       };
     } else {
       close();
@@ -125,8 +124,9 @@
         <Select
           items={typeList}
           bind:value={polling.Type}
-          placeholder="アドレスモードを選択"
+          placeholder="ポーリング種別を選択"
           size="sm"
+          disabled={pollingID != ""}
         />
       </Label>
       <Label class="space-y-2">
