@@ -43,6 +43,7 @@
     "numeral": "^2.0.6",
     "p5": "^1.7.0",
     "prismjs": "^1.29.0",
-    "tailwind-merge": "^1.14.0"
+    "tailwind-merge": "^1.14.0",
+    "world-map-geojson": "^1.0.2"
   }
 }

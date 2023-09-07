@@ -10,6 +10,7 @@
   import DrawItem from "./DrawItem.svelte";
   import NodeReport from "./NodeReport.svelte";
   import AddPolling from "./AddPolling.svelte";
+  import Ping from "./Ping.svelte";
   import {
     CheckPolling,
     DeleteDrawItems,
@@ -39,6 +40,7 @@
   let gridSize: number = 40;
   let showNodeReport: boolean = false;
   let showAddPolling: boolean = false;
+  let showPing: boolean = false;
 
   export let dark: boolean = false;
   let timer = undefined;
@@ -206,6 +208,17 @@
     >
       <Icon path={icons.mdiChartBarStacked} />
       レポート
+    </GradientButton>
+    <GradientButton
+      color="cyan"
+      class="w-full"
+      on:click={() => {
+        showNodeMenu = false;
+        showPing = true;
+      }}
+    >
+      <Icon path={icons.mdiShippingPallet} />
+      PING
     </GradientButton>
     <GradientButton
       color="cyan"
@@ -385,6 +398,15 @@
     nodeID={selectedNode}
     on:close={(e) => {
       showAddPolling = false;
+    }}
+  />
+{/if}
+
+{#if showPing}
+  <Ping
+    nodeID={selectedNode}
+    on:close={(e) => {
+      showPing = false;
     }}
   />
 {/if}

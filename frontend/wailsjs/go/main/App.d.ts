@@ -93,6 +93,8 @@ export function GetVPanelPowerInfo(arg1:string):Promise<boolean>;
 
 export function GetVersion():Promise<string>;
 
+export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
+
 export function SelectFile(arg1:string,arg2:boolean):Promise<string>;
 
 export function StartDiscover(arg1:datastore.DiscoverConfEnt):Promise<boolean>;

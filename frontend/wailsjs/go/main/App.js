@@ -178,6 +178,10 @@ export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
 }
 
+export function Ping(arg1) {
+  return window['go']['main']['App']['Ping'](arg1);
+}
+
 export function SelectFile(arg1, arg2) {
   return window['go']['main']['App']['SelectFile'](arg1, arg2);
 }

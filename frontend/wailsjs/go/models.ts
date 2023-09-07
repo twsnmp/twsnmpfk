@@ -559,6 +559,48 @@ export namespace main {
 	        this.LastTime = source["LastTime"];
 	    }
 	}
+	export class PingReq {
+	    IP: string;
+	    Size: number;
+	    TTL: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new PingReq(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.IP = source["IP"];
+	        this.Size = source["Size"];
+	        this.TTL = source["TTL"];
+	    }
+	}
+	export class PingRes {
+	    Stat: number;
+	    TimeStamp: number;
+	    Time: number;
+	    Size: number;
+	    SendTTL: number;
+	    RecvTTL: number;
+	    RecvSrc: string;
+	    Loc: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PingRes(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Stat = source["Stat"];
+	        this.TimeStamp = source["TimeStamp"];
+	        this.Time = source["Time"];
+	        this.Size = source["Size"];
+	        this.SendTTL = source["SendTTL"];
+	        this.RecvTTL = source["RecvTTL"];
+	        this.RecvSrc = source["RecvSrc"];
+	        this.Loc = source["Loc"];
+	    }
+	}
 	export class Settings {
 	    Kiosk: boolean;
 	    Lock: boolean;
