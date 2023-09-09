@@ -114,6 +114,10 @@ export function GetLines() {
   return window['go']['main']['App']['GetLines']();
 }
 
+export function GetMIBTree() {
+  return window['go']['main']['App']['GetMIBTree']();
+}
+
 export function GetMapConf() {
   return window['go']['main']['App']['GetMapConf']();
 }
@@ -184,6 +188,10 @@ export function Ping(arg1) {
 
 export function SelectFile(arg1, arg2) {
   return window['go']['main']['App']['SelectFile'](arg1, arg2);
+}
+
+export function SnmpWalk(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SnmpWalk'](arg1, arg2, arg3);
 }
 
 export function StartDiscover(arg1) {

@@ -21,6 +21,7 @@
     GetNode,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
+  import MIBBrowser from "./MIBBrowser.svelte";
 
   let map: any;
   let posX: number = 0;
@@ -41,6 +42,7 @@
   let showNodeReport: boolean = false;
   let showAddPolling: boolean = false;
   let showPing: boolean = false;
+  let showMibBr: boolean = false;
 
   export let dark: boolean = false;
   let timer = undefined;
@@ -219,6 +221,17 @@
     >
       <Icon path={icons.mdiShippingPallet} />
       PING
+    </GradientButton>
+    <GradientButton
+      color="cyan"
+      class="w-full"
+      on:click={() => {
+        showNodeMenu = false;
+        showMibBr = true;
+      }}
+    >
+      <Icon path={icons.mdiShippingPallet} />
+      MIBブラウザー
     </GradientButton>
     <GradientButton
       color="cyan"
@@ -407,6 +420,15 @@
     nodeID={selectedNode}
     on:close={(e) => {
       showPing = false;
+    }}
+  />
+{/if}
+
+{#if showMibBr}
+  <MIBBrowser
+    nodeID={selectedNode}
+    on:close={(e) => {
+      showMibBr = false;
     }}
   />
 {/if}

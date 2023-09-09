@@ -237,6 +237,40 @@ export namespace datastore {
 	        this.Port = source["Port"];
 	    }
 	}
+	export class MIBTreeEnt {
+	    oid: string;
+	    name: string;
+	    children: MIBTreeEnt[];
+	
+	    static createFrom(source: any = {}) {
+	        return new MIBTreeEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.oid = source["oid"];
+	        this.name = source["name"];
+	        this.children = this.convertValues(source["children"], MIBTreeEnt);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class MapConfEnt {
 	    MapName: string;
 	    PollInt: number;
@@ -557,6 +591,20 @@ export namespace main {
 	        this.Score = source["Score"];
 	        this.Count = source["Count"];
 	        this.LastTime = source["LastTime"];
+	    }
+	}
+	export class MibEnt {
+	    Name: string;
+	    Value: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new MibEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Name = source["Name"];
+	        this.Value = source["Value"];
 	    }
 	}
 	export class PingReq {

@@ -61,6 +61,8 @@ export function GetLine(arg1:string,arg2:string):Promise<datastore.LineEnt>;
 
 export function GetLines():Promise<Array<datastore.LineEnt>>;
 
+export function GetMIBTree():Promise<Array<datastore.MIBTreeEnt>>;
+
 export function GetMapConf():Promise<datastore.MapConfEnt>;
 
 export function GetMapName():Promise<string>;
@@ -96,6 +98,8 @@ export function GetVersion():Promise<string>;
 export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 
 export function SelectFile(arg1:string,arg2:boolean):Promise<string>;
+
+export function SnmpWalk(arg1:string,arg2:string,arg3:boolean):Promise<Array<main.MibEnt>>;
 
 export function StartDiscover(arg1:datastore.DiscoverConfEnt):Promise<boolean>;
 

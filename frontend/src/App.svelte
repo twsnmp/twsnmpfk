@@ -6,8 +6,6 @@
     NavLi,
     NavUl,
     Button,
-    Dropdown,
-    DropdownItem,
   } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
