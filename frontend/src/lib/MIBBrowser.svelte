@@ -9,13 +9,14 @@
   import neko6 from "../assets/images/neko_anm6.png";
   import neko7 from "../assets/images/neko_anm7.png";
   import { Modal, Button, Search, Select,Toggle } from "flowbite-svelte";
-  import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
+  import { onMount, createEventDispatcher, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { GetMIBTree, GetNode, SnmpWalk } from "../../wailsjs/go/main/App";
   import { getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import MibTree from "./MIBTree.svelte";
 
   export let nodeID = "";
 
@@ -34,12 +35,18 @@
   let columns = [];
   let data = [];
   let selectedCount = 0;
+  let showMIBTree = false;
+  let mibTree = {
+    oid: ".1.3.6.1",
+    name: ".iso.org.dod.internet",
+    MIBInfo: null,
+    children: undefined,
+  };
 
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
-    const mibTree = await GetMIBTree();
-    console.log(mibTree);
+    mibTree.children = await GetMIBTree();
     const node = await GetNode(nodeID);
     show = true;
     nekos.push(neko1);
@@ -221,7 +228,7 @@
         <Search size="sm" bind:value={name} placeholder="オブジェクト名">
         </Search>
       </div>
-      <Button size="sm" class="ml-2">
+      <Button size="sm" class="ml-2" on:click={()=>{showMIBTree =true}}>
         <Icon path={icons.mdiFileTree} size={1} />
       </Button>
       <Select
@@ -261,4 +268,26 @@
   <div class="flex justify-center items-center">
     <img src={neko} alt="neko" />
   </div>
+</Modal>
+
+<Modal
+  bind:open={showMIBTree}
+  size="lg"
+  permanent
+  class="w-full"
+>
+  <div class="flex flex-col space-y-4">
+    <MibTree tree={mibTree} on:select={(e)=>{
+      name = e.detail;
+      showMIBTree = false;
+    }}/>
+    <div class="flex justify-end space-x-2 mr-2">
+      <Button type="button" color="alternative" on:click={()=>{showMIBTree = false}} size="sm">
+        <Icon path={icons.mdiCancel} size={1} />
+        閉じる
+      </Button>
+    </div>
+
+  </div>
+
 </Modal>
