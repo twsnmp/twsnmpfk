@@ -27,6 +27,7 @@
   let posX: number = 0;
   let posY: number = 0;
   let showMapMenu: boolean = false;
+  let showMapMenu2: boolean = false;
   let showNodeMenu: boolean = false;
   let showDrawItemMenu: boolean = false;
   let showEditNode: boolean = false;
@@ -131,72 +132,58 @@
 
 <div bind:this={map} class="h-full w-full overflow-scroll" />
 
-<Modal bind:open={showMapMenu} size="xs" outsideclose>
-  <div class="flex flex-col space-y-2">
-    <GradientButton
-      color="blue"
-      class="w-full"
-      on:click={() => {
+{#if showMapMenu}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px"> 
+    <div class="bg-white w-30 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 px-1">
+      <div class="flex hover:bg-gray-100" on:click={()=>{
         selectedNode = "";
         showEditNode = true;
         showMapMenu = false;
-      }}
-    >
-      <Icon path={icons.mdiPlus} />
-      新規ノード
-    </GradientButton>
-    <GradientButton
-      color="blue"
-      class="w-full"
-      on:click={() => {
+      }}>
+        <Icon path={icons.mdiPlus} size={0.8} />
+        新規ノード  
+      </div>
+      <div class="flex hover:bg-gray-100" on:click={()=>{
         selectedDrawItem = "";
         showEditDrawItem = true;
         showMapMenu = false;
-      }}
-    >
-      <Icon path={icons.mdiDrawing} />
-      描画アイテム
-    </GradientButton>
-    <GradientButton color="teal" class="w-full">
-      <Icon path={icons.mdiCached} />
-      全て再確認
-    </GradientButton>
-    <GradientButton
-      color="cyan"
-      class="w-full"
-      on:click={() => {
+      }}>
+        <Icon path={icons.mdiDrawing} size={0.8}/>
+        描画アイテム
+      </div>
+      <div class="flex hover:bg-gray-100" on:click={()=>{
+        showMapMenu = false;
+        CheckPolling("");
+      }}>
+        <Icon path={icons.mdiCached} size={0.8}/>
+        全て再確認
+      </div>
+      <div class="flex hover:bg-gray-100" on:click={()=>{
         showMapMenu = false;
         showDiscover = true;
-      }}
-    >
-      <Icon path={icons.mdiFileFind} />
-      自動発見
-    </GradientButton>
-    <GradientButton
-      color="red"
-      class="w-full"
-      on:click={() => {
+      }}>
+        <Icon path={icons.mdiFileFind} size={0.8}/>
+        自動発見
+      </div>
+      <div class="flex hover:bg-gray-100" on:click={()=>{
         showMapMenu = false;
         showGrid = true;
-      }}
-    >
-      <Icon path={icons.mdiGrid} />
-      グリッド整列
-    </GradientButton>
-    <GradientButton
-      color="teal"
-      class="w-full"
-      on:click={() => {
+      }}>
+        <Icon path={icons.mdiGrid} size={0.8}/>
+        グリッド整列
+      </div>
+      <div class="flex hover:bg-gray-100" on:click={()=>{
         resetMap();
         count = 1;
         showMapMenu = false;
-      }}
-    >
+      }}>
       <Icon path={icons.mdiRecycle} />
       更新
-    </GradientButton>
+      </div>
+    </div>
   </div>
-</Modal>
+{/if}
 
 <Modal bind:open={showNodeMenu} size="xs" outsideclose>
   <div class="flex flex-col space-y-2">
@@ -486,3 +473,10 @@
     </div>
   </form>
 </Modal>
+
+
+<svelte:window on:click={()=>{
+  showMapMenu = false;
+  showNodeMenu = false;
+  showDrawItemMenu = false;
+}} />
