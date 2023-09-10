@@ -134,212 +134,230 @@
 
 {#if showMapMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px"> 
-    <div class="bg-white w-30 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 px-1">
-      <div class="flex hover:bg-gray-100" on:click={()=>{
-        selectedNode = "";
-        showEditNode = true;
-        showMapMenu = false;
-      }}>
+  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+    <div
+      class="bg-white w-30 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 px-1"
+    >
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          selectedNode = "";
+          showEditNode = true;
+          showMapMenu = false;
+        }}
+      >
         <Icon path={icons.mdiPlus} size={0.8} />
-        新規ノード  
+        新規ノード
       </div>
-      <div class="flex hover:bg-gray-100" on:click={()=>{
-        selectedDrawItem = "";
-        showEditDrawItem = true;
-        showMapMenu = false;
-      }}>
-        <Icon path={icons.mdiDrawing} size={0.8}/>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          selectedDrawItem = "";
+          showEditDrawItem = true;
+          showMapMenu = false;
+        }}
+      >
+        <Icon path={icons.mdiDrawing} size={0.8} />
         描画アイテム
       </div>
-      <div class="flex hover:bg-gray-100" on:click={()=>{
-        showMapMenu = false;
-        CheckPolling("");
-      }}>
-        <Icon path={icons.mdiCached} size={0.8}/>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showMapMenu = false;
+          CheckPolling("");
+        }}
+      >
+        <Icon path={icons.mdiCached} size={0.8} />
         全て再確認
       </div>
-      <div class="flex hover:bg-gray-100" on:click={()=>{
-        showMapMenu = false;
-        showDiscover = true;
-      }}>
-        <Icon path={icons.mdiFileFind} size={0.8}/>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showMapMenu = false;
+          showDiscover = true;
+        }}
+      >
+        <Icon path={icons.mdiFileFind} size={0.8} />
         自動発見
       </div>
-      <div class="flex hover:bg-gray-100" on:click={()=>{
-        showMapMenu = false;
-        showGrid = true;
-      }}>
-        <Icon path={icons.mdiGrid} size={0.8}/>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showMapMenu = false;
+          showGrid = true;
+        }}
+      >
+        <Icon path={icons.mdiGrid} size={0.8} />
         グリッド整列
       </div>
-      <div class="flex hover:bg-gray-100" on:click={()=>{
-        resetMap();
-        count = 1;
-        showMapMenu = false;
-      }}>
-      <Icon path={icons.mdiRecycle} />
-      更新
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          resetMap();
+          count = 1;
+          showMapMenu = false;
+        }}
+      >
+        <Icon path={icons.mdiRecycle} />
+        更新
       </div>
     </div>
   </div>
 {/if}
 
-<Modal bind:open={showNodeMenu} size="xs" outsideclose>
-  <div class="flex flex-col space-y-2">
-    <GradientButton
-      color="green"
-      class="w-full"
-      on:click={() => {
-        showNodeMenu = false;
-        showNodeReport = true;
-      }}
+{#if showNodeMenu}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+    <div
+      class="bg-white w-30 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 px-1"
     >
-      <Icon path={icons.mdiChartBarStacked} />
-      レポート
-    </GradientButton>
-    <GradientButton
-      color="cyan"
-      class="w-full"
-      on:click={() => {
-        showNodeMenu = false;
-        showPing = true;
-      }}
-    >
-      <Icon path={icons.mdiShippingPallet} />
-      PING
-    </GradientButton>
-    <GradientButton
-      color="cyan"
-      class="w-full"
-      on:click={() => {
-        showNodeMenu = false;
-        showMibBr = true;
-      }}
-    >
-      <Icon path={icons.mdiShippingPallet} />
-      MIBブラウザー
-    </GradientButton>
-    <GradientButton
-      color="cyan"
-      class="w-full"
-      on:click={() => {
-        showNodeMenu = false;
-        WakeOnLan(selectedNode);
-      }}
-    >
-      <Icon path={icons.mdiAlarm} />
-      Wake On Lan
-    </GradientButton>
-    <GradientButton
-      color="blue"
-      class="w-full"
-      on:click={() => {
-        showNodeMenu = false;
-        showEditNode = true;
-      }}
-    >
-      <Icon path={icons.mdiPencil} />
-      編集
-    </GradientButton>
-    <GradientButton
-      color="blue"
-      class="w-full"
-      on:click={() => {
-        showNodeMenu = false;
-        showAddPolling = true;
-      }}
-    >
-      <Icon path={icons.mdiLanCheck} />
-      ポーリング
-    </GradientButton>
-    <GradientButton
-      color="teal"
-      class="w-full"
-      on:click={() => {
-        showNodeMenu = false;
-        CheckPolling(selectedNode);
-      }}
-    >
-      <Icon path={icons.mdiCached} />
-      再確認
-    </GradientButton>
-    <GradientButton
-      color="cyan"
-      class="w-full"
-      on:click={async () => {
-        showNodeMenu = false;
-        await CopyNode(selectedNode);
-        count = 1;
-      }}
-    >
-      <Icon path={icons.mdiContentCopy} />
-      コピー
-    </GradientButton>
-    <GradientButton
-      color="red"
-      class="w-full"
-      on:click={() => {
-        deleteNodes([selectedNode]);
-      }}
-    >
-      <Icon path={icons.mdiDelete} />
-      削除
-    </GradientButton>
-    {#each urls as url}
-      {#if url}
-        <GradientButton
-          color="blue"
-          class="w-full"
-          on:click={() => {
-            BrowserOpenURL(url);
-          }}
-        >
-          <Icon path={icons.mdiLink} />
-          {url}
-        </GradientButton>
-      {/if}
-    {/each}
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showNodeMenu = false;
+          showNodeReport = true;
+        }}
+      >
+        <Icon path={icons.mdiChartBarStacked} size={0.8} />
+        レポート
+      </div>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showNodeMenu = false;
+          showPing = true;
+        }}
+      >
+        <Icon path={icons.mdiShippingPallet}  size={0.8}/>
+        PING
+      </div>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showNodeMenu = false;
+          showMibBr = true;
+        }}
+      >
+        <Icon path={icons.mdiShippingPallet} size={0.8} />
+        MIBブラウザー
+      </div>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showNodeMenu = false;
+          WakeOnLan(selectedNode);
+        }}
+      >
+        <Icon path={icons.mdiAlarm} size={0.8} />
+        Wake On Lan
+      </div>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showNodeMenu = false;
+          showEditNode = true;
+        }}
+      >
+        <Icon path={icons.mdiPencil} size={0.8} />
+        編集
+      </div>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showNodeMenu = false;
+          showAddPolling = true;
+        }}
+      >
+        <Icon path={icons.mdiLanCheck} size={0.8} />
+        ポーリング
+      </div>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showNodeMenu = false;
+          CheckPolling(selectedNode);
+        }}
+      >
+        <Icon path={icons.mdiCached} size={0.8} />
+        再確認
+      </div>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={async () => {
+          showNodeMenu = false;
+          await CopyNode(selectedNode);
+          count = 1;
+        }}
+      >
+        <Icon path={icons.mdiContentCopy} size={0.8} />
+        コピー
+      </div>
+      <div
+        class="flex text-red-500 hover:bg-gray-100 "
+        on:click={() => {
+          deleteNodes([selectedNode]);
+        }}
+      >
+        <Icon path={icons.mdiDelete} size={0.8} />
+        削除
+      </div>
+      {#each urls as url}
+        {#if url}
+          <div
+            class="flex hover:bg-gray-100"
+            on:click={() => {
+              showNodeMenu = false;
+              BrowserOpenURL(url);
+            }}
+          >
+            <Icon path={icons.mdiLink} size={0.8} />
+            {url}
+          </div>
+        {/if}
+      {/each}
+    </div>
   </div>
-</Modal>
+{/if}
 
-<Modal bind:open={showDrawItemMenu} size="xs" outsideclose>
-  <div class="flex flex-col space-y-2">
-    <GradientButton
-      color="blue"
-      class="w-full"
-      on:click={() => {
-        showDrawItemMenu = false;
-        showEditDrawItem = true;
-      }}
+{#if showDrawItemMenu}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+    <div
+      class="bg-white w-30 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 px-1"
     >
-      <Icon path={icons.mdiPencil} />
-      編集
-    </GradientButton>
-    <GradientButton
-      color="cyan"
-      class="w-full"
-      on:click={async () => {
-        showDrawItemMenu = false;
-        await CopyDrawItem(selectedDrawItem);
-        count = 1;
-      }}
-    >
-      <Icon path={icons.mdiContentCopy} />
-      コピー
-    </GradientButton>
-    <GradientButton
-      color="red"
-      class="w-full"
-      on:click={() => {
-        deleteDrawItems([selectedDrawItem]);
-      }}
-    >
-      <Icon path={icons.mdiDelete} />
-      削除
-    </GradientButton>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={() => {
+          showDrawItemMenu = false;
+          showEditDrawItem = true;
+        }}
+      >
+        <Icon path={icons.mdiPencil} size={0.8} />
+        編集
+      </div>
+      <div
+        class="flex hover:bg-gray-100"
+        on:click={async () => {
+          showDrawItemMenu = false;
+          await CopyDrawItem(selectedDrawItem);
+          count = 1;
+        }}
+      >
+        <Icon path={icons.mdiContentCopy} size={0.8} />
+        コピー
+      </div>
+      <div
+        class="flex text-red-500 hover:bg-gray-100"
+        on:click={() => {
+          deleteDrawItems([selectedDrawItem]);
+        }}
+      >
+        <Icon path={icons.mdiDelete} size={0.8} />
+        削除
+      </div>
+    </div>
   </div>
-</Modal>
+{/if}
 
 {#if showDiscover}
   <Discover
@@ -474,9 +492,10 @@
   </form>
 </Modal>
 
-
-<svelte:window on:click={()=>{
-  showMapMenu = false;
-  showNodeMenu = false;
-  showDrawItemMenu = false;
-}} />
+<svelte:window
+  on:click={() => {
+    showMapMenu = false;
+    showNodeMenu = false;
+    showDrawItemMenu = false;
+  }}
+/>
