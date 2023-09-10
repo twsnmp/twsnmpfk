@@ -38,6 +38,10 @@ export function DeletePollings(arg1) {
   return window['go']['main']['App']['DeletePollings'](arg1);
 }
 
+export function ExportAny(arg1, arg2) {
+  return window['go']['main']['App']['ExportAny'](arg1, arg2);
+}
+
 export function ExportEventLogs(arg1) {
   return window['go']['main']['App']['ExportEventLogs'](arg1);
 }

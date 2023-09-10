@@ -15,10 +15,10 @@ import (
 )
 
 type ExportData struct {
-	Title  string
-	Header []string
-	Data   [][]interface{}
-	Image  string
+	Title  string          `json:"Title"`
+	Header []string        `json:"Header"`
+	Data   [][]interface{} `json:"Data"`
+	Image  string          `json:"Image"`
 }
 
 func (a *App) ExportNodes(t string) string {
@@ -169,6 +169,23 @@ func (a *App) ExportTraps(t string) string {
 		data.Data = append(data.Data, e)
 		return true
 	})
+	var err error
+	switch t {
+	case "excel":
+		err = a.exportExcel(&data)
+	case "csv":
+		err = a.exportCSV(&data)
+	default:
+		return "not suppoerted"
+	}
+	if err != nil {
+		log.Printf("ExportTable err=%v", err)
+		return fmt.Sprintf("export err=%v", err)
+	}
+	return ""
+}
+
+func (a *App) ExportAny(t string, data ExportData) string {
 	var err error
 	switch t {
 	case "excel":

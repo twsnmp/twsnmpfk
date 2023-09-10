@@ -37,7 +37,7 @@
             dispatch("select", name);
           }}
         >
-          {name}({oid}){type}
+          {name}({oid}{type})
         </span>
         {#if mibInfoTooltip}
           <Tooltip trigger="click">{mibInfoTooltip}</Tooltip>
@@ -60,7 +60,7 @@
             dispatch("select", name);
           }}
         >
-          {name}({oid}){type}
+          {name}({oid}{type})
         </span>
         {#if mibInfoTooltip}
           <Tooltip trigger="click">{mibInfoTooltip}</Tooltip>

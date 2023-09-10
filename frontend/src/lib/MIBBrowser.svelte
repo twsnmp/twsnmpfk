@@ -8,11 +8,16 @@
   import neko5 from "../assets/images/neko_anm5.png";
   import neko6 from "../assets/images/neko_anm6.png";
   import neko7 from "../assets/images/neko_anm7.png";
-  import { Modal, Button, Search, Select,Toggle } from "flowbite-svelte";
+  import { Modal, Button, Search, Select, Toggle } from "flowbite-svelte";
   import { onMount, createEventDispatcher, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import { GetMIBTree, GetNode, SnmpWalk } from "../../wailsjs/go/main/App";
+  import {
+    GetMIBTree,
+    GetNode,
+    SnmpWalk,
+    ExportAny,
+  } from "../../wailsjs/go/main/App";
   import { getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -139,17 +144,17 @@
 
   const updateHistory = () => {
     const tmp = [];
-    for(const h of history) {
+    for (const h of history) {
       if (h.value != name) {
         tmp.push(h);
       }
     }
     tmp.unshift({
-      name:name,
-      value:name,
+      name: name,
+      value: name,
     });
     history = tmp;
-  }
+  };
 
   const tableMIBData = (mibs) => {
     const names = [];
@@ -219,16 +224,38 @@
     show = false;
     dispatch("close", {});
   };
+
+  const exportMIB = (t: string) => {
+    const ed = {
+      Title: "TWSNMP MIB(" + name + ")",
+      Header: columns.map((e) => e.title),
+      Data: [],
+      Image: "",
+    };
+    for (const d of data) {
+      const row = [];
+      for (const c of columns) {
+        row.push(d[c.data] || "");
+      }
+      ed.Data.push(row);
+    }
+    ExportAny(t, ed);
+  };
 </script>
 
 <Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
   <div class="flex flex-col space-y-4">
     <div class="flex flex-row mb-2">
       <div class="flex-auto">
-        <Search size="sm" bind:value={name} placeholder="オブジェクト名">
-        </Search>
+        <Search size="sm" bind:value={name} placeholder="オブジェクト名" />
       </div>
-      <Button size="sm" class="ml-2" on:click={()=>{showMIBTree =true}}>
+      <Button
+        size="sm"
+        class="ml-2"
+        on:click={() => {
+          showMIBTree = true;
+        }}
+      >
         <Icon path={icons.mdiFileTree} size={1} />
       </Button>
       <Select
@@ -236,7 +263,7 @@
         class="ml-2 w-64"
         items={history}
         bind:value={selected}
-        on:change={()=>{
+        on:change={() => {
           name = selected;
         }}
         placeholder="履歴"
@@ -250,6 +277,30 @@
           <Icon path={icons.mdiPlay} size={1} />
           取得
         </Button>
+        {#if data.length > 0}
+          <Button
+            color="blue"
+            type="button"
+            on:click={() => {
+              exportMIB("csv");
+            }}
+            size="sm"
+          >
+            <Icon path={icons.mdiFileDelimited} size={1} />
+            CSV
+          </Button>
+          <Button
+            color="blue"
+            type="button"
+            on:click={() => {
+              exportMIB("excel");
+            }}
+            size="sm"
+          >
+            <Icon path={icons.mdiFileExcel} size={1} />
+            Excel
+          </Button>
+        {/if}
       {/if}
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
@@ -270,24 +321,27 @@
   </div>
 </Modal>
 
-<Modal
-  bind:open={showMIBTree}
-  size="lg"
-  permanent
-  class="w-full"
->
+<Modal bind:open={showMIBTree} size="lg" permanent class="w-full">
   <div class="flex flex-col space-y-4">
-    <MibTree tree={mibTree} on:select={(e)=>{
-      name = e.detail;
-      showMIBTree = false;
-    }}/>
+    <MibTree
+      tree={mibTree}
+      on:select={(e) => {
+        name = e.detail;
+        showMIBTree = false;
+      }}
+    />
     <div class="flex justify-end space-x-2 mr-2">
-      <Button type="button" color="alternative" on:click={()=>{showMIBTree = false}} size="sm">
+      <Button
+        type="button"
+        color="alternative"
+        on:click={() => {
+          showMIBTree = false;
+        }}
+        size="sm"
+      >
         <Icon path={icons.mdiCancel} size={1} />
         閉じる
       </Button>
     </div>
-
   </div>
-
 </Modal>

@@ -593,6 +593,24 @@ export namespace main {
 	        this.LastTime = source["LastTime"];
 	    }
 	}
+	export class ExportData {
+	    Title: string;
+	    Header: string[];
+	    Data: any[][];
+	    Image: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ExportData(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Title = source["Title"];
+	        this.Header = source["Header"];
+	        this.Data = source["Data"];
+	        this.Image = source["Image"];
+	    }
+	}
 	export class MibEnt {
 	    Name: string;
 	    Value: string;
