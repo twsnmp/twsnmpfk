@@ -88,7 +88,7 @@
   bind:open={show}
   size="xl"
   permanent
-  class="w-full"
+  class="w-full min-h-[90vh]"
   on:on:close={close}
 >
     <Tabs style="underline">
@@ -305,7 +305,7 @@
             <span> コマンド実行 </span>
             <Input class="w-full" bind:value={notifyConf.ExecCmd} size="sm" />
           </Label>
-          <div class="flex space-x-3">
+          <div class="flex justify-end space-x-2 mr-2">
             <Button type="button" on:click={saveNotifyConf} size="sm">
               <Icon path={icons.mdiContentSave} size={1} />
               保存

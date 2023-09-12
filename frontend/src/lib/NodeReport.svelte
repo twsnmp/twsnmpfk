@@ -277,7 +277,7 @@
   });
 </script>
 
-<Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="xl" permanent class="w-full min-h-[90vh]" on:on:close={close}>
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem open on:click={() => {selectedCount = 0;}}>

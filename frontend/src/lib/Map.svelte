@@ -136,7 +136,7 @@
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
     <div
-      class="bg-white w-30 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 px-1"
+      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 p-2"
     >
       <div
         class="flex hover:bg-gray-100"

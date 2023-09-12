@@ -321,7 +321,7 @@
   </div>
 </Modal>
 
-<Modal bind:open={showMIBTree} size="lg" permanent class="w-full">
+<Modal bind:open={showMIBTree} size="lg" permanent class="w-full min-h-[80vh]">
   <div class="flex flex-col space-y-4">
     <MibTree
       tree={mibTree}

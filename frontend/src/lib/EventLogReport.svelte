@@ -46,7 +46,7 @@
   bind:open={show}
   size="xl"
   permanent
-  class="w-full"
+  class="w-full min-h-[90vh]"
   on:on:close={close}
 >
   <div class="flex flex-col space-y-4">
