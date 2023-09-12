@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -181,18 +180,16 @@ func ForEachLastPollingLog(pollingID string, f func(*PollingLogEnt) bool) error 
 		if b == nil {
 			return nil
 		}
-		c := b.Cursor()
+		bs := b.Bucket([]byte(pollingID))
+		if bs == nil {
+			return nil
+		}
+		c := bs.Cursor()
 		for k, v := c.Last(); k != nil; k, v = c.Prev() {
-			if !bytes.Contains(v, []byte(pollingID)) {
-				continue
-			}
 			var e PollingLogEnt
 			err := json.Unmarshal(v, &e)
 			if err != nil {
 				log.Printf("load polling log err=%v", err)
-				continue
-			}
-			if e.PollingID != pollingID {
 				continue
 			}
 			if !f(&e) {
@@ -211,22 +208,7 @@ func ClearPollingLog(pollingID string) error {
 		if b == nil {
 			return fmt.Errorf("bucket pollingLogs not found")
 		}
-		c := b.Cursor()
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-			if !bytes.Contains(v, []byte(pollingID)) {
-				continue
-			}
-			var e PollingLogEnt
-			err := json.Unmarshal(v, &e)
-			if err != nil {
-				log.Printf("ClearPollingLog log err=%v", err)
-				continue
-			}
-			if e.PollingID != pollingID {
-				continue
-			}
-			c.Delete()
-		}
+		b.DeleteBucket([]byte(pollingID))
 		log.Printf("ClearPollingLog id=%s,dur=%v", pollingID, time.Since(st))
 		return nil
 	})
@@ -240,26 +222,10 @@ func clearDeletedPollingLogs(ids []string) error {
 		if b == nil {
 			return fmt.Errorf("bucket pollingLogs not found")
 		}
-		c := b.Cursor()
-		del := 0
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-			for _, id := range ids {
-				if bytes.Contains(v, []byte(id)) {
-					var e PollingLogEnt
-					err := json.Unmarshal(v, &e)
-					if err != nil {
-						log.Printf("ClearDeletedPollingLogs err=%v", err)
-					} else {
-						if e.PollingID == id {
-							_ = c.Delete()
-							del++
-							break
-						}
-					}
-				}
-			}
+		for _, id := range ids {
+			b.DeleteBucket([]byte(id))
 		}
-		log.Printf("clearDeletedPollingLogs del=%d,dur=%v", del, time.Since(st))
+		log.Printf("clearDeletedPollingLogs dur=%v", time.Since(st))
 		return nil
 	})
 }
@@ -270,31 +236,9 @@ func GetAllPollingLog(pollingID string) []PollingLogEnt {
 	if db == nil {
 		return ret
 	}
-	_ = db.View(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("pollingLogs"))
-		if b == nil {
-			log.Printf("no polling log bucket")
-			return nil
-		}
-		c := b.Cursor()
-		i := 0
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-			if !bytes.Contains(v, []byte(pollingID)) {
-				continue
-			}
-			var l PollingLogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Printf("get polling log err=%v", err)
-				continue
-			}
-			if l.PollingID != pollingID {
-				continue
-			}
-			ret = append(ret, l)
-			i++
-		}
-		return nil
+	ForEachLastPollingLog(pollingID, func(l *PollingLogEnt) bool {
+		ret = append(ret, *l)
+		return true
 	})
 	return ret
 }
