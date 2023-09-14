@@ -92,6 +92,7 @@ func (a *App) shutdown(ctx context.Context) {
 			log.Println("shutdown wait start")
 			a.wg.Wait()
 			log.Println("shutdown wait end")
+			datastore.CloseDB()
 		}
 	}
 }
