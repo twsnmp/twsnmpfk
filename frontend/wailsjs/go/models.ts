@@ -1,5 +1,151 @@
 export namespace backend {
 	
+	export class HrProcess {
+	    PID: string;
+	    Name: string;
+	    Type: string;
+	    Status: string;
+	    Path: string;
+	    Param: string;
+	    CPU: number;
+	    Mem: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new HrProcess(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PID = source["PID"];
+	        this.Name = source["Name"];
+	        this.Type = source["Type"];
+	        this.Status = source["Status"];
+	        this.Path = source["Path"];
+	        this.Param = source["Param"];
+	        this.CPU = source["CPU"];
+	        this.Mem = source["Mem"];
+	    }
+	}
+	export class HrFileSystem {
+	    Index: string;
+	    Type: string;
+	    Mount: string;
+	    Remote: string;
+	    Bootable: number;
+	    Access: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new HrFileSystem(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Index = source["Index"];
+	        this.Type = source["Type"];
+	        this.Mount = source["Mount"];
+	        this.Remote = source["Remote"];
+	        this.Bootable = source["Bootable"];
+	        this.Access = source["Access"];
+	    }
+	}
+	export class HrDevice {
+	    Index: string;
+	    Type: string;
+	    Descr: string;
+	    Status: string;
+	    Errors: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new HrDevice(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Index = source["Index"];
+	        this.Type = source["Type"];
+	        this.Descr = source["Descr"];
+	        this.Status = source["Status"];
+	        this.Errors = source["Errors"];
+	    }
+	}
+	export class HrStorage {
+	    Index: string;
+	    Type: string;
+	    Descr: string;
+	    Size: number;
+	    Used: number;
+	    Unit: number;
+	    Rate: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new HrStorage(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Index = source["Index"];
+	        this.Type = source["Type"];
+	        this.Descr = source["Descr"];
+	        this.Size = source["Size"];
+	        this.Used = source["Used"];
+	        this.Unit = source["Unit"];
+	        this.Rate = source["Rate"];
+	    }
+	}
+	export class HrSystem {
+	    Index: number;
+	    Name: string;
+	    Value: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new HrSystem(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Index = source["Index"];
+	        this.Name = source["Name"];
+	        this.Value = source["Value"];
+	    }
+	}
+	export class HostResourceEnt {
+	    System: HrSystem[];
+	    Storage: HrStorage[];
+	    Device: HrDevice[];
+	    FileSystem: HrFileSystem[];
+	    Process: HrProcess[];
+	
+	    static createFrom(source: any = {}) {
+	        return new HostResourceEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.System = this.convertValues(source["System"], HrSystem);
+	        this.Storage = this.convertValues(source["Storage"], HrStorage);
+	        this.Device = this.convertValues(source["Device"], HrDevice);
+	        this.FileSystem = this.convertValues(source["FileSystem"], HrFileSystem);
+	        this.Process = this.convertValues(source["Process"], HrProcess);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class VPanelPortEnt {
 	    Index: number;
 	    State: string;

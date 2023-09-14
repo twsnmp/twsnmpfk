@@ -13,55 +13,55 @@ import (
 )
 
 type HrSystem struct {
-	Index   int
-	Name    string
-	Value   string
-	Polling string
+	Index int    `json:"Index"`
+	Name  string `json:"Name"`
+	Value string `json:"Value"`
 }
 
 type HrStorage struct {
-	Index string
-	Type  string
-	Descr string
-	Size  int64
-	Used  int64
-	Unit  int64
+	Index string  `json:"Index"`
+	Type  string  `json:"Type"`
+	Descr string  `json:"Descr"`
+	Size  int64   `json:"Size"`
+	Used  int64   `json:"Used"`
+	Unit  int64   `json:"Unit"`
+	Rate  float64 `json:"Rate"`
 }
 
 type HrDevice struct {
-	Index  string
-	Type   string
-	Descr  string
-	Status string
-	Errors string
+	Index  string `json:"Index"`
+	Type   string `json:"Type"`
+	Descr  string `json:"Descr"`
+	Status string `json:"Status"`
+	Errors string `json:"Errors"`
 }
 
 type HrFileSystem struct {
-	Index    string
-	Type     string
-	Mount    string
-	Remote   string
-	Bootable int64
-	Access   int64
+	Index    string `json:"Index"`
+	Type     string `json:"Type"`
+	Mount    string `json:"Mount"`
+	Remote   string `json:"Remote"`
+	Bootable int64  `json:"Bootable"`
+	Access   int64  `json:"Access"`
 }
 
 type HrProcess struct {
-	PID    string
-	Name   string
-	Type   string
-	Status string
-	Path   string
-	Param  string
-	CPU    int64
-	Mem    int64
+	PID    string `json:"PID"`
+	Name   string `json:"Name"`
+	Type   string `json:"Type"`
+	Status string `json:"Status"`
+	Path   string `json:"Path"`
+	Param  string `json:"Param"`
+	CPU    int64  `json:"CPU"`
+	Mem    int64  `json:"Mem"`
 }
 
 type HostResourceEnt struct {
-	System     []*HrSystem
-	Storage    []*HrStorage
-	Device     []*HrDevice
-	FileSystem []*HrFileSystem
-	Process    []*HrProcess
+	System     []*HrSystem     `json:"System"`
+	Storage    []*HrStorage    `json:"Storage"`
+	Device     []*HrDevice     `json:"Device"`
+	FileSystem []*HrFileSystem `json:"FileSystem"`
+	Process    []*HrProcess    `json:"Process"`
 }
 
 func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
@@ -100,10 +100,9 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 			})
 		case "hrSystemDate":
 			hr.System = append(hr.System, &HrSystem{
-				Name:    "システム時刻",
-				Value:   getDateAndTime(variable.Value),
-				Index:   2,
-				Polling: "hrSystemDate",
+				Name:  "システム時刻",
+				Value: getDateAndTime(variable.Value),
+				Index: 2,
 			})
 		case "hrSystemInitialLoadDevice":
 			hr.System = append(hr.System, &HrSystem{
@@ -119,17 +118,15 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 			})
 		case "hrSystemNumUsers":
 			hr.System = append(hr.System, &HrSystem{
-				Name:    "システムユーザ数",
-				Value:   fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
-				Index:   5,
-				Polling: "hrSystemNumUsers",
+				Name:  "システムユーザ数",
+				Value: fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
+				Index: 5,
 			})
 		case "hrSystemProcesses":
 			hr.System = append(hr.System, &HrSystem{
-				Name:    "システムプロセス数",
-				Value:   fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
-				Index:   6,
-				Polling: "hrSystemProcesses",
+				Name:  "システムプロセス数",
+				Value: fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
+				Index: 6,
 			})
 		case "hrSystemMaxProcesses":
 			hr.System = append(hr.System, &HrSystem{
@@ -145,10 +142,9 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 			})
 		case "hrProcessorLoad":
 			hr.System = append(hr.System, &HrSystem{
-				Name:    fmt.Sprintf("CPU%d使用率", nCPU),
-				Value:   fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
-				Index:   8 + nCPU,
-				Polling: "hrProcessorLoad." + a[1],
+				Name:  fmt.Sprintf("CPU%d使用率", nCPU),
+				Value: fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
+				Index: 8 + nCPU,
 			})
 			nCPU++
 		case "hrStorageIndex":
@@ -344,6 +340,11 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 		if s.Unit > 0 {
 			s.Size *= s.Unit
 			s.Used *= s.Unit
+			if s.Size > 0 {
+				s.Rate = 100.0 * float64(s.Used) / float64(s.Size)
+			} else {
+				s.Rate = 0.0
+			}
 		}
 		hr.Storage = append(hr.Storage, s)
 	}

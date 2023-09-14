@@ -57,6 +57,8 @@ export function GetEventLogs(arg1:string):Promise<Array<datastore.EventLogEnt>>;
 
 export function GetGroks():Promise<Array<datastore.GrokEnt>>;
 
+export function GetHostResource(arg1:string):Promise<backend.HostResourceEnt>;
+
 export function GetImage(arg1:string):Promise<string>;
 
 export function GetLine(arg1:string,arg2:string):Promise<datastore.LineEnt>;

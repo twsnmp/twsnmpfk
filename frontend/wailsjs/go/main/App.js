@@ -106,6 +106,10 @@ export function GetGroks() {
   return window['go']['main']['App']['GetGroks']();
 }
 
+export function GetHostResource(arg1) {
+  return window['go']['main']['App']['GetHostResource'](arg1);
+}
+
 export function GetImage(arg1) {
   return window['go']['main']['App']['GetImage'](arg1);
 }

@@ -14,7 +14,7 @@
   import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import type { datastore } from "wailsjs/go/models";
+  import type { backend, datastore } from "wailsjs/go/models";
   import {
     GetNode,
     GetVPanelPorts,
@@ -22,6 +22,7 @@
     GetEventLogs,
     GetPollings,
     DeletePollings,
+    GetHostResource,
   } from "../../wailsjs/go/main/App";
   import {
     getIcon,
@@ -39,6 +40,8 @@
   import PollingReport from "./PollingReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+
+  import { showHrBarChart, showHrSummary } from "./chart/hostResource";
 
   export let id = "";
   let node: datastore.NodeEnt | undefined = undefined;
@@ -153,7 +156,7 @@
     }
     selectedPolling = selected[0];
     showPollingReport = true;
-  }
+  };
 
   const deletePollings = async () => {
     const selected = pollingTable.rows({ selected: true }).data().pluck("ID");
@@ -162,7 +165,7 @@
     }
     await DeletePollings(selected.toArray());
     showPolling();
-  }
+  };
 
   let portTable = undefined;
   const showPortTable = (ports) => {
@@ -172,8 +175,8 @@
     }
     portTable = new DataTable("#portTable", {
       paging: false,
-      searching:false,
-      info:false,
+      searching: false,
+      info: false,
       scrollY: "180px",
       data: ports,
       language: getTableLang(),
@@ -183,7 +186,7 @@
           data: "Index",
           title: "No.",
           width: "5%",
-          className: 'dt-body-right',
+          className: "dt-body-right",
         },
         {
           data: "State",
@@ -210,35 +213,35 @@
           title: "スピード",
           width: "10%",
           render: renderSpeed,
-          className: 'dt-body-right',
+          className: "dt-body-right",
         },
         {
           data: "OutPacktes",
           title: "送信パケット",
           width: "10%",
           render: renderCount,
-          className: 'dt-body-right',
+          className: "dt-body-right",
         },
         {
           data: "OutBytes",
           title: "送信バイト",
           width: "10%",
           render: renderBytes,
-          className: 'dt-body-right',
+          className: "dt-body-right",
         },
         {
           data: "InPacktes",
           title: "受信パケット",
           width: "10%",
           render: renderCount,
-          className: 'dt-body-right',
+          className: "dt-body-right",
         },
         {
           data: "InBytes",
           title: "受信バイト",
           width: "10%",
           render: renderBytes,
-          className: 'dt-body-right',
+          className: "dt-body-right",
         },
       ],
     });
@@ -253,6 +256,395 @@
     showPortTable(ports);
   };
 
+  const renderStatus = (s) => {
+    switch (s) {
+      case "Running":
+        return `<span class="text-blue-700">動作中</span>`;
+      case "Runnable":
+        return `<span class="text-blue-900">動作待ち</span>`;
+      case "Testing":
+        return "テスト中";
+      case "NotRunnable":
+        return "起動待";
+      case "Invalid":
+      case "Down":
+        return `<span class="text-red-800">停止</span>`;
+    }
+    return "不明";
+  };
+
+  const renderRate = (r) => {
+    if (r < 80.0) {
+      return `<span class="text-blue-700">${r.toFixed(2)}</span>`;
+    } else if (r < 90.0) {
+      return `<span class="text-yellow-700">${r.toFixed(2)}</span>`;
+    }
+    return `<span class="text-red-700">${r.toFixed(2)}</span>`;
+  };
+
+  const renderStorageType = (t) => {
+    switch (t) {
+      case "hrStorageCompactDisc":
+        return "CDドライブ";
+      case "hrStorageRemovableDisk":
+        return "リムーバブル";
+      case "hrStorageFloppyDisk":
+        return "フロッピー";
+      case "hrStorageRamDisk":
+        return "RAMディスク";
+      case "hrStorageFlashMemory":
+        return "フラッシュメモリ";
+      case "hrStorageNetworkDisk":
+        return "ネットワーク";
+      case "hrStorageFixedDisk":
+        return "固定ディスク";
+      case "hrStorageVirtualMemory":
+        return "仮想メモリ";
+      case "hrStorageRam":
+        return "実メモリ";
+    }
+    return "その他";
+  };
+
+  const renderDeviceType = (t) => {
+    return t.replace("hrDevice", "");
+  };
+
+  const renderFSType = (t) => {
+    return t.replace("hrFS", "");
+  };
+
+  const renderTrueFalse = (v) => {
+    if (v === 1) {
+      return "Yes";
+    }
+    return "No";
+  };
+
+  const renderAccess = (v) => {
+    if (v === 1) {
+      return "R/W";
+    }
+    return "Read Only";
+  };
+
+  const renderCPU = (v) => {
+    return (v / 100).toFixed(2);
+  };
+
+  const renderMem = (v, t) => {
+    return renderBytes(v * 1024, t);
+  };
+
+  let hostResource: backend.HostResourceEnt | undefined = undefined;
+  let hrSystemTable = undefined;
+  let selectedhrSystemCount = 0;
+  let hrStorageTable = undefined;
+  let hrDeviceTable = undefined;
+  let hrFileSystemTable = undefined;
+  let hrProcessTable = undefined;
+
+  const checkHostResource = async () => {
+    hostResource = await GetHostResource(id);
+    console.log(hostResource);
+  };
+
+  const showHrSystem = async () => {
+    if (hrSystemTable) {
+      hrSystemTable.destroy();
+      hrSystemTable = undefined;
+    }
+    selectedhrSystemCount = 0;
+    hrSystemTable = new DataTable("#hrSystemTable", {
+      data: hostResource.System,
+      language: getTableLang(),
+      order: [[1, "desc"]],
+      select: {
+        style: "single",
+      },
+      columns: [
+        {
+          data: "Index",
+          title: "No",
+          width: "10%",
+        },
+        {
+          data: "Name",
+          title: "名前",
+          width: "30%",
+        },
+        {
+          data: "Value",
+          title: "値",
+          width: "60%",
+        },
+      ],
+    });
+    hrSystemTable.on("select", () => {
+      selectedhrSystemCount = hrSystemTable.rows({ selected: true }).count();
+    });
+    hrSystemTable.on("deselect", () => {
+      selectedhrSystemCount = hrSystemTable.rows({ selected: true }).count();
+    });
+    showHrSummaryChart();
+    showHrCPUChart();
+  };
+
+  let selectedhrStorageCount = 0;
+
+  const showHrStorage = () => {
+    if (hrStorageTable) {
+      hrStorageTable.destroy();
+      hrStorageTable = undefined;
+    }
+    selectedhrStorageCount = 0;
+    hrStorageTable = new DataTable("#hrStorageTable", {
+      data: hostResource.Storage,
+      language: getTableLang(),
+      order: [[1, "desc"]],
+      select: {
+        style: "single",
+      },
+      columns: [
+        {
+          title: "種別",
+          data: "Type",
+          width: "20%",
+          render: renderStorageType,
+        },
+        { title: "説明", data: "Descr", width: "40%" },
+        {
+          title: "サイズ",
+          data: "Size",
+          width: "10%",
+          render: renderBytes,
+          className: "dt-body-right",
+        },
+        {
+          title: "使用量",
+          data: "Used",
+          width: "10%",
+          render: renderBytes,
+          className: "dt-body-right",
+        },
+        {
+          title: "使用率",
+          data: "Rate",
+          width: "10%",
+          render: renderRate,
+          className: "dt-body-right",
+        },
+        {
+          title: "単位",
+          data: "Unit",
+          width: "10%",
+          className: "dt-body-right",
+        },
+      ],
+    });
+    hrStorageTable.on("select", () => {
+      selectedhrStorageCount = hrStorageTable.rows({ selected: true }).count();
+    });
+    hrStorageTable.on("deselect", () => {
+      selectedhrStorageCount = hrStorageTable.rows({ selected: true }).count();
+    });
+    showHrStorageChart();
+  };
+
+  const showHrDevice = () => {
+    if (hrDeviceTable) {
+      hrDeviceTable.destroy();
+      hrDeviceTable = undefined;
+    }
+    hrDeviceTable = new DataTable("#hrDeviceTable", {
+      data: hostResource.Device,
+      language: getTableLang(),
+      order: [[1, "desc"]],
+      columns: [
+        { title: "状態", data: "Status", width: "10%", render: renderStatus },
+        { title: "インデックス", data: "Index", width: "10%" },
+        { title: "種別", data: "Type", width: "30%", render: renderDeviceType },
+        { title: "説明", data: "Descr", width: "40%" },
+        { title: "エラー", data: "Errors", width: "10%" },
+      ],
+    });
+  };
+
+  const showHrFileSystem = () => {
+    if (hrFileSystemTable) {
+      hrFileSystemTable.destroy();
+      hrFileSystemTable = undefined;
+    }
+    hrFileSystemTable = new DataTable("#hrFileSystemTable", {
+      data: hostResource.FileSystem,
+      language: getTableLang(),
+      order: [[1, "desc"]],
+      columns: [
+        { title: "マウント", data: "Mount", width: "30%" },
+        { title: "リモート", data: "Remote", width: "30%" },
+        { title: "種別", data: "Type", width: "20%", render: renderFSType },
+        {
+          title: "アクセス",
+          data: "Access",
+          width: "10%",
+          render: renderAccess,
+        },
+        {
+          title: "ブート",
+          data: "Bootable",
+          width: "10%",
+          render: renderTrueFalse,
+        },
+      ],
+    });
+  };
+
+  let selectedHrProcessCount = 0;
+
+  const showHrProcess = () => {
+    if (hrProcessTable) {
+      hrProcessTable.destroy();
+      hrProcessTable = undefined;
+    }
+    selectedHrProcessCount = 0;
+    hrProcessTable = new DataTable("#hrProcessTable", {
+      data: hostResource.Process,
+      language: getTableLang(),
+      order: [[1, "desc"]],
+      select: {
+        style: "single",
+      },
+      columns: [
+        {
+          title: "状態",
+          data: "Status",
+          width: "10%",
+          render: renderStatus,
+        },
+        { title: "PID", data: "PID", width: "10%" },
+        { title: "種別", data: "Type", width: "10%" },
+        {
+          title: "名前",
+          data: "Name",
+          width: "15%",
+        },
+        { title: "パス", data: "Path", width: "15%" },
+        { title: "パラメータ", data: "Param", width: "20%" },
+        {
+          title: "CPU",
+          data: "CPU",
+          width: "10%",
+          render: renderCPU,
+          className: "dt-body-right",
+        },
+        {
+          title: "Mem",
+          data: "Mem",
+          width: "10%",
+          render: renderMem,
+          className: "dt-body-right",
+        },
+      ],
+    });
+    hrProcessTable.on("select", () => {
+      selectedHrProcessCount = hrProcessTable.rows({ selected: true }).count();
+    });
+    hrProcessTable.on("deselect", () => {
+      selectedHrProcessCount = hrProcessTable.rows({ selected: true }).count();
+    });
+    showHrProcChart(true);
+    showHrProcChart(false);
+  };
+
+  const showHrSummaryChart = async () => {
+    await tick();
+    const data = {
+      CPU: 0,
+      Mem: 0,
+      VM: 0,
+    };
+    let cpu = 0;
+    hostResource.System.forEach((e) => {
+      if (e.Name.includes("CPU")) {
+        cpu++;
+        data.CPU = Number(e.Value);
+      }
+    });
+    hostResource.Storage.forEach((e) => {
+      if (e.Type.includes("hrStorageRam")) {
+        data.Mem = e.Rate;
+      }
+      if (
+        e.Type.includes("hrStorageVirtualMemory") &&
+        !e.Descr.includes("wap")
+      ) {
+        data.VM = e.Rate;
+      }
+    });
+    data.CPU /= cpu > 0 ? cpu : 1;
+    showHrSummary("hrSummaryChart", data);
+  };
+
+  const showHrCPUChart = async () => {
+    await tick();
+    const list = [];
+    hostResource.System.forEach((e) => {
+      if (e.Name.includes("CPU")) {
+        list.unshift({
+          Name: e.Name,
+          Value: Number(e.Value),
+        });
+      }
+    });
+    showHrBarChart("hrSystemCPUChart", "CPU使用率", "%", list);
+  };
+
+  const showHrStorageChart = async () => {
+    await tick();
+    const list = [];
+    hostResource.Storage.forEach((e) => {
+      const t = renderStorageType(e.Type);
+      if (!t.includes("その他")) {
+        list.unshift({
+          Name: e.Descr + "(" + t + ")",
+          Value: e.Rate,
+        });
+      }
+    });
+    showHrBarChart("hrStorageChart", "ストレージ使用率", "%", list);
+  };
+
+  const showHrProcChart = async (bCPU) => {
+    await tick();
+    let max = 0;
+    const list = [];
+    hostResource.Process.forEach((e) => {
+      const v = bCPU ? e.CPU / 100.0 : e.Mem * 1024;
+      if (max < v) {
+        max = v;
+      }
+      list.push({
+        Name: e.Name + "(" + e.PID + ")",
+        Value: v,
+      });
+    });
+    list.sort((a, b) => {
+      if (a.Value < b.Value) return -1;
+      if (a.Value > b.Value) return 1;
+      return 0;
+    });
+    while (list.length > 20) {
+      list.shift();
+    }
+    showHrBarChart(
+      bCPU ? "hrProcessCPUChart" : "hrProcessMemChart",
+      bCPU ? "CPU使用量" : "Mem使用量",
+      bCPU ? "秒" : "Bytes",
+      list,
+      max
+    );
+  };
+
   const close = () => {
     show = false;
     dispatch("close", {});
@@ -260,27 +652,54 @@
 
   onMount(async () => {
     node = await GetNode(id);
+    checkHostResource();
     show = true;
   });
 
   onDestroy(() => {
     deleteVPanel();
-    if(pollingTable) {
+    if (pollingTable) {
       pollingTable.destroy();
     }
-    if(logTable) {
+    if (logTable) {
       logTable.destroy();
     }
-    if(portTable) {
+    if (portTable) {
       portTable.destroy();
+    }
+    if (hrSystemTable) {
+      hrSystemTable.destroy();
+    }
+    if (hrStorageTable) {
+      hrStorageTable.destroy();
+    }
+    if (hrDeviceTable) {
+      hrDeviceTable.destroy();
+    }
+    if (hrFileSystemTable) {
+      hrFileSystemTable.destroy();
+    }
+    if (hrProcessTable) {
+      hrProcessTable.destroy();
     }
   });
 </script>
 
-<Modal bind:open={show} size="xl" permanent class="w-full min-h-[90vh]" on:on:close={close}>
+<Modal
+  bind:open={show}
+  size="xl"
+  permanent
+  class="w-full min-h-[90vh]"
+  on:on:close={close}
+>
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem open on:click={() => {selectedCount = 0;}}>
+      <TabItem
+        open
+        on:click={() => {
+          selectedCount = 0;
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           基本情報
@@ -344,6 +763,72 @@
         <div id="vpanel" style="width: 98%; height: 500px" />
         <table id="portTable" class="display compact mt-2" style="width:99%" />
       </TabItem>
+      {#if hostResource}
+        <TabItem on:click={showHrSystem}>
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiAppsBox} size={1} />
+            ホスト情報
+          </div>
+          <div class="flex w-full">
+            <div id="hrSummaryChart" style="width: 35%; height: 300px" />
+            <div id="hrSystemCPUChart" style="width: 63%; height: 300px" />
+          </div>
+          <table
+            id="hrSystemTable"
+            class="display compact mt-2"
+            style="width:99%"
+          />
+        </TabItem>
+        <TabItem on:click={showHrStorage}>
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiAppsBox} size={1} />
+            ストレージ
+          </div>
+          <div id="hrStorageChart" style="width: 98%; height: 300px" />
+          <table
+            id="hrStorageTable"
+            class="display compact mt-2"
+            style="width:99%"
+          />
+        </TabItem>
+        <TabItem on:click={showHrDevice}>
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiAppsBox} size={1} />
+            デバイス
+          </div>
+          <table
+            id="hrDeviceTable"
+            class="display compact mt-2"
+            style="width:99%"
+          />
+        </TabItem>
+        <TabItem on:click={showHrFileSystem}>
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiAppsBox} size={1} />
+            File System
+          </div>
+          <table
+            id="hrFileSystemTable"
+            class="display compact mt-2"
+            style="width:99%"
+          />
+        </TabItem>
+        <TabItem on:click={showHrProcess}>
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiAppsBox} size={1} />
+            プロセス
+          </div>
+          <div class="flex w-full mx-auto">
+            <div id="hrProcessCPUChart" style="width: 49%; height: 300px" />
+            <div id="hrProcessMemChart" style="width: 49%; height: 300px" />
+          </div>
+          <table
+            id="hrProcessTable"
+            class="display compact mt-2"
+            style="width:99%"
+          />
+        </TabItem>
+      {/if}
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
       {#if selectedCount == 1}
@@ -375,9 +860,8 @@
   />
 {/if}
 
-
 <style global>
   #vpanel canvas {
-    margin:  0 auto;
-  } 
+    margin: 0 auto;
+  }
 </style>

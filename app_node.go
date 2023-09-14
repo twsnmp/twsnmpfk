@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/wol"
 )
@@ -142,4 +143,14 @@ func (a *App) WakeOnLan(id string) bool {
 		Event:    fmt.Sprintf("%sにWake ON LANパケットを送信しました", n.MAC),
 	})
 	return true
+}
+
+// GetHostResource は、ノードからホストリソースMIBを取得して返します。
+func (a *App) GetHostResource(id string) *backend.HostResourceEnt {
+	n := datastore.GetNode(id)
+	if n == nil {
+		log.Printf("host resorce node not found id=%s", id)
+		return nil
+	}
+	return backend.GetHostResource(n)
 }
