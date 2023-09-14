@@ -73,12 +73,12 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 	hr.Process = []*HrProcess{}
 	agent := getSNMPAgent(n)
 	if agent == nil {
-		return hr
+		return nil
 	}
 	err := agent.Connect()
 	if err != nil {
 		log.Printf("getPortsBySNMP err=%v", err)
-		return hr
+		return nil
 	}
 	defer agent.Conn.Close()
 	nCPU := 1
@@ -86,7 +86,7 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 	deviceMap := make(map[string]*HrDevice)
 	fsMap := make(map[string]*HrFileSystem)
 	procMap := make(map[string]*HrProcess)
-	_ = agent.Walk(datastore.MIBDB.NameToOID("host"), func(variable gosnmp.SnmpPDU) error {
+	err = agent.Walk(datastore.MIBDB.NameToOID("host"), func(variable gosnmp.SnmpPDU) error {
 		a := strings.SplitN(datastore.MIBDB.OIDToName(variable.Name), ".", 2)
 		if len(a) != 2 {
 			return nil
@@ -335,6 +335,10 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 		}
 		return nil
 	})
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
 	for i, s := range storageMap {
 		s.Index = i
 		if s.Unit > 0 {

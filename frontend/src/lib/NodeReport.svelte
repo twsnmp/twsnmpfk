@@ -10,6 +10,7 @@
     TableBodyRow,
     TableHead,
     TableHeadCell,
+    Spinner,
   } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
@@ -338,23 +339,25 @@
 
   let hostResource: backend.HostResourceEnt | undefined = undefined;
   let hrSystemTable = undefined;
-  let selectedhrSystemCount = 0;
   let hrStorageTable = undefined;
   let hrDeviceTable = undefined;
   let hrFileSystemTable = undefined;
   let hrProcessTable = undefined;
-
-  const checkHostResource = async () => {
-    hostResource = await GetHostResource(id);
-    console.log(hostResource);
-  };
+  let waitHr = false;
 
   const showHrSystem = async () => {
+    if (!hostResource) {
+      hostResource = await GetHostResource(id);
+    }
+    waitHr = false;
     if (hrSystemTable) {
       hrSystemTable.destroy();
       hrSystemTable = undefined;
     }
-    selectedhrSystemCount = 0;
+    if ( !hostResource) {
+      return;
+    }
+    await tick();
     hrSystemTable = new DataTable("#hrSystemTable", {
       data: hostResource.System,
       language: getTableLang(),
@@ -379,12 +382,6 @@
           width: "60%",
         },
       ],
-    });
-    hrSystemTable.on("select", () => {
-      selectedhrSystemCount = hrSystemTable.rows({ selected: true }).count();
-    });
-    hrSystemTable.on("deselect", () => {
-      selectedhrSystemCount = hrSystemTable.rows({ selected: true }).count();
     });
     showHrSummaryChart();
     showHrCPUChart();
@@ -652,7 +649,6 @@
 
   onMount(async () => {
     node = await GetNode(id);
-    checkHostResource();
     show = true;
   });
 
@@ -763,12 +759,19 @@
         <div id="vpanel" style="width: 98%; height: 500px" />
         <table id="portTable" class="display compact mt-2" style="width:99%" />
       </TabItem>
-      {#if hostResource}
-        <TabItem on:click={showHrSystem}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiAppsBox} size={1} />
-            ホスト情報
-          </div>
+      <TabItem on:click={()=>{
+        waitHr = true;
+        showHrSystem();
+      }}>
+        <div slot="title" class="flex items-center gap-2">
+          {#if waitHr}
+            <Spinner color="red" size="6" />
+          {:else}
+            <Icon path={icons.mdiInformation} size={1} />
+          {/if}
+          ホスト情報
+        </div>
+        {#if hostResource}
           <div class="flex w-full">
             <div id="hrSummaryChart" style="width: 35%; height: 300px" />
             <div id="hrSystemCPUChart" style="width: 63%; height: 300px" />
@@ -778,10 +781,14 @@
             class="display compact mt-2"
             style="width:99%"
           />
-        </TabItem>
+        {:else if !waitHr}
+          <div>ホストリソースMIBに対応していません。</div>
+        {/if}
+      </TabItem>
+      {#if hostResource}
         <TabItem on:click={showHrStorage}>
           <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiAppsBox} size={1} />
+            <Icon path={icons.mdiDatabase} size={1} />
             ストレージ
           </div>
           <div id="hrStorageChart" style="width: 98%; height: 300px" />
@@ -793,7 +800,7 @@
         </TabItem>
         <TabItem on:click={showHrDevice}>
           <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiAppsBox} size={1} />
+            <Icon path={icons.mdiApplicationCog} size={1} />
             デバイス
           </div>
           <table
@@ -804,7 +811,7 @@
         </TabItem>
         <TabItem on:click={showHrFileSystem}>
           <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiAppsBox} size={1} />
+            <Icon path={icons.mdiFileCabinet} size={1} />
             File System
           </div>
           <table
@@ -815,7 +822,7 @@
         </TabItem>
         <TabItem on:click={showHrProcess}>
           <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiAppsBox} size={1} />
+            <Icon path={icons.mdiViewList} size={1} />
             プロセス
           </div>
           <div class="flex w-full mx-auto">
