@@ -5,8 +5,6 @@ import {datastore} from '../models';
 import {discover} from '../models';
 import {backend} from '../models';
 
-export function AutoAddPolling(arg1:string,arg2:string):Promise<boolean>;
-
 export function CheckPolling(arg1:string):Promise<boolean>;
 
 export function CopyDrawItem(arg1:string):Promise<boolean>;
@@ -42,6 +40,8 @@ export function GetAIList():Promise<Array<main.AIList>>;
 export function GetAIResult(arg1:string):Promise<datastore.AIResult>;
 
 export function GetAlertEventLogs():Promise<Array<datastore.EventLogEnt>>;
+
+export function GetAutoPollings(arg1:string,arg2:string):Promise<Array<datastore.PollingEnt>>;
 
 export function GetBackImage():Promise<datastore.BackImageEnt>;
 

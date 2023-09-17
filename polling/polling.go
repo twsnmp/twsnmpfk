@@ -44,15 +44,16 @@ func Start(ctx context.Context, wg *sync.WaitGroup) error {
 	return nil
 }
 
-func AutoAddPolling(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) {
+func GetAutoPollings(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) []*datastore.PollingEnt {
 	switch pt.Type {
 	case "snmp":
-		autoAddSnmpPolling(n, pt)
+		return getAutoSnmpPollings(n, pt)
 	case "tcp", "http", "tls":
-		autoAddTCPPolling(n, pt)
+		return getAutoTCPPollings(n, pt)
 	default:
 		log.Printf("polling not supported type=%s", pt.Type)
 	}
+	return nil
 }
 
 func PollNowNode(nodeID string) {

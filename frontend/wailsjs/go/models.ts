@@ -606,7 +606,7 @@ export namespace datastore {
 	    Extractor: string;
 	    Script: string;
 	    Descr: string;
-	    AutoMode: string;
+	    AutoParam: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new PollingTemplateEnt(source);
@@ -624,7 +624,7 @@ export namespace datastore {
 	        this.Extractor = source["Extractor"];
 	        this.Script = source["Script"];
 	        this.Descr = source["Descr"];
-	        this.AutoMode = source["AutoMode"];
+	        this.AutoParam = source["AutoParam"];
 	    }
 	}
 	export class SyslogEnt {

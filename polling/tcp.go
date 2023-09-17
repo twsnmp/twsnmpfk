@@ -175,8 +175,9 @@ func getTLSConnectioStateInfo(pe *datastore.PollingEnt, host string, cs *tls.Con
 	}
 }
 
-func autoAddTCPPolling(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) {
-	ports := strings.Split(pt.AutoMode, ",")
+func getAutoTCPPollings(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) []*datastore.PollingEnt {
+	var ret []*datastore.PollingEnt
+	ports := strings.Split(pt.AutoParam, ",")
 	for _, port := range ports {
 		if !checkTCPConnect(n, port) {
 			continue
@@ -215,10 +216,9 @@ func autoAddTCPPolling(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) {
 		p.LogMode = 0
 		p.NextTime = 0
 		p.State = "unknown"
-		if err := datastore.AddPolling(p); err != nil {
-			return
-		}
+		ret = append(ret, p)
 	}
+	return ret
 }
 
 func checkTCPConnect(n *datastore.NodeEnt, port string) bool {

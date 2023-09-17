@@ -117,32 +117,26 @@ func (a *App) GetPollingTemplate(id string) datastore.PollingTemplateEnt {
 	pt := datastore.GetPollingTemplate(id)
 	if pt == nil {
 		return datastore.PollingTemplateEnt{
-			Name:     "New",
-			Type:     "ping",
-			AutoMode: "disable",
+			Name: "New",
+			Type: "ping",
 		}
 	}
 	return *pt
 }
 
-// AutoAddPolling add polling from templates
-func (a *App) AutoAddPolling(node string, id string) bool {
+// GetAutoPollingsは、ポーリングのテンプレートから自動でポーリングを作成してリストを返します。
+func (a *App) GetAutoPollings(node string, id string) []*datastore.PollingEnt {
 	n := datastore.GetNode(node)
 	if n == nil {
 		log.Printf("node not found id=%s", node)
-		return false
+		return nil
 	}
 	pt := datastore.GetPollingTemplate(id)
-	log.Println(pt)
 	if pt == nil {
-		return false
+		return nil
 	}
-	if pt.AutoMode == "disable" {
-		return false
-	}
-	if pt.AutoMode != "" {
-		polling.AutoAddPolling(n, pt)
-		return true
+	if pt.AutoParam != "" {
+		return polling.GetAutoPollings(n, pt)
 	}
 	p := new(datastore.PollingEnt)
 	p.Name = pt.Name
@@ -160,9 +154,5 @@ func (a *App) AutoAddPolling(node string, id string) bool {
 	p.LogMode = 0
 	p.NextTime = 0
 	p.State = "unknown"
-	if err := datastore.AddPolling(p); err != nil {
-		return false
-	}
-	log.Println("auto add polling")
-	return true
+	return []*datastore.PollingEnt{p}
 }

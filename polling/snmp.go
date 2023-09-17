@@ -492,18 +492,9 @@ func doPollingSnmpStats(pe *datastore.PollingEnt, agent *gosnmp.GoSNMP) {
 	setPollingError("snmp", pe, err)
 }
 
-func autoAddSnmpPolling(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) {
-	indexMIB := ""
-	if strings.HasPrefix(pt.AutoMode, "index:") {
-		a := strings.SplitAfterN(pt.AutoMode, ":", 2)
-		if len(a) != 2 {
-			return
-		}
-		indexMIB = a[1]
-	} else {
-		return
-	}
-	indexes := getSnmpIndex(n, indexMIB)
+func getAutoSnmpPollings(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) []*datastore.PollingEnt {
+	var ret []*datastore.PollingEnt
+	indexes := getSnmpIndex(n, pt.AutoParam)
 	for _, index := range indexes {
 		p := new(datastore.PollingEnt)
 		p.Name = pt.Name + " : " + index
@@ -524,10 +515,9 @@ func autoAddSnmpPolling(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) 
 		p.LogMode = 0
 		p.NextTime = 0
 		p.State = "unknown"
-		if err := datastore.AddPolling(p); err != nil {
-			return
-		}
+		ret = append(ret, p)
 	}
+	return ret
 }
 
 func getSnmpIndex(n *datastore.NodeEnt, name string) []string {

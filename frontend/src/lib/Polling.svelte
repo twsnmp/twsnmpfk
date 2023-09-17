@@ -8,23 +8,29 @@
   import { CodeJar } from "@novacbn/svelte-codejar";
 
   import { Select, Modal, Label, Input, Button } from "flowbite-svelte";
-  import { onMount, onDestroy, createEventDispatcher } from "svelte";
+  import { onMount, onDestroy, createEventDispatcher,tick } from "svelte";
   import {
     GetPolling,
     GetGroks,
     UpdatePolling,
+    GetAutoPollings,
     GetPollingTemplate,
   } from "../../wailsjs/go/main/App";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
-  import { levelList, typeList, logModeList } from "./common";
+  import { levelList, typeList, logModeList, getTableLang } from "./common";
+  import DataTable from "datatables.net-dt";
+  import "datatables.net-select-dt";
 
   export let nodeID: string = "";
   export let pollingID: string = "";
   export let pollingTmpID: string = "";
+  export let params = undefined;
   let polling: datastore.PollingEnt | undefined = undefined;
   let show: boolean = false;
+  let list = [];
+  let showList: boolean = false;
   let extractorList = [
     {
       name: "goqueryによるデータ取得",
@@ -38,34 +44,6 @@
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
-    if (pollingID) {
-      polling = await GetPolling(pollingID);
-    } else if (nodeID) {
-      const tmp = await GetPollingTemplate(pollingTmpID); 
-      polling = {
-        ID: "",
-        Name: tmp.Name,
-        NodeID: nodeID,
-        Type: tmp.Type,
-        Mode: tmp.Mode,
-        Params: tmp.Params,
-        Filter: tmp.Filter,
-        Extractor: tmp.Extractor,
-        Script: tmp.Script,
-        Level: tmp.Level,
-        PollInt: 60,
-        Timeout: 1,
-        Retry: 1,
-        LogMode: 0,
-        NextTime: 0,
-        LastTime: 0,
-        Result: {},
-        State: "unknown",
-      };
-    } else {
-      close();
-      return;
-    }
     const groks = await GetGroks();
     for (const g of groks) {
       extractorList.push({
@@ -73,10 +51,117 @@
         value: g.ID,
       });
     }
-    show = true;
+    if (pollingID) {
+      polling = await GetPolling(pollingID);
+    } else if (nodeID && pollingTmpID) {
+      if (params) {
+        const tmp = await GetPollingTemplate(pollingTmpID);
+        polling = {
+          ID: "",
+          Name: tmp.Name,
+          NodeID: nodeID,
+          Type: tmp.Type,
+          Mode: tmp.Mode,
+          Params: params.Params || tmp.Params,
+          Filter: params.Filter || tmp.Filter,
+          Extractor: tmp.Extractor,
+          Script: tmp.Script,
+          Level: tmp.Level,
+          PollInt: 60,
+          Timeout: 1,
+          Retry: 1,
+          LogMode: 0,
+          NextTime: 0,
+          LastTime: 0,
+          Result: {},
+          State: "unknown",
+        };
+        show = true;
+      } else {
+        list = await GetAutoPollings(nodeID, pollingTmpID);
+        if (list.length == 1) {
+          polling = list[0];
+          show = true;
+        } else {
+          showPollingList();
+          showList = true;
+        }
+      }
+    } else {
+      close();
+      return;
+    }
   });
 
-  onDestroy(() => {});
+  let pollingTable = undefined;
+  let selectedCount = 0;
+
+  const showPollingList = async () => {
+    if (pollingTable) {
+      pollingTable.destroy();
+      pollingTable = undefined;
+    }
+    await tick();
+    selectedCount = 0;
+    pollingTable = new DataTable("#pollingTable", {
+      data: list,
+      language: getTableLang(),
+      order: [[1, "desc"]],
+      select: {
+        style: "multi",
+      },
+      columns: [
+        {
+          data: "Name",
+          title: "名前",
+          width: "35%",
+        },
+        {
+          data: "Type",
+          title: "種別",
+          width: "10%",
+        },
+        {
+          data: "Mode",
+          title: "モード",
+          width: "10%",
+        },
+        {
+          data: "Params",
+          title: "パラメータ",
+          width: "10%",
+        },
+        {
+          data: "Filter",
+          title: "フィルター",
+          width: "10%",
+        },
+      ],
+    });
+    pollingTable.on("select", () => {
+      selectedCount = pollingTable.rows({ selected: true }).count();
+    });
+    pollingTable.on("deselect", () => {
+      selectedCount = pollingTable.rows({ selected: true }).count();
+    });
+  };
+
+  onDestroy(() => {
+    if (pollingTable) {
+      pollingTable.destroy();
+    }
+  });
+
+  const select = () => {
+    const p = pollingTable.rows({ selected: true }).data();
+    if (!p || p.length !=1 ) {
+      return;
+    }
+    polling = p[0];
+    selectedCount = 0;
+    showList = false;
+    show = true;
+  };
 
   const close = () => {
     show = false;
@@ -226,6 +311,30 @@
       </Button>
     </div>
   </form>
+</Modal>
+
+<Modal
+  bind:open={showList}
+  size="xl"
+  permanent
+  class="w-full"
+  on:on:close={close}
+>
+  <div class="flex flex-col space-y-4">
+    <table id="pollingTable" class="display compact mt-2" style="width:99%" />
+    <div class="flex justify-end space-x-2 mr-2">
+      {#if selectedCount == 1}
+        <Button type="button" color="alternative" on:click={select} size="sm">
+          <Icon path={icons.mdiCancel} size={1} />
+          選択
+        </Button>
+      {/if}
+      <Button type="button" color="alternative" on:click={close} size="sm">
+        <Icon path={icons.mdiCancel} size={1} />
+        キャンセル
+      </Button>
+    </div>
+  </div>
 </Modal>
 
 <style>

@@ -2,13 +2,10 @@
   import { Modal, Button } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import { onMount, onDestroy,tick,createEventDispatcher } from "svelte";
-  import {
-    GetPollingTemplates,
-    AutoAddPolling,
-  } from "../../wailsjs/go/main/App";
+  import { onMount, onDestroy, tick, createEventDispatcher } from "svelte";
+  import { GetPollingTemplates } from "../../wailsjs/go/main/App";
   import { renderState, getTableLang } from "./common";
-  import Polling  from "./Polling.svelte";
+  import Polling from "./Polling.svelte";
 
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -20,7 +17,6 @@
   let selectedCount = 0;
   let show = false;
   let showEditPolling = false;
-  let canAuto = false;
   let selectedTmplateID = "";
 
   const showTable = async () => {
@@ -42,15 +38,9 @@
       },
     });
     tmpTable.on("select", () => {
-      canAuto = false;
       selectedCount = tmpTable.rows({ selected: true }).count();
-      if (selectedCount == 1) {
-        const autoMode = tmpTable.rows({ selected: true }).data().pluck("AutoMode");
-        canAuto = autoMode[0] != "disable";
-      }
     });
     tmpTable.on("deselect", () => {
-      canAuto = false;
       selectedCount = tmpTable.rows({ selected: true }).count();
     });
   };
@@ -61,29 +51,15 @@
       return;
     }
     selectedTmplateID = selected[0];
+    show = false;
     showEditPolling = true;
-  };
-
-  const auto = async () => {
-    const selected = tmpTable.rows({ selected: true }).data().pluck("ID");
-    const autoMode = tmpTable.rows({ selected: true }).data().pluck("AutoMode");
-    if (selected.length != 1) {
-      return;
-    }
-    if (autoMode[0] == "disable") {
-      return;
-    }
-    const r = await AutoAddPolling(nodeID, selected[0]);
-    if(r) {
-      close();
-    }
   };
 
   const columns = [
     {
       data: "Name",
       title: "名前",
-      width: "25%",
+      width: "30%",
     },
     {
       data: "Level",
@@ -97,15 +73,9 @@
       width: "10%",
     },
     {
-      data: "AutoMode",
-      title: "自動",
-      width: "10%",
-      render: (d) => d == "disable" ? "" : "Yes",
-    },
-    {
       data: "Descr",
       title: "説明",
-      width: "45%",
+      width: "50%",
     },
   ];
 
@@ -125,7 +95,6 @@
     showEditPolling = false;
     dispatch("close", {});
   };
-
 </script>
 
 <Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
@@ -140,12 +109,6 @@
           追加
         </Button>
       {/if}
-      {#if selectedCount == 1 && canAuto}
-        <Button color="red" type="button" on:click={auto} size="xs">
-          <Icon path={icons.mdiBrain} size={1} />
-          自動追加
-        </Button>
-      {/if}
       <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         キャンセル
@@ -156,11 +119,11 @@
 
 {#if showEditPolling}
   <Polling
-    nodeID={nodeID}
+    {nodeID}
     pollingID={""}
     pollingTmpID={selectedTmplateID}
     on:close={close}
-  ></Polling>
+  />
 {/if}
 
 <style>

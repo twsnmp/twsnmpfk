@@ -18,7 +18,7 @@ type PollingTemplateEnt struct {
 	Extractor string `json:"Extractor"`
 	Script    string `json:"Script"`
 	Descr     string `json:"Descr"`
-	AutoMode  string `json:"AutoMode"`
+	AutoParam string `json:"AutoParam"`
 }
 
 var pollingTemplateList = make(map[string]*PollingTemplateEnt)
