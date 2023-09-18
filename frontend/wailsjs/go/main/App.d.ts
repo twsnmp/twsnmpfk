@@ -41,7 +41,7 @@ export function GetAIResult(arg1:string):Promise<datastore.AIResult>;
 
 export function GetAlertEventLogs():Promise<Array<datastore.EventLogEnt>>;
 
-export function GetAutoPollings(arg1:string,arg2:string):Promise<Array<datastore.PollingEnt>>;
+export function GetAutoPollings(arg1:string,arg2:number):Promise<Array<datastore.PollingEnt>>;
 
 export function GetBackImage():Promise<datastore.BackImageEnt>;
 
@@ -81,7 +81,7 @@ export function GetPolling(arg1:string):Promise<datastore.PollingEnt>;
 
 export function GetPollingLogs(arg1:string):Promise<Array<datastore.PollingLogEnt>>;
 
-export function GetPollingTemplate(arg1:string):Promise<datastore.PollingTemplateEnt>;
+export function GetPollingTemplate(arg1:number):Promise<datastore.PollingTemplateEnt>;
 
 export function GetPollingTemplates():Promise<Array<datastore.PollingTemplateEnt>>;
 

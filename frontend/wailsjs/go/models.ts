@@ -596,7 +596,7 @@ export namespace datastore {
 	    }
 	}
 	export class PollingTemplateEnt {
-	    ID: string;
+	    ID: number;
 	    Name: string;
 	    Level: string;
 	    Type: string;

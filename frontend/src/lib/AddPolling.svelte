@@ -4,7 +4,7 @@
   import * as icons from "@mdi/js";
   import { onMount, onDestroy, tick, createEventDispatcher } from "svelte";
   import { GetPollingTemplates } from "../../wailsjs/go/main/App";
-  import { renderState, getTableLang } from "./common";
+  import { getTableLang } from "./common";
   import Polling from "./Polling.svelte";
 
   import DataTable from "datatables.net-dt";
@@ -17,11 +17,11 @@
   let selectedCount = 0;
   let show = false;
   let showEditPolling = false;
-  let selectedTmplateID = "";
+  let selectedTemplateID = 0;
 
   const showTable = async () => {
     await tick();
-    let order = [[2, "asc"]];
+    let order = [[0, "asc"]];
     if (tmpTable) {
       order = tmpTable.order();
       tmpTable.destroy();
@@ -50,32 +50,36 @@
     if (selected.length != 1) {
       return;
     }
-    selectedTmplateID = selected[0];
+    selectedTemplateID = Number(selected[0]);
     show = false;
     showEditPolling = true;
   };
 
   const columns = [
     {
+      data: "ID",
+      title: "ID",
+      width: "5%",
+    },
+    {
       data: "Name",
       title: "名前",
       width: "30%",
     },
     {
-      data: "Level",
-      title: "レベル",
-      width: "10%",
-      render: renderState,
-    },
-    {
       data: "Type",
       title: "種別",
-      width: "10%",
+      width: "15%",
+    },
+    {
+      data: "Mode",
+      title: "モード",
+      width: "15%",
     },
     {
       data: "Descr",
       title: "説明",
-      width: "50%",
+      width: "40%",
     },
   ];
 
@@ -121,7 +125,7 @@
   <Polling
     {nodeID}
     pollingID={""}
-    pollingTmpID={selectedTmplateID}
+    pollingTmpID={selectedTemplateID}
     on:close={close}
   />
 {/if}

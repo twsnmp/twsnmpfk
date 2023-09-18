@@ -48,8 +48,6 @@ func GetAutoPollings(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) []*
 	switch pt.Type {
 	case "snmp":
 		return getAutoSnmpPollings(n, pt)
-	case "tcp", "http", "tls":
-		return getAutoTCPPollings(n, pt)
 	default:
 		log.Printf("polling not supported type=%s", pt.Type)
 	}

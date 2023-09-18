@@ -25,7 +25,7 @@
 
   export let nodeID: string = "";
   export let pollingID: string = "";
-  export let pollingTmpID: string = "";
+  export let pollingTmpID: number = 0;
   export let params = undefined;
   let polling: datastore.PollingEnt | undefined = undefined;
   let show: boolean = false;

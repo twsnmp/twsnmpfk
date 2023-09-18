@@ -104,16 +104,11 @@ func (a *App) GetGroks() []datastore.GrokEnt {
 }
 
 // GetPollingTemplates returns polling templates
-func (a *App) GetPollingTemplates() []datastore.PollingTemplateEnt {
-	ret := []datastore.PollingTemplateEnt{}
-	datastore.ForEachPollingTemplate(func(pt *datastore.PollingTemplateEnt) bool {
-		ret = append(ret, *pt)
-		return true
-	})
-	return ret
+func (a *App) GetPollingTemplates() []*datastore.PollingTemplateEnt {
+	return datastore.PollingTemplateList
 }
 
-func (a *App) GetPollingTemplate(id string) datastore.PollingTemplateEnt {
+func (a *App) GetPollingTemplate(id int) datastore.PollingTemplateEnt {
 	pt := datastore.GetPollingTemplate(id)
 	if pt == nil {
 		return datastore.PollingTemplateEnt{
@@ -125,7 +120,7 @@ func (a *App) GetPollingTemplate(id string) datastore.PollingTemplateEnt {
 }
 
 // GetAutoPollingsは、ポーリングのテンプレートから自動でポーリングを作成してリストを返します。
-func (a *App) GetAutoPollings(node string, id string) []*datastore.PollingEnt {
+func (a *App) GetAutoPollings(node string, id int) []*datastore.PollingEnt {
 	n := datastore.GetNode(node)
 	if n == nil {
 		log.Printf("node not found id=%s", node)
