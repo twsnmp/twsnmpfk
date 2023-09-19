@@ -74,6 +74,10 @@ export function GetAlertEventLogs() {
   return window['go']['main']['App']['GetAlertEventLogs']();
 }
 
+export function GetArpLogs() {
+  return window['go']['main']['App']['GetArpLogs']();
+}
+
 export function GetAutoPollings(arg1, arg2) {
   return window['go']['main']['App']['GetAutoPollings'](arg1, arg2);
 }
@@ -100,10 +104,6 @@ export function GetDrawItems() {
 
 export function GetEventLogs(arg1) {
   return window['go']['main']['App']['GetEventLogs'](arg1);
-}
-
-export function GetGroks() {
-  return window['go']['main']['App']['GetGroks']();
 }
 
 export function GetHostResource(arg1) {

@@ -329,26 +329,6 @@ export namespace datastore {
 	        this.LastLevel = source["LastLevel"];
 	    }
 	}
-	export class GrokEnt {
-	    ID: string;
-	    Name: string;
-	    Decr: string;
-	    Pat: string;
-	    Ok: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new GrokEnt(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.ID = source["ID"];
-	        this.Name = source["Name"];
-	        this.Decr = source["Decr"];
-	        this.Pat = source["Pat"];
-	        this.Ok = source["Ok"];
-	    }
-	}
 	export class LineEnt {
 	    ID: string;
 	    NodeID1: string;
@@ -383,6 +363,7 @@ export namespace datastore {
 	        this.Port = source["Port"];
 	    }
 	}
+	
 	export class MIBTreeEnt {
 	    oid: string;
 	    name: string;

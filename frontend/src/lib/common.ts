@@ -75,7 +75,6 @@ export const typeList = [
   { name: 'SSH', value: 'ssh' },
   { name: 'Report', value: 'report' },
   { name: 'TWSNMP', value: 'twsnmp' },
-  { name: 'VMware', value: 'vmware' },
   { name: 'LXI', value: 'lxi' },
 ]
 

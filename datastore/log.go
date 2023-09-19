@@ -115,41 +115,6 @@ func ForEachLastEventLog(last int64, f func(*EventLogEnt) bool) error {
 	})
 }
 
-func ForEachLog(st, et int64, t string, f func(*LogEnt) bool) error {
-	if db == nil {
-		return ErrDBNotOpen
-	}
-	sk := fmt.Sprintf("%016x", st)
-	return db.View(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte(t))
-		if b == nil {
-			return nil
-		}
-		c := b.Cursor()
-		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
-			var e LogEnt
-			err := json.Unmarshal(v, &e)
-			if err != nil {
-				log.Printf("ForEachLog v=%s err=%v", v, err)
-				continue
-			}
-			if e.Time < st {
-				continue
-			}
-			if e.Time > et {
-				break
-			}
-			if !f(&e) {
-				break
-			}
-		}
-		return nil
-	})
-}
-
 func deleteOldLog(tx *bbolt.Tx, bucket string, days int) bool {
 	s := time.Now()
 	done := true
@@ -682,6 +647,35 @@ func ForEachLastTraps(f func(*TrapEnt) bool) error {
 			}
 			re.Time = l.Time
 			if !f(re) {
+				break
+			}
+		}
+		return nil
+	})
+}
+
+// ForEachLastArpLogs は最新のARP Logを返します。
+func ForEachLastArpLogs(f func(*LogEnt) bool) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("arplog"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, v := c.Last(); k != nil; k, v = c.Prev() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			if !f(&l) {
 				break
 			}
 		}

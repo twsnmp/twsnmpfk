@@ -156,7 +156,6 @@ func loadDataFromFS() error {
 	if _, err := os.Stat(p); err == nil {
 		openGeoIP(p)
 	}
-	loadGrokMap()
 	if r, err := conf.Open("conf/polling.json"); err == nil {
 		if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
 			if err := loadPollingTemplate(b); err != nil {

@@ -41,6 +41,8 @@ export function GetAIResult(arg1:string):Promise<datastore.AIResult>;
 
 export function GetAlertEventLogs():Promise<Array<datastore.EventLogEnt>>;
 
+export function GetArpLogs():Promise<Array<datastore.LogEnt>>;
+
 export function GetAutoPollings(arg1:string,arg2:number):Promise<Array<datastore.PollingEnt>>;
 
 export function GetBackImage():Promise<datastore.BackImageEnt>;
@@ -54,8 +56,6 @@ export function GetDrawItem(arg1:string):Promise<datastore.DrawItemEnt>;
 export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
 
 export function GetEventLogs(arg1:string):Promise<Array<datastore.EventLogEnt>>;
-
-export function GetGroks():Promise<Array<datastore.GrokEnt>>;
 
 export function GetHostResource(arg1:string):Promise<backend.HostResourceEnt>;
 

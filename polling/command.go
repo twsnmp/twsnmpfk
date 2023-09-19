@@ -70,17 +70,11 @@ func doPollingCmd(pe *datastore.PollingEnt) {
 			return otto.UndefinedValue()
 		})
 	} else if extractor != "" {
-		grokEnt := datastore.GetGrokEnt(extractor)
-		if grokEnt == nil {
-			setPollingError("cmd", pe, fmt.Errorf("no grok pattern"))
-			return
-		}
 		g, _ := grok.NewWithConfig(&grok.Config{NamedCapturesOnly: true})
-		if err := g.AddPattern(extractor, grokEnt.Pat); err != nil {
+		if err := g.AddPattern("TWSNMP", extractor); err != nil {
 			log.Printf("cmd polling err=%v", err)
 		}
-		cap := fmt.Sprintf("%%{%s}", extractor)
-		values, err := g.Parse(cap, string(stdout))
+		values, err := g.Parse("%%{TWSNMP}", string(stdout))
 		if err != nil {
 			setPollingError("cmd", pe, err)
 			return

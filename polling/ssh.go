@@ -64,15 +64,9 @@ func doPollingSSH(pe *datastore.PollingEnt) {
 			return otto.UndefinedValue()
 		})
 	} else if extractor != "" {
-		grokEnt := datastore.GetGrokEnt(extractor)
-		if grokEnt == nil {
-			setPollingError("ssh", pe, fmt.Errorf("no grok pattern"))
-			return
-		}
 		g, _ := grok.NewWithConfig(&grok.Config{NamedCapturesOnly: true})
-		g.AddPattern(extractor, grokEnt.Pat)
-		cap := fmt.Sprintf("%%{%s}", extractor)
-		values, err := g.Parse(cap, string(out))
+		g.AddPattern("TWSNMP", extractor)
+		values, err := g.Parse("%%{TWSNMP}", string(out))
 		if err != nil {
 			setPollingError("ssh", pe, err)
 			return

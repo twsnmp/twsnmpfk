@@ -132,16 +132,11 @@ func checkHTTPResp(pe *datastore.PollingEnt, status, body string, code int, rTim
 			return otto.UndefinedValue()
 		})
 	} else if extractor != "" {
-		grokEnt := datastore.GetGrokEnt(extractor)
-		if grokEnt == nil {
-			return false, fmt.Errorf("no grok pattern")
-		}
 		g, _ := grok.NewWithConfig(&grok.Config{NamedCapturesOnly: true})
-		if err := g.AddPattern(extractor, grokEnt.Pat); err != nil {
-			return false, fmt.Errorf("no grok pattern err=%v", err)
+		if err := g.AddPattern("TWSNMP", extractor); err != nil {
+			return false, fmt.Errorf("grok pattern err=%v", err)
 		}
-		cap := fmt.Sprintf("%%{%s}", extractor)
-		values, err := g.Parse(cap, body)
+		values, err := g.Parse("%%{TWSNMP}", body)
 		if err != nil {
 			return false, err
 		}

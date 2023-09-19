@@ -11,7 +11,6 @@
   import { onMount, onDestroy, createEventDispatcher,tick } from "svelte";
   import {
     GetPolling,
-    GetGroks,
     UpdatePolling,
     GetAutoPollings,
     GetPollingTemplate,
@@ -31,26 +30,9 @@
   let show: boolean = false;
   let list = [];
   let showList: boolean = false;
-  let extractorList = [
-    {
-      name: "goqueryによるデータ取得",
-      value: "goquery",
-    },
-    {
-      name: "getBodyによるデータ取得",
-      value: "getBody",
-    },
-  ];
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
-    const groks = await GetGroks();
-    for (const g of groks) {
-      extractorList.push({
-        name: g.Name,
-        value: g.ID,
-      });
-    }
     if (pollingID) {
       polling = await GetPolling(pollingID);
     } else if (nodeID && pollingTmpID) {
@@ -167,8 +149,19 @@
     show = false;
     dispatch("close", {});
   };
-
+  let paramsColor :any = "base";
+  let filterColor :any = "base";
   const save = async () => {
+    filterColor = "base";
+    paramsColor = "base";
+    if(polling.Filter.startsWith("TODO:")) {
+      filterColor = "red";
+      return;
+    }
+    if(polling.Params.startsWith("TODO:")) {
+      paramsColor = "red";
+      return;
+    }
     polling.Timeout *= 1;
     polling.Retry *= 1;
     polling.PollInt *= 1;
@@ -194,7 +187,7 @@
         size="sm"
       />
     </Label>
-    <div class="grid gap-4 mb-4 md:grid-cols-3">
+    <div class="grid gap-4 mb-4 md:grid-cols-4">
       <Label class="space-y-2">
         <span> レベル </span>
         <Select
@@ -219,38 +212,6 @@
         <Input
           bind:value={polling.Mode}
           placeholder="モード"
-          required
-          size="sm"
-        />
-      </Label>
-    </div>
-    <div class="grid gap-4 mb-4 md:grid-cols-2">
-      <Label class="space-y-2">
-        <span>パラメーター</span>
-        <Input
-          bind:value={polling.Params}
-          placeholder="パラメーター"
-          required
-          size="sm"
-        />
-      </Label>
-      <Label class="space-y-2">
-        <span>フィルター</span>
-        <Input
-          bind:value={polling.Filter}
-          placeholder="フィルター"
-          required
-          size="sm"
-        />
-      </Label>
-    </div>
-    <div class="grid gap-4 md:grid-cols-2">
-      <Label class="space-y-2">
-        <span> 抽出パターン </span>
-        <Select
-          items={extractorList}
-          bind:value={polling.Extractor}
-          placeholder="抽出パターンを選択"
           size="sm"
         />
       </Label>
@@ -264,6 +225,32 @@
         />
       </Label>
     </div>
+    <Label class="space-y-2">
+      <span>パラメーター</span>
+      <Input
+        bind:value={polling.Params}
+        placeholder="パラメーター"
+        color={paramsColor}
+        size="sm"
+      />
+    </Label>
+    <Label class="space-y-2">
+      <span>フィルター</span>
+      <Input
+        bind:value={polling.Filter}
+        placeholder="フィルター"
+        color={filterColor}
+        size="sm"
+      />
+    </Label>
+    <Label class="space-y-2">
+      <span>抽出パターン</span>
+      <Input
+        bind:value={polling.Extractor}
+        placeholder="抽出パターン"
+        size="sm"
+      />
+    </Label>
     <Label class="space-y-2">
       <span>スクリプト</span>
       <CodeJar syntax="javascript" {highlight} bind:value={polling.Script} />

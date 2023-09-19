@@ -93,16 +93,6 @@ func (a *App) GetPollingLogs(id string) []datastore.PollingLogEnt {
 	return ret
 }
 
-// GetGroks retunrs grok list
-func (a *App) GetGroks() []datastore.GrokEnt {
-	ret := []datastore.GrokEnt{}
-	datastore.ForEachGrokEnt(func(g *datastore.GrokEnt) bool {
-		ret = append(ret, *g)
-		return true
-	})
-	return ret
-}
-
 // GetPollingTemplates returns polling templates
 func (a *App) GetPollingTemplates() []*datastore.PollingTemplateEnt {
 	return datastore.PollingTemplateList
