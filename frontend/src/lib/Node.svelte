@@ -17,6 +17,7 @@
   export let nodeID: string = "";
   export let posX = 0;
   export let posY = 0;
+  export let ip = "";
   let node: datastore.NodeEnt | undefined = undefined;
   let show: boolean = false;
   const dispatch = createEventDispatcher();
@@ -33,7 +34,7 @@
         State: "",
         X: posX,
         Y: posY,
-        IP: "",
+        IP: ip,
         IPv6: "",
         MAC: "",
         SnmpMode: "v2c",

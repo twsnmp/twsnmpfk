@@ -13,6 +13,8 @@
   import { renderTime, getTableLang, renderState } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
   import ArpReport from "./ArpReport.svelte";
+  import Node from "./Node.svelte";
+  import NodeReport from "./NodeReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
 
@@ -23,16 +25,20 @@
   let showReport = false;
   let arpTable = undefined;
   let arpLogTable = undefined;
-  let selectedArpCount = 0;
   let changeMAC = new Map();
   let changeIP = new Map();
+  let selectedIP = "";
+  let selectedNodeID = "";
+
+  let showEditNode = false;
+  let showNodeReport = false;
 
   const showArpTable = () => {
     if (arpTable) {
       arpTable.destroy();
       arpTable = undefined;
     }
-    selectedArpCount = 0;
+    selectedIP = selectedNodeID = "";
     arpTable = new DataTable("#arpTable", {
       columns: arpColumns,
       data: arp,
@@ -43,10 +49,22 @@
       },
     });
     arpTable.on("select", () => {
-      selectedArpCount = arpTable.rows({ selected: true }).count();
+      selectedIP = selectedNodeID = "";
+      const d  = arpTable.rows({ selected: true }).data();
+      if (!d || d.length != 1) {
+        return;
+      }
+      if (d[0].NodeID ) {
+        selectedNodeID = d[0].NodeID;
+      } else if (d[0].IP) {
+        selectedIP = d[0].IP;
+      }
     });
     arpTable.on("deselect", () => {
-      selectedArpCount = arpTable.rows({ selected: true }).count();
+      const c  = arpTable.rows({ selected: true }).count();
+      if(c != 1) {
+        selectedIP = selectedNodeID = "";
+      }
     });
   };
 
@@ -229,6 +247,20 @@
     </div>
   </div>
   <div class="flex justify-end space-x-2 mr-2 mt-2">
+    {#if selectedNodeID}
+      <Button color="green" type="button" on:click={()=> showNodeReport= true} size="xs">
+        <Icon path={icons.mdiChartBar} size={1} />
+        ノード情報
+      </Button>
+    {/if}
+
+    {#if selectedIP}
+      <Button color="blue" type="button" on:click={()=>{showEditNode=true}} size="xs">
+        <Icon path={icons.mdiPlus} size={1} />
+        ノード追加
+      </Button>
+    {/if}
+
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
@@ -267,6 +299,27 @@
    {changeMAC}
     on:close={() => {
       showReport = false;
+    }}
+  />
+{/if}
+
+{#if showEditNode}
+  <Node
+    ip={selectedIP}
+    posX={100}
+    posY={120}
+    on:close={(e) => {
+      refresh();
+      showEditNode = false;
+    }}
+  />
+{/if}
+
+{#if showNodeReport}
+  <NodeReport
+    id={selectedNodeID}
+    on:close={(e) => {
+      showNodeReport = false;
     }}
   />
 {/if}
