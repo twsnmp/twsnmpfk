@@ -9,8 +9,10 @@ import (
 )
 
 type ArpEnt struct {
-	IP  string
-	MAC string
+	IP     string `json:"IP"`
+	MAC    string `json:"MAC"`
+	NodeID string `json:"NodeID"`
+	Vendor string `json:"Vendor"`
 }
 
 func UpdateArpEnt(ip, mac string) error {
@@ -36,9 +38,19 @@ func ForEachArp(f func(*ArpEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.First(); k != nil; k, v = c.Next() {
+			ip := string(k)
+			mac := string(v)
+			nodeID := ""
+			if n := FindNodeFromIP(ip); n != nil {
+				nodeID = n.ID
+			} else if n := FindNodeFromMAC(mac); n != nil {
+				nodeID = n.ID
+			}
 			var e = ArpEnt{
-				IP:  string(k),
-				MAC: string(v),
+				IP:     ip,
+				MAC:    mac,
+				NodeID: nodeID,
+				Vendor: FindVendor(mac),
 			}
 			if !f(&e) {
 				break

@@ -18,6 +18,7 @@
   import EventLog from "./lib/EventLog.svelte";
   import Syslog from "./lib/Syslog.svelte";
   import Trap from "./lib/Trap.svelte";
+  import Arp from "./lib/Arp.svelte";
   import AIList from "./lib/AIList.svelte";
   import Config from "./lib/Config.svelte";
 
@@ -95,6 +96,10 @@
       <Icon path={icons.mdiAlert} size={1} />
       TRAP
     </NavLi>
+    <NavLi active={page == "arp"} on:click={()=> {page= "arp"}}>
+      <Icon path={icons.mdiCheckNetwork} size={1} />
+      ARP
+    </NavLi>
      <NavLi active={page == "ai"} on:click={()=> {page= "ai"}}>
       <Icon path={icons.mdiBrain} size={1} />
       AI分析
@@ -135,6 +140,8 @@
   <Syslog />
 {:else if page == "trap"}
   <Trap />
+{:else if page == "arp"}
+  <Arp />
 {:else if page == "ai"}
   <AIList />
 {/if}

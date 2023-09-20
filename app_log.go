@@ -48,10 +48,25 @@ func (a *App) GetTraps() []*datastore.TrapEnt {
 	return ret
 }
 
+// GetArpTableは、ARP Tableを返します。
+func (a *App) GetArpTable() []*datastore.ArpEnt {
+	ret := []*datastore.ArpEnt{}
+	datastore.ForEachArp(func(l *datastore.ArpEnt) bool {
+		ret = append(ret, l)
+		return len(ret) < maxDispLog
+	})
+	return ret
+}
+
+// ResetArpTableは、ARP Tableをクリアします。
+func (a *App) ResetArpTable() bool {
+	return datastore.ResetArpTable() == nil
+}
+
 // GetArpLogsは、最新のARP Logを返します。
-func (a *App) GetArpLogs() []*datastore.LogEnt {
-	ret := []*datastore.LogEnt{}
-	datastore.ForEachLastArpLogs(func(l *datastore.LogEnt) bool {
+func (a *App) GetArpLogs() []*datastore.ArpLogEnt {
+	ret := []*datastore.ArpLogEnt{}
+	datastore.ForEachLastArpLogs(func(l *datastore.ArpLogEnt) bool {
 		ret = append(ret, l)
 		return len(ret) < maxDispLog
 	})

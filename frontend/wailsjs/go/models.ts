@@ -221,6 +221,44 @@ export namespace datastore {
 	        this.ScoreData = source["ScoreData"];
 	    }
 	}
+	export class ArpEnt {
+	    IP: string;
+	    MAC: string;
+	    NodeID: string;
+	    Vendor: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ArpEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.IP = source["IP"];
+	        this.MAC = source["MAC"];
+	        this.NodeID = source["NodeID"];
+	        this.Vendor = source["Vendor"];
+	    }
+	}
+	export class ArpLogEnt {
+	    Time: number;
+	    State: string;
+	    IP: string;
+	    OldMAC: string;
+	    NewMAC: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ArpLogEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.State = source["State"];
+	        this.IP = source["IP"];
+	        this.OldMAC = source["OldMAC"];
+	        this.NewMAC = source["NewMAC"];
+	    }
+	}
 	export class BackImageEnt {
 	    X: number;
 	    Y: number;
@@ -363,7 +401,6 @@ export namespace datastore {
 	        this.Port = source["Port"];
 	    }
 	}
-	
 	export class MIBTreeEnt {
 	    oid: string;
 	    name: string;

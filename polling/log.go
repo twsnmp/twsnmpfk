@@ -167,15 +167,8 @@ func doPollingSyslogCount(pe *datastore.PollingEnt) {
 
 func doPollingArpLog(pe *datastore.PollingEnt) {
 	var err error
-	var regexFilter *regexp.Regexp
 	filter := pe.Filter
 	script := pe.Script
-	if filter != "" {
-		if regexFilter, err = regexp.Compile(filter); err != nil {
-			setPollingError("log", pe, fmt.Errorf("invalid log watch format"))
-			return
-		}
-	}
 	st := time.Now().Add(-time.Second * time.Duration(pe.PollInt)).UnixNano()
 	if v, ok := pe.Result["lastTime"]; ok {
 		if vf, ok := v.(float64); ok {
@@ -185,12 +178,11 @@ func doPollingArpLog(pe *datastore.PollingEnt) {
 	vm := otto.New()
 	addJavaScriptFunctions(pe, vm)
 	count := 0
-	datastore.ForEachLastArpLogs(func(l *datastore.LogEnt) bool {
+	datastore.ForEachLastArpLogs(func(l *datastore.ArpLogEnt) bool {
 		if l.Time < st {
 			return false
 		}
-		msg := l.Log
-		if regexFilter != nil && !regexFilter.Match([]byte(msg)) {
+		if filter != "" && l.State != filter {
 			return true
 		}
 		count++

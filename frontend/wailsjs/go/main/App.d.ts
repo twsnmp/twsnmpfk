@@ -23,6 +23,8 @@ export function DeletePollings(arg1:Array<string>):Promise<void>;
 
 export function ExportAny(arg1:string,arg2:main.ExportData):Promise<string>;
 
+export function ExportArpTable(arg1:string):Promise<string>;
+
 export function ExportEventLogs(arg1:string):Promise<string>;
 
 export function ExportNodes(arg1:string):Promise<string>;
@@ -41,7 +43,9 @@ export function GetAIResult(arg1:string):Promise<datastore.AIResult>;
 
 export function GetAlertEventLogs():Promise<Array<datastore.EventLogEnt>>;
 
-export function GetArpLogs():Promise<Array<datastore.LogEnt>>;
+export function GetArpLogs():Promise<Array<datastore.ArpLogEnt>>;
+
+export function GetArpTable():Promise<Array<datastore.ArpEnt>>;
 
 export function GetAutoPollings(arg1:string,arg2:number):Promise<Array<datastore.PollingEnt>>;
 
@@ -100,6 +104,8 @@ export function GetVPanelPowerInfo(arg1:string):Promise<boolean>;
 export function GetVersion():Promise<string>;
 
 export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
+
+export function ResetArpTable():Promise<boolean>;
 
 export function SelectFile(arg1:string,arg2:boolean):Promise<string>;
 

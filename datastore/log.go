@@ -654,8 +654,16 @@ func ForEachLastTraps(f func(*TrapEnt) bool) error {
 	})
 }
 
+type ArpLogEnt struct {
+	Time   int64  `json:"Time"`
+	State  string `json:"State"`
+	IP     string `json:"IP"`
+	OldMAC string `json:"OldMAC"`
+	NewMAC string `json:"NewMAC"`
+}
+
 // ForEachLastArpLogs は最新のARP Logを返します。
-func ForEachLastArpLogs(f func(*LogEnt) bool) error {
+func ForEachLastArpLogs(f func(*ArpLogEnt) bool) error {
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -675,7 +683,24 @@ func ForEachLastArpLogs(f func(*LogEnt) bool) error {
 				log.Println(err)
 				continue
 			}
-			if !f(&l) {
+			a := strings.Split(l.Log, ",")
+			if len(a) < 3 {
+				continue
+			}
+			st := a[0]
+			ip := a[1]
+			newMac := a[2]
+			oldMac := ""
+			if len(a) > 3 {
+				oldMac = a[3]
+			}
+			if !f(&ArpLogEnt{
+				Time:   l.Time,
+				State:  st,
+				IP:     ip,
+				NewMAC: newMac,
+				OldMAC: oldMac,
+			}) {
 				break
 			}
 		}

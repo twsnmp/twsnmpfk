@@ -208,7 +208,7 @@ func updateArpTable(ip, mac string) {
 		logCh <- &datastore.LogEnt{
 			Time: time.Now().UnixNano(),
 			Type: "arplog",
-			Log:  fmt.Sprintf("Change,%s,%s,%s", ip, m, mac),
+			Log:  fmt.Sprintf("Change,%s,%s,%s", ip, mac, m),
 		}
 		log.Printf("Change %s %s -> %s", ip, m, mac)
 		return

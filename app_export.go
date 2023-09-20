@@ -185,6 +185,42 @@ func (a *App) ExportTraps(t string) string {
 	return ""
 }
 
+// ExportArpTable  export arp Table
+func (a *App) ExportArpTable(t string) string {
+	data := ExportData{
+		Title:  "TWSNMP ARP Table",
+		Header: []string{"IP", "MAC", "Node", "Vendor"},
+	}
+	datastore.ForEachArp(func(l *datastore.ArpEnt) bool {
+		e := []any{}
+		e = append(e, l.IP)
+		e = append(e, l.MAC)
+		n := datastore.GetNode(l.NodeID)
+		if n != nil {
+			e = append(e, n.Name)
+		} else {
+			e = append(e, "")
+		}
+		e = append(e, l.Vendor)
+		data.Data = append(data.Data, e)
+		return true
+	})
+	var err error
+	switch t {
+	case "excel":
+		err = a.exportExcel(&data)
+	case "csv":
+		err = a.exportCSV(&data)
+	default:
+		return "not suppoerted"
+	}
+	if err != nil {
+		log.Printf("ExportTable err=%v", err)
+		return fmt.Sprintf("export err=%v", err)
+	}
+	return ""
+}
+
 func (a *App) ExportAny(t string, data ExportData) string {
 	var err error
 	switch t {

@@ -38,6 +38,10 @@ export function ExportAny(arg1, arg2) {
   return window['go']['main']['App']['ExportAny'](arg1, arg2);
 }
 
+export function ExportArpTable(arg1) {
+  return window['go']['main']['App']['ExportArpTable'](arg1);
+}
+
 export function ExportEventLogs(arg1) {
   return window['go']['main']['App']['ExportEventLogs'](arg1);
 }
@@ -76,6 +80,10 @@ export function GetAlertEventLogs() {
 
 export function GetArpLogs() {
   return window['go']['main']['App']['GetArpLogs']();
+}
+
+export function GetArpTable() {
+  return window['go']['main']['App']['GetArpTable']();
 }
 
 export function GetAutoPollings(arg1, arg2) {
@@ -192,6 +200,10 @@ export function GetVersion() {
 
 export function Ping(arg1) {
   return window['go']['main']['App']['Ping'](arg1);
+}
+
+export function ResetArpTable() {
+  return window['go']['main']['App']['ResetArpTable']();
 }
 
 export function SelectFile(arg1, arg2) {
