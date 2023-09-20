@@ -46,8 +46,8 @@ func main() {
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:      "TWSNMP FK",
-		Width:      1024,
-		Height:     768,
+		Width:      1600,
+		Height:     900,
 		Fullscreen: kiosk,
 		Frameless:  kiosk,
 		AssetServer: &assetserver.Options{

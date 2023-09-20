@@ -8,6 +8,7 @@
     GetArpLogs,
     GetArpTable,
     GetNodes,
+    ResetArpTable,
   } from "../../wailsjs/go/main/App";
   import { renderTime, getTableLang, renderState } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
@@ -35,7 +36,7 @@
     arpTable = new DataTable("#arpTable", {
       columns: arpColumns,
       data: arp,
-      order: [[0, "desc"]],
+      order: [[0, "asc"]],
       language: getTableLang(),
       select: {
         style: "single",
@@ -207,6 +208,12 @@
   const saveExcel = () => {
     ExportArpTable("excel");
   };
+
+  const reset = async() => {
+    await ResetArpTable();
+    refresh();
+  }
+
 </script>
 
 <svelte:window on:resize={resizeLogCountChart} />
@@ -240,6 +247,10 @@
     >
       <Icon path={icons.mdiChartPie} size={1} />
       レポート
+    </Button>
+    <Button color="red" type="button" on:click={reset} size="xs">
+      <Icon path={icons.mdiTrashCan} size={1} />
+      クリア
     </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />

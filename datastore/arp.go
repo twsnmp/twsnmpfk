@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -60,17 +59,14 @@ func ForEachArp(f func(*ArpEnt) bool) error {
 	})
 }
 
+// ResetArpTableは、ARPテーブルとARPログをクリアする
 func ResetArpTable() error {
 	st := time.Now()
 	return db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("arp"))
-		if b == nil {
-			return fmt.Errorf("bucket arp not found")
-		}
-		c := b.Cursor()
-		for k, _ := c.First(); k != nil; k, _ = c.Next() {
-			_ = c.Delete()
-		}
+		tx.DeleteBucket([]byte("arp"))
+		tx.DeleteBucket([]byte("arplog"))
+		tx.CreateBucketIfNotExists([]byte("arp"))
+		tx.CreateBucketIfNotExists([]byte("arplog"))
 		log.Printf("ResetArpTable  dur=%v", time.Since(st))
 		return nil
 	})

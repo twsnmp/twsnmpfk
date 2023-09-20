@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/logger"
 )
 
 // GetEventLogs retunrs  event logs
@@ -60,6 +61,7 @@ func (a *App) GetArpTable() []*datastore.ArpEnt {
 
 // ResetArpTableは、ARP Tableをクリアします。
 func (a *App) ResetArpTable() bool {
+	logger.ResetArpWatch = true
 	return datastore.ResetArpTable() == nil
 }
 

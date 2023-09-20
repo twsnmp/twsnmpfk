@@ -18,7 +18,9 @@ var arpTable = make(map[string]string)
 var macToIPTable = make(map[string]string)
 var localCheckAddrs []string
 
-func ResetArpTable() {
+var ResetArpWatch = false
+
+func resetArpTable() {
 	arpTable = make(map[string]string)
 	macToIPTable = make(map[string]string)
 }
@@ -40,6 +42,11 @@ func arpWatch(stopCh chan bool) {
 			log.Println("stop arp")
 			return
 		case <-pinger.C:
+			if ResetArpWatch {
+				resetArpTable()
+				checkArpTable()
+				ResetArpWatch = false
+			}
 			if len(localCheckAddrs) > 0 {
 				a := localCheckAddrs[0]
 				ping.DoPing(a, 1, 0, 64, 0)
