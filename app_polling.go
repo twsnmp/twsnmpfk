@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"regexp"
+	"strings"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/polling"
+	"github.com/vjeantet/grok"
 )
 
 // GetPollings retunrs polling list
@@ -140,4 +143,116 @@ func (a *App) GetAutoPollings(node string, id int) []*datastore.PollingEnt {
 	p.NextTime = 0
 	p.State = "unknown"
 	return []*datastore.PollingEnt{p}
+}
+
+// GetDefaultPollingは、デフォルトのポーリングを作成します。
+func (a *App) GetDefaultPolling(node string) *datastore.PollingEnt {
+	n := datastore.GetNode(node)
+	if n == nil {
+		n = datastore.FindNodeFromIP(node)
+	}
+
+	p := new(datastore.PollingEnt)
+	p.Level = "off"
+	if n != nil {
+		p.NodeID = n.ID
+	}
+	p.PollInt = datastore.MapConf.PollInt
+	p.Timeout = datastore.MapConf.Timeout
+	p.Retry = datastore.MapConf.Retry
+	p.LogMode = 0
+	p.NextTime = 0
+	p.State = "unknown"
+	return p
+}
+
+var grokTestMap = map[string][]string{
+	"timestamp": {
+		"%{TIMESTAMP_ISO8601:timestamp}",
+		"%{HTTPDERROR_DATE:timestamp}",
+		"%{HTTPDATE:timestamp}",
+		"%{DATESTAMP_EVENTLOG:timestamp}",
+		"%{DATESTAMP_RFC2822:timestamp}",
+		"%{SYSLOGTIMESTAMP:timestamp}",
+		"%{DATESTAMP_OTHER:timestamp}",
+		"%{DATESTAMP_RFC822:timestamp}",
+	}, // Time
+	"ipv4": {
+		"%{IPV4:ipv4}",
+	}, // IPv4
+	"ipv6": {
+		"%{IPV6:ipv6}",
+	}, // IPv4
+	"mac": {
+		"%{MAC:mac}",
+	},
+	"email": {
+		"%{EMAILADDRESS:email}",
+	},
+	"uri": {
+		"%{URI:uri}",
+	},
+}
+
+// AutoGrok : 抽出パターンを自動生成する
+func (a *App) AutoGrok(testData string) string {
+	replaceMap := make(map[string]string)
+	for f, ps := range grokTestMap {
+		findGrok(f, testData, ps, replaceMap)
+	}
+	findSplunkPat(testData, replaceMap)
+	if len(replaceMap) < 1 {
+		return ""
+	}
+	return makeGrok(testData, replaceMap)
+}
+
+func findGrok(field, td string, groks []string, rmap map[string]string) {
+	config := grok.Config{
+		Patterns:          make(map[string]string),
+		NamedCapturesOnly: true,
+	}
+	for _, p := range groks {
+		config.Patterns["TWSNMP"] = p
+		g, err := grok.NewWithConfig(&config)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		values, err := g.Parse("%{TWSNMP}", td)
+		if err != nil {
+			log.Println(err)
+			break
+		} else if len(values) > 0 {
+			for k, v := range values {
+				if k == field && v != "" {
+					rmap[v] = p
+				}
+			}
+		}
+	}
+}
+
+func findSplunkPat(td string, rmap map[string]string) {
+	reg := regexp.MustCompile(`\s+([a-zA-Z_]+[a-zA-Z0-9_]+)=([^ ]+)`)
+	regNum := regexp.MustCompile(`\d+(\.\d+)?`)
+	td = " " + td
+	for _, m := range reg.FindAllStringSubmatch(td, -1) {
+		if len(m) > 2 {
+			k := fmt.Sprintf("%s=%s", m[1], m[2])
+			if regNum.MatchString(m[2]) {
+				rmap[k] = fmt.Sprintf("%s=%%{NUMBER:%s}", m[1], m[1])
+			} else {
+				rmap[k] = fmt.Sprintf("%s=%%{WORD:%s}", m[1], m[1])
+			}
+		}
+	}
+}
+
+func makeGrok(td string, rmap map[string]string) string {
+	r := regexp.QuoteMeta(td)
+	for s, d := range rmap {
+		r = strings.ReplaceAll(r, regexp.QuoteMeta(s), d)
+	}
+	return r
 }

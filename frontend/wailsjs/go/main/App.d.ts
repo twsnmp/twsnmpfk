@@ -5,6 +5,8 @@ import {datastore} from '../models';
 import {discover} from '../models';
 import {backend} from '../models';
 
+export function AutoGrok(arg1:string):Promise<string>;
+
 export function CheckPolling(arg1:string):Promise<boolean>;
 
 export function CopyDrawItem(arg1:string):Promise<boolean>;
@@ -50,6 +52,8 @@ export function GetArpTable():Promise<Array<datastore.ArpEnt>>;
 export function GetAutoPollings(arg1:string,arg2:number):Promise<Array<datastore.PollingEnt>>;
 
 export function GetBackImage():Promise<datastore.BackImageEnt>;
+
+export function GetDefaultPolling(arg1:string):Promise<datastore.PollingEnt>;
 
 export function GetDiscoverConf():Promise<datastore.DiscoverConfEnt>;
 
