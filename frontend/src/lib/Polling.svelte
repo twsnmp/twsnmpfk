@@ -1,5 +1,10 @@
 <script context="module">
   import Prism from "prismjs";
+  Prism.languages.grok = {
+    number: /%\{.+?\}/,
+    string: /\.\+/,
+    regex: /\\s\+/,
+  };
   const highlight = (code, syntax) =>
     Prism.highlight(code, Prism.languages[syntax], syntax);
 </script>
@@ -8,12 +13,12 @@
   import { CodeJar } from "@novacbn/svelte-codejar";
 
   import { Select, Modal, Label, Input, Button } from "flowbite-svelte";
-  import { onMount, onDestroy, createEventDispatcher,tick } from "svelte";
+  import { onMount, onDestroy, createEventDispatcher, tick } from "svelte";
   import {
     GetPolling,
     UpdatePolling,
     GetAutoPollings,
-    GetPollingTemplate,
+    GetNodes,
   } from "../../wailsjs/go/main/App";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -25,49 +30,38 @@
   export let nodeID: string = "";
   export let pollingID: string = "";
   export let pollingTmpID: number = 0;
-  export let params = undefined;
+  export let pollingTmp = undefined;
   let polling: datastore.PollingEnt | undefined = undefined;
   let show: boolean = false;
   let list = [];
   let showList: boolean = false;
+  const nodeList = [];
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
+    const nodes = await GetNodes();
+    for (const k in nodes) {
+      nodeList.push({
+        title: nodes[k].Name,
+        value: k,
+      });
+    }
     if (pollingID) {
       polling = await GetPolling(pollingID);
+      nodeID = polling.NodeID;
+      show = true;
+    } else if (pollingTmp) {
+      polling = pollingTmp;
+      nodeID = polling.NodeID;
+      show = true;
     } else if (nodeID && pollingTmpID) {
-      if (params) {
-        const tmp = await GetPollingTemplate(pollingTmpID);
-        polling = {
-          ID: "",
-          Name: tmp.Name,
-          NodeID: nodeID,
-          Type: tmp.Type,
-          Mode: tmp.Mode,
-          Params: params.Params || tmp.Params,
-          Filter: params.Filter || tmp.Filter,
-          Extractor: tmp.Extractor,
-          Script: tmp.Script,
-          Level: tmp.Level,
-          PollInt: 60,
-          Timeout: 1,
-          Retry: 1,
-          LogMode: 0,
-          NextTime: 0,
-          LastTime: 0,
-          Result: {},
-          State: "unknown",
-        };
+      list = await GetAutoPollings(nodeID, pollingTmpID);
+      if (list.length == 1) {
+        polling = list[0];
         show = true;
       } else {
-        list = await GetAutoPollings(nodeID, pollingTmpID);
-        if (list.length == 1) {
-          polling = list[0];
-          show = true;
-        } else {
-          showPollingList();
-          showList = true;
-        }
+        showPollingList();
+        showList = true;
       }
     } else {
       close();
@@ -136,7 +130,7 @@
 
   const select = () => {
     const p = pollingTable.rows({ selected: true }).data();
-    if (!p || p.length !=1 ) {
+    if (!p || p.length != 1) {
       return;
     }
     polling = p[0];
@@ -149,19 +143,20 @@
     show = false;
     dispatch("close", {});
   };
-  let paramsColor :any = "base";
-  let filterColor :any = "base";
+  let paramsColor: any = "base";
+  let filterColor: any = "base";
   const save = async () => {
     filterColor = "base";
     paramsColor = "base";
-    if(polling.Filter.startsWith("TODO:")) {
+    if (polling.Filter.startsWith("TODO:")) {
       filterColor = "red";
       return;
     }
-    if(polling.Params.startsWith("TODO:")) {
+    if (polling.Params.startsWith("TODO:")) {
       paramsColor = "red";
       return;
     }
+    polling.Extractor.replaceAll("\n", "");
     polling.Timeout *= 1;
     polling.Retry *= 1;
     polling.PollInt *= 1;
@@ -178,6 +173,17 @@
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       ポーリングの編集
     </h3>
+    {#if !nodeID}
+      <Label class="space-y-2">
+        <span> ノード </span>
+        <Select
+          items={nodeList}
+          bind:value={polling.NodeID}
+          placeholder="ノードを選択"
+          size="sm"
+        />
+      </Label>
+    {/if}
     <Label class="space-y-2">
       <span>名前</span>
       <Input
@@ -209,11 +215,7 @@
       </Label>
       <Label class="space-y-2">
         <span>モード</span>
-        <Input
-          bind:value={polling.Mode}
-          placeholder="モード"
-          size="sm"
-        />
+        <Input bind:value={polling.Mode} placeholder="モード" size="sm" />
       </Label>
       <Label class="space-y-2">
         <span> ログモード </span>
@@ -245,11 +247,7 @@
     </Label>
     <Label class="space-y-2">
       <span>抽出パターン</span>
-      <Input
-        bind:value={polling.Extractor}
-        placeholder="抽出パターン"
-        size="sm"
-      />
+      <CodeJar syntax="grok" {highlight} bind:value={polling.Extractor} />
     </Label>
     <Label class="space-y-2">
       <span>スクリプト</span>
