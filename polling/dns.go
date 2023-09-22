@@ -36,7 +36,6 @@ func doPollingDNS(pe *datastore.PollingEnt) {
 		endTime := time.Now().UnixNano()
 		rTime = endTime - startTime
 		ok = true
-		delete(pe.Result, "error")
 	}
 	if !ok {
 		pe.Result["rtt"] = 0.0

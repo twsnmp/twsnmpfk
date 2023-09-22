@@ -4,6 +4,7 @@ package polling
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 	"time"
@@ -113,8 +114,12 @@ func doPollingSyslogCount(pe *datastore.PollingEnt) {
 			return true
 		}
 		if grokExtractor != nil {
-			values, err := grokExtractor.Parse("%%{TWSNMP}", msg)
+			values, err := grokExtractor.Parse("%{TWSNMP}", msg)
 			if err != nil {
+				log.Println(err)
+				return true
+			}
+			if len(values) < 1 {
 				return true
 			}
 			count++
@@ -130,8 +135,9 @@ func doPollingSyslogCount(pe *datastore.PollingEnt) {
 					return false
 				}
 			} else {
+				log.Println(err)
 				failed = true
-				setPollingError("log", pe, fmt.Errorf("invalid script"))
+				setPollingError("log", pe, err)
 				return false
 			}
 		} else {
@@ -142,7 +148,7 @@ func doPollingSyslogCount(pe *datastore.PollingEnt) {
 	pe.Result["lastTime"] = time.Now().UnixNano()
 	pe.Result["count"] = float64(count)
 	if extractor != "" {
-		if !failed {
+		if !failed && count > 0 {
 			setPollingState(pe, "normal")
 		}
 		return

@@ -34,7 +34,6 @@ func doPollingTCP(pe *datastore.PollingEnt) {
 	}
 	pe.Result["rtt"] = float64(rTime)
 	if ok {
-		delete(pe.Result, "error")
 		setPollingState(pe, "normal")
 	} else {
 		setPollingState(pe, pe.Level)

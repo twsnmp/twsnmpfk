@@ -74,7 +74,7 @@ func doPollingCmd(pe *datastore.PollingEnt) {
 		if err := g.AddPattern("TWSNMP", extractor); err != nil {
 			log.Printf("cmd polling err=%v", err)
 		}
-		values, err := g.Parse("%%{TWSNMP}", string(stdout))
+		values, err := g.Parse("%{TWSNMP}", string(stdout))
 		if err != nil {
 			setPollingError("cmd", pe, err)
 			return

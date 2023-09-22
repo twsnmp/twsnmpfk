@@ -26,7 +26,6 @@ func doPollingNTP(pe *datastore.PollingEnt) {
 		pe.Result["stratum"] = float64(r.Stratum)
 		pe.Result["refid"] = float64(r.ReferenceID)
 		pe.Result["offset"] = float64(r.ClockOffset.Nanoseconds())
-		delete(pe.Result, "error")
 		ok = true
 	}
 	if ok {

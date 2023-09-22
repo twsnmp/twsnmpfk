@@ -53,7 +53,6 @@ func doPollingHTTP(pe *datastore.PollingEnt) {
 		}
 	}
 	if ok {
-		delete(pe.Result, "error")
 		setPollingState(pe, "normal")
 	} else {
 		setPollingState(pe, pe.Level)
@@ -80,7 +79,6 @@ func checkHTTPResp(pe *datastore.PollingEnt, status, body string, code int, rTim
 		}
 		vm.Set("interval", pe.PollInt)
 		if m, err := getMetrics(body); err == nil {
-			delete(pe.Result, "error")
 			for k, v := range m {
 				pe.Result[k] = v
 				vm.Set(k, v)
@@ -136,7 +134,7 @@ func checkHTTPResp(pe *datastore.PollingEnt, status, body string, code int, rTim
 		if err := g.AddPattern("TWSNMP", extractor); err != nil {
 			return false, fmt.Errorf("grok pattern err=%v", err)
 		}
-		values, err := g.Parse("%%{TWSNMP}", body)
+		values, err := g.Parse("%{TWSNMP}", body)
 		if err != nil {
 			return false, err
 		}

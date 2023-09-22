@@ -150,6 +150,9 @@ func (a *App) GetDefaultPolling(node string) *datastore.PollingEnt {
 	n := datastore.GetNode(node)
 	if n == nil {
 		n = datastore.FindNodeFromIP(node)
+		if n == nil {
+			n = datastore.FindNodeFromName(node)
+		}
 	}
 
 	p := new(datastore.PollingEnt)
@@ -194,8 +197,74 @@ var grokTestMap = map[string][]string{
 	},
 }
 
-// AutoGrok : 抽出パターンを自動生成する
+var grokList = []string{
+	`Login %{NOTSPACE:stat}: \[(host/)*%{USER:user}\].+cli %{MAC:client}`,
+	`FileZen: %{IP:client} %{USER:user} "Authentication %{NOTSPACE:stat}`,
+	`Login %{NOTSPACE:stat}: \[.+\] %{USER:user}`,
+	`mac=%{MAC:mac}.+ip=%{IP:ip}`,
+	`ip=%{IP:ip}.+mac=%{MAC:mac}`,
+	`src=%{IP:src}:%{BASE10NUM:sport}:.+dst=%{IP:dst}:%{BASE10NUM:dport}:.+proto=%{WORD:prot}.+sent=%{BASE10NUM:sent}.+rcvd=%{BASE10NUM:rcvd}.+spkt=%{BASE10NUM:spkt}.+rpkt=%{BASE10NUM:rpkt}`,
+	`"weather":.+"main":\s*"%{WORD:weather}".+"main":.+"temp":\s*%{BASE10NUM:temp}.+"feels_like":\s*%{BASE10NUM:feels_like}.+"temp_min":\s*%{BASE10NUM:temp_min}.+"temp_max":\s*%{BASE10NUM:temp_max}.+"pressure":\s*%{BASE10NUM:pressure}.+"humidity":\s*%{BASE10NUM:humidity}.+"wind":\s*{"speed":\s*%{BASE10NUM:wind}`,
+	`load average: %{BASE10NUM:load1m}, %{BASE10NUM:load5m}, %{BASE10NUM:load15m}`,
+	`Mem:\s+%{BASE10NUM:total}\s+%{BASE10NUM:used}\s+%{BASE10NUM:free}\s+%{BASE10NUM:share}\s+%{BASE10NUM:buffer}\s+%{BASE10NUM:available}`,
+	`%{NOTSPACE:stat} (password|publickey) for( invalid user | )%{USER:user} from %{IP:client}`,
+	`type=Stats,total=%{BASE10NUM:total},count=%{BASE10NUM:count},ps=%{BASE10NUM:ps}`,
+	`type=IPToMAC,ip=%{IP:ip},mac=%{MAC:mac},count=%{BASE10NUM:count},change=%{BASE10NUM:chnage},dhcp=%{BASE10NUM:dhcp}`,
+	`type=DNS,sv=%{IP:sv},DNSType=%{WORD:dnsType},Name=%{IPORHOST:name},count=%{BASE10NUM:count},change=%{BASE10NUM:chnage},lcl=%{IP:lastIP},lMAC=%{MAC:lastMAC}`,
+	`type=DHCP,sv=%{IP:sv},count=%{BASE10NUM:count},offer=%{BASE10NUM:offer},ack=%{BASE10NUM:ack},nak=%{BASE10NUM:nak}`,
+	`type=NTP,sv=%{IP:sv},count=%{BASE10NUM:count},change=%{BASE10NUM:change},lcl=%{IP:client},version=%{BASE10NUM:version},stratum=%{BASE10NUM:stratum},refid=%{WORD:refid}`,
+	`type=RADIUS,cl=%{IP:client},sv=%{IP:server},count=%{BASE10NUM:count},req=%{BASE10NUM:request},accept=%{BASE10NUM:accept},reject=%{BASE10NUM:reject},challenge=%{BASE10NUM:challenge}`,
+	`type=TLSFlow,cl=%{IP:client},sv=%{IP:server},serv=%{WORD:service},count=%{BASE10NUM:count},handshake=%{BASE10NUM:handshake},alert=%{BASE10NUM:alert},minver=%{DATA:minver},maxver=%{DATA:maxver},cipher=%{DATA:cipher},ft=`,
+}
+
+// AutoGrok : 抽出パターンを自動取得
 func (a *App) AutoGrok(testData string) string {
+	max := 0
+	hit := ""
+	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
+		if strings.Contains(p.Extractor, "%{") {
+			c := checkGrok(p.Extractor, testData)
+			if c > max {
+				max = c
+				hit = p.Extractor
+			}
+		}
+		return true
+	})
+	for _, pat := range grokList {
+		c := checkGrok(pat, testData)
+		if c > max {
+			max = c
+			hit = pat
+		}
+	}
+	if hit != "" {
+		return hit
+	}
+	return autoGenGrok(testData)
+}
+
+func checkGrok(p, td string) int {
+	config := grok.Config{
+		Patterns:          make(map[string]string),
+		NamedCapturesOnly: true,
+	}
+	config.Patterns["TWSNMP"] = p
+	g, err := grok.NewWithConfig(&config)
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+	values, err := g.Parse("%{TWSNMP}", td)
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+	return len(values)
+}
+
+// autoGenGrok : 抽出パターンを自動生成する
+func autoGenGrok(testData string) string {
 	replaceMap := make(map[string]string)
 	for f, ps := range grokTestMap {
 		findGrok(f, testData, ps, replaceMap)

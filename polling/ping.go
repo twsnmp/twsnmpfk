@@ -47,7 +47,6 @@ func doPollingPing(pe *datastore.PollingEnt) {
 	if r.Stat == ping.PingOK {
 		pe.Result["rtt"] = float64(r.Time)
 		pe.Result["ttl"] = float64(r.RecvTTL)
-		delete(pe.Result, "error")
 		setPollingState(pe, "normal")
 	} else {
 		pe.Result["rtt"] = 0.0

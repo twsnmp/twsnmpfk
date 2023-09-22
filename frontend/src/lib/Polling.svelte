@@ -42,7 +42,7 @@
     const nodes = await GetNodes();
     for (const k in nodes) {
       nodeList.push({
-        title: nodes[k].Name,
+        name: nodes[k].Name,
         value: k,
       });
     }
@@ -52,7 +52,6 @@
       show = true;
     } else if (pollingTmp) {
       polling = pollingTmp;
-      nodeID = polling.NodeID;
       show = true;
     } else if (nodeID && pollingTmpID) {
       list = await GetAutoPollings(nodeID, pollingTmpID);

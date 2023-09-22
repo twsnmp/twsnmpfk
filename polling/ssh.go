@@ -66,7 +66,7 @@ func doPollingSSH(pe *datastore.PollingEnt) {
 	} else if extractor != "" {
 		g, _ := grok.NewWithConfig(&grok.Config{NamedCapturesOnly: true})
 		g.AddPattern("TWSNMP", extractor)
-		values, err := g.Parse("%%{TWSNMP}", string(out))
+		values, err := g.Parse("%{TWSNMP}", string(out))
 		if err != nil {
 			setPollingError("ssh", pe, err)
 			return

@@ -3,18 +3,21 @@
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick, onDestroy } from "svelte";
-  import { GetSyslogs, ExportSyslogs } from "../../wailsjs/go/main/App";
+  import { GetSyslogs, ExportSyslogs,GetDefaultPolling,AutoGrok } from "../../wailsjs/go/main/App";
   import { renderState, renderTime, getTableLang } from "./common";
   import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
   import SyslogReport from "./SyslogReport.svelte";
+  import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import type { datastore } from "wailsjs/go/models";
 
   let data = [];
   let logs = [];
   let showReport = false;
   let table = undefined;
   let selectedCount = 0;
+  let showPolling = false;
 
   const showTable = () => {
     if (table) {
@@ -119,15 +122,26 @@
     ExportSyslogs("excel");
   };
 
-  let pagination: any = {
-    limit: 10,
-  };
-  let pp = 10;
-  const ppList = [
-    { name: "10", value: 10 },
-    { name: "20", value: 20 },
-    { name: "100", value: 100 },
-  ];
+  let polling : datastore.PollingEnt | undefined = undefined;
+
+  const watch = async () => {
+    const d = table.rows({ selected: true }).data();
+    if (!d || d.length !=1 ) {
+      return;
+    }
+    polling = await GetDefaultPolling(d[0].Host);
+    polling.Extractor = await AutoGrok(d[0].Message);
+    if (polling.Extractor == "") {
+      polling.Mode = "count";
+      polling.Script = "count < 1";
+    }
+    polling.Name = `syslog監視`; 
+    polling.Type = "syslog";
+    polling.Filter = d[0].Type + " " + d[0].Tag;
+    polling.Params = d[0].Host;
+    showPolling = true;
+  }
+
 </script>
 
 <svelte:window on:resize={resizeLogLevelChart} />
@@ -138,6 +152,12 @@
     <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
+    {#if selectedCount == 1}
+      <Button color="green" type="button" on:click={watch} size="xs">
+        <Icon path={icons.mdiEye} size={1} />
+        ポーリング
+      </Button>
+    {/if}
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
@@ -169,6 +189,15 @@
     {logs}
     on:close={() => {
       showReport = false;
+    }}
+  />
+{/if}
+
+{#if showPolling}
+  <Polling
+   pollingTmp={polling}
+    on:close={() => {
+      showPolling = false;
     }}
   />
 {/if}
