@@ -12,14 +12,14 @@
   import { getTableLang, renderState, renderIP } from "./common";
   import Node from "./Node.svelte";
   import NodeReport from "./NodeReport.svelte";
-  import AddPolling from "./AddPolling.svelte";
+  import NodePolling from "./NodePolling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
 
   let data = [];
   let showEditNode = false;
   let showNodeReport = false;
-  let showAddPolling = false;
+  let showPolling = false;
   let selectedNode = "";
   let table = undefined;
   let selectedCount = 0;
@@ -85,7 +85,7 @@
       return;
     }
     selectedNode = selected[0];
-    showAddPolling = true;
+    showPolling = true;
   };
 
   const deleteNodes = async () => {
@@ -229,11 +229,11 @@
   />
 {/if}
 
-{#if showAddPolling}
-  <AddPolling
+{#if showPolling}
+  <NodePolling
     nodeID={selectedNode}
     on:close={(e) => {
-      showAddPolling = false;
+      showPolling = false;
     }}
   />
 {/if}

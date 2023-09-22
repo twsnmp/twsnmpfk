@@ -1,15 +1,9 @@
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
+  import { Modal, Button } from "flowbite-svelte";
+  import { onMount, createEventDispatcher, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import { onMount, onDestroy } from "svelte";
-  import {
-    GetNodes,
-    GetPollings,
-    DeletePollings,
-    ExportPollings,
-    GetDefaultPolling,
-  } from "../../wailsjs/go/main/App";
+  import { GetPollings, DeletePollings } from "../../wailsjs/go/main/App";
   import {
     renderState,
     renderTime,
@@ -17,13 +11,19 @@
     getTableLang,
   } from "./common";
   import Polling from "./Polling.svelte";
+  import AddPolling from "./AddPolling.svelte";
+
+  import PollingReport from "./PollingReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import PollingReport from "./PollingReport.svelte";
+
+  export let nodeID = "";
+  let show: boolean = false;
+  const dispatch = createEventDispatcher();
 
   let data = [];
-  let nodes = {};
   let showEditPolling = false;
+  let showAddPolling = false;
   let showPollingReport = false;
   let selectedPolling = "";
   let table = undefined;
@@ -40,7 +40,7 @@
       table = undefined;
     }
     selectedCount = 0;
-    table = new DataTable("#table", {
+    table = new DataTable("#nodePollingTable", {
       columns: columns,
       data: data,
       order: order,
@@ -59,18 +59,9 @@
 
   const refresh = async () => {
     data = [];
-    nodes = await GetNodes();
-    data = await GetPollings("");
+    data = await GetPollings(nodeID);
     showTable();
   };
-
-  let showAddPolling = false;
-  let pollingTmp = undefined;
-
-  const add = async () => {
-    pollingTmp = await GetDefaultPolling("");
-    showAddPolling = true;
-  }
 
   const edit = () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
@@ -81,6 +72,9 @@
     showEditPolling = true;
   };
 
+  let showCopyPolling = false;
+  let pollingTmp = undefined;
+
   const copy = () => {
     const selected = table.rows({ selected: true }).data();
     if (selected.length != 1) {
@@ -88,6 +82,11 @@
     }
     pollingTmp = selected[0];
     pollingTmp.ID = "";
+    showCopyPolling = true;
+  };
+
+  const add = () => {
+    selectedPolling = "";
     showAddPolling = true;
   };
 
@@ -98,7 +97,7 @@
     }
     selectedPolling = selected[0];
     showPollingReport = true;
-  }
+  };
 
   const deletePollings = async () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
@@ -113,35 +112,29 @@
     {
       data: "State",
       title: "状態",
-      width: "10%",
-      render: renderState,
-    },
-    {
-      data: "NodeID",
-      title: "ノード名",
       width: "15%",
-      render: (id) => nodes[id].Name,
+      render: renderState,
     },
     {
       data: "Name",
       title: "名前",
-      width: "25%",
+      width: "35%",
     },
     {
       data: "Level",
       title: "レベル",
-      width: "10%",
+      width: "15%",
       render: renderState,
     },
     {
       data: "Type",
       title: "種別",
-      width: "8%",
+      width: "10%",
     },
     {
       data: "LogMode",
       title: "ログ",
-      width: "7%",
+      width: "10%",
       render: getLogModeName,
     },
     {
@@ -153,6 +146,7 @@
   ];
 
   onMount(() => {
+    show = true;
     refresh();
   });
 
@@ -163,58 +157,53 @@
     }
   });
 
-  const saveCSV = () => {
-    ExportPollings("csv");
-  };
-
-  const saveExcel = () => {
-    ExportPollings("excel");
+  const close = () => {
+    show = false;
+    dispatch("close", {});
   };
 </script>
 
-<div class="flex flex-col">
-  <div class="m-5 grow">
-    <table id="table" class="display compact" style="width:99%" />
+<Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
+  <div class="flex flex-col">
+    <div class="m-5 grow">
+      <table id="nodePollingTable" class="display compact" style="width:99%" />
+    </div>
+    <div class="flex justify-end space-x-2 mr-2">
+      <Button color="blue" type="button" on:click={add} size="xs">
+        <Icon path={icons.mdiPlus} size={1} />
+        追加
+      </Button>
+      {#if selectedCount == 1}
+        <Button color="blue" type="button" on:click={edit} size="xs">
+          <Icon path={icons.mdiPencil} size={1} />
+          編集
+        </Button>
+        <Button color="blue" type="button" on:click={copy} size="xs">
+          <Icon path={icons.mdiContentCopy} size={1} />
+          コピー
+        </Button>
+        <Button color="green" type="button" on:click={report} size="xs">
+          <Icon path={icons.mdiChartBar} size={1} />
+          レポート
+        </Button>
+      {/if}
+      {#if selectedCount > 0}
+        <Button color="red" type="button" on:click={deletePollings} size="xs">
+          <Icon path={icons.mdiTrashCan} size={1} />
+          削除
+        </Button>
+      {/if}
+      <Button type="button" color="alternative" on:click={refresh} size="xs">
+        <Icon path={icons.mdiRecycle} size={1} />
+        更新
+      </Button>
+      <Button type="button" color="alternative" on:click={close} size="sm">
+        <Icon path={icons.mdiCancel} size={1} />
+        閉じる
+      </Button>
+    </div>
   </div>
-  <div class="flex justify-end space-x-2 mr-2">
-    <Button color="blue" type="button" on:click={add} size="xs">
-      <Icon path={icons.mdiPlus} size={1} />
-      追加
-    </Button>
-    {#if selectedCount == 1}
-      <Button color="blue" type="button" on:click={edit} size="xs">
-        <Icon path={icons.mdiPencil} size={1} />
-        編集
-      </Button>
-      <Button color="blue" type="button" on:click={copy} size="xs">
-        <Icon path={icons.mdiContentCopy} size={1} />
-        コピー
-      </Button>
-      <Button color="green" type="button" on:click={report} size="xs">
-        <Icon path={icons.mdiChartBar} size={1} />
-        レポート
-      </Button>
-    {/if}
-    {#if selectedCount > 0}
-      <Button color="red" type="button" on:click={deletePollings} size="xs">
-        <Icon path={icons.mdiTrashCan} size={1} />
-        削除
-      </Button>
-    {/if}
-    <Button color="blue" type="button" on:click={saveCSV} size="xs">
-      <Icon path={icons.mdiFileDelimited} size={1} />
-      CSV
-    </Button>
-    <Button color="blue" type="button" on:click={saveExcel} size="xs">
-      <Icon path={icons.mdiFileExcel} size={1} />
-      Excel
-    </Button>
-    <Button type="button" color="alternative" on:click={refresh} size="xs">
-      <Icon path={icons.mdiRecycle} size={1} />
-      更新
-    </Button>
-  </div>
-</div>
+</Modal>
 
 {#if showEditPolling}
   <Polling
@@ -222,18 +211,6 @@
     pollingID={selectedPolling}
     on:close={(e) => {
       showEditPolling = false;
-      refresh();
-    }}
-  />
-{/if}
-
-{#if showAddPolling}
-  <Polling
-    nodeID=""
-    pollingID = ""
-    {pollingTmp}
-    on:close={(e) => {
-      showAddPolling = false;
       refresh();
     }}
   />
@@ -247,6 +224,29 @@
     }}
   />
 {/if}
+
+{#if showAddPolling}
+  <AddPolling
+    {nodeID}
+    on:close={(e) => {
+      showAddPolling = false;
+      refresh();
+    }}
+  />
+{/if}
+
+{#if showCopyPolling}
+  <Polling
+    nodeID=""
+    pollingID= ""
+    {pollingTmp}
+    on:close={(e) => {
+      showCopyPolling = false;
+      refresh();
+    }}
+  />
+{/if}
+
 
 <style>
   @import "../assets/css/jquery.dataTables.css";

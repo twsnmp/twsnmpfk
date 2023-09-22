@@ -9,7 +9,7 @@
   import Line from "./Line.svelte";
   import DrawItem from "./DrawItem.svelte";
   import NodeReport from "./NodeReport.svelte";
-  import AddPolling from "./AddPolling.svelte";
+  import NodePolling from "./NodePolling.svelte";
   import Ping from "./Ping.svelte";
   import {
     CheckPolling,
@@ -27,7 +27,6 @@
   let posX: number = 0;
   let posY: number = 0;
   let showMapMenu: boolean = false;
-  let showMapMenu2: boolean = false;
   let showNodeMenu: boolean = false;
   let showDrawItemMenu: boolean = false;
   let showEditNode: boolean = false;
@@ -41,7 +40,7 @@
   let showGrid: boolean = false;
   let gridSize: number = 40;
   let showNodeReport: boolean = false;
-  let showAddPolling: boolean = false;
+  let showPolling: boolean = false;
   let showPing: boolean = false;
   let showMibBr: boolean = false;
 
@@ -265,7 +264,7 @@
         class="flex hover:bg-gray-100"
         on:click={() => {
           showNodeMenu = false;
-          showAddPolling = true;
+          showPolling = true;
         }}
       >
         <Icon path={icons.mdiLanCheck} size={0.8} />
@@ -411,11 +410,11 @@
   />
 {/if}
 
-{#if showAddPolling}
-  <AddPolling
+{#if showPolling}
+  <NodePolling
     nodeID={selectedNode}
     on:close={(e) => {
-      showAddPolling = false;
+      showPolling = false;
     }}
   />
 {/if}

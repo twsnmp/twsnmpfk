@@ -21,8 +21,6 @@
     GetVPanelPorts,
     GetVPanelPowerInfo,
     GetEventLogs,
-    GetPollings,
-    DeletePollings,
     GetHostResource,
   } from "../../wailsjs/go/main/App";
   import {
@@ -32,13 +30,11 @@
     getTableLang,
     renderTime,
     renderState,
-    getLogModeName,
     renderBytes,
     renderCount,
     renderSpeed,
   } from "./common";
   import { deleteVPanel, initVPanel, setVPanel } from "./vpanel";
-  import PollingReport from "./PollingReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
 
@@ -51,7 +47,6 @@
 
   let logTable = undefined;
   const showLog = async () => {
-    selectedCount = 0;
     if (logTable) {
       logTable.destroy();
       logTable = undefined;
@@ -87,86 +82,6 @@
     });
   };
 
-  let pollingTable = undefined;
-  let selectedCount = 0;
-  let showPollingReport = false;
-  let selectedPolling = "";
-
-  const showPolling = async () => {
-    if (pollingTable) {
-      pollingTable.destroy();
-      pollingTable = undefined;
-    }
-    selectedCount = 0;
-    pollingTable = new DataTable("#pollingTable", {
-      data: await GetPollings(id),
-      language: getTableLang(),
-      order: [[1, "desc"]],
-      select: {
-        style: "multi",
-      },
-      columns: [
-        {
-          data: "State",
-          title: "状態",
-          width: "15%",
-          render: renderState,
-        },
-        {
-          data: "Name",
-          title: "名前",
-          width: "35%",
-        },
-        {
-          data: "Level",
-          title: "レベル",
-          width: "15%",
-          render: renderState,
-        },
-        {
-          data: "Type",
-          title: "種別",
-          width: "10%",
-        },
-        {
-          data: "LogMode",
-          title: "ログ",
-          width: "10%",
-          render: getLogModeName,
-        },
-        {
-          data: "LastTime",
-          title: "最終確認",
-          width: "15%",
-          render: renderTime,
-        },
-      ],
-    });
-    pollingTable.on("select", () => {
-      selectedCount = pollingTable.rows({ selected: true }).count();
-    });
-    pollingTable.on("deselect", () => {
-      selectedCount = pollingTable.rows({ selected: true }).count();
-    });
-  };
-
-  const report = () => {
-    const selected = pollingTable.rows({ selected: true }).data().pluck("ID");
-    if (selected.length != 1) {
-      return;
-    }
-    selectedPolling = selected[0];
-    showPollingReport = true;
-  };
-
-  const deletePollings = async () => {
-    const selected = pollingTable.rows({ selected: true }).data().pluck("ID");
-    if (selected.length < 1) {
-      return;
-    }
-    await DeletePollings(selected.toArray());
-    showPolling();
-  };
 
   let portTable = undefined;
   const showPortTable = (ports) => {
@@ -249,7 +164,6 @@
   };
 
   const showVPanel = async () => {
-    selectedCount = 0;
     initVPanel("vpanel");
     const ports = await GetVPanelPorts(id);
     const power = await GetVPanelPowerInfo(id);
@@ -347,21 +261,18 @@
 
   const showHrSystem = async () => {
     if (!hostResource) {
+      waitHr = true;
       hostResource = await GetHostResource(id);
-    }
-    waitHr = false;
-    if (hrSystemTable) {
-      hrSystemTable.destroy();
-      hrSystemTable = undefined;
+      waitHr = false;
+      await tick();
     }
     if ( !hostResource) {
       return;
     }
-    await tick();
     hrSystemTable = new DataTable("#hrSystemTable", {
       data: hostResource.System,
       language: getTableLang(),
-      order: [[1, "desc"]],
+      order: [[0, "asc"]],
       select: {
         style: "single",
       },
@@ -390,15 +301,11 @@
   let selectedhrStorageCount = 0;
 
   const showHrStorage = () => {
-    if (hrStorageTable) {
-      hrStorageTable.destroy();
-      hrStorageTable = undefined;
-    }
     selectedhrStorageCount = 0;
     hrStorageTable = new DataTable("#hrStorageTable", {
       data: hostResource.Storage,
       language: getTableLang(),
-      order: [[1, "desc"]],
+      order: [[4, "desc"]],
       select: {
         style: "single",
       },
@@ -449,14 +356,10 @@
   };
 
   const showHrDevice = () => {
-    if (hrDeviceTable) {
-      hrDeviceTable.destroy();
-      hrDeviceTable = undefined;
-    }
     hrDeviceTable = new DataTable("#hrDeviceTable", {
       data: hostResource.Device,
       language: getTableLang(),
-      order: [[1, "desc"]],
+      order: [[0, "asc"]],
       columns: [
         { title: "状態", data: "Status", width: "10%", render: renderStatus },
         { title: "インデックス", data: "Index", width: "10%" },
@@ -468,14 +371,10 @@
   };
 
   const showHrFileSystem = () => {
-    if (hrFileSystemTable) {
-      hrFileSystemTable.destroy();
-      hrFileSystemTable = undefined;
-    }
     hrFileSystemTable = new DataTable("#hrFileSystemTable", {
       data: hostResource.FileSystem,
       language: getTableLang(),
-      order: [[1, "desc"]],
+      order: [[0, "asc"]],
       columns: [
         { title: "マウント", data: "Mount", width: "30%" },
         { title: "リモート", data: "Remote", width: "30%" },
@@ -499,15 +398,11 @@
   let selectedHrProcessCount = 0;
 
   const showHrProcess = () => {
-    if (hrProcessTable) {
-      hrProcessTable.destroy();
-      hrProcessTable = undefined;
-    }
     selectedHrProcessCount = 0;
     hrProcessTable = new DataTable("#hrProcessTable", {
       data: hostResource.Process,
       language: getTableLang(),
-      order: [[1, "desc"]],
+      order: [[1, "asc"]],
       select: {
         style: "single",
       },
@@ -654,30 +549,6 @@
 
   onDestroy(() => {
     deleteVPanel();
-    if (pollingTable) {
-      pollingTable.destroy();
-    }
-    if (logTable) {
-      logTable.destroy();
-    }
-    if (portTable) {
-      portTable.destroy();
-    }
-    if (hrSystemTable) {
-      hrSystemTable.destroy();
-    }
-    if (hrStorageTable) {
-      hrStorageTable.destroy();
-    }
-    if (hrDeviceTable) {
-      hrDeviceTable.destroy();
-    }
-    if (hrFileSystemTable) {
-      hrFileSystemTable.destroy();
-    }
-    if (hrProcessTable) {
-      hrProcessTable.destroy();
-    }
   });
 </script>
 
@@ -690,12 +561,7 @@
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem
-        open
-        on:click={() => {
-          selectedCount = 0;
-        }}
-      >
+      <TabItem open>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           基本情報
@@ -737,13 +603,6 @@
           </TableBody>
         </Table>
       </TabItem>
-      <TabItem on:click={showPolling}>
-        <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiLanCheck} size={1} />
-          ポーリング
-        </div>
-        <table id="pollingTable" class="display compact" style="width:99%" />
-      </TabItem>
       <TabItem on:click={showLog}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiCalendarCheck} size={1} />
@@ -760,7 +619,6 @@
         <table id="portTable" class="display compact mt-2" style="width:99%" />
       </TabItem>
       <TabItem on:click={()=>{
-        waitHr = true;
         showHrSystem();
       }}>
         <div slot="title" class="flex items-center gap-2">
@@ -838,18 +696,6 @@
       {/if}
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      {#if selectedCount == 1}
-        <Button type="button" color="green" on:click={report} size="sm">
-          <Icon path={icons.mdiCancel} size={1} />
-          レポート
-        </Button>
-      {/if}
-      {#if selectedCount > 0}
-        <Button type="button" color="red" on:click={deletePollings} size="sm">
-          <Icon path={icons.mdiTrashCan} size={1} />
-          削除
-        </Button>
-      {/if}
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
         閉じる
@@ -857,15 +703,6 @@
     </div>
   </div>
 </Modal>
-
-{#if showPollingReport}
-  <PollingReport
-    id={selectedPolling}
-    on:close={(e) => {
-      showPollingReport = false;
-    }}
-  />
-{/if}
 
 <style global>
   #vpanel canvas {
