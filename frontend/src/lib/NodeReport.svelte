@@ -22,6 +22,7 @@
     GetVPanelPowerInfo,
     GetEventLogs,
     GetHostResource,
+    GetDefaultPolling,
   } from "../../wailsjs/go/main/App";
   import {
     getIcon,
@@ -33,8 +34,10 @@
     renderBytes,
     renderCount,
     renderSpeed,
+    renderHrSystemName,
   } from "./common";
   import { deleteVPanel, initVPanel, setVPanel } from "./vpanel";
+  import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
 
@@ -45,12 +48,22 @@
   let show: boolean = false;
   const dispatch = createEventDispatcher();
 
+  let selectedPortCount = 0;
+  let selectedHrSystemCount = 0;
+  let selectedhrStorageCount = 0;
+  let selectedHrProcessCount = 0;
+  let showPolling = false;
+
+  const clearSelectedCount = () => {
+    selectedPortCount = 0;
+    selectedHrSystemCount = 0;
+    selectedhrStorageCount = 0;
+    selectedHrProcessCount = 0;
+  };
+
   let logTable = undefined;
   const showLog = async () => {
-    if (logTable) {
-      logTable.destroy();
-      logTable = undefined;
-    }
+    clearSelectedCount();
     logTable = new DataTable("#logTable", {
       data: await GetEventLogs(id),
       language: getTableLang(),
@@ -82,17 +95,17 @@
     });
   };
 
-
   let portTable = undefined;
+
   const showPortTable = (ports) => {
-    if (portTable) {
-      portTable.destroy();
-      portTable = undefined;
-    }
+    clearSelectedCount();
     portTable = new DataTable("#portTable", {
       paging: false,
       searching: false,
       info: false,
+      select: {
+        style: "single",
+      },
       scrollY: "180px",
       data: ports,
       language: getTableLang(),
@@ -161,9 +174,16 @@
         },
       ],
     });
+    portTable.on("select", () => {
+      selectedPortCount = portTable.rows({ selected: true }).count();
+    });
+    portTable.on("deselect", () => {
+      selectedPortCount = portTable.rows({ selected: true }).count();
+    });
   };
 
   const showVPanel = async () => {
+    clearSelectedCount();
     initVPanel("vpanel");
     const ports = await GetVPanelPorts(id);
     const power = await GetVPanelPowerInfo(id);
@@ -266,9 +286,10 @@
       waitHr = false;
       await tick();
     }
-    if ( !hostResource) {
+    if (!hostResource) {
       return;
     }
+    clearSelectedCount();
     hrSystemTable = new DataTable("#hrSystemTable", {
       data: hostResource.System,
       language: getTableLang(),
@@ -283,9 +304,10 @@
           width: "10%",
         },
         {
-          data: "Name",
+          data: "Key",
           title: "名前",
           width: "30%",
+          render: renderHrSystemName,
         },
         {
           data: "Value",
@@ -294,14 +316,17 @@
         },
       ],
     });
+    hrSystemTable.on("select", () => {
+      selectedHrSystemCount = hrSystemTable.rows({ selected: true }).count();
+    });
+    hrSystemTable.on("deselect", () => {
+      selectedHrSystemCount = hrSystemTable.rows({ selected: true }).count();
+    });
     showHrSummaryChart();
-    showHrCPUChart();
   };
 
-  let selectedhrStorageCount = 0;
-
   const showHrStorage = () => {
-    selectedhrStorageCount = 0;
+    clearSelectedCount();
     hrStorageTable = new DataTable("#hrStorageTable", {
       data: hostResource.Storage,
       language: getTableLang(),
@@ -356,6 +381,7 @@
   };
 
   const showHrDevice = () => {
+    clearSelectedCount();
     hrDeviceTable = new DataTable("#hrDeviceTable", {
       data: hostResource.Device,
       language: getTableLang(),
@@ -371,6 +397,7 @@
   };
 
   const showHrFileSystem = () => {
+    clearSelectedCount();
     hrFileSystemTable = new DataTable("#hrFileSystemTable", {
       data: hostResource.FileSystem,
       language: getTableLang(),
@@ -395,10 +422,8 @@
     });
   };
 
-  let selectedHrProcessCount = 0;
-
   const showHrProcess = () => {
-    selectedHrProcessCount = 0;
+    clearSelectedCount();
     hrProcessTable = new DataTable("#hrProcessTable", {
       data: hostResource.Process,
       language: getTableLang(),
@@ -455,10 +480,8 @@
       Mem: 0,
       VM: 0,
     };
-    let cpu = 0;
     hostResource.System.forEach((e) => {
-      if (e.Name.includes("CPU")) {
-        cpu++;
+      if (e.Key == "hrProcessorLoad") {
         data.CPU = Number(e.Value);
       }
     });
@@ -473,22 +496,7 @@
         data.VM = e.Rate;
       }
     });
-    data.CPU /= cpu > 0 ? cpu : 1;
     showHrSummary("hrSummaryChart", data);
-  };
-
-  const showHrCPUChart = async () => {
-    await tick();
-    const list = [];
-    hostResource.System.forEach((e) => {
-      if (e.Name.includes("CPU")) {
-        list.unshift({
-          Name: e.Name,
-          Value: Number(e.Value),
-        });
-      }
-    });
-    showHrBarChart("hrSystemCPUChart", "CPU使用率", "%", list);
   };
 
   const showHrStorageChart = async () => {
@@ -542,6 +550,133 @@
     dispatch("close", {});
   };
 
+  let pollingTmp = undefined;
+
+  const watchPortState = async () => {
+    const d = portTable.rows({ selected: true }).data();
+    if (d.length != 1) {
+      return;
+    }
+    pollingTmp = await GetDefaultPolling(node.ID);
+    pollingTmp.Name = d[0].Name + "状態";
+    pollingTmp.Type = "snmp";
+    pollingTmp.Mode = "ifOperStatus";
+    pollingTmp.Level = "low";
+    pollingTmp.Params = d[0].Index;
+    showPolling = true;
+  };
+
+  const watchPortTraffic = async () => {
+    const d = portTable.rows({ selected: true }).data();
+    if (d.length != 1) {
+      return;
+    }
+    pollingTmp = await GetDefaultPolling(node.ID);
+    pollingTmp.Name = d[0].Name + "トラフィック";
+    pollingTmp.Type = "snmp";
+    pollingTmp.Mode = "traffic";
+    pollingTmp.Params = d[0].Index;
+    pollingTmp.Level = "info";
+    showPolling = true;
+  };
+
+  const canWacthHrSystem = () => {
+    const d = hrSystemTable.rows({ selected: true }).data();
+    if (d.length != 1) {
+      return false;
+    }
+    switch(d[0].Key) {
+      case "hrSystemUptime":
+      case "hrSystemDate":
+      case "hrSystemProcesses":
+      case "hrProcessorLoad":
+        return true;
+    }
+    return false;
+  };
+
+  const watchHrSystem = async () => {
+    const d = hrSystemTable.rows({ selected: true }).data();
+    if (d.length != 1) {
+      return;
+    }
+    pollingTmp = await GetDefaultPolling(node.ID);
+    switch(d[0].Key) {
+      case "hrSystemUptime":
+        pollingTmp = await GetDefaultPolling(node.ID);
+        pollingTmp.Name = "SNMP再起動監視";
+        pollingTmp.Type = "snmp";
+        pollingTmp.Mode = "sysUpTime";
+        pollingTmp.Level = "low";
+        showPolling = true;
+      break;
+      case "hrSystemDate":
+        pollingTmp = await GetDefaultPolling(node.ID);
+        pollingTmp.Name = "システム時刻";
+        pollingTmp.Type = "snmp";
+        pollingTmp.Mode = "hrSystemDate";
+        pollingTmp.Script = "diff < 1";
+        pollingTmp.Level = "warn";
+        showPolling = true;
+      break;
+      case "hrSystemProcesses":
+        pollingTmp = await GetDefaultPolling(node.ID);
+        pollingTmp.Name = "プロセス数";
+        pollingTmp.Type = "snmp";
+        pollingTmp.Mode = "get";
+        pollingTmp.Params = "hrSystemProcesses.0";
+        pollingTmp.Level = "info";
+        showPolling = true;
+        break;
+      case "hrProcessorLoad":
+        pollingTmp = await GetDefaultPolling(node.ID);
+        pollingTmp.Name = "CPU平均使用率";
+        pollingTmp.Type = "snmp";
+        pollingTmp.Mode = "stats";
+        pollingTmp.Params = "hrProcessorLoad";
+        pollingTmp.Level = "low";
+        pollingTmp.Script = "avg < 95.0";
+        showPolling = true;
+        break;
+    }
+  };
+
+  const watchHrStorage = async () => {
+    const d = hrStorageTable.rows({ selected: true }).data();
+    if (d.length != 1) {
+      return;
+    }
+    pollingTmp = await GetDefaultPolling(node.ID);
+    pollingTmp.Name = d[0].Descr + "使用率";
+    pollingTmp.Type = "snmp";
+    pollingTmp.Mode = "get";
+    pollingTmp.Params = 'hrStorageSize.' + d[0].Index + ',hrStorageUsed.' + d[0].Index;
+    pollingTmp.Script = `
+      s = hrStorageSize;
+      u = hrStorageUsed;
+      rate = s ? (100.0*u)/s : 0.0;
+      setResult("rate",rate);
+      rate < 95.0
+    `;
+    pollingTmp.Level = "low";
+    showPolling = true;
+  };
+
+  const watchHrProcess = async () => {
+    const d = hrProcessTable.rows({ selected: true }).data();
+    if (d.length != 1) {
+      return;
+    }
+    pollingTmp = await GetDefaultPolling(node.ID);
+    pollingTmp.Name = d[0].Name + "プロセスの起動数";
+    pollingTmp.Type = "snmp";
+    pollingTmp.Mode = "process";
+    pollingTmp.Filter = d[0].Name;
+    pollingTmp.Script = `count > 0`;
+    pollingTmp.Level = "low";
+    showPolling = true;
+  };
+
   onMount(async () => {
     node = await GetNode(id);
     show = true;
@@ -561,7 +696,7 @@
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem open>
+      <TabItem open on:click={clearSelectedCount}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           基本情報
@@ -618,9 +753,11 @@
         <div id="vpanel" style="width: 98%; height: 500px" />
         <table id="portTable" class="display compact mt-2" style="width:99%" />
       </TabItem>
-      <TabItem on:click={()=>{
-        showHrSystem();
-      }}>
+      <TabItem
+        on:click={() => {
+          showHrSystem();
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           {#if waitHr}
             <Spinner color="red" size="6" />
@@ -630,15 +767,19 @@
           ホスト情報
         </div>
         {#if hostResource}
-          <div class="flex w-full">
-            <div id="hrSummaryChart" style="width: 35%; height: 300px" />
-            <div id="hrSystemCPUChart" style="width: 63%; height: 300px" />
+          <div class="grid grid-cols-2 gap-1">
+            <div
+              id="hrSummaryChart"
+              style="width: 350px; height: 350px; margin: 0 auto;"
+            />
+            <div>
+              <table
+                id="hrSystemTable"
+                class="display compact"
+                style="width:100%"
+              />
+            </div>
           </div>
-          <table
-            id="hrSystemTable"
-            class="display compact mt-2"
-            style="width:99%"
-          />
         {:else if !waitHr}
           <div>ホストリソースMIBに対応していません。</div>
         {/if}
@@ -649,7 +790,7 @@
             <Icon path={icons.mdiDatabase} size={1} />
             ストレージ
           </div>
-          <div id="hrStorageChart" style="width: 98%; height: 300px" />
+          <div id="hrStorageChart" style="width: 98%; height: 300px;" class="mb-2" />
           <table
             id="hrStorageTable"
             class="display compact mt-2"
@@ -683,9 +824,9 @@
             <Icon path={icons.mdiViewList} size={1} />
             プロセス
           </div>
-          <div class="flex w-full mx-auto">
-            <div id="hrProcessCPUChart" style="width: 49%; height: 300px" />
-            <div id="hrProcessMemChart" style="width: 49%; height: 300px" />
+          <div class="grid grid-cols-2 gap-1 mb-2">
+            <div id="hrProcessCPUChart" style="width: 100%; height: 300px" />
+            <div id="hrProcessMemChart" style="width: 100%; height: 300px" />
           </div>
           <table
             id="hrProcessTable"
@@ -696,6 +837,34 @@
       {/if}
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
+      {#if selectedPortCount > 0}
+        <Button color="green" type="button" on:click={watchPortState} size="xs">
+          <Icon path={icons.mdiEye} size={1} />
+          ポーリング(状態)
+        </Button>
+        <Button color="green" type="button" on:click={watchPortTraffic} size="xs">
+          <Icon path={icons.mdiEye} size={1} />
+          ポーリング(通信量)
+        </Button>
+      {/if}
+      {#if selectedHrSystemCount > 0 && canWacthHrSystem()}
+        <Button color="green" type="button" on:click={watchHrSystem} size="xs">
+          <Icon path={icons.mdiEye} size={1} />
+          ポーリング
+        </Button>
+      {/if}
+      {#if selectedhrStorageCount > 0}
+        <Button color="green" type="button" on:click={watchHrStorage} size="xs">
+          <Icon path={icons.mdiEye} size={1} />
+          ポーリング
+        </Button>
+      {/if}
+      {#if selectedHrProcessCount > 0}
+        <Button color="green" type="button" on:click={watchHrProcess} size="xs">
+          <Icon path={icons.mdiEye} size={1} />
+          ポーリング
+        </Button>
+      {/if}
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
         閉じる
@@ -703,6 +872,15 @@
     </div>
   </div>
 </Modal>
+
+{#if showPolling}
+  <Polling
+    {pollingTmp}
+    on:close={() => {
+      showPolling = false;
+    }}
+  />
+{/if}
 
 <style global>
   #vpanel canvas {

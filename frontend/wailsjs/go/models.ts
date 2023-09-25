@@ -94,7 +94,7 @@ export namespace backend {
 	}
 	export class HrSystem {
 	    Index: number;
-	    Name: string;
+	    Key: string;
 	    Value: string;
 	
 	    static createFrom(source: any = {}) {
@@ -104,7 +104,7 @@ export namespace backend {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Index = source["Index"];
-	        this.Name = source["Name"];
+	        this.Key = source["Key"];
 	        this.Value = source["Value"];
 	    }
 	}

@@ -14,7 +14,7 @@ import (
 
 type HrSystem struct {
 	Index int    `json:"Index"`
-	Name  string `json:"Name"`
+	Key   string `json:"Key"`
 	Value string `json:"Value"`
 }
 
@@ -81,7 +81,8 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 		return nil
 	}
 	defer agent.Conn.Close()
-	nCPU := 1
+	nCPU := 0
+	hrProcessorLoad := int64(0)
 	storageMap := make(map[string]*HrStorage)
 	deviceMap := make(map[string]*HrDevice)
 	fsMap := make(map[string]*HrFileSystem)
@@ -94,58 +95,54 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 		switch a[0] {
 		case "hrSystemUptime":
 			hr.System = append(hr.System, &HrSystem{
-				Name:  "システム稼働時間",
+				Key:   "hrSystemUptime",
 				Value: getTimeTickStr(gosnmp.ToBigInt(variable.Value).Int64()),
 				Index: 1,
 			})
 		case "hrSystemDate":
 			hr.System = append(hr.System, &HrSystem{
-				Name:  "システム時刻",
+				Key:   "hrSystemDate",
 				Value: getDateAndTime(variable.Value),
 				Index: 2,
 			})
 		case "hrSystemInitialLoadDevice":
 			hr.System = append(hr.System, &HrSystem{
-				Name:  "起動デバイス",
+				Key:   "hrSystemInitialLoadDevice",
 				Value: getMIBStringVal(variable.Value),
 				Index: 3,
 			})
 		case "hrSystemInitialLoadParameters":
 			hr.System = append(hr.System, &HrSystem{
-				Name:  "起動パラメータ",
+				Key:   "hrSystemInitialLoadParameters",
 				Value: getMIBStringVal(variable.Value),
 				Index: 4,
 			})
 		case "hrSystemNumUsers":
 			hr.System = append(hr.System, &HrSystem{
-				Name:  "システムユーザ数",
+				Key:   "hrSystemNumUsers",
 				Value: fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
 				Index: 5,
 			})
 		case "hrSystemProcesses":
 			hr.System = append(hr.System, &HrSystem{
-				Name:  "システムプロセス数",
+				Key:   "hrSystemProcesses",
 				Value: fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
 				Index: 6,
 			})
 		case "hrSystemMaxProcesses":
 			hr.System = append(hr.System, &HrSystem{
-				Name:  "最大プロセス数",
+				Key:   "hrSystemMaxProcesses",
 				Value: fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
 				Index: 7,
 			})
 		case "hrMemorySize":
 			hr.System = append(hr.System, &HrSystem{
-				Name:  "メモリサイズ",
+				Key:   "hrMemorySize",
 				Value: fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
 				Index: 8,
 			})
 		case "hrProcessorLoad":
-			hr.System = append(hr.System, &HrSystem{
-				Name:  fmt.Sprintf("CPU%d使用率", nCPU),
-				Value: fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64()),
-				Index: 8 + nCPU,
-			})
+			hrProcessorLoad += gosnmp.ToBigInt(variable.Value).Int64()
 			nCPU++
 		case "hrStorageIndex":
 			// Skip
@@ -335,6 +332,18 @@ func GetHostResource(n *datastore.NodeEnt) *HostResourceEnt {
 		}
 		return nil
 	})
+	if nCPU > 0 {
+		hr.System = append(hr.System, &HrSystem{
+			Key:   "hrProcessorLoad",
+			Value: fmt.Sprintf("%.2f", float64(hrProcessorLoad)/float64(nCPU)),
+			Index: 9,
+		})
+		hr.System = append(hr.System, &HrSystem{
+			Key:   "hrProcessorCount",
+			Value: fmt.Sprintf("%d", nCPU),
+			Index: 10,
+		})
+	}
 	if err != nil {
 		log.Println(err)
 		return nil

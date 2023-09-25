@@ -318,3 +318,29 @@ export const renderBytes = (n:number,type:string) => {
   }
   return numeral(n).format('0.000b');
 }
+
+export const renderHrSystemName = (k:string) => {
+  switch (k) {
+    case "hrSystemUptime":
+      return "システム稼働時間";
+    case "hrSystemDate":
+      return "システム時刻";
+    case "hrSystemInitialLoadDevice":
+      return "起動デバイス";
+    case "hrSystemInitialLoadParameters":
+      return "起動パラメータ";
+    case "hrSystemNumUsers":
+      return "システムユーザ数";
+    case "hrSystemProcesses":
+      return "システムプロセス数";
+    case "hrSystemMaxProcesses":
+      return "最大プロセス数";
+    case "hrMemorySize":
+      return "メモリサイズ";
+    case "hrProcessorLoad":
+      return "CPU平均負荷";
+    case "hrProcessorCount":
+      return "CPUコア数";
+  }
+  return k
+}
