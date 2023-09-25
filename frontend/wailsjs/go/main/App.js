@@ -78,10 +78,6 @@ export function GetAIResult(arg1) {
   return window['go']['main']['App']['GetAIResult'](arg1);
 }
 
-export function GetAlertEventLogs() {
-  return window['go']['main']['App']['GetAlertEventLogs']();
-}
-
 export function GetArpLogs() {
   return window['go']['main']['App']['GetArpLogs']();
 }

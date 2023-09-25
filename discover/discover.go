@@ -69,10 +69,10 @@ func StartDiscover() error {
 	if Stat.Running {
 		return fmt.Errorf("discover already runnning")
 	}
-	return ActiveDiscover()
+	return Discover()
 }
 
-func ActiveDiscover() error {
+func Discover() error {
 	sip, err := ipv4.FromDots(datastore.DiscoverConf.StartIP)
 	if err != nil {
 		return fmt.Errorf("discover start ip err=%v", err)
@@ -87,7 +87,7 @@ func ActiveDiscover() error {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "info",
-		Event: fmt.Sprintf("自動発見開始(Active) %s - %s", datastore.DiscoverConf.StartIP, datastore.DiscoverConf.EndIP),
+		Event: fmt.Sprintf("自動発見開始 %s - %s", datastore.DiscoverConf.StartIP, datastore.DiscoverConf.EndIP),
 	})
 	Stop = false
 	Stat.Total = eip - sip + 1
@@ -133,7 +133,9 @@ func ActiveDiscover() error {
 						dent.HostName = names[0]
 					}
 					getSnmpInfo(ipstr, &dent)
-					checkServer(&dent)
+					if datastore.DiscoverConf.PortScan {
+						checkServer(&dent)
+					}
 					mu.Lock()
 					dent.X = X
 					dent.Y = Y
@@ -176,7 +178,7 @@ func ActiveDiscover() error {
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",
 			Level: "info",
-			Event: fmt.Sprintf("自動発見終了(Active) %s - %s", datastore.DiscoverConf.StartIP, datastore.DiscoverConf.EndIP),
+			Event: fmt.Sprintf("自動発見終了 %s - %s", datastore.DiscoverConf.StartIP, datastore.DiscoverConf.EndIP),
 		})
 	}()
 	return nil
@@ -275,6 +277,7 @@ func getSnmpInfo(t string, dent *discoverInfoEnt) {
 }
 
 func addFoundNode(dent *discoverInfoEnt) {
+	funcList := []string{}
 	n := datastore.NodeEnt{
 		Name:  dent.HostName,
 		IP:    dent.IP,
@@ -296,22 +299,20 @@ func addFoundNode(dent *discoverInfoEnt) {
 		n.Password = datastore.MapConf.SnmpPassword
 		n.Community = datastore.MapConf.Community
 		n.Icon = "hdd"
-		n.Descr += " / snmp対応"
+		funcList = append(funcList, "snmp")
 	}
 	if len(dent.ServerList) > 0 {
-		sl := []string{}
 		for _, s := range []string{
 			"http", "https", "pop3", "imap", "smtp", "ssh", "cifs", "nfs",
 			"vnc", "rdp", "ldap", "ldaps", "kerberos",
 		} {
 			if dent.ServerList[s] {
-				sl = append(sl, s)
+				funcList = append(funcList, s)
 			}
 		}
-		if len(sl) > 0 {
-			n.Descr += " / "
-			n.Descr += strings.Join(sl, ",") + "対応"
-		}
+	}
+	if len(funcList) > 0 {
+		n.Descr += "/対応プロトコル:" + strings.Join(funcList, ",")
 	}
 	if err := datastore.AddNode(&n); err != nil {
 		log.Printf("discover err=%v", err)
@@ -361,7 +362,6 @@ func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 			ptype = "http"
 			mode = "https"
 			params = "https://" + n.IP
-			level = "low"
 		case "smtp":
 			name = "SMTPサーバー監視"
 			ptype = "tcp"
@@ -407,7 +407,7 @@ func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 		case "ldaps":
 			name = "LDAPSサーバー監視"
 			ptype = "tcp"
-			params = "88"
+			params = "636"
 		default:
 			continue
 		}
@@ -510,17 +510,4 @@ func getMIBStringVal(i interface{}) string {
 		return fmt.Sprintf("%d", v)
 	}
 	return ""
-}
-
-// 同じ位置にノードがあれば次の場所に配置
-func checkNodePos(x, y int) bool {
-	hit := false
-	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
-		if n.X == x && n.Y == y {
-			hit = true
-			return false
-		}
-		return true
-	})
-	return hit
 }

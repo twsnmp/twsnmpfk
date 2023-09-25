@@ -43,8 +43,6 @@ export function GetAIList():Promise<Array<main.AIList>>;
 
 export function GetAIResult(arg1:string):Promise<datastore.AIResult>;
 
-export function GetAlertEventLogs():Promise<Array<datastore.EventLogEnt>>;
-
 export function GetArpLogs():Promise<Array<datastore.ArpLogEnt>>;
 
 export function GetArpTable():Promise<Array<datastore.ArpEnt>>;

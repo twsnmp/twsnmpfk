@@ -17,18 +17,6 @@ func (a *App) GetEventLogs(id string) []*datastore.EventLogEnt {
 	return ret
 }
 
-// GetAlertEventLogs retunrs  event logs about polling or ai
-func (a *App) GetAlertEventLogs() []*datastore.EventLogEnt {
-	ret := []*datastore.EventLogEnt{}
-	datastore.ForEachLastEventLog(0, func(l *datastore.EventLogEnt) bool {
-		if l.Type == "polling" || l.Type == "ai" {
-			ret = append(ret, l)
-		}
-		return len(ret) < 100
-	})
-	return ret
-}
-
 // GetSyslogs retunrs syslogs
 func (a *App) GetSyslogs() []*datastore.SyslogEnt {
 	ret := []*datastore.SyslogEnt{}

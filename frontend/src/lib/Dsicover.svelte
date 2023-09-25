@@ -93,7 +93,7 @@
         />
       </Label>
     </div>
-    <div class="grid gap-4 mb-4 md:grid-cols-3">
+    <div class="grid gap-4 mb-4 md:grid-cols-2">
       <Label class="space-y-2">
         <span> タイムアウト(秒) </span>
         <Input
@@ -116,6 +116,9 @@
           size="sm"
         />
       </Label>
+    </div>
+    <div class="grid gap-4 mb-4 md:grid-cols-2">
+      <Checkbox bind:checked={conf.PortScan}>ポートスキャン</Checkbox>
       <Checkbox bind:checked={conf.AddPolling}>ポーリング自動設定</Checkbox>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
@@ -151,8 +154,42 @@
       size="h-5"
       labelOutside="Found:{stats.Found + '/' + stats.Total}"
     />
+    <Progressbar
+      progress={(stats.Found
+        ? ((100 * stats.Snmp) / stats.Found).toFixed(2)
+        : 0) + ""}
+      color="red"
+      size="h-5"
+      labelOutside="SNMP:{stats.Snmp + '/' + stats.Found}"
+    />
+    {#if conf.PortScan}
+      <Progressbar
+        progress={(stats.Found
+          ? ((100 * stats.Web) / stats.Found).toFixed(2)
+          : 0) + ""}
+        color="gray"
+        size="h-5"
+        labelOutside="Web:{stats.Web + '/' + stats.Found}"
+      />
+      <Progressbar
+        progress={(stats.Found
+          ? ((100 * stats.Mail) / stats.Found).toFixed(2)
+          : 0) + ""}
+        color="gray"
+        size="h-5"
+        labelOutside="Mail:{stats.Mail + '/' + stats.Found}"
+      />
+      <Progressbar
+        progress={(stats.Found
+          ? ((100 * stats.SSH) / stats.Found).toFixed(2)
+          : 0) + ""}
+        color="gray"
+        size="h-5"
+        labelOutside="SSH:{stats.SSH + '/' + stats.Found}"
+      />
+    {/if}
     <div class="flex justify-end space-x-2 mr-2">
-      <Button type="button" on:click={stop} size="sm">
+      <Button type="button" color="red" on:click={stop} size="sm">
         <Icon path={icons.mdiRun} size={1} />
         停止
       </Button>

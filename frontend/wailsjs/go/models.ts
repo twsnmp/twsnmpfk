@@ -287,6 +287,7 @@ export namespace datastore {
 	    X: number;
 	    Y: number;
 	    AddPolling: boolean;
+	    PortScan: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new DiscoverConfEnt(source);
@@ -301,6 +302,7 @@ export namespace datastore {
 	        this.X = source["X"];
 	        this.Y = source["Y"];
 	        this.AddPolling = source["AddPolling"];
+	        this.PortScan = source["PortScan"];
 	    }
 	}
 	export class DrawItemEnt {
