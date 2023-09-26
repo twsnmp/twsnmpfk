@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/polling"
 	"github.com/vjeantet/grok"
 )
@@ -78,7 +79,7 @@ func (a *App) DeletePollings(ids []string) {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "user",
 		Level: "info",
-		Event: fmt.Sprintf("ポーリングを削除しました %d件", len(ids)),
+		Event: fmt.Sprintf(i18n.Trans("Delete Polling(%d)"), len(ids)),
 	})
 }
 

@@ -10,6 +10,7 @@ import (
 
 	"github.com/Songmu/timeout"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 func checkExecCmd() {
@@ -30,14 +31,16 @@ func checkExecCmd() {
 	if execLevel != lastExecLevel {
 		err := ExecNotifyCmd(datastore.NotifyConf.ExecCmd, execLevel)
 		r := ""
+		level := "info"
 		if err != nil {
 			log.Printf("execNotifyCmd err=%v", err)
-			r = fmt.Sprintf("エラー=%v", err)
+			r = fmt.Sprintf("err=%v", err)
+			level = "low"
 		}
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",
-			Level: "info",
-			Event: fmt.Sprintf("外部通知コマンド実行 レベル=%d %s", execLevel, r),
+			Level: level,
+			Event: fmt.Sprintf(i18n.Trans("(Failure)"), execLevel, r),
 		})
 		lastExecLevel = execLevel
 	}

@@ -18,8 +18,8 @@ export function CopyNode(arg1) {
   return window['go']['main']['App']['CopyNode'](arg1);
 }
 
-export function DeeleteAIResult(arg1) {
-  return window['go']['main']['App']['DeeleteAIResult'](arg1);
+export function DeleteAIResult(arg1) {
+  return window['go']['main']['App']['DeleteAIResult'](arg1);
 }
 
 export function DeleteDrawItems(arg1) {

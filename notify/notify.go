@@ -14,6 +14,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 var (
@@ -132,12 +133,12 @@ func getNotifyData(list []*datastore.EventLogEnt, nl int) notifyData {
 	fs, rs := "", ""
 	if len(failure) > 0 {
 		f = eventLogListToString(false, failure)
-		fs = datastore.NotifyConf.Subject + "(障害)"
+		fs = datastore.NotifyConf.Subject + i18n.Trans("(Failure)")
 		fs += ":" + getNodes(fNodeMap)
 	}
 	if len(repair) > 0 {
 		r = eventLogListToString(true, repair)
-		rs = datastore.NotifyConf.Subject + "(復帰)"
+		rs = datastore.NotifyConf.Subject + i18n.Trans("(Repair)")
 		rs += ":" + getNodes(rNodeMap)
 	}
 	return notifyData{
@@ -163,9 +164,9 @@ func getNodes(m map[string]int) string {
 
 // eventLogListToString : イベントログを通知メールの本文に変換する
 func eventLogListToString(repair bool, list []*datastore.EventLogEnt) string {
-	title := datastore.NotifyConf.Subject + "(障害)"
+	title := datastore.NotifyConf.Subject + i18n.Trans("(Failure)")
 	if repair {
-		title = datastore.NotifyConf.Subject + "(復帰)"
+		title = datastore.NotifyConf.Subject + i18n.Trans("(Repair)")
 	}
 	f := template.FuncMap{
 		"levelName":     levelName,
@@ -173,14 +174,14 @@ func eventLogListToString(repair bool, list []*datastore.EventLogEnt) string {
 	}
 	t, err := template.New("notify").Funcs(f).Parse(datastore.LoadMailTemplate("notify"))
 	if err != nil {
-		return fmt.Sprintf("メール作成エラー err=%v", err)
+		return fmt.Sprintf("make mail err=%v", err)
 	}
 	buffer := new(bytes.Buffer)
 	if err = t.Execute(buffer, map[string]interface{}{
 		"Title": title,
 		"Logs":  list,
 	}); err != nil {
-		return fmt.Sprintf("メール作成エラー err=%v", err)
+		return fmt.Sprintf("make mail err=%v", err)
 	}
 	return buffer.String()
 }
@@ -188,17 +189,17 @@ func eventLogListToString(repair bool, list []*datastore.EventLogEnt) string {
 func levelName(s string) string {
 	switch s {
 	case "high":
-		return "重度"
+		return i18n.Trans("High")
 	case "low":
-		return "軽度"
+		return i18n.Trans("Low")
 	case "warn":
-		return "注意"
+		return i18n.Trans("Warnning")
 	case "normal", "up":
-		return "正常"
+		return i18n.Trans("Normal")
 	case "repair":
-		return "復帰"
+		return i18n.Trans("Repair")
 	}
-	return "不明"
+	return i18n.Trans("Unknown")
 }
 
 func formatLogTime(t int64) string {

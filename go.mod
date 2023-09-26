@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/Songmu/timeout v0.4.0
+	github.com/Xuanwo/go-locale v1.1.0
 	github.com/beevik/ntp v1.2.0
 	github.com/codegaudi/go-iforest v0.0.1
 	github.com/dustin/go-humanize v1.0.1

@@ -7,6 +7,7 @@ import (
 
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/wol"
 )
 
@@ -29,7 +30,7 @@ func (a *App) addNode(n datastore.NodeEnt) bool {
 		Level:    "info",
 		NodeName: n.Name,
 		NodeID:   n.ID,
-		Event:    "ノードを追加しました",
+		Event:    i18n.Trans("Add Node"),
 	})
 	return true
 }
@@ -61,7 +62,7 @@ func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
 		Level:    "info",
 		NodeName: n.Name,
 		NodeID:   n.ID,
-		Event:    "ノードを更新しました",
+		Event:    i18n.Trans("Update Node"),
 	})
 	return true
 }
@@ -77,7 +78,7 @@ func (a *App) DeleteNodes(ids []string) {
 				Level:    "info",
 				NodeName: n.Name,
 				NodeID:   n.ID,
-				Event:    "ノードを削除しました",
+				Event:    i18n.Trans("Delete Node"),
 			})
 		}
 	}
@@ -114,7 +115,7 @@ func (a *App) CopyNode(id string) bool {
 		Level:    "info",
 		NodeName: n.Name,
 		NodeID:   n.ID,
-		Event:    "ノードをコピーしました",
+		Event:    i18n.Trans("Copy Node"),
 	})
 	return true
 }
@@ -140,7 +141,7 @@ func (a *App) WakeOnLan(id string) bool {
 		Level:    "info",
 		NodeName: n.Name,
 		NodeID:   n.ID,
-		Event:    fmt.Sprintf("%sにWake ON LANパケットを送信しました", n.MAC),
+		Event:    fmt.Sprintf(i18n.Trans("Send Wake on LAN Packet to %s"), n.MAC),
 	})
 	return true
 }

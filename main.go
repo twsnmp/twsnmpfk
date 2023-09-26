@@ -5,6 +5,7 @@ import (
 	"flag"
 	"log"
 
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -23,6 +24,7 @@ var lock = false
 var trapPort = 162
 var syslogPort = 514
 var maxDispLog = 10000
+var lang = ""
 
 func init() {
 	flag.StringVar(&dataStorePath, "datastore", "./datastore", "Path to Data Store directory")
@@ -32,6 +34,7 @@ func init() {
 	flag.IntVar(&syslogPort, "syslogPort", 514, "Lock mad edit")
 	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "max log size to diplay")
 	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
+	flag.StringVar(&lang, "lang", "", "Language")
 	flag.Parse()
 }
 
@@ -39,6 +42,10 @@ func main() {
 	flag.VisitAll(func(f *flag.Flag) {
 		log.Printf("args %s=%s", f.Name, f.Value)
 	})
+
+	if lang != "" {
+		i18n.SetLang(lang)
+	}
 
 	// Create an instance of the app structure
 	app := NewApp()

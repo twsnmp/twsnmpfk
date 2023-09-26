@@ -5,7 +5,7 @@
   import { onMount, tick, onDestroy } from "svelte";
   import {
     GetAIList,
-    DeeleteAIResult,
+    DeleteAIResult,
   } from "../../wailsjs/go/main/App";
   import AIReport from "./AIReport.svelte";
   import { renderTime, getScoreIcon, getScoreColor,getTableLang } from "./common";
@@ -39,7 +39,7 @@
     if (selected) {
       for(let i = 0; i < selected.length;i++) {
         const id = selected[i];
-        await DeeleteAIResult(id);
+        await DeleteAIResult(id);
       }
     }
     refresh();

@@ -6,6 +6,7 @@ import (
 
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 type AIList struct {
@@ -54,30 +55,26 @@ func (a *App) GetAIResult(id string) datastore.AIResult {
 	return *r
 }
 
-func (a *App) DeeleteAIResult(id string) bool {
+func (a *App) DeleteAIResult(id string) bool {
 	if id == "all" {
 		go func() {
 			datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
 				if err := backend.DeleteAIResult(p.ID); err != nil {
 					log.Printf("delete ai result err=%v", err)
 				}
-				datastore.AddEventLog(&datastore.EventLogEnt{
-					Type:  "user",
-					Level: "info",
-					Event: fmt.Sprintf("AI分析結果を削除しました(%s)", p.ID),
-				})
 				return true
 			})
 		}()
 	} else {
 		if err := backend.DeleteAIResult(id); err != nil {
 			log.Printf("delete ai result err=%v", err)
+			return false
 		}
-		datastore.AddEventLog(&datastore.EventLogEnt{
-			Type:  "user",
-			Level: "info",
-			Event: fmt.Sprintf("AI分析結果を削除しました(%s)", id),
-		})
 	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: fmt.Sprintf(i18n.Trans("Delete AI Result(%s)"), id),
+	})
 	return true
 }

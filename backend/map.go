@@ -13,6 +13,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 func mapBackend(ctx context.Context, wg *sync.WaitGroup) {
@@ -86,7 +87,7 @@ func checkOperationRate() {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "oprate",
 		Level: "info",
-		Event: fmt.Sprintf("ノード数=%d,障害ノード=%d,稼働率=%.2f%%", total, down, 100.0*float64(total-down)/float64(total)),
+		Event: fmt.Sprintf(i18n.Trans("node=%d,down=%d,rate=%.2f%%"), total, down, 100.0*float64(total-down)/float64(total)),
 	})
 }
 
@@ -211,7 +212,7 @@ func checkNewVersion() {
 			datastore.AddEventLog(&datastore.EventLogEnt{
 				Type:  "system",
 				Level: "info",
-				Event: "TWSNMPのバージョンは最新です。",
+				Event: i18n.Trans("TWSNMP is latest version"),
 			})
 			versionCheckState = 1
 		}
@@ -220,7 +221,7 @@ func checkNewVersion() {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "warn",
-		Event: "TWSNMPの新しいバージョンがあります。",
+		Event: i18n.Trans("TWSNMP has new version"),
 	})
 	versionCheckState = 2
 }

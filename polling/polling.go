@@ -28,6 +28,7 @@ import (
 
 	"github.com/robertkrimen/otto"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 const maxPolling = 300
@@ -69,7 +70,7 @@ func PollNowNode(nodeID string) {
 				Level:    "info",
 				NodeID:   pe.NodeID,
 				NodeName: n.Name,
-				Event:    "ポーリング再確認:" + pe.Name,
+				Event:    i18n.Trans("re check polling:") + pe.Name,
 			})
 			datastore.UpdatePolling(pe, false)
 			doPollingCh <- pe.ID
@@ -94,7 +95,7 @@ func CheckAllPoll() {
 				Level:    "info",
 				NodeID:   pe.NodeID,
 				NodeName: n.Name,
-				Event:    "ポーリング再確認:" + pe.Name,
+				Event:    i18n.Trans("re check polling:") + pe.Name,
 			})
 			datastore.SetNodeStateChanged(n.ID)
 			datastore.UpdatePolling(pe, false)
@@ -242,7 +243,7 @@ func setPollingState(pe *datastore.PollingEnt, newState string) {
 			NodeID:    pe.NodeID,
 			NodeName:  nodeName,
 			LastLevel: oldState,
-			Event:     fmt.Sprintf("ポーリング状態変化:%s(%s)", pe.Name, pe.Type),
+			Event:     fmt.Sprintf(i18n.Trans("Change polling state:%s(%s)"), pe.Name, pe.Type),
 		}
 		datastore.AddEventLog(l)
 	}

@@ -13,6 +13,7 @@ import (
 
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/logger"
 	"github.com/twsnmp/twsnmpfk/notify"
 	"github.com/twsnmp/twsnmpfk/ping"
@@ -54,7 +55,7 @@ func (a *App) startup(ctx context.Context) {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "info",
-		Event: "TWSNMP FK起動",
+		Event: i18n.Trans("Start TWSNMP"),
 	})
 	log.Println("call ping.Start")
 	if err := ping.Start(a.ctx, a.wg, pingMode); err != nil {
@@ -83,7 +84,7 @@ func (a *App) shutdown(ctx context.Context) {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "info",
-		Event: "TWSNMP FK停止",
+		Event: i18n.Trans("Stop TWSNMP"),
 	})
 	if a.cancel != nil {
 		log.Println("shutdown call cancel")

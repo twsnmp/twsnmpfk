@@ -12,6 +12,7 @@ import (
 	"github.com/montanaflynn/stats"
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 func sendReport() {
@@ -53,7 +54,7 @@ func getLastEventLog() ([]string, []string, []*datastore.EventLogEnt) {
 		return true
 	})
 	sum = append(sum,
-		fmt.Sprintf("重度=%d,軽度=%d,注意=%d,正常=%d,その他=%d", high, low, warn, normal, other))
+		fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, normal, other))
 	return sum, slogs, logs
 }
 
@@ -81,33 +82,33 @@ func getMapInfo(htmlMode bool) []string {
 		}
 		return true
 	})
-	state := "不明"
+	state := i18n.Trans("Unknown")
 	class := "none"
 	if high > 0 {
-		state = "重度"
+		state = i18n.Trans("High")
 		class = "high"
 	} else if low > 0 {
-		state = "軽度"
+		state = i18n.Trans("Low")
 		class = "low"
 	} else if warn > 0 {
 		class = "warn"
-		state = "注意"
+		state = i18n.Trans("Warnning")
 	} else if normal+repair > 0 {
 		class = "normal"
-		state = "正常"
+		state = i18n.Trans("Normal")
 	}
 	if htmlMode {
 		return []string{
 			datastore.MapConf.MapName,
 			state,
-			fmt.Sprintf("重度=%d,軽度=%d,注意=%d,復帰=%d,正常=%d,不明=%d", high, low, warn, repair, normal, unknown),
+			fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, repair, normal, unknown),
 			class,
 		}
 	}
 	return []string{
-		fmt.Sprintf("マップ名=%s", datastore.MapConf.MapName),
-		fmt.Sprintf("マップ状態=%s", state),
-		fmt.Sprintf("重度=%d,軽度=%d,注意=%d,復帰=%d,正常=%d,不明=%d", high, low, warn, repair, normal, unknown),
+		fmt.Sprintf(i18n.Trans("MAP=%s"), datastore.MapConf.MapName),
+		fmt.Sprintf(i18n.Trans("MAP State=%s"), state),
+		fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, repair, normal, unknown),
 	}
 }
 
@@ -139,22 +140,22 @@ func getResInfo(htmlMode bool) []string {
 	loadMax, _ := stats.Max(load)
 	if htmlMode {
 		return []string{
-			fmt.Sprintf("最小:%s%% 平均:%s%% 最大:%s%%",
+			fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
 				humanize.FormatFloat("###.##", cpuMin),
 				humanize.FormatFloat("###.##", cpuMean),
 				humanize.FormatFloat("###.##", cpuMax),
 			),
-			fmt.Sprintf("最小:%s%% 平均:%s%% 最大:%s%%",
+			fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
 				humanize.FormatFloat("###.##", memMin),
 				humanize.FormatFloat("###.##", memMean),
 				humanize.FormatFloat("###.##", memMax),
 			),
-			fmt.Sprintf("最小:%s%% 平均:%s%% 最大:%s%%",
+			fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
 				humanize.FormatFloat("###.##", diskMin),
 				humanize.FormatFloat("###.##", diskMean),
 				humanize.FormatFloat("###.##", diskMax),
 			),
-			fmt.Sprintf("最小:%s 平均:%s 最大:%s",
+			fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
 				humanize.FormatFloat("###.##", loadMin),
 				humanize.FormatFloat("###.##", loadMean),
 				humanize.FormatFloat("###.##", loadMax),
@@ -257,17 +258,17 @@ func sendReportHTML() {
 	a := getMapInfo(true)
 	if len(a) > 3 {
 		info = append(info, reportInfoEnt{
-			Name:  "マップ名",
+			Name:  i18n.Trans("MAP Name"),
 			Value: a[0],
 			Class: "none",
 		})
 		info = append(info, reportInfoEnt{
-			Name:  "マップの状態",
+			Name:  i18n.Trans("MAP State"),
 			Value: a[1],
 			Class: a[3],
 		})
 		info = append(info, reportInfoEnt{
-			Name:  "状態別のノード数",
+			Name:  i18n.Trans("Node count by state"),
 			Value: a[2],
 			Class: "none",
 		})
@@ -275,22 +276,22 @@ func sendReportHTML() {
 	a = getResInfo(true)
 	if len(a) > 3 {
 		info = append(info, reportInfoEnt{
-			Name:  "CPU使用率",
+			Name:  i18n.Trans("CPU Usage"),
 			Value: a[0],
 			Class: "none",
 		})
 		info = append(info, reportInfoEnt{
-			Name:  "メモリ使用率",
+			Name:  i18n.Trans("Memory Usage"),
 			Value: a[1],
 			Class: "none",
 		})
 		info = append(info, reportInfoEnt{
-			Name:  "ディスク使用率",
+			Name:  i18n.Trans("Disk Usage"),
 			Value: a[2],
 			Class: "none",
 		})
 		info = append(info, reportInfoEnt{
-			Name:  "システム負荷",
+			Name:  i18n.Trans("System Load"),
 			Value: a[3],
 			Class: "none",
 		})
@@ -298,12 +299,12 @@ func sendReportHTML() {
 	logSum, _, logs := getLastEventLog()
 	if len(logSum) > 0 {
 		info = append(info, reportInfoEnt{
-			Name:  "状態別のログ数",
+			Name:  i18n.Trans("Log count by level"),
 			Value: logSum[0],
 			Class: "none",
 		})
 	}
-	title := fmt.Sprintf("%s(定期レポート) at %s", datastore.NotifyConf.Subject, time.Now().Format("2006/01/02 15:04:05"))
+	title := fmt.Sprintf(i18n.Trans("%s(report) at %s"), datastore.NotifyConf.Subject, time.Now().Format("2006/01/02 15:04:05"))
 	f := template.FuncMap{
 		"levelName":     levelName,
 		"formatLogTime": formatLogTime,
@@ -329,7 +330,7 @@ func sendReportHTML() {
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",
 			Level: "low",
-			Event: fmt.Sprintf("定期レポートメール送信失敗 err=%v", err),
+			Event: fmt.Sprintf(i18n.Trans("Failed to send report mail err=%v"), err),
 		})
 		return
 	}
@@ -339,7 +340,7 @@ func sendReportHTML() {
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",
 			Level: "info",
-			Event: "定期レポートメール送信",
+			Event: i18n.Trans("Send report mail"),
 		})
 	}
 }

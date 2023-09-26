@@ -12,6 +12,7 @@ import (
 
 	go_iforest "github.com/codegaudi/go-iforest"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 func aiBackend(ctx context.Context, wg *sync.WaitGroup) {
@@ -232,7 +233,7 @@ func calcAIScore(req *AIReq) {
 				Level:    level,
 				NodeID:   pe.NodeID,
 				NodeName: n.Name,
-				Event:    fmt.Sprintf("AI分析レポート:%s(%s):%f", pe.Name, pe.Type, ls),
+				Event:    fmt.Sprintf(i18n.Trans("AI report:%s(%s):%f"), pe.Name, pe.Type, ls),
 			})
 		}
 	}

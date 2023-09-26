@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 func canSendMail() bool {
@@ -36,27 +37,31 @@ func sendNotifyMail(list []*datastore.EventLogEnt) {
 	if nd.failureBody != "" {
 		err := sendMail(nd.failureSubject, nd.failureBody)
 		r := ""
+		level := "info"
 		if err != nil {
 			log.Printf("send mail err=%v", err)
-			r = fmt.Sprintf("失敗 エラー=%v", err)
+			r = fmt.Sprintf("err=%v", err)
+			level = "low"
 		}
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",
-			Level: "info",
-			Event: fmt.Sprintf("通知メール送信 %s", r),
+			Level: level,
+			Event: fmt.Sprintf(i18n.Trans("Send notify mail %s"), r),
 		})
 	}
 	if nd.repairBody != "" {
 		err := sendMail(nd.repairSubject, nd.repairBody)
 		r := ""
+		level := "info"
 		if err != nil {
 			log.Printf("send mail err=%v", err)
-			r = fmt.Sprintf("失敗 エラー=%v", err)
+			r = fmt.Sprintf("err=%v", err)
+			level = "low"
 		}
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",
-			Level: "info",
-			Event: fmt.Sprintf("復帰通知メール送信 %s", r),
+			Level: level,
+			Event: fmt.Sprintf(i18n.Trans("Send repair mail %s"), r),
 		})
 	}
 }
@@ -196,7 +201,7 @@ func SendTestMail(testConf *datastore.NotifyConfEnt) error {
 	}
 	buffer := new(bytes.Buffer)
 	if err = t.Execute(buffer, map[string]interface{}{
-		"Title": testConf.Subject + "(試験メール）",
+		"Title": testConf.Subject + i18n.Trans("(test mail)"),
 	}); err != nil {
 		return err
 	}

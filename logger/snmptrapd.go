@@ -16,6 +16,7 @@ import (
 	gosnmp "github.com/gosnmp/gosnmp"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"golang.org/x/text/encoding/japanese"
 	"golang.org/x/text/transform"
 )
@@ -186,11 +187,11 @@ func getSnmpString(i interface{}) string {
 func getTimeTickStr(t int64) string {
 	ft := float64(t) / 100
 	if ft > 3600*24 {
-		return fmt.Sprintf("%.2f日(%d)", ft/(3600*24), t)
+		return fmt.Sprintf(i18n.Trans("%.2fDays(%d)"), ft/(3600*24), t)
 	} else if ft > 3600 {
-		return fmt.Sprintf("%.2f時間(%d)", ft/(3600), t)
+		return fmt.Sprintf(i18n.Trans("%.2fHours(%d)"), ft/(3600), t)
 	}
-	return fmt.Sprintf("%.2f秒(%d)", ft, t)
+	return fmt.Sprintf(i18n.Trans("%.2fSec(%d)"), ft, t)
 }
 
 func CheckCharCode(s string) string {

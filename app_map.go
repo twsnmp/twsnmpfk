@@ -9,6 +9,7 @@ import (
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/discover"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 // GetNodes retunrs map nodes
@@ -277,14 +278,7 @@ func (a *App) addLine(lu datastore.LineEnt) bool {
 		Level:    "info",
 		NodeID:   lu.NodeID1,
 		NodeName: getNodeName(lu.NodeID1),
-		Event:    "ラインを追加しました",
-	})
-	datastore.AddEventLog(&datastore.EventLogEnt{
-		Type:     "user",
-		Level:    "info",
-		NodeID:   lu.NodeID2,
-		NodeName: getNodeName(lu.NodeID2),
-		Event:    "ラインを追加しました",
+		Event:    fmt.Sprintf(i18n.Trans("Add line to %s"), getNodeName(lu.NodeID2)),
 	})
 	return true
 }
@@ -318,14 +312,7 @@ func (a *App) UpdateLine(lu datastore.LineEnt) bool {
 		Level:    "info",
 		NodeID:   lu.NodeID1,
 		NodeName: getNodeName(lu.NodeID1),
-		Event:    "ラインを更新しました",
-	})
-	datastore.AddEventLog(&datastore.EventLogEnt{
-		Type:     "user",
-		Level:    "info",
-		NodeID:   lu.NodeID2,
-		NodeName: getNodeName(lu.NodeID2),
-		Event:    "ラインを更新しました",
+		Event:    fmt.Sprintf(i18n.Trans("Update line to %s"), getNodeName(lu.NodeID2)),
 	})
 	return true
 }
@@ -355,7 +342,7 @@ func (a *App) addDrawItem(di datastore.DrawItemEnt) bool {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "user",
 		Level: "info",
-		Event: "描画アイテムを追加しました",
+		Event: i18n.Trans("Add draw item"),
 	})
 	return true
 }
@@ -398,7 +385,7 @@ func (a *App) UpdateDrawItem(di datastore.DrawItemEnt) bool {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "user",
 		Level: "info",
-		Event: "描画アイテムを更新しました",
+		Event: i18n.Trans("Update draw item"),
 	})
 	return true
 }
@@ -411,7 +398,7 @@ func (a *App) DeleteDrawItems(ids []string) {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "user",
 		Level: "info",
-		Event: fmt.Sprintf("描画を削除しました %d件", len(ids)),
+		Event: fmt.Sprintf(i18n.Trans("Delete draw item(%d)"), len(ids)),
 	})
 }
 
@@ -443,7 +430,7 @@ func (a *App) CopyDrawItem(id string) bool {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "user",
 		Level: "info",
-		Event: "描画アイテムをコピーしました",
+		Event: i18n.Trans("Copy draw item"),
 	})
 	return true
 }

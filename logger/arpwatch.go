@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/ping"
 )
 
@@ -127,7 +128,7 @@ func makeLoacalCheckAddrs() {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "arpwatch",
 		Level: "info",
-		Event: fmt.Sprintf("ARP監視 ローカルアドレス使用量 %d/%d %.2f%%", localHitCount, localIPCount, lau),
+		Event: fmt.Sprintf(i18n.Trans("ARP Watch local address usage:%d/%d %.2f%%"), localHitCount, localIPCount, lau),
 	})
 }
 
@@ -269,7 +270,7 @@ func checkNodeMAC() {
 					Level:    "info",
 					NodeID:   n.ID,
 					NodeName: n.Name,
-					Event:    fmt.Sprintf("MACアドレス変化 %s -> %s", n.MAC, new),
+					Event:    fmt.Sprintf(i18n.Trans("Change MAC Address %s -> %s"), n.MAC, new),
 				})
 				n.MAC = new
 			}
@@ -288,10 +289,10 @@ func checkFixMACMode(n *datastore.NodeEnt) {
 			n.MAC = mac
 			datastore.AddEventLog(&datastore.EventLogEnt{
 				Type:     "system",
-				Level:    "info",
+				Level:    "warn",
 				NodeID:   n.ID,
 				NodeName: n.Name,
-				Event:    fmt.Sprintf("MACアドレス固定ノードのアドレス取得 %s", n.MAC),
+				Event:    fmt.Sprintf(i18n.Trans("Fixed MAC address node MAC is %s"), n.MAC),
 			})
 		}
 		return
@@ -310,7 +311,7 @@ func checkFixMACMode(n *datastore.NodeEnt) {
 				Level:    "info",
 				NodeID:   n.ID,
 				NodeName: n.Name,
-				Event:    fmt.Sprintf("MACアドレス固定ノード'%s'のIPアドレスが'%s'から'%s'に変化", n.MAC, oldIP, ip),
+				Event:    fmt.Sprintf(i18n.Trans("Fixed MAC address node '%s' Chnage IP address from '%s' to '%s'"), n.MAC, oldIP, ip),
 			})
 		}
 	}
@@ -346,9 +347,9 @@ func checkFixHostMode(n *datastore.NodeEnt) {
 	n.IP = hitIP
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:     "system",
-		Level:    "info",
+		Level:    "warn",
 		NodeID:   n.ID,
 		NodeName: n.Name,
-		Event:    fmt.Sprintf("ホスト名固定ノード'%s'のIPアドレスが'%s'から''%sに変化", n.Name, oldIP, hitIP),
+		Event:    fmt.Sprintf(i18n.Trans("Fixed host name node '%s' Chnage IP from '%s' to ''%s"), n.Name, oldIP, hitIP),
 	})
 }

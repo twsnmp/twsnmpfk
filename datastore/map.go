@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"go.etcd.io/bbolt"
 )
 
@@ -45,7 +46,7 @@ func initConf() {
 	DiscoverConf.Timeout = 1
 	NotifyConf.InsecureSkipVerify = true
 	NotifyConf.Interval = 60
-	NotifyConf.Subject = "TWSNMPからの通知"
+	NotifyConf.Subject = i18n.Trans("Notify from TWSNMP")
 	NotifyConf.Level = "none"
 }
 

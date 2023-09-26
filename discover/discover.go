@@ -17,6 +17,7 @@ import (
 	"github.com/gosnmp/gosnmp"
 	"github.com/signalsciences/ipv4"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/ping"
 )
 
@@ -87,7 +88,7 @@ func Discover() error {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "info",
-		Event: fmt.Sprintf("自動発見開始 %s - %s", datastore.DiscoverConf.StartIP, datastore.DiscoverConf.EndIP),
+		Event: fmt.Sprintf(i18n.Trans("Start discover %s - %s"), datastore.DiscoverConf.StartIP, datastore.DiscoverConf.EndIP),
 	})
 	Stop = false
 	Stat.Total = eip - sip + 1
@@ -178,7 +179,7 @@ func Discover() error {
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",
 			Level: "info",
-			Event: fmt.Sprintf("自動発見終了 %s - %s", datastore.DiscoverConf.StartIP, datastore.DiscoverConf.EndIP),
+			Event: fmt.Sprintf(i18n.Trans("End discover %s - %s"), datastore.DiscoverConf.StartIP, datastore.DiscoverConf.EndIP),
 		})
 	}()
 	return nil
@@ -284,7 +285,7 @@ func addFoundNode(dent *discoverInfoEnt) {
 		Icon:  "desktop",
 		X:     dent.X,
 		Y:     dent.Y,
-		Descr: time.Now().Format("2006/01/02") + "に発見",
+		Descr: fmt.Sprintf(i18n.Trans("Found at %s"), time.Now().Format("2006/01/02")),
 	}
 	if n.Name == "" {
 		if dent.SysName != "" {
@@ -312,7 +313,7 @@ func addFoundNode(dent *discoverInfoEnt) {
 		}
 	}
 	if len(funcList) > 0 {
-		n.Descr += "/対応プロトコル:" + strings.Join(funcList, ",")
+		n.Descr += i18n.Trans("/Protocol:") + strings.Join(funcList, ",")
 	}
 	if err := datastore.AddNode(&n); err != nil {
 		log.Printf("discover err=%v", err)
@@ -323,7 +324,7 @@ func addFoundNode(dent *discoverInfoEnt) {
 		Level:    "info",
 		NodeID:   n.ID,
 		NodeName: n.Name,
-		Event:    "自動発見により追加",
+		Event:    i18n.Trans("Add by dicover"),
 	})
 	if !datastore.DiscoverConf.AddPolling {
 		return
@@ -334,7 +335,7 @@ func addFoundNode(dent *discoverInfoEnt) {
 func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 	p := &datastore.PollingEnt{
 		NodeID:  n.ID,
-		Name:    "PING監視",
+		Name:    "PING",
 		Type:    "ping",
 		Level:   "low",
 		State:   "unknown",
@@ -354,58 +355,58 @@ func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 		level := "off"
 		switch s {
 		case "http":
-			name = "HTTPサーバー監視"
+			name = "HTTP Server"
 			ptype = "http"
 			params = "http://" + n.IP
 		case "https":
-			name = "HTTPSサーバー監視"
+			name = "HTTPS Server"
 			ptype = "http"
 			mode = "https"
 			params = "https://" + n.IP
 		case "smtp":
-			name = "SMTPサーバー監視"
+			name = "SMTP Server"
 			ptype = "tcp"
 			params = "25"
 			level = "low"
 		case "pop3":
-			name = "POP3サーバー監視"
+			name = "POP3 Server"
 			ptype = "tcp"
 			params = "110"
 		case "imap":
-			name = "IMAPサーバー監視"
+			name = "IMAP Server"
 			ptype = "tcp"
 			params = "143"
 			level = "low"
 		case "ssh":
-			name = "SSHサーバー監視"
+			name = "SSH Server"
 			ptype = "tcp"
 			params = "22"
 		case "cifs":
-			name = "ファイル共有(CIFS)サーバー監視"
+			name = "CIFS Server"
 			ptype = "tcp"
 			params = "445"
 		case "nfs":
-			name = "ファイル共有(NFS)サーバー監視"
+			name = "NFS Server"
 			ptype = "tcp"
 			params = "2049"
 		case "vnc":
-			name = "画面共有(VNC)サーバー監視"
+			name = "VNC Server"
 			ptype = "tcp"
 			params = "5900"
 		case "rdp":
-			name = "RDPサーバー監視"
+			name = "RDP Server"
 			ptype = "tcp"
 			params = "3389"
 		case "kerberos":
-			name = "AD(kerberos)サーバー監視"
+			name = "AD(kerberos) Server"
 			ptype = "tcp"
 			params = "88"
 		case "ldap":
-			name = "LDAPサーバー監視"
+			name = "LDAP Server"
 			ptype = "tcp"
 			params = "389"
 		case "ldaps":
-			name = "LDAPSサーバー監視"
+			name = "LDAPS Server"
 			ptype = "tcp"
 			params = "636"
 		default:
@@ -433,7 +434,7 @@ func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 	}
 	p = &datastore.PollingEnt{
 		NodeID:  n.ID,
-		Name:    "sysUptime監視",
+		Name:    "sysUptime",
 		Type:    "snmp",
 		Mode:    "sysUpTime",
 		Level:   "off",
@@ -450,7 +451,7 @@ func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 		p = &datastore.PollingEnt{
 			NodeID:  n.ID,
 			Type:    "snmp",
-			Name:    "IF " + i + "監視",
+			Name:    "I/F " + i,
 			Mode:    "ifOperStatus",
 			Params:  i,
 			Level:   "off",
