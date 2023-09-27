@@ -6,6 +6,7 @@
   import type { datastore } from "wailsjs/go/models";
   import {showAIHeatMap,showAIPieChart,showAITimeChart } from "./chart/ai";
   import { GetAIResult } from "../../wailsjs/go/main/App";
+  import { _ } from 'svelte-i18n';
 
   export let id = "";
   export let results : datastore.AIResult | undefined =undefined;
@@ -51,21 +52,21 @@
       <TabItem open on:click={()=>{showChart("heatmap")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
-          ヒートマップ
+          { $_('AIReport.Heatmap') }
         </div>
         <div id="heatmap" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("pie")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
-          異常割当
+          { $_('AIReport.PieChart') }
         </div>
         <div id="pie" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("time")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
-          タイムチャート
+          { $_('AIReport.TimeChart') }
         </div>
         <div id="time" style="height: 500px;"></div>
       </TabItem>
@@ -73,7 +74,7 @@
     <div class="flex justify-end space-x-2 mr-2">
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        {$_('AIReport.Close')}
       </Button>
     </div>
   </div>

@@ -144,5 +144,11 @@
     "Report": "レポート",
     "Clear": "クリア",
     "Reload": "更新"
+  },
+  "AIReport": {
+    "Heatmap": "ヒートマップ",
+    "PieChart": "異常割合",
+    "TimeChart": "タイムチャート",
+    "Close": "閉じる"
   }
 }

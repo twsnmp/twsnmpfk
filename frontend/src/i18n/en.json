@@ -144,5 +144,11 @@
     "Polling": "Polling",
     "Reload": "Reload",
     "Report": "Report"
+  },
+  "AIReport": {
+    "Close": "Close",
+    "Heatmap": "Heatmap",
+    "PieChart": "Anomary Rate",
+    "TimeChart": "Time chart"
   }
 }
