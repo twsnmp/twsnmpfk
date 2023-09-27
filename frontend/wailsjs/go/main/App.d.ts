@@ -67,6 +67,8 @@ export function GetHostResource(arg1:string):Promise<backend.HostResourceEnt>;
 
 export function GetImage(arg1:string):Promise<string>;
 
+export function GetLang():Promise<string>;
+
 export function GetLine(arg1:string,arg2:string):Promise<datastore.LineEnt>;
 
 export function GetLines():Promise<Array<datastore.LineEnt>>;
@@ -105,11 +107,15 @@ export function GetVPanelPowerInfo(arg1:string):Promise<boolean>;
 
 export function GetVersion():Promise<string>;
 
+export function IsDark():Promise<boolean>;
+
 export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 
 export function ResetArpTable():Promise<boolean>;
 
 export function SelectFile(arg1:string,arg2:boolean):Promise<string>;
+
+export function SetDark(arg1:boolean):Promise<void>;
 
 export function SnmpWalk(arg1:string,arg2:string,arg3:boolean):Promise<Array<main.MibEnt>>;
 

@@ -69,6 +69,7 @@ var (
 	logSize      int64
 	compLogSize  int64
 	mailTemplate map[string]string
+	Dark         bool
 )
 
 // Define errors

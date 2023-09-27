@@ -140,3 +140,20 @@ func (a *App) GetImage(path string) string {
 	}
 	return fmt.Sprintf("data:image/%s;base64,%s", t, base64.StdEncoding.EncodeToString(b))
 }
+
+// GetLangは言語を返します。
+func (a *App) GetLang() string {
+	return i18n.GetLang()
+}
+
+// IsDarkは,Darkモードの状態を返します。
+func (a *App) IsDark() bool {
+	return datastore.Dark
+}
+
+// SetDarkは,Darkモードの状態を設定します。
+func (a *App) SetDark(d bool) {
+	if err := datastore.SetDark(d); err != nil {
+		log.Println(err)
+	}
+}

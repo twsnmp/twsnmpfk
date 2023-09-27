@@ -1,12 +1,6 @@
 <script lang="ts">
   import logo from "./assets/images/appicon.png";
-  import {
-    Navbar,
-    NavBrand,
-    NavLi,
-    NavUl,
-    Button,
-  } from "flowbite-svelte";
+  import { Navbar, NavBrand, NavLi, NavUl, Button } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
@@ -22,17 +16,29 @@
   import AIList from "./lib/AIList.svelte";
   import Config from "./lib/Config.svelte";
 
+  import {
+    IsDark,
+    SetDark,
+  } from "../wailsjs/go/main/App";
+
   let dark: boolean = false;
   let mainHeight = 0;
   let mapName = "";
   let page = "map";
   let showConfig = false;
 
+  console.log("aaa");
+
+
   const updateMapName = async () => {
     mapName = await GetMapName();
   };
 
   onMount(async () => {
+    if (await IsDark()) {
+      const e = document.querySelector("html");
+       e.classList.add("dark"); 
+    }
     await tick();
     mainHeight = window.innerHeight - 96;
     updateMapName();
@@ -42,6 +48,7 @@
     const e = document.querySelector("html");
     e.classList.toggle("dark");
     dark = e.classList.contains("dark");
+    SetDark(dark);
   };
 </script>
 
@@ -84,27 +91,57 @@
       <Icon path={icons.mdiLanCheck} size={1} />
       ポーリング
     </NavLi>
-    <NavLi active={page == "eventlog"} on:click={()=> {page= "eventlog"}}>
+    <NavLi
+      active={page == "eventlog"}
+      on:click={() => {
+        page = "eventlog";
+      }}
+    >
       <Icon path={icons.mdiCalendarCheck} size={1} />
       ログ
     </NavLi>
-    <NavLi active={page == "syslog"} on:click={()=> {page= "syslog"}}>
+    <NavLi
+      active={page == "syslog"}
+      on:click={() => {
+        page = "syslog";
+      }}
+    >
       <Icon path={icons.mdiCalendarText} size={1} />
       syslog
     </NavLi>
-    <NavLi active={page == "trap"} on:click={()=> {page= "trap"}}>
+    <NavLi
+      active={page == "trap"}
+      on:click={() => {
+        page = "trap";
+      }}
+    >
       <Icon path={icons.mdiAlert} size={1} />
       TRAP
     </NavLi>
-    <NavLi active={page == "arp"} on:click={()=> {page= "arp"}}>
+    <NavLi
+      active={page == "arp"}
+      on:click={() => {
+        page = "arp";
+      }}
+    >
       <Icon path={icons.mdiCheckNetwork} size={1} />
       ARP
     </NavLi>
-     <NavLi active={page == "ai"} on:click={()=> {page= "ai"}}>
+    <NavLi
+      active={page == "ai"}
+      on:click={() => {
+        page = "ai";
+      }}
+    >
       <Icon path={icons.mdiBrain} size={1} />
       AI分析
     </NavLi>
-    <NavLi active={showConfig} on:click={()=>{showConfig = true}}>
+    <NavLi
+      active={showConfig}
+      on:click={() => {
+        showConfig = true;
+      }}
+    >
       <Icon path={icons.mdiCog} size={1} />
       設定
     </NavLi>

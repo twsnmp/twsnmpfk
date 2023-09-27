@@ -1,4 +1,6 @@
 import * as echarts from 'echarts'
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 let chart;
 
@@ -8,30 +10,30 @@ export const showAIHeatMap = (div, scores) => {
   }
   chart = echarts.init(document.getElementById(div))
   const hours = [
-    '0時',
-    '1時',
-    '2時',
-    '3時',
-    '4時',
-    '5時',
-    '6時',
-    '7時',
-    '8時',
-    '9時',
-    '10時',
-    '11時',
-    '12時',
-    '13時',
-    '14時',
-    '15時',
-    '16時',
-    '17時',
-    '18時',
-    '19時',
-    '20時',
-    '21時',
-    '22時',
-    '23時',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
+    '13',
+    '14',
+    '15',
+    '16',
+    '17',
+    '18',
+    '19',
+    '20',
+    '21',
+    '22',
+    '23',
   ]
   const option = {
     title: {
@@ -70,7 +72,7 @@ export const showAIHeatMap = (div, scores) => {
           params.name +
           ' ' +
           params.data[1] +
-          '時 : ' +
+          ' : ' +
           params.data[2].toFixed(1)
         )
       },
@@ -80,7 +82,7 @@ export const showAIHeatMap = (div, scores) => {
     },
     xAxis: {
       type: 'category',
-      name: '日付',
+      name: $_("Ts.Date"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -100,7 +102,7 @@ export const showAIHeatMap = (div, scores) => {
     },
     yAxis: {
       type: 'category',
-      name: '時間帯',
+      name: $_("Ts.TimeRange"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -212,7 +214,7 @@ export const showAIPieChart = (div, scores) => {
       formatter: '{a} <br/>{b} : {c} ({d}%)',
     },
     legend: {
-      data: ['正常', '注意', '異常'],
+      data: [$_("Ts.Normal"), $_("Ts.Warn"), $_("Ts.Anamary")],
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -220,7 +222,7 @@ export const showAIPieChart = (div, scores) => {
     },
     series: [
       {
-        name: '異常スコア',
+        name: $_("Ts.AnmaryScore"),
         type: 'pie',
         radius: '75%',
         center: ['45%', '50%'],
@@ -229,9 +231,9 @@ export const showAIPieChart = (div, scores) => {
           color: '#ccc',
         },
         data: [
-          { name: '正常', value: 0 },
-          { name: '注意', value: 0 },
-          { name: '異常', value: 0 },
+          { name: $_("Ts.Normal"), value: 0 },
+          { name: $_("Ts.Warn"), value: 0 },
+          { name: $_("Ts.Anamary"), value: 0 },
         ],
       },
     ],
@@ -294,7 +296,7 @@ export const showAITimeChart = (div, scores) => {
     },
     xAxis: {
       type: 'time',
-      name: '日時',
+      name: $_("Ts.DateTime"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -319,7 +321,7 @@ export const showAITimeChart = (div, scores) => {
     },
     yAxis: {
       type: 'value',
-      name: '異常スコア',
+      name: $_("Ts.AnmaryScore"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -340,7 +342,7 @@ export const showAITimeChart = (div, scores) => {
       {
         color: '#1f78b4',
         type: 'line',
-        name: '異常スコア',
+        name: $_("Ts.AnmaryScore"),
         showSymbol: false,
         data: [],
       },

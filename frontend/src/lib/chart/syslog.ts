@@ -3,6 +3,8 @@ import 'echarts-gl';
 import * as ecStat from 'echarts-stat';
 import { doFFT } from './fft'
 import { isDark } from './utils'
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 let chart;
 
@@ -46,7 +48,7 @@ export const showSyslogHost = (div, logs) => {
         fontSize: 10,
         color: '#ccc',
       },
-      data: ['重度', '軽度', '注意', 'その他'],
+      data: [$_("Ts.High"),$_("Ts.Low"),$_("Ts.Warn"),$_("Ts.Other")],
     },
     toolbox: {
       iconStyle: {
@@ -71,7 +73,7 @@ export const showSyslogHost = (div, logs) => {
     },
     xAxis: {
       type: 'value',
-      name: '件数',
+      name: $_("Ts.Count"),
     },
     yAxis: {
       type: 'category',
@@ -94,27 +96,27 @@ export const showSyslogHost = (div, logs) => {
     },
     series: [
       {
-        name: '重度',
+        name: $_("Ts.High"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: high,
       },
       {
-        name: '軽度',
+        name: $_("Ts.Low"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: low,
       },
       {
-        name: '注意',
+        name: $_("Ts.Warn"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: warn,
       },
       {
-        name: 'その他',
+        name: $_("Ts.Other"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: other,
       },
     ],
@@ -279,7 +281,7 @@ export const showSyslogHost3D = (div, logs) => {
     },
     series: [
       {
-        name: 'ホスト別ログ件数',
+        name: $_("Ts.LogCountByHost"),
         type: 'scatter3D',
         symbolSize: 4,
         dimensions: ['Host', 'Time', 'Priority', 'Level'],
@@ -445,7 +447,7 @@ export const showSyslogFFT3D = (div, logs) => {
     },
     yAxis3D: {
       type: 'log',
-      name: '周期(Sec)',
+      name: $_("Ts.CycleSec"),
       nameTextStyle: {
         color: dark ? "#ccc" : "#222",
         fontSize: 12,
@@ -463,7 +465,7 @@ export const showSyslogFFT3D = (div, logs) => {
     },
     zAxis3D: {
       type: 'value',
-      name: '回数',
+      name: $_("Ts.PingCount"),
       nameTextStyle: {
         color: dark ? "#ccc" : "#222",
         fontSize: 12,
@@ -497,14 +499,14 @@ export const showSyslogFFT3D = (div, logs) => {
     },
     series: [
       {
-        name: 'Syslog FFT分析',
+        name: 'Syslog FFT',
         type: 'scatter3D',
         symbolSize: 4,
         dimensions: [
           'Host',
-          '周期',
-          '回数',
-          '周波数',
+          $_("Ts.Cycle"),
+          $_("Ts.PingCount"),
+          $_("Ts.Frequency"),
         ],
         data,
       },
@@ -548,7 +550,7 @@ export const showSyslogLevelChart = (div:string, logs) => {
       formatter: '{a} <br/>{b} : {c} ({d}%)',
     },
     legend: {
-      data: ['重度', '軽度', '注意', 'その他'],
+      data: [$_("Ts.High"),$_("Ts.Low") ,$_("Ts.Warn"), $_("Ts.Other")],
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -556,7 +558,7 @@ export const showSyslogLevelChart = (div:string, logs) => {
     },
     series: [
       {
-        name: '状態別',
+        name: $_("Ts.CountByState"),
         type: 'pie',
         radius: '75%',
         center: ['45%', '50%'],
@@ -565,10 +567,10 @@ export const showSyslogLevelChart = (div:string, logs) => {
           color: '#ccc',
         },
         data: [
-          { name: '重度', value: 0 },
-          { name: '軽度', value: 0 },
-          { name: '注意', value: 0 },
-          { name: 'その他', value: 0 },
+          { name: $_("Ts.High"), value: 0 },
+          { name: $_("Ts.Low"), value: 0 },
+          { name: $_("Ts.Warn"), value: 0 },
+          { name: $_("Ts.Other"), value: 0 },
         ],
       },
     ],

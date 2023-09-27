@@ -1,6 +1,8 @@
 import * as echarts from 'echarts';
 import 'echarts-gl';
 import { isDark } from './utils'
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 let chart;
 
@@ -40,7 +42,7 @@ export const showArpLogIP = (div, logs) => {
         fontSize: 10,
         color: '#ccc',
       },
-      data: ['新規', '変化'],
+      data: [$_("Ts.New"), $_("Ts.Change")],
     },
     toolbox: {
       iconStyle: {
@@ -65,7 +67,7 @@ export const showArpLogIP = (div, logs) => {
     },
     xAxis: {
       type: 'value',
-      name: '件数',
+      name: $_("Ts.Count"),
     },
     yAxis: {
       type: 'category',
@@ -88,15 +90,15 @@ export const showArpLogIP = (div, logs) => {
     },
     series: [
       {
-        name: '新規',
+        name: $_("Ts.New"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: newLog,
       },
       {
-        name: '変化',
+        name: $_("Ts.Change"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: changeLog,
       },
     ],
@@ -255,7 +257,7 @@ export const showArpLogIP3D = (div, logs) => {
     },
     series: [
       {
-        name: 'IP別ログ件数',
+        name: $_("Ts.LogCountByIP"),
         type: 'scatter3D',
         symbolSize: 4,
         dimensions: ['ip', 'time', 'type'],

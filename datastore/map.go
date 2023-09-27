@@ -88,6 +88,10 @@ func loadConf() error {
 				log.Printf("load icons err=%v", err)
 			}
 		}
+		v = b.Get([]byte("dark"))
+		if v != nil && string(v) == "yes" {
+			Dark = true
+		}
 		return nil
 	})
 	if err == nil && bSaveConf {
@@ -256,5 +260,23 @@ func saveIcons() error {
 		}
 		log.Printf("saveIcons dur=%v", time.Since(st))
 		return b.Put([]byte("icons"), s)
+	})
+}
+
+func SetDark(dark bool) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		if dark {
+			return b.Put([]byte("dark"), []byte("yes"))
+		} else {
+			b.Delete([]byte("dark"))
+		}
+		return nil
 	})
 }

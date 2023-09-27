@@ -126,6 +126,10 @@ export function GetImage(arg1) {
   return window['go']['main']['App']['GetImage'](arg1);
 }
 
+export function GetLang() {
+  return window['go']['main']['App']['GetLang']();
+}
+
 export function GetLine(arg1, arg2) {
   return window['go']['main']['App']['GetLine'](arg1, arg2);
 }
@@ -202,6 +206,10 @@ export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
 }
 
+export function IsDark() {
+  return window['go']['main']['App']['IsDark']();
+}
+
 export function Ping(arg1) {
   return window['go']['main']['App']['Ping'](arg1);
 }
@@ -212,6 +220,10 @@ export function ResetArpTable() {
 
 export function SelectFile(arg1, arg2) {
   return window['go']['main']['App']['SelectFile'](arg1, arg2);
+}
+
+export function SetDark(arg1) {
+  return window['go']['main']['App']['SetDark'](arg1);
 }
 
 export function SnmpWalk(arg1, arg2, arg3) {

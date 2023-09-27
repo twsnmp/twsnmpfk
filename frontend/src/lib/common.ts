@@ -1,20 +1,24 @@
 import * as echarts from 'echarts';
 import * as numeral from 'numeral';
 import ja from "datatables.net-plugins/i18n/ja.mjs";
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+import {lang} from '../i18n/i18n';
+const $_ = unwrapFunctionStore(_);
+
 
 export const stateList = [
-  { text: '重度', color: '#e31a1c', icon: "mdi-alert-circle", value: 'high' },
-  { text: '軽度', color: '#fb9a99', icon: "mdi-alert-circle", value: 'low' },
-  { text: '注意', color: '#dfdf22', icon: "mdi-alert", value: 'warn' },
-  { text: '正常', color: '#33a02c', icon: "mdi-check-circle", value: 'normal' },
-  { text: 'Up', color: '#33a02c', icon:  "mdi-check-circle", value: 'up' },
-  { text: '復帰', color: '#1f78b4', icon: "mdi-autorenew", value: 'repair' },
-  { text: '情報', color: '#1f78b4', icon: "mdi-information", value: 'info' },
-  { text: '新規', color: '#1f78b4', icon: "mdi-information", value: 'New' },
-  { text: '変化', color: '#e31a1c', icon: "mdi-autorenew", value: 'Change' },
-  { text: 'エラー', color: '#e31a1c', icon: "mdi-alert-circle", value: 'error' },
+  { text: $_("Ts.High"), color: '#e31a1c', icon: "mdi-alert-circle", value: 'high' },
+  { text: $_("Ts.Low"), color: '#fb9a99', icon: "mdi-alert-circle", value: 'low' },
+  { text: $_("Ts.Warn"), color: '#dfdf22', icon: "mdi-alert", value: 'warn' },
+  { text: $_("Ts.Normal"), color: '#33a02c', icon: "mdi-check-circle", value: 'normal' },
+  { text: $_("Ts.Repair"), color: '#1f78b4', icon: "mdi-autorenew", value: 'repair' },
+  { text: $_("Ts.Info"), color: '#1f78b4', icon: "mdi-information", value: 'info' },
+  { text: $_("Ts.New"), color: '#1f78b4', icon: "mdi-information", value: 'New' },
+  { text: $_("Ts.Change"), color: '#e31a1c', icon: "mdi-autorenew", value: 'Change' },
+  { text: $_("Ts.Error"), color: '#e31a1c', icon: "mdi-alert-circle", value: 'error' },
+  { text: $_("Ts.Stop"), color: '#777', icon: "mdi-stop", value: 'off' },
   { text: 'Down', color: '#e31a1c', icon: "mdi-alert-circle", value: 'down' },
-  { text: '停止', color: '#777', icon: "mdi-stop", value: 'off' },
+  { text: 'Up', color: '#33a02c', icon:  "mdi-check-circle", value: 'up' },
   { text: 'Debug', color: '#777', icon: "mdi-bug", value: 'debug' },
 ]
 
@@ -29,7 +33,7 @@ export const getStateColor = (state:string) :string => {
 }
 
 export const getStateName = (state:string) : string => {
-  return stateMap[state] ? stateMap[state].text : '不明'
+  return stateMap[state] ? stateMap[state].text : $_("Ts.Unknown")
 }
 
 export const getStateIcon = (state:string) => {
@@ -37,27 +41,27 @@ export const getStateIcon = (state:string) => {
 }
 
 export const levelList = [
-  { name: '重度', value: 'high' },
-  { name: '軽度', value: 'low' },
-  { name: '注意', value: 'warn' },
-  { name: '情報', value: 'info' },
-  { name: '停止', value: 'off' },
+  { name: $_("Ts.High"), value: 'high' },
+  { name: $_("Ts.Low"), value: 'low' },
+  { name: $_("Ts.Warn"), value: 'warn' },
+  { name: $_("Ts.Info"), value: 'info' },
+  { name: $_("Ts.Stop"), value: 'off' },
 ]
 
 export const filterEventLevelList = [
-  { name: '指定しない', value: '' },
-  { name: '重度以上', value: 'high' },
-  { name: '軽度以上', value: 'low' },
-  { name: '注意以上', value: 'warn' },
+  { name: $_("Ts.None"), value: '' },
+  { name: $_("Ts.OverHigh"), value: 'high' },
+  { name: $_("Ts.OverLow"), value: 'low' },
+  { name: $_("Ts.OverWarn"), value: 'warn' },
 ]
 
 export const filterEventTypeList = [
-  { name: '指定しない', value: '' },
-  { name: 'システム', value: 'system' },
-  { name: 'ポーリング', value: 'polling' },
-  { name: 'AI分析', value: 'ai' },
-  { name: '稼働率', value: 'oprate' },
-  { name: 'ARP監視', value: 'arpwatch' },
+  { name: $_("Ts.None"), value: '' },
+  { name: $_("Ts.System"), value: 'system' },
+  { name: $_("Ts.Porlling"), value: 'polling' },
+  { name: $_("Ts.AI"), value: 'ai' },
+  { name: $_("Ts.Oprate"), value: 'oprate' },
+  { name: $_("Ts.ArpWatch"), value: 'arpwatch' },
 ]
 
 export const typeList = [
@@ -79,69 +83,69 @@ export const typeList = [
 ]
 
 export const logModeList = [
-  { name: '記録しない', value: 0 },
-  { name: '常に記録', value: 1 },
-  { name: '状態変化時のみ記録', value: 2 },
-  { name: 'AI分析', value: 3 },
+  { name: $_("Ts.NoLog"), value: 0 },
+  { name: $_("Ts.LogAll"), value: 1 },
+  { name: $_("Ts.LogChnage"), value: 2 },
+  { name: $_("Ts.AI"), value: 3 },
 ]
 
 export const addrModeList = [
-  { name: 'IP固定', value: 'ip' },
-  { name: 'MAC固定', value: 'mac' },
-  { name: 'ホスト名固定', value: 'host' },
+  { name: $_("Ts.FixedIP"), value: 'ip' },
+  { name: $_("Ts.FixedMAC"), value: 'mac' },
+  { name: $_("Ts.FixeHost"), value: 'host' },
 ]
 
 export const snmpModeList = [
   { name: 'SNMPv1', value: 'v1' },
   { name: 'SNMPv2c', value: 'v2c' },
-  { name: 'SNMPv3認証', value: 'v3auth' },
-  { name: 'SNMPv3認証暗号化(AES128)', value: 'v3authpriv' },
-  { name: 'SNMPv3認証暗号化(SHA256/AES256)', value: 'v3authprivex' },
+  { name: $_("Ts.SNMPv3Auth"), value: 'v3auth' },
+  { name: $_("Ts.SNMPv3AuthPriv"), value: 'v3authpriv' },
+  { name: $_("Ts.SNMPv3AuthPrivEx"), value: 'v3authprivex' },
 ]
 
 
 export const iconList = [
   {
-    name: 'デスクトップ',
+    name: $_("Ts.Desktop"),
     icon: 'mdi-desktop-mac',
     value: 'desktop',
     code: 0xF01C4,
   },
   {
-    name: '古いデスクトップ',
+    name: $_("Ts.DesktopClassic"),
     icon: 'mdi-desktop-classic',
     value: 'desktop-classic',
     code: 0xF07C0,
   },
-  { name: 'ラップトップ', icon: 'mdi-laptop', value: 'laptop' ,code: 0xF0322},
-  { name: 'タブレット', icon: 'mdi-tablet-ipad', value: 'tablet' ,code:0xF04F8},
-  { name: 'サーバー', icon: 'mdi-server', value: 'server' ,code: 0xF048B},
-  { name: 'ネットワーク機器', icon: 'mdi-ip-network', value: 'hdd' ,code: 0xF0A60},
-  { name: 'IP機器', icon: 'mdi-ip-network', value: 'ip' ,code: 0xF0A60},
-  { name: 'ネットワーク', icon: 'mdi-lan', value: 'network' ,code: 0xF0317},
-  { name: '無線LAN', icon: 'mdi-wifi', value: 'wifi' ,code: 0xF05A9},
-  { name: 'クラウド', icon: 'mdi-cloud', value: 'cloud' ,code: 0xF015F },
-  { name: 'プリンター', icon: 'mdi-printer', value: 'printer' ,code: 0xF042A},
-  { name: 'モバイル', icon: 'mdi-cellphone', value: 'cellphone' ,code: 0xF011C},
-  { name: 'ルーター1', icon: 'mdi-router', value: 'router' ,code: 0xF11E2},
+  { name: $_("Ts.Laptop"), icon: 'mdi-laptop', value: 'laptop' ,code: 0xF0322},
+  { name: $_("Ts.Tablet"), icon: 'mdi-tablet-ipad', value: 'tablet' ,code:0xF04F8},
+  { name: $_("Ts.Server"), icon: 'mdi-server', value: 'server' ,code: 0xF048B},
+  { name: $_("Ts.NetworkDev"), icon: 'mdi-ip-network', value: 'hdd' ,code: 0xF0A60},
+  { name: $_("Ts.IPDev"), icon: 'mdi-ip-network', value: 'ip' ,code: 0xF0A60},
+  { name: $_("Ts.Network"), icon: 'mdi-lan', value: 'network' ,code: 0xF0317},
+  { name: $_("Ts.Wifi"), icon: 'mdi-wifi', value: 'wifi' ,code: 0xF05A9},
+  { name: $_("Ts.Cloud"), icon: 'mdi-cloud', value: 'cloud' ,code: 0xF015F },
+  { name: $_("Ts.Printer"), icon: 'mdi-printer', value: 'printer' ,code: 0xF042A},
+  { name: $_("Ts.Mobile"), icon: 'mdi-cellphone', value: 'cellphone' ,code: 0xF011C},
+  { name: $_("Ts.Router1"), icon: 'mdi-router', value: 'router' ,code: 0xF11E2},
   { name: 'WEB', icon: 'mdi-web', value: 'web' ,code: 0xF059F},
-  { name: 'データベース', icon: 'mdi-database', value: 'db' ,code: 0xF01BC},
-  { name: '無線AP', icon: 'mdi-router-wireless', value: 'mdi-router-wireless' ,code: 0xF0469},
-  { name: 'ルーター2', icon: 'mdi-router-network', value: 'mdi-router-network' ,code: 0xF1087},
-  { name: 'セキュリティー', icon: 'mdi-security', value: 'mdi-security' ,code: 0xF0483},
-  { name: 'タワーPC', icon: 'mdi-desktop-tower', value: 'mdi-desktop-tower' ,code: 0xF01C5},
+  { name: $_("Ts.Database"), icon: 'mdi-database', value: 'db' ,code: 0xF01BC},
+  { name: $_("Ts.WifiAP"), icon: 'mdi-router-wireless', value: 'mdi-router-wireless' ,code: 0xF0469},
+  { name: $_("Ts.Router2"), icon: 'mdi-router-network', value: 'mdi-router-network' ,code: 0xF1087},
+  { name: $_("Ts.Security"), icon: 'mdi-security', value: 'mdi-security' ,code: 0xF0483},
+  { name: $_("Ts.TowerPC"), icon: 'mdi-desktop-tower', value: 'mdi-desktop-tower' ,code: 0xF01C5},
   { name: 'Windows', icon: 'mdi-microsoft-windows', value: 'mdi-microsoft-windows' ,code: 0xF05B3},
   { name: 'Linux', icon: 'mdi-linux', value: 'mdi-linux' ,code: 0xF033D},
   { name: 'Raspberry PI', icon: 'mdi-raspberry-pi', value: 'mdi-raspberry-pi' ,code: 0xF043F},
-  { name: 'メールサーバー', icon: 'mdi-mailbox', value: 'mdi-mailbox' ,code: 0xF06EE},
-  { name: 'NTPサーバー', icon: 'mdi-clock', value: 'mdi-clock' ,code: 0xF0954},
+  { name: $_("Ts.MailServer"), icon: 'mdi-mailbox', value: 'mdi-mailbox' ,code: 0xF06EE},
+  { name: $_("Ts.NTPServer"), icon: 'mdi-clock', value: 'mdi-clock' ,code: 0xF0954},
   { name: 'Android', icon: 'mdi-android', value: 'mdi-android' ,code: 0xF0032},
   { name: 'Azure', icon: 'mdi-microsoft-azure', value: 'mdi-microsoft-azure' ,code: 0xF0805},
   { name: 'Amazon', icon: 'mdi-amazon', value: 'mdi-amazon' ,code: 0xF002D},
   { name: 'Apple', icon: 'mdi-apple', value: 'mdi-apple' ,code: 0xF0035},
   { name: 'Google', icon: 'mdi-google', value: 'mdi-google' ,code: 0xF02AD},
-  { name: 'CDプレーヤー', icon: 'mdi-disc-player', value: 'mdi-disc-player' ,code: 0xF0960},
-  { name: 'TWSNMP連携マップ', icon: 'mdi-layers-search', value: 'mdi-layers-search' ,code: 0xF1206},
+  { name: 'CD Player', icon: 'mdi-disc-player', value: 'mdi-disc-player' ,code: 0xF0960},
+  { name: 'TWSNMP', icon: 'mdi-layers-search', value: 'mdi-layers-search' ,code: 0xF1206},
 ]
 
 const iconMap = {}
@@ -277,7 +281,11 @@ export const getLogModeName = (m) => {
   return ''
 } 
 
+
 export const getTableLang = () => {
+  if (lang != "ja") {
+    return undefined;
+  } 
   ja.select = {
     cells: {
       "0": "",
@@ -322,25 +330,25 @@ export const renderBytes = (n:number,type:string) => {
 export const renderHrSystemName = (k:string) => {
   switch (k) {
     case "hrSystemUptime":
-      return "システム稼働時間";
+      return $_("Ts.hrSystemUptime");
     case "hrSystemDate":
-      return "システム時刻";
+      return $_("Ts.hrSystemDate");
     case "hrSystemInitialLoadDevice":
-      return "起動デバイス";
+      return $_("Ts.hrSystemInitialLoadDevice");
     case "hrSystemInitialLoadParameters":
-      return "起動パラメータ";
+      return $_("Ts.hrSystemInitialLoadParameters");
     case "hrSystemNumUsers":
-      return "システムユーザ数";
+      return $_("Ts.hrSystemNumUsers");
     case "hrSystemProcesses":
-      return "システムプロセス数";
+      return $_("Ts.hrSystemProcesses");
     case "hrSystemMaxProcesses":
-      return "最大プロセス数";
+      return $_("Ts.hrSystemMaxProcesses");
     case "hrMemorySize":
-      return "メモリサイズ";
+      return $_("Ts.hrMemorySize");
     case "hrProcessorLoad":
-      return "CPU平均負荷";
+      return $_("Ts.hrProcessorLoad");
     case "hrProcessorCount":
-      return "CPUコア数";
+      return $_("Ts.hrProcessorCount");
   }
   return k
 }

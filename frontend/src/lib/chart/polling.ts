@@ -1,5 +1,7 @@
 import * as echarts from "echarts";
 import * as ecStat from "echarts-stat";
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 const vmapUsage = [
   {
@@ -21,132 +23,108 @@ const vmapUsage = [
 const chartParams = {
   rtt: {
     mul: 1.0 / (1000 * 1000 * 1000),
-    axis: "応答時間(秒)",
+    axis: $_("Ts.RespTimeSec"),
   },
   rtt_cv: {
     mul: 1.0,
-    axis: "応答時間変動係数",
+    axis: $_("Ts.RespTimeCV"),
   },
   successRate: {
     mul: 100.0,
-    axis: "成功率(%)",
+    axis: $_("Ts.SuccessRatePer"),
   },
   speed: {
     mul: 1.0,
-    axis: "回線速度(Mbps)",
+    axis: $_("Ts.LineSpeedMbps"),
   },
   speed_cv: {
     mul: 1.0,
-    axis: "回線速度変動係数",
+    axis: $_("Ts.LineSeedCV"),
   },
   feels_like: {
     mul: 1.0,
-    axis: "体感温度(℃）",
+    axis: $_("TsFeelsLikeC"),
   },
   humidity: {
     mul: 1.0,
-    axis: "湿度(%)",
+    axis: $_("Ts.Humidity"),
   },
   pressure: {
     mul: 1.0,
-    axis: "気圧(hPa)",
+    axis: $_("Ts.PressurehPa"),
   },
   temp: {
     mul: 1.0,
-    axis: "温度(℃）",
+    axis: $_("Ts.TempC"),
   },
   temp_max: {
     mul: 1.0,
-    axis: "最高温度(℃）",
+    axis: $_("Ts.MaxTempC"),
   },
   temp_min: {
     mul: 1.0,
-    axis: "最低温度(℃）",
+    axis: $_("Ts.MinTempC"),
   },
   wind: {
     mul: 1.0,
-    axis: "風速(m/sec)",
+    axis: $_("Ts.WindSpeedMPS"),
   },
   offset: {
     mul: 1.0 / (1000 * 1000 * 1000),
-    axis: "時刻差(秒)",
+    axis: $_("Ts.OffsetSec"),
   },
   stratum: {
     mul: 1,
-    axis: "階層",
+    axis: $_("Ts.Stratum"),
   },
   load1m: {
     mul: 1.0,
-    axis: "１分間負荷",
+    axis: $_("Ts.Load1M"),
   },
   load5m: {
     mul: 1.0,
-    axis: "５分間負荷",
+    axis: $_("Ts.Load5M"),
   },
   load15m: {
     mul: 1.0,
-    axis: "１５分間負荷",
+    axis: $_("Ts.Load15M"),
   },
   up: {
     mul: 1.0,
-    axis: "稼働数",
+    axis: $_("Ts.UpCount"),
   },
   total: {
     mul: 1.0,
-    axis: "総数",
+    axis: $_("Ts.Total"),
   },
   rate: {
     mul: 1.0,
-    axis: "稼働率",
-  },
-  capacity: {
-    mul: 0.000000001,
-    axis: "総容量(GB)",
-  },
-  freeSpace: {
-    mul: 0.000000001,
-    axis: "空き容量(GB)",
+    axis: $_("Ts.Oprate"),
   },
   usage: {
     mul: 1.0,
-    axis: "使用率(%)",
+    axis: $_("Ts.UsagePer"),
     vmap: vmapUsage,
-  },
-  totalCPU: {
-    mul: 0.001,
-    axis: "総CPUクロック(GHz)",
-  },
-  usedCPU: {
-    mul: 0.001,
-    axis: "使用中のCPUクロック(GHz)",
   },
   usageCPU: {
     mul: 1.0,
-    axis: "CPU使用率(%)",
-  },
-  totalMEM: {
-    mul: 0.000001,
-    axis: "総メモリー(MB)",
-  },
-  usedMEM: {
-    mul: 0.000001,
-    axis: "使用中メモリー(MB)",
+    axis: $_("Ts.CPUUsagePer"),
   },
   usageMEM: {
     mul: 1.0,
-    axis: "メモリー使用率(%)",
+    axis: $_("MemUsagePer"),
   },
   totalHost: {
     mul: 1.0,
-    axis: "ホスト数",
+    axis: $_("TotalHost"),
   },
   fail: {
     mul: 1.0,
-    axis: "失敗回数",
+    axis: $_("Ts.FailCount"),
   },
   count: {
     mul: 1.0,
-    axis: "回数",
+    axis: $_("Ts.PingCount"),
   },
 };
 
@@ -209,7 +187,7 @@ const getPollingChartOption = (div) => {
     },
     xAxis: {
       type: "time",
-      name: "日時",
+      name: $_("Ts.DateTime"),
       nameTextStyle: {
         color: "#ccc",
         fontSize: 10,
@@ -312,27 +290,27 @@ export const showPollingChart = (div, logs, ent) => {
     return;
   }
   const dp = getChartParams(ent);
-  option.series[0].name = "平均値";
+  option.series[0].name = $_("Ts.AvgVal");
   option.series.push({
-    name: "最大値",
+    name: $_("Ts.MaxVal"),
     type: "line",
     large: true,
     data: [],
   });
   option.series.push({
-    name: "最小値",
+    name: $_("Ts.MinVal"),
     type: "line",
     large: true,
     data: [],
   });
   option.series.push({
-    name: "中央値",
+    name: $_("Ts.Median"),
     type: "line",
     large: true,
     data: [],
   });
   option.series.push({
-    name: "分散",
+    name: $_("Ts.Variance"),
     type: "line",
     large: true,
     yAxisIndex: 1,
@@ -340,7 +318,7 @@ export const showPollingChart = (div, logs, ent) => {
   });
   option.yAxis.push({
     type: "value",
-    name: "分散",
+    name: $_("Ts.Variance"),
     nameTextStyle: {
       color: "#ccc",
       fontSize: 10,
@@ -357,11 +335,11 @@ export const showPollingChart = (div, logs, ent) => {
       },
     },
   });
-  option.legend.data[0] = "平均値";
-  option.legend.data.push("最大値");
-  option.legend.data.push("最小値");
-  option.legend.data.push("中央値");
-  option.legend.data.push("分散");
+  option.legend.data[0] = $_("Ts.AvgVal");
+  option.legend.data.push($_("Ts.MaxVal"));
+  option.legend.data.push($_("Ts.MinVal"));
+  option.legend.data.push($_("Ts.Median"));
+  option.legend.data.push($_("Ts.Variance"));
   let tS = -1;
   const values = [];
   const dt = 3600 * 1000;
@@ -428,7 +406,7 @@ const makePollingHistogram = (div) => {
       trigger: "axis",
       formatter(params) {
         const p = params[0];
-        return p.value[0] + "の回数:" + p.value[1];
+        return p.value[0] + ":" + p.value[1];
       },
       axisPointer: {
         type: "shadow",
@@ -445,7 +423,7 @@ const makePollingHistogram = (div) => {
       min: 0,
     },
     yAxis: {
-      name: "回数",
+      name: $_("Ts.PingCount"),
     },
     series: [
       {

@@ -1,5 +1,7 @@
 import * as echarts from 'echarts'
 import { setZoomCallback } from './utils.js'
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 let chart;
 
@@ -43,7 +45,7 @@ const makeLogLevelChart = (div:string) => {
     },
     xAxis: {
       type: 'time',
-      name: '日時',
+      name: $_("Ts.DateTime"),
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
@@ -68,7 +70,7 @@ const makeLogLevelChart = (div:string) => {
     },
     yAxis: {
       type: 'value',
-      name: '件数',
+      name: $_("Ts.Count"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -87,7 +89,7 @@ const makeLogLevelChart = (div:string) => {
     },
     series: [
       {
-        name: '重度',
+        name: $_("Ts.High"),
         type: 'bar',
         color: '#e31a1c',
         stack: 'count',
@@ -95,7 +97,7 @@ const makeLogLevelChart = (div:string) => {
         data: [],
       },
       {
-        name: '軽度',
+        name: $_("Ts.Low"),
         type: 'bar',
         color: '#fb9a99',
         stack: 'count',
@@ -103,7 +105,7 @@ const makeLogLevelChart = (div:string) => {
         data: [],
       },
       {
-        name: '注意',
+        name: $_("Ts.Low"),
         type: 'bar',
         color: '#dfdf22',
         stack: 'count',
@@ -111,7 +113,7 @@ const makeLogLevelChart = (div:string) => {
         data: [],
       },
       {
-        name: 'その他',
+        name: $_("Ts.Other"),
         type: 'bar',
         color: '#1f78b4',
         stack: 'count',
@@ -124,7 +126,7 @@ const makeLogLevelChart = (div:string) => {
         fontSize: 10,
         color: '#ccc',
       },
-      data: ['重度', '軽度', '注意', 'その他'],
+      data: [$_("Ts.High"), $_("Ts.Low"), $_("Ts.Warn"), $_("Ts.Other")],
     },
   }
   chart.setOption(option);

@@ -1,5 +1,7 @@
 import * as echarts from 'echarts'
 import { setZoomCallback } from './utils.js'
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 let chart
 
@@ -43,7 +45,7 @@ const makeLogStateChart = (div) => {
     },
     xAxis: {
       type: 'time',
-      name: '日時',
+      name: $_("Ts.DateTime"),
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
@@ -68,7 +70,7 @@ const makeLogStateChart = (div) => {
     },
     yAxis: {
       type: 'value',
-      name: '件数',
+      name: $_("Ts.Count"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -87,7 +89,7 @@ const makeLogStateChart = (div) => {
     },
     series: [
       {
-        name: '重度',
+        name: $_("Ts.High"),
         type: 'bar',
         color: '#e31a1c',
         stack: 'count',
@@ -95,7 +97,7 @@ const makeLogStateChart = (div) => {
         data: [],
       },
       {
-        name: '軽度',
+        name: $_("Ts.Low"),
         type: 'bar',
         color: '#fb9a99',
         stack: 'count',
@@ -103,7 +105,7 @@ const makeLogStateChart = (div) => {
         data: [],
       },
       {
-        name: '注意',
+        name: $_("Ts.Warn"),
         type: 'bar',
         color: '#dfdf22',
         stack: 'count',
@@ -111,7 +113,7 @@ const makeLogStateChart = (div) => {
         data: [],
       },
       {
-        name: '正常',
+        name: $_("Ts.Normal"),
         type: 'bar',
         color: '#33a02c',
         stack: 'count',
@@ -119,7 +121,7 @@ const makeLogStateChart = (div) => {
         data: [],
       },
       {
-        name: '不明',
+        name: $_("Ts.Unknown"),
         type: 'bar',
         color: 'gray',
         stack: 'count',
@@ -132,7 +134,7 @@ const makeLogStateChart = (div) => {
         fontSize: 10,
         color: '#ccc',
       },
-      data: ['重度', '軽度', '注意', '正常', '不明'],
+      data: [$_("Ts.High"),$_("Ts.Low"),$_("Ts.Warn"), $_("Ts.Normal"), $_("Ts.Unknown")],
     },
   }
   chart.setOption(option)

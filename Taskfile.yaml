@@ -13,6 +13,9 @@ tasks:
   dev:
     cmds:
       - wails dev -appargs "-datastore ./tmp/ -syslogPort 8514 -trapPort 8162"
+  deven:
+    cmds:
+      - wails dev -appargs "-datastore ./tmp/ -syslogPort 8514 -trapPort 8162 -lang en"
   mac:
     cmds:
       - wails build  -platform darwin/universal -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"

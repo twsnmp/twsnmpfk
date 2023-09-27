@@ -1,7 +1,8 @@
 import * as echarts from 'echarts';
 import 'echarts-gl';
-import * as ecStat from 'echarts-stat';
 import { isDark } from './utils'
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 let chart;
 
@@ -45,7 +46,7 @@ export const showTrapFromAddr = (div, logs) => {
     },
     xAxis: {
       type: 'value',
-      name: '件数',
+      name: $_("Ts.Count"),
     },
     yAxis: {
       type: 'category',
@@ -97,7 +98,7 @@ export const showTrapFromAddr = (div, logs) => {
     option.series.push({
         name: t,
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: [],
     });
   }
@@ -176,7 +177,7 @@ export const showTrapLog3D = (div, logs) => {
     },
     xAxis3D: {
       type: 'category',
-      name: '送信元',
+      name: $_("Ts.Sender"),
       data: froms,
       nameTextStyle: {
         color: dark ? "#ccc" : "#222",
@@ -218,7 +219,7 @@ export const showTrapLog3D = (div, logs) => {
     },
     zAxis3D: {
       type: 'category',
-      name: 'TRAP種別',
+      name: 'TRAP Type',
       data: types,
       nameTextStyle: {
         color: dark ? "#ccc" : "#222",
@@ -249,7 +250,7 @@ export const showTrapLog3D = (div, logs) => {
     },
     series: [
       {
-        name: 'ログ件数',
+        name: $_("Ts.LogCount"),
         type: 'scatter3D',
         symbolSize: 8,
         dimensions: ['From', 'Time', 'Type', 'Level'],
@@ -304,7 +305,7 @@ export const showTrapTypeChart = (div:string, logs) => {
     },
     series: [
       {
-        name: 'TRAP種類',
+        name: 'TRAP Type',
         type: 'pie',
         radius: '75%',
         center: ['45%', '50%'],

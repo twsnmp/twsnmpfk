@@ -1,5 +1,7 @@
 import * as echarts from 'echarts'
 import { setZoomCallback } from './utils.js'
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 let chart;
 
@@ -43,7 +45,7 @@ const makeLogCountChart = (div:string) => {
     },
     xAxis: {
       type: 'time',
-      name: '日時',
+      name: $_("Ts.DateTime"),
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
@@ -68,7 +70,7 @@ const makeLogCountChart = (div:string) => {
     },
     yAxis: {
       type: 'value',
-      name: '件数',
+      name: $_("Ts.Count"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -88,7 +90,7 @@ const makeLogCountChart = (div:string) => {
     series: [
       {
         type: 'bar',
-        name: '件数',
+        name: $_("Ts.Count"),
         color: '#1f78b4',
         large: true,
         data: [],

@@ -2,8 +2,9 @@ import * as echarts from 'echarts';
 import * as ecStat from 'echarts-stat';
 import * as numeral from 'numeral';
 import { isDark } from './utils';
-
 import WorldData from 'world-map-geojson';
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 let chart;
 
@@ -45,7 +46,7 @@ export const getPingChartOption = () => {
       buttom: 0,
     },
     legend: {
-      data: ['応答時間(秒)', '送信TTL', '受信TTL'],
+      data: [$_("Ts.RespTimeSec"), $_("Ts.SendTTL"),$_("Ts.RecvTTL")],
       textStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -53,7 +54,7 @@ export const getPingChartOption = () => {
     },
     xAxis: {
       type: 'time',
-      name: '日時',
+      name: $_("Ts.DateTime"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -79,7 +80,7 @@ export const getPingChartOption = () => {
     yAxis: [
       {
         type: 'value',
-        name: '応答時間(秒)',
+        name: $_("Ts.RespTimeSec"),
         nameTextStyle: {
           color: '#ccc',
           fontSize: 10,
@@ -118,14 +119,14 @@ export const getPingChartOption = () => {
     ],
     series: [
       {
-        name: '応答時間(秒)',
+        name: $_("Ts.RespTimeSec"),
         color: '#1f78b4',
         type: 'line',
         showSymbol: false,
         data: [],
       },
       {
-        name: '送信TTL',
+        name: $_("Ts.SendTTL"),
         color: '#dfdf22',
         type: 'line',
         showSymbol: false,
@@ -133,7 +134,7 @@ export const getPingChartOption = () => {
         data: [],
       },
       {
-        name: '受信TTL',
+        name: $_("Ts.RecvTTL"),
         color: '#e31a1c',
         type: 'line',
         showSymbol: false,
@@ -197,7 +198,7 @@ export const showPing3DChart = (div, results) => {
     },
     xAxis3D: {
       type: 'value',
-      name: 'サイズ',
+      name: $_("Ts.Size"),
       nameTextStyle: {
         color: dark ? "#ccc" : "#222",
         fontSize: 12,
@@ -216,7 +217,7 @@ export const showPing3DChart = (div, results) => {
     },
     yAxis3D: {
       type: 'time',
-      name: '日時',
+      name: $_("Ts.DateTime"),
       nameTextStyle: {
         color: dark ? "#ccc" : "#222",
         fontSize: 12,
@@ -238,7 +239,7 @@ export const showPing3DChart = (div, results) => {
     },
     zAxis3D: {
       type: 'value',
-      name: '応答時間(秒)',
+      name: $_("Ts.RespTimeSec"),
       nameTextStyle: {
         color: dark ? "#ccc" : "#222",
         fontSize: 12,
@@ -272,10 +273,10 @@ export const showPing3DChart = (div, results) => {
     },
     series: [
       {
-        name: 'PING分析(3D)',
+        name: $_("Ts.PingAn3D"),
         type: 'scatter3D',
         symbolSize: 10,
-        dimensions: ['サイズ', '日時', '応答時間(秒)'],
+        dimensions: [$_("Ts.Size"),$_("Ts.DateTime"),$_("Ts.RespTimeSec")],
         data,
       },
     ],
@@ -449,7 +450,7 @@ export const showPingHistgram = (div, results) => {
       trigger: 'axis',
       formatter(params) {
         const p = params[0]
-        return p.value[0] + 'の回数:' + p.value[1]
+        return p.value[0] + ':' + p.value[1]
       },
       axisPointer: {
         type: 'shadow',
@@ -463,7 +464,7 @@ export const showPingHistgram = (div, results) => {
     },
     xAxis: {
       scale: true,
-      name: '応答時間(秒)',
+      name: $_("Ts.RespTimeSec"),
       min: 0,
       nameTextStyle: {
         color: '#ccc',
@@ -477,7 +478,7 @@ export const showPingHistgram = (div, results) => {
       },
     },
     yAxis: {
-      name: '回数',
+      name: $_("Ts.PingCount"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -560,7 +561,7 @@ export const showPingLinearChart = (div, results) => {
     },
     xAxis: {
       type: 'value',
-      name: 'サイズ',
+      name: $_("Ts.Size"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -578,7 +579,7 @@ export const showPingLinearChart = (div, results) => {
     yAxis: [
       {
         type: 'value',
-        name: '応答時間(秒)',
+        name: $_("Ts.RespTimeSec"),
         nameTextStyle: {
           color: '#ccc',
           fontSize: 10,

@@ -1,4 +1,6 @@
 import * as echarts from 'echarts'
+import { _,unwrapFunctionStore } from 'svelte-i18n';
+const $_ = unwrapFunctionStore(_);
 
 let chart
 
@@ -8,30 +10,30 @@ export const showLogHeatmap = (div, logs) => {
   }
   chart = echarts.init(document.getElementById(div))
   const hours = [
-    '0時',
-    '1時',
-    '2時',
-    '3時',
-    '4時',
-    '5時',
-    '6時',
-    '7時',
-    '8時',
-    '9時',
-    '10時',
-    '11時',
-    '12時',
-    '13時',
-    '14時',
-    '15時',
-    '16時',
-    '17時',
-    '18時',
-    '19時',
-    '20時',
-    '21時',
-    '22時',
-    '23時',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
+    '13',
+    '14',
+    '15',
+    '16',
+    '17',
+    '18',
+    '19',
+    '20',
+    '21',
+    '22',
+    '23',
   ]
   const option = {
     title: {
@@ -70,7 +72,7 @@ export const showLogHeatmap = (div, logs) => {
           params.name +
           ' ' +
           params.data[1] +
-          '時 : ' +
+          ': ' +
           params.data[2].toFixed(1)
         )
       },
@@ -80,7 +82,7 @@ export const showLogHeatmap = (div, logs) => {
     },
     xAxis: {
       type: 'category',
-      name: '日付',
+      name: $_("Ts.Date"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -100,7 +102,7 @@ export const showLogHeatmap = (div, logs) => {
     },
     yAxis: {
       type: 'category',
-      name: '時間帯',
+      name: $_("Ts.TimeRange"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -231,7 +233,7 @@ export const showEventLogStateChart = (div:string, logs) => {
       formatter: '{a} <br/>{b} : {c} ({d}%)',
     },
     legend: {
-      data: ['重度', '軽度', '注意', '正常', '復帰', 'その他'],
+      data: [ $_("Ts.High"),$_("Ts.Low"),$_("Ts.Warn"), $_("Ts.Normal"),$_("Ts.Repair"),$_("Ts.Other")],
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -239,7 +241,7 @@ export const showEventLogStateChart = (div:string, logs) => {
     },
     series: [
       {
-        name: '状態別',
+        name: $_("Ts.CountByState"),
         type: 'pie',
         radius: '75%',
         center: ['45%', '50%'],
@@ -248,12 +250,12 @@ export const showEventLogStateChart = (div:string, logs) => {
           color: '#ccc',
         },
         data: [
-          { name: '重度', value: 0 },
-          { name: '軽度', value: 0 },
-          { name: '注意', value: 0 },
-          { name: '正常', value: 0 },
-          { name: '復帰', value: 0 },
-          { name: 'その他', value: 0 },
+          { name: $_("Ts.High"), value: 0 },
+          { name: $_("Ts.Low"), value: 0 },
+          { name: $_("Ts.Warn"), value: 0 },
+          { name: $_("Ts.Normal"), value: 0 },
+          { name: $_("Ts.Repair"), value: 0 },
+          { name: $_("Ts.Other"), value: 0 },
         ],
       },
     ],
@@ -328,7 +330,7 @@ export const showEventLogTimeChart = (div, type, logs) => {
     },
     xAxis: {
       type: 'time',
-      name: '日時',
+      name: $_("Ts.DateTime"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -353,7 +355,7 @@ export const showEventLogTimeChart = (div, type, logs) => {
     },
     yAxis: {
       type: 'value',
-      name: type === 'oprate' ? '稼働率%' : '使用率%',
+      name: type === 'oprate' ? $_("Ts.Oprate")+ "%" : $_("Ts.Usage") +"%",
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -374,7 +376,7 @@ export const showEventLogTimeChart = (div, type, logs) => {
       {
         color: '#1f78b4',
         type: 'line',
-        name: type === 'oprate' ? '稼働率' : '使用率',
+        name: type === 'oprate' ? $_("Ts.Oprate") : $_("Ts.Usage"),
         showSymbol: false,
         data: [],
       },
@@ -494,7 +496,7 @@ export const showEventLogNodeChart = (div, logs) => {
         fontSize: 10,
         color: '#ccc',
       },
-      data: ['重度', '軽度', '注意', '正常', '復帰', 'その他'],
+      data: [ $_("Ts.High"),$_("Ts.Low"),$_("Ts.Warn"), $_("Ts.Normal"),$_("Ts.Repair"),$_("Ts.Other")],
     },
     toolbox: {
       iconStyle: {
@@ -519,7 +521,7 @@ export const showEventLogNodeChart = (div, logs) => {
     },
     xAxis: {
       type: 'value',
-      name: '件数',
+      name: $_("Ts.Count"),
     },
     yAxis: {
       type: 'category',
@@ -542,39 +544,39 @@ export const showEventLogNodeChart = (div, logs) => {
     },
     series: [
       {
-        name: '重度',
+        name: $_("Ts.High"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: high,
       },
       {
-        name: '軽度',
+        name: $_("Ts.Low"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: low,
       },
       {
-        name: '注意',
+        name: $_("Ts.Warn"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: warn,
       },
       {
-        name: '正常',
+        name: $_("Ts.Normal"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: normal,
       },
       {
-        name: '復帰',
+        name: $_("Ts.Repair"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: repair,
       },
       {
-        name: 'その他',
+        name: $_("Ts.Other"),
         type: 'bar',
-        stack: '件数',
+        stack: $_("Ts.Count"),
         data: other,
       },
     ],
