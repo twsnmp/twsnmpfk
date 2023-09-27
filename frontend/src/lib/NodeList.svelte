@@ -15,6 +15,7 @@
   import NodePolling from "./NodePolling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import { _ } from "svelte-i18n";
 
   let data = [];
   let showEditNode = false;
@@ -111,29 +112,29 @@
   const columns = [
     {
       data: "State",
-      title: "状態",
+      title: $_('NodeList.State'),
       width: "10%",
       render: renderState,
     },
     {
       data: "Name",
-      title: "名前",
+      title: $_('NodeList.Name'),
       width: "15%",
     },
     {
       data: "IP",
-      title: "IPアドレス",
+      title: $_('NodeList.IPAddress'),
       width: "10%",
       render: renderIP,
     },
     {
       data: "MAC",
-      title: "MACアドレス",
+      title: $_('NodeList.MACAddress'),
       width: "30%",
     },
     {
       data: "Descr",
-      title: "説明",
+      title: $_('NodeList.Descr'),
       width: "30%",
     },
   ];
@@ -170,30 +171,30 @@
     {#if selectedCount == 1}
       <Button color="blue" type="button" on:click={edit} size="xs">
         <Icon path={icons.mdiPencil} size={1} />
-        編集
+        { $_('NodeList.Edit') }
       </Button>
       <Button color="blue" type="button" on:click={polling} size="xs">
         <Icon path={icons.mdiLanCheck} size={1} />
-        ポーリング
+        { $_('NodeList.Polling') }
       </Button>
       <Button color="green" type="button" on:click={report} size="xs">
         <Icon path={icons.mdiChartBar} size={1} />
-        レポート
+        { $_('NodeList.Report') }
       </Button>
     {/if}
     {#if selectedCount > 0}
       <Button color="red" type="button" on:click={deleteNodes} size="xs">
         <Icon path={icons.mdiTrashCan} size={1} />
-        削除
+        { $_('NodeList.Delete') }
       </Button>
       <Button color="blue" type="button" on:click={check} size="xs">
         <Icon path={icons.mdiCheck} size={1} />
-        再確認
+        { $_('NodeList.ReCheck') }
       </Button>
     {/if}
     <Button color="blue" type="button" on:click={checkAll} size="xs">
       <Icon path={icons.mdiCheckAll} size={1} />
-      すべて再確認
+      { $_('NodeList.CheckAll') }
     </Button>
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
@@ -205,7 +206,7 @@
     </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
-      更新
+      { $_('NodeList.Reload') }
     </Button>
   </div>
 </div>

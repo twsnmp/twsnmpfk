@@ -355,5 +355,19 @@
     "SelectSnmpMode": "Select SNMP mode",
     "SnmpPassword": "SNMP password",
     "SnmpUser": "SNMP user"
+  },
+  "NodeList": {
+    "CheckAll": "Check all",
+    "Delete": "Delete",
+    "Descr": "Description",
+    "Edit": "Edit",
+    "IPAddress": "IP address",
+    "MACAddress": "MAC address",
+    "Name": "Name",
+    "Polling": "Polling",
+    "ReCheck": "Re check",
+    "Reload": "Reload",
+    "Report": "Report",
+    "State": "Satte"
   }
 }

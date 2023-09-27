@@ -355,5 +355,19 @@
     "Descr": "説明",
     "Save": "保存",
     "Cancel": "キャンセル"
+  },
+  "NodeList": {
+    "State": "状態",
+    "Name": "名前",
+    "IPAddress": "IPアドレス",
+    "MACAddress": "MACアドレス",
+    "Descr": "説明",
+    "Edit": "編集",
+    "Polling": "ポーリング",
+    "Report": "レポート",
+    "Delete": "削除",
+    "ReCheck": "再確認",
+    "CheckAll": "すべて再確認",
+    "Reload": "更新"
   }
 }
