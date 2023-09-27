@@ -271,5 +271,14 @@
     "Stats": "Discover progress",
     "Stop": "Stop",
     "Timeout": "Timeout (seconds)"
+  },
+  "EventLog": {
+    "Event": "Event",
+    "Level": "Level",
+    "NodeName": "Node name",
+    "Reload": "Reload",
+    "Report": "Report",
+    "Time": "Time",
+    "Type": "Type"
   }
 }

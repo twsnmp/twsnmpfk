@@ -16,6 +16,8 @@
   let showReport = false;
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import { _ } from "svelte-i18n";
+
   let table = undefined;
 
   const showTable = () => {
@@ -60,29 +62,29 @@
   const columns = [
     {
       data: "Level",
-      title: "レベル",
+      title:  $_('EventLog.Level') ,
       width: "10%",
       render: renderState,
     },
     {
       data: "Time",
-      title: "発生日時",
+      title: $_('EventLog.Time'),
       width: "15%",
       render: renderTime,
     },
     {
       data: "Type",
-      title: "種別",
+      title: $_('EventLog.Type'),
       width: "10%",
     },
     {
       data: "NodeName",
-      title: "関連ノード",
+      title: $_('EventLog.NodeName'),
       width: "15%",
     },
     {
       data: "Event",
-      title: "イベント",
+      title: $_('EventLog.Event'),
       width: "50%",
     },
   ];
@@ -126,11 +128,11 @@
     </Button>
     <Button type="button" color="green" on:click={() => {showReport=true}} size="xs">
       <Icon path={icons.mdiChartPie} size={1} />
-      レポート
+      { $_('EventLog.Report') }
     </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
-      更新
+      { $_('EventLog.Reload') }
     </Button>
   </div>
 </div>
