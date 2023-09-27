@@ -309,5 +309,24 @@
     "Polling2": "Polling2",
     "Port": "Port",
     "Update": "Update"
+  },
+  "Map": {
+    "AddDrawItem": "Draw item",
+    "AddNode": "Add node",
+    "Cancel": "Cancel",
+    "CheckAll": "Check all",
+    "Copy": "Copy",
+    "Delete": "Delete",
+    "Discover": "Discover",
+    "Edit": "Edit",
+    "Exec": "Do",
+    "Grid": "Grid",
+    "GridSize": "Grid size",
+    "MIBBrowser": "MIB Browser",
+    "Polling": "Polling",
+    "ReCheck": "ReCheck",
+    "Reload": "Reload",
+    "Report": "Report",
+    "Test": "Test"
   }
 }

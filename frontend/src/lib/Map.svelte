@@ -22,6 +22,7 @@
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
+  import { _ } from 'svelte-i18n';
 
   let map: any;
   let posX: number = 0;
@@ -146,7 +147,7 @@
         }}
       >
         <Icon path={icons.mdiPlus} size={0.8} />
-        新規ノード
+        { $_('Map.AddNode') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -157,7 +158,7 @@
         }}
       >
         <Icon path={icons.mdiDrawing} size={0.8} />
-        描画アイテム
+        { $_('Map.AddDrawItem') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -167,7 +168,7 @@
         }}
       >
         <Icon path={icons.mdiCached} size={0.8} />
-        全て再確認
+        { $_('Map.CheckAll') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -177,7 +178,7 @@
         }}
       >
         <Icon path={icons.mdiFileFind} size={0.8} />
-        自動発見
+        { $_('Map.Discover') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -187,7 +188,7 @@
         }}
       >
         <Icon path={icons.mdiGrid} size={0.8} />
-        グリッド整列
+        { $_('Map.Grid') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -198,7 +199,7 @@
         }}
       >
         <Icon path={icons.mdiRecycle} />
-        更新
+        { $_('Map.Reload') }
       </div>
     </div>
   </div>
@@ -218,7 +219,7 @@
         }}
       >
         <Icon path={icons.mdiChartBarStacked} size={0.8} />
-        レポート
+        { $_('Map.Report') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -238,7 +239,7 @@
         }}
       >
         <Icon path={icons.mdiShippingPallet} size={0.8} />
-        MIBブラウザー
+        { $_('Map.MIBBrowser') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -258,7 +259,7 @@
         }}
       >
         <Icon path={icons.mdiPencil} size={0.8} />
-        編集
+        { $_('Map.Edit') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -268,7 +269,7 @@
         }}
       >
         <Icon path={icons.mdiLanCheck} size={0.8} />
-        ポーリング
+        { $_('Map.Polling') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -278,7 +279,7 @@
         }}
       >
         <Icon path={icons.mdiCached} size={0.8} />
-        再確認
+        { $_('Map.ReCheck') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -289,7 +290,7 @@
         }}
       >
         <Icon path={icons.mdiContentCopy} size={0.8} />
-        コピー
+        { $_('Map.Copy') }
       </div>
       <div
         class="flex text-red-500 hover:bg-gray-100 "
@@ -298,7 +299,7 @@
         }}
       >
         <Icon path={icons.mdiDelete} size={0.8} />
-        削除
+        { $_('Map.Delete') }
       </div>
       {#each urls as url}
         {#if url}
@@ -332,7 +333,7 @@
         }}
       >
         <Icon path={icons.mdiPencil} size={0.8} />
-        編集
+        { $_('Map.Edit') }
       </div>
       <div
         class="flex hover:bg-gray-100"
@@ -343,7 +344,7 @@
         }}
       >
         <Icon path={icons.mdiContentCopy} size={0.8} />
-        コピー
+        { $_('Map.Copy') }
       </div>
       <div
         class="flex text-red-500 hover:bg-gray-100"
@@ -352,7 +353,7 @@
         }}
       >
         <Icon path={icons.mdiDelete} size={0.8} />
-        削除
+        { $_('Map.Delete') }
       </div>
     </div>
   </div>
@@ -439,9 +440,9 @@
 
 <Modal bind:open={showGrid} size="sm" permanent class="w-full">
   <form class="flex flex-col space-y-4" action="#">
-    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">グリッド整列</h3>
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">{ $_('Map.Grid') }</h3>
     <Label class="space-y-2">
-      <span>グリッドサイズ </span>
+      <span>{ $_('Map.GridSize') } </span>
       <Input
         type="number"
         min={20}
@@ -462,7 +463,7 @@
         size="sm"
       >
         <Icon path={icons.mdiRun} size={1} />
-        実行
+        { $_('Map.Exec') }
       </Button>
       <Button
         color="blue"
@@ -474,7 +475,7 @@
         size="sm"
       >
         <Icon path={icons.mdiTestTube} size={1} />
-        テスト
+        { $_('Map.Test') }
       </Button>
       <Button
         color="alternative"
@@ -485,7 +486,7 @@
         size="sm"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        キャンセル
+        { $_('Map.Cancel') }
       </Button>
     </div>
   </form>

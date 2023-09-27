@@ -309,5 +309,24 @@
   },
   "LIne": {
     "Disconnect": "切断"
+  },
+  "Map": {
+    "AddNode": "新規ノード",
+    "AddDrawItem": "描画アイテム",
+    "CheckAll": "全て再確認",
+    "Discover": "自動発見",
+    "Grid": "グリッド整列",
+    "Reload": "更新",
+    "Report": "レポート",
+    "MIBBrowser": "MIBブラウザー",
+    "Edit": "編集",
+    "Polling": "ポーリング",
+    "ReCheck": "再確認",
+    "Copy": "コピー",
+    "Delete": "削除",
+    "GridSize": "グリッドサイズ",
+    "Exec": "実行",
+    "Test": "テスト",
+    "Cancel": "キャンセル"
   }
 }
