@@ -109,5 +109,13 @@
     "MemUsagePer": "メモリー使用率(%)",
     "TotalHost": "ホスト数",
     "NumberOfLog": "件数"
+  },
+  "App": {
+    "Map": "マップ",
+    "Node": "ノード",
+    "Polling": "ポーリング",
+    "Log": "ログ",
+    "AI": "AI分析",
+    "Config": "設定"
   }
 }

@@ -2,5 +2,13 @@
   "Ts": {
     "Date": "Date",
     "Stratum": "Stratum"
+  },
+  "App": {
+    "AI": "AI analysis",
+    "Config": "setting",
+    "Log": "Log",
+    "Map": "Map",
+    "Node": "Node",
+    "Polling": "Polling"
   }
 }

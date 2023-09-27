@@ -15,6 +15,7 @@
   import Arp from "./lib/Arp.svelte";
   import AIList from "./lib/AIList.svelte";
   import Config from "./lib/Config.svelte";
+  import { _ } from 'svelte-i18n';
 
   import {
     IsDark,
@@ -68,7 +69,7 @@
       }}
     >
       <Icon path={icons.mdiLan} size={1} />
-      マップ
+      { $_('App.Map') }
     </NavLi>
     <NavLi
       active={page == "node"}
@@ -77,7 +78,7 @@
       }}
     >
       <Icon path={icons.mdiLaptop} size={1} />
-      ノード
+      { $_('App.Node') }
     </NavLi>
     <NavLi
       active={page == "polling"}
@@ -86,7 +87,7 @@
       }}
     >
       <Icon path={icons.mdiLanCheck} size={1} />
-      ポーリング
+      { $_('App.Polling') }
     </NavLi>
     <NavLi
       active={page == "eventlog"}
@@ -95,7 +96,7 @@
       }}
     >
       <Icon path={icons.mdiCalendarCheck} size={1} />
-      ログ
+      { $_('App.Log') }
     </NavLi>
     <NavLi
       active={page == "syslog"}
@@ -131,7 +132,7 @@
       }}
     >
       <Icon path={icons.mdiBrain} size={1} />
-      AI分析
+      { $_('App.AI') }
     </NavLi>
     <NavLi
       active={showConfig}
@@ -140,7 +141,7 @@
       }}
     >
       <Icon path={icons.mdiCog} size={1} />
-      設定
+      { $_('App.Config') }
     </NavLi>
   </NavUl>
   <Button class="!p-2" color="alternative" on:click={toggleDark}>

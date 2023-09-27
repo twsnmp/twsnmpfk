@@ -7,5 +7,16 @@
   "i18n-ally.extract.autoDetect": true,
   "i18n-ally.extract.ignored": [
     " {\n          showChart(\"ip\");\n        }}\n      >\n        ",
+    "TWSNMP Logo",
+    "\n      TWSNMP FK - {mapName}\n    ",
+    " {\n        page = \"map\";\n      }}\n    >\n      ",
+    " {\n        page = \"node\";\n      }}\n    >\n      ",
+    " {\n        page = \"polling\";\n      }}\n    >\n      ",
+    " {\n        page = \"eventlog\";\n      }}\n    >\n      ",
+    " {\n        page = \"syslog\";\n      }}\n    >\n      ",
+    " {\n        page = \"trap\";\n      }}\n    >\n      ",
+    " {\n        page = \"arp\";\n      }}\n    >\n      ",
+    " {\n        page = \"ai\";\n      }}\n    >\n      ",
+    " {\n        showConfig = true;\n      }}\n    >\n      "
   ]
 }
