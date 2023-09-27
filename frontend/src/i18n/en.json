@@ -258,5 +258,18 @@
     "TextToDisplay": "String to display",
     "Type": "Type",
     "Width": "width"
+  },
+  "Discover": {
+    "AutoAddPolling": "Polling automatic add",
+    "Close": "Close",
+    "Discover": "Discover",
+    "EndIP": "End IP",
+    "PortScan": "Port scan",
+    "Retry": "Retry",
+    "Start": "Start",
+    "StartIP": "Start IP",
+    "Stats": "Discover progress",
+    "Stop": "Stop",
+    "Timeout": "Timeout (seconds)"
   }
 }

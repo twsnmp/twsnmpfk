@@ -258,5 +258,18 @@
     "ValNamePH": "変数名(空欄は自動設定)",
     "TextFormat": "表示フォーマット",
     "Zoom": "倍率"
+  },
+  "Discover": {
+    "Discover": "自動発見",
+    "StartIP": "開始IP",
+    "EndIP": "終了IP",
+    "Timeout": "タイムアウト(秒)",
+    "Retry": "リトライ(回)",
+    "PortScan": "ポートスキャン",
+    "AutoAddPolling": "ポーリング自動設定",
+    "Start": "開始",
+    "Close": "閉じる",
+    "Stats": "自動発見の進行状況",
+    "Stop": "停止"
   }
 }
