@@ -290,5 +290,24 @@
     "CountByNode": "Count by node",
     "CountByState": "Count by level",
     "Heatmap": "Heatmap"
+  },
+  "LIne": {
+    "Disconnect": "Disconnect"
+  },
+  "Line": {
+    "Cancel": "Cancel",
+    "Connect": "Connect",
+    "EditLine": "Edit line",
+    "Info": "Info",
+    "InfoPolling": "Polling for info",
+    "LineWidth": "Line width",
+    "Node1": "Node1",
+    "Node1Polling": "Polling1",
+    "Node2": "Node2",
+    "Node2Polling": "Polling2",
+    "Polling1": "Polling1",
+    "Polling2": "Polling2",
+    "Port": "Port",
+    "Update": "Update"
   }
 }

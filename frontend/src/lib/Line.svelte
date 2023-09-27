@@ -11,6 +11,7 @@
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
+  import { _ } from "svelte-i18n";
 
   export let nodeID1: string = "";
   export let nodeID2: string = "";
@@ -79,68 +80,59 @@
 
 <Modal bind:open={show} size="lg" permanent class="w-full" on:on:close={close}>
   <form class="flex flex-col space-y-4" action="#">
-    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">ラインの編集</h3>
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+      {$_("Line.EditLine")}
+    </h3>
     <div class="grid gap-4 mb-4 md:grid-cols-2">
       <Label class="space-y-2">
-        <span>ノード1</span>
-        <Input
-          bind:value={node1.Name}
-          placeholder="ノード1名"
-          readonly
-          size="sm"
-        />
+        <span>{$_("Line.Node1")}</span>
+        <Input bind:value={node1.Name} readonly size="sm" />
       </Label>
       <Label class="space-y-2">
-        <span>ノード2</span>
-        <Input
-          bind:value={node2.Name}
-          placeholder="ノード2名"
-          readonly
-          size="sm"
-        />
+        <span>{$_("Line.Node2")}</span>
+        <Input bind:value={node2.Name} readonly size="sm" />
       </Label>
     </div>
     <div class="grid gap-4 mb-4 md:grid-cols-2">
       <Label class="space-y-2">
-        <span> ポーリング1 </span>
+        <span> {$_("Line.Polling1")} </span>
         <Select
           items={pollingList1}
           bind:value={line.PollingID1}
-          placeholder="ノード１のポーリング"
+          placeholder={$_("Line.Node1Polling")}
           size="sm"
         />
       </Label>
       <Label class="space-y-2">
-        <span> ポーリング2 </span>
+        <span> {$_("Line.Polling2")} </span>
         <Select
           items={pollingList2}
           bind:value={line.PollingID2}
-          placeholder="ノード2のポーリング"
+          placeholder={$_("Line.Node2Polling")}
           size="sm"
         />
       </Label>
     </div>
     <div class="grid gap-4 md:grid-cols-2">
       <Label class="space-y-2">
-        <span> 情報のためのポーリング </span>
+        <span> {$_("Line.InfoPolling")} </span>
         <Select
           items={pollingList}
           bind:value={line.PollingID}
-          placeholder="情報のポーリング"
+          placeholder={$_("Line.InfoPolling")}
           size="sm"
         />
       </Label>
       <Label class="space-y-2">
-        <span>情報</span>
-        <Input bind:value={line.Info} placeholder="情報" size="sm" />
+        <span>{$_("Line.Info")}</span>
+        <Input bind:value={line.Info} size="sm" />
       </Label>
     </div>
     <div class="grid gap-4 md:grid-cols-2">
       <Label class="space-y-2">
-        <span>ラインの太さ</span>
+        <span>{$_("Line.LineWidth")}</span>
         <Input
           bind:value={line.Width}
-          placeholder="ラインの太さ"
           type="number"
           min="1"
           max="5"
@@ -148,29 +140,31 @@
         />
       </Label>
       <Label class="space-y-2">
-        <span>ポート</span>
-        <Input bind:value={line.Port} placeholder="ポート1:ポート2" size="sm" />
+        <span>{$_("Line.Port")}</span>
+        <Input bind:value={line.Port} size="sm" />
       </Label>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if line.ID != ""}
         <Button color="red" type="button" on:click={disconnect} size="sm">
           <Icon path={icons.mdiLanDisconnect} size={1} />
-          切断
+          {$_("LIne.Disconnect")}
         </Button>
       {/if}
-      <Button color="blue" type="button" on:click={connect} size="sm">
-        {#if line.ID != ""}
+      {#if line.ID != ""}
+        <Button color="blue" type="button" on:click={connect} size="sm">
           <Icon path={icons.mdiContentSave} size={1} />
-          更新
-        {:else}
+          {$_("Line.Update")}
+        </Button>
+      {:else}
+        <Button color="blue" type="button" on:click={connect} size="sm">
           <Icon path={icons.mdiLanConnect} size={1} />
-          接続
-        {/if}
-      </Button>
+          {$_("Line.Connect")}
+        </Button>
+      {/if}
       <Button color="alternative" type="button" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        キャンセル
+        {$_("Line.Cancel")}
       </Button>
     </div>
   </form>

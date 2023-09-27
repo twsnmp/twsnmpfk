@@ -290,5 +290,24 @@
   },
   "EventLogREport": {
     "Oprate": "稼働率"
+  },
+  "Line": {
+    "EditLine": "ラインの編集",
+    "Node1": "ノード1",
+    "Node2": "ノード2",
+    "Polling1": "ポーリング1",
+    "Node1Polling": "ノード１のポーリング",
+    "Polling2": "ポーリング2",
+    "Node2Polling": "ノード2のポーリング",
+    "InfoPolling": "情報のためのポーリング",
+    "Info": "情報",
+    "LineWidth": "ラインの太さ",
+    "Port": "ポート",
+    "Update": "更新",
+    "Connect": "接続",
+    "Cancel": "キャンセル"
+  },
+  "LIne": {
+    "Disconnect": "切断"
   }
 }
