@@ -280,5 +280,15 @@
     "Event": "イベント",
     "Report": "レポート",
     "Reload": "更新"
+  },
+  "EventLogReport": {
+    "CountByState": "状態別",
+    "Heatmap": "ヒートマップ",
+    "CountByNode": "ノード別",
+    "ArpWatch": "ARP監視",
+    "Close": "閉じる"
+  },
+  "EventLogREport": {
+    "Oprate": "稼働率"
   }
 }

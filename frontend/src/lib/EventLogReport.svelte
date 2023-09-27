@@ -5,6 +5,7 @@
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import { showEventLogStateChart,showLogHeatmap,showEventLogTimeChart,showEventLogNodeChart } from "./chart/eventlog";
+  import { _ } from "svelte-i18n";
 
   export let logs : datastore.EventLogEnt[] | undefined =undefined;
   let show: boolean = false;
@@ -54,35 +55,35 @@
       <TabItem open on:click={()=>{showChart("state")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
-          状態別
+          { $_('EventLogReport.CountByState') }
         </div>
         <div id="state" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("heatmap")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
-          ヒートマップ
+          { $_('EventLogReport.Heatmap') }
         </div>
         <div id="heatmap" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("node")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
-          ノード別
+          { $_('EventLogReport.CountByNode') }
         </div>
         <div id="node" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("oprate")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
-          稼働率
+          { $_('EventLogREport.Oprate') }
         </div>
         <div id="oprate" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("arpwatch")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
-          ARP監視
+          { $_('EventLogReport.ArpWatch') }
         </div>
         <div id="arpwatch" style="height: 500px;"></div>
       </TabItem>
@@ -90,7 +91,7 @@
     <div class="flex justify-end space-x-2 mr-2">
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        { $_('EventLogReport.Close') }
       </Button>
     </div>
   </div>

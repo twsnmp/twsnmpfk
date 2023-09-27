@@ -280,5 +280,15 @@
     "Report": "Report",
     "Time": "Time",
     "Type": "Type"
+  },
+  "EventLogREport": {
+    "Oprate": "Oparation rate"
+  },
+  "EventLogReport": {
+    "ArpWatch": "Arp watch",
+    "Close": "Close",
+    "CountByNode": "Count by node",
+    "CountByState": "Count by level",
+    "Heatmap": "Heatmap"
   }
 }
