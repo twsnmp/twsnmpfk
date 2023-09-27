@@ -4,11 +4,18 @@
     "Stratum": "Stratum"
   },
   "App": {
-    "AI": "AI analysis",
+    "AI": "AI",
     "Config": "setting",
     "Log": "Log",
     "Map": "Map",
     "Node": "Node",
     "Polling": "Polling"
+  },
+  "Log": {
+    "Event": "Event",
+    "Level": "Level",
+    "NodeName": "Node",
+    "Time": "Time",
+    "Type": "Type"
   }
 }

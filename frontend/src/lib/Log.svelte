@@ -8,6 +8,7 @@
   } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import { _ } from 'svelte-i18n';
   let table = undefined;
   let data = [];
   let timer: number | undefined = undefined;
@@ -32,29 +33,29 @@
   const columns = [
     {
       data: "Level",
-      title: "レベル",
+      title: $_('Log.Level'),
       width: "10%",
       render: renderState,
     },
     {
       data: "Time",
-      title: "発生日時",
+      title: $_('Log.Time'),
       width: "15%",
       render: renderTime,
     },
     {
       data: "Type",
-      title: "種別",
+      title: $_('Log.Type'),
       width: "10%",
     },
     {
       data: "NodeName",
-      title: "関連ノード",
+      title: $_('Log.NodeName'),
       width: "15%",
     },
     {
       data: "Event",
-      title: "イベント",
+      title: $_('Log.Event'),
       width: "50%",
     },
   ];

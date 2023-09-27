@@ -17,6 +17,10 @@
     " {\n        page = \"trap\";\n      }}\n    >\n      ",
     " {\n        page = \"arp\";\n      }}\n    >\n      ",
     " {\n        page = \"ai\";\n      }}\n    >\n      ",
-    " {\n        showConfig = true;\n      }}\n    >\n      "
+    " {\n        showConfig = true;\n      }}\n    >\n      ",
+    "Level",
+    "Time",
+    "Type",
+    "Event"
   ]
 }
