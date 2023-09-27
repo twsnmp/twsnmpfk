@@ -24,6 +24,13 @@
     "Event",
     "Name",
     "Mode",
-    "Descr"
+    "Descr",
+    "<span class=\"mdi ",
+    " text-xl\" style=\"color:",
+    ";\"></span><span class=\"ml-2\">",
+    "Score",
+    "Node",
+    "Polling",
+    "Count"
   ]
 }

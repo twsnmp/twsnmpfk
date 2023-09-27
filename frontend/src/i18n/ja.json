@@ -134,5 +134,15 @@
     "Descr": "説明",
     "Add": "追加",
     "Cancel": "キャンセル"
+  },
+  "AIList": {
+    "AnomaryScore": "異常スコア",
+    "Node": "ノード名",
+    "Polling": "ポーリング",
+    "Count": "データ数",
+    "LastTime": "最終確認",
+    "Report": "レポート",
+    "Clear": "クリア",
+    "Reload": "更新"
   }
 }

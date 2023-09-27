@@ -11,6 +11,7 @@
   import { renderTime, getScoreIcon, getScoreColor,getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import { _ } from 'svelte-i18n';
 
   let table = undefined;
   let data = [];
@@ -56,28 +57,28 @@
   const columns = [
     {
       data: "Score",
-      title: "異常スコア",
+      title: $_('AIList.AnomaryScore'),
       width: "15%",
       render: formatScore,
     },
     {
       data: "Node",
-      title: "ノード名",
+      title: $_('AIList.Node'),
       width: "20%",
     },
     {
       data: "Polling",
-      title: "ポーリング",
+      title: $_('AIList.Polling'),
       width: "15%",
     },
     {
       data: "Count",
-      title: "データ数",
+      title: $_('AIList.Count'),
       width: "10%",
     },
     {
       data: "LastTime",
-      title: "最終確認",
+      title: $_('AIList.LastTime'),
       width: "15%",
       render: (data, type, row, meta) =>
         renderTime(data * 1000 * 1000 * 1000,type),
@@ -126,18 +127,18 @@
   {#if selectedCount == 1}
     <Button color="green" type="button" on:click={show} size="xs">
       <Icon path={icons.mdiChartBarStacked} size={1} />
-      レポート
+      {$_('AIList.Report')}
     </Button>
   {/if}
   {#if selectedCount > 0}
     <Button color="red" type="button" on:click={clearAIResult} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
-      クリア
+      { $_('AIList.Clear') }
     </Button>
   {/if}
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
-      更新
+      { $_('AIList.Reload') }
     </Button>
   </div>
 </div>

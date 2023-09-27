@@ -134,5 +134,15 @@
   },
   "AppPolling": {
     "Name": "Name"
+  },
+  "AIList": {
+    "AnomaryScore": "Anomaly score",
+    "Clear": "Clear",
+    "Count": "Count",
+    "LastTime": "Last time",
+    "Node": "Node Name",
+    "Polling": "Polling",
+    "Reload": "Reload",
+    "Report": "Report"
   }
 }
