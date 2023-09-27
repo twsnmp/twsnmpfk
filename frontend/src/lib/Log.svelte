@@ -9,6 +9,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from 'svelte-i18n';
+
   let table = undefined;
   let data = [];
   let timer: number | undefined = undefined;

@@ -21,6 +21,9 @@
     "Level",
     "Time",
     "Type",
-    "Event"
+    "Event",
+    "Name",
+    "Mode",
+    "Descr"
   ]
 }

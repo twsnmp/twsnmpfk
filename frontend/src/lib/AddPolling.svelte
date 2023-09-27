@@ -9,6 +9,7 @@
 
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import { _ } from 'svelte-i18n';
 
   export let nodeID = "";
   const dispatch = createEventDispatcher();
@@ -63,22 +64,22 @@
     },
     {
       data: "Name",
-      title: "名前",
+      title: $_('AppPolling.Name'),
       width: "30%",
     },
     {
       data: "Type",
-      title: "種別",
+      title: $_('AddPolling.Type'),
       width: "15%",
     },
     {
       data: "Mode",
-      title: "モード",
+      title: $_('AddPolling.Mode'),
       width: "15%",
     },
     {
       data: "Descr",
-      title: "説明",
+      title: $_('AddPolling.Descr'),
       width: "40%",
     },
   ];
@@ -110,12 +111,12 @@
       {#if selectedCount == 1}
         <Button color="blue" type="button" on:click={add} size="xs">
           <Icon path={icons.mdiPlus} size={1} />
-          追加
+          { $_('AddPolling.Add') }
         </Button>
       {/if}
       <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
-        キャンセル
+        { $_('AddPolling.Cancel') }
       </Button>
     </div>
   </div>

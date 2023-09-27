@@ -124,5 +124,15 @@
     "Type": "種別",
     "NodeName": "関連ノード",
     "Event": "イベント"
+  },
+  "AppPolling": {
+    "Name": "名前"
+  },
+  "AddPolling": {
+    "Type": "種別",
+    "Mode": "モード",
+    "Descr": "説明",
+    "Add": "追加",
+    "Cancel": "キャンセル"
   }
 }
