@@ -50,6 +50,8 @@
     "Syslog",
     "SNMP TRAP",
     "ARP Watch",
-    "smtp user"
+    "smtp user",
+    "\n    {#if drawItem.Type ",
+    "< 2}\n      "
   ]
 }

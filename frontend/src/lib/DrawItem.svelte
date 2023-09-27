@@ -20,6 +20,7 @@
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
+  import { _ } from 'svelte-i18n';
 
   export let id: string = "";
   export let posX = 0;
@@ -36,12 +37,12 @@
   const dispatch = createEventDispatcher();
 
   const drawItemList = [
-    { name: "矩形", value: 0 },
-    { name: "楕円", value: 1 },
-    { name: "ラベル", value: 2 },
-    { name: "イメージ", value: 3 },
-    { name: "ポーリング結果(テキスト)", value: 4 },
-    { name: "ポーリング結果(ゲージ)", value: 5 },
+    { name: $_('DrawItem.Rect'), value: 0 },
+    { name: $_('DrawItem.Ellipse'), value: 1 },
+    { name: $_('DarwItem.Label'), value: 2 },
+    { name: $_('DrawItem.Image'), value: 3 },
+    { name: $_('DrawItem.PollingText'), value: 4 },
+    { name: $_('DrawItem.PollingGauge'), value: 5 },
   ];
 
   onMount(async () => {
@@ -107,7 +108,7 @@
   };
 
   const selectImage = async () => {
-    const p = await SelectFile("描画アイテム画像ファイル", true);
+    const p = await SelectFile($_('DrawItem.ImageFile'), true);
     if (p) {
       drawItem.Path = p;
       image = await GetImage(p);
@@ -118,43 +119,43 @@
 <Modal bind:open={show} size="lg" permanent class="w-full" on:on:close={close}>
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-      描画アイテムの編集
+      { $_('DrawItem.EditDrawItem') }
     </h3>
     <Label class="space-y-2">
-      <span> 種類 </span>
+      <span> { $_('DrawItem.Type') } </span>
       <Select
         items={drawItemList}
         bind:value={drawItem.Type}
-        placeholder="描画アイテムを選択"
+        placeholder={ $_('DrawItem.SelectType') }
         size="sm"
       />
     </Label>
     {#if drawItem.Type < 2}
       <div class="grid gap-4 mb-4 md:grid-cols-4">
         <Label class="space-y-2">
-          <span>幅</span>
+          <span>{ $_('DrawItem.Width') }</span>
           <Input
             type="number"
             min={0}
             max={1000}
             bind:value={drawItem.W}
-            placeholder="幅"
+            placeholder={ $_('DrawItem.Width') }
             size="sm"
           />
         </Label>
         <Label class="space-y-2">
-          <span>高さ</span>
+          <span>{ $_('DrawItem.Height') }</span>
           <Input
             type="number"
             min={0}
             max={1000}
             bind:value={drawItem.H}
-            placeholder="高さ"
+            placeholder={ $_('DrawItem.Height') }
             size="sm"
           />
         </Label>
         <Label class="space-y-2">
-          <div>色</div>
+          <div>{ $_('DrawItem.Color') }</div>
           <input type="color" bind:value={drawItem.Color} />
         </Label>
         <div />
@@ -163,28 +164,28 @@
     {#if drawItem.Type == 2}
       <div class="grid gap-4 mb-4 md:grid-cols-4">
         <Label class="space-y-2">
-          <span>文字サイズ</span>
+          <span>{ $_('DrawItem.FontSize') }</span>
           <Input
             type="number"
             min={8}
             max={128}
             bind:value={drawItem.Size}
-            placeholder="文字サイズ"
+            placeholder={ $_('DrawItem.FontSize') }
             size="sm"
           />
         </Label>
         <Label class="space-y-2">
-          <div>色</div>
+          <div>{ $_('DrawItem.Color') }</div>
           <input type="color" bind:value={drawItem.Color} />
         </Label>
         <div />
         <div />
       </div>
       <Label class="space-y-2">
-        <span>文字列</span>
+        <span>{ $_('DrawItem.Text') }</span>
         <Input
           bind:value={drawItem.Text}
-          placeholder="表示する文字列"
+          placeholder={ $_('DrawItem.TextToDisplay') }
           size="sm"
         />
       </Label>
@@ -192,24 +193,22 @@
     {#if drawItem.Type == 3}
       <div class="grid gap-4 mb-4 md:grid-cols-4">
         <Label class="space-y-2">
-          <span>幅</span>
+          <span>{ $_('DrawItem.Width') }</span>
           <Input
             type="number"
             min={0}
             max={1000}
             bind:value={drawItem.W}
-            placeholder="幅"
             size="sm"
           />
         </Label>
         <Label class="space-y-2">
-          <span>高さ</span>
+          <span>{ $_('DrawItem.Height') }</span>
           <Input
             type="number"
             min={0}
             max={1000}
             bind:value={drawItem.H}
-            placeholder="高さ"
             size="sm"
           />
         </Label>
@@ -221,12 +220,12 @@
           on:click={selectImage}
         >
           <Icon path={icons.mdiImage} size={1} />
-          選択
+          { $_('DarwItem.Select') }
         </Button>
         <div />
       </div>
       <Label class="space-y-2">
-        <span>イメージ</span>
+        <span>{ $_('DrawItem.Image') }</span>
         {#if image}
           <img src={image} alt="" class="h-32" />
         {:else}
@@ -237,13 +236,12 @@
     {#if drawItem.Type == 4 || drawItem.Type == 5}
       <div class="grid gap-4 mb-4 md:grid-cols-4">
         <Label class="space-y-2">
-          <span>サイズ</span>
+          <span>{ $_('DarwItem.Size') }</span>
           <Input
             type="number"
             min={8}
             max={128}
             bind:value={drawItem.Size}
-            placeholder="サイズ"
             size="sm"
           />
         </Label>
@@ -253,74 +251,72 @@
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2">
-          <span> ノード </span>
+          <span> { $_('DarwItem.Node') } </span>
           <Select
             items={nodeList}
             bind:value={nodeID}
-            placeholder="ノードを選択"
+            placeholder={ $_('DarwItem.SelectNode') }
             size="sm"
             on:change={updatePollingList}
           />
         </Label>
         <Label class="space-y-2">
-          <span> ポーリング </span>
+          <span> { $_('DarwItem.Polling') } </span>
           <Select
             items={pollingList}
             bind:value={drawItem.PollingID}
-            placeholder="ポーリングを選択"
+            placeholder={ $_('DarwItem.SelectPolling') }
             size="sm"
           />
         </Label>
       </div>
       <Label class="space-y-2">
-        <span>変数名</span>
+        <span>{ $_('DarwItem.ValName') }</span>
         <Input
           bind:value={drawItem.VarName}
-          placeholder="変数名(空欄は自動設定)"
+          placeholder={ $_('DarwItem.ValNamePH') }
           size="sm"
         />
       </Label>
     {/if}
     {#if drawItem.Type == 4}
       <Label class="space-y-2">
-        <span>表示フォーマット</span>
+        <span>{ $_('DarwItem.TextFormat') }</span>
         <Input
           bind:value={drawItem.Format}
-          placeholder="表示フォーマット(空欄は自動設定)"
+          placeholder={ $_('DrawItem.TextFormatPH') }
           size="sm"
         />
       </Label>
     {/if}
     {#if drawItem.Type == 5}
       <Label class="space-y-2">
-        <span>ゲージのラベル</span>
+        <span>{ $_('DrawItem.GaugeLabel') }</span>
         <Input
           bind:value={drawItem.Text}
-          placeholder="ゲージのラベル"
           size="sm"
         />
       </Label>
     {/if}
     <Label class="space-y-2">
-      <span>倍率</span>
+      <span>{ $_('DarwItem.Zoom') }</span>
       <Input
         type="number"
         min={0.1}
         max={5.0}
         step={0.1}
         bind:value={drawItem.Scale}
-        placeholder="倍率"
         size="sm"
       />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <Button color="blue" type="button" on:click={save} size="sm">
         <Icon path={icons.mdiContentSave} size={1} />
-        保存
+        { $_('DrawItem.Save') }
       </Button>
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        キャンセル
+        { $_('DrawItem.Cancel') }
       </Button>
     </div>
   </form>

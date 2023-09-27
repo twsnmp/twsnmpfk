@@ -224,5 +224,39 @@
     "Test": "Test",
     "TimeoutSec": "Timeout (seconds)",
     "Warn": "Warn"
+  },
+  "DarwItem": {
+    "Label": "Label",
+    "Node": "Node",
+    "Polling": "Polling",
+    "Select": "Select",
+    "SelectNode": "select node",
+    "SelectPolling": "Select polling",
+    "Size": "Size",
+    "TextFormat": "Format",
+    "ValName": "Variable name",
+    "ValNamePH": "Variable name (blank fields are automatically set)",
+    "Zoom": "Zoom"
+  },
+  "DrawItem": {
+    "Cancel": "Cancel",
+    "Color": "Color",
+    "EditDrawItem": "Edit  draw item",
+    "Ellipse": "ellipse",
+    "FontSize": "Font Size",
+    "GaugeLabel": "Gauge label",
+    "Height": "Height",
+    "Image": "Image",
+    "ImageFile": "Image file",
+    "PollingGauge": "Polling result (gauge)",
+    "PollingText": "Polling result (text)",
+    "Rect": "rectangle",
+    "Save": "Save",
+    "SelectType": "Select drawing item",
+    "Text": "Text",
+    "TextFormatPH": "Display format (blank fields are automatically set)",
+    "TextToDisplay": "String to display",
+    "Type": "Type",
+    "Width": "width"
   }
 }

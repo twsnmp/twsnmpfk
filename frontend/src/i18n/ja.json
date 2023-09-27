@@ -224,5 +224,39 @@
     "SelectAILevel": "レベルを選択",
     "AILevelLow": "軽度と判定するレベル",
     "AIlevelWarn": "注意と判定するレベル"
+  },
+  "DrawItem": {
+    "Rect": "矩形",
+    "Ellipse": "楕円",
+    "Image": "イメージ",
+    "PollingText": "ポーリング結果(テキスト)",
+    "PollingGauge": "ポーリング結果(ゲージ)",
+    "ImageFile": "描画アイテム画像ファイル",
+    "EditDrawItem": "描画アイテムの編集",
+    "Type": "種類",
+    "SelectType": "描画アイテムを選択",
+    "Width": "幅",
+    "Height": "高さ",
+    "Color": "色",
+    "FontSize": "文字サイズ",
+    "Text": "文字列",
+    "TextToDisplay": "表示する文字列",
+    "TextFormatPH": "表示フォーマット(空欄は自動設定)",
+    "GaugeLabel": "ゲージのラベル",
+    "Save": "保存",
+    "Cancel": "キャンセル"
+  },
+  "DarwItem": {
+    "Label": "ラベル",
+    "Select": "選択",
+    "Size": "サイズ",
+    "Node": "ノード",
+    "SelectNode": "ノードを選択",
+    "Polling": "ポーリング",
+    "SelectPolling": "ポーリングを選択",
+    "ValName": "変数名",
+    "ValNamePH": "変数名(空欄は自動設定)",
+    "TextFormat": "表示フォーマット",
+    "Zoom": "倍率"
   }
 }
