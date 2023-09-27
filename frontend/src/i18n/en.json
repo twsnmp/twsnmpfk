@@ -336,5 +336,24 @@
     "ObjectName": "Object name",
     "RawData": "Raw data",
     "Value": "Value"
+  },
+  "Node": {
+    "AddressMode": "Address mode",
+    "AutoCheck": "Auto check",
+    "Cancel": "Cancel",
+    "Descr": "Description",
+    "EditNode": "Edit node",
+    "IPAddress": "IP Address",
+    "Icon": "Icon",
+    "Name": "Name",
+    "NewNode": "New Node",
+    "PublicKey": "Public key",
+    "SNMPMode": "SNMP mode",
+    "Save": "Save",
+    "SelectAddressMode": "Select address mode",
+    "SelectIcon": "Select icon",
+    "SelectSnmpMode": "Select SNMP mode",
+    "SnmpPassword": "SNMP password",
+    "SnmpUser": "SNMP user"
   }
 }

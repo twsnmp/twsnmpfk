@@ -336,5 +336,24 @@
     "RawData": "生データ",
     "Get": "取得",
     "Close": "閉じる"
+  },
+  "Node": {
+    "NewNode": "新規ノード",
+    "EditNode": "ノードの編集",
+    "Name": "名前",
+    "IPAddress": "IPアドレス",
+    "AddressMode": "アドレスモード",
+    "SelectAddressMode": "アドレスモードを選択",
+    "Icon": "アイコン",
+    "SelectIcon": "アイコンを選択",
+    "AutoCheck": "復帰時に自動確認",
+    "SNMPMode": "SNMPモード",
+    "SelectSnmpMode": "SNMPのモードを選択",
+    "SnmpUser": "ユーザー",
+    "SnmpPassword": "SNMPパスワード",
+    "PublicKey": "公開鍵",
+    "Descr": "説明",
+    "Save": "保存",
+    "Cancel": "キャンセル"
   }
 }
