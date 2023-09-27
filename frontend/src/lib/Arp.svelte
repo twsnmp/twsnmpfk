@@ -17,6 +17,7 @@
   import NodeReport from "./NodeReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import { _ } from 'svelte-i18n';
 
   let arp = [];
   let nodes = undefined;
@@ -100,25 +101,25 @@
   const arpColumns = [
     {
       data: "IP",
-      title: "IPアドレス",
+      title: $_('Arp.IPAddress'),
       width: "15%",
       render: renderArpIP,
     },
     {
       data: "MAC",
-      title: "MACアドレス",
+      title: $_('Arp.MACAddress'),
       width: "20%",
       render: renderArpMAC,
     },
     {
       data: "NodeID",
-      title: "ノード名",
+      title: $_('Arp.NodeName'),
       width: "20%",
       render: renderNode,
     },
     {
       data: "Vendor",
-      title: "ベンダー",
+      title: $_('Arp.Vendor'),
       width: "45%",
       render: renderNode,
     },
@@ -140,29 +141,29 @@
   const arpLogColumns = [
     {
       data: "State",
-      title: "状態",
+      title: $_('Arp.State'),
       width: "10%",
       render: renderState,
     },
     {
       data: "Time",
-      title: "日時",
+      title: $_('Arp.DateTime'),
       width: "30%",
       render: renderTime,
     },
     {
       data: "IP",
-      title: "IPアドレス",
+      title: $_('Arp.IPAddress'),
       width: "20%",
     },
     {
       data: "NewMAC",
-      title: "新MACアドレス",
+      title: $_('Arp.NewMACAddress'),
       width: "20%",
     },
     {
       data: "OldMAC",
-      title: "旧MACアドレス",
+      title: $_('Arp.OldMACAddress'),
       width: "20%",
     },
   ];
@@ -250,14 +251,14 @@
     {#if selectedNodeID}
       <Button color="green" type="button" on:click={()=> showNodeReport= true} size="xs">
         <Icon path={icons.mdiChartBar} size={1} />
-        ノード情報
+        { $_('Arp.NodeInfo') }
       </Button>
     {/if}
 
     {#if selectedIP}
       <Button color="blue" type="button" on:click={()=>{showEditNode=true}} size="xs">
         <Icon path={icons.mdiPlus} size={1} />
-        ノード追加
+        { $_('Arp.AddNode') }
       </Button>
     {/if}
 
@@ -278,15 +279,15 @@
       size="xs"
     >
       <Icon path={icons.mdiChartPie} size={1} />
-      レポート
+      { $_('Arp.Report') }
     </Button>
     <Button color="red" type="button" on:click={reset} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
-      クリア
+      { $_('Arp.Clear') }
     </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
-      更新
+      { $_('Arp.Reload') }
     </Button>
   </div>
 </div>

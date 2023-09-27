@@ -150,5 +150,20 @@
     "Heatmap": "Heatmap",
     "PieChart": "Anomary Rate",
     "TimeChart": "Time chart"
+  },
+  "Arp": {
+    "AddNode": "Add Node",
+    "Clear": "Clear",
+    "DateTime": "Date and time",
+    "IPAddress": "IP address",
+    "MACAddress": "MAC address",
+    "NewMACAddress": "New MAC",
+    "NodeInfo": "Node info",
+    "NodeName": "Node name",
+    "OldMACAddress": "Old MAC",
+    "Reload": "Reload",
+    "Report": "Report",
+    "State": "State",
+    "Vendor": "Vendor"
   }
 }

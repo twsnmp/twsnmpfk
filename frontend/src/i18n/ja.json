@@ -150,5 +150,20 @@
     "PieChart": "異常割合",
     "TimeChart": "タイムチャート",
     "Close": "閉じる"
+  },
+  "Arp": {
+    "IPAddress": "IPアドレス",
+    "MACAddress": "MACアドレス",
+    "NodeName": "ノード名",
+    "Vendor": "ベンダー",
+    "State": "状態",
+    "DateTime": "日時",
+    "NewMACAddress": "新MACアドレス",
+    "OldMACAddress": "旧MACアドレス",
+    "NodeInfo": "ノード情報",
+    "AddNode": "ノード追加",
+    "Report": "レポート",
+    "Clear": "クリア",
+    "Reload": "更新"
   }
 }

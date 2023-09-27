@@ -31,6 +31,16 @@
     "Score",
     "Node",
     "Polling",
-    "Count"
+    "Count",
+    "<span class=\"text-yellow-500\">${ip}</span>",
+    "<span class=\"text-red-500\">${ip}</span>",
+    "<span class=\"text-red-600\">${mac}</span>",
+    "<span class=\"text-red-600\">${mac}</span>",
+    "Vendor",
+    "State",
+    "Change",
+    "Change",
+    " {\n        showReport = true;\n      }}\n      size=\"xs\"\n    >\n      ",
+    "\n      Excel\n    "
   ]
 }
