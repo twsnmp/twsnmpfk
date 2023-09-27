@@ -5,6 +5,7 @@
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import { showArpLogIP, showArpLogIP3D,showArpGraph } from "./chart/arp";
+  import { _ } from 'svelte-i18n';
 
   export let logs: datastore.ArpLogEnt[] | undefined = undefined;
   export let arp : datastore.ArpEnt[] | undefined = undefined;
@@ -60,7 +61,7 @@
       >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
-          IPアドレス別
+          { $_('ArpReport.CountByIP') }
         </div>
         <div id="ip" style="height: 600px;" />
       </TabItem>
@@ -71,7 +72,7 @@
       >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartScatterPlot} size={1} />
-          IPアドレス別(3D)
+          { $_('ArpReport.Chart3DByIP') }
         </div>
         <div id="ip3D" style="height: 600px;" />
       </TabItem>
@@ -82,7 +83,7 @@
       >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiGraph} size={1} />
-          IPとMACの関係(力学モデル)
+          { $_('ArpReport.IPtoMACForceGraph') }
         </div>
         <div id="graphForce" style="height: 600px;" />
       </TabItem>
@@ -93,7 +94,7 @@
       >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiCircle} size={1} />
-          IPとMACの関係(円形)
+          { $_('ArpReport.IPtoMACCircelGraph') }
         </div>
         <div id="graphCircular" style="height: 600px;" />
       </TabItem>
@@ -101,7 +102,7 @@
     <div class="flex justify-end space-x-2 mr-2">
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        { $_('ArpReport.Close') }
       </Button>
     </div>
   </div>

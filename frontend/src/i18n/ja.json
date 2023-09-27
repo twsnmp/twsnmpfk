@@ -165,5 +165,12 @@
     "Report": "レポート",
     "Clear": "クリア",
     "Reload": "更新"
+  },
+  "ArpReport": {
+    "CountByIP": "IPアドレス別",
+    "Chart3DByIP": "IPアドレス別(3D)",
+    "IPtoMACForceGraph": "IPとMACの関係(力学モデル)",
+    "IPtoMACCircelGraph": "IPとMACの関係(円形)",
+    "Close": "閉じる"
   }
 }

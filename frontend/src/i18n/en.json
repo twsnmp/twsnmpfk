@@ -165,5 +165,12 @@
     "Report": "Report",
     "State": "State",
     "Vendor": "Vendor"
+  },
+  "ArpReport": {
+    "Chart3DByIP": "3D chart",
+    "Close": "Close",
+    "CountByIP": "Count by IP",
+    "IPtoMACCircelGraph": "IP to MAC Graph(circle)",
+    "IPtoMACForceGraph": "IP to MAC graph(Force)"
   }
 }

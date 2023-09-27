@@ -41,6 +41,9 @@
     "Change",
     "Change",
     " {\n        showReport = true;\n      }}\n      size=\"xs\"\n    >\n      ",
-    "\n      Excel\n    "
+    "\n      Excel\n    ",
+    " {\n          showChart(\"ip3D\");\n        }}\n      >\n        ",
+    " {\n          showChart(\"graphForce\");\n        }}\n      >\n        ",
+    " {\n          showChart(\"graphCircular\");\n        }}\n      >\n        "
   ]
 }
