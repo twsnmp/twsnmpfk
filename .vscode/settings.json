@@ -77,6 +77,19 @@
     " {\n          showGrid = false;\n        }}\n        size=\"sm\"\n      >\n        ",
     " {\n    showMapMenu = false;\n    showNodeMenu = false;\n    showDrawItemMenu = false;\n  }}\n/>\n",
     "\n        Wake On Lan\n      ",
-    " {\n          deleteDrawItems([selectedDrawItem]);\n        }}\n      >\n        "
+    " {\n          deleteDrawItems([selectedDrawItem]);\n        }}\n      >\n        ",
+    "Index",
+    "Value",
+    "Table",
+    "Table",
+    "TWSNMP MIB(",
+    ")",
+    " {\n          showMIBTree = true;\n        }}\n      >\n        ",
+    " {\n          name = selected;\n        }}\n      />\n    ",
+    " {\n              exportMIB(\"csv\");\n            }}\n            size=\"sm\"\n          >\n            ",
+    " {\n              exportMIB(\"excel\");\n            }}\n            size=\"sm\"\n          >\n            ",
+    "\n            Excel\n          ",
+    " {\n        name = e.detail;\n        showMIBTree = false;\n      }}\n    />\n    ",
+    " {\n          showMIBTree = false;\n        }}\n        size=\"sm\"\n      >\n        "
   ]
 }

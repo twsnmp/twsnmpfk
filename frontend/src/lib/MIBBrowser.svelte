@@ -22,6 +22,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import MibTree from "./MIBTree.svelte";
+  import { _ } from "svelte-i18n";
 
   export let nodeID = "";
 
@@ -100,12 +101,12 @@
     },
     {
       data: "Name",
-      title: "オブジェクト名",
+      title: $_('MIBBrowser.ObjectName'),
       width: "30%",
     },
     {
       data: "Value",
-      title: "値",
+      title: $_('MIBBrowser.Value'),
       width: "60%",
     },
   ];
@@ -247,7 +248,7 @@
   <div class="flex flex-col space-y-4">
     <div class="flex flex-row mb-2">
       <div class="flex-auto">
-        <Search size="sm" bind:value={name} placeholder="オブジェクト名" />
+        <Search size="sm" bind:value={name} placeholder={ $_('MIBBrowser.ObjectName') } />
       </div>
       <Button
         size="sm"
@@ -263,19 +264,19 @@
         class="ml-2 w-64"
         items={history}
         bind:value={selected}
+        placeholder={ $_('MIBBrowser.History') }
         on:change={() => {
           name = selected;
         }}
-        placeholder="履歴"
       />
     </div>
     <table id="mibTable" class="display compact" style="width:99%" />
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait}
-        <Toggle bind:checked={raw}>生データ</Toggle>
+        <Toggle bind:checked={raw}>{ $_('MIBBrowser.RawData') }</Toggle>
         <Button type="button" color="blue" on:click={get} size="sm">
           <Icon path={icons.mdiPlay} size={1} />
-          取得
+          { $_('MIBBrowser.Get') }
         </Button>
         {#if data.length > 0}
           <Button
@@ -304,7 +305,7 @@
       {/if}
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        { $_('MIBBrowser.Close') }
       </Button>
     </div>
   </div>
@@ -340,7 +341,7 @@
         size="sm"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        { $_('MIBBrowser.Close') }
       </Button>
     </div>
   </div>

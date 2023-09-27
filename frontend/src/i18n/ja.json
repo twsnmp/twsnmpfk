@@ -328,5 +328,13 @@
     "Exec": "実行",
     "Test": "テスト",
     "Cancel": "キャンセル"
+  },
+  "MIBBrowser": {
+    "ObjectName": "オブジェクト名",
+    "Value": "値",
+    "History": "履歴",
+    "RawData": "生データ",
+    "Get": "取得",
+    "Close": "閉じる"
   }
 }

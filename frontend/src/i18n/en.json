@@ -328,5 +328,13 @@
     "Reload": "Reload",
     "Report": "Report",
     "Test": "Test"
+  },
+  "MIBBrowser": {
+    "Close": "Close",
+    "Get": "Get",
+    "History": "History",
+    "ObjectName": "Object name",
+    "RawData": "Raw data",
+    "Value": "Value"
   }
 }
