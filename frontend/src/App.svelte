@@ -27,9 +27,6 @@
   let page = "map";
   let showConfig = false;
 
-  console.log("aaa");
-
-
   const updateMapName = async () => {
     mapName = await GetMapName();
   };
@@ -56,7 +53,7 @@
 
 <Navbar let:hidden let:toggle style="--wails-draggable:drag">
   <NavBrand href="/">
-    <img src={logo} class="mr-3 h-12" alt="TWSNMP FK Logo" />
+    <img src={logo} class="mr-3 h-12" alt="TWSNMP Logo" />
     <span
       class="self-center whitespace-nowrap text-xl font-semibold dark:text-white"
     >

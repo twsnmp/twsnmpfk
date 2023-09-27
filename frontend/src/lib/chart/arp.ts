@@ -67,7 +67,7 @@ export const showArpLogIP = (div, logs) => {
     },
     xAxis: {
       type: 'value',
-      name: $_("Ts.Count"),
+      name: $_("Ts.NumberOfLog"),
     },
     yAxis: {
       type: 'category',
@@ -92,13 +92,13 @@ export const showArpLogIP = (div, logs) => {
       {
         name: $_("Ts.New"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: newLog,
       },
       {
         name: $_("Ts.Change"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: changeLog,
       },
     ],

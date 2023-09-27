@@ -70,7 +70,7 @@ const makeLogCountChart = (div:string) => {
     },
     yAxis: {
       type: 'value',
-      name: $_("Ts.Count"),
+      name: $_("Ts.NumberOfLog"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -90,7 +90,7 @@ const makeLogCountChart = (div:string) => {
     series: [
       {
         type: 'bar',
-        name: $_("Ts.Count"),
+        name: $_("Ts.NumberOfLog"),
         color: '#1f78b4',
         large: true,
         data: [],

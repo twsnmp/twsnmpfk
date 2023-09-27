@@ -70,7 +70,7 @@ const makeLogStateChart = (div) => {
     },
     yAxis: {
       type: 'value',
-      name: $_("Ts.Count"),
+      name: $_("Ts.NumberOfLog"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,

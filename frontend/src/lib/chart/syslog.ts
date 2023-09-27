@@ -73,7 +73,7 @@ export const showSyslogHost = (div, logs) => {
     },
     xAxis: {
       type: 'value',
-      name: $_("Ts.Count"),
+      name: $_("Ts.NumberOfLog"),
     },
     yAxis: {
       type: 'category',
@@ -98,25 +98,25 @@ export const showSyslogHost = (div, logs) => {
       {
         name: $_("Ts.High"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: high,
       },
       {
         name: $_("Ts.Low"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: low,
       },
       {
         name: $_("Ts.Warn"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: warn,
       },
       {
         name: $_("Ts.Other"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: other,
       },
     ],
@@ -465,7 +465,7 @@ export const showSyslogFFT3D = (div, logs) => {
     },
     zAxis3D: {
       type: 'value',
-      name: $_("Ts.PingCount"),
+      name: $_("Ts.Count"),
       nameTextStyle: {
         color: dark ? "#ccc" : "#222",
         fontSize: 12,
@@ -505,7 +505,7 @@ export const showSyslogFFT3D = (div, logs) => {
         dimensions: [
           'Host',
           $_("Ts.Cycle"),
-          $_("Ts.PingCount"),
+          $_("Ts.Count"),
           $_("Ts.Frequency"),
         ],
         data,

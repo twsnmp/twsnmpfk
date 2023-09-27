@@ -43,7 +43,7 @@ const chartParams = {
   },
   feels_like: {
     mul: 1.0,
-    axis: $_("TsFeelsLikeC"),
+    axis: $_("Ts.FeelsLikeC"),
   },
   humidity: {
     mul: 1.0,
@@ -112,11 +112,11 @@ const chartParams = {
   },
   usageMEM: {
     mul: 1.0,
-    axis: $_("MemUsagePer"),
+    axis: $_("Ts.MemUsagePer"),
   },
   totalHost: {
     mul: 1.0,
-    axis: $_("TotalHost"),
+    axis: $_("Ts.TotalHost"),
   },
   fail: {
     mul: 1.0,
@@ -124,7 +124,7 @@ const chartParams = {
   },
   count: {
     mul: 1.0,
-    axis: $_("Ts.PingCount"),
+    axis: $_("Ts.Count"),
   },
 };
 
@@ -423,7 +423,7 @@ const makePollingHistogram = (div) => {
       min: 0,
     },
     yAxis: {
-      name: $_("Ts.PingCount"),
+      name: $_("Ts.Count"),
     },
     series: [
       {

@@ -521,7 +521,7 @@ export const showEventLogNodeChart = (div, logs) => {
     },
     xAxis: {
       type: 'value',
-      name: $_("Ts.Count"),
+      name: $_("Ts.NumberOfLog"),
     },
     yAxis: {
       type: 'category',
@@ -546,37 +546,37 @@ export const showEventLogNodeChart = (div, logs) => {
       {
         name: $_("Ts.High"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: high,
       },
       {
         name: $_("Ts.Low"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: low,
       },
       {
         name: $_("Ts.Warn"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: warn,
       },
       {
         name: $_("Ts.Normal"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: normal,
       },
       {
         name: $_("Ts.Repair"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: repair,
       },
       {
         name: $_("Ts.Other"),
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: other,
       },
     ],

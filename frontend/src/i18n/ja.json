@@ -64,7 +64,7 @@
     "Anamary": "異常",
     "AnmaryScore": "異常スコア",
     "DateTime": "日時",
-    "Count": "件数",
+    "Count": "回数",
     "LogCountByIP": "IP別ログ件数",
     "Other": "その他",
     "CountByState": "状態別",
@@ -74,7 +74,6 @@
     "RecvTTL": "受信TTL",
     "Size": "サイズ",
     "PingAn3D": "PING分析(3D)",
-    "PingCount": "回数",
     "RespTimeCV": "応答時間変動係数",
     "SuccessRatePer": "成功率(%)",
     "LineSpeedMbps": "回線速度(Mbps)",
@@ -105,9 +104,10 @@
     "Cycle": "周期",
     "Frequency": "周波数",
     "Sender": "送信元",
-    "LogCount": "ログ件数"
-  },
-  "TsFeelsLikeC": "体感温度(℃）",
-  "MemUsagePer": "メモリー使用率(%)",
-  "TotalHost": "ホスト数"
+    "LogCount": "ログ件数",
+    "FeelsLikeC": "体感温度(℃）",
+    "MemUsagePer": "メモリー使用率(%)",
+    "TotalHost": "ホスト数",
+    "NumberOfLog": "件数"
+  }
 }

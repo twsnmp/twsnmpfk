@@ -46,7 +46,7 @@ export const showTrapFromAddr = (div, logs) => {
     },
     xAxis: {
       type: 'value',
-      name: $_("Ts.Count"),
+      name: $_("Ts.NumberOfLog"),
     },
     yAxis: {
       type: 'category',
@@ -98,7 +98,7 @@ export const showTrapFromAddr = (div, logs) => {
     option.series.push({
         name: t,
         type: 'bar',
-        stack: $_("Ts.Count"),
+        stack: $_("Ts.NumberOfLog"),
         data: [],
     });
   }

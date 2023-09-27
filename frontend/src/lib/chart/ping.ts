@@ -478,7 +478,7 @@ export const showPingHistgram = (div, results) => {
       },
     },
     yAxis: {
-      name: $_("Ts.PingCount"),
+      name: $_("Ts.Count"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
