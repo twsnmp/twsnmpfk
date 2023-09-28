@@ -26,11 +26,13 @@
   import { levelList, typeList, logModeList, getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import { _ } from "svelte-i18n";
 
   export let nodeID: string = "";
   export let pollingID: string = "";
   export let pollingTmpID: number = 0;
   export let pollingTmp = undefined;
+
   let polling: datastore.PollingEnt | undefined = undefined;
   let show: boolean = false;
   let list = [];
@@ -88,27 +90,27 @@
       columns: [
         {
           data: "Name",
-          title: "名前",
+          title: $_('Polling.Name'),
           width: "35%",
         },
         {
           data: "Type",
-          title: "種別",
+          title: $_('Polling.Type'),
           width: "10%",
         },
         {
           data: "Mode",
-          title: "モード",
+          title: $_('Polling.Mode'),
           width: "10%",
         },
         {
           data: "Params",
-          title: "パラメータ",
+          title: $_('Polling.Params'),
           width: "10%",
         },
         {
           data: "Filter",
-          title: "フィルター",
+          title: $_('Polling.Filter'),
           width: "10%",
         },
       ],
@@ -170,91 +172,90 @@
 <Modal bind:open={show} size="lg" permanent class="w-full" on:on:close={close}>
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-      ポーリングの編集
+      { $_('Polling.EditPolling') }
     </h3>
     {#if !nodeID}
       <Label class="space-y-2">
-        <span> ノード </span>
+        <span> { $_('Polling.Node') } </span>
         <Select
           items={nodeList}
           bind:value={polling.NodeID}
-          placeholder="ノードを選択"
+          placeholder="{ $_('Polling.SelectNode') }"
           size="sm"
         />
       </Label>
     {/if}
     <Label class="space-y-2">
-      <span>名前</span>
+      <span>{ $_('Polling.Name') }</span>
       <Input
         bind:value={polling.Name}
-        placeholder="ポーリングの名前"
         required
         size="sm"
       />
     </Label>
     <div class="grid gap-4 mb-4 md:grid-cols-4">
       <Label class="space-y-2">
-        <span> レベル </span>
+        <span> { $_('Polling.Level') } </span>
         <Select
           items={levelList}
           bind:value={polling.Level}
-          placeholder="レベルを選択"
+          placeholder={ $_('Polling.SelectLevel') }
           size="sm"
         />
       </Label>
       <Label class="space-y-2">
-        <span> 種別 </span>
+        <span> { $_('Polling.Type') } </span>
         <Select
           items={typeList}
           bind:value={polling.Type}
-          placeholder="ポーリング種別を選択"
+          placeholder={ $_('Polling.SelectPollingType') }
           size="sm"
           disabled={pollingID != ""}
         />
       </Label>
       <Label class="space-y-2">
-        <span>モード</span>
-        <Input bind:value={polling.Mode} placeholder="モード" size="sm" />
+        <span>{ $_('Polling.Mode') }</span>
+        <Input bind:value={polling.Mode} size="sm" />
       </Label>
       <Label class="space-y-2">
-        <span> ログモード </span>
+        <span> { $_('Polling.LogMode') } </span>
         <Select
           items={logModeList}
           bind:value={polling.LogMode}
-          placeholder="ログモードを選択"
+          placeholder={ $_('Polling.SelectLogMode') }
           size="sm"
         />
       </Label>
     </div>
     <Label class="space-y-2">
-      <span>パラメーター</span>
+      <span>{ $_('Polling.Params') }</span>
       <Input
         bind:value={polling.Params}
-        placeholder="パラメーター"
+        placeholder={ $_('Polling.Params') }
         color={paramsColor}
         size="sm"
       />
     </Label>
     <Label class="space-y-2">
-      <span>フィルター</span>
+      <span>{ $_('Polling.Filter') }</span>
       <Input
         bind:value={polling.Filter}
-        placeholder="フィルター"
+        placeholder={ $_('Polling.Filter') }
         color={filterColor}
         size="sm"
       />
     </Label>
     <Label class="space-y-2">
-      <span>抽出パターン</span>
+      <span>{ $_('Polling.GrokPat') }</span>
       <CodeJar syntax="grok" {highlight} bind:value={polling.Extractor} />
     </Label>
     <Label class="space-y-2">
-      <span>スクリプト</span>
+      <span>{ $_('Polling.Script') }</span>
       <CodeJar syntax="javascript" {highlight} bind:value={polling.Script} />
     </Label>
     <div class="grid gap-4 md:grid-cols-3">
       <Label class="space-y-2">
-        <span>ポーリング間隔(秒)</span>
+        <span>{ $_('Polling.IntSec') }</span>
         <Input
           type="number"
           min="5"
@@ -264,7 +265,7 @@
         />
       </Label>
       <Label class="space-y-2">
-        <span>タイムアウト(秒)</span>
+        <span>{ $_('Polling.TimeoutSec') }</span>
         <Input
           type="number"
           min="0"
@@ -274,7 +275,7 @@
         />
       </Label>
       <Label class="space-y-2">
-        <span>リトライ</span>
+        <span>{ $_('Polling.Retry') }</span>
         <Input
           type="number"
           min="0"
@@ -287,11 +288,11 @@
     <div class="flex justify-end space-x-2 mr-2">
       <Button color="blue" type="button" on:click={save} size="sm">
         <Icon path={icons.mdiContentSave} size={1} />
-        保存
+        { $_('Polling.Save') }
       </Button>
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        キャンセル
+        { $_('Polling.Cancel') }
       </Button>
     </div>
   </form>
@@ -310,12 +311,12 @@
       {#if selectedCount == 1}
         <Button type="button" color="alternative" on:click={select} size="sm">
           <Icon path={icons.mdiCancel} size={1} />
-          選択
+          { $_('Polling.Select') }
         </Button>
       {/if}
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        キャンセル
+        { $_('Polling.Cancel') }
       </Button>
     </div>
   </div>

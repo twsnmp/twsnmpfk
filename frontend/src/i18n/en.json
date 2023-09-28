@@ -480,5 +480,28 @@
     "Warn": "Warn",
     "World": "Route analysis"
   },
-  "PingTraceRoute": "Trace route"
+  "PingTraceRoute": "Trace route",
+  "Polling": {
+    "Cancel": "Cancel",
+    "EditPolling": "Edit polling",
+    "Filter": "Filter",
+    "GrokPat": "Grok pattern",
+    "IntSec": "Interval(Sec)",
+    "Level": "Level",
+    "LogMode": "Log mode",
+    "Mode": "Mode",
+    "Name": "Name",
+    "Node": "Node",
+    "Params": "Params",
+    "Retry": "Retry",
+    "Save": "Save",
+    "Script": "Script",
+    "Select": "Select",
+    "SelectLevel": "Select level",
+    "SelectLogMode": "Select log mode",
+    "SelectNode": "Seelect node",
+    "SelectPollingType": "Select polling type",
+    "TimeoutSec": "Timeout(sec)",
+    "Type": "Type"
+  }
 }

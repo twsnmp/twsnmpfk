@@ -480,5 +480,28 @@
     "Start": "開始",
     "Close": "閉じる"
   },
-  "PingTraceRoute": "トレースルート"
+  "PingTraceRoute": "トレースルート",
+  "Polling": {
+    "Name": "名前",
+    "Type": "種別",
+    "Mode": "モード",
+    "Params": "パラメーター",
+    "Filter": "フィルター",
+    "EditPolling": "ポーリングの編集",
+    "Node": "ノード",
+    "SelectNode": "ノードを選択",
+    "Level": "レベル",
+    "SelectLevel": "レベルを選択",
+    "SelectPollingType": "ポーリング種別を選択",
+    "LogMode": "ログモード",
+    "SelectLogMode": "ログモードを選択",
+    "GrokPat": "抽出パターン",
+    "Script": "スクリプト",
+    "IntSec": "ポーリング間隔(秒)",
+    "TimeoutSec": "タイムアウト(秒)",
+    "Retry": "リトライ",
+    "Save": "保存",
+    "Cancel": "キャンセル",
+    "Select": "選択"
+  }
 }
