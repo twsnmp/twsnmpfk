@@ -20,6 +20,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import PollingReport from "./PollingReport.svelte";
+  import { _ } from "svelte-i18n";
 
   let data = [];
   let nodes = {};
@@ -112,41 +113,41 @@
   const columns = [
     {
       data: "State",
-      title: "状態",
+      title: $_('PollingList.State'),
       width: "10%",
       render: renderState,
     },
     {
       data: "NodeID",
-      title: "ノード名",
+      title: $_('PollingList.Node'),
       width: "15%",
       render: (id) => nodes[id].Name,
     },
     {
       data: "Name",
-      title: "名前",
+      title: $_('PollingList.Name'),
       width: "25%",
     },
     {
       data: "Level",
-      title: "レベル",
+      title: $_('PollingList.Level'),
       width: "10%",
       render: renderState,
     },
     {
       data: "Type",
-      title: "種別",
+      title: $_('PollingList.Type'),
       width: "8%",
     },
     {
       data: "LogMode",
-      title: "ログ",
+      title: $_('PollingList.LogMode'),
       width: "7%",
       render: getLogModeName,
     },
     {
       data: "LastTime",
-      title: "最終確認",
+      title: $_('PollingList.LastTime'),
       width: "15%",
       render: renderTime,
     },
@@ -179,26 +180,26 @@
   <div class="flex justify-end space-x-2 mr-2">
     <Button color="blue" type="button" on:click={add} size="xs">
       <Icon path={icons.mdiPlus} size={1} />
-      追加
+      { $_('PollingList.Add') }
     </Button>
     {#if selectedCount == 1}
       <Button color="blue" type="button" on:click={edit} size="xs">
         <Icon path={icons.mdiPencil} size={1} />
-        編集
+        { $_('PollingList.Edit') }
       </Button>
       <Button color="blue" type="button" on:click={copy} size="xs">
         <Icon path={icons.mdiContentCopy} size={1} />
-        コピー
+        { $_('PollingList.Copy') }
       </Button>
       <Button color="green" type="button" on:click={report} size="xs">
         <Icon path={icons.mdiChartBar} size={1} />
-        レポート
+        { $_('PollingList.Report') }
       </Button>
     {/if}
     {#if selectedCount > 0}
       <Button color="red" type="button" on:click={deletePollings} size="xs">
         <Icon path={icons.mdiTrashCan} size={1} />
-        削除
+        { $_('PollingList.Delete') }
       </Button>
     {/if}
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
@@ -211,7 +212,7 @@
     </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
-      更新
+      { $_('PollingList.Reload') }
     </Button>
   </div>
 </div>

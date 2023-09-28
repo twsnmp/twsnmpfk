@@ -503,5 +503,20 @@
     "Save": "保存",
     "Cancel": "キャンセル",
     "Select": "選択"
+  },
+  "PollingList": {
+    "State": "状態",
+    "Node": "ノード名",
+    "Name": "名前",
+    "Level": "レベル",
+    "Type": "種別",
+    "LogMode": "ログ",
+    "LastTime": "最終確認",
+    "Add": "追加",
+    "Edit": "編集",
+    "Copy": "コピー",
+    "Report": "レポート",
+    "Delete": "削除",
+    "Reload": "更新"
   }
 }
