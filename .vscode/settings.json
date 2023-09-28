@@ -152,6 +152,10 @@
     "Result",
     "=",
     "\n        {#if polling.LogMode == 3 ",
-    "& aiResult}\n          "
+    "& aiResult}\n          ",
+    "Host",
+    "Tag",
+    "Message",
+    "count < 1"
   ]
 }

@@ -535,5 +535,16 @@
     "State": "State",
     "Time": "Time",
     "TimeChart": "Time chart"
+  },
+  "Syslog": {
+    "Host": "Host",
+    "Level": "Level",
+    "Message": "Message",
+    "Polling": "Polling",
+    "Reload": "Reload",
+    "Report": "Report",
+    "Tag": "Tag",
+    "Time": "Time",
+    "Type": "Type"
   }
 }

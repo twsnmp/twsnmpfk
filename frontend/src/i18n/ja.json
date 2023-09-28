@@ -535,5 +535,16 @@
     "SelectVal": "変数を選択",
     "AI": "AI分析",
     "Close": "閉じる"
+  },
+  "Syslog": {
+    "Level": "レベル",
+    "Time": "日時",
+    "Host": "ホスト",
+    "Type": "タイプ",
+    "Tag": "タグ",
+    "Message": "メッセージ",
+    "Polling": "ポーリング",
+    "Report": "レポート",
+    "Reload": "更新"
   }
 }

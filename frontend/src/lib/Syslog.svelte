@@ -11,6 +11,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import type { datastore } from "wailsjs/go/models";
+  import { _ } from "svelte-i18n";
 
   let data = [];
   let logs = [];
@@ -71,34 +72,34 @@
   const columns = [
     {
       data: "Level",
-      title: "レベル",
+      title: $_('Syslog.Level'),
       width: "10%",
       render: renderState,
     },
     {
       data: "Time",
-      title: "日時",
+      title: $_('Syslog.Time'),
       width: "15%",
       render: renderTime,
     },
     {
       data: "Host",
-      title: "ホスト",
+      title: $_('Syslog.Host'),
       width: "15%",
     },
     {
       data: "Type",
-      title: "タイプ",
+      title: $_('Syslog.Type'),
       width: "10%",
     },
     {
       data: "Tag",
-      title: "タグ",
+      title: $_('Syslog.Tag'),
       width: "10%",
     },
     {
       data: "Message",
-      title: "メッセージ",
+      title: $_('Syslog.Message'),
       width: "40%",
     },
   ];
@@ -135,7 +136,7 @@
       polling.Mode = "count";
       polling.Script = "count < 1";
     }
-    polling.Name = `syslog監視`; 
+    polling.Name = `syslog`; 
     polling.Type = "syslog";
     polling.Filter = d[0].Type + " " + d[0].Tag;
     polling.Params = d[0].Host;
@@ -155,7 +156,7 @@
     {#if selectedCount == 1}
       <Button color="green" type="button" on:click={watch} size="xs">
         <Icon path={icons.mdiEye} size={1} />
-        ポーリング
+        { $_('Syslog.Polling') }
       </Button>
     {/if}
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
@@ -175,11 +176,11 @@
       size="xs"
     >
       <Icon path={icons.mdiChartPie} size={1} />
-      レポート
+      { $_('Syslog.Report') }
     </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
-      更新
+      { $_('Syslog.Reload') }
     </Button>
   </div>
 </div>
