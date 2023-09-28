@@ -40,8 +40,8 @@
   import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-
   import { showHrBarChart, showHrSummary } from "./chart/hostResource";
+  import { _ } from "svelte-i18n";
 
   export let id = "";
   let node: datastore.NodeEnt | undefined = undefined;
@@ -71,24 +71,24 @@
       columns: [
         {
           data: "Level",
-          title: "レベル",
+          title: $_('NodeReport.Level'),
           width: "15%",
           render: renderState,
         },
         {
           data: "Time",
-          title: "発生日時",
+          title: $_('NodeReport.Time'),
           width: "20%",
           render: renderTime,
         },
         {
           data: "Type",
-          title: "種別",
+          title: $_('NodeReport.Type'),
           width: "15%",
         },
         {
           data: "Event",
-          title: "イベント",
+          title: $_('NodeReport.Event'),
           width: "50%",
         },
       ],
@@ -119,55 +119,55 @@
         },
         {
           data: "State",
-          title: "状態",
+          title: $_('NodePolling.State'),
           width: "10%",
         },
         {
           data: "Name",
-          title: "名前",
+          title: $_('NodeReport.Name'),
           width: "15%",
         },
         {
           data: "Type",
-          title: "種別",
+          title: $_('NodeReport.Type'),
           width: "5%",
         },
         {
           data: "MAC",
-          title: "MACアドレス",
+          title: $_('NodeReport.MACAddress'),
           width: "15%",
         },
         {
           data: "Speed",
-          title: "スピード",
+          title: $_('NodeReport.Speed'),
           width: "10%",
           render: renderSpeed,
           className: "dt-body-right",
         },
         {
           data: "OutPacktes",
-          title: "送信パケット",
+          title: $_('NodeReport.OutPacktes'),
           width: "10%",
           render: renderCount,
           className: "dt-body-right",
         },
         {
           data: "OutBytes",
-          title: "送信バイト",
+          title: $_('NodeReport.OutBytes'),
           width: "10%",
           render: renderBytes,
           className: "dt-body-right",
         },
         {
           data: "InPacktes",
-          title: "受信パケット",
+          title: $_('NodeReport.InPacktes'),
           width: "10%",
           render: renderCount,
           className: "dt-body-right",
         },
         {
           data: "InBytes",
-          title: "受信バイト",
+          title: $_('NodeReport.InBytes'),
           width: "10%",
           render: renderBytes,
           className: "dt-body-right",
@@ -194,18 +194,18 @@
   const renderStatus = (s) => {
     switch (s) {
       case "Running":
-        return `<span class="text-blue-700">動作中</span>`;
+        return `<span class="text-blue-700">`+$_('NodeReport.Running')+`</span>`;
       case "Runnable":
-        return `<span class="text-blue-900">動作待ち</span>`;
+        return `<span class="text-blue-900">`+$_('NodeReport.Runnable')+`</span>`;
       case "Testing":
-        return "テスト中";
+        return $_('NodeReport.Testing');
       case "NotRunnable":
-        return "起動待";
+        return $_('NodeReport.NotRunnable');
       case "Invalid":
       case "Down":
-        return `<span class="text-red-800">停止</span>`;
+        return `<span class="text-red-800">`+$_('NodeReport.Down')+`</span>`;
     }
-    return "不明";
+    return $_('NodeReport.Unknown');
   };
 
   const renderRate = (r) => {
@@ -220,25 +220,25 @@
   const renderStorageType = (t) => {
     switch (t) {
       case "hrStorageCompactDisc":
-        return "CDドライブ";
+        return $_('NodeReport.CDDrive');
       case "hrStorageRemovableDisk":
-        return "リムーバブル";
+        return $_('NodeReport.RemovableDisk');
       case "hrStorageFloppyDisk":
-        return "フロッピー";
+        return $_('NodeReport.FloppyDIsk');
       case "hrStorageRamDisk":
-        return "RAMディスク";
+        return $_('NodeReport.RamDisk');
       case "hrStorageFlashMemory":
-        return "フラッシュメモリ";
+        return $_('NodeReport.FlashMemory');
       case "hrStorageNetworkDisk":
-        return "ネットワーク";
+        return $_('NodeReport.NetworkDIsk');
       case "hrStorageFixedDisk":
-        return "固定ディスク";
+        return $_('NodeReport.FixedDisk');
       case "hrStorageVirtualMemory":
-        return "仮想メモリ";
+        return $_('NodeReportVM');
       case "hrStorageRam":
-        return "実メモリ";
+        return $_('NodeReport.RAM');
     }
-    return "その他";
+    return $_('NodeReport.Other');
   };
 
   const renderDeviceType = (t) => {
@@ -305,13 +305,13 @@
         },
         {
           data: "Key",
-          title: "名前",
+          title: $_('NodeReport.Name'),
           width: "30%",
           render: renderHrSystemName,
         },
         {
           data: "Value",
-          title: "値",
+          title: $_('MIBBrowser.Value'),
           width: "60%",
         },
       ],
@@ -336,35 +336,35 @@
       },
       columns: [
         {
-          title: "種別",
+          title: $_('NodeReport.Type'),
           data: "Type",
           width: "20%",
           render: renderStorageType,
         },
-        { title: "説明", data: "Descr", width: "40%" },
+        { title: $_('NodeReport.Descr'), data: "Descr", width: "40%" },
         {
-          title: "サイズ",
+          title: $_('NodeReport.Size'),
           data: "Size",
           width: "10%",
           render: renderBytes,
           className: "dt-body-right",
         },
         {
-          title: "使用量",
+          title: $_('NodeReport.Used'),
           data: "Used",
           width: "10%",
           render: renderBytes,
           className: "dt-body-right",
         },
         {
-          title: "使用率",
+          title: $_('NodeReport.Rate'),
           data: "Rate",
           width: "10%",
           render: renderRate,
           className: "dt-body-right",
         },
         {
-          title: "単位",
+          title: $_('NodeReport.Unit'),
           data: "Unit",
           width: "10%",
           className: "dt-body-right",
@@ -387,11 +387,11 @@
       language: getTableLang(),
       order: [[0, "asc"]],
       columns: [
-        { title: "状態", data: "Status", width: "10%", render: renderStatus },
-        { title: "インデックス", data: "Index", width: "10%" },
-        { title: "種別", data: "Type", width: "30%", render: renderDeviceType },
-        { title: "説明", data: "Descr", width: "40%" },
-        { title: "エラー", data: "Errors", width: "10%" },
+        { title: $_('NodeReport.Status'), data: "Status", width: "10%", render: renderStatus },
+        { title: $_('NodeReport.Index'), data: "Index", width: "10%" },
+        { title: $_('NodeReport.Type'), data: "Type", width: "30%", render: renderDeviceType },
+        { title: $_('NodeReport.Descr'), data: "Descr", width: "40%" },
+        { title: $_('NodeReport.Errors'), data: "Errors", width: "10%" },
       ],
     });
   };
@@ -403,17 +403,17 @@
       language: getTableLang(),
       order: [[0, "asc"]],
       columns: [
-        { title: "マウント", data: "Mount", width: "30%" },
-        { title: "リモート", data: "Remote", width: "30%" },
-        { title: "種別", data: "Type", width: "20%", render: renderFSType },
+        { title: $_('NodeReport.Mount'), data: "Mount", width: "30%" },
+        { title: $_('NodeReport.Remote'), data: "Remote", width: "30%" },
+        { title: $_('NodePolling.Type'), data: "Type", width: "20%", render: renderFSType },
         {
-          title: "アクセス",
+          title: $_('NodeReport.Access'),
           data: "Access",
           width: "10%",
           render: renderAccess,
         },
         {
-          title: "ブート",
+          title: $_('NodeReport.Bootable'),
           data: "Bootable",
           width: "10%",
           render: renderTrueFalse,
@@ -433,20 +433,20 @@
       },
       columns: [
         {
-          title: "状態",
+          title: $_('NodeReport.Status'),
           data: "Status",
           width: "10%",
           render: renderStatus,
         },
         { title: "PID", data: "PID", width: "10%" },
-        { title: "種別", data: "Type", width: "10%" },
+        { title: $_('NodeReport.Type'), data: "Type", width: "10%" },
         {
-          title: "名前",
+          title: $_('NodeReport.Name'),
           data: "Name",
           width: "15%",
         },
-        { title: "パス", data: "Path", width: "15%" },
-        { title: "パラメータ", data: "Param", width: "20%" },
+        { title: $_('NodeReport.Path'), data: "Path", width: "15%" },
+        { title: $_('NodeReport.Param'), data: "Param", width: "20%" },
         {
           title: "CPU",
           data: "CPU",
@@ -504,14 +504,14 @@
     const list = [];
     hostResource.Storage.forEach((e) => {
       const t = renderStorageType(e.Type);
-      if (!t.includes("その他")) {
+      if (!t.includes($_('NodeReport.Other'))) {
         list.unshift({
           Name: e.Descr + "(" + t + ")",
           Value: e.Rate,
         });
       }
     });
-    showHrBarChart("hrStorageChart", "ストレージ使用率", "%", list);
+    showHrBarChart("hrStorageChart", $_('NodeReport.StorageUsgae'), "%", list);
   };
 
   const showHrProcChart = async (bCPU) => {
@@ -538,8 +538,8 @@
     }
     showHrBarChart(
       bCPU ? "hrProcessCPUChart" : "hrProcessMemChart",
-      bCPU ? "CPU使用量" : "Mem使用量",
-      bCPU ? "秒" : "Bytes",
+      bCPU ? $_('NodeReport.CPUUsage') : $_('NodeReport.MemUsage'),
+      bCPU ? $_('NodeReport.Sec') : "Bytes",
       list,
       max
     );
@@ -558,7 +558,7 @@
       return;
     }
     pollingTmp = await GetDefaultPolling(node.ID);
-    pollingTmp.Name = d[0].Name + "状態";
+    pollingTmp.Name = d[0].Name + "I/F Status";
     pollingTmp.Type = "snmp";
     pollingTmp.Mode = "ifOperStatus";
     pollingTmp.Level = "low";
@@ -572,7 +572,7 @@
       return;
     }
     pollingTmp = await GetDefaultPolling(node.ID);
-    pollingTmp.Name = d[0].Name + "トラフィック";
+    pollingTmp.Name = d[0].Name + "Traffic";
     pollingTmp.Type = "snmp";
     pollingTmp.Mode = "traffic";
     pollingTmp.Params = d[0].Index;
@@ -604,7 +604,7 @@
     switch(d[0].Key) {
       case "hrSystemUptime":
         pollingTmp = await GetDefaultPolling(node.ID);
-        pollingTmp.Name = "SNMP再起動監視";
+        pollingTmp.Name = "SNMP restart";
         pollingTmp.Type = "snmp";
         pollingTmp.Mode = "sysUpTime";
         pollingTmp.Level = "low";
@@ -612,7 +612,7 @@
       break;
       case "hrSystemDate":
         pollingTmp = await GetDefaultPolling(node.ID);
-        pollingTmp.Name = "システム時刻";
+        pollingTmp.Name = "System date";
         pollingTmp.Type = "snmp";
         pollingTmp.Mode = "hrSystemDate";
         pollingTmp.Script = "diff < 1";
@@ -621,7 +621,7 @@
       break;
       case "hrSystemProcesses":
         pollingTmp = await GetDefaultPolling(node.ID);
-        pollingTmp.Name = "プロセス数";
+        pollingTmp.Name = "Process count";
         pollingTmp.Type = "snmp";
         pollingTmp.Mode = "get";
         pollingTmp.Params = "hrSystemProcesses.0";
@@ -630,7 +630,7 @@
         break;
       case "hrProcessorLoad":
         pollingTmp = await GetDefaultPolling(node.ID);
-        pollingTmp.Name = "CPU平均使用率";
+        pollingTmp.Name = "CPU Usage";
         pollingTmp.Type = "snmp";
         pollingTmp.Mode = "stats";
         pollingTmp.Params = "hrProcessorLoad";
@@ -647,7 +647,7 @@
       return;
     }
     pollingTmp = await GetDefaultPolling(node.ID);
-    pollingTmp.Name = d[0].Descr + "使用率";
+    pollingTmp.Name = d[0].Descr + "Usage";
     pollingTmp.Type = "snmp";
     pollingTmp.Mode = "get";
     pollingTmp.Params = 'hrStorageSize.' + d[0].Index + ',hrStorageUsed.' + d[0].Index;
@@ -668,7 +668,7 @@
       return;
     }
     pollingTmp = await GetDefaultPolling(node.ID);
-    pollingTmp.Name = d[0].Name + "プロセスの起動数";
+    pollingTmp.Name = d[0].Name + " process count";
     pollingTmp.Type = "snmp";
     pollingTmp.Mode = "process";
     pollingTmp.Filter = d[0].Name;
@@ -699,20 +699,20 @@
       <TabItem open on:click={clearSelectedCount}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
-          基本情報
+          { $_('NodeReport.BasicInfo') }
         </div>
         <Table striped={true}>
           <TableHead>
-            <TableHeadCell>項目</TableHeadCell>
-            <TableHeadCell>内容</TableHeadCell>
+            <TableHeadCell>{ $_('NodeReport.Item') }</TableHeadCell>
+            <TableHeadCell>{ $_('NodeReport.Content') }</TableHeadCell>
           </TableHead>
           <TableBody tableBodyClass="divide-y">
             <TableBodyRow>
-              <TableBodyCell>名前</TableBodyCell>
+              <TableBodyCell>{ $_('NodeReport.Name') }</TableBodyCell>
               <TableBodyCell>{node.Name}</TableBodyCell>
             </TableBodyRow>
             <TableBodyRow>
-              <TableBodyCell>状態</TableBodyCell>
+              <TableBodyCell>{ $_('NodeReport.Status') }</TableBodyCell>
               <TableBodyCell>
                 <span
                   class="mdi {getIcon(node.Icon)} text-xl"
@@ -724,15 +724,15 @@
               </TableBodyCell>
             </TableBodyRow>
             <TableBodyRow>
-              <TableBodyCell>IPアドレス</TableBodyCell>
+              <TableBodyCell>{ $_('NodeReport.IPAddress') }</TableBodyCell>
               <TableBodyCell>{node.IP}</TableBodyCell>
             </TableBodyRow>
             <TableBodyRow>
-              <TableBodyCell>MACアドレス</TableBodyCell>
+              <TableBodyCell>{ $_('NodeReport.MACAddress') }</TableBodyCell>
               <TableBodyCell>{node.MAC}</TableBodyCell>
             </TableBodyRow>
             <TableBodyRow>
-              <TableBodyCell>説明</TableBodyCell>
+              <TableBodyCell>{ $_('NodeReport.Descr') }</TableBodyCell>
               <TableBodyCell>{node.Descr}</TableBodyCell>
             </TableBodyRow>
           </TableBody>
@@ -741,14 +741,14 @@
       <TabItem on:click={showLog}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiCalendarCheck} size={1} />
-          ログ
+          { $_('NodeReport.Log') }
         </div>
         <table id="logTable" class="display compact" style="width:99%" />
       </TabItem>
       <TabItem on:click={showVPanel}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiAppsBox} size={1} />
-          パネル
+          { $_('NodeReport.Panel') }
         </div>
         <div id="vpanel" style="width: 98%; height: 500px" />
         <table id="portTable" class="display compact mt-2" style="width:99%" />
@@ -764,7 +764,7 @@
           {:else}
             <Icon path={icons.mdiInformation} size={1} />
           {/if}
-          ホスト情報
+          <span>{ $_('NodeReport.HostInfo') }</span>
         </div>
         {#if hostResource}
           <div class="grid grid-cols-2 gap-1">
@@ -781,14 +781,14 @@
             </div>
           </div>
         {:else if !waitHr}
-          <div>ホストリソースMIBに対応していません。</div>
+          <div>{ $_('NodeReport.NoHRMIB') }</div>
         {/if}
       </TabItem>
       {#if hostResource}
         <TabItem on:click={showHrStorage}>
           <div slot="title" class="flex items-center gap-2">
             <Icon path={icons.mdiDatabase} size={1} />
-            ストレージ
+            { $_('NodeReport.Storage') }
           </div>
           <div id="hrStorageChart" style="width: 98%; height: 300px;" class="mb-2" />
           <table
@@ -800,7 +800,7 @@
         <TabItem on:click={showHrDevice}>
           <div slot="title" class="flex items-center gap-2">
             <Icon path={icons.mdiApplicationCog} size={1} />
-            デバイス
+            { $_('NodeReport.Device') }
           </div>
           <table
             id="hrDeviceTable"
@@ -822,7 +822,7 @@
         <TabItem on:click={showHrProcess}>
           <div slot="title" class="flex items-center gap-2">
             <Icon path={icons.mdiViewList} size={1} />
-            プロセス
+            { $_('NodeReport.Process') }
           </div>
           <div class="grid grid-cols-2 gap-1 mb-2">
             <div id="hrProcessCPUChart" style="width: 100%; height: 300px" />
@@ -840,34 +840,34 @@
       {#if selectedPortCount > 0}
         <Button color="green" type="button" on:click={watchPortState} size="xs">
           <Icon path={icons.mdiEye} size={1} />
-          ポーリング(状態)
+          { $_('NodeReport.AddPollingIFState') }
         </Button>
         <Button color="green" type="button" on:click={watchPortTraffic} size="xs">
           <Icon path={icons.mdiEye} size={1} />
-          ポーリング(通信量)
+          { $_('NodeReport.AddPollingTraffic') }
         </Button>
       {/if}
       {#if selectedHrSystemCount > 0 && canWacthHrSystem()}
         <Button color="green" type="button" on:click={watchHrSystem} size="xs">
           <Icon path={icons.mdiEye} size={1} />
-          ポーリング
+          { $_('NodeReport.Polling') }
         </Button>
       {/if}
       {#if selectedhrStorageCount > 0}
         <Button color="green" type="button" on:click={watchHrStorage} size="xs">
           <Icon path={icons.mdiEye} size={1} />
-          ポーリング
+          { $_('NodeReport.Polling') }
         </Button>
       {/if}
       {#if selectedHrProcessCount > 0}
         <Button color="green" type="button" on:click={watchHrProcess} size="xs">
           <Icon path={icons.mdiEye} size={1} />
-          ポーリング
+          { $_('NodeReport.Polling') }
         </Button>
       {/if}
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        { $_('NodeReport.Close') }
       </Button>
     </div>
   </div>
