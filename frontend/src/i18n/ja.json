@@ -554,5 +554,14 @@
     "Chart3D": "ホスト別(3D)",
     "FFT": "FFTによる周期分析",
     "Close": "閉じる"
+  },
+  "Trap": {
+    "Time": "日時",
+    "FromAddress": "送信元",
+    "TrapType": "タイプ",
+    "Variables": "変数",
+    "Polling": "ポーリング",
+    "Report": "レポート",
+    "Reload": "更新"
   }
 }

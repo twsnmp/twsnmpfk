@@ -554,5 +554,14 @@
     "CountByLevel": "Count by Level",
     "FFT": "FFT",
     "Heatmap": "Heatmap"
+  },
+  "Trap": {
+    "FromAddress": "From address",
+    "Polling": "Polling",
+    "Reload": "Reload",
+    "Report": "Report",
+    "Time": "Time",
+    "TrapType": "Trap type",
+    "Variables": "Variables"
   }
 }

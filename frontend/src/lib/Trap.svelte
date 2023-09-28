@@ -14,6 +14,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import type { datastore } from "wailsjs/go/models";
+  import { _ } from "svelte-i18n";
 
   let data = [];
   let logs = [];
@@ -74,23 +75,23 @@
   const columns = [
     {
       data: "Time",
-      title: "日時",
+      title: $_('Trap.Time'),
       width: "20%",
       render: renderTime,
     },
     {
       data: "FromAddress",
-      title: "送信元",
+      title: $_('Trap.FromAddress'),
       width: "15%",
     },
     {
       data: "TrapType",
-      title: "タイプ",
+      title: $_('Trap.TrapType'),
       width: "15%",
     },
     {
       data: "Variables",
-      title: "変数",
+      title: $_('Trap.Variables'),
       width: "50%",
     },
   ];
@@ -126,7 +127,7 @@
       ip = a[0];
     }
     polling = await GetDefaultPolling(ip);
-    polling.Name = `${d[0].TrapType} TRAP監視`; 
+    polling.Name = `${d[0].TrapType}`; 
     polling.Type = "trap";
     polling.Mode = "count";
     polling.Script = "count < 1";
@@ -148,7 +149,7 @@
     {#if selectedCount == 1}
       <Button color="green" type="button" on:click={watch} size="xs">
         <Icon path={icons.mdiEye} size={1} />
-        ポーリング
+        {$_('Trap.Polling')}
       </Button>
     {/if}
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
@@ -161,11 +162,11 @@
     </Button>
     <Button type="button" color="green" on:click={() => {showReport=true}} size="xs">
       <Icon path={icons.mdiChartPie} size={1} />
-      レポート
+      {$_('Trap.Report')}
     </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
-      更新
+      {$_('Trap.Reload')}
     </Button>
   </div>
 </div>
