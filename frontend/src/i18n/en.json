@@ -369,5 +369,20 @@
     "Reload": "Reload",
     "Report": "Report",
     "State": "Satte"
+  },
+  "NodePolling": {
+    "Add": "Add",
+    "Close": "Close",
+    "Copy": "Copy",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "LastTime": "Last time",
+    "Level": "Level",
+    "LogMode": "Log mode",
+    "Name": "Name",
+    "Reload": "Reload",
+    "Report": "Report",
+    "State": "State",
+    "Type": "Type"
   }
 }

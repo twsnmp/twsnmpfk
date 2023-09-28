@@ -369,5 +369,20 @@
     "ReCheck": "再確認",
     "CheckAll": "すべて再確認",
     "Reload": "更新"
+  },
+  "NodePolling": {
+    "State": "状態",
+    "Name": "名前",
+    "Level": "レベル",
+    "Type": "種別",
+    "LogMode": "ログ",
+    "LastTime": "最終確認",
+    "Add": "追加",
+    "Edit": "編集",
+    "Copy": "コピー",
+    "Report": "レポート",
+    "Delete": "削除",
+    "Reload": "更新",
+    "Close": "閉じる"
   }
 }

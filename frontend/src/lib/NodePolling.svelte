@@ -12,10 +12,10 @@
   } from "./common";
   import Polling from "./Polling.svelte";
   import AddPolling from "./AddPolling.svelte";
-
   import PollingReport from "./PollingReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
+  import { _ } from "svelte-i18n";
 
   export let nodeID = "";
   let show: boolean = false;
@@ -111,35 +111,35 @@
   const columns = [
     {
       data: "State",
-      title: "状態",
+      title: $_('NodePolling.State'),
       width: "15%",
       render: renderState,
     },
     {
       data: "Name",
-      title: "名前",
+      title: $_('NodePolling.Name'),
       width: "35%",
     },
     {
       data: "Level",
-      title: "レベル",
+      title: $_('NodePolling.Level'),
       width: "15%",
       render: renderState,
     },
     {
       data: "Type",
-      title: "種別",
+      title: $_('NodePolling.Type'),
       width: "10%",
     },
     {
       data: "LogMode",
-      title: "ログ",
+      title: $_('NodePolling.LogMode'),
       width: "10%",
       render: getLogModeName,
     },
     {
       data: "LastTime",
-      title: "最終確認",
+      title: $_('NodePolling.LastTime'),
       width: "15%",
       render: renderTime,
     },
@@ -171,35 +171,35 @@
     <div class="flex justify-end space-x-2 mr-2">
       <Button color="blue" type="button" on:click={add} size="xs">
         <Icon path={icons.mdiPlus} size={1} />
-        追加
+        { $_('NodePolling.Add') }
       </Button>
       {#if selectedCount == 1}
         <Button color="blue" type="button" on:click={edit} size="xs">
           <Icon path={icons.mdiPencil} size={1} />
-          編集
+          { $_('NodePolling.Edit') }
         </Button>
         <Button color="blue" type="button" on:click={copy} size="xs">
           <Icon path={icons.mdiContentCopy} size={1} />
-          コピー
+          { $_('NodePolling.Copy') }
         </Button>
         <Button color="green" type="button" on:click={report} size="xs">
           <Icon path={icons.mdiChartBar} size={1} />
-          レポート
+          { $_('NodePolling.Report') }
         </Button>
       {/if}
       {#if selectedCount > 0}
         <Button color="red" type="button" on:click={deletePollings} size="xs">
           <Icon path={icons.mdiTrashCan} size={1} />
-          削除
+          { $_('NodePolling.Delete') }
         </Button>
       {/if}
       <Button type="button" color="alternative" on:click={refresh} size="xs">
         <Icon path={icons.mdiRecycle} size={1} />
-        更新
+        { $_('NodePolling.Reload') }
       </Button>
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        { $_('NodePolling.Close') }
       </Button>
     </div>
   </div>
