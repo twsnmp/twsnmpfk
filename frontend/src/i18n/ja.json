@@ -563,5 +563,12 @@
     "Polling": "ポーリング",
     "Report": "レポート",
     "Reload": "更新"
+  },
+  "TrapReport": {
+    "CountByType": "TRAP種類別",
+    "Heatmap": "ヒートマップ",
+    "CountByFromAddress": "送信元アドレス別",
+    "Chart3D": "送信元と種別(3D)",
+    "Close": "閉じる"
   }
 }

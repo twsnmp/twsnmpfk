@@ -563,5 +563,12 @@
     "Time": "Time",
     "TrapType": "Trap type",
     "Variables": "Variables"
+  },
+  "TrapReport": {
+    "Chart3D": "3D chart",
+    "Close": "Close",
+    "CountByFromAddress": "Count by from address",
+    "CountByType": "Count by type",
+    "Heatmap": "Heatmap"
   }
 }
