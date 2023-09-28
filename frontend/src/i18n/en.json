@@ -546,5 +546,13 @@
     "Tag": "Tag",
     "Time": "Time",
     "Type": "Type"
+  },
+  "SyslogReport": {
+    "Chart3D": "3D chart",
+    "Close": "Close",
+    "CountByHost": "Count by host",
+    "CountByLevel": "Count by Level",
+    "FFT": "FFT",
+    "Heatmap": "Heatmap"
   }
 }

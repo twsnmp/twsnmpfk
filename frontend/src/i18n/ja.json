@@ -546,5 +546,13 @@
     "Polling": "ポーリング",
     "Report": "レポート",
     "Reload": "更新"
+  },
+  "SyslogReport": {
+    "CountByLevel": "状態別",
+    "Heatmap": "ヒートマップ",
+    "CountByHost": "ホスト別",
+    "Chart3D": "ホスト別(3D)",
+    "FFT": "FFTによる周期分析",
+    "Close": "閉じる"
   }
 }

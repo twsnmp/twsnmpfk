@@ -6,6 +6,7 @@
   import type { datastore } from "wailsjs/go/models";
   import {showSyslogLevelChart,showSyslogHost,showSyslogHost3D,showSyslogFFT3D  } from "./chart/syslog";
   import { showLogHeatmap } from "./chart/eventlog";
+  import { _ } from "svelte-i18n";
 
   export let logs : datastore.SyslogEnt[] | undefined =undefined;
   let show: boolean = false;
@@ -55,35 +56,35 @@
       <TabItem open on:click={()=>{showChart("level")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
-          状態別
+          {$_('SyslogReport.CountByLevel')}
         </div>
         <div id="level" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("heatmap")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
-          ヒートマップ
+          {$_('SyslogReport.Heatmap')}
         </div>
         <div id="heatmap" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("host")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
-          ホスト別
+          {$_('SyslogReport.CountByHost')}
         </div>
         <div id="host" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("host3D")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartScatterPlot} size={1} />
-          ホスト別(3D)
+          {$_('SyslogReport.Chart3D')}
         </div>
         <div id="host3D" style="height: 500px;"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("fft")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
-          FFTによる周期分析
+          {$_('SyslogReport.FFT')}
         </div>
         <div id="fft" style="height: 500px;"></div>
       </TabItem>
@@ -91,7 +92,7 @@
     <div class="flex justify-end space-x-2 mr-2">
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        {$_('SyslogReport.Close')}
       </Button>
     </div>
   </div>
