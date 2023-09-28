@@ -140,6 +140,12 @@
     "& canWacthHrSystem()}\n        ",
     "Usage",
     "&",
-    "&"
+    "&",
+    "Timeout",
+    "Stat",
+    "Loc",
+    "\n      {#if !wait ",
+    "& results.length > 0}\n        {#if canShowHistogram}\n          ",
+    "& results.length > 0}\n        {#if canShowHistogram}\n          "
   ]
 }

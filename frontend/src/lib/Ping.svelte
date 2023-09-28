@@ -20,6 +20,7 @@
     formatTime,
   } from "./common";
   import * as echarts from "echarts";
+  import { _ } from "svelte-i18n";
 
   export let nodeID = "";
   let show: boolean = false;
@@ -111,19 +112,19 @@
     chart.resize();
   };
   const countList = [
-    { name: "連続", value: -1 },
-    { name: "1回", value: 1 },
-    { name: "3回", value: 3 },
-    { name: "5回", value: 5 },
-    { name: "10回", value: 10 },
-    { name: "20回", value: 20 },
-    { name: "30回", value: 30 },
-    { name: "50回", value: 50 },
-    { name: "100回", value: 100 },
+    { name: $_('Ping.Cont'), value: -1 },
+    { name: $_('Ping.Coun1'), value: 1 },
+    { name: $_('Ping.Count3'), value: 3 },
+    { name: $_('Ping.Count5'), value: 5 },
+    { name: $_('Ping.Count10'), value: 10 },
+    { name: $_('Ping.Count20'), value: 20 },
+    { name: $_('Ping.Count30'), value: 30 },
+    { name: $_('Ping.Count50'), value: 50 },
+    { name: $_('Ping.Count100'), value: 100 },
   ];
 
   const sizeList = [
-    { name: "変化モード", value: -1 },
+    { name: $_('Ping.IncSize'), value: -1 },
     { name: "64", value: 64 },
     { name: "128", value: 128 },
     { name: "256", value: 256 },
@@ -133,7 +134,7 @@
   ];
 
   const ttlList = [
-    { name: "トレースルート", value: -1 },
+    { name: $_('PingTraceRoute'), value: -1 },
     { name: "1", value: 1 },
     { name: "2", value: 2 },
     { name: "4", value: 4 },
@@ -151,11 +152,11 @@
     }
 
     let state = "unknown";
-    let name = "不明";
+    let name = $_('Ping.Unknown');
     switch (s) {
       case 1:
         state = "normal";
-        name = "正常";
+        name = $_('Ping.Normal');
         break;
       case 2:
         state = "error";
@@ -163,7 +164,7 @@
         break;
       case 3:
         state = "warn";
-        name = "エラー";
+        name = $_('Ping.Warn');
         break;
       case 4:
         state = "info";
@@ -192,45 +193,45 @@
   const columns = [
     {
       data: "Stat",
-      title: "結果",
+      title: $_('Ping.Result'),
       width: "10%",
       render: renderPingStat,
     },
     {
       data: "TimeStamp",
-      title: "時刻",
+      title: $_('Ping.TimeStamp'),
       width: "15%",
       render: renderTimeStamp,
     },
     {
       data: "Time",
-      title: "応答時間",
+      title: $_('Ping.RespTime'),
       width: "10%",
       render: renderRespTime,
     },
     {
       data: "Size",
-      title: "サイズ",
+      title: $_('Ping.Size'),
       width: "10%",
     },
     {
       data: "SendTTL",
-      title: "送信TTL",
+      title: $_('Ping.SendTTL'),
       width: "10%",
     },
     {
       data: "RecvTTL",
-      title: "受信TTL",
+      title: $_('Ping.RecvTTL'),
       width: "10%",
     },
     {
       data: "RecvSrc",
-      title: "応答送信IP",
+      title: $_('Ping.RecvSrc'),
       width: "15%",
     },
     {
       data: "Loc",
-      title: "位置",
+      title: $_('Ping.Loc'),
       width: "20%",
     },
   ];
@@ -351,26 +352,26 @@
       <TabItem bind:open={pingTab} on:click={showPing}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
-          PING実行
+          { $_('Ping.DoPing') }
         </div>
         <div class="flex flex-row mb-2">
           <Input
             type="text"
             bind:value={ip}
-            placeholder="IPまたはホスト名"
+            placeholder={ $_('Ping.IPOrHost') }
             required
           />
           <Select
             class="ml-2"
             items={countList}
             bind:value={count}
-            placeholder="回数"
+            placeholder={ $_('Ping.Count') }
           />
           <Select
             class="ml-2"
             items={sizeList}
             bind:value={size}
-            placeholder="サイズ"
+            placeholder={ $_('Ping.Size') }
           />
           <Select
             class="ml-2"
@@ -387,7 +388,7 @@
           <TabItem on:click={showHistogram}>
             <div slot="title" class="flex items-center gap-2">
               <Icon path={icons.mdiChartHistogram} size={1} />
-              ヒストグラム
+              { $_('Ping.Histogram') }
             </div>
             <div id="histogram" style="height: 500px;" />
           </TabItem>
@@ -395,7 +396,7 @@
         <TabItem on:click={show3D}>
           <div slot="title" class="flex items-center gap-2">
             <Icon path={icons.mdiRotate3d} size={1} />
-            3D分析
+            { $_('Ping.Chart3D') }
           </div>
           <div id="3d" style="height: 500px;" />
         </TabItem>
@@ -403,7 +404,7 @@
           <TabItem on:click={showLinear}>
             <div slot="title" class="flex items-center gap-2">
               <Icon path={icons.mdiChartScatterPlot} size={1} />
-              回線速度予測
+              { $_('Ping.LineSpeed') }
             </div>
             <div id="linear" style="height: 500px;" />
           </TabItem>
@@ -412,7 +413,7 @@
           <TabItem on:click={showWorld}>
             <div slot="title" class="flex items-center gap-2">
               <Icon path={icons.mdiMapMarker} size={1} />
-              経路分析
+              { $_('Ping.World') }
             </div>
             <div id="world" style="height: 500px;" />
           </TabItem>
@@ -424,18 +425,18 @@
         {#if wait}
           <Button type="button" color="red" on:click={stop} size="sm">
             <Icon path={icons.mdiStop} size={1} />
-            停止
+            { $_('Ping.Stop') }
           </Button>
         {:else}
           <Button type="button" color="blue" on:click={start} size="sm">
             <Icon path={icons.mdiPlay} size={1} />
-            開始
+            { $_('Ping.Start') }
           </Button>
         {/if}
       {/if}
       <Button type="button" color="alternative" on:click={close} size="sm">
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        { $_('Ping.Close') }
       </Button>
     </div>
   </div>
