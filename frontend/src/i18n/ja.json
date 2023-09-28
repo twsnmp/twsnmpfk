@@ -518,5 +518,22 @@
     "Report": "レポート",
     "Delete": "削除",
     "Reload": "更新"
+  },
+  "PollingReport": {
+    "State": "状態",
+    "Time": "日時",
+    "Result": "結果",
+    "BasicInfo": "基本情報",
+    "Item": "項目",
+    "Content": "内容",
+    "NodeName": "ノード名",
+    "Name": "ポーリング名",
+    "LastTime": "最終実施",
+    "PollingLog": "ポーリングログ",
+    "TimeChart": "時系列",
+    "Histogram": "ヒストグラム",
+    "SelectVal": "変数を選択",
+    "AI": "AI分析",
+    "Close": "閉じる"
   }
 }

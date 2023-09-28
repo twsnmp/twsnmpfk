@@ -35,6 +35,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { showAIHeatMap } from "./chart/ai";
+  import { _ } from "svelte-i18n";
 
   export let id = "";
 
@@ -116,19 +117,19 @@
       columns: [
         {
           data: "State",
-          title: "状態",
+          title: $_('PollingReport.State'),
           width: "10%",
           render: renderState,
         },
         {
           data: "Time",
-          title: "日時",
+          title: $_('PollingReport.Time'),
           width: "15%",
           render: renderTime,
         },
         {
           data: "Result",
-          title: "結果",
+          title: $_('PollingReport.Result'),
           width: "75%",
           render: renderResult,
         },
@@ -167,24 +168,24 @@
       <TabItem open>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
-          基本情報
+          { $_('PollingReport.BasicInfo') }
         </div>
         <Table striped={true}>
           <TableHead>
-            <TableHeadCell>項目</TableHeadCell>
-            <TableHeadCell>内容</TableHeadCell>
+            <TableHeadCell>{ $_('PollingReport.Item') }</TableHeadCell>
+            <TableHeadCell>{ $_('PollingReport.Content') }</TableHeadCell>
           </TableHead>
           <TableBody tableBodyClass="divide-y">
             <TableBodyRow>
-              <TableBodyCell>ノード名</TableBodyCell>
+              <TableBodyCell>{ $_('PollingReport.NodeName') }</TableBodyCell>
               <TableBodyCell>{node.Name}</TableBodyCell>
             </TableBodyRow>
             <TableBodyRow>
-              <TableBodyCell>ポーリング名</TableBodyCell>
+              <TableBodyCell>{ $_('PollingReport.Name') }</TableBodyCell>
               <TableBodyCell>{polling.Name}</TableBodyCell>
             </TableBodyRow>
             <TableBodyRow>
-              <TableBodyCell>状態</TableBodyCell>
+              <TableBodyCell>{ $_('PollingReport.State') }</TableBodyCell>
               <TableBodyCell>
                 <span
                   class="mdi {getStateIcon(polling.State)} text-xl"
@@ -196,7 +197,7 @@
               </TableBodyCell>
             </TableBodyRow>
             <TableBodyRow>
-              <TableBodyCell>最終実施</TableBodyCell>
+              <TableBodyCell>{ $_('PollingReport.LastTime') }</TableBodyCell>
               <TableBodyCell>{renderTime(polling.LastTime, "")}</TableBodyCell>
             </TableBodyRow>
             {#each Object.keys(polling.Result) as k}
@@ -212,7 +213,7 @@
         <TabItem on:click={showLog}>
           <div slot="title" class="flex items-center gap-2">
             <Icon path={icons.mdiLanCheck} size={1} />
-            ポーリングログ
+            { $_('PollingReport.PollingLog') }
           </div>
           <div id="log" style="height: 200px; margin-bottom:10px" />
           <table id="pollingLogTable" class="display compact" style="width:99%" />
@@ -220,24 +221,24 @@
         <TabItem on:click={showTimeChart}>
           <div slot="title" class="flex items-center gap-2">
             <Icon path={icons.mdiCalendarCheck} size={1} />
-            時系列
+            { $_('PollingReport.TimeChart') }
           </div>
-          <Select class="mb-2" size="sm" items={entList} bind:value={selectedEnt} on:change={showTimeChart} placeholder="変数を選択"/>
+          <Select class="mb-2" size="sm" items={entList} bind:value={selectedEnt} on:change={showTimeChart} placeholder={ $_('PollingReport.SelectVal') }/>
           <div id="time" style="height: 500px;" />
         </TabItem>
         <TabItem on:click={showHistogram}>
           <div slot="title" class="flex items-center gap-2">
             <Icon path={icons.mdiAppsBox} size={1} />
-            ヒストグラム
+            { $_('PollingReport.Histogram') }
           </div>
-          <Select class="mb-2" size="sm" items={entList} bind:value={selectedEnt} on:change={showHistogram} placeholder="変数を選択"/>
+          <Select class="mb-2" size="sm" items={entList} bind:value={selectedEnt} on:change={showHistogram} placeholder={ $_('PollingReport.SelectVal') }/>
           <div id="histogram" style="height: 500px;" />
         </TabItem>
         {#if polling.LogMode == 3 && aiResult}
           <TabItem on:click={showAI}>
             <div slot="title" class="flex items-center gap-2">
               <Icon path={icons.mdiAppsBox} size={1} />
-              AI分析
+              { $_('PollingReport.AI') }
             </div>
             <div id="ai" style="height: 500px;" />
           </TabItem>
@@ -247,7 +248,7 @@
     <div class="flex justify-end space-x-2 mr-2">
       <Button type="button" color="alternative" on:click={close} size="sm" class="w-18">
         <Icon path={icons.mdiCancel} size={1} />
-        閉じる
+        { $_('PollingReport.Close') }
       </Button>
     </div>
   </div>

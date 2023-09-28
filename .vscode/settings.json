@@ -148,6 +148,10 @@
     "& results.length > 0}\n        {#if canShowHistogram}\n          ",
     "& results.length > 0}\n        {#if canShowHistogram}\n          ",
     "Params",
-    "Filter"
+    "Filter",
+    "Result",
+    "=",
+    "\n        {#if polling.LogMode == 3 ",
+    "& aiResult}\n          "
   ]
 }

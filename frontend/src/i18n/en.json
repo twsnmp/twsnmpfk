@@ -518,5 +518,22 @@
     "Report": "Report",
     "State": "State",
     "Type": "Type"
+  },
+  "PollingReport": {
+    "AI": "AI",
+    "BasicInfo": "Basic Info",
+    "Close": "Close",
+    "Content": "Content",
+    "Histogram": "Histogram",
+    "Item": "Item",
+    "LastTime": "Last time",
+    "Name": "Name",
+    "NodeName": "Node name",
+    "PollingLog": "Polling log",
+    "Result": "Result",
+    "SelectVal": "Select variable",
+    "State": "State",
+    "Time": "Time",
+    "TimeChart": "Time chart"
   }
 }
