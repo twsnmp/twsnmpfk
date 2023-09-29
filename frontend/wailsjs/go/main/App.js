@@ -146,6 +146,10 @@ export function GetMapConf() {
   return window['go']['main']['App']['GetMapConf']();
 }
 
+export function GetMapEventLogs() {
+  return window['go']['main']['App']['GetMapEventLogs']();
+}
+
 export function GetMapName() {
   return window['go']['main']['App']['GetMapName']();
 }

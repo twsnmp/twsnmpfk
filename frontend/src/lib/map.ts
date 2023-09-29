@@ -17,7 +17,6 @@ const MAP_SIZE_X = 2500;
 const MAP_SIZE_Y = 5000;
 let mapRedraw = true;
 let readOnly = false;
-let dark = false;
 
 let mapCallBack = undefined;
 
@@ -59,8 +58,8 @@ export const initMAP = async (div:HTMLElement,cb :any) => {
   _mapP5 = new P5(mapMain, div)
 }
 
-export const updateMAP = async (d:boolean) => {
-  dark = d;
+export const updateMAP = async () => {
+  const dark = isDark();
   nodes = await GetNodes();
   lines = await GetLines();
   items = await GetDrawItems() || {};
@@ -182,12 +181,18 @@ const getLineColor = (state) => {
   return 250
 }
 
+const isDark = () :boolean => {
+  const  e = document.querySelector("html");
+  return e.classList.contains("dark");
+}
+
 const mapMain = (p5:P5) => {
   let startMouseX = 0;
   let startMouseY = 0;
   let lastMouseX = 0;
   let lastMouseY = 0;
   let dragMode  = 0; // 0 : None , 1: Select , 2 :Move
+  let oldDark = false;
   const draggedNodes = [];
   const draggedItems = [];
   let clickInCanvas = false;
@@ -201,6 +206,11 @@ const mapMain = (p5:P5) => {
   }
 
   p5.draw = () => {
+    const dark = isDark();
+    if (dark != oldDark) {
+      mapRedraw = true;
+      oldDark = dark;
+    }
     if (!mapRedraw){
       return;
     }

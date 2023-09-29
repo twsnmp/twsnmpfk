@@ -122,9 +122,6 @@
       neko = neko_ok;
       if (name.endsWith("Table")) {
         tableMIBData(mibs);
-        console.log(mibs);
-        console.log(columns);
-        console.log(data);
       } else {
         columns = basicColumns;
         data = [];

@@ -45,7 +45,6 @@
   let showPing: boolean = false;
   let showMibBr: boolean = false;
 
-  export let dark: boolean = false;
   let timer = undefined;
   let urls = [];
 
@@ -107,11 +106,9 @@
     }
   };
   let count = 0;
-  let oldDark = false;
   const refreshMap = async () => {
-    if (count < 2 || count % 5 == 0 || dark != oldDark) {
-      updateMAP(dark);
-      oldDark = dark;
+    if (count < 2 || count % 5 == 0 ) {
+      updateMAP();
     }
     count++;
     timer = setTimeout(refreshMap, 1000);

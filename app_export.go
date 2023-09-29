@@ -95,7 +95,7 @@ func (a *App) ExportEventLogs(t string) string {
 		Title:  "TWSNMP Event Log",
 		Header: []string{"Level", "Time", "Type", "Node Name", "Event"},
 	}
-	datastore.ForEachLastEventLog(0, func(l *datastore.EventLogEnt) bool {
+	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
 		e := []any{}
 		e = append(e, l.Level)
 		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))

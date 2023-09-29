@@ -8,11 +8,24 @@ import (
 // GetEventLogs retunrs  event logs
 func (a *App) GetEventLogs(id string) []*datastore.EventLogEnt {
 	ret := []*datastore.EventLogEnt{}
-	datastore.ForEachLastEventLog(0, func(l *datastore.EventLogEnt) bool {
+	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
 		if id == "" || id == l.NodeID {
 			ret = append(ret, l)
 		}
 		return len(ret) < maxDispLog
+	})
+	return ret
+}
+
+// GetMapEventLogs retunrs  event logs
+func (a *App) GetMapEventLogs() []*datastore.EventLogEnt {
+	ret := []*datastore.EventLogEnt{}
+	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
+		if l.Type == "user" || l.Type == "oprate" || l.Type == "arpwatch" {
+			return true
+		}
+		ret = append(ret, l)
+		return len(ret) < 100
 	})
 	return ret
 }

@@ -521,7 +521,6 @@ export const showPingLinearChart = (div, results) => {
     numeral(reg.parameter.gradient ? 1.0 / reg.parameter.gradient : 0.0).format(
       '0.00a'
     ) + 'bps';
-  console.log(reg);
   const delay = reg.parameter.intercept.toFixed(6) + `sec`
   const option = {
     title: {

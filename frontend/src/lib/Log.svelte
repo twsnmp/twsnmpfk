@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import { GetEventLogs } from "../../wailsjs/go/main/App";
+  import { GetMapEventLogs } from "../../wailsjs/go/main/App";
   import {
     renderState,
     renderTime,
@@ -62,7 +62,7 @@
   ];
 
   const updateLogs = async () => {
-    data = await GetEventLogs("");
+    data = await GetMapEventLogs();
     showTable();
     timer = setTimeout(() => {
       updateLogs();

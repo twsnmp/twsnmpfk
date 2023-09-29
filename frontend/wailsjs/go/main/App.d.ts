@@ -77,6 +77,8 @@ export function GetMIBTree():Promise<Array<datastore.MIBTreeEnt>>;
 
 export function GetMapConf():Promise<datastore.MapConfEnt>;
 
+export function GetMapEventLogs():Promise<Array<datastore.EventLogEnt>>;
+
 export function GetMapName():Promise<string>;
 
 export function GetNode(arg1:string):Promise<datastore.NodeEnt>;

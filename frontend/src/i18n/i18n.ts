@@ -7,8 +7,11 @@ import {
 
 addMessages("en", en);
 addMessages("ja", ja);
-export const lang = await GetLang();
-init({
-    fallbackLocale: "en",
-    initialLocale: lang || "en",
-});
+export let lang ="ja";
+GetLang().then((l)=> {
+  lang = l;
+  init({
+      fallbackLocale: "en",
+      initialLocale: lang || "en",
+  });
+})

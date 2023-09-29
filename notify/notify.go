@@ -77,9 +77,12 @@ func checkNotify(last int64) int64 {
 	list := []*datastore.EventLogEnt{}
 	lastLogTime := int64(0)
 	skip := 0
-	datastore.ForEachLastEventLog(last, func(l *datastore.EventLogEnt) bool {
+	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
 		if lastLogTime < l.Time {
 			lastLogTime = l.Time
+		}
+		if last >= l.Time {
+			return false
 		}
 		list = append(list, l)
 		return true

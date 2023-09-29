@@ -36,6 +36,7 @@
     if (await IsDark()) {
       const e = document.querySelector("html");
        e.classList.add("dark"); 
+       dark = true;
     }
     await tick();
     mainHeight = window.innerHeight - 96;
@@ -159,7 +160,7 @@
     style="height:{mainHeight}px;"
   >
     <div class="row-span-3">
-      <Map {dark} />
+      <Map />
     </div>
     <div class="row-span-1 ml-2 mr-2">
       <Log />

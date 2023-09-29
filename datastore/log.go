@@ -88,7 +88,7 @@ func ForEachEventLog(st, et int64, f func(*EventLogEnt) bool) error {
 	})
 }
 
-func ForEachLastEventLog(last int64, f func(*EventLogEnt) bool) error {
+func ForEachLastEventLog(f func(*EventLogEnt) bool) error {
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -103,9 +103,6 @@ func ForEachLastEventLog(last int64, f func(*EventLogEnt) bool) error {
 			err := json.Unmarshal(v, &e)
 			if err != nil {
 				continue
-			}
-			if e.Time < last {
-				break
 			}
 			if !f(&e) {
 				break

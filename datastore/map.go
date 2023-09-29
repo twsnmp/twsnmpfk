@@ -267,6 +267,7 @@ func SetDark(dark bool) error {
 	if db == nil {
 		return ErrDBNotOpen
 	}
+	Dark = dark
 	return db.Batch(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("config"))
 		if b == nil {
