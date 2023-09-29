@@ -545,7 +545,17 @@
     "Message": "メッセージ",
     "Polling": "ポーリング",
     "Report": "レポート",
-    "Reload": "更新"
+    "Reload": "更新",
+    "All": "全て",
+    "Info": "情報以上",
+    "Warn": "注意以上",
+    "Low": "軽度以上",
+    "High": "重度以上",
+    "Filter": "フィルター",
+    "SelectLevel": "レベルを選択",
+    "Search": "検索",
+    "Calcel": "キャンセル",
+    "Loading": "検索しています..."
   },
   "SyslogReport": {
     "CountByLevel": "状態別",

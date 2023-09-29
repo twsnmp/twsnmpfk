@@ -545,7 +545,17 @@
     "Report": "Report",
     "Tag": "Tag",
     "Time": "Time",
-    "Type": "Type"
+    "Type": "Type",
+    "All": "All",
+    "Calcel": "Cancel",
+    "Filter": "Filter",
+    "High": "High",
+    "Info": "Info",
+    "Loading": "Loading...",
+    "Low": "Low",
+    "Search": "Search",
+    "SelectLevel": "Select level",
+    "Warn": "Warn"
   },
   "SyslogReport": {
     "Chart3D": "3D chart",

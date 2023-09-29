@@ -1,9 +1,21 @@
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
+  import {
+    Button,
+    Modal,
+    Label,
+    Input,
+    Select,
+    Spinner,
+  } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick, onDestroy } from "svelte";
-  import { GetSyslogs, ExportSyslogs,GetDefaultPolling,AutoGrok } from "../../wailsjs/go/main/App";
+  import {
+    GetSyslogs,
+    ExportSyslogs,
+    GetDefaultPolling,
+    AutoGrok,
+  } from "../../wailsjs/go/main/App";
   import { renderState, renderTime, getTableLang } from "./common";
   import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
   import SyslogReport from "./SyslogReport.svelte";
@@ -19,6 +31,20 @@
   let table = undefined;
   let selectedCount = 0;
   let showPolling = false;
+  let showFilter = false;
+  let showLoading = false;
+  let severity = 6;
+  let host = "";
+  let tag = "";
+  let msg = "";
+
+  const levelList = [
+    { name: $_('Syslog.All'), value: 7 },
+    { name: $_('Syslog.Info'), value: 6 },
+    { name: $_('Syslog.Warn'), value: 4 },
+    { name: $_('Syslog.Low'), value: 3 },
+    { name: $_('Syslog.High'), value: 2 },
+  ];
 
   const showTable = () => {
     if (table) {
@@ -44,7 +70,9 @@
   };
 
   const refresh = async () => {
-    logs = await GetSyslogs();
+    severity *= 1;
+    showLoading = true;
+    logs = await GetSyslogs(severity, host, tag, msg);
     data = [];
     for (let i = 0; i < logs.length; i++) {
       data.push(logs[i]);
@@ -52,6 +80,7 @@
     logs.reverse();
     showTable();
     showChart();
+    showLoading = false;
   };
 
   const showChart = async () => {
@@ -72,34 +101,34 @@
   const columns = [
     {
       data: "Level",
-      title: $_('Syslog.Level'),
+      title: $_("Syslog.Level"),
       width: "10%",
       render: renderState,
     },
     {
       data: "Time",
-      title: $_('Syslog.Time'),
+      title: $_("Syslog.Time"),
       width: "15%",
       render: renderTime,
     },
     {
       data: "Host",
-      title: $_('Syslog.Host'),
+      title: $_("Syslog.Host"),
       width: "15%",
     },
     {
       data: "Type",
-      title: $_('Syslog.Type'),
+      title: $_("Syslog.Type"),
       width: "10%",
     },
     {
       data: "Tag",
-      title: $_('Syslog.Tag'),
+      title: $_("Syslog.Tag"),
       width: "10%",
     },
     {
       data: "Message",
-      title: $_('Syslog.Message'),
+      title: $_("Syslog.Message"),
       width: "40%",
     },
   ];
@@ -123,11 +152,11 @@
     ExportSyslogs("excel");
   };
 
-  let polling : datastore.PollingEnt | undefined = undefined;
+  let polling: datastore.PollingEnt | undefined = undefined;
 
   const watch = async () => {
     const d = table.rows({ selected: true }).data();
-    if (!d || d.length !=1 ) {
+    if (!d || d.length != 1) {
       return;
     }
     polling = await GetDefaultPolling(d[0].Host);
@@ -136,13 +165,12 @@
       polling.Mode = "count";
       polling.Script = "count < 1";
     }
-    polling.Name = `syslog`; 
+    polling.Name = `syslog`;
     polling.Type = "syslog";
     polling.Filter = d[0].Type + " " + d[0].Tag;
     polling.Params = d[0].Host;
     showPolling = true;
-  }
-
+  };
 </script>
 
 <svelte:window on:resize={resizeLogLevelChart} />
@@ -156,7 +184,7 @@
     {#if selectedCount == 1}
       <Button color="green" type="button" on:click={watch} size="xs">
         <Icon path={icons.mdiEye} size={1} />
-        { $_('Syslog.Polling') }
+        {$_("Syslog.Polling")}
       </Button>
     {/if}
     <Button color="blue" type="button" on:click={saveCSV} size="xs">
@@ -176,11 +204,20 @@
       size="xs"
     >
       <Icon path={icons.mdiChartPie} size={1} />
-      { $_('Syslog.Report') }
+      {$_("Syslog.Report")}
+    </Button>
+    <Button
+      color="blue"
+      type="button"
+      on:click={() => (showFilter = true)}
+      size="xs"
+    >
+      <Icon path={icons.mdiFilter} size={1} />
+      { $_('Syslog.Filter') }
     </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
-      { $_('Syslog.Reload') }
+      {$_("Syslog.Reload")}
     </Button>
   </div>
 </div>
@@ -196,12 +233,71 @@
 
 {#if showPolling}
   <Polling
-   pollingTmp={polling}
+    pollingTmp={polling}
     on:close={() => {
       showPolling = false;
     }}
   />
 {/if}
+
+<Modal bind:open={showFilter} size="sm" permanent class="w-full">
+  <form class="flex flex-col space-y-4" action="#">
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">{ $_('Syslog.Filter') }</h3>
+    <Label class="space-y-2">
+      <span>{ $_('Syslog.Level') }</span>
+      <Select
+        items={levelList}
+        bind:value={severity}
+        placeholder={ $_('Syslog.SelectLevel') }
+        size="sm"
+      />
+    </Label>
+    <Label class="space-y-2">
+      <span>{ $_('Syslog.Host') }</span>
+      <Input bind:value={host} size="sm" />
+    </Label>
+    <Label class="space-y-2">
+      <span>{ $_('Syslog.Tag') }</span>
+      <Input bind:value={tag} size="sm" />
+    </Label>
+    <Label class="space-y-2">
+      <span>{ $_('Syslog.Message') }</span>
+      <Input bind:value={msg} size="sm" />
+    </Label>
+    <div class="flex justify-end space-x-2 mr-2">
+      <Button
+        color="blue"
+        type="button"
+        on:click={() => {
+          showFilter = false;
+          refresh();
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiSearchWeb} size={1} />
+        { $_('Syslog.Search') }
+      </Button>
+      <Button
+        color="alternative"
+        type="button"
+        on:click={() => {
+          showFilter = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        { $_('Syslog.Calcel') }
+      </Button>
+    </div>
+  </form>
+</Modal>
+
+<Modal bind:open={showLoading} size="sm" permanent class="w-full">
+  <div>
+    <Spinner />
+    <span class="ml-2"> { $_('Syslog.Loading') } </span>
+  </div>
+</Modal>
 
 <style>
   @import "../assets/css/jquery.dataTables.css";
