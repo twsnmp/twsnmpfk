@@ -6,28 +6,17 @@ const $_ = unwrapFunctionStore(_);
 let chart;
 
 const makeLogCountChart = (div:string) => {
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const option = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     toolbox: {
       iconStyle: {
         color: '#ccc',
       },
       feature: {
         dataZoom: {},
-        saveAsImage: { name: 'twsnmp_' + div },
       },
     },
     dataZoom: [{}],

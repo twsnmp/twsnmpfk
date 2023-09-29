@@ -54,6 +54,13 @@
  
   const zoomCallBack = (st:number, et:number) => {
     data = [];
+    if (!st) {
+      for (let i =0; i < logs.length;i++) {
+        data.push(logs[i]);
+      }
+      logs.reverse();
+      return;
+    }
     for(let i = logs.length -1 ; i >= 0;i--) {
       if (logs[i].Time >= st && logs[i].Time <= et) {
         data.push(logs[i]);

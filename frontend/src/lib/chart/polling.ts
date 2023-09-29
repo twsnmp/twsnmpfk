@@ -146,23 +146,12 @@ const getPollingChartOption = (div) => {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: "#4b5769",
-      },
-      {
-        offset: 1,
-        color: "#404a59",
-      },
-    ]),
     toolbox: {
       iconStyle: {
         color: "#ccc",
       },
       feature: {
         dataZoom: {},
-        saveAsImage: { name: "twsnmp_" + div },
       },
     },
     dataZoom: [{}],
@@ -280,7 +269,7 @@ export const showPollingChart = (div, logs, ent) => {
   if (chart) {
     chart.dispose();
   }
-  chart = echarts.init(document.getElementById(div));
+  chart = echarts.init(document.getElementById(div),"dark");
 
   const option: any = getPollingChartOption(div);
 
@@ -377,28 +366,17 @@ const makePollingHistogram = (div) => {
   if (chart) {
     chart.dispose();
   }
-  chart = echarts.init(document.getElementById(div));
+  chart = echarts.init(document.getElementById(div),"dark");
   const option = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: "#4b5769",
-      },
-      {
-        offset: 1,
-        color: "#404a59",
-      },
-    ]),
     toolbox: {
       iconStyle: {
         color: "#ccc",
       },
       feature: {
         dataZoom: {},
-        saveAsImage: { name: "twsnmp_" + div },
       },
     },
     dataZoom: [{}],

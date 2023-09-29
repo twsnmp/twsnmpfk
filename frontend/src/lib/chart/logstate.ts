@@ -1,33 +1,22 @@
-import * as echarts from 'echarts'
-import { setZoomCallback } from './utils.js'
+import * as echarts from 'echarts';
+import { setZoomCallback } from './utils.js';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart
+let chart;
 
 const makeLogStateChart = (div) => {
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark");
   const option = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     toolbox: {
       iconStyle: {
         color: '#ccc',
       },
       feature: {
         dataZoom: {},
-        saveAsImage: { name: 'twsnmp_' + div },
       },
     },
     dataZoom: [{}],

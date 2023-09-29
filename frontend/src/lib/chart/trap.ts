@@ -1,6 +1,5 @@
 import * as echarts from 'echarts';
 import 'echarts-gl';
-import { isDark } from './utils'
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
@@ -10,8 +9,7 @@ export const showTrapFromAddr = (div, logs) => {
   if (chart) {
     chart.dispose()
   }
-  const dark = isDark();
-  chart = echarts.init(document.getElementById(div),dark ? "dark":"");
+  chart = echarts.init(document.getElementById(div),"dark");
   const option = {
     title: {
       show: false,
@@ -22,14 +20,6 @@ export const showTrapFromAddr = (div, logs) => {
         fontSize: 12,
       },
       data: [],
-    },
-    toolbox: {
-      iconStyle: {
-        color: dark ? "#ccc" : "#222",
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {
       trigger: 'axis',
@@ -52,17 +42,17 @@ export const showTrapFromAddr = (div, logs) => {
       type: 'category',
       data: [],
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 10,
         margin: 2,
       },
@@ -149,19 +139,10 @@ export const showTrapLog3D = (div, logs) => {
   if (chart) {
     chart.dispose()
   }
-  const dark = isDark();
-  chart = echarts.init(document.getElementById(div),dark ? "dark" : "");
+  chart = echarts.init(document.getElementById(div),"dark");
   const options = {
     title: {
       show: false,
-    },
-    toolbox: {
-      iconStyle: {
-        color: dark ? "#ccc" : "#222",
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {},
     animationDurationUpdate: 1500,
@@ -180,18 +161,18 @@ export const showTrapLog3D = (div, logs) => {
       name: $_("Ts.Sender"),
       data: froms,
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 10,
         margin: 2,
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
     },
@@ -199,12 +180,12 @@ export const showTrapLog3D = (div, logs) => {
       type: 'time',
       name: 'Time',
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 8,
         formatter(value, index) {
           const date = new Date(value)
@@ -213,7 +194,7 @@ export const showTrapLog3D = (div, logs) => {
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
     },
@@ -222,27 +203,27 @@ export const showTrapLog3D = (div, logs) => {
       name: 'TRAP Type',
       data: types,
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 8,
         margin: 2,
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
     },
     grid3D: {
       axisLine: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
       },
       axisPointer: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
       },
       viewControl: {
         projection: 'orthographic',
@@ -279,19 +260,10 @@ export const showTrapTypeChart = (div:string, logs) => {
   if (chart) {
     chart.dispose()
   }
-  const dark = isDark();
-  chart = echarts.init(document.getElementById(div),dark? "dark" : "");
+  chart = echarts.init(document.getElementById(div),"dark");
   const option = {
     title: {
       show: false,
-    },
-    toolbox: {
-      iconStyle: {
-        color: dark ? "#ccc" : "#222",
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {
       trigger: 'item',
@@ -300,7 +272,7 @@ export const showTrapTypeChart = (div:string, logs) => {
     legend: {
       data: [],
       textStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
       },
     },
     series: [
@@ -310,7 +282,7 @@ export const showTrapTypeChart = (div:string, logs) => {
         radius: '75%',
         center: ['45%', '50%'],
         label: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
           fontSize: 12,
         },
         data: [],

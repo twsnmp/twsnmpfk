@@ -1,6 +1,5 @@
 import * as echarts from 'echarts';
 import 'echarts-gl';
-import { isDark } from './utils'
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
@@ -20,21 +19,11 @@ export const showArpLogIP = (div, logs) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   chart.setOption({
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     color: ['#1f78b4','#e31a1c'],
     legend: {
       top: 15,
@@ -43,14 +32,6 @@ export const showArpLogIP = (div, logs) => {
         color: '#ccc',
       },
       data: [$_("Ts.New"), $_("Ts.Change")],
-    },
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {
       trigger: 'axis',
@@ -156,19 +137,10 @@ export const showArpLogIP3D = (div, logs) => {
   if (chart) {
     chart.dispose()
   }
-  const dark = isDark();
-  chart = echarts.init(document.getElementById(div),dark ? "dark" : "");
+  chart = echarts.init(document.getElementById(div),"dark");
   const options = {
     title: {
       show: false,
-    },
-    toolbox: {
-      iconStyle: {
-        color: dark ? "#ccc" : "#222",
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {},
     animationDurationUpdate: 1500,
@@ -187,18 +159,18 @@ export const showArpLogIP3D = (div, logs) => {
       name: 'ip',
       data: cat,
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 10,
         margin: 2,
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
     },
@@ -206,12 +178,12 @@ export const showArpLogIP3D = (div, logs) => {
       type: 'time',
       name: 'time',
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 8,
         formatter(value, index) {
           const date = new Date(value)
@@ -220,7 +192,7 @@ export const showArpLogIP3D = (div, logs) => {
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
     },
@@ -229,27 +201,27 @@ export const showArpLogIP3D = (div, logs) => {
       name: 'satte',
       data: ["New","Change"],
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 8,
         margin: 2,
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
     },
     grid3D: {
       axisLine: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
       },
       axisPointer: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
       },
       viewControl: {
         projection: 'orthographic',
@@ -317,34 +289,16 @@ export const showArpGraph = (div, arp, type,changeIP,changeMAC) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const options = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     grid: {
       left: '7%',
       right: '4%',
       bottom: '3%',
       containLabel: true,
-    },
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {
       trigger: 'item',

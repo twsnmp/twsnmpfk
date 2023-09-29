@@ -8,7 +8,7 @@ export const showAIHeatMap = (div, scores) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const hours = [
     '0',
     '1',
@@ -39,16 +39,6 @@ export const showAIHeatMap = (div, scores) => {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     grid: {
       left: '10%',
       right: '5%',
@@ -61,7 +51,6 @@ export const showAIHeatMap = (div, scores) => {
       },
       feature: {
         dataZoom: {},
-        saveAsImage: { name: 'twsnmp_' + div },
       },
     },
     dataZoom: [{}],
@@ -185,30 +174,12 @@ export const showAIPieChart = (div, scores) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const option = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     color: ['#1f78b4', '#dfdf22', '#e31a1c'],
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
-    },
     tooltip: {
       trigger: 'item',
       formatter: '{a} <br/>{b} : {c} ({d}%)',
@@ -257,28 +228,17 @@ export const showAITimeChart = (div, scores) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const option = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     toolbox: {
       iconStyle: {
         color: '#ccc',
       },
       feature: {
         dataZoom: {},
-        saveAsImage: { name: 'twsnmp_' + div },
       },
     },
     dataZoom: [{}],

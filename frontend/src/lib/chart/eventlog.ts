@@ -1,14 +1,14 @@
-import * as echarts from 'echarts'
+import * as echarts from 'echarts';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart
+let chart;
 
 export const showLogHeatmap = (div, logs) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark");
   const hours = [
     '0',
     '1',
@@ -39,18 +39,8 @@ export const showLogHeatmap = (div, logs) => {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     grid: {
-      left: '10%',
+      left: '5%',
       right: '5%',
       top: 30,
       buttom: 0,
@@ -61,7 +51,6 @@ export const showLogHeatmap = (div, logs) => {
       },
       feature: {
         dataZoom: {},
-        saveAsImage: { name: 'twsnmp_' + div },
       },
     },
     dataZoom: [{}],
@@ -202,32 +191,14 @@ export const showLogHeatmap = (div, logs) => {
 
 export const showEventLogStateChart = (div:string, logs) => {
   if (chart) {
-    chart.dispose()
+    chart.dispose();
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark");
   const option = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     color: ['#e31a1c', '#fb9a99', '#dfdf22', '#33a02c', '#1f78b4', '#bbb'],
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
-    },
     tooltip: {
       trigger: 'item',
       formatter: '{a} <br/>{b} : {c} ({d}%)',
@@ -289,30 +260,19 @@ export const showEventLogStateChart = (div:string, logs) => {
 
 export const showEventLogTimeChart = (div, type, logs) => {
   if (chart) {
-    chart.dispose()
+    chart.dispose();
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark");
   const option = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     toolbox: {
       iconStyle: {
         color: '#ccc',
       },
       feature: {
         dataZoom: {},
-        saveAsImage: { name: 'twsnmp_event_log' + type },
       },
     },
     dataZoom: [{}],
@@ -474,21 +434,11 @@ export const showEventLogNodeChart = (div, logs) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark");
   chart.setOption({
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     color: ['#e31a1c', '#fb9a99', '#dfdf22', '#33a02c', '#1f78b4', '#bbb'],
     legend: {
       top: 15,
@@ -497,14 +447,6 @@ export const showEventLogNodeChart = (div, logs) => {
         color: '#ccc',
       },
       data: [ $_("Ts.High"),$_("Ts.Low"),$_("Ts.Warn"), $_("Ts.Normal"),$_("Ts.Repair"),$_("Ts.Other")],
-    },
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_eventlog_state' },
-      },
     },
     tooltip: {
       trigger: 'axis',

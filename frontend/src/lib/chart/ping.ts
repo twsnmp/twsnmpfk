@@ -1,7 +1,6 @@
 import * as echarts from 'echarts';
 import * as ecStat from 'echarts-stat';
 import * as numeral from 'numeral';
-import { isDark } from './utils';
 import WorldData from 'world-map-geojson';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
@@ -9,7 +8,6 @@ const $_ = unwrapFunctionStore(_);
 let chart;
 
 export const getPingChartOption = () => {
-  const dark = isDark();
   return {
     title: {
       show: false,
@@ -29,7 +27,7 @@ export const getPingChartOption = () => {
     legend: {
       data: [$_("Ts.RespTimeSec"), $_("Ts.SendTTL"),$_("Ts.RecvTTL")],
       textStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 10,
       },
     },
@@ -37,12 +35,12 @@ export const getPingChartOption = () => {
       type: 'time',
       name: $_("Ts.DateTime"),
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 10,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: '8px',
         formatter(value, index) {
           const date = new Date(value)
@@ -51,7 +49,7 @@ export const getPingChartOption = () => {
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
       splitLine: {
@@ -63,18 +61,18 @@ export const getPingChartOption = () => {
         type: 'value',
         name: $_("Ts.RespTimeSec"),
         nameTextStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
           fontSize: 10,
           margin: 2,
         },
         axisLabel: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
           fontSize: 8,
           margin: 2,
         },
         axisLine: {
           lineStyle: {
-            color: dark ? "#ccc" : "#222",
+            color: '#ccc',
           },
         },
       },
@@ -82,18 +80,18 @@ export const getPingChartOption = () => {
         type: 'value',
         name: 'TTL',
         nameTextStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
           fontSize: 10,
           margin: 2,
         },
         axisLabel: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
           fontSize: 8,
           margin: 2,
         },
         axisLine: {
           lineStyle: {
-            color: dark ? "#ccc" : "#222",
+            color: '#ccc',
           },
         },
       },
@@ -143,8 +141,7 @@ export const showPing3DChart = (div, results) => {
     }
     data.push([r.Size, t, rtt])
   })
-  const dark = isDark();
-  chart = echarts.init(document.getElementById(div),dark ? "dark" : "");
+  chart = echarts.init(document.getElementById(div),"dark");
   const options = {
     title: {
       show: false,
@@ -173,18 +170,18 @@ export const showPing3DChart = (div, results) => {
       type: 'value',
       name: $_("Ts.Size"),
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 10,
         margin: 2,
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
     },
@@ -192,12 +189,12 @@ export const showPing3DChart = (div, results) => {
       type: 'time',
       name: $_("Ts.DateTime"),
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 8,
         formatter(value, index) {
           const date = new Date(value)
@@ -206,7 +203,7 @@ export const showPing3DChart = (div, results) => {
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
     },
@@ -214,30 +211,30 @@ export const showPing3DChart = (div, results) => {
       type: 'value',
       name: $_("Ts.RespTimeSec"),
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 12,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 8,
         margin: 2,
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
     },
     grid3D: {
       axisLine: {
         lineStyle: { 
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
       axisPointer: {
         lineStyle: { 
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
       viewControl: {
@@ -259,11 +256,10 @@ export const showPing3DChart = (div, results) => {
 }
 
 export const showPingMapChart = (div, results) => {
-  const dark = isDark();
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   echarts.registerMap('world', WorldData)
   const option = {
     grid: {
@@ -278,7 +274,7 @@ export const showPingMapChart = (div, results) => {
       emphasis: {
         label: {
           show: false,
-          areaColor: dark ? '#eee' : '#222',
+          areaColor: '#ccc',
         },
       },
       itemStyle: {
@@ -366,7 +362,6 @@ export const showPingMapChart = (div, results) => {
 }
 
 export const showPingHistgram = (div, results) => {
-  const dark = isDark();
   if (chart) {
     chart.dispose()
   }
@@ -378,7 +373,7 @@ export const showPingHistgram = (div, results) => {
     data.push(r.Time / (1000 * 1000 * 1000))
   })
   const bins = ecStat.histogram(data,"squareRoot")
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const option = {
     title: {
       show: false,
@@ -404,12 +399,12 @@ export const showPingHistgram = (div, results) => {
       name: $_("Ts.RespTimeSec"),
       min: 0,
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 10,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 8,
         margin: 2,
       },
@@ -417,12 +412,12 @@ export const showPingHistgram = (div, results) => {
     yAxis: {
       name: $_("Ts.Count"),
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 10,
         margin: 2,
       },
       axisLabel: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 8,
         margin: 2,
       },
@@ -442,11 +437,10 @@ export const showPingHistgram = (div, results) => {
 }
 
 export const showPingLinearChart = (div, results) => {
-  const dark = isDark();
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const data = []
   results.forEach((r) => {
     if (r.Stat !== 1) {
@@ -480,13 +474,13 @@ export const showPingLinearChart = (div, results) => {
       type: 'value',
       name: $_("Ts.Size"),
       nameTextStyle: {
-        color: dark ? "#ccc" : "#222",
+        color: '#ccc',
         fontSize: 10,
         margin: 2,
       },
       axisLine: {
         lineStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
         },
       },
       splitLine: {
@@ -498,17 +492,17 @@ export const showPingLinearChart = (div, results) => {
         type: 'value',
         name: $_("Ts.RespTimeSec"),
         nameTextStyle: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
           fontSize: 10,
           margin: 2,
         },
         axisLine: {
           lineStyle: {
-            color: dark ? "#ccc" : "#222",
+            color: '#ccc',
           },
         },
         axisLabel: {
-          color: dark ? "#ccc" : "#222",
+          color: '#ccc',
           fontSize: 8,
           margin: 2,
         },
@@ -541,7 +535,7 @@ export const showPingLinearChart = (div, results) => {
               show: true,
               formatter: `回線速度=${speed} 遅延=${delay}`,
               textStyle: {
-                color: dark ? "#ccc" : "#222",
+                color: '#ccc',
                 fontSize: 12,
               },
             },

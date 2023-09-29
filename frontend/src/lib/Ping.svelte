@@ -85,7 +85,7 @@
       chart.dispose();
     }
     chartOption = getPingChartOption();
-    chart = echarts.init(document.getElementById("pingChart"));
+    chart = echarts.init(document.getElementById("pingChart"),"dark");
     if (results.length > 0) {
       for (const r of results) {
         if (r.Stat === 1 || r.Stat === 4) {

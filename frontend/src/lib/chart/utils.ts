@@ -62,7 +62,3 @@ export const setZoomCallback = (chart, cb, st, lt) => {
   });
 }
 
-export const isDark = () :boolean => {
-  const  e = document.querySelector("html");
-  return e.classList.contains("dark");
-}

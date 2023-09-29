@@ -1,37 +1,17 @@
 import * as echarts from 'echarts'
-import { isDark } from './utils';
 
 const chartMap = new Map();
 
 export const showHrBarChart = (div, type, xAxis, list, max?) => {
-  const dark = isDark();
   if (chartMap.has(div)) {
     chartMap.get(div).dispose();
   }
-  const chart = echarts.init(document.getElementById(div),dark? "dark" : "");
+  const chart = echarts.init(document.getElementById(div),"dark");
   chartMap.set(div,chart);
 
   const yellow = max ? max * 0.8 : 80
   const red = max ? max * 0.9 : 90
   const option = {
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + type },
-      },
-    },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -104,11 +84,10 @@ export const showHrBarChart = (div, type, xAxis, list, max?) => {
 }
 
 export const showHrSummary = (div:string, data) => {
-  const dark = isDark();
   if (chartMap.has(div)) {
     chartMap.get(div).dispose();
   }
-  const chart = echarts.init(document.getElementById(div),dark? "dark" : "");
+  const chart = echarts.init(document.getElementById(div),"dark");
   chartMap.set(div,chart);
 
   const gaugeData = [
@@ -144,24 +123,6 @@ export const showHrSummary = (div:string, data) => {
     },
   ]
   const option = {
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_hr' },
-      },
-    },
     color: ['#4575b4', '#abd9e9', '#FAC858'],
     series: [
       {
@@ -200,8 +161,7 @@ export const showHrSummary = (div:string, data) => {
           width: 40,
           height: 14,
           fontSize: 12,
-          color: '#fff',
-          backgroundColor: 'auto',
+          color: '#ccc',
           borderRadius: 3,
           formatter: '{value}%',
         },
