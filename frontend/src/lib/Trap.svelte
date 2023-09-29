@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button,Modal,Label,Input } from "flowbite-svelte";
+  import { Button,Modal,Label,Input,Spinner } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount,tick,onDestroy } from "svelte";
@@ -25,6 +25,7 @@
   let showFilter = false;
   let from = "";
   let trapType = "";
+  let showLoading = false;
 
   const showTable = () => {
     if (table) {
@@ -50,6 +51,7 @@
   }
 
   const refresh = async () => {
+    showLoading = true;
     logs = await GetTraps(from,trapType);
     data = [];
     for (let i =0; i < logs.length;i++) {
@@ -58,6 +60,7 @@
     logs.reverse();
     showTable();
     showChart();
+    showLoading = false;
   };
 
   const showChart = async () => {
@@ -239,6 +242,13 @@
       </Button>
     </div>
   </form>
+</Modal>
+
+<Modal bind:open={showLoading} size="sm" permanent class="w-full">
+  <div>
+    <Spinner />
+    <span class="ml-2"> { $_('Syslog.Loading') } </span>
+  </div>
 </Modal>
 
 <style>
