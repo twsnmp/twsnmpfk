@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
+  import { Button,Modal,Label,Input } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount,tick,onDestroy } from "svelte";
@@ -22,6 +22,9 @@
   let table = undefined;
   let selectedCount = 0;
   let showPolling = false;
+  let showFilter = false;
+  let from = "";
+  let trapType = "";
 
   const showTable = () => {
     if (table) {
@@ -47,7 +50,7 @@
   }
 
   const refresh = async () => {
-    logs = await GetTraps();
+    logs = await GetTraps(from,trapType);
     data = [];
     for (let i =0; i < logs.length;i++) {
       data.push(logs[i]);
@@ -164,6 +167,10 @@
       <Icon path={icons.mdiChartPie} size={1} />
       {$_('Trap.Report')}
     </Button>
+    <Button color="blue" type="button" on:click={()=> showFilter = true} size="xs">
+      <Icon path={icons.mdiFilter} size={1} />
+      {$_('Trap.Filter')}
+    </Button>
     <Button type="button" color="alternative" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       {$_('Trap.Reload')}
@@ -188,6 +195,51 @@
     }}
   />
 {/if}
+
+<Modal bind:open={showFilter} size="sm" permanent class="w-full">
+  <form class="flex flex-col space-y-4" action="#">
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">{$_('Trap.Filter')}</h3>
+    <Label class="space-y-2">
+      <span>{ $_('Trap.FromAddress') } </span>
+      <Input
+        bind:value={from}
+        size="sm"
+      />
+    </Label>
+    <Label class="space-y-2">
+      <span>{ $_('Trap.TrapType') }</span>
+      <Input
+        bind:value={trapType}
+        size="sm"
+      />
+    </Label>
+    <div class="flex justify-end space-x-2 mr-2">
+      <Button
+        color="blue"
+        type="button"
+        on:click={() => {
+          showFilter= false;
+          refresh();
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiSearchWeb} size={1} />
+        { $_('Trap.Search') }
+      </Button>
+      <Button
+        color="alternative"
+        type="button"
+        on:click={() => {
+          showFilter = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        { $_('Trap.Cancel') }
+      </Button>
+    </div>
+  </form>
+</Modal>
 
 <style>
   @import "../assets/css/jquery.dataTables.css";

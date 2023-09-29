@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"regexp"
+
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/logger"
 )
@@ -31,9 +34,43 @@ func (a *App) GetMapEventLogs() []*datastore.EventLogEnt {
 }
 
 // GetSyslogs retunrs syslogs
-func (a *App) GetSyslogs() []*datastore.SyslogEnt {
+func (a *App) GetSyslogs(severity int, host, tag, msg string) []*datastore.SyslogEnt {
 	ret := []*datastore.SyslogEnt{}
+	var hostFilter *regexp.Regexp
+	var tagFilter *regexp.Regexp
+	var msgFilter *regexp.Regexp
+	var err error
+	if host != "" {
+		if hostFilter, err = regexp.Compile(host); err != nil {
+			log.Println(err)
+			return ret
+		}
+	}
+	if tag != "" {
+		if tagFilter, err = regexp.Compile(tag); err != nil {
+			log.Println(err)
+			return ret
+		}
+	}
+	if msg != "" {
+		if msgFilter, err = regexp.Compile(msg); err != nil {
+			log.Println(err)
+			return ret
+		}
+	}
 	datastore.ForEachLastSyslog(func(l *datastore.SyslogEnt) bool {
+		if severity < l.Severity {
+			return true
+		}
+		if hostFilter != nil && !hostFilter.MatchString(l.Host) {
+			return true
+		}
+		if tagFilter != nil && !tagFilter.MatchString(l.Tag) {
+			return true
+		}
+		if msgFilter != nil && !msgFilter.MatchString(l.Message) {
+			return true
+		}
 		ret = append(ret, l)
 		return len(ret) < maxDispLog
 	})
@@ -41,9 +78,30 @@ func (a *App) GetSyslogs() []*datastore.SyslogEnt {
 }
 
 // GetTraps retunrs SNMP Trap log
-func (a *App) GetTraps() []*datastore.TrapEnt {
+func (a *App) GetTraps(from, trapType string) []*datastore.TrapEnt {
 	ret := []*datastore.TrapEnt{}
+	var fromFilter *regexp.Regexp
+	var typeFilter *regexp.Regexp
+	var err error
+	if from != "" {
+		if fromFilter, err = regexp.Compile(from); err != nil {
+			log.Println(err)
+			return ret
+		}
+	}
+	if trapType != "" {
+		if typeFilter, err = regexp.Compile(trapType); err != nil {
+			log.Println(err)
+			return ret
+		}
+	}
 	datastore.ForEachLastTraps(func(l *datastore.TrapEnt) bool {
+		if fromFilter != nil && !fromFilter.MatchString(l.FromAddress) {
+			return true
+		}
+		if typeFilter != nil && !typeFilter.MatchString(l.TrapType) {
+			return true
+		}
 		ret = append(ret, l)
 		return len(ret) < maxDispLog
 	})

@@ -190,12 +190,12 @@ export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
 
-export function GetSyslogs() {
-  return window['go']['main']['App']['GetSyslogs']();
+export function GetSyslogs(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['GetSyslogs'](arg1, arg2, arg3, arg4);
 }
 
-export function GetTraps() {
-  return window['go']['main']['App']['GetTraps']();
+export function GetTraps(arg1, arg2) {
+  return window['go']['main']['App']['GetTraps'](arg1, arg2);
 }
 
 export function GetVPanelPorts(arg1) {

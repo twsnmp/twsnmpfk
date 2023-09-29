@@ -562,7 +562,10 @@
     "Report": "Report",
     "Time": "Time",
     "TrapType": "Trap type",
-    "Variables": "Variables"
+    "Variables": "Variables",
+    "Cancel": "Cancel",
+    "Filter": "Filter",
+    "Search": "Search"
   },
   "TrapReport": {
     "Chart3D": "3D chart",

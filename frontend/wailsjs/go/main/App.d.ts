@@ -99,9 +99,9 @@ export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 
 export function GetSettings():Promise<main.Settings>;
 
-export function GetSyslogs():Promise<Array<datastore.SyslogEnt>>;
+export function GetSyslogs(arg1:number,arg2:string,arg3:string,arg4:string):Promise<Array<datastore.SyslogEnt>>;
 
-export function GetTraps():Promise<Array<datastore.TrapEnt>>;
+export function GetTraps(arg1:string,arg2:string):Promise<Array<datastore.TrapEnt>>;
 
 export function GetVPanelPorts(arg1:string):Promise<Array<backend.VPanelPortEnt>>;
 

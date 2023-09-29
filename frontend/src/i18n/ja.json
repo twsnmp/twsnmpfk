@@ -562,7 +562,10 @@
     "Variables": "変数",
     "Polling": "ポーリング",
     "Report": "レポート",
-    "Reload": "更新"
+    "Reload": "更新",
+    "Filter": "フィルター",
+    "Search": "検索",
+    "Cancel": "キャンセル"
   },
   "TrapReport": {
     "CountByType": "TRAP種類別",
