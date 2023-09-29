@@ -146,23 +146,23 @@
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if line.ID != ""}
-        <Button color="red" type="button" on:click={disconnect} size="sm">
+        <Button color="red" type="button" on:click={disconnect} size="xs">
           <Icon path={icons.mdiLanDisconnect} size={1} />
           {$_("LIne.Disconnect")}
         </Button>
       {/if}
       {#if line.ID != ""}
-        <Button color="blue" type="button" on:click={connect} size="sm">
+        <Button color="blue" type="button" on:click={connect} size="xs">
           <Icon path={icons.mdiContentSave} size={1} />
           {$_("Line.Update")}
         </Button>
       {:else}
-        <Button color="blue" type="button" on:click={connect} size="sm">
+        <Button color="blue" type="button" on:click={connect} size="xs">
           <Icon path={icons.mdiLanConnect} size={1} />
           {$_("Line.Connect")}
         </Button>
       {/if}
-      <Button color="alternative" type="button" on:click={close} size="sm">
+      <Button color="alternative" type="button" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_("Line.Cancel")}
       </Button>

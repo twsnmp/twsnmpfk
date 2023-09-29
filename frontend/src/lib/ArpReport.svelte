@@ -100,7 +100,7 @@
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button type="button" color="alternative" on:click={close} size="sm">
+      <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('ArpReport.Close') }
       </Button>

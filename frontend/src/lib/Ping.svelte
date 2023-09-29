@@ -423,18 +423,18 @@
     <div class="flex justify-end space-x-2 mr-2">
       {#if pingTab}
         {#if wait}
-          <Button type="button" color="red" on:click={stop} size="sm">
+          <Button type="button" color="red" on:click={stop} size="xs">
             <Icon path={icons.mdiStop} size={1} />
             { $_('Ping.Stop') }
           </Button>
         {:else}
-          <Button type="button" color="blue" on:click={start} size="sm">
+          <Button type="button" color="blue" on:click={start} size="xs">
             <Icon path={icons.mdiPlay} size={1} />
             { $_('Ping.Start') }
           </Button>
         {/if}
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="sm">
+      <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Ping.Close') }
       </Button>

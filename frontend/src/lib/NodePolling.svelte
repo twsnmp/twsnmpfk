@@ -197,7 +197,7 @@
         <Icon path={icons.mdiRecycle} size={1} />
         { $_('NodePolling.Reload') }
       </Button>
-      <Button type="button" color="alternative" on:click={close} size="sm">
+      <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('NodePolling.Close') }
       </Button>

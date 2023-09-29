@@ -865,7 +865,7 @@
           { $_('NodeReport.Polling') }
         </Button>
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="sm">
+      <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('NodeReport.Close') }
       </Button>

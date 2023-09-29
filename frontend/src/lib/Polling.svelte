@@ -286,11 +286,11 @@
       </Label>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button color="blue" type="button" on:click={save} size="sm">
+      <Button color="blue" type="button" on:click={save} size="xs">
         <Icon path={icons.mdiContentSave} size={1} />
         { $_('Polling.Save') }
       </Button>
-      <Button type="button" color="alternative" on:click={close} size="sm">
+      <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Polling.Cancel') }
       </Button>
@@ -309,12 +309,12 @@
     <table id="pollingTable" class="display compact mt-2" style="width:99%" />
     <div class="flex justify-end space-x-2 mr-2">
       {#if selectedCount == 1}
-        <Button type="button" color="alternative" on:click={select} size="sm">
+        <Button type="button" color="alternative" on:click={select} size="xs">
           <Icon path={icons.mdiCancel} size={1} />
           { $_('Polling.Select') }
         </Button>
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="sm">
+      <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Polling.Cancel') }
       </Button>

@@ -191,11 +191,11 @@
             <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
           </div>
           <div class="flex justify-end space-x-2 mr-2">
-            <Button type="button" on:click={saveMapConf} size="sm">
+            <Button type="button" on:click={saveMapConf} size="xs">
               <Icon path={icons.mdiContentSave} size={1} />
               { $_('Config.Save') }
             </Button>
-            <Button type="button" color="alternative" on:click={close} size="sm">
+            <Button type="button" color="alternative" on:click={close} size="xs">
               <Icon path={icons.mdiCancel} size={1} />
               { $_('Config.Cancel') }
             </Button>
@@ -305,15 +305,15 @@
             <Input class="w-full" bind:value={notifyConf.ExecCmd} size="sm" />
           </Label>
           <div class="flex justify-end space-x-2 mr-2">
-            <Button type="button" on:click={saveNotifyConf} size="sm">
+            <Button type="button" on:click={saveNotifyConf} size="xs">
               <Icon path={icons.mdiContentSave} size={1} />
               { $_('Config.Save') }
             </Button>
-            <Button type="button" color="red" on:click={testNotifyConf} size="sm">
+            <Button type="button" color="red" on:click={testNotifyConf} size="xs">
               <Icon path={icons.mdiEmail} size={1} />
               { $_('Config.Test') }
             </Button>
-            <Button type="button" color="alternative" on:click={close} size="sm">
+            <Button type="button" color="alternative" on:click={close} size="xs">
               <Icon path={icons.mdiCancel} size={1} />
               { $_('Config.Cancel') }
             </Button>
@@ -356,11 +356,11 @@
             </Label>
           </div>
           <div class="flex justify-end space-x-2 mr-2">
-            <Button type="button" on:click={saveAIConf} size="sm">
+            <Button type="button" on:click={saveAIConf} size="xs">
               <Icon path={icons.mdiContentSave} size={1} />
               { $_('Config.Save') }
             </Button>
-            <Button type="button" color="alternative" on:click={close} size="sm">
+            <Button type="button" color="alternative" on:click={close} size="xs">
               <Icon path={icons.mdiCancel} size={1} />
               { $_('Config.Cancel') }
             </Button>

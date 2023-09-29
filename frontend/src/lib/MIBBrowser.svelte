@@ -271,7 +271,7 @@
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait}
         <Toggle bind:checked={raw}>{ $_('MIBBrowser.RawData') }</Toggle>
-        <Button type="button" color="blue" on:click={get} size="sm">
+        <Button type="button" color="blue" on:click={get} size="xs">
           <Icon path={icons.mdiPlay} size={1} />
           { $_('MIBBrowser.Get') }
         </Button>
@@ -300,7 +300,7 @@
           </Button>
         {/if}
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="sm">
+      <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('MIBBrowser.Close') }
       </Button>
@@ -335,7 +335,7 @@
         on:click={() => {
           showMIBTree = false;
         }}
-        size="sm"
+        size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
         { $_('MIBBrowser.Close') }

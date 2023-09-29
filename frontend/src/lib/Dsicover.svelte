@@ -90,11 +90,11 @@
     <div class="grid gap-4 mb-4 md:grid-cols-2">
       <Label class="space-y-2">
         <span>{$_("Discover.StartIP")}</span>
-        <Input bind:value={conf.StartIP} required size="sm" />
+        <Input bind:value={conf.StartIP} size="sm" />
       </Label>
       <Label class="space-y-2">
         <span>{$_("Discover.EndIP")}</span>
-        <Input bind:value={conf.EndIP} required size="sm" />
+        <Input bind:value={conf.EndIP} size="sm" />
       </Label>
     </div>
     <div class="grid gap-4 mb-4 md:grid-cols-2">
@@ -129,11 +129,11 @@
       >
     </div>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button type="button" on:click={start} size="sm">
+      <Button type="button" on:click={start} size="xs">
         <Icon path={icons.mdiSearchWeb} size={1} />
         {$_("Discover.Start")}
       </Button>
-      <Button type="button" color="alternative" on:click={close} size="sm">
+      <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_("Discover.Close")}
       </Button>
@@ -239,12 +239,12 @@
     {/if}
     <div class="flex justify-end space-x-2 mr-2">
       {#if showStop}
-        <Button type="button" color="red" on:click={stop} size="sm">
+        <Button type="button" color="red" on:click={stop} size="xs">
           <Icon path={icons.mdiStop} size={1} />
           {$_("Discover.Stop")}
         </Button>
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="sm">
+      <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_("Discover.Close")}
       </Button>
