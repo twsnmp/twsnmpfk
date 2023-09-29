@@ -750,7 +750,7 @@
           <Icon path={icons.mdiAppsBox} size={1} />
           { $_('NodeReport.Panel') }
         </div>
-        <div id="vpanel" style="width: 98%; height: 500px" />
+        <div id="vpanel" style="width: 98%; height: 400px; overflow:scroll;" />
         <table id="portTable" class="display compact mt-2" style="width:99%" />
       </TabItem>
       <TabItem

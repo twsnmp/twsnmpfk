@@ -20,7 +20,7 @@ const vpanelMain = (p) => {
     font = p.loadFont('/src/assets/fonts/inconsolata.ttf');
   }
   p.setup = () => {
-    p.createCanvas(1000, 500, p.WEBGL);
+    p.createCanvas(1000, 400, p.WEBGL);
     p.frameRate(10);
     portImage = p.loadImage('/src/assets/images/port.png');
     p.textFont(font, 24);
