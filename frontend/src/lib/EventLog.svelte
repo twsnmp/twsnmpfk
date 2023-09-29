@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button} from "flowbite-svelte";
+  import { Button,Modal,Spinner} from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount,tick,onDestroy } from "svelte";
@@ -11,13 +11,14 @@
   } from "./common";
   import {showLogLevelChart,resizeLogLevelChart} from "./chart/loglevel";
   import EventLogReport from "./EventLogReport.svelte";
-  let data = [];
-  let logs = [];
-  let showReport = false;
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
 
+  let data = [];
+  let logs = [];
+  let showReport = false;
+  let showLoading = false;
   let table = undefined;
 
   const showTable = () => {
@@ -34,6 +35,7 @@
   }
 
   const refresh = async () => {
+    showLoading = true;
     logs = await GetEventLogs("");
     data = [];
     for (let i =0; i < logs.length;i++) {
@@ -42,6 +44,7 @@
     logs.reverse();
     showTable();
     showChart();
+    showLoading = false;
   };
 
   const showChart = async () => {
@@ -145,6 +148,13 @@
     }}
   />
 {/if}
+
+<Modal bind:open={showLoading} size="sm" permanent class="w-full">
+  <div>
+    <Spinner />
+    <span class="ml-2"> { $_('Syslog.Loading') } </span>
+  </div>
+</Modal>
 
 <style>
   @import "../assets/css/jquery.dataTables.css";
