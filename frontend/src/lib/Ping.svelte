@@ -32,6 +32,7 @@
   let chartOption = undefined;
   let results = [];
   let ip = "";
+  let ipColor: any = "base";
   let size = 64;
   let count = 10;
   let ttl = 64;
@@ -62,20 +63,22 @@
   });
 
   const showTable = () => {
-    if (table) {
+    if (table && DataTable.isDataTable("#pingTable")) {
       table.destroy();
       table = undefined;
     }
     table = new DataTable("#pingTable", {
       columns: columns,
+      paging: false,
+      searching:false,
+      info:false,
+      scrollY: "180px",
       data: results,
       order: [[1, "asc"]],
       language: getTableLang(),
-      select: {
-        style: "single",
-      },
     });
   };
+
   const showPing = async () => {
     await tick();
     if (chart) {
@@ -106,8 +109,8 @@
           });
         }
       }
-      showTable();
     }
+    showTable();
     chart.setOption(chartOption);
     chart.resize();
   };
@@ -150,7 +153,6 @@
     if (type == "sort") {
       return s;
     }
-
     let state = "unknown";
     let name = $_('Ping.Unknown');
     switch (s) {
@@ -257,6 +259,12 @@
   };
 
   const start = () => {
+    if (!ip) {
+      ipColor ="red";
+      return;
+    } else {
+      ipColor = "base";
+    }
     stopFlag = false;
     if (chart) {
       chartOption.series[0].data = [];
@@ -359,25 +367,29 @@
             type="text"
             bind:value={ip}
             placeholder={ $_('Ping.IPOrHost') }
-            required
+            color={ipColor}
+            size="sm"
           />
           <Select
             class="ml-2"
             items={countList}
             bind:value={count}
             placeholder={ $_('Ping.Count') }
+            size="sm"
           />
           <Select
             class="ml-2"
             items={sizeList}
             bind:value={size}
             placeholder={ $_('Ping.Size') }
+            size="sm"
           />
           <Select
             class="ml-2"
             items={ttlList}
             bind:value={ttl}
             placeholder="TTL"
+            size="sm"
           />
         </div>
         <div id="pingChart" class="mb-2" style="height: 200px;" />

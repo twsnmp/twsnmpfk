@@ -9,30 +9,11 @@ const $_ = unwrapFunctionStore(_);
 let chart;
 
 export const getPingChartOption = () => {
+  const dark = isDark();
   return {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        dataZoom: {},
-        saveAsImage: { name: 'twsnmp_ping' },
-      },
-    },
-    dataZoom: [{}],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -40,15 +21,15 @@ export const getPingChartOption = () => {
       },
     },
     grid: {
-      left: '10%',
-      right: '10%',
+      left: '5%',
+      right: '5%',
       top: 60,
       buttom: 0,
     },
     legend: {
       data: [$_("Ts.RespTimeSec"), $_("Ts.SendTTL"),$_("Ts.RecvTTL")],
       textStyle: {
-        color: '#ccc',
+        color: dark ? "#ccc" : "#222",
         fontSize: 10,
       },
     },
@@ -56,12 +37,12 @@ export const getPingChartOption = () => {
       type: 'time',
       name: $_("Ts.DateTime"),
       nameTextStyle: {
-        color: '#ccc',
+        color: dark ? "#ccc" : "#222",
         fontSize: 10,
         margin: 2,
       },
       axisLabel: {
-        color: '#ccc',
+        color: dark ? "#ccc" : "#222",
         fontSize: '8px',
         formatter(value, index) {
           const date = new Date(value)
@@ -70,7 +51,7 @@ export const getPingChartOption = () => {
       },
       axisLine: {
         lineStyle: {
-          color: '#ccc',
+          color: dark ? "#ccc" : "#222",
         },
       },
       splitLine: {
@@ -82,18 +63,18 @@ export const getPingChartOption = () => {
         type: 'value',
         name: $_("Ts.RespTimeSec"),
         nameTextStyle: {
-          color: '#ccc',
+          color: dark ? "#ccc" : "#222",
           fontSize: 10,
           margin: 2,
         },
         axisLabel: {
-          color: '#ccc',
+          color: dark ? "#ccc" : "#222",
           fontSize: 8,
           margin: 2,
         },
         axisLine: {
           lineStyle: {
-            color: '#ccc',
+            color: dark ? "#ccc" : "#222",
           },
         },
       },
@@ -101,18 +82,18 @@ export const getPingChartOption = () => {
         type: 'value',
         name: 'TTL',
         nameTextStyle: {
-          color: '#ccc',
+          color: dark ? "#ccc" : "#222",
           fontSize: 10,
           margin: 2,
         },
         axisLabel: {
-          color: '#ccc',
+          color: dark ? "#ccc" : "#222",
           fontSize: 8,
           margin: 2,
         },
         axisLine: {
           lineStyle: {
-            color: '#ccc',
+            color: dark ? "#ccc" : "#222",
           },
         },
       },
@@ -167,14 +148,6 @@ export const showPing3DChart = (div, results) => {
   const options = {
     title: {
       show: false,
-    },
-    toolbox: {
-      iconStyle: {
-        color: dark ? "#ccc" : "#222",
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_ping_3d' },
-      },
     },
     tooltip: {},
     animationDurationUpdate: 1500,
@@ -286,22 +259,13 @@ export const showPing3DChart = (div, results) => {
 }
 
 export const showPingMapChart = (div, results) => {
+  const dark = isDark();
   if (chart) {
     chart.dispose()
   }
   chart = echarts.init(document.getElementById(div))
   echarts.registerMap('world', WorldData)
   const option = {
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     grid: {
       left: '7%',
       right: '4%',
@@ -314,7 +278,7 @@ export const showPingMapChart = (div, results) => {
       emphasis: {
         label: {
           show: false,
-          areaColor: '#eee',
+          areaColor: dark ? '#eee' : '#222',
         },
       },
       itemStyle: {
@@ -322,14 +286,6 @@ export const showPingMapChart = (div, results) => {
         borderColor: '#404a59',
       },
       roam: true,
-    },
-    toolbox: {
-      iconStyle: {
-        color: '#eee',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     series: [
       {
@@ -410,6 +366,7 @@ export const showPingMapChart = (div, results) => {
 }
 
 export const showPingHistgram = (div, results) => {
+  const dark = isDark();
   if (chart) {
     chart.dispose()
   }
@@ -426,26 +383,6 @@ export const showPingHistgram = (div, results) => {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        dataZoom: {},
-        saveAsImage: { name: 'twsnmp_ping_histgram' },
-      },
-    },
-    dataZoom: [{}],
     tooltip: {
       trigger: 'axis',
       formatter(params) {
@@ -467,12 +404,12 @@ export const showPingHistgram = (div, results) => {
       name: $_("Ts.RespTimeSec"),
       min: 0,
       nameTextStyle: {
-        color: '#ccc',
+        color: dark ? "#ccc" : "#222",
         fontSize: 10,
         margin: 2,
       },
       axisLabel: {
-        color: '#ccc',
+        color: dark ? "#ccc" : "#222",
         fontSize: 8,
         margin: 2,
       },
@@ -480,12 +417,12 @@ export const showPingHistgram = (div, results) => {
     yAxis: {
       name: $_("Ts.Count"),
       nameTextStyle: {
-        color: '#ccc',
+        color: dark ? "#ccc" : "#222",
         fontSize: 10,
         margin: 2,
       },
       axisLabel: {
-        color: '#ccc',
+        color: dark ? "#ccc" : "#222",
         fontSize: 8,
         margin: 2,
       },
@@ -505,6 +442,7 @@ export const showPingHistgram = (div, results) => {
 }
 
 export const showPingLinearChart = (div, results) => {
+  const dark = isDark();
   if (chart) {
     chart.dispose()
   }
@@ -526,26 +464,6 @@ export const showPingLinearChart = (div, results) => {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        dataZoom: {},
-        saveAsImage: { name: 'twsnmp_ping_size' },
-      },
-    },
-    dataZoom: [{}],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -562,13 +480,13 @@ export const showPingLinearChart = (div, results) => {
       type: 'value',
       name: $_("Ts.Size"),
       nameTextStyle: {
-        color: '#ccc',
+        color: dark ? "#ccc" : "#222",
         fontSize: 10,
         margin: 2,
       },
       axisLine: {
         lineStyle: {
-          color: '#ccc',
+          color: dark ? "#ccc" : "#222",
         },
       },
       splitLine: {
@@ -580,17 +498,17 @@ export const showPingLinearChart = (div, results) => {
         type: 'value',
         name: $_("Ts.RespTimeSec"),
         nameTextStyle: {
-          color: '#ccc',
+          color: dark ? "#ccc" : "#222",
           fontSize: 10,
           margin: 2,
         },
         axisLine: {
           lineStyle: {
-            color: '#ccc',
+            color: dark ? "#ccc" : "#222",
           },
         },
         axisLabel: {
-          color: '#ccc',
+          color: dark ? "#ccc" : "#222",
           fontSize: 8,
           margin: 2,
         },
@@ -623,7 +541,7 @@ export const showPingLinearChart = (div, results) => {
               show: true,
               formatter: `回線速度=${speed} 遅延=${delay}`,
               textStyle: {
-                color: '#eee',
+                color: dark ? "#ccc" : "#222",
                 fontSize: 12,
               },
             },
