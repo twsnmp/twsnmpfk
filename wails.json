@@ -9,5 +9,12 @@
   "author": {
     "name": "twsnmp",
     "email": "ymi@twise.co.jp"
+  },
+  "Info": {
+    "companyName": "TWSNMP",
+    "productName": "TWSNMP",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright 2023 Masayuki Yamai",
+    "comments": "https://lhx98.linkclub.jp/twise.co.jp/"
   }
 }
