@@ -14,6 +14,7 @@ import (
 
 	"github.com/oschwald/geoip2-golang"
 	gomibdb "github.com/twsnmp/go-mibdb"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"go.etcd.io/bbolt"
 )
 
@@ -139,7 +140,11 @@ func loadDataFromFS() error {
 	if _, err := os.Stat(p); err == nil {
 		openGeoIP(p)
 	}
-	if r, err := conf.Open("conf/polling.json"); err == nil {
+	lang := i18n.GetLang()
+	if lang != "jp" {
+		lang = "en"
+	}
+	if r, err := conf.Open("conf/polling_" + lang + ".json"); err == nil {
 		if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
 			if err := loadPollingTemplate(b); err != nil {
 				log.Printf("load polling template err=%v", err)
@@ -158,16 +163,23 @@ func loadDataFromFS() error {
 		r.Close()
 	}
 	mailTemplate = make(map[string]string)
-	loadMailTemplateToMap("test")
-	loadMailTemplateToMap("notify")
-	loadMailTemplateToMap("report")
+	loadMailTemplateToMap("test", lang)
+	loadMailTemplateToMap("notify", lang)
+	loadMailTemplateToMap("report", lang)
 	return nil
 }
 
-func loadMailTemplateToMap(t string) {
-	if r, err := conf.Open("conf/mail_" + t + ".html"); err == nil {
+func loadMailTemplateToMap(t, lang string) {
+	if r, err := os.Open(filepath.Join(dspath, "mail_"+t+".html")); err == nil {
 		if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
 			log.Printf("load mail template=%s", t)
+			mailTemplate[t] = string(b)
+		}
+		r.Close()
+	}
+	if r, err := conf.Open("conf/mail_" + t + "_" + lang + ".html"); err == nil {
+		if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
+			log.Printf("load defalut mail template=%s_%s", t, lang)
 			mailTemplate[t] = string(b)
 		}
 		r.Close()

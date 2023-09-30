@@ -112,11 +112,11 @@
     </tr>
     <tr class="content">
       <td style="padding:5px 20px;">
-        <h3>【マップ情報】</h3>
+        <h3>[Map info]</h3>
         <table class="infoTable">
           <tr>
-            <th width="30%">項目</th>
-            <th>値</th>
+            <th width="30%">Key</th>
+            <th>Value</th>
           </tr>
           {{ range .Info }}
           <tr>
@@ -129,14 +129,14 @@
     </tr>
     <tr class="content">
       <td style="padding:5px 20px;">
-        <h3>【AI分析情報】</h3>
+        <h3>[AI info]</h3>
         <table class="infoTable">
           <tr>
-            <th width="15%">異常スコア</th>
-            <th width="25%">ノード名</th>
-            <th width="35%">ポーリング名</th>
-            <th width="10%">分析数</th>
-            <th width="15%">最終確認</th>
+            <th width="15%">Anomary score</th>
+            <th width="25%">Node</th>
+            <th width="35%">Polling</th>
+            <th width="10%">Sample count</th>
+            <th width="15%">Last time</th>
           </tr>
           {{ range .AIList }}
           <tr>
@@ -152,7 +152,7 @@
     </tr>
     <tr class="footer">
       <td style="padding: 40px;">
-        Powered by <a href="https://lhx98.linkclub.jp/twise.co.jp/" target="_blank">TWSNMP FK</a>
+        Powered by <a href="https://lhx98.linkclub.jp/twise.co.jp/" target="_blank">TWSNMP</a>
       </td>
     </tr>
   </table>

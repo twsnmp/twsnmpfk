@@ -1,0 +1,221 @@
+[
+  {
+    "Name": "PING",
+    "Type": "ping",
+    "Level": "low",
+    "Descr": "PING"
+  },
+  {
+    "Name": "LAN port",
+    "Type": "snmp",
+    "Mode": "ifOperStatus",
+    "Params": "$i",
+    "Level": "low",
+    "Descr": "polling i/f state",
+    "AutoParam": "ifIndex"
+  },
+  {
+    "Name": "SNMP restart",
+    "Type": "snmp",
+    "Mode": "sysUpTime",
+    "Level": "low",
+    "Descr": "Detect reboot"
+  },
+  {
+    "Name": "SNMP traffic",
+    "Type": "snmp",
+    "Mode": "traffic",
+    "Params": "$i",
+    "Level": "off",
+    "Descr": "polling i/f traffic",
+    "AutoParam": "ifIndex"
+  },
+  {
+    "Name": "CPU usgage",
+    "Type": "snmp",
+    "Mode": "stats",
+    "Params": "hrProcessorLoad",
+    "Script": "avg < 90.0",
+    "Level": "low",
+    "Descr": "CPU usgae"
+  },
+  {
+    "Name": "Storage usage",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "hrStorageSize.$i,hrStorageUsed.$i",
+    "Script": "rate=hrStorageSize > 0 ? 100.0*(hrStorageUsed/hrStorageSize):0.0;rate < 90.0",
+    "Level": "low",
+    "Descr": "storage usage",
+    "AutoParam": "hrStorageSize"
+  },
+  {
+    "Name": "TCP port",
+    "Type": "tcp",
+    "Mode": "",
+    "Params": "TODO:port number",
+    "Level": "low",
+    "Descr": "TCP port"
+  },
+  {
+    "Name": "HTTP",
+    "Type": "http",
+    "Mode": "",
+    "Params": "TODO:port number or URL",
+    "Level": "low",
+    "Descr": "HTTP"
+  },
+  {
+    "Name": "HTTPS",
+    "Type": "http",
+    "Mode": "https",
+    "Params": "TODO:port number of URL",
+    "Level": "low",
+    "Descr": "HTTPS"
+  },
+  {
+    "Name": "TLS cert",
+    "Type": "tls",
+    "Mode": "expire",
+    "Params": "TODO:port number of host:port",
+    "Script": "30",
+    "Level": "low",
+    "Descr": "check server cert expire"
+  },
+  {
+    "Name": "TLS証明書検証",
+    "Type": "tls",
+    "Mode": "verify",
+    "Params": "TODO:port number of host:port",
+    "Level": "low",
+    "Descr": "check server cert"
+  },
+  {
+    "Name": "Process",
+    "Type": "snmp",
+    "Mode": "count",
+    "Params": "hrSWRunName",
+    "Filter":"TODO:process name",
+    "Script":"count > 0",
+    "Level": "low",
+    "Descr": "check number of process"
+  },
+  {
+    "Name": "TCP connection table",
+    "Type": "snmp",
+    "Mode": "count",
+    "Params": "tcpConnState",
+    "Filter":"TODO:Connection state(ex:5)",
+    "Script":"count > 0",
+    "Level": "low",
+    "Descr": "TCP connect table"
+  },
+  {
+    "Name": "process restart",
+    "Type": "snmp",
+    "Mode": "process",
+    "Params": "", 
+    "Filter": "TODO:process name",
+    "Script": "changed == 0",
+    "Level": "low",
+    "Descr": "check pid"
+  },
+  {
+    "Name": "process",
+    "Type": "snmp",
+    "Mode": "process",
+    "Params": "", 
+    "Filter": "TODO:porcess name",
+    "Script": "count > 0",
+    "Level": "low",
+    "Descr": "check process running"
+  },
+  {
+    "Name": "TCP connectin number",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "tcpCurrEstab.0",
+    "Script": "tcpCurrEstab < 10000",
+    "Level": "low",
+    "Descr": "TCP connectin number"
+  },
+  {
+    "Name": "NTP server",
+    "Type": "ntp",
+    "Mode": "",
+    "Params": "",
+    "Level": "low",
+    "Descr": "NTP server"
+  },
+  {
+    "Name": "DNS",
+    "Type": "dns",
+    "Mode": "host",
+    "Params": "TODO:host name",
+    "Script": "count > 0",
+    "Level": "low",
+    "Descr": "DNS"
+  },
+  {
+    "Name": "SSH",
+    "Type": "ssh",
+    "Mode": "",
+    "Params": "TODO:command",
+    "Script": "exitCode == 0",
+    "Level": "low",
+    "Descr": "SSH"
+  },
+  {
+    "Name": "SSH uptime",
+    "Type": "ssh",
+    "Params": "/usr/bin/uptime",
+    "Extractor": "load average: %{BASE10NUM:load1m}, %{BASE10NUM:load5m}, %{BASE10NUM:load15m}",
+    "Script": "load1m < 1.0",
+    "Level": "low",
+    "Descr": "SSH uptime"
+  },
+  {
+    "Name": "Syslog count",
+    "Type": "syslog",
+    "Mode": "count",
+    "Params": "TODO:host",
+    "Filter": "TODO:filter",
+    "Script": "count < 1",
+    "Level": "off",
+    "Descr": "syslog count"
+  },
+  {
+    "Name": "TRAP",
+    "Type": "trap",
+    "Mode": "count",
+    "Params": "TODO:from",
+    "Filter": "TODO:TRAP type",
+    "Script": "count < 1",
+    "Level": "low",
+    "Descr": "TRAP count"
+  },
+  {
+    "Name": "TWSNMP",
+    "Type": "twsnmp",
+    "Level": "low",
+    "Descr": "TWSNMP"
+  },
+  {
+    "Name": "New device",
+    "Type": "arplog",
+    "Mode": "",
+    "Filter": "New",
+    "Script": "count < 1",
+    "Level": "off",
+    "Descr": "New devcie by arp watch"
+  },
+  {
+    "Name": "Change MAC",
+    "Type": "arplog",
+    "Mode": "",
+    "Filter": "Change",
+    "Script": "count < 1",
+    "Level": "off",
+    "Descr": "change MAC by arp watch"
+  }
+]

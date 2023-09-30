@@ -97,8 +97,8 @@
     }
     td.repair,
     td.info {
-      color: #FFFFFF;
       text-align: center;
+      color: #FFFFFF;
       background-color: #1f78b4;
     }
   </style>
@@ -112,22 +112,39 @@
     </tr>
     <tr class="content">
       <td style="padding:5px 20px;">
-        <h3>【イベントログ】</h3>
+        <h3>【マップ情報】</h3>
         <table class="infoTable">
           <tr>
-            <th width="10%">状態</th>
-            <th width="15%">発生日時</th>
-            <th width="10%">種別</th>
-            <th width="15%">関連ノード</th>
-            <th width="50%">イベント</th>
+            <th width="30%">項目</th>
+            <th>値</th>
           </tr>
-          {{ range .Logs }}
+          {{ range .Info }}
           <tr>
-            <td class="{{.Level}}">{{.Level | levelName}}</td>
-            <td>{{.Time | formatLogTime }}</td>
-            <td>{{.Type}}</td>
+            <td>{{.Name}}</td>
+            <td class="{{.Class}}" style="text-align: left;">{{.Value}}</td>
+          </tr>
+          {{ end }}
+        </table>
+      </td>
+    </tr>
+    <tr class="content">
+      <td style="padding:5px 20px;">
+        <h3>【AI分析情報】</h3>
+        <table class="infoTable">
+          <tr>
+            <th width="15%">異常スコア</th>
+            <th width="25%">ノード名</th>
+            <th width="35%">ポーリング名</th>
+            <th width="10%">分析数</th>
+            <th width="15%">最終確認</th>
+          </tr>
+          {{ range .AIList }}
+          <tr>
+            <td class="{{.LastScore | aiScoreClass}}">{{.LastScore | formatScore}}</td>
             <td>{{.NodeName}}</td>
-            <td>{{.Event}}</td>
+            <td>{{.PollingName}}</td>
+            <td style="text-align: right;">{{ .Count | formatCount}}</td>
+            <td>{{ .LastTime  | formatAITime}}</td>
           </tr>
           {{ end }}
         </table>
@@ -135,7 +152,7 @@
     </tr>
     <tr class="footer">
       <td style="padding: 40px;">
-        Powered by <a href="https://lhx98.linkclub.jp/twise.co.jp/" target="_blank">TWSNMP FK</a>
+        Powered by <a href="https://lhx98.linkclub.jp/twise.co.jp/" target="_blank">TWSNMP</a>
       </td>
     </tr>
   </table>
