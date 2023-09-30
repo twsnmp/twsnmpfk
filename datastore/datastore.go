@@ -32,7 +32,6 @@ var (
 	DiscoverConf DiscoverConfEnt
 	AIConf       AIConfEnt
 	AutoCharCode bool
-	Yasumi       string
 	// Restrt snmptrapd
 	RestartSnmpTrapd bool
 	// Map Data on Memory
@@ -134,23 +133,6 @@ func loadDataFromFS() error {
 			loadOUIMap(r)
 		} else {
 			return err
-		}
-	}
-	// 休みの定義
-	if r, err := os.Open(filepath.Join(dspath, "yasumi.txt")); err == nil {
-		if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
-			Yasumi = string(b)
-		}
-		r.Close()
-	}
-	if Yasumi == "" {
-		if r, err := conf.Open("conf/yasumi.txt"); err == nil {
-			if b, err := io.ReadAll(r); err == nil && len(b) > 0 {
-				Yasumi = string(b)
-			}
-			r.Close()
-		} else {
-			log.Printf("open yasumi.txt err=%v", err)
 		}
 	}
 	p := filepath.Join(dspath, "geoip.mmdb")

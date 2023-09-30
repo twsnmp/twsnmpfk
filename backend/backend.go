@@ -9,15 +9,12 @@ import (
 var (
 	versionCheckState int
 	versionNum        string
-	yasumiMap         map[string]bool
 	dspath            string
 )
 
 func Start(ctx context.Context, dsp, vn string, wg *sync.WaitGroup) error {
 	dspath = dsp
 	versionNum = vn
-	yasumiMap = make(map[string]bool)
-	makeYasumiMap()
 	wg.Add(1)
 	go monitor(ctx, wg)
 	wg.Add(1)

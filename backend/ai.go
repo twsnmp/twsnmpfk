@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 	"sync"
 	"time"
 
@@ -35,17 +34,6 @@ type AIReq struct {
 	PollingID string
 	TimeStamp []int64
 	Data      [][]float64
-}
-
-func makeYasumiMap() {
-	for _, l := range strings.Split(datastore.Yasumi, "\n") {
-		y := strings.Split(l, ",")
-		if len(y) == 2 {
-			if _, err := time.Parse("2006-01-02", y[0]); err == nil {
-				yasumiMap[y[0]] = true
-			}
-		}
-	}
 }
 
 func checkAI() {
@@ -149,11 +137,7 @@ func MakeAIData(req *AIReq) error {
 			}
 			ts := time.Unix(ct, 0)
 			ent[0] = float64(ts.Hour())
-			if _, ok := yasumiMap[ts.Format("2006-01-02")]; ok {
-				ent[1] = 0.0
-			} else {
-				ent[1] = float64(ts.Weekday())
-			}
+			ent[1] = float64(ts.Weekday())
 			for i := 0; i < len(ent); i++ {
 				if i >= 3 {
 					ent[i] /= count
