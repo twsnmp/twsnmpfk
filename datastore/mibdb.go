@@ -14,6 +14,7 @@ import (
 
 	"github.com/sleepinggenius2/gosmi/parser"
 	gomibdb "github.com/twsnmp/go-mibdb"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 type MIBInfo struct {
@@ -403,13 +404,19 @@ func checkMIBInfoMap() {
 }
 
 func setMIB2Descr() {
-	r, err := conf.Open("conf/mib2descr.txt")
+	lang := i18n.GetLang()
+	if lang != "jp" {
+		lang = "en"
+	}
+	r, err := conf.Open("conf/mib2descr_" + lang + ".txt")
 	if err != nil {
+		log.Printf("setMIBDescr err=%v", err)
 		return
 	}
 	rg := regexp.MustCompile(`^#(\S+)`)
 	all, err := io.ReadAll(r)
 	if err != nil {
+		log.Printf("setMIBDescr err=%v", err)
 		return
 	}
 	name := ""
