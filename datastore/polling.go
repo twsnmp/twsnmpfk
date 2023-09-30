@@ -231,14 +231,31 @@ func clearDeletedPollingLogs(ids []string) error {
 }
 
 // GetAllPollingLog :全てのポーリングログを取得する
-func GetAllPollingLog(pollingID string) []PollingLogEnt {
-	ret := []PollingLogEnt{}
+func GetAllPollingLog(pollingID string) []*PollingLogEnt {
+	ret := []*PollingLogEnt{}
 	if db == nil {
 		return ret
 	}
-	ForEachLastPollingLog(pollingID, func(l *PollingLogEnt) bool {
-		ret = append(ret, *l)
-		return true
+	db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("pollingLogs"))
+		if b == nil {
+			return nil
+		}
+		bs := b.Bucket([]byte(pollingID))
+		if bs == nil {
+			return nil
+		}
+		c := bs.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			var l PollingLogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Printf("load polling log err=%v", err)
+				continue
+			}
+			ret = append(ret, &l)
+		}
+		return nil
 	})
 	return ret
 }
