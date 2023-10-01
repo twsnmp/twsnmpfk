@@ -1,5 +1,6 @@
 import P5 from 'p5'
-
+import inconslata from '../assets/fonts/inconsolata.ttf';
+import port from "../assets/images/port.png";
 let ports = [];
 let power = false;
 let rotate = false;
@@ -17,12 +18,12 @@ const vpanelMain = (p) => {
   let depth;
   let r = 0;
   p.preload = () => {
-    font = p.loadFont('/src/assets/fonts/inconsolata.ttf');
+    font = p.loadFont(inconslata);
   }
   p.setup = () => {
     p.createCanvas(1000, 400, p.WEBGL);
     p.frameRate(10);
-    portImage = p.loadImage('/src/assets/images/port.png');
+    portImage = p.loadImage(port);
     p.textFont(font, 24);
     p.camera(100, -500, 2000, 0, 0, 0);
   }

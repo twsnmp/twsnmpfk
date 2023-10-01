@@ -1,5 +1,5 @@
 import * as echarts from 'echarts';
-import * as numeral from 'numeral';
+import numeral from 'numeral';
 import ja from "datatables.net-plugins/i18n/ja.mjs";
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 import {lang} from '../i18n/i18n';
