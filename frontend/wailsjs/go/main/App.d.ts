@@ -53,6 +53,8 @@ export function GetBackImage():Promise<datastore.BackImageEnt>;
 
 export function GetDefaultPolling(arg1:string):Promise<datastore.PollingEnt>;
 
+export function GetDiscoverAddressRange():Promise<Array<string>>;
+
 export function GetDiscoverConf():Promise<datastore.DiscoverConfEnt>;
 
 export function GetDiscoverStats():Promise<discover.DiscoverStat>;

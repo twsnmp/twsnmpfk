@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"strings"
 
 	"github.com/dustin/go-humanize"
@@ -177,6 +178,50 @@ func (a *App) GetBackImage() datastore.BackImageEnt {
 // GetDiscoverConf retunrs discover config
 func (a *App) GetDiscoverConf() datastore.DiscoverConfEnt {
 	return datastore.DiscoverConf
+}
+
+// GetDiscoverAddressRange retunrs discover address
+func (a *App) GetDiscoverAddressRange() []string {
+	ret := []string{}
+	ifs, err := net.Interfaces()
+	if err != nil {
+		log.Printf("GetDiscoverAddressRange err=%v", err)
+		return ret
+	}
+	for _, i := range ifs {
+		if (i.Flags&net.FlagLoopback) == net.FlagLoopback ||
+			(i.Flags&net.FlagUp) != net.FlagUp ||
+			(i.Flags&net.FlagPointToPoint) == net.FlagPointToPoint ||
+			len(i.HardwareAddr) != 6 ||
+			i.HardwareAddr[0]&0x02 == 0x02 {
+			continue
+		}
+		addrs, err := i.Addrs()
+		if err != nil {
+			continue
+		}
+		for _, a := range addrs {
+			cidr := a.String()
+			ipTmp, ipnet, err := net.ParseCIDR(cidr)
+			if err != nil {
+				continue
+			}
+			ip := ipTmp.To4()
+			if ip == nil {
+				continue
+			}
+			start := ip.Mask(ipnet.Mask)
+			mask := ipnet.Mask
+			end := net.IP(make([]byte, 4))
+			for i := range ip {
+				end[i] = ip[i] | ^mask[i]
+			}
+			end[3] -= 1
+			ret = append(ret, start.String())
+			ret = append(ret, end.String())
+		}
+	}
+	return ret
 }
 
 // GetDiscoverStats restunrs discover stats

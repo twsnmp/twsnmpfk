@@ -270,7 +270,8 @@
     "StartIP": "Start IP",
     "Stats": "Discover progress",
     "Stop": "Stop",
-    "Timeout": "Timeout (seconds)"
+    "Timeout": "Timeout (seconds)",
+    "AutoIPRange": "Auto IP range"
   },
   "EventLog": {
     "Event": "Event",

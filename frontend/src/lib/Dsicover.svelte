@@ -9,6 +9,7 @@
   } from "flowbite-svelte";
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import {
+  GetDiscoverAddressRange,
     GetDiscoverConf,
     GetDiscoverStats,
     StartDiscover,
@@ -80,6 +81,23 @@
     showStop = false;
     await StopDiscover();
   };
+
+  let ipRanges = [];
+  let selIPRange  = 0;
+  const getIPRange = async () => {
+    if (ipRanges.length < 1) {
+      ipRanges = await GetDiscoverAddressRange();
+    }
+    if (ipRanges.length < 2) {
+      return
+    }
+    conf.StartIP = ipRanges[selIPRange];
+    conf.EndIP = ipRanges[selIPRange+1];
+    selIPRange += 2
+    if (selIPRange > ipRanges.length /2) {
+      selIPRange = 0;
+    }
+  }  
 </script>
 
 <Modal bind:open={showConf} size="lg" permanent class="w-full">
@@ -132,6 +150,10 @@
       <Button type="button" on:click={start} size="xs">
         <Icon path={icons.mdiSearchWeb} size={1} />
         {$_("Discover.Start")}
+      </Button>
+      <Button type="button" color="green" on:click={getIPRange} size="xs">
+        <Icon path={icons.mdiMagicStaff} size={1} />
+        {$_('Discover.AutoIPRange')}
       </Button>
       <Button type="button" color="alternative" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />

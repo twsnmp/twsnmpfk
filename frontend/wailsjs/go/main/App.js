@@ -98,6 +98,10 @@ export function GetDefaultPolling(arg1) {
   return window['go']['main']['App']['GetDefaultPolling'](arg1);
 }
 
+export function GetDiscoverAddressRange() {
+  return window['go']['main']['App']['GetDiscoverAddressRange']();
+}
+
 export function GetDiscoverConf() {
   return window['go']['main']['App']['GetDiscoverConf']();
 }
