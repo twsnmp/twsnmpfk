@@ -291,6 +291,9 @@
     }
     clearSelectedCount();
     hrSystemTable = new DataTable("#hrSystemTable", {
+      paging: false,
+      searching: false,
+      info: false,
       data: hostResource.System,
       language: getTableLang(),
       order: [[0, "asc"]],
