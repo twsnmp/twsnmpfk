@@ -4,6 +4,8 @@ import (
 	"embed"
 	"flag"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/wailsapp/wails/v2"
@@ -32,12 +34,12 @@ var maxDispLog = 10000
 var lang = ""
 
 func init() {
-	flag.StringVar(&dataStorePath, "datastore", "./datastore", "Path to Data Store directory")
+	flag.StringVar(&dataStorePath, "datastore", "", "Path to Data Store directory")
 	flag.BoolVar(&kiosk, "kiosk", false, "Kisok mode(Frameless and Full screen)")
-	flag.BoolVar(&lock, "lock", false, "Lock mad edit")
-	flag.IntVar(&trapPort, "trapPort", 162, "Lock mad edit")
-	flag.IntVar(&syslogPort, "syslogPort", 514, "Lock mad edit")
-	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "max log size to diplay")
+	flag.BoolVar(&lock, "lock", false, "Lock mode edit")
+	flag.IntVar(&trapPort, "trapPort", 162, "SNMP TRAP port")
+	flag.IntVar(&syslogPort, "syslogPort", 514, "Syslog port")
+	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "Max log size to diplay")
 	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
 	flag.StringVar(&lang, "lang", "", "Language")
 	flag.Parse()
@@ -48,6 +50,17 @@ func main() {
 		log.Printf("args %s=%s", f.Name, f.Value)
 	})
 
+	if dataStorePath == "" {
+		hd, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		dataStorePath = filepath.Join(hd, "twsnmp")
+		if err = os.MkdirAll(dataStorePath, 0766); err != nil {
+			log.Fatalln(err)
+		}
+	}
+
 	if lang != "" {
 		i18n.SetLang(lang)
 	}
@@ -57,7 +70,7 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:      "TWSNMP FK",
+		Title:      "TWSNMP",
 		Width:      1600,
 		Height:     900,
 		Fullscreen: kiosk,
@@ -78,7 +91,6 @@ func main() {
 			DisableWindowIcon:    false,
 		},
 		Mac: &mac.Options{
-			// TitleBar:             mac.TitleBarHiddenInset(),
 			TitleBar: &mac.TitleBar{
 				TitlebarAppearsTransparent: false,
 				HideTitle:                  false,
