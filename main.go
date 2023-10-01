@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -103,7 +104,7 @@ func main() {
 			WebviewIsTransparent: true,
 			WindowIsTranslucent:  true,
 			About: &mac.AboutInfo{
-				Title:   "TWSNMP",
+				Title:   "TWSNMP " + fmt.Sprintf("%s(%s)", version, commit),
 				Message: "© 2023 Masayuki Yamai",
 				Icon:    icon,
 			},
