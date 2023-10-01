@@ -35,13 +35,14 @@ type MapConfEnt struct {
 }
 
 func initConf() {
-	MapConf.Community = "public"
 	MapConf.PollInt = 60
 	MapConf.Retry = 1
 	MapConf.Timeout = 1
 	MapConf.LogDays = 14
 	MapConf.Community = "public"
+	MapConf.SnmpMode = "v2c"
 	MapConf.EnableArpWatch = true
+	DiscoverConf.AddPolling = true
 	DiscoverConf.Retry = 1
 	DiscoverConf.Timeout = 1
 	NotifyConf.InsecureSkipVerify = true
