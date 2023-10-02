@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os/exec"
 	"runtime"
 	"strings"
 	"time"
 
+	"github.com/twsnmp/twsnmpfk/cmd"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/ping"
@@ -151,7 +151,7 @@ func checkArpTable() {
 }
 
 func checkArpTableWindows() {
-	out, err := exec.Command("arp", "-a").Output()
+	out, err := cmd.GetCmd("arp", []string{"-a"}).Output()
 	if err != nil {
 		log.Printf("check arp table err=%v", err)
 		return
@@ -167,7 +167,7 @@ func checkArpTableWindows() {
 }
 
 func checkArpTableUnix() {
-	out, err := exec.Command("arp", "-an").Output()
+	out, err := cmd.GetCmd("arp", []string{"-an"}).Output()
 	if err != nil {
 		log.Printf("check arp table err=%v", err)
 		return

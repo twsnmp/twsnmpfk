@@ -5,25 +5,25 @@ package polling
 import (
 	"fmt"
 	"log"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/Songmu/timeout"
 	"github.com/robertkrimen/otto"
+	"github.com/twsnmp/twsnmpfk/cmd"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/vjeantet/grok"
 )
 
 func doPollingCmd(pe *datastore.PollingEnt) {
-	cmd := getReplacedCmd(pe)
+	c := getReplacedCmd(pe)
 	extractor := pe.Extractor
 	script := pe.Script
 	vm := otto.New()
 	pe.Result = make(map[string]interface{})
 	addJavaScriptFunctions(pe, vm)
-	cl := strings.Split(cmd, " ")
+	cl := strings.Split(c, " ")
 	if len(cl) < 1 {
 		setPollingError("cmd", pe, fmt.Errorf("no cmd"))
 		return
@@ -35,13 +35,13 @@ func doPollingCmd(pe *datastore.PollingEnt) {
 
 	if filepath.Ext(cl[0]) == ".sh" {
 		cl[0] = filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
-		tio.Cmd = exec.Command("/bin/sh", "-c", strings.Join(cl, " "))
+		tio.Cmd = cmd.GetCmd("/bin/sh", []string{"-c", strings.Join(cl, " ")})
 	} else {
 		exe := filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
 		if len(cl) == 1 {
-			tio.Cmd = exec.Command(exe)
+			tio.Cmd = cmd.GetCmd(exe, nil)
 		} else {
-			tio.Cmd = exec.Command(exe, cl[1:]...)
+			tio.Cmd = cmd.GetCmd(exe, cl[1:])
 		}
 	}
 

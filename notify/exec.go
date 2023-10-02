@@ -4,11 +4,11 @@ package notify
 import (
 	"fmt"
 	"log"
-	"os/exec"
 	"strings"
 	"time"
 
 	"github.com/Songmu/timeout"
+	"github.com/twsnmp/twsnmpfk/cmd"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 )
@@ -46,8 +46,8 @@ func checkExecCmd() {
 	}
 }
 
-func ExecNotifyCmd(cmd string, level int) error {
-	cl := strings.Split(cmd, " ")
+func ExecNotifyCmd(c string, level int) error {
+	cl := strings.Split(c, " ")
 	if len(cl) < 1 {
 		return fmt.Errorf("notify ExecCmd is empty")
 	}
@@ -62,9 +62,9 @@ func ExecNotifyCmd(cmd string, level int) error {
 		KillAfter: 5 * time.Second,
 	}
 	if len(cl) == 1 {
-		tio.Cmd = exec.Command(cl[0])
+		tio.Cmd = cmd.GetCmd(cl[0], nil)
 	} else {
-		tio.Cmd = exec.Command(cl[0], cl[1:]...)
+		tio.Cmd = cmd.GetCmd(cl[0], cl[1:])
 	}
 	_, _, _, err := tio.Run()
 	return err
