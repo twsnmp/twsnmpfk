@@ -8,7 +8,7 @@
         <key>CFBundleExecutable</key>
         <string>{{.Name}}</string>
         <key>CFBundleIdentifier</key>
-        <string>com.wails.{{.Name}}</string>
+        <string>{{.Name}}</string>
         <key>CFBundleVersion</key>
         <string>{{.Info.ProductVersion}}</string>
         <key>CFBundleGetInfoString</key>
@@ -23,5 +23,14 @@
         <string>true</string>
         <key>NSHumanReadableCopyright</key>
         <string>{{.Info.Copyright}}</string>
+        <key>LSApplicationCategoryType</key>
+        <string>public.app-category.developer-tools</string>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>ja</string>
+        <key>CFBundleLocalizations</key>
+        <array>
+            <string>ja</string>
+            <string>en</string>
+        </array>
     </dict>
 </plist>

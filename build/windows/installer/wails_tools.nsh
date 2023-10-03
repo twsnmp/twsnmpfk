@@ -11,7 +11,7 @@
     !define INFO_COMPANYNAME "TWSNMP"
 !endif
 !ifndef INFO_PRODUCTNAME
-    !define INFO_PRODUCTNAME "TWSNMP"
+    !define INFO_PRODUCTNAME "twsnmpfk"
 !endif
 !ifndef INFO_PRODUCTVERSION
     !define INFO_PRODUCTVERSION "1.0.0"

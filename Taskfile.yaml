@@ -18,13 +18,13 @@ tasks:
       - wails dev -appargs "-datastore ./tmp/ -syslogPort 8514 -trapPort 8162 -lang en"
   mac:
     cmds:
-      - wails build  -platform darwin/universal -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+      - wails build  -platform darwin/universal -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   macdebug:
     cmds:
       - wails build  -platform darwin -debug -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   windows:
     cmds:
-      - wails build  -platform windows/amd64 -clean -nsis -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+      - wails build  -platform windows/amd64 -nsis -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   windebug:
     cmds:
       - wails build  -platform windows/amd64 -debug -clean -windowsconsole -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
