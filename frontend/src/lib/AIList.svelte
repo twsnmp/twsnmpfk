@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
+  import { GradientButton } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick, onDestroy } from "svelte";
@@ -125,21 +125,21 @@
   </div>
   <div class="flex justify-end space-x-2 mr-2">
   {#if selectedCount == 1}
-    <Button color="green" type="button" on:click={show} size="xs">
+    <GradientButton shadow color="green" type="button" on:click={show} size="xs">
       <Icon path={icons.mdiChartBarStacked} size={1} />
       {$_('AIList.Report')}
-    </Button>
+    </GradientButton>
   {/if}
   {#if selectedCount > 0}
-    <Button color="red" type="button" on:click={clearAIResult} size="xs">
+    <GradientButton shadow color="red" type="button" on:click={clearAIResult} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
       { $_('AIList.Clear') }
-    </Button>
+    </GradientButton>
   {/if}
-    <Button type="button" color="alternative" on:click={refresh} size="xs">
+    <GradientButton shadow type="button" color="teal" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       { $_('AIList.Reload') }
-    </Button>
+    </GradientButton>
   </div>
 </div>
 

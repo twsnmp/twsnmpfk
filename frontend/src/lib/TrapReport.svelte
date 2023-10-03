@@ -1,14 +1,18 @@
 <script lang="ts">
-  import { Modal, Button,Tabs,TabItem } from "flowbite-svelte";
-  import { onMount, createEventDispatcher,tick } from "svelte";
+  import { Modal, GradientButton, Tabs, TabItem } from "flowbite-svelte";
+  import { onMount, createEventDispatcher, tick } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
-  import {showTrapFromAddr,showTrapLog3D,showTrapTypeChart } from "./chart/trap";
+  import {
+    showTrapFromAddr,
+    showTrapLog3D,
+    showTrapTypeChart,
+  } from "./chart/trap";
   import { showLogHeatmap } from "./chart/eventlog";
   import { _ } from "svelte-i18n";
 
-  export let logs : datastore.TrapEnt[] | undefined =undefined;
+  export let logs: datastore.TrapEnt[] | undefined = undefined;
   let show: boolean = false;
   const dispatch = createEventDispatcher();
 
@@ -17,23 +21,23 @@
     showChart("type");
   });
 
-  const showChart = async (t:string) => {
+  const showChart = async (t: string) => {
     await tick();
-    switch(t) {
+    switch (t) {
       case "type":
-        showTrapTypeChart(t,logs);
+        showTrapTypeChart(t, logs);
         break;
       case "heatmap":
-        showLogHeatmap(t,logs);
+        showLogHeatmap(t, logs);
         break;
       case "from":
-        showTrapFromAddr(t,logs);
+        showTrapFromAddr(t, logs);
         break;
       case "trap3D":
-        showTrapLog3D(t,logs);
+        showTrapLog3D(t, logs);
         break;
     }
-  }
+  };
 
   const close = () => {
     show = false;
@@ -50,40 +54,63 @@
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem open on:click={()=>{showChart("type")}}>
+      <TabItem
+        open
+        on:click={() => {
+          showChart("type");
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
-          {$_('TrapReport.CountByType')}
+          {$_("TrapReport.CountByType")}
         </div>
-        <div id="type" style="height: 500px;"></div>
+        <div id="type" style="height: 500px;" />
       </TabItem>
-      <TabItem on:click={()=>{showChart("heatmap")}}>
+      <TabItem
+        on:click={() => {
+          showChart("heatmap");
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
-          {$_('TrapReport.Heatmap')}
+          {$_("TrapReport.Heatmap")}
         </div>
-        <div id="heatmap" style="height: 500px;"></div>
+        <div id="heatmap" style="height: 500px;" />
       </TabItem>
-      <TabItem on:click={()=>{showChart("from")}}>
+      <TabItem
+        on:click={() => {
+          showChart("from");
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
-          {$_('TrapReport.CountByFromAddress')}
+          {$_("TrapReport.CountByFromAddress")}
         </div>
-        <div id="from" style="height: 500px;"></div>
+        <div id="from" style="height: 500px;" />
       </TabItem>
-      <TabItem on:click={()=>{showChart("trap3D")}}>
+      <TabItem
+        on:click={() => {
+          showChart("trap3D");
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartScatterPlot} size={1} />
-          {$_('TrapReport.Chart3D')}
+          {$_("TrapReport.Chart3D")}
         </div>
-        <div id="trap3D" style="height: 500px;"></div>
+        <div id="trap3D" style="height: 500px;" />
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={close}
+        size="xs"
+      >
         <Icon path={icons.mdiCancel} size={1} />
-        {$_('TrapReport.Close')}
-      </Button>
+        {$_("TrapReport.Close")}
+      </GradientButton>
     </div>
   </div>
 </Modal>

@@ -5,7 +5,7 @@
     Label,
     Input,
     Checkbox,
-    Button,
+    GradientButton,
   } from "flowbite-svelte";
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import { GetNode, UpdateNode } from "../../wailsjs/go/main/App";
@@ -154,14 +154,14 @@
       <Input bind:value={node.Descr} size="sm" />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button color="blue" type="button" on:click={save} size="xs">
+      <GradientButton shadow color="blue" type="button" on:click={save} size="xs">
         <Icon path={icons.mdiContentSave} size={1} />
         { $_('Node.Save') }
-      </Button>
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      </GradientButton>
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Node.Cancel') }
-      </Button>
+      </GradientButton>
     </div>
   </form>
 </Modal>

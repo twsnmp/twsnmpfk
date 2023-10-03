@@ -1,14 +1,21 @@
 <script lang="ts">
-  import { Button,Modal,Label,Input,Spinner } from "flowbite-svelte";
+  import {
+    GradientButton,
+    Modal,
+    Label,
+    Input,
+    Spinner,
+  } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import { onMount,tick,onDestroy } from "svelte";
-  import { GetTraps, ExportTraps, GetDefaultPolling } from "../../wailsjs/go/main/App";
+  import { onMount, tick, onDestroy } from "svelte";
   import {
-    renderTime,
-    getTableLang,
-  } from "./common";
-  import {showLogCountChart,resizeLogCountChart} from "./chart/logcount";
+    GetTraps,
+    ExportTraps,
+    GetDefaultPolling,
+  } from "../../wailsjs/go/main/App";
+  import { renderTime, getTableLang } from "./common";
+  import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
   import TrapReport from "./TrapReport.svelte";
   import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
@@ -36,7 +43,7 @@
     table = new DataTable("#table", {
       columns: columns,
       data: data,
-      order:[[0,"desc"]],
+      order: [[0, "desc"]],
       language: getTableLang(),
       select: {
         style: "single",
@@ -48,13 +55,13 @@
     table.on("deselect", () => {
       selectedCount = table.rows({ selected: true }).count();
     });
-  }
+  };
 
   const refresh = async () => {
     showLoading = true;
-    logs = await GetTraps(from,trapType);
+    logs = await GetTraps(from, trapType);
     data = [];
-    for (let i =0; i < logs.length;i++) {
+    for (let i = 0; i < logs.length; i++) {
       data.push(logs[i]);
     }
     logs.reverse();
@@ -65,12 +72,12 @@
 
   const showChart = async () => {
     await tick();
-    showLogCountChart("chart",data,zoomCallBack);
-  }
+    showLogCountChart("chart", data, zoomCallBack);
+  };
 
-  const zoomCallBack = (st:number, et:number) => {
+  const zoomCallBack = (st: number, et: number) => {
     data = [];
-    for(let i = logs.length -1 ; i >= 0;i--) {
+    for (let i = logs.length - 1; i >= 0; i--) {
       if (logs[i].Time >= st && logs[i].Time <= et) {
         data.push(logs[i]);
       }
@@ -81,23 +88,23 @@
   const columns = [
     {
       data: "Time",
-      title: $_('Trap.Time'),
+      title: $_("Trap.Time"),
       width: "20%",
       render: renderTime,
     },
     {
       data: "FromAddress",
-      title: $_('Trap.FromAddress'),
+      title: $_("Trap.FromAddress"),
       width: "15%",
     },
     {
       data: "TrapType",
-      title: $_('Trap.TrapType'),
+      title: $_("Trap.TrapType"),
       width: "15%",
     },
     {
       data: "Variables",
-      title: $_('Trap.Variables'),
+      title: $_("Trap.Variables"),
       width: "50%",
     },
   ];
@@ -106,8 +113,8 @@
     refresh();
   });
 
-  onDestroy(()=>{
-    if(table) {
+  onDestroy(() => {
+    if (table) {
       table.destroy();
       table = undefined;
     }
@@ -115,16 +122,16 @@
 
   const saveCSV = () => {
     ExportTraps("csv");
-  }
+  };
 
   const saveExcel = () => {
     ExportTraps("excel");
-  }
+  };
 
-  let polling : datastore.PollingEnt | undefined = undefined;
+  let polling: datastore.PollingEnt | undefined = undefined;
   const watch = async () => {
     const d = table.rows({ selected: true }).data();
-    if (!d || d.length !=1 ) {
+    if (!d || d.length != 1) {
       return;
     }
     let ip = d[0].FromAddress;
@@ -133,57 +140,94 @@
       ip = a[0];
     }
     polling = await GetDefaultPolling(ip);
-    polling.Name = `${d[0].TrapType}`; 
+    polling.Name = `${d[0].TrapType}`;
     polling.Type = "trap";
     polling.Mode = "count";
     polling.Script = "count < 1";
     polling.Params = d[0].FromAddress;
     polling.Filter = d[0].TrapType;
     showPolling = true;
-  }
-
+  };
 </script>
 
 <svelte:window on:resize={resizeLogCountChart} />
 
 <div class="flex flex-col">
-  <div id="chart" style="height: 200px;"></div>
+  <div id="chart" style="height: 200px;" />
   <div class="m-5 grow">
     <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1}
-      <Button color="green" type="button" on:click={watch} size="xs">
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        on:click={watch}
+        size="xs"
+      >
         <Icon path={icons.mdiEye} size={1} />
-        {$_('Trap.Polling')}
-      </Button>
+        {$_("Trap.Polling")}
+      </GradientButton>
     {/if}
-    <Button color="blue" type="button" on:click={saveCSV} size="xs">
+    <GradientButton
+      shadow
+      type="button"
+      color="green"
+      on:click={() => {
+        showReport = true;
+      }}
+      size="xs"
+    >
+      <Icon path={icons.mdiChartPie} size={1} />
+      {$_("Trap.Report")}
+    </GradientButton>
+    <GradientButton
+      shadow
+      color="blue"
+      type="button"
+      on:click={() => (showFilter = true)}
+      size="xs"
+    >
+      <Icon path={icons.mdiFilter} size={1} />
+      {$_("Trap.Filter")}
+    </GradientButton>
+    <GradientButton
+      shadow
+      color="lime"
+      type="button"
+      on:click={saveCSV}
+      size="xs"
+    >
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
-    </Button>
-    <Button color="blue" type="button" on:click={saveExcel} size="xs">
+    </GradientButton>
+    <GradientButton
+      shadow
+      color="lime"
+      type="button"
+      on:click={saveExcel}
+      size="xs"
+    >
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
-    </Button>
-    <Button type="button" color="green" on:click={() => {showReport=true}} size="xs">
-      <Icon path={icons.mdiChartPie} size={1} />
-      {$_('Trap.Report')}
-    </Button>
-    <Button color="blue" type="button" on:click={()=> showFilter = true} size="xs">
-      <Icon path={icons.mdiFilter} size={1} />
-      {$_('Trap.Filter')}
-    </Button>
-    <Button type="button" color="alternative" on:click={refresh} size="xs">
+    </GradientButton>
+    <GradientButton
+      shadow
+      type="button"
+      color="teal"
+      on:click={refresh}
+      size="xs"
+    >
       <Icon path={icons.mdiRecycle} size={1} />
-      {$_('Trap.Reload')}
-    </Button>
+      {$_("Trap.Reload")}
+    </GradientButton>
   </div>
 </div>
 
 {#if showReport}
   <TrapReport
-   {logs}
+    {logs}
     on:close={() => {
       showReport = false;
     }}
@@ -192,7 +236,7 @@
 
 {#if showPolling}
   <Polling
-   pollingTmp={polling}
+    pollingTmp={polling}
     on:close={() => {
       showPolling = false;
     }}
@@ -201,36 +245,34 @@
 
 <Modal bind:open={showFilter} size="sm" permanent class="w-full">
   <form class="flex flex-col space-y-4" action="#">
-    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">{$_('Trap.Filter')}</h3>
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+      {$_("Trap.Filter")}
+    </h3>
     <Label class="space-y-2">
-      <span>{ $_('Trap.FromAddress') } </span>
-      <Input
-        bind:value={from}
-        size="sm"
-      />
+      <span>{$_("Trap.FromAddress")} </span>
+      <Input bind:value={from} size="sm" />
     </Label>
     <Label class="space-y-2">
-      <span>{ $_('Trap.TrapType') }</span>
-      <Input
-        bind:value={trapType}
-        size="sm"
-      />
+      <span>{$_("Trap.TrapType")}</span>
+      <Input bind:value={trapType} size="sm" />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button
+      <GradientButton
+        shadow
         color="blue"
         type="button"
         on:click={() => {
-          showFilter= false;
+          showFilter = false;
           refresh();
         }}
         size="xs"
       >
         <Icon path={icons.mdiSearchWeb} size={1} />
-        { $_('Trap.Search') }
-      </Button>
-      <Button
-        color="alternative"
+        {$_("Trap.Search")}
+      </GradientButton>
+      <GradientButton
+        shadow
+        color="teal"
         type="button"
         on:click={() => {
           showFilter = false;
@@ -238,8 +280,8 @@
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        { $_('Trap.Cancel') }
-      </Button>
+        {$_("Trap.Cancel")}
+      </GradientButton>
     </div>
   </form>
 </Modal>
@@ -247,7 +289,7 @@
 <Modal bind:open={showLoading} size="sm" permanent class="w-full">
   <div>
     <Spinner />
-    <span class="ml-2"> { $_('Syslog.Loading') } </span>
+    <span class="ml-2"> {$_("Syslog.Loading")} </span>
   </div>
 </Modal>
 

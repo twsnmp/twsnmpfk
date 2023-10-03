@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    Button,
+    GradientButton,
     Modal,
     Label,
     Input,
@@ -39,11 +39,11 @@
   let msg = "";
 
   const levelList = [
-    { name: $_('Syslog.All'), value: 7 },
-    { name: $_('Syslog.Info'), value: 6 },
-    { name: $_('Syslog.Warn'), value: 4 },
-    { name: $_('Syslog.Low'), value: 3 },
-    { name: $_('Syslog.High'), value: 2 },
+    { name: $_("Syslog.All"), value: 7 },
+    { name: $_("Syslog.Info"), value: 6 },
+    { name: $_("Syslog.Warn"), value: 4 },
+    { name: $_("Syslog.Low"), value: 3 },
+    { name: $_("Syslog.High"), value: 2 },
   ];
 
   const showTable = () => {
@@ -182,20 +182,19 @@
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1}
-      <Button color="green" type="button" on:click={watch} size="xs">
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        on:click={watch}
+        size="xs"
+      >
         <Icon path={icons.mdiEye} size={1} />
         {$_("Syslog.Polling")}
-      </Button>
+      </GradientButton>
     {/if}
-    <Button color="blue" type="button" on:click={saveCSV} size="xs">
-      <Icon path={icons.mdiFileDelimited} size={1} />
-      CSV
-    </Button>
-    <Button color="blue" type="button" on:click={saveExcel} size="xs">
-      <Icon path={icons.mdiFileExcel} size={1} />
-      Excel
-    </Button>
-    <Button
+    <GradientButton
+      shadow
       type="button"
       color="green"
       on:click={() => {
@@ -205,20 +204,47 @@
     >
       <Icon path={icons.mdiChartPie} size={1} />
       {$_("Syslog.Report")}
-    </Button>
-    <Button
+    </GradientButton>
+    <GradientButton
+      shadow
       color="blue"
       type="button"
       on:click={() => (showFilter = true)}
       size="xs"
     >
       <Icon path={icons.mdiFilter} size={1} />
-      { $_('Syslog.Filter') }
-    </Button>
-    <Button type="button" color="alternative" on:click={refresh} size="xs">
+      {$_("Syslog.Filter")}
+    </GradientButton>
+    <GradientButton
+      shadow
+      color="lime"
+      type="button"
+      on:click={saveCSV}
+      size="xs"
+    >
+      <Icon path={icons.mdiFileDelimited} size={1} />
+      CSV
+    </GradientButton>
+    <GradientButton
+      shadow
+      color="lime"
+      type="button"
+      on:click={saveExcel}
+      size="xs"
+    >
+      <Icon path={icons.mdiFileExcel} size={1} />
+      Excel
+    </GradientButton>
+    <GradientButton
+      shadow
+      type="button"
+      color="teal"
+      on:click={refresh}
+      size="xs"
+    >
       <Icon path={icons.mdiRecycle} size={1} />
       {$_("Syslog.Reload")}
-    </Button>
+    </GradientButton>
   </div>
 </div>
 
@@ -242,30 +268,33 @@
 
 <Modal bind:open={showFilter} size="sm" permanent class="w-full">
   <form class="flex flex-col space-y-4" action="#">
-    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">{ $_('Syslog.Filter') }</h3>
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+      {$_("Syslog.Filter")}
+    </h3>
     <Label class="space-y-2">
-      <span>{ $_('Syslog.Level') }</span>
+      <span>{$_("Syslog.Level")}</span>
       <Select
         items={levelList}
         bind:value={severity}
-        placeholder={ $_('Syslog.SelectLevel') }
+        placeholder={$_("Syslog.SelectLevel")}
         size="sm"
       />
     </Label>
     <Label class="space-y-2">
-      <span>{ $_('Syslog.Host') }</span>
+      <span>{$_("Syslog.Host")}</span>
       <Input bind:value={host} size="sm" />
     </Label>
     <Label class="space-y-2">
-      <span>{ $_('Syslog.Tag') }</span>
+      <span>{$_("Syslog.Tag")}</span>
       <Input bind:value={tag} size="sm" />
     </Label>
     <Label class="space-y-2">
-      <span>{ $_('Syslog.Message') }</span>
+      <span>{$_("Syslog.Message")}</span>
       <Input bind:value={msg} size="sm" />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button
+      <GradientButton
+        shadow
         color="blue"
         type="button"
         on:click={() => {
@@ -275,10 +304,11 @@
         size="xs"
       >
         <Icon path={icons.mdiSearchWeb} size={1} />
-        { $_('Syslog.Search') }
-      </Button>
-      <Button
-        color="alternative"
+        {$_("Syslog.Search")}
+      </GradientButton>
+      <GradientButton
+        shadow
+        color="teal"
         type="button"
         on:click={() => {
           showFilter = false;
@@ -286,8 +316,8 @@
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        { $_('Syslog.Calcel') }
-      </Button>
+        {$_("Syslog.Calcel")}
+      </GradientButton>
     </div>
   </form>
 </Modal>
@@ -295,7 +325,7 @@
 <Modal bind:open={showLoading} size="sm" permanent class="w-full">
   <div>
     <Spinner />
-    <span class="ml-2"> { $_('Syslog.Loading') } </span>
+    <span class="ml-2"> {$_("Syslog.Loading")} </span>
   </div>
 </Modal>
 

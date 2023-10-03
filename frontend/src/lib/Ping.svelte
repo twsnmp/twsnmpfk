@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Modal, Button, Tabs, TabItem, Input, Select } from "flowbite-svelte";
+  import { Modal, GradientButton, Tabs, TabItem, Input, Select } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -435,21 +435,21 @@
     <div class="flex justify-end space-x-2 mr-2">
       {#if pingTab}
         {#if wait}
-          <Button type="button" color="red" on:click={stop} size="xs">
+          <GradientButton shadow type="button" color="red" on:click={stop} size="xs">
             <Icon path={icons.mdiStop} size={1} />
             { $_('Ping.Stop') }
-          </Button>
+          </GradientButton>
         {:else}
-          <Button type="button" color="blue" on:click={start} size="xs">
+          <GradientButton shadow type="button" color="blue" on:click={start} size="xs">
             <Icon path={icons.mdiPlay} size={1} />
             { $_('Ping.Start') }
-          </Button>
+          </GradientButton>
         {/if}
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Ping.Close') }
-      </Button>
+      </GradientButton>
     </div>
   </div>
 </Modal>

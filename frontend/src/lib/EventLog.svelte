@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button,Modal,Spinner} from "flowbite-svelte";
+  import { GradientButton,Modal,Spinner} from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount,tick,onDestroy } from "svelte";
@@ -128,22 +128,22 @@
     <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-    <Button color="blue" type="button" on:click={saveCSV} size="xs">
-      <Icon path={icons.mdiFileDelimited} size={1} />
-      CSV
-    </Button>
-    <Button color="blue" type="button" on:click={saveExcel} size="xs">
-      <Icon path={icons.mdiFileExcel} size={1} />
-      Excel
-    </Button>
-    <Button type="button" color="green" on:click={() => {showReport=true}} size="xs">
+    <GradientButton shadow type="button" color="green" on:click={() => {showReport=true}} size="xs">
       <Icon path={icons.mdiChartPie} size={1} />
       { $_('EventLog.Report') }
-    </Button>
-    <Button type="button" color="alternative" on:click={refresh} size="xs">
+    </GradientButton>
+    <GradientButton shadow color="lime" type="button" on:click={saveCSV} size="xs">
+      <Icon path={icons.mdiFileDelimited} size={1} />
+      CSV
+    </GradientButton>
+    <GradientButton shadow color="lime" type="button" on:click={saveExcel} size="xs">
+      <Icon path={icons.mdiFileExcel} size={1} />
+      Excel
+    </GradientButton>
+    <GradientButton shadow type="button" color="teal" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       { $_('EventLog.Reload') }
-    </Button>
+    </GradientButton>
   </div>
 </div>
 

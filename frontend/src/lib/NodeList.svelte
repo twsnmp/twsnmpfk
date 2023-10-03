@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
+  import { GradientButton } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, onDestroy } from "svelte";
@@ -169,45 +169,45 @@
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1}
-      <Button color="blue" type="button" on:click={edit} size="xs">
+      <GradientButton shadow color="blue" type="button" on:click={edit} size="xs">
         <Icon path={icons.mdiPencil} size={1} />
         { $_('NodeList.Edit') }
-      </Button>
-      <Button color="blue" type="button" on:click={polling} size="xs">
+      </GradientButton>
+      <GradientButton shadow color="blue" type="button" on:click={polling} size="xs">
         <Icon path={icons.mdiLanCheck} size={1} />
         { $_('NodeList.Polling') }
-      </Button>
-      <Button color="green" type="button" on:click={report} size="xs">
+      </GradientButton>
+      <GradientButton shadow color="green" type="button" on:click={report} size="xs">
         <Icon path={icons.mdiChartBar} size={1} />
         { $_('NodeList.Report') }
-      </Button>
+      </GradientButton>
     {/if}
     {#if selectedCount > 0}
-      <Button color="red" type="button" on:click={deleteNodes} size="xs">
+      <GradientButton shadow color="red" type="button" on:click={deleteNodes} size="xs">
         <Icon path={icons.mdiTrashCan} size={1} />
         { $_('NodeList.Delete') }
-      </Button>
-      <Button color="blue" type="button" on:click={check} size="xs">
+      </GradientButton>
+      <GradientButton shadow color="teal" type="button" on:click={check} size="xs">
         <Icon path={icons.mdiCheck} size={1} />
         { $_('NodeList.ReCheck') }
-      </Button>
+      </GradientButton>
     {/if}
-    <Button color="blue" type="button" on:click={checkAll} size="xs">
+    <GradientButton shadow color="teal" type="button" on:click={checkAll} size="xs">
       <Icon path={icons.mdiCheckAll} size={1} />
       { $_('NodeList.CheckAll') }
-    </Button>
-    <Button color="blue" type="button" on:click={saveCSV} size="xs">
+    </GradientButton>
+    <GradientButton shadow color="lime" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
-    </Button>
-    <Button color="blue" type="button" on:click={saveExcel} size="xs">
+    </GradientButton>
+    <GradientButton shadow color="lime" type="button" on:click={saveExcel} size="xs">
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
-    </Button>
-    <Button type="button" color="alternative" on:click={refresh} size="xs">
+    </GradientButton>
+    <GradientButton shadow type="button" color="teal" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       { $_('NodeList.Reload') }
-    </Button>
+    </GradientButton>
   </div>
 </div>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Modal, Button } from "flowbite-svelte";
+  import { Modal, GradientButton } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, onDestroy, tick, createEventDispatcher } from "svelte";
@@ -109,15 +109,15 @@
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if selectedCount == 1}
-        <Button color="blue" type="button" on:click={add} size="xs">
+        <GradientButton shadow color="blue" type="button" on:click={add} size="xs">
           <Icon path={icons.mdiPlus} size={1} />
           { $_('AddPolling.Add') }
-        </Button>
+        </GradientButton>
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('AddPolling.Cancel') }
-      </Button>
+      </GradientButton>
     </div>
   </div>
 </Modal>

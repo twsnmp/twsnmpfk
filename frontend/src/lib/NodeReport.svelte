@@ -1,7 +1,7 @@
 <script lang="ts">
   import {
     Modal,
-    Button,
+    GradientButton,
     Tabs,
     TabItem,
     Table,
@@ -841,37 +841,37 @@
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
       {#if selectedPortCount > 0}
-        <Button color="green" type="button" on:click={watchPortState} size="xs">
+        <GradientButton shadow color="blue" type="button" on:click={watchPortState} size="xs">
           <Icon path={icons.mdiEye} size={1} />
           { $_('NodeReport.AddPollingIFState') }
-        </Button>
-        <Button color="green" type="button" on:click={watchPortTraffic} size="xs">
+        </GradientButton>
+        <GradientButton shadow color="blue" type="button" on:click={watchPortTraffic} size="xs">
           <Icon path={icons.mdiEye} size={1} />
           { $_('NodeReport.AddPollingTraffic') }
-        </Button>
+        </GradientButton>
       {/if}
       {#if selectedHrSystemCount > 0 && canWacthHrSystem()}
-        <Button color="green" type="button" on:click={watchHrSystem} size="xs">
+        <GradientButton shadow color="blue" type="button" on:click={watchHrSystem} size="xs">
           <Icon path={icons.mdiEye} size={1} />
           { $_('NodeReport.Polling') }
-        </Button>
+        </GradientButton>
       {/if}
       {#if selectedhrStorageCount > 0}
-        <Button color="green" type="button" on:click={watchHrStorage} size="xs">
+        <GradientButton shadow color="blue" type="button" on:click={watchHrStorage} size="xs">
           <Icon path={icons.mdiEye} size={1} />
           { $_('NodeReport.Polling') }
-        </Button>
+        </GradientButton>
       {/if}
       {#if selectedHrProcessCount > 0}
-        <Button color="green" type="button" on:click={watchHrProcess} size="xs">
+        <GradientButton shadow color="blue" type="button" on:click={watchHrProcess} size="xs">
           <Icon path={icons.mdiEye} size={1} />
           { $_('NodeReport.Polling') }
-        </Button>
+        </GradientButton>
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('NodeReport.Close') }
-      </Button>
+      </GradientButton>
     </div>
   </div>
 </Modal>

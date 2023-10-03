@@ -4,9 +4,7 @@
     Modal,
     Label,
     Input,
-    Checkbox,
-    Button,
-    P,
+    GradientButton,
   } from "flowbite-svelte";
   import { onMount, createEventDispatcher } from "svelte";
   import {
@@ -212,7 +210,8 @@
             size="sm"
           />
         </Label>
-        <Button
+        <GradientButton
+          shadow
           class="h-10 mt-4 w-32"
           type="button"
           size="sm"
@@ -221,7 +220,7 @@
         >
           <Icon path={icons.mdiImage} size={1} />
           { $_('DarwItem.Select') }
-        </Button>
+        </GradientButton>
         <div />
       </div>
       <Label class="space-y-2">
@@ -310,14 +309,14 @@
       />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button color="blue" type="button" on:click={save} size="xs">
+      <GradientButton shadow color="blue" type="button" on:click={save} size="xs">
         <Icon path={icons.mdiContentSave} size={1} />
         { $_('DrawItem.Save') }
-      </Button>
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      </GradientButton>
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('DrawItem.Cancel') }
-      </Button>
+      </GradientButton>
     </div>
   </form>
 </Modal>

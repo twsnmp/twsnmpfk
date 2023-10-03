@@ -12,7 +12,7 @@
 <script lang="ts">
   import { CodeJar } from "@novacbn/svelte-codejar";
 
-  import { Select, Modal, Label, Input, Button } from "flowbite-svelte";
+  import { Select, Modal, Label, Input, GradientButton } from "flowbite-svelte";
   import { onMount, onDestroy, createEventDispatcher, tick } from "svelte";
   import {
     GetPolling,
@@ -286,14 +286,14 @@
       </Label>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button color="blue" type="button" on:click={save} size="xs">
+      <GradientButton shadow color="blue" type="button" on:click={save} size="xs">
         <Icon path={icons.mdiContentSave} size={1} />
         { $_('Polling.Save') }
-      </Button>
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      </GradientButton>
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Polling.Cancel') }
-      </Button>
+      </GradientButton>
     </div>
   </form>
 </Modal>
@@ -309,15 +309,15 @@
     <table id="pollingTable" class="display compact mt-2" style="width:99%" />
     <div class="flex justify-end space-x-2 mr-2">
       {#if selectedCount == 1}
-        <Button type="button" color="alternative" on:click={select} size="xs">
-          <Icon path={icons.mdiCancel} size={1} />
+        <GradientButton shadow type="button" color="blue" on:click={select} size="xs">
+          <Icon path={icons.mdiCheck} size={1} />
           { $_('Polling.Select') }
-        </Button>
+        </GradientButton>
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Polling.Cancel') }
-      </Button>
+      </GradientButton>
     </div>
   </div>
 </Modal>

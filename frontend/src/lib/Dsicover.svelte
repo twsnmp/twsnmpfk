@@ -5,7 +5,7 @@
     Label,
     Input,
     Checkbox,
-    Button,
+    GradientButton,
   } from "flowbite-svelte";
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import {
@@ -147,18 +147,18 @@
       >
     </div>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button type="button" on:click={start} size="xs">
+      <GradientButton shadow color="blue" type="button" on:click={start} size="xs">
         <Icon path={icons.mdiSearchWeb} size={1} />
         {$_("Discover.Start")}
-      </Button>
-      <Button type="button" color="green" on:click={getIPRange} size="xs">
+      </GradientButton>
+      <GradientButton shadow type="button" color="red" on:click={getIPRange} size="xs">
         <Icon path={icons.mdiMagicStaff} size={1} />
         {$_('Discover.AutoIPRange')}
-      </Button>
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      </GradientButton>
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_("Discover.Close")}
-      </Button>
+      </GradientButton>
     </div>
   </form>
 </Modal>
@@ -261,15 +261,15 @@
     {/if}
     <div class="flex justify-end space-x-2 mr-2">
       {#if showStop}
-        <Button type="button" color="red" on:click={stop} size="xs">
+        <GradientButton shadow type="button" color="red" on:click={stop} size="xs">
           <Icon path={icons.mdiStop} size={1} />
           {$_("Discover.Stop")}
-        </Button>
+        </GradientButton>
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_("Discover.Close")}
-      </Button>
+      </GradientButton>
     </div>
   </div>
 </Modal>

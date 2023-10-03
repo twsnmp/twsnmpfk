@@ -1,7 +1,7 @@
 <script lang="ts">
   import {
     Modal,
-    Button,
+    GradientButton,
     Tabs,
     TabItem,
     Table,
@@ -246,10 +246,10 @@
       {/if}
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('PollingReport.Close') }
-      </Button>
+      </GradientButton>
     </div>
   </div>
 </Modal>

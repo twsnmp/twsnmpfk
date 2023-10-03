@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Modal, Button,Tabs,TabItem } from "flowbite-svelte";
+  import { Modal, GradientButton,Tabs,TabItem } from "flowbite-svelte";
   import { onMount, createEventDispatcher,tick } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -89,10 +89,10 @@
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('EventLogReport.Close') }
-      </Button>
+      </GradientButton>
     </div>
   </div>
 </Modal>

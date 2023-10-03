@@ -8,7 +8,7 @@
   import neko5 from "../assets/images/neko_anm5.png";
   import neko6 from "../assets/images/neko_anm6.png";
   import neko7 from "../assets/images/neko_anm7.png";
-  import { Modal, Button, Search, Select, Toggle } from "flowbite-svelte";
+  import { Modal, GradientButton, Search, Select, Toggle } from "flowbite-svelte";
   import { onMount, createEventDispatcher, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -247,15 +247,17 @@
       <div class="flex-auto">
         <Search size="sm" bind:value={name} placeholder={ $_('MIBBrowser.ObjectName') } />
       </div>
-      <Button
-        size="sm"
+      <GradientButton
+        shadow
+        color="blue"
+        size="xs"
         class="ml-2"
         on:click={() => {
           showMIBTree = true;
         }}
       >
         <Icon path={icons.mdiFileTree} size={1} />
-      </Button>
+      </GradientButton>
       <Select
         size="sm"
         class="ml-2 w-64"
@@ -271,39 +273,41 @@
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait}
         <Toggle bind:checked={raw}>{ $_('MIBBrowser.RawData') }</Toggle>
-        <Button type="button" color="blue" on:click={get} size="xs">
+        <GradientButton shadow type="button" color="blue" on:click={get} size="xs">
           <Icon path={icons.mdiPlay} size={1} />
           { $_('MIBBrowser.Get') }
-        </Button>
+        </GradientButton>
         {#if data.length > 0}
-          <Button
-            color="blue"
+          <GradientButton
+            shadow
+            color="lime"
             type="button"
             on:click={() => {
               exportMIB("csv");
             }}
-            size="sm"
+            size="xs"
           >
             <Icon path={icons.mdiFileDelimited} size={1} />
             CSV
-          </Button>
-          <Button
-            color="blue"
+          </GradientButton>
+          <GradientButton
+            shadow
+            color="lime"
             type="button"
             on:click={() => {
               exportMIB("excel");
             }}
-            size="sm"
+            size="xs"
           >
             <Icon path={icons.mdiFileExcel} size={1} />
             Excel
-          </Button>
+          </GradientButton>
         {/if}
       {/if}
-      <Button type="button" color="alternative" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('MIBBrowser.Close') }
-      </Button>
+      </GradientButton>
     </div>
   </div>
 </Modal>
@@ -329,9 +333,10 @@
       }}
     />
     <div class="flex justify-end space-x-2 mr-2">
-      <Button
+      <GradientButton
+        shadow
         type="button"
-        color="alternative"
+        color="teal"
         on:click={() => {
           showMIBTree = false;
         }}
@@ -339,7 +344,7 @@
       >
         <Icon path={icons.mdiCancel} size={1} />
         { $_('MIBBrowser.Close') }
-      </Button>
+      </GradientButton>
     </div>
   </div>
 </Modal>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Select, Modal, Label, Input, Button } from "flowbite-svelte";
+  import { Select, Modal, Label, Input, GradientButton } from "flowbite-svelte";
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import {
     GetNode,
@@ -146,26 +146,26 @@
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if line.ID != ""}
-        <Button color="red" type="button" on:click={disconnect} size="xs">
+        <GradientButton shadow color="red" type="button" on:click={disconnect} size="xs">
           <Icon path={icons.mdiLanDisconnect} size={1} />
           {$_("LIne.Disconnect")}
-        </Button>
+        </GradientButton>
       {/if}
       {#if line.ID != ""}
-        <Button color="blue" type="button" on:click={connect} size="xs">
+        <GradientButton shadow color="blue" type="button" on:click={connect} size="xs">
           <Icon path={icons.mdiContentSave} size={1} />
           {$_("Line.Update")}
-        </Button>
+        </GradientButton>
       {:else}
-        <Button color="blue" type="button" on:click={connect} size="xs">
+        <GradientButton color="blue" type="button" on:click={connect} size="xs">
           <Icon path={icons.mdiLanConnect} size={1} />
           {$_("Line.Connect")}
-        </Button>
+        </GradientButton>
       {/if}
-      <Button color="alternative" type="button" on:click={close} size="xs">
+      <GradientButton shadow color="teal" type="button" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_("Line.Cancel")}
-      </Button>
+      </GradientButton>
     </div>
   </form>
 </Modal>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Modal,Tabs,TabItem,Checkbox,Label,Input,Select,Button,Alert } from "flowbite-svelte";
+  import { Modal,Tabs,TabItem,Checkbox,Label,Input,Select,GradientButton,Alert } from "flowbite-svelte";
   import { onMount, createEventDispatcher } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -191,14 +191,14 @@
             <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
           </div>
           <div class="flex justify-end space-x-2 mr-2">
-            <Button type="button" on:click={saveMapConf} size="xs">
+            <GradientButton shadow color="blue" type="button" on:click={saveMapConf} size="xs">
               <Icon path={icons.mdiContentSave} size={1} />
               { $_('Config.Save') }
-            </Button>
-            <Button type="button" color="alternative" on:click={close} size="xs">
+            </GradientButton>
+            <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
               <Icon path={icons.mdiCancel} size={1} />
               { $_('Config.Cancel') }
-            </Button>
+            </GradientButton>
           </div>
                 </form>
         <!-- <MapConf on:close={close}></MapConf> -->
@@ -305,18 +305,18 @@
             <Input class="w-full" bind:value={notifyConf.ExecCmd} size="sm" />
           </Label>
           <div class="flex justify-end space-x-2 mr-2">
-            <Button type="button" on:click={saveNotifyConf} size="xs">
+            <GradientButton shadow color="blue" type="button" on:click={saveNotifyConf} size="xs">
               <Icon path={icons.mdiContentSave} size={1} />
               { $_('Config.Save') }
-            </Button>
-            <Button type="button" color="red" on:click={testNotifyConf} size="xs">
+            </GradientButton>
+            <GradientButton shadow type="button" color="red" on:click={testNotifyConf} size="xs">
               <Icon path={icons.mdiEmail} size={1} />
               { $_('Config.Test') }
-            </Button>
-            <Button type="button" color="alternative" on:click={close} size="xs">
+            </GradientButton>
+            <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
               <Icon path={icons.mdiCancel} size={1} />
               { $_('Config.Cancel') }
-            </Button>
+            </GradientButton>
           </div>
         </form>
       </TabItem>
@@ -356,14 +356,14 @@
             </Label>
           </div>
           <div class="flex justify-end space-x-2 mr-2">
-            <Button type="button" on:click={saveAIConf} size="xs">
+            <GradientButton shadow color="blue" type="button" on:click={saveAIConf} size="xs">
               <Icon path={icons.mdiContentSave} size={1} />
               { $_('Config.Save') }
-            </Button>
-            <Button type="button" color="alternative" on:click={close} size="xs">
+            </GradientButton>
+            <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
               <Icon path={icons.mdiCancel} size={1} />
               { $_('Config.Cancel') }
-            </Button>
+            </GradientButton>
           </div>
         </form>
       </TabItem>

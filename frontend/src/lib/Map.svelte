@@ -1,7 +1,7 @@
 <script lang="ts">
   import { initMAP, updateMAP, resetMap, deleteMap, grid } from "./map";
   import { onMount, onDestroy } from "svelte";
-  import { Modal, GradientButton, Button, Label, Input } from "flowbite-svelte";
+  import { Modal, GradientButton, Label, Input } from "flowbite-svelte";
   import * as icons from "@mdi/js";
   import Icon from "mdi-svelte";
   import Discover from "./Dsicover.svelte";
@@ -450,41 +450,43 @@
       />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
-      <Button
+      <GradientButton
         color="red"
         type="button"
         on:click={() => {
           showGrid = false;
           grid(gridSize, false);
         }}
-        size="sm"
+        size="xs"
       >
         <Icon path={icons.mdiRun} size={1} />
         { $_('Map.Exec') }
-      </Button>
-      <Button
-        color="blue"
+      </GradientButton>
+      <GradientButton
+        shadow
+        color="lime"
         type="button"
         on:click={() => {
           showGrid = false;
           grid(gridSize, true);
         }}
-        size="sm"
+        size="xs"
       >
         <Icon path={icons.mdiTestTube} size={1} />
         { $_('Map.Test') }
-      </Button>
-      <Button
-        color="alternative"
+      </GradientButton>
+      <GradientButton
+        shadow
+        color="teal"
         type="button"
         on:click={() => {
           showGrid = false;
         }}
-        size="sm"
+        size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Map.Cancel') }
-      </Button>
+      </GradientButton>
     </div>
   </form>
 </Modal>

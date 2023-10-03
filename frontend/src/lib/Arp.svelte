@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
+  import { GradientButton } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick, onDestroy } from "svelte";
@@ -249,46 +249,46 @@
   </div>
   <div class="flex justify-end space-x-2 mr-2 mt-2">
     {#if selectedNodeID}
-      <Button color="green" type="button" on:click={()=> showNodeReport= true} size="xs">
+      <GradientButton shadow color="green" type="button" on:click={()=> showNodeReport= true} size="xs">
         <Icon path={icons.mdiChartBar} size={1} />
         { $_('Arp.NodeInfo') }
-      </Button>
+      </GradientButton>
     {/if}
 
     {#if selectedIP}
-      <Button color="blue" type="button" on:click={()=>{showEditNode=true}} size="xs">
+      <GradientButton shadow color="blue" type="button" on:click={()=>{showEditNode=true}} size="xs">
         <Icon path={icons.mdiPlus} size={1} />
         { $_('Arp.AddNode') }
-      </Button>
+      </GradientButton>
     {/if}
 
-    <Button color="blue" type="button" on:click={saveCSV} size="xs">
-      <Icon path={icons.mdiFileDelimited} size={1} />
-      CSV
-    </Button>
-    <Button color="blue" type="button" on:click={saveExcel} size="xs">
-      <Icon path={icons.mdiFileExcel} size={1} />
-      Excel
-    </Button>
-    <Button
-      type="button"
-      color="green"
-      on:click={() => {
-        showReport = true;
-      }}
+    <GradientButton
+    type="button"
+    color="green"
+    on:click={() => {
+      showReport = true;
+    }}
       size="xs"
-    >
+      >
       <Icon path={icons.mdiChartPie} size={1} />
       { $_('Arp.Report') }
-    </Button>
-    <Button color="red" type="button" on:click={reset} size="xs">
+    </GradientButton>
+    <GradientButton shadow color="red" type="button" on:click={reset} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
       { $_('Arp.Clear') }
-    </Button>
-    <Button type="button" color="alternative" on:click={refresh} size="xs">
+    </GradientButton>
+    <GradientButton shadow color="lime" type="button" on:click={saveCSV} size="xs">
+      <Icon path={icons.mdiFileDelimited} size={1} />
+      CSV
+    </GradientButton>
+    <GradientButton shadow color="lime" type="button" on:click={saveExcel} size="xs">
+      <Icon path={icons.mdiFileExcel} size={1} />
+      Excel
+    </GradientButton>
+    <GradientButton shadow type="button" color="teal" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       { $_('Arp.Reload') }
-    </Button>
+    </GradientButton>
   </div>
 </div>
 

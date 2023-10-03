@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
+  import { GradientButton } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, onDestroy } from "svelte";
@@ -178,42 +178,42 @@
     <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-    <Button color="blue" type="button" on:click={add} size="xs">
+    <GradientButton shadow color="blue" type="button" on:click={add} size="xs">
       <Icon path={icons.mdiPlus} size={1} />
       { $_('PollingList.Add') }
-    </Button>
+    </GradientButton>
     {#if selectedCount == 1}
-      <Button color="blue" type="button" on:click={edit} size="xs">
+      <GradientButton shadow color="blue" type="button" on:click={edit} size="xs">
         <Icon path={icons.mdiPencil} size={1} />
         { $_('PollingList.Edit') }
-      </Button>
-      <Button color="blue" type="button" on:click={copy} size="xs">
+      </GradientButton>
+      <GradientButton shadow color="lime" type="button" on:click={copy} size="xs">
         <Icon path={icons.mdiContentCopy} size={1} />
         { $_('PollingList.Copy') }
-      </Button>
-      <Button color="green" type="button" on:click={report} size="xs">
+      </GradientButton>
+      <GradientButton shadow color="green" type="button" on:click={report} size="xs">
         <Icon path={icons.mdiChartBar} size={1} />
         { $_('PollingList.Report') }
-      </Button>
+      </GradientButton>
     {/if}
     {#if selectedCount > 0}
-      <Button color="red" type="button" on:click={deletePollings} size="xs">
+      <GradientButton shadow color="red" type="button" on:click={deletePollings} size="xs">
         <Icon path={icons.mdiTrashCan} size={1} />
         { $_('PollingList.Delete') }
-      </Button>
+      </GradientButton>
     {/if}
-    <Button color="blue" type="button" on:click={saveCSV} size="xs">
+    <GradientButton shadow color="lime" type="button" on:click={saveCSV} size="xs">
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
-    </Button>
-    <Button color="blue" type="button" on:click={saveExcel} size="xs">
+    </GradientButton>
+    <GradientButton shadow color="lime" type="button" on:click={saveExcel} size="xs">
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
-    </Button>
-    <Button type="button" color="alternative" on:click={refresh} size="xs">
+    </GradientButton>
+    <GradientButton shadow type="button" color="teal" on:click={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       { $_('PollingList.Reload') }
-    </Button>
+    </GradientButton>
   </div>
 </div>
 
