@@ -111,11 +111,15 @@ export function GetVPanelPowerInfo(arg1:string):Promise<boolean>;
 
 export function GetVersion():Promise<string>;
 
+export function HasDatastore():Promise<boolean>;
+
 export function IsDark():Promise<boolean>;
 
 export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 
 export function ResetArpTable():Promise<boolean>;
+
+export function SelectDatastore():Promise<boolean>;
 
 export function SelectFile(arg1:string,arg2:boolean):Promise<string>;
 

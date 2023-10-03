@@ -1,0 +1,190 @@
+<script lang="ts">
+  import logo from "../assets/images/appicon.png";
+  import { Navbar, NavBrand, NavLi, NavUl, Button } from "flowbite-svelte";
+  import Icon from "mdi-svelte";
+  import * as icons from "@mdi/js";
+  import { onMount, tick } from "svelte";
+  import { GetMapName,IsDark,SetDark } from "../../wailsjs/go/main/App";
+  import Map from "./Map.svelte";
+  import Log from "./Log.svelte";
+  import NodeList from "./NodeList.svelte";
+  import PollingList from "./PollingList.svelte";
+  import EventLog from "./EventLog.svelte";
+  import Syslog from "./Syslog.svelte";
+  import Trap from "./Trap.svelte";
+  import Arp from "./Arp.svelte";
+  import AIList from "./AIList.svelte";
+  import Config from "./Config.svelte";
+  import { _ } from 'svelte-i18n';
+
+  let dark: boolean = false;
+  let mainHeight = 0;
+  let mapName = "";
+  let page = "map";
+  let showConfig = false;
+
+  const updateMapName = async () => {
+    mapName = await GetMapName();
+  };
+
+  onMount(async () => {
+    const e = document.querySelector("html");
+    if (await IsDark()) {
+       e.classList.add("dark"); 
+       dark = true;
+    } else {
+      e.classList.remove("dark"); 
+      dark = false;
+    }
+    await tick();
+    mainHeight = window.innerHeight - 96;
+    updateMapName();
+  });
+
+  const toggleDark = () => {
+    const e = document.querySelector("html");
+    e.classList.toggle("dark");
+    dark = e.classList.contains("dark");
+    SetDark(dark);
+  };
+</script>
+
+<svelte:window on:resize={() => (mainHeight = window.innerHeight - 96)} />
+
+<Navbar let:hidden let:toggle style="--wails-draggable:drag">
+  <NavBrand href="/">
+    <img src={logo} class="mr-3 h-12" alt="TWSNMP Logo" />
+    <span
+      class="self-center whitespace-nowrap text-xl font-semibold dark:text-white"
+    >
+      TWSNMP FK - {mapName}
+    </span>
+  </NavBrand>
+  <NavUl>
+    <NavLi
+      active={page == "map"}
+      on:click={() => {
+        page = "map";
+      }}
+    >
+      <Icon path={icons.mdiLan} size={1} />
+      { $_('App.Map') }
+    </NavLi>
+    <NavLi
+      active={page == "node"}
+      on:click={() => {
+        page = "node";
+      }}
+    >
+      <Icon path={icons.mdiLaptop} size={1} />
+      { $_('App.Node') }
+    </NavLi>
+    <NavLi
+      active={page == "polling"}
+      on:click={() => {
+        page = "polling";
+      }}
+    >
+      <Icon path={icons.mdiLanCheck} size={1} />
+      { $_('App.Polling') }
+    </NavLi>
+    <NavLi
+      active={page == "eventlog"}
+      on:click={() => {
+        page = "eventlog";
+      }}
+    >
+      <Icon path={icons.mdiCalendarCheck} size={1} />
+      { $_('App.Log') }
+    </NavLi>
+    <NavLi
+      active={page == "syslog"}
+      on:click={() => {
+        page = "syslog";
+      }}
+    >
+      <Icon path={icons.mdiCalendarText} size={1} />
+      syslog
+    </NavLi>
+    <NavLi
+      active={page == "trap"}
+      on:click={() => {
+        page = "trap";
+      }}
+    >
+      <Icon path={icons.mdiAlert} size={1} />
+      TRAP
+    </NavLi>
+    <NavLi
+      active={page == "arp"}
+      on:click={() => {
+        page = "arp";
+      }}
+    >
+      <Icon path={icons.mdiCheckNetwork} size={1} />
+      ARP
+    </NavLi>
+    <NavLi
+      active={page == "ai"}
+      on:click={() => {
+        page = "ai";
+      }}
+    >
+      <Icon path={icons.mdiBrain} size={1} />
+      { $_('App.AI') }
+    </NavLi>
+    <NavLi
+      active={showConfig}
+      on:click={() => {
+        showConfig = true;
+      }}
+    >
+      <Icon path={icons.mdiCog} size={1} />
+      { $_('App.Config') }
+    </NavLi>
+  </NavUl>
+  <Button class="!p-2" color="alternative" on:click={toggleDark}>
+    {#if dark}
+      <Icon path={icons.mdiWeatherSunny} size={1} />
+    {:else}
+      <Icon path={icons.mdiMoonWaxingCrescent} size={1} />
+    {/if}
+  </Button>
+</Navbar>
+
+{#if page == "map"}
+  <div
+    class="grid grid-rows-4 grid-cols-1 gap-0 w-full"
+    style="height:{mainHeight}px;"
+  >
+    <div class="row-span-3">
+      <Map />
+    </div>
+    <div class="row-span-1 ml-2 mr-2">
+      <Log />
+    </div>
+  </div>
+{:else if page == "node"}
+  <NodeList />
+{:else if page == "polling"}
+  <PollingList />
+{:else if page == "eventlog"}
+  <EventLog />
+{:else if page == "syslog"}
+  <Syslog />
+{:else if page == "trap"}
+  <Trap />
+{:else if page == "arp"}
+  <Arp />
+{:else if page == "ai"}
+  <AIList />
+{/if}
+
+{#if showConfig}
+  <Config
+    on:close={() => {
+      updateMapName();
+      showConfig = false;
+    }}
+  />
+{/if}

@@ -214,6 +214,10 @@ export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
 }
 
+export function HasDatastore() {
+  return window['go']['main']['App']['HasDatastore']();
+}
+
 export function IsDark() {
   return window['go']['main']['App']['IsDark']();
 }
@@ -224,6 +228,10 @@ export function Ping(arg1) {
 
 export function ResetArpTable() {
   return window['go']['main']['App']['ResetArpTable']();
+}
+
+export function SelectDatastore() {
+  return window['go']['main']['App']['SelectDatastore']();
 }
 
 export function SelectFile(arg1, arg2) {

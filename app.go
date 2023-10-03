@@ -48,39 +48,15 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.wg = &sync.WaitGroup{}
 	a.ctx, a.cancel = context.WithCancel(ctx)
-	log.Println("call datastore.Init")
-	if err := datastore.Init(a.ctx, dataStorePath, a.wg); err != nil {
-		log.Fatalf("init db err=%v", err)
+	if dataStorePath != "" {
+		a.startTWSNMP()
 	}
-	datastore.AddEventLog(&datastore.EventLogEnt{
-		Type:  "system",
-		Level: "info",
-		Event: i18n.Trans("Start TWSNMP"),
-	})
-	log.Println("call ping.Start")
-	if err := ping.Start(a.ctx, a.wg, pingMode); err != nil {
-		log.Fatalf("start ping err=%v", err)
-	}
-	log.Println("call logger.Start")
-	if err := logger.Start(a.ctx, a.wg, syslogPort, trapPort); err != nil {
-		log.Fatalf("start logger err=%v", err)
-	}
-	log.Println("call polling.Start")
-	if err := polling.Start(a.ctx, a.wg); err != nil {
-		log.Fatalf("start polling err=%v", err)
-	}
-	log.Println("call backend.Start")
-	if err := backend.Start(a.ctx, dataStorePath, version, a.wg); err != nil {
-		log.Fatalf("start backend err=%v", err)
-	}
-	log.Println("call notify.Start")
-	if err := notify.Start(a.ctx, a.wg); err != nil {
-		log.Fatalf("start notify err=%v", err)
-	}
-
 }
 
 func (a *App) shutdown(ctx context.Context) {
+	if dataStorePath == "" {
+		return
+	}
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "info",
@@ -155,5 +131,67 @@ func (a *App) IsDark() bool {
 func (a *App) SetDark(d bool) {
 	if err := datastore.SetDark(d); err != nil {
 		log.Println(err)
+	}
+}
+
+// HasDatastoreは,データストアの選択状態を返します。
+func (a *App) HasDatastore() bool {
+	return dataStorePath != ""
+}
+
+// SelectDatastore は、データストアのディレクトリを選択してサービスを起動します。
+func (a *App) SelectDatastore() bool {
+	if dataStorePath != "" {
+		return true
+	}
+	p, _ := os.UserHomeDir()
+	var err error
+	dataStorePath, err = wails.OpenDirectoryDialog(a.ctx,
+		wails.OpenDialogOptions{
+			Title:                i18n.Trans("Select data store path"),
+			DefaultDirectory:     p,
+			CanCreateDirectories: true,
+		})
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	if dataStorePath != "" {
+		a.startTWSNMP()
+		return true
+	}
+	return false
+}
+
+// startTWSNMP は、データストアのディレクトリを設定します。
+func (a *App) startTWSNMP() {
+	log.Println("call datastore.Init")
+	if err := datastore.Init(a.ctx, dataStorePath, a.wg); err != nil {
+		log.Fatalf("init db err=%v", err)
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "system",
+		Level: "info",
+		Event: i18n.Trans("Start TWSNMP"),
+	})
+	log.Println("call ping.Start")
+	if err := ping.Start(a.ctx, a.wg, pingMode); err != nil {
+		log.Fatalf("start ping err=%v", err)
+	}
+	log.Println("call logger.Start")
+	if err := logger.Start(a.ctx, a.wg, syslogPort, trapPort); err != nil {
+		log.Fatalf("start logger err=%v", err)
+	}
+	log.Println("call polling.Start")
+	if err := polling.Start(a.ctx, a.wg); err != nil {
+		log.Fatalf("start polling err=%v", err)
+	}
+	log.Println("call backend.Start")
+	if err := backend.Start(a.ctx, dataStorePath, version, a.wg); err != nil {
+		log.Fatalf("start backend err=%v", err)
+	}
+	log.Println("call notify.Start")
+	if err := notify.Start(a.ctx, a.wg); err != nil {
+		log.Fatalf("start notify err=%v", err)
 	}
 }

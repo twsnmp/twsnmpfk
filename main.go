@@ -5,8 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
 
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/wailsapp/wails/v2"
@@ -51,17 +49,6 @@ func main() {
 		log.Printf("args %s=%s", f.Name, f.Value)
 	})
 
-	if dataStorePath == "" {
-		hd, err := os.UserHomeDir()
-		if err != nil {
-			log.Fatalln(err)
-		}
-		dataStorePath = filepath.Join(hd, "twsnmp")
-		if err = os.MkdirAll(dataStorePath, 0766); err != nil {
-			log.Fatalln(err)
-		}
-	}
-
 	if lang != "" {
 		i18n.SetLang(lang)
 	}
@@ -71,7 +58,7 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:      "TWSNMP",
+		Title:      "TWSNMP FK",
 		Width:      1600,
 		Height:     900,
 		Fullscreen: kiosk,

@@ -197,6 +197,9 @@ var transMap = map[string]map[string]string{
 	"Change polling state:%s(%s)": {
 		"ja": "ポーリング状態変化:%s(%s)",
 	},
+	"Select data store path": {
+		"ja": "データストアのパスを選択",
+	},
 }
 
 func init() {

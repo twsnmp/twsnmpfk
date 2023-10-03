@@ -584,5 +584,12 @@
     "CountByFromAddress": "送信元アドレス別",
     "Chart3D": "送信元と種別(3D)",
     "Close": "閉じる"
+  },
+  "Wellcom": {
+    "Starting": "起動しています..."
+  },
+  "Wellcome": {
+    "Start": "はじめる",
+    "Stop": "おわる"
   }
 }

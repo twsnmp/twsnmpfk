@@ -584,5 +584,12 @@
     "CountByFromAddress": "Count by from address",
     "CountByType": "Count by type",
     "Heatmap": "Heatmap"
+  },
+  "Wellcom": {
+    "Starting": "Starting..."
+  },
+  "Wellcome": {
+    "Start": "Start",
+    "Stop": "Stop"
   }
 }

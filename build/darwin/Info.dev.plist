@@ -28,5 +28,12 @@
             <key>NSAllowsLocalNetworking</key>
             <true/>
         </dict>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>ja</string>
+        <key>CFBundleLocalizations</key>
+        <array>
+            <string>ja</string>
+            <string>en</string>
+        </array>
     </dict>
 </plist>
