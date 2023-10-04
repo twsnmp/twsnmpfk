@@ -55,7 +55,7 @@
     } else if (pollingTmp) {
       polling = pollingTmp;
       show = true;
-    } else if (nodeID && pollingTmpID) {
+    } else if (pollingTmpID) {
       list = await GetAutoPollings(nodeID, pollingTmpID);
       if (list.length == 1) {
         polling = list[0];

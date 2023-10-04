@@ -115,21 +115,21 @@ func (a *App) GetPollingTemplate(id int) datastore.PollingTemplateEnt {
 
 // GetAutoPollingsは、ポーリングのテンプレートから自動でポーリングを作成してリストを返します。
 func (a *App) GetAutoPollings(node string, id int) []*datastore.PollingEnt {
-	n := datastore.GetNode(node)
-	if n == nil {
-		log.Printf("node not found id=%s", node)
-		return nil
-	}
 	pt := datastore.GetPollingTemplate(id)
 	if pt == nil {
 		return nil
 	}
-	if pt.AutoParam != "" {
+	if node != "" && pt.AutoParam != "" {
+		n := datastore.GetNode(node)
+		if n == nil {
+			log.Printf("node not found id=%s", node)
+			return nil
+		}
 		return polling.GetAutoPollings(n, pt)
 	}
 	p := new(datastore.PollingEnt)
 	p.Name = pt.Name
-	p.NodeID = n.ID
+	p.NodeID = node
 	p.Type = pt.Type
 	p.Params = pt.Params
 	p.Mode = pt.Mode

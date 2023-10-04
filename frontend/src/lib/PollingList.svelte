@@ -17,6 +17,7 @@
     getTableLang,
   } from "./common";
   import Polling from "./Polling.svelte";
+  import AddPolling from "./AddPolling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import PollingReport from "./PollingReport.svelte";
@@ -65,6 +66,7 @@
     showTable();
   };
 
+  let showCopyPolling = false;
   let showAddPolling = false;
   let pollingTmp = undefined;
 
@@ -89,7 +91,7 @@
     }
     pollingTmp = selected[0];
     pollingTmp.ID = "";
-    showAddPolling = true;
+    showCopyPolling = true;
   };
 
   const report = () => {
@@ -228,11 +230,21 @@
   />
 {/if}
 
-{#if showAddPolling}
+{#if showCopyPolling}
   <Polling
     nodeID=""
     pollingID = ""
     {pollingTmp}
+    on:close={(e) => {
+      showCopyPolling = false;
+      refresh();
+    }}
+  />
+{/if}
+
+{#if showAddPolling}
+  <AddPolling
+    nodeID=""
     on:close={(e) => {
       showAddPolling = false;
       refresh();
