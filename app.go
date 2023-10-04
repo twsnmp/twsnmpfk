@@ -127,6 +127,11 @@ func (a *App) IsDark() bool {
 	return datastore.Dark
 }
 
+// IsLatestは,TWSNMPが最新版であることを返します。
+func (a *App) IsLatest() bool {
+	return backend.IsLatest()
+}
+
 // SetDarkは,Darkモードの状態を設定します。
 func (a *App) SetDark(d bool) {
 	if err := datastore.SetDark(d); err != nil {

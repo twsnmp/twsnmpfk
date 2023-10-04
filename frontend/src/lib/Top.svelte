@@ -1,10 +1,10 @@
 <script lang="ts">
   import logo from "../assets/images/appicon.png";
-  import { Navbar, NavBrand, NavLi, NavUl, Button } from "flowbite-svelte";
+  import { Navbar, NavBrand, NavLi, NavUl, Button,Badge } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
-  import { GetMapName,IsDark,SetDark } from "../../wailsjs/go/main/App";
+  import { GetMapName,IsDark,IsLatest,SetDark } from "../../wailsjs/go/main/App";
   import Map from "./Map.svelte";
   import Log from "./Log.svelte";
   import NodeList from "./NodeList.svelte";
@@ -22,10 +22,19 @@
   let mapName = "";
   let page = "map";
   let showConfig = false;
+  let latest = false;
 
   const updateMapName = async () => {
     mapName = await GetMapName();
   };
+
+  const checkLatest = async () => {
+    latest = await IsLatest();
+    if(!latest) {
+      return;
+    }
+    setTimeout(checkLatest,1000 * 60);
+  }
 
   onMount(async () => {
     const e = document.querySelector("html");
@@ -39,6 +48,7 @@
     await tick();
     mainHeight = window.innerHeight - 96;
     updateMapName();
+    checkLatest();
   });
 
   const toggleDark = () => {
@@ -68,7 +78,7 @@
       }}
     >
       <Icon path={icons.mdiLan} size={1} />
-      { $_('App.Map') }
+      { $_('Top.Map') }
     </NavLi>
     <NavLi
       active={page == "node"}
@@ -77,7 +87,7 @@
       }}
     >
       <Icon path={icons.mdiLaptop} size={1} />
-      { $_('App.Node') }
+      { $_('Top.Node') }
     </NavLi>
     <NavLi
       active={page == "polling"}
@@ -86,7 +96,7 @@
       }}
     >
       <Icon path={icons.mdiLanCheck} size={1} />
-      { $_('App.Polling') }
+      { $_('Top.Polling') }
     </NavLi>
     <NavLi
       active={page == "eventlog"}
@@ -95,7 +105,7 @@
       }}
     >
       <Icon path={icons.mdiCalendarCheck} size={1} />
-      { $_('App.Log') }
+      { $_('Top.Log') }
     </NavLi>
     <NavLi
       active={page == "syslog"}
@@ -131,7 +141,7 @@
       }}
     >
       <Icon path={icons.mdiBrain} size={1} />
-      { $_('App.AI') }
+      { $_('Top.AI') }
     </NavLi>
     <NavLi
       active={showConfig}
@@ -140,9 +150,12 @@
       }}
     >
       <Icon path={icons.mdiCog} size={1} />
-      { $_('App.Config') }
+      { $_('Top.Config') }
     </NavLi>
   </NavUl>
+  {#if !latest}
+    <Badge border color="red">{$_('Top.HasUpdate')}</Badge>
+  {/if}
   <Button class="!p-2" color="alternative" on:click={toggleDark}>
     {#if dark}
       <Icon path={icons.mdiWeatherSunny} size={1} />

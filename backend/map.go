@@ -207,26 +207,22 @@ func checkNewVersion() {
 		log.Printf("check new version err=%v", err)
 		return
 	}
-	if CmpVersion(versionNum, strings.TrimSpace(string(ba))) >= 0 {
-		if versionCheckState == 0 {
-			datastore.AddEventLog(&datastore.EventLogEnt{
-				Type:  "system",
-				Level: "info",
-				Event: i18n.Trans("TWSNMP is latest version"),
-			})
-			versionCheckState = 1
-		}
-		return
+	l := "warn"
+	sv := strings.TrimSpace(string(ba))
+	if cmpVersion(versionNum, sv) >= 0 {
+		versionCheckState = 1
+		l = "info"
+	} else {
+		versionCheckState = 2
 	}
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
-		Level: "warn",
-		Event: i18n.Trans("TWSNMP has new version"),
+		Level: l,
+		Event: fmt.Sprintf(i18n.Trans("TWSNMP verison this=%s latest=%s"), versionNum, sv),
 	})
-	versionCheckState = 2
 }
 
-func CmpVersion(mv, sv string) int {
+func cmpVersion(mv, sv string) int {
 	mv = strings.ReplaceAll(mv, "(", " ")
 	mv = strings.ReplaceAll(mv, "v", "")
 	mv = strings.ReplaceAll(mv, "x", "0")

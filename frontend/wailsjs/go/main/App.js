@@ -222,6 +222,10 @@ export function IsDark() {
   return window['go']['main']['App']['IsDark']();
 }
 
+export function IsLatest() {
+  return window['go']['main']['App']['IsLatest']();
+}
+
 export function Ping(arg1) {
   return window['go']['main']['App']['Ping'](arg1);
 }

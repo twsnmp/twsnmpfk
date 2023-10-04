@@ -110,13 +110,14 @@
     "hrSystemProcesses": "System processes",
     "hrSystemUptime": "System uptime"
   },
-  "App": {
+  "Top": {
     "AI": "AI",
     "Config": "setting",
     "Log": "Log",
     "Map": "Map",
     "Node": "Node",
-    "Polling": "Polling"
+    "Polling": "Polling",
+    "HasUpdate": "Update"
   },
   "Log": {
     "Event": "Event",

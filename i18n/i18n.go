@@ -62,11 +62,8 @@ var transMap = map[string]map[string]string{
 	"node=%d,down=%d,rate=%.2f%%": {
 		"ja": "ノード数=%d,障害ノード=%d,稼働率=%.2f%%",
 	},
-	"TWSNMP is latest version": {
-		"ja": "TWSNMPは最新バージョン",
-	},
-	"TWSNMP has new version": {
-		"ja": "TWSNMPの更新バージョン有り",
+	"TWSNMP verison this=%s latest=%s": {
+		"ja": "このTWSNMPのバージョンは%s、最新版は%s",
 	},
 	"%.2fDays(%d)": {
 		"ja": "%.2f日(%d)",
@@ -89,8 +86,8 @@ var transMap = map[string]map[string]string{
 	"Found at %s": {
 		"ja": "%sに発見",
 	},
-	"/Protocol:": {
-		"ja": "/対応プロトコル:",
+	"Protocol:": {
+		"ja": "対応プロトコル:",
 	},
 	"Add by dicover": {
 		"ja": "自動発見により追加",

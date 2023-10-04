@@ -313,7 +313,8 @@ func addFoundNode(dent *discoverInfoEnt) {
 		}
 	}
 	if len(funcList) > 0 {
-		n.Descr += i18n.Trans("/Protocol:") + strings.Join(funcList, ",")
+		n.Descr += " "
+		n.Descr += i18n.Trans("Protocol:") + strings.Join(funcList, ",")
 	}
 	if err := datastore.AddNode(&n); err != nil {
 		log.Printf("discover err=%v", err)

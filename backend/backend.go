@@ -24,6 +24,6 @@ func Start(ctx context.Context, dsp, vn string, wg *sync.WaitGroup) error {
 	return nil
 }
 
-func HasNewVersion() bool {
-	return versionCheckState == 2
+func IsLatest() bool {
+	return versionCheckState != 2
 }

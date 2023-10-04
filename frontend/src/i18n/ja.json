@@ -110,14 +110,6 @@
     "TotalHost": "ホスト数",
     "NumberOfLog": "件数"
   },
-  "App": {
-    "Map": "マップ",
-    "Node": "ノード",
-    "Polling": "ポーリング",
-    "Log": "ログ",
-    "AI": "AI分析",
-    "Config": "設定"
-  },
   "Log": {
     "Level": "レベル",
     "Time": "発生日時",
@@ -591,5 +583,14 @@
   "Wellcome": {
     "Start": "はじめる",
     "Stop": "おわる"
+  },
+  "Top": {
+    "Map": "マップ",
+    "Node": "ノード",
+    "Polling": "ポーリング",
+    "Log": "ログ",
+    "AI": "AI分析",
+    "Config": "設定",
+    "HasUpdate": "更新版あり"
   }
 }

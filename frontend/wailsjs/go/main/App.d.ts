@@ -115,6 +115,8 @@ export function HasDatastore():Promise<boolean>;
 
 export function IsDark():Promise<boolean>;
 
+export function IsLatest():Promise<boolean>;
+
 export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 
 export function ResetArpTable():Promise<boolean>;
