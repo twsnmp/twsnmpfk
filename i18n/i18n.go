@@ -215,6 +215,18 @@ var transMap = map[string]map[string]string{
 	"Stop ARP watch": {
 		"ja": "ARP監視停止",
 	},
+	"Confirm clear": {
+		"ja": "クリア確認",
+	},
+	"Do you want to clear?": {
+		"ja": "クリアしますか?",
+	},
+	"Confirm delete": {
+		"ja": "削除確認",
+	},
+	"Do you want to delete?": {
+		"ja": "削除しますか?",
+	},
 }
 
 func init() {

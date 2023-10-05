@@ -22,7 +22,7 @@
   let mapName = "";
   let page = "map";
   let showConfig = false;
-  let latest = false;
+  let latest = true;
 
   const updateMapName = async () => {
     mapName = await GetMapName();

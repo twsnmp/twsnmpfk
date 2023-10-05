@@ -219,34 +219,14 @@ func deleteOldLogs() {
 	log.Printf("deleteOldLogs dur=%s", time.Since(s))
 }
 
-func DeleteAllLogs() {
-	st := time.Now()
-	buckets := []string{"logs", "pollingLogs", "syslog", "trap"}
-	for _, b := range buckets {
-		db.Batch(func(tx *bbolt.Tx) error {
-			if err := tx.DeleteBucket([]byte(b)); err != nil {
-				return err
-			}
-			tx.CreateBucketIfNotExists([]byte(b))
-			return nil
-		})
-	}
-	log.Printf("DeleteAllLogs dur=%v", time.Since(st))
-}
-
-func DeleteArp() {
-	st := time.Now()
-	buckets := []string{"arp", "arplog"}
-	for _, b := range buckets {
-		db.Batch(func(tx *bbolt.Tx) error {
-			if err := tx.DeleteBucket([]byte(b)); err != nil {
-				return err
-			}
-			tx.CreateBucketIfNotExists([]byte(b))
-			return nil
-		})
-	}
-	log.Printf("DeleteArp dur=%v", time.Since(st))
+func DeleteAllLogs(b string) error {
+	return db.Batch(func(tx *bbolt.Tx) error {
+		if err := tx.DeleteBucket([]byte(b)); err != nil {
+			return err
+		}
+		tx.CreateBucketIfNotExists([]byte(b))
+		return nil
+	})
 }
 
 func eventLogger(ctx context.Context, wg *sync.WaitGroup) {

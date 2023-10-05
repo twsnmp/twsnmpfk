@@ -22,6 +22,22 @@ export function DeleteAIResult(arg1) {
   return window['go']['main']['App']['DeleteAIResult'](arg1);
 }
 
+export function DeleteAllEventLogs() {
+  return window['go']['main']['App']['DeleteAllEventLogs']();
+}
+
+export function DeleteAllPollingLogs() {
+  return window['go']['main']['App']['DeleteAllPollingLogs']();
+}
+
+export function DeleteAllSyslog() {
+  return window['go']['main']['App']['DeleteAllSyslog']();
+}
+
+export function DeleteAllTraps() {
+  return window['go']['main']['App']['DeleteAllTraps']();
+}
+
 export function DeleteDrawItems(arg1) {
   return window['go']['main']['App']['DeleteDrawItems'](arg1);
 }

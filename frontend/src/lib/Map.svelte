@@ -22,7 +22,7 @@
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
-  import { _ } from 'svelte-i18n';
+  import { _ } from "svelte-i18n";
 
   let map: any;
   let posX: number = 0;
@@ -107,7 +107,7 @@
   };
   let count = 0;
   const refreshMap = async () => {
-    if (count < 2 || count % 5 == 0 ) {
+    if (count < 2 || count % 5 == 0) {
       updateMAP();
     }
     count++;
@@ -133,70 +133,82 @@
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
     <div
-      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 p-2"
+      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
     >
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           selectedNode = "";
           showEditNode = true;
           showMapMenu = false;
         }}
       >
-        <Icon path={icons.mdiPlus} size={0.8} />
-        { $_('Map.AddNode') }
+        <Icon path={icons.mdiPlus} size={0.7} />
+        <div>
+          {$_("Map.AddNode")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           selectedDrawItem = "";
           showEditDrawItem = true;
           showMapMenu = false;
         }}
       >
-        <Icon path={icons.mdiDrawing} size={0.8} />
-        { $_('Map.AddDrawItem') }
+        <Icon path={icons.mdiDrawing} size={0.7} />
+        <div>
+          {$_("Map.AddDrawItem")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showMapMenu = false;
           CheckPolling("");
         }}
       >
-        <Icon path={icons.mdiCached} size={0.8} />
-        { $_('Map.CheckAll') }
+        <Icon path={icons.mdiCached} size={0.7} />
+        <div>
+          {$_("Map.CheckAll")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showMapMenu = false;
           showDiscover = true;
         }}
       >
-        <Icon path={icons.mdiFileFind} size={0.8} />
-        { $_('Map.Discover') }
+        <Icon path={icons.mdiFileFind} size={0.7} />
+        <div>
+          {$_("Map.Discover")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showMapMenu = false;
           showGrid = true;
         }}
       >
-        <Icon path={icons.mdiGrid} size={0.8} />
-        { $_('Map.Grid') }
+        <Icon path={icons.mdiGrid} size={0.7} />
+        <div>
+          {$_("Map.Grid")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           resetMap();
           count = 1;
           showMapMenu = false;
         }}
       >
-        <Icon path={icons.mdiRecycle} />
-        { $_('Map.Reload') }
+        <Icon path={icons.mdiRecycle} size={0.7} />
+        <div>
+          {$_("Map.Reload")}
+        </div>
       </div>
     </div>
   </div>
@@ -206,109 +218,125 @@
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
     <div
-      class="bg-white w-30 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 px-1"
+      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
     >
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNodeMenu = false;
           showNodeReport = true;
         }}
       >
-        <Icon path={icons.mdiChartBarStacked} size={0.8} />
-        { $_('Map.Report') }
+        <Icon path={icons.mdiChartBarStacked} size={0.7} />
+        <div>
+          {$_("Map.Report")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNodeMenu = false;
           showPing = true;
         }}
       >
-        <Icon path={icons.mdiShippingPallet}  size={0.8}/>
-        PING
+        <Icon path={icons.mdiShippingPallet} size={0.7} />
+        <div>PING</div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNodeMenu = false;
           showMibBr = true;
         }}
       >
-        <Icon path={icons.mdiShippingPallet} size={0.8} />
-        { $_('Map.MIBBrowser') }
+        <Icon path={icons.mdiShippingPallet} size={0.7} />
+        <div>
+          {$_("Map.MIBBrowser")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNodeMenu = false;
           WakeOnLan(selectedNode);
         }}
       >
-        <Icon path={icons.mdiAlarm} size={0.8} />
-        Wake On Lan
+        <Icon path={icons.mdiAlarm} size={0.7} />
+        <div>Wake On Lan</div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNodeMenu = false;
           showEditNode = true;
         }}
       >
-        <Icon path={icons.mdiPencil} size={0.8} />
-        { $_('Map.Edit') }
+        <Icon path={icons.mdiPencil} size={0.7} />
+        <div>
+          {$_("Map.Edit")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNodeMenu = false;
           showPolling = true;
         }}
       >
-        <Icon path={icons.mdiLanCheck} size={0.8} />
-        { $_('Map.Polling') }
+        <Icon path={icons.mdiLanCheck} size={0.7} />
+        <div>
+          {$_("Map.Polling")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNodeMenu = false;
           CheckPolling(selectedNode);
         }}
       >
-        <Icon path={icons.mdiCached} size={0.8} />
-        { $_('Map.ReCheck') }
+        <Icon path={icons.mdiCached} size={0.7} />
+        <div>
+          {$_("Map.ReCheck")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={async () => {
           showNodeMenu = false;
           await CopyNode(selectedNode);
           count = 1;
         }}
       >
-        <Icon path={icons.mdiContentCopy} size={0.8} />
-        { $_('Map.Copy') }
+        <Icon path={icons.mdiContentCopy} size={0.7} />
+        <div>
+          {$_("Map.Copy")}
+        </div>
       </div>
       <div
-        class="flex text-red-500 hover:bg-gray-100 "
+        class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           deleteNodes([selectedNode]);
         }}
       >
-        <Icon path={icons.mdiDelete} size={0.8} />
-        { $_('Map.Delete') }
+        <Icon path={icons.mdiDelete} size={0.7} />
+        <div>
+          {$_("Map.Delete")}
+        </div>
       </div>
       {#each urls as url}
         {#if url}
           <div
-            class="flex hover:bg-gray-100"
+            class="flex space-x-2 hover:bg-sky-500/[0.8]"
             on:click={() => {
               showNodeMenu = false;
               BrowserOpenURL(url);
             }}
           >
-            <Icon path={icons.mdiLink} size={0.8} />
-            {url}
+            <Icon path={icons.mdiLink} size={0.7} />
+            <div>
+              {url}
+            </div>
           </div>
         {/if}
       {/each}
@@ -320,37 +348,43 @@
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
     <div
-      class="bg-white w-30 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-500 px-1"
+      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
     >
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showDrawItemMenu = false;
           showEditDrawItem = true;
         }}
       >
-        <Icon path={icons.mdiPencil} size={0.8} />
-        { $_('Map.Edit') }
+        <Icon path={icons.mdiPencil} size={0.7} />
+        <div>
+          {$_("Map.Edit")}
+        </div>
       </div>
       <div
-        class="flex hover:bg-gray-100"
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={async () => {
           showDrawItemMenu = false;
           await CopyDrawItem(selectedDrawItem);
           count = 1;
         }}
       >
-        <Icon path={icons.mdiContentCopy} size={0.8} />
-        { $_('Map.Copy') }
+        <Icon path={icons.mdiContentCopy} size={0.7} />
+        <div>
+          {$_("Map.Copy")}
+        </div>
       </div>
       <div
-        class="flex text-red-500 hover:bg-gray-100"
+        class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           deleteDrawItems([selectedDrawItem]);
         }}
       >
-        <Icon path={icons.mdiDelete} size={0.8} />
-        { $_('Map.Delete') }
+        <Icon path={icons.mdiDelete} size={0.7} />
+        <div>
+          {$_("Map.Delete")}
+        </div>
       </div>
     </div>
   </div>
@@ -437,9 +471,11 @@
 
 <Modal bind:open={showGrid} size="sm" permanent class="w-full">
   <form class="flex flex-col space-y-4" action="#">
-    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">{ $_('Map.Grid') }</h3>
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+      {$_("Map.Grid")}
+    </h3>
     <Label class="space-y-2">
-      <span>{ $_('Map.GridSize') } </span>
+      <span>{$_("Map.GridSize")} </span>
       <Input
         type="number"
         min={20}
@@ -460,7 +496,7 @@
         size="xs"
       >
         <Icon path={icons.mdiRun} size={1} />
-        { $_('Map.Exec') }
+        {$_("Map.Exec")}
       </GradientButton>
       <GradientButton
         shadow
@@ -473,7 +509,7 @@
         size="xs"
       >
         <Icon path={icons.mdiTestTube} size={1} />
-        { $_('Map.Test') }
+        {$_("Map.Test")}
       </GradientButton>
       <GradientButton
         shadow
@@ -485,7 +521,7 @@
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        { $_('Map.Cancel') }
+        {$_("Map.Cancel")}
       </GradientButton>
     </div>
   </form>

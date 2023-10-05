@@ -281,7 +281,8 @@
     "Reload": "Reload",
     "Report": "Report",
     "Time": "Time",
-    "Type": "Type"
+    "Type": "Type",
+    "DeleteAllLogs": "Delete all logs"
   },
   "EventLogREport": {
     "Oprate": "Oparation rate"
@@ -557,7 +558,8 @@
     "Low": "Low",
     "Search": "Search",
     "SelectLevel": "Select level",
-    "Warn": "Warn"
+    "Warn": "Warn",
+    "DeleteAllLogs": "Delete all logs"
   },
   "SyslogReport": {
     "Chart3D": "3D chart",
@@ -592,5 +594,8 @@
   "Wellcome": {
     "Start": "Start",
     "Stop": "Stop"
+  },
+  "Traps": {
+    "DeleteAllLogs": "Delete all logs"
   }
 }

@@ -15,6 +15,7 @@
     ExportSyslogs,
     GetDefaultPolling,
     AutoGrok,
+    DeleteAllSyslog,
   } from "../../wailsjs/go/main/App";
   import { renderState, renderTime, getTableLang } from "./common";
   import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
@@ -171,6 +172,12 @@
     polling.Params = d[0].Host;
     showPolling = true;
   };
+
+  const deleteAll = async () => {
+    if (await DeleteAllSyslog()) {
+      refresh();
+    }
+  };
 </script>
 
 <svelte:window on:resize={resizeLogLevelChart} />
@@ -214,6 +221,16 @@
     >
       <Icon path={icons.mdiFilter} size={1} />
       {$_("Syslog.Filter")}
+    </GradientButton>
+    <GradientButton
+      shadow
+      color="red"
+      type="button"
+      on:click={deleteAll}
+      size="xs"
+    >
+      <Icon path={icons.mdiTrashCan} size={1} />
+      {$_("Syslog.DeleteAllLogs")}
     </GradientButton>
     <GradientButton
       shadow

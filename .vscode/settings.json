@@ -162,6 +162,11 @@
     " {\n          showFilter = false;\n        }}\n        size=\"xs\"\n      >\n        ",
     " (showFilter = true)}\n      size=\"xs\"\n    >\n      ",
     " {\n          showFilter = false;\n          refresh();\n        }}\n        size=\"xs\"\n      >\n        ",
-    "\n        TWSNMP FK\n      "
+    "\n        TWSNMP FK\n      ",
+    " {\n      showReport = true;\n    }}\n      size=\"xs\"\n      >\n      ",
+    " {\n          showGrid = false;\n          grid(gridSize, false);\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n          showGrid = false;\n          grid(gridSize, true);\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n          showGrid = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    "\n          Wake On Lan\n        "
   ]
 }

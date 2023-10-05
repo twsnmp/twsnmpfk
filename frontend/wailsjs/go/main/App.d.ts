@@ -15,6 +15,14 @@ export function CopyNode(arg1:string):Promise<boolean>;
 
 export function DeleteAIResult(arg1:string):Promise<boolean>;
 
+export function DeleteAllEventLogs():Promise<boolean>;
+
+export function DeleteAllPollingLogs():Promise<boolean>;
+
+export function DeleteAllSyslog():Promise<boolean>;
+
+export function DeleteAllTraps():Promise<boolean>;
+
 export function DeleteDrawItems(arg1:Array<string>):Promise<void>;
 
 export function DeleteLine(arg1:string):Promise<boolean>;

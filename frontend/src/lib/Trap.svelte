@@ -13,6 +13,7 @@
     GetTraps,
     ExportTraps,
     GetDefaultPolling,
+    DeleteAllTraps,
   } from "../../wailsjs/go/main/App";
   import { renderTime, getTableLang } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
@@ -148,6 +149,12 @@
     polling.Filter = d[0].TrapType;
     showPolling = true;
   };
+
+  const deleteAll = async () => {
+    if (await DeleteAllTraps()) {
+      refresh();
+    }
+  };
 </script>
 
 <svelte:window on:resize={resizeLogCountChart} />
@@ -191,6 +198,16 @@
     >
       <Icon path={icons.mdiFilter} size={1} />
       {$_("Trap.Filter")}
+    </GradientButton>
+    <GradientButton
+      shadow
+      color="red"
+      type="button"
+      on:click={deleteAll}
+      size="xs"
+    >
+      <Icon path={icons.mdiTrashCan} size={1} />
+      {$_("Traps.DeleteAllLogs")}
     </GradientButton>
     <GradientButton
       shadow

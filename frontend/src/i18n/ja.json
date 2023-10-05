@@ -272,7 +272,8 @@
     "NodeName": "関連ノード",
     "Event": "イベント",
     "Report": "レポート",
-    "Reload": "更新"
+    "Reload": "更新",
+    "DeleteAllLogs": "全ログ削除"
   },
   "EventLogReport": {
     "CountByState": "状態別",
@@ -548,7 +549,8 @@
     "SelectLevel": "レベルを選択",
     "Search": "検索",
     "Calcel": "キャンセル",
-    "Loading": "検索しています..."
+    "Loading": "検索しています...",
+    "DeleteAllLogs": "全ログ削除"
   },
   "SyslogReport": {
     "CountByLevel": "状態別",
@@ -592,5 +594,8 @@
     "AI": "AI分析",
     "Config": "設定",
     "HasUpdate": "更新版あり"
+  },
+  "Traps": {
+    "DeleteAllLogs": "全ログ削除"
   }
 }

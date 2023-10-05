@@ -4,7 +4,10 @@ import (
 	"log"
 	"regexp"
 
+	wails "github.com/wailsapp/wails/v2/pkg/runtime"
+
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/logger"
 )
 
@@ -120,6 +123,16 @@ func (a *App) GetArpTable() []*datastore.ArpEnt {
 
 // ResetArpTableは、ARP Tableをクリアします。
 func (a *App) ResetArpTable() bool {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm clear"),
+		Message:       i18n.Trans("Do you want to clear?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return false
+	}
 	logger.ResetArpWatch = true
 	return datastore.ResetArpTable() == nil
 }
@@ -132,4 +145,64 @@ func (a *App) GetArpLogs() []*datastore.ArpLogEnt {
 		return len(ret) < maxDispLog
 	})
 	return ret
+}
+
+// DeleteAllEventLogsは、Event logを全て削除します。
+func (a *App) DeleteAllEventLogs() bool {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm delete"),
+		Message:       i18n.Trans("Do you want to delete?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return false
+	}
+	return datastore.DeleteAllLogs("log") == nil
+}
+
+// DeleteAllSyslogは、Syslogを全て削除します。
+func (a *App) DeleteAllSyslog() bool {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm delete"),
+		Message:       i18n.Trans("Do you want to delete?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return false
+	}
+	return datastore.DeleteAllLogs("syslog") == nil
+}
+
+// DeleteAllTrapsは、TRAP logを全て削除します。
+func (a *App) DeleteAllTraps() bool {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm delete"),
+		Message:       i18n.Trans("Do you want to delete?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return false
+	}
+	return datastore.DeleteAllLogs("trap") == nil
+}
+
+// DeleteAllPollingLogsは、ポーリングログを全て削除します。
+func (a *App) DeleteAllPollingLogs() bool {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm delete"),
+		Message:       i18n.Trans("Do you want to delete?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return false
+	}
+	return datastore.DeleteAllLogs("pollingLogs") == nil
 }
