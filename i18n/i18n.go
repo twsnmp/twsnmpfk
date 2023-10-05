@@ -98,6 +98,9 @@ var transMap = map[string]map[string]string{
 	"Change MAC Address %s -> %s": {
 		"ja": "MACアドレス変化 %s -> %s",
 	},
+	"Set MAC Address %s": {
+		"ja": "MACアドレス設定 %s",
+	},
 	"Fixed MAC address node MAC is %s": {
 		"ja": "MACアドレス固定ノードのアドレス取得 %s",
 	},

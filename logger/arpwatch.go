@@ -73,6 +73,8 @@ func arpWatch(stopCh chan bool) {
 	}
 }
 
+var lastAddressUsage = 0.0
+
 func makeLoacalCheckAddrs() {
 	ifs, err := net.Interfaces()
 	if err != nil {
@@ -135,6 +137,10 @@ func makeLoacalCheckAddrs() {
 	} else {
 		return
 	}
+	if lau == lastAddressUsage {
+		return
+	}
+	lastAddressUsage = lau
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "arpwatch",
 		Level: "info",
@@ -275,13 +281,23 @@ func checkNodeMAC() {
 				if v != "" {
 					new += fmt.Sprintf("(%s)", v)
 				}
-				datastore.AddEventLog(&datastore.EventLogEnt{
-					Type:     "arpwatch",
-					Level:    "info",
-					NodeID:   n.ID,
-					NodeName: n.Name,
-					Event:    fmt.Sprintf(i18n.Trans("Change MAC Address %s -> %s"), n.MAC, new),
-				})
+				if n.MAC == "" {
+					datastore.AddEventLog(&datastore.EventLogEnt{
+						Type:     "arpwatch",
+						Level:    "info",
+						NodeID:   n.ID,
+						NodeName: n.Name,
+						Event:    fmt.Sprintf(i18n.Trans("Set MAC Address %s"), new),
+					})
+				} else {
+					datastore.AddEventLog(&datastore.EventLogEnt{
+						Type:     "arpwatch",
+						Level:    "warn",
+						NodeID:   n.ID,
+						NodeName: n.Name,
+						Event:    fmt.Sprintf(i18n.Trans("Change MAC Address %s -> %s"), n.MAC, new),
+					})
+				}
 				n.MAC = new
 			}
 		}
@@ -318,7 +334,7 @@ func checkFixMACMode(n *datastore.NodeEnt) {
 			n.IP = ip
 			datastore.AddEventLog(&datastore.EventLogEnt{
 				Type:     "system",
-				Level:    "info",
+				Level:    "warn",
 				NodeID:   n.ID,
 				NodeName: n.Name,
 				Event:    fmt.Sprintf(i18n.Trans("Fixed MAC address node '%s' Chnage IP address from '%s' to '%s'"), n.MAC, oldIP, ip),
