@@ -220,7 +220,7 @@
           {#if showTestOk}
             <Alert class="flex" color="blue" dismissable>
               <div class="flex">
-                <Icon path={icons.mdiExclamation} size={1} />
+                <Icon path={icons.mdiCheck} size={1} />
                 { $_('Config.SentTestMail') }
               </div>
             </Alert>

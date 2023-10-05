@@ -405,7 +405,7 @@ func checkMIBInfoMap() {
 
 func setMIB2Descr() {
 	lang := i18n.GetLang()
-	if lang != "jp" {
+	if lang != "ja" {
 		lang = "en"
 	}
 	r, err := conf.Open("conf/mib2descr_" + lang + ".txt")

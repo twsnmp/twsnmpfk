@@ -139,7 +139,7 @@ func loadDataFromFS() error {
 		openGeoIP(p)
 	}
 	lang := i18n.GetLang()
-	if lang != "jp" {
+	if lang != "ja" {
 		lang = "en"
 	}
 	if r, err := conf.Open("conf/polling_" + lang + ".json"); err == nil {
