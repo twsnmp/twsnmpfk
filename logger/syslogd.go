@@ -12,10 +12,17 @@ import (
 	"time"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	syslog "gopkg.in/mcuadros/go-syslog.v2"
 )
 
 func syslogd(stopCh chan bool, port int) {
+	log.Printf("start syslogd")
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "system",
+		Level: "info",
+		Event: i18n.Trans("Start syslogd"),
+	})
 	syslogCh := make(syslog.LogPartsChannel, 2000)
 	server := syslog.NewServer()
 	server.SetFormat(syslog.Automatic)
@@ -23,12 +30,16 @@ func syslogd(stopCh chan bool, port int) {
 	_ = server.ListenUDP(fmt.Sprintf("0.0.0.0:%d", port))
 	_ = server.ListenTCP(fmt.Sprintf("0.0.0.0:%d", port))
 	_ = server.Boot()
-	log.Printf("start syslogd")
 	for {
 		select {
 		case <-stopCh:
 			{
 				log.Printf("stop syslogd")
+				datastore.AddEventLog(&datastore.EventLogEnt{
+					Type:  "system",
+					Level: "info",
+					Event: i18n.Trans("Stop syslogd"),
+				})
 				_ = server.Kill()
 				return
 			}

@@ -197,6 +197,24 @@ var transMap = map[string]map[string]string{
 	"Select data store path": {
 		"ja": "データストアのパスを選択",
 	},
+	"Start syslogd": {
+		"ja": "Syslog受信開始",
+	},
+	"Stop syslogd": {
+		"ja": "Syslog受信停止",
+	},
+	"Start snmptrapd": {
+		"ja": "SNMP TRAP受信開始",
+	},
+	"Stop snmptrapd": {
+		"ja": "SNMP TRAP受信停止",
+	},
+	"Start ARP watch": {
+		"ja": "ARP監視開始",
+	},
+	"Stop ARP watch": {
+		"ja": "ARP監視停止",
+	},
 }
 
 func init() {

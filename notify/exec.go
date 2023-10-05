@@ -30,18 +30,14 @@ func checkExecCmd() {
 	})
 	if execLevel != lastExecLevel {
 		err := ExecNotifyCmd(datastore.NotifyConf.ExecCmd, execLevel)
-		r := ""
-		level := "info"
 		if err != nil {
 			log.Printf("execNotifyCmd err=%v", err)
-			r = fmt.Sprintf("err=%v", err)
-			level = "low"
+			datastore.AddEventLog(&datastore.EventLogEnt{
+				Type:  "system",
+				Level: "low",
+				Event: fmt.Sprintf(i18n.Trans("Exec notify command err=%v"), err),
+			})
 		}
-		datastore.AddEventLog(&datastore.EventLogEnt{
-			Type:  "system",
-			Level: level,
-			Event: fmt.Sprintf(i18n.Trans("(Failure)"), execLevel, r),
-		})
 		lastExecLevel = execLevel
 	}
 }

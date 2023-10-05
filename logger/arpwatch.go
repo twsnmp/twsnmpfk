@@ -28,6 +28,11 @@ func resetArpTable() {
 
 func arpWatch(stopCh chan bool) {
 	log.Println("start arp")
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "system",
+		Level: "info",
+		Event: i18n.Trans("Start ARP watch"),
+	})
 	datastore.ForEachArp(func(a *datastore.ArpEnt) bool {
 		arpTable[a.IP] = a.MAC
 		return true
@@ -41,6 +46,11 @@ func arpWatch(stopCh chan bool) {
 		case <-stopCh:
 			timer.Stop()
 			log.Println("stop arp")
+			datastore.AddEventLog(&datastore.EventLogEnt{
+				Type:  "system",
+				Level: "info",
+				Event: i18n.Trans("Stop ARP watch"),
+			})
 			return
 		case <-pinger.C:
 			if ResetArpWatch {

@@ -19,10 +19,7 @@ func sendReport() {
 	sendReportHTML()
 }
 
-func getLastEventLog() ([]string, []string, []*datastore.EventLogEnt) {
-	sum := []string{}
-	slogs := []string{}
-	logs := []*datastore.EventLogEnt{}
+func getEventLogSummary() string {
 	high := 0
 	low := 0
 	warn := 0
@@ -48,14 +45,9 @@ func getLastEventLog() ([]string, []string, []*datastore.EventLogEnt) {
 			other++
 			return true
 		}
-		ts := time.Unix(0, l.Time).Local().Format(time.RFC3339Nano)
-		slogs = append(slogs, fmt.Sprintf("%s,%s,%s,%s,%s", l.Level, ts, l.Type, l.NodeName, l.Event))
-		logs = append(logs, l)
 		return true
 	})
-	sum = append(sum,
-		fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, normal, other))
-	return sum, slogs, logs
+	return fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, normal, other)
 }
 
 func getMapInfo(htmlMode bool) []string {
@@ -296,14 +288,12 @@ func sendReportHTML() {
 			Class: "none",
 		})
 	}
-	logSum, _, logs := getLastEventLog()
-	if len(logSum) > 0 {
-		info = append(info, reportInfoEnt{
-			Name:  i18n.Trans("Log count by level"),
-			Value: logSum[0],
-			Class: "none",
-		})
-	}
+	logSum := getEventLogSummary()
+	info = append(info, reportInfoEnt{
+		Name:  i18n.Trans("Log count by level"),
+		Value: logSum,
+		Class: "none",
+	})
 	title := fmt.Sprintf(i18n.Trans("%s(report) at %s"), datastore.NotifyConf.Subject, time.Now().Format("2006/01/02 15:04:05"))
 	f := template.FuncMap{
 		"levelName":     levelName,
@@ -323,7 +313,6 @@ func sendReportHTML() {
 	if err = t.Execute(body, map[string]interface{}{
 		"Title":  title,
 		"Info":   info,
-		"Logs":   logs,
 		"AIList": getAIList(),
 	}); err != nil {
 		log.Printf("send report mail err=%v", err)
@@ -336,6 +325,11 @@ func sendReportHTML() {
 	}
 	if err := sendMail(title, body.String()); err != nil {
 		log.Printf("send report mail err=%v", err)
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "low",
+			Event: fmt.Sprintf(i18n.Trans("Failed to send report mail err=%v"), err),
+		})
 	} else {
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",

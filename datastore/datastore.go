@@ -33,8 +33,6 @@ var (
 	DiscoverConf DiscoverConfEnt
 	AIConf       AIConfEnt
 	AutoCharCode bool
-	// Restrt snmptrapd
-	RestartSnmpTrapd bool
 	// Map Data on Memory
 	nodes    sync.Map
 	items    sync.Map

@@ -23,6 +23,11 @@ import (
 
 func snmptrapd(stopCh chan bool, port int) {
 	log.Printf("start snmp trapd")
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "system",
+		Level: "info",
+		Event: i18n.Trans("Start snmptrapd"),
+	})
 	tl := gosnmp.NewTrapListener()
 	tl.Params = &gosnmp.GoSNMP{}
 	tl.Params.Port = uint16(port)
@@ -172,6 +177,11 @@ func snmptrapd(stopCh chan bool, port int) {
 	}()
 	<-stopCh
 	log.Printf("stop snmp trapd")
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "system",
+		Level: "info",
+		Event: i18n.Trans("Stop snmptrapd"),
+	})
 }
 
 func getSnmpString(i interface{}) string {
