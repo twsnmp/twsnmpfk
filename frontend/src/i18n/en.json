@@ -282,7 +282,15 @@
     "Report": "Report",
     "Time": "Time",
     "Type": "Type",
-    "DeleteAllLogs": "Delete all logs"
+    "DeleteAllLogs": "Delete all logs",
+    "SelectLevel": "Select level",
+    "Search": "Search",
+    "Calcel": "Cancel",
+    "Loading": "Loading",
+    "High": "High",
+    "Low": "Low",
+    "Warn": "Warn",
+    "Filter": "Filter"
   },
   "EventLogREport": {
     "Oprate": "Oparation rate"

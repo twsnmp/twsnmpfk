@@ -273,7 +273,16 @@
     "Event": "イベント",
     "Report": "レポート",
     "Reload": "更新",
-    "DeleteAllLogs": "全ログ削除"
+    "DeleteAllLogs": "全ログ削除",
+    "SelectLevel": "レベルを選択",
+    "Search": "検索",
+    "Calcel": "キャンセル",
+    "Loading": "検索中...",
+    "All": "全て",
+    "Warn": "注意以上",
+    "Low": "軽度以上",
+    "High": "重度",
+    "Filter": "フィルター"
   },
   "EventLogReport": {
     "CountByState": "状態別",

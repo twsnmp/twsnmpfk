@@ -71,7 +71,7 @@ export function GetDrawItem(arg1:string):Promise<datastore.DrawItemEnt>;
 
 export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
 
-export function GetEventLogs(arg1:string):Promise<Array<datastore.EventLogEnt>>;
+export function GetEventLogs(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number):Promise<Array<datastore.EventLogEnt>>;
 
 export function GetHostResource(arg1:string):Promise<backend.HostResourceEnt>;
 

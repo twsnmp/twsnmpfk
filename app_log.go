@@ -12,15 +12,62 @@ import (
 )
 
 // GetEventLogs retunrs  event logs
-func (a *App) GetEventLogs(id string) []*datastore.EventLogEnt {
+func (a *App) GetEventLogs(id, eventType, node, event string, level int) []*datastore.EventLogEnt {
 	ret := []*datastore.EventLogEnt{}
-	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
-		if id == "" || id == l.NodeID {
-			ret = append(ret, l)
+	var typeFilter *regexp.Regexp
+	var nodeFilter *regexp.Regexp
+	var eventFilter *regexp.Regexp
+	var err error
+	if eventType != "" {
+		if typeFilter, err = regexp.Compile(eventType); err != nil {
+			log.Println(err)
+			return ret
 		}
+	}
+	if node != "" {
+		if nodeFilter, err = regexp.Compile(node); err != nil {
+			log.Println(err)
+			return ret
+		}
+	}
+	if event != "" {
+		if eventFilter, err = regexp.Compile(event); err != nil {
+			log.Println(err)
+			return ret
+		}
+	}
+	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
+		if id != "" && id != l.NodeID {
+			return true
+		}
+		if typeFilter != nil && !typeFilter.MatchString(l.Type) {
+			return true
+		}
+		if nodeFilter != nil && !nodeFilter.MatchString(l.NodeName) {
+			return true
+		}
+		if eventFilter != nil && !eventFilter.MatchString(l.Event) {
+			return true
+		}
+		if level != 0 && level > getLevelNum(l.Level) {
+			return true
+		}
+		ret = append(ret, l)
 		return len(ret) < maxDispLog
 	})
 	return ret
+}
+
+func getLevelNum(l string) int {
+	switch l {
+	case "high":
+		return 3
+	case "low":
+		return 2
+	case "warn":
+		return 1
+	}
+	return 0
 }
 
 // GetMapEventLogs retunrs  event logs

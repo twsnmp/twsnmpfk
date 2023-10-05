@@ -65,7 +65,7 @@
   const showLog = async () => {
     clearSelectedCount();
     logTable = new DataTable("#logTable", {
-      data: await GetEventLogs(id),
+      data: await GetEventLogs(id,"","","",0),
       language: getTableLang(),
       order: [[1, "desc"]],
       columns: [

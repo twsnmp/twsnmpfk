@@ -167,6 +167,7 @@
     " {\n          showGrid = false;\n          grid(gridSize, false);\n        }}\n        size=\"xs\"\n      >\n        ",
     " {\n          showGrid = false;\n          grid(gridSize, true);\n        }}\n        size=\"xs\"\n      >\n        ",
     " {\n          showGrid = false;\n        }}\n        size=\"xs\"\n      >\n        ",
-    "\n          Wake On Lan\n        "
+    "\n          Wake On Lan\n        ",
+    "Wake On Lan"
   ]
 }

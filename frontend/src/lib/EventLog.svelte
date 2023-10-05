@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { GradientButton, Modal, Spinner } from "flowbite-svelte";
+  import { GradientButton, Modal, Spinner,Label,Select,Input } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick, onDestroy } from "svelte";
@@ -17,9 +17,21 @@
 
   let data = [];
   let logs = [];
+  let table = undefined;
   let showReport = false;
   let showLoading = false;
-  let table = undefined;
+  let showFilter = false;
+  let level = 0;
+  let type = "";
+  let node = "";
+  let event = "";
+
+  const levelList = [
+    { name: $_("EventLog.All"), value: 0 },
+    { name: $_("EventLog.Warn"), value: 1 },
+    { name: $_("EventLog.Low"), value: 2 },
+    { name: $_("EventLog.High"), value: 3 },
+  ];
 
   const showTable = () => {
     if (table) {
@@ -36,7 +48,7 @@
 
   const refresh = async () => {
     showLoading = true;
-    logs = await GetEventLogs("");
+    logs = await GetEventLogs("",type,node,event,level);
     data = [];
     for (let i = 0; i < logs.length; i++) {
       data.push(logs[i]);
@@ -147,6 +159,16 @@
     </GradientButton>
     <GradientButton
       shadow
+      color="blue"
+      type="button"
+      on:click={() => (showFilter = true)}
+      size="xs"
+    >
+      <Icon path={icons.mdiFilter} size={1} />
+      {$_("Trap.Filter")}
+    </GradientButton>
+    <GradientButton
+      shadow
       color="red"
       type="button"
       on:click={deleteAll}
@@ -200,8 +222,64 @@
 <Modal bind:open={showLoading} size="sm" permanent class="w-full">
   <div>
     <Spinner />
-    <span class="ml-2"> {$_("Syslog.Loading")} </span>
+    <span class="ml-2"> {$_("EventLog.Loading")} </span>
   </div>
+</Modal>
+
+<Modal bind:open={showFilter} size="sm" permanent class="w-full">
+  <form class="flex flex-col space-y-4" action="#">
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+      {$_("EventLog.Filter")}
+    </h3>
+    <Label class="space-y-2">
+      <span>{$_("EventLog.Level")}</span>
+      <Select
+        items={levelList}
+        bind:value={level}
+        placeholder={$_("EventLog.SelectLevel")}
+        size="sm"
+      />
+    </Label>
+    <Label class="space-y-2">
+      <span>{$_('EventLog.Type')}</span>
+      <Input bind:value={type} size="sm" />
+    </Label>
+    <Label class="space-y-2">
+      <span>{$_('EventLog.NodeName')}</span>
+      <Input bind:value={node} size="sm" />
+    </Label>
+    <Label class="space-y-2">
+      <span>{$_('EventLog.Event')}</span>
+      <Input bind:value={event} size="sm" />
+    </Label>
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        on:click={() => {
+          showFilter = false;
+          refresh();
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiSearchWeb} size={1} />
+        {$_("EventLog.Search")}
+      </GradientButton>
+      <GradientButton
+        shadow
+        color="teal"
+        type="button"
+        on:click={() => {
+          showFilter = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_("EventLog.Calcel")}
+      </GradientButton>
+    </div>
+  </form>
 </Modal>
 
 <style>
