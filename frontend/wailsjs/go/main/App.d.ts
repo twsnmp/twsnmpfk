@@ -7,6 +7,8 @@ import {backend} from '../models';
 
 export function AutoGrok(arg1:string):Promise<string>;
 
+export function Backup():Promise<boolean>;
+
 export function CheckPolling(arg1:string):Promise<boolean>;
 
 export function CopyDrawItem(arg1:string):Promise<boolean>;

@@ -50,7 +50,7 @@ func getEventLogSummary() string {
 	return fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, normal, other)
 }
 
-func getMapInfo(htmlMode bool) []string {
+func getMapInfo() []string {
 	high := 0
 	low := 0
 	warn := 0
@@ -89,22 +89,15 @@ func getMapInfo(htmlMode bool) []string {
 		class = "normal"
 		state = i18n.Trans("Normal")
 	}
-	if htmlMode {
-		return []string{
-			datastore.MapConf.MapName,
-			state,
-			fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, repair, normal, unknown),
-			class,
-		}
-	}
 	return []string{
-		fmt.Sprintf(i18n.Trans("MAP=%s"), datastore.MapConf.MapName),
-		fmt.Sprintf(i18n.Trans("MAP State=%s"), state),
+		datastore.MapConf.MapName,
+		state,
 		fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, repair, normal, unknown),
+		class,
 	}
 }
 
-func getResInfo(htmlMode bool) []string {
+func getResInfo() []string {
 	if len(backend.MonitorDataes) < 1 {
 		return []string{}
 	}
@@ -130,47 +123,23 @@ func getResInfo(htmlMode bool) []string {
 	loadMin, _ := stats.Min(load)
 	loadMean, _ := stats.Mean(load)
 	loadMax, _ := stats.Max(load)
-	if htmlMode {
-		return []string{
-			fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
-				humanize.FormatFloat("###.##", cpuMin),
-				humanize.FormatFloat("###.##", cpuMean),
-				humanize.FormatFloat("###.##", cpuMax),
-			),
-			fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
-				humanize.FormatFloat("###.##", memMin),
-				humanize.FormatFloat("###.##", memMean),
-				humanize.FormatFloat("###.##", memMax),
-			),
-			fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
-				humanize.FormatFloat("###.##", diskMin),
-				humanize.FormatFloat("###.##", diskMean),
-				humanize.FormatFloat("###.##", diskMax),
-			),
-			fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
-				humanize.FormatFloat("###.##", loadMin),
-				humanize.FormatFloat("###.##", loadMean),
-				humanize.FormatFloat("###.##", loadMax),
-			),
-		}
-	}
 	return []string{
-		fmt.Sprintf("CPU=%s/%s/%s %%",
+		fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
 			humanize.FormatFloat("###.##", cpuMin),
 			humanize.FormatFloat("###.##", cpuMean),
 			humanize.FormatFloat("###.##", cpuMax),
 		),
-		fmt.Sprintf("Mem=%s/%s/%s %%",
+		fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
 			humanize.FormatFloat("###.##", memMin),
 			humanize.FormatFloat("###.##", memMean),
 			humanize.FormatFloat("###.##", memMax),
 		),
-		fmt.Sprintf("Disk=%s/%s/%s %%",
+		fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
 			humanize.FormatFloat("###.##", diskMin),
 			humanize.FormatFloat("###.##", diskMean),
 			humanize.FormatFloat("###.##", diskMax),
 		),
-		fmt.Sprintf("Load=%s/%s/%s",
+		fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
 			humanize.FormatFloat("###.##", loadMin),
 			humanize.FormatFloat("###.##", loadMean),
 			humanize.FormatFloat("###.##", loadMax),
@@ -247,7 +216,7 @@ type reportInfoEnt struct {
 // HTML版レポートの送信
 func sendReportHTML() {
 	info := []reportInfoEnt{}
-	a := getMapInfo(true)
+	a := getMapInfo()
 	if len(a) > 3 {
 		info = append(info, reportInfoEnt{
 			Name:  i18n.Trans("MAP Name"),
@@ -265,7 +234,7 @@ func sendReportHTML() {
 			Class: "none",
 		})
 	}
-	a = getResInfo(true)
+	a = getResInfo()
 	if len(a) > 3 {
 		info = append(info, reportInfoEnt{
 			Name:  i18n.Trans("CPU Usage"),
@@ -288,6 +257,11 @@ func sendReportHTML() {
 			Class: "none",
 		})
 	}
+	info = append(info, reportInfoEnt{
+		Name:  i18n.Trans("DB Size"),
+		Value: humanize.Bytes(uint64(datastore.GetDBSize())),
+		Class: "none",
+	})
 	logSum := getEventLogSummary()
 	info = append(info, reportInfoEnt{
 		Name:  i18n.Trans("Log count by level"),

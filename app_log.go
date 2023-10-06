@@ -206,7 +206,15 @@ func (a *App) DeleteAllEventLogs() bool {
 	if err != nil || result == "No" {
 		return false
 	}
-	return datastore.DeleteAllLogs("log") == nil
+	if err := datastore.DeleteAllLogs("logs"); err != nil {
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: i18n.Trans("Delete all event logs"),
+	})
+	return true
 }
 
 // DeleteAllSyslogは、Syslogを全て削除します。
@@ -221,7 +229,16 @@ func (a *App) DeleteAllSyslog() bool {
 	if err != nil || result == "No" {
 		return false
 	}
-	return datastore.DeleteAllLogs("syslog") == nil
+	if err := datastore.DeleteAllLogs("syslog"); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: i18n.Trans("Delete all syslog"),
+	})
+	return true
 }
 
 // DeleteAllTrapsは、TRAP logを全て削除します。
@@ -236,7 +253,16 @@ func (a *App) DeleteAllTraps() bool {
 	if err != nil || result == "No" {
 		return false
 	}
-	return datastore.DeleteAllLogs("trap") == nil
+	if err := datastore.DeleteAllLogs("trap"); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: i18n.Trans("Delete all TRAP logs"),
+	})
+	return true
 }
 
 // DeleteAllPollingLogsは、ポーリングログを全て削除します。
@@ -251,5 +277,14 @@ func (a *App) DeleteAllPollingLogs() bool {
 	if err != nil || result == "No" {
 		return false
 	}
-	return datastore.DeleteAllLogs("pollingLogs") == nil
+	if err := datastore.DeleteAllLogs("pollingLogs"); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: i18n.Trans("Delete all polling logs"),
+	})
+	return true
 }

@@ -158,6 +158,9 @@ var transMap = map[string]map[string]string{
 	"Min:%s%% Avg:%s%% Max:%s%%": {
 		"ja": "最小:%s%% 平均:%s%% 最大:%s%%",
 	},
+	"DB Size": {
+		"ja": "DBサイズ",
+	},
 	"MAP Name": {
 		"ja": "マップ名",
 	},
@@ -224,11 +227,32 @@ var transMap = map[string]map[string]string{
 	"Do you want to clear?": {
 		"ja": "クリアしますか?",
 	},
+	"Clear ARP": {
+		"ja": "ARP監視情報をクリア",
+	},
 	"Confirm delete": {
 		"ja": "削除確認",
 	},
 	"Do you want to delete?": {
 		"ja": "削除しますか?",
+	},
+	"Delete all event logs": {
+		"ja": "イベントログ全削除",
+	},
+	"Delete all syslog": {
+		"ja": "Syslog全削除",
+	},
+	"Delete all TRAP logs": {
+		"ja": "TRAP全削除",
+	},
+	"Delete all polling logs": {
+		"ja": "ポーリングログ全削除",
+	},
+	"Backup file": {
+		"ja": "バックアップ ファイル",
+	},
+	"Backup done": {
+		"ja": "バックアップ完了",
 	},
 }
 

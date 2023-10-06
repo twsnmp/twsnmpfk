@@ -6,6 +6,10 @@ export function AutoGrok(arg1) {
   return window['go']['main']['App']['AutoGrok'](arg1);
 }
 
+export function Backup() {
+  return window['go']['main']['App']['Backup']();
+}
+
 export function CheckPolling(arg1) {
   return window['go']['main']['App']['CheckPolling'](arg1);
 }

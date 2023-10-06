@@ -10,6 +10,7 @@ require (
 	github.com/codegaudi/go-iforest v0.0.1
 	github.com/dustin/go-humanize v1.0.1
 	github.com/gosnmp/gosnmp v1.35.0
+	github.com/labstack/gommon v0.3.1
 	github.com/montanaflynn/stats v0.7.1
 	github.com/oschwald/geoip2-golang v1.9.0
 	github.com/robertkrimen/otto v0.2.1
@@ -37,7 +38,6 @@ require (
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/labstack/echo/v4 v4.9.0 // indirect
-	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/leaanthony/go-ansi-parser v1.0.1 // indirect
 	github.com/leaanthony/gosod v1.0.3 // indirect
 	github.com/leaanthony/slicer v1.5.0 // indirect

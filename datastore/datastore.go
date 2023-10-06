@@ -50,11 +50,6 @@ var (
 	lastNodeChanged   time.Time
 	//
 	MIBDB        *gomibdb.MIBDB
-	stopBackup   bool
-	nextBackup   int64
-	dbBackupSize int64
-	dstDB        *bbolt.DB
-	dstTx        *bbolt.Tx
 	eventLogCh   chan *EventLogEnt
 	pollingLogCh chan *PollingLogEnt
 
@@ -246,6 +241,18 @@ func CloseDB() {
 	}
 	db.Close()
 	db = nil
+}
+
+func GetDBSize() int64 {
+	if db == nil {
+		return 0
+	}
+	var dbSize int64
+	db.View(func(tx *bbolt.Tx) error {
+		dbSize = tx.Size()
+		return nil
+	})
+	return dbSize
 }
 
 // SaveMapData:  24時間毎にマップのデータをDBへ保存する
