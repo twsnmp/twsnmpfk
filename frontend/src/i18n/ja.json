@@ -606,5 +606,20 @@
   },
   "Traps": {
     "DeleteAllLogs": "全ログ削除"
+  },
+  "System": {
+    "Time": "日時",
+    "Memory": "メモリー",
+    "Disk": "ディスク",
+    "Load": "負荷",
+    "Net": "通信量",
+    "Conn": "接続数",
+    "Proc": "プロセス",
+    "DBSize": "DBサイズ",
+    "SizeForecast": "サイズ予測",
+    "Backup": "バクアップ",
+    "Reload": "更新",
+    "Close": "閉じる",
+    "Loading": "取得しています..."
   }
 }

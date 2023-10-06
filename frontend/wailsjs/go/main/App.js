@@ -178,6 +178,10 @@ export function GetMapName() {
   return window['go']['main']['App']['GetMapName']();
 }
 
+export function GetMonitorDatas() {
+  return window['go']['main']['App']['GetMonitorDatas']();
+}
+
 export function GetNode(arg1) {
   return window['go']['main']['App']['GetNode'](arg1);
 }

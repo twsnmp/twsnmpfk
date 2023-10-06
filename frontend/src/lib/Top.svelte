@@ -15,6 +15,7 @@
   import Arp from "./Arp.svelte";
   import AIList from "./AIList.svelte";
   import Config from "./Config.svelte";
+  import System from "./System.svelte";
   import { _ } from 'svelte-i18n';
 
   let dark: boolean = false;
@@ -144,6 +145,15 @@
       { $_('Top.AI') }
     </NavLi>
     <NavLi
+      active={page == "system"}
+      on:click={() => {
+        page = "system";
+      }}
+    >
+      <Icon path={icons.mdiChartLine} size={1} />
+      System
+    </NavLi>
+    <NavLi
       active={showConfig}
       on:click={() => {
         showConfig = true;
@@ -191,6 +201,8 @@
   <Arp />
 {:else if page == "ai"}
   <AIList />
+{:else if page == "system"}
+  <System />
 {/if}
 
 {#if showConfig}

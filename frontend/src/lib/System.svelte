@@ -1,0 +1,214 @@
+<script lang="ts">
+  import { GradientButton, Modal, Spinner } from "flowbite-svelte";
+  import Icon from "mdi-svelte";
+  import * as icons from "@mdi/js";
+  import { onMount, tick, onDestroy } from "svelte";
+  import { GetMonitorDatas, Backup } from "../../wailsjs/go/main/App";
+  import { renderTime, getTableLang, renderBytes, renderSpeed } from "./common";
+  import {
+    showMonitorResChart,
+    showMonitorNetChart,
+    showMonitorForecastChart,
+    resizeMonitorChart,
+  } from "./chart/system";
+  import DataTable from "datatables.net-dt";
+  import "datatables.net-select-dt";
+  import type { backend, datastore } from "wailsjs/go/models";
+  import { _ } from "svelte-i18n";
+
+  let logs: backend.MonitorDataEnt[] = [];
+  let table = undefined;
+  let showLoading = false;
+
+  const showTable = () => {
+    if (table) {
+      table.destroy();
+      table = undefined;
+    }
+    table = new DataTable("#table", {
+      columns: columns,
+      paging: false,
+      searching: false,
+      info: false,
+      scrollY: "180px",
+      data: logs,
+      order: [[0, "desc"]],
+      language: getTableLang(),
+    });
+  };
+
+  const refresh = async () => {
+    showLoading = true;
+    logs = await GetMonitorDatas();
+    logs.reverse();
+    showTable();
+    showChart();
+    showLoading = false;
+  };
+
+  const showChart = async () => {
+    await tick();
+    showMonitorResChart("resChart", logs);
+    showMonitorNetChart("netChart", logs);
+  };
+
+  const renderPer = (v, t) => {
+    if (t == "sort") {
+      return v;
+    }
+    return v.toFixed(2) + "%";
+  };
+
+  const columns = [
+    {
+      data: "Time",
+      title: $_("System.Time"),
+      width: "20%",
+      render: renderTime,
+    },
+    {
+      data: "CPU",
+      title: "CPU",
+      width: "10%",
+      render: renderPer,
+    },
+    {
+      data: "Mem",
+      title: $_("System.Memory"),
+      width: "10%",
+      render: renderPer,
+    },
+    {
+      data: "Disk",
+      title: $_("System.Disk"),
+      width: "10%",
+      render: renderPer,
+    },
+    {
+      data: "Load",
+      title: $_("System.Load"),
+      width: "10%",
+      render: (v) => v.toFixed(2),
+    },
+    {
+      data: "Net",
+      title: $_("System.Net"),
+      width: "10%",
+      render: renderSpeed,
+    },
+    {
+      data: "Conn",
+      title: $_("System.Conn"),
+      width: "10%",
+    },
+    {
+      data: "Proc",
+      title: $_("System.Proc"),
+      width: "10%",
+    },
+    {
+      data: "DBSize",
+      title: $_("System.DBSize"),
+      width: "10%",
+      render: renderBytes,
+    },
+  ];
+
+  onMount(() => {
+    refresh();
+  });
+
+  onDestroy(() => {
+    if (table) {
+      table.destroy();
+      table = undefined;
+    }
+  });
+
+  const backup = async () => {
+    Backup();
+  };
+
+  let showForecast = false;
+
+  const forecast = async () => {
+    showForecast = true;
+    await tick();
+    showMonitorForecastChart("forecast", logs);
+  };
+
+  const resizeChart = () => {
+    resizeMonitorChart(showForecast);
+  };
+</script>
+
+<svelte:window on:resize={resizeChart} />
+
+<div class="flex flex-col">
+  <div id="resChart" style="height: 200px;" />
+  <div id="netChart" style="height: 200px;" />
+  <div class="m-5 grow">
+    <table id="table" class="display compact" style="width:99%" />
+  </div>
+  <div class="flex justify-end space-x-2 mr-2">
+    <GradientButton
+      shadow
+      type="button"
+      color="green"
+      on:click={forecast}
+      size="xs"
+    >
+      <Icon path={icons.mdiChartLine} size={1} />
+      {$_("System.SizeForecast")}
+    </GradientButton>
+    <GradientButton
+      shadow
+      color="lime"
+      type="button"
+      on:click={backup}
+      size="xs"
+    >
+      <Icon path={icons.mdiDatabaseArrowDown} size={1} />
+      {$_("System.Backup")}
+    </GradientButton>
+    <GradientButton
+      shadow
+      type="button"
+      color="teal"
+      on:click={refresh}
+      size="xs"
+    >
+      <Icon path={icons.mdiRecycle} size={1} />
+      {$_("System.Reload")}
+    </GradientButton>
+  </div>
+</div>
+
+<Modal bind:open={showForecast} size="xl" permanent class="w-full">
+  <div id="forecast" style="height: 500px;" />
+  <div class="flex justify-end space-x-2 mr-2">
+    <GradientButton
+      shadow
+      type="button"
+      color="teal"
+      on:click={() => {
+        showForecast = false;
+      }}
+      size="xs"
+    >
+      <Icon path={icons.mdiCancel} size={1} />
+      {$_("System.Close")}
+    </GradientButton>
+  </div>
+</Modal>
+
+<Modal bind:open={showLoading} size="sm" permanent class="w-full">
+  <div>
+    <Spinner />
+    <span class="ml-2"> $_('System.Loading') </span>
+  </div>
+</Modal>
+
+<style>
+  @import "../assets/css/jquery.dataTables.css";
+</style>

@@ -168,6 +168,20 @@
     " {\n          showGrid = false;\n          grid(gridSize, true);\n        }}\n        size=\"xs\"\n      >\n        ",
     " {\n          showGrid = false;\n        }}\n        size=\"xs\"\n      >\n        ",
     "\n          Wake On Lan\n        ",
-    "Wake On Lan"
+    "Wake On Lan",
+    " {\n        page = \"system\";\n      }}\n    >\n      ",
+    "\n      System\n    ",
+    " {\n          showChart(\"from\");\n        }}\n      >\n        ",
+    " {\n          showChart(\"heatmap\");\n        }}\n      >\n        ",
+    " {\n          showChart(\"trap3D\");\n        }}\n      >\n        ",
+    " {\n          showChart(\"type\");\n        }}\n      >\n        ",
+    "Disk",
+    "Load",
+    "Net",
+    "Conn",
+    "Proc",
+    "DBSize",
+    " {\n    showForecast = false;\n  }}\n  size=\"xs\"\n>\n  ",
+    " {\n        showForecast = false;\n      }}\n      size=\"xs\"\n    >\n      "
   ]
 }

@@ -290,7 +290,8 @@
     "High": "High",
     "Low": "Low",
     "Warn": "Warn",
-    "Filter": "Filter"
+    "Filter": "Filter",
+    "All": "All"
   },
   "EventLogREport": {
     "Oprate": "Oparation rate"
@@ -605,5 +606,20 @@
   },
   "Traps": {
     "DeleteAllLogs": "Delete all logs"
+  },
+  "System": {
+    "Close": "Close",
+    "Backup": "Backup",
+    "Conn": "Connections",
+    "DBSize": "DB SIze",
+    "Disk": "Disk",
+    "Load": "Load",
+    "Loading": "Loading....",
+    "Memory": "Memory",
+    "Net": "Network",
+    "Proc": "Processes",
+    "Reload": "Reload",
+    "SizeForecast": "Forecast size",
+    "Time": "Time"
   }
 }

@@ -146,6 +146,36 @@ export namespace backend {
 		    return a;
 		}
 	}
+	export class MonitorDataEnt {
+	    Time: number;
+	    CPU: number;
+	    Mem: number;
+	    Disk: number;
+	    Load: number;
+	    Bytes: number;
+	    Net: number;
+	    Conn: number;
+	    Proc: number;
+	    DBSize: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new MonitorDataEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.CPU = source["CPU"];
+	        this.Mem = source["Mem"];
+	        this.Disk = source["Disk"];
+	        this.Load = source["Load"];
+	        this.Bytes = source["Bytes"];
+	        this.Net = source["Net"];
+	        this.Conn = source["Conn"];
+	        this.Proc = source["Proc"];
+	        this.DBSize = source["DBSize"];
+	    }
+	}
 	export class VPanelPortEnt {
 	    Index: number;
 	    State: string;

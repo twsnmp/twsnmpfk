@@ -93,6 +93,8 @@ export function GetMapEventLogs():Promise<Array<datastore.EventLogEnt>>;
 
 export function GetMapName():Promise<string>;
 
+export function GetMonitorDatas():Promise<Array<backend.MonitorDataEnt>>;
+
 export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
 
 export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;

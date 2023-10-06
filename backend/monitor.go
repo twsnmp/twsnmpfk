@@ -26,10 +26,10 @@ type MonitorDataEnt struct {
 	Mem    float64 `json:"Mem"`
 	Disk   float64 `json:"Disk"`
 	Load   float64 `json:"Load"`
-	Bytes  float64 `json:"Byte"`
+	Bytes  float64 `json:"Bytes"`
 	Net    float64 `json:"Net"`
-	Proc   int     `json:"Proc"`
 	Conn   int     `json:"Conn"`
+	Proc   int     `json:"Proc"`
 	DBSize int64   `json:"DBSize"`
 }
 

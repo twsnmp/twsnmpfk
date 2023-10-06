@@ -144,6 +144,11 @@ func (a *App) HasDatastore() bool {
 	return dataStorePath != ""
 }
 
+// GetMonitorDatasは、システムリソースのモニター情報を返します。
+func (a *App) GetMonitorDatas() []*backend.MonitorDataEnt {
+	return backend.MonitorDataes
+}
+
 // SelectDatastore は、データストアのディレクトリを選択してサービスを起動します。
 func (a *App) SelectDatastore() bool {
 	if dataStorePath != "" {
