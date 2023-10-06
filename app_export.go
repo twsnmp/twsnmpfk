@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -90,12 +91,46 @@ func (a *App) ExportPollings(t string) string {
 }
 
 // ExportEventLogs  export event logs
-func (a *App) ExportEventLogs(t string) string {
+func (a *App) ExportEventLogs(t, eventType, node, event string, level int) string {
+	var typeFilter *regexp.Regexp
+	var nodeFilter *regexp.Regexp
+	var eventFilter *regexp.Regexp
+	var err error
+	if eventType != "" {
+		if typeFilter, err = regexp.Compile(eventType); err != nil {
+			log.Println(err)
+			return fmt.Sprintf("export eventlog err=%v", err)
+		}
+	}
+	if node != "" {
+		if nodeFilter, err = regexp.Compile(node); err != nil {
+			log.Println(err)
+			return fmt.Sprintf("export eventlog err=%v", err)
+		}
+	}
+	if event != "" {
+		if eventFilter, err = regexp.Compile(event); err != nil {
+			log.Println(err)
+			return fmt.Sprintf("export eventlog err=%v", err)
+		}
+	}
 	data := ExportData{
 		Title:  "TWSNMP Event Log",
 		Header: []string{"Level", "Time", "Type", "Node Name", "Event"},
 	}
 	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
+		if typeFilter != nil && !typeFilter.MatchString(l.Type) {
+			return true
+		}
+		if nodeFilter != nil && !nodeFilter.MatchString(l.NodeName) {
+			return true
+		}
+		if eventFilter != nil && !eventFilter.MatchString(l.Event) {
+			return true
+		}
+		if level != 0 && level > getLevelNum(l.Level) {
+			return true
+		}
 		e := []any{}
 		e = append(e, l.Level)
 		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))
@@ -105,7 +140,6 @@ func (a *App) ExportEventLogs(t string) string {
 		data.Data = append(data.Data, e)
 		return true
 	})
-	var err error
 	switch t {
 	case "excel":
 		err = a.exportExcel(&data)
@@ -115,19 +149,53 @@ func (a *App) ExportEventLogs(t string) string {
 		return "not suppoerted"
 	}
 	if err != nil {
-		log.Printf("ExportTable err=%v", err)
-		return fmt.Sprintf("export err=%v", err)
+		log.Printf("Export eventlog err=%v", err)
+		return fmt.Sprintf("export eventlog err=%v", err)
 	}
 	return ""
 }
 
 // ExportSyslogs  export syslogs
-func (a *App) ExportSyslogs(t string) string {
+func (a *App) ExportSyslogs(t, host, tag, msg string, severity int) string {
+	var hostFilter *regexp.Regexp
+	var tagFilter *regexp.Regexp
+	var msgFilter *regexp.Regexp
+	var err error
+	if host != "" {
+		if hostFilter, err = regexp.Compile(host); err != nil {
+			log.Println(err)
+			return fmt.Sprintf("export syslog err=%v", err)
+		}
+	}
+	if tag != "" {
+		if tagFilter, err = regexp.Compile(tag); err != nil {
+			log.Println(err)
+			return fmt.Sprintf("export syslog err=%v", err)
+		}
+	}
+	if msg != "" {
+		if msgFilter, err = regexp.Compile(msg); err != nil {
+			log.Println(err)
+			return fmt.Sprintf("export syslog err=%v", err)
+		}
+	}
 	data := ExportData{
 		Title:  "TWSNMP Syslog",
 		Header: []string{"Level", "Time", "Host", "Type", "Tag", "Message"},
 	}
 	datastore.ForEachLastSyslog(func(l *datastore.SyslogEnt) bool {
+		if severity < l.Severity {
+			return true
+		}
+		if hostFilter != nil && !hostFilter.MatchString(l.Host) {
+			return true
+		}
+		if tagFilter != nil && !tagFilter.MatchString(l.Tag) {
+			return true
+		}
+		if msgFilter != nil && !msgFilter.MatchString(l.Message) {
+			return true
+		}
 		e := []any{}
 		e = append(e, l.Level)
 		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))
@@ -138,7 +206,6 @@ func (a *App) ExportSyslogs(t string) string {
 		data.Data = append(data.Data, e)
 		return true
 	})
-	var err error
 	switch t {
 	case "excel":
 		err = a.exportExcel(&data)
@@ -148,19 +215,40 @@ func (a *App) ExportSyslogs(t string) string {
 		return "not suppoerted"
 	}
 	if err != nil {
-		log.Printf("ExportTable err=%v", err)
-		return fmt.Sprintf("export err=%v", err)
+		log.Printf("Export syslog err=%v", err)
+		return fmt.Sprintf("export syslog err=%v", err)
 	}
 	return ""
 }
 
 // ExportTrap  export traps
-func (a *App) ExportTraps(t string) string {
+func (a *App) ExportTraps(t, from, trapType string) string {
+	var fromFilter *regexp.Regexp
+	var typeFilter *regexp.Regexp
+	var err error
+	if from != "" {
+		if fromFilter, err = regexp.Compile(from); err != nil {
+			log.Println(err)
+			return fmt.Sprintf("export tarps err=%v", err)
+		}
+	}
+	if trapType != "" {
+		if typeFilter, err = regexp.Compile(trapType); err != nil {
+			log.Println(err)
+			return fmt.Sprintf("export traps err=%v", err)
+		}
+	}
 	data := ExportData{
 		Title:  "TWSNMP TRAP",
 		Header: []string{"Time", "From", "Type", "Variables"},
 	}
 	datastore.ForEachLastTraps(func(l *datastore.TrapEnt) bool {
+		if fromFilter != nil && !fromFilter.MatchString(l.FromAddress) {
+			return true
+		}
+		if typeFilter != nil && !typeFilter.MatchString(l.TrapType) {
+			return true
+		}
 		e := []any{}
 		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))
 		e = append(e, l.FromAddress)
@@ -169,7 +257,6 @@ func (a *App) ExportTraps(t string) string {
 		data.Data = append(data.Data, e)
 		return true
 	})
-	var err error
 	switch t {
 	case "excel":
 		err = a.exportExcel(&data)
@@ -179,8 +266,8 @@ func (a *App) ExportTraps(t string) string {
 		return "not suppoerted"
 	}
 	if err != nil {
-		log.Printf("ExportTable err=%v", err)
-		return fmt.Sprintf("export err=%v", err)
+		log.Printf("Export TRAPs err=%v", err)
+		return fmt.Sprintf("export traps err=%v", err)
 	}
 	return ""
 }
@@ -215,8 +302,8 @@ func (a *App) ExportArpTable(t string) string {
 		return "not suppoerted"
 	}
 	if err != nil {
-		log.Printf("ExportTable err=%v", err)
-		return fmt.Sprintf("export err=%v", err)
+		log.Printf("Export arp err=%v", err)
+		return fmt.Sprintf("export arp err=%v", err)
 	}
 	return ""
 }
@@ -232,8 +319,8 @@ func (a *App) ExportAny(t string, data ExportData) string {
 		return "not suppoerted"
 	}
 	if err != nil {
-		log.Printf("ExportTable err=%v", err)
-		return fmt.Sprintf("export err=%v", err)
+		log.Printf("Export any err=%v", err)
+		return fmt.Sprintf("export any err=%v", err)
 	}
 	return ""
 }

@@ -37,15 +37,15 @@ export function ExportAny(arg1:string,arg2:main.ExportData):Promise<string>;
 
 export function ExportArpTable(arg1:string):Promise<string>;
 
-export function ExportEventLogs(arg1:string):Promise<string>;
+export function ExportEventLogs(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number):Promise<string>;
 
 export function ExportNodes(arg1:string):Promise<string>;
 
 export function ExportPollings(arg1:string):Promise<string>;
 
-export function ExportSyslogs(arg1:string):Promise<string>;
+export function ExportSyslogs(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number):Promise<string>;
 
-export function ExportTraps(arg1:string):Promise<string>;
+export function ExportTraps(arg1:string,arg2:string,arg3:string):Promise<string>;
 
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 

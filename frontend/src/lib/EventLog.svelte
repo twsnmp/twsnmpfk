@@ -123,11 +123,11 @@
   });
 
   const saveCSV = () => {
-    ExportEventLogs("csv");
+    ExportEventLogs("csv",type,node,event,level);
   };
 
   const saveExcel = () => {
-    ExportEventLogs("excel");
+    ExportEventLogs("excel",type,node,event,level);
   };
 
   const deleteAll = async () => {

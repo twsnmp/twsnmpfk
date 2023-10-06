@@ -146,11 +146,11 @@
   });
 
   const saveCSV = () => {
-    ExportSyslogs("csv");
+    ExportSyslogs("csv",host,tag,msg,severity);
   };
 
   const saveExcel = () => {
-    ExportSyslogs("excel");
+    ExportSyslogs("excel",host,tag,msg,severity);
   };
 
   let polling: datastore.PollingEnt | undefined = undefined;

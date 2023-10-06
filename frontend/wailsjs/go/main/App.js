@@ -66,8 +66,8 @@ export function ExportArpTable(arg1) {
   return window['go']['main']['App']['ExportArpTable'](arg1);
 }
 
-export function ExportEventLogs(arg1) {
-  return window['go']['main']['App']['ExportEventLogs'](arg1);
+export function ExportEventLogs(arg1, arg2, arg3, arg4, arg5) {
+  return window['go']['main']['App']['ExportEventLogs'](arg1, arg2, arg3, arg4, arg5);
 }
 
 export function ExportNodes(arg1) {
@@ -78,12 +78,12 @@ export function ExportPollings(arg1) {
   return window['go']['main']['App']['ExportPollings'](arg1);
 }
 
-export function ExportSyslogs(arg1) {
-  return window['go']['main']['App']['ExportSyslogs'](arg1);
+export function ExportSyslogs(arg1, arg2, arg3, arg4, arg5) {
+  return window['go']['main']['App']['ExportSyslogs'](arg1, arg2, arg3, arg4, arg5);
 }
 
-export function ExportTraps(arg1) {
-  return window['go']['main']['App']['ExportTraps'](arg1);
+export function ExportTraps(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ExportTraps'](arg1, arg2, arg3);
 }
 
 export function GetAIConf() {

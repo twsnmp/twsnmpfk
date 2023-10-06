@@ -122,11 +122,11 @@
   });
 
   const saveCSV = () => {
-    ExportTraps("csv");
+    ExportTraps("csv",from,trapType);
   };
 
   const saveExcel = () => {
-    ExportTraps("excel");
+    ExportTraps("excel",from,trapType);
   };
 
   let polling: datastore.PollingEnt | undefined = undefined;
