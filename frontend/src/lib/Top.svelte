@@ -1,10 +1,23 @@
 <script lang="ts">
   import logo from "../assets/images/appicon.png";
-  import { Navbar, NavBrand, NavLi, NavUl, Button,Badge } from "flowbite-svelte";
+  import {
+    Navbar,
+    NavBrand,
+    NavLi,
+    NavUl,
+    Button,
+    Badge,
+  } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
-  import { GetMapName,IsDark,IsLatest,SetDark } from "../../wailsjs/go/main/App";
+  import {
+    GetMapName,
+    IsDark,
+    IsLatest,
+    SetDark,
+    GetSettings,
+  } from "../../wailsjs/go/main/App";
   import Map from "./Map.svelte";
   import Log from "./Log.svelte";
   import NodeList from "./NodeList.svelte";
@@ -16,7 +29,7 @@
   import AIList from "./AIList.svelte";
   import Config from "./Config.svelte";
   import System from "./System.svelte";
-  import { _ } from 'svelte-i18n';
+  import { _ } from "svelte-i18n";
 
   let dark: boolean = false;
   let mainHeight = 0;
@@ -24,6 +37,7 @@
   let page = "map";
   let showConfig = false;
   let latest = true;
+  let lock = false;
 
   const updateMapName = async () => {
     mapName = await GetMapName();
@@ -31,21 +45,23 @@
 
   const checkLatest = async () => {
     latest = await IsLatest();
-    if(!latest) {
+    if (!latest) {
       return;
     }
-    setTimeout(checkLatest,1000 * 60);
-  }
+    setTimeout(checkLatest, 1000 * 60);
+  };
 
   onMount(async () => {
     const e = document.querySelector("html");
     if (await IsDark()) {
-       e.classList.add("dark"); 
-       dark = true;
+      e.classList.add("dark");
+      dark = true;
     } else {
-      e.classList.remove("dark"); 
+      e.classList.remove("dark");
       dark = false;
     }
+    const settings = await GetSettings();
+    lock = settings.Lock;
     await tick();
     mainHeight = window.innerHeight - 96;
     updateMapName();
@@ -72,6 +88,7 @@
     </span>
   </NavBrand>
   <NavUl>
+    {#if !lock}
     <NavLi
       active={page == "map"}
       on:click={() => {
@@ -79,92 +96,93 @@
       }}
     >
       <Icon path={icons.mdiLan} size={1} />
-      { $_('Top.Map') }
+      {$_("Top.Map")}
     </NavLi>
-    <NavLi
-      active={page == "node"}
-      on:click={() => {
-        page = "node";
-      }}
-    >
-      <Icon path={icons.mdiLaptop} size={1} />
-      { $_('Top.Node') }
-    </NavLi>
-    <NavLi
-      active={page == "polling"}
-      on:click={() => {
-        page = "polling";
-      }}
-    >
-      <Icon path={icons.mdiLanCheck} size={1} />
-      { $_('Top.Polling') }
-    </NavLi>
-    <NavLi
-      active={page == "eventlog"}
-      on:click={() => {
-        page = "eventlog";
-      }}
-    >
-      <Icon path={icons.mdiCalendarCheck} size={1} />
-      { $_('Top.Log') }
-    </NavLi>
-    <NavLi
-      active={page == "syslog"}
-      on:click={() => {
-        page = "syslog";
-      }}
-    >
-      <Icon path={icons.mdiCalendarText} size={1} />
-      syslog
-    </NavLi>
-    <NavLi
-      active={page == "trap"}
-      on:click={() => {
-        page = "trap";
-      }}
-    >
-      <Icon path={icons.mdiAlert} size={1} />
-      TRAP
-    </NavLi>
-    <NavLi
-      active={page == "arp"}
-      on:click={() => {
-        page = "arp";
-      }}
-    >
-      <Icon path={icons.mdiCheckNetwork} size={1} />
-      ARP
-    </NavLi>
-    <NavLi
-      active={page == "ai"}
-      on:click={() => {
-        page = "ai";
-      }}
-    >
-      <Icon path={icons.mdiBrain} size={1} />
-      { $_('Top.AI') }
-    </NavLi>
-    <NavLi
-      active={page == "system"}
-      on:click={() => {
-        page = "system";
-      }}
-    >
-      <Icon path={icons.mdiChartLine} size={1} />
-      System
-    </NavLi>
-    <NavLi
-      active={showConfig}
-      on:click={() => {
-        showConfig = true;
-      }}
-    >
-      <Icon path={icons.mdiCog} size={1} />
-      { $_('Top.Config') }
-    </NavLi>
+      <NavLi
+        active={page == "node"}
+        on:click={() => {
+          page = "node";
+        }}
+      >
+        <Icon path={icons.mdiLaptop} size={1} />
+        {$_("Top.Node")}
+      </NavLi>
+      <NavLi
+        active={page == "polling"}
+        on:click={() => {
+          page = "polling";
+        }}
+      >
+        <Icon path={icons.mdiLanCheck} size={1} />
+        {$_("Top.Polling")}
+      </NavLi>
+      <NavLi
+        active={page == "eventlog"}
+        on:click={() => {
+          page = "eventlog";
+        }}
+      >
+        <Icon path={icons.mdiCalendarCheck} size={1} />
+        {$_("Top.Log")}
+      </NavLi>
+      <NavLi
+        active={page == "syslog"}
+        on:click={() => {
+          page = "syslog";
+        }}
+      >
+        <Icon path={icons.mdiCalendarText} size={1} />
+        syslog
+      </NavLi>
+      <NavLi
+        active={page == "trap"}
+        on:click={() => {
+          page = "trap";
+        }}
+      >
+        <Icon path={icons.mdiAlert} size={1} />
+        TRAP
+      </NavLi>
+      <NavLi
+        active={page == "arp"}
+        on:click={() => {
+          page = "arp";
+        }}
+      >
+        <Icon path={icons.mdiCheckNetwork} size={1} />
+        ARP
+      </NavLi>
+      <NavLi
+        active={page == "ai"}
+        on:click={() => {
+          page = "ai";
+        }}
+      >
+        <Icon path={icons.mdiBrain} size={1} />
+        {$_("Top.AI")}
+      </NavLi>
+      <NavLi
+        active={page == "system"}
+        on:click={() => {
+          page = "system";
+        }}
+      >
+        <Icon path={icons.mdiChartLine} size={1} />
+        System
+      </NavLi>
+      <NavLi
+        active={showConfig}
+        on:click={() => {
+          showConfig = true;
+        }}
+      >
+        <Icon path={icons.mdiCog} size={1} />
+        {$_("Top.Config")}
+      </NavLi>
+    {/if}
   </NavUl>
   {#if !latest}
-    <Badge border color="red">{$_('Top.HasUpdate')}</Badge>
+    <Badge border color="red">{$_("Top.HasUpdate")}</Badge>
   {/if}
   <Button class="!p-2" color="alternative" on:click={toggleDark}>
     {#if dark}
