@@ -33,14 +33,14 @@ var maxDispLog = 10000
 var lang = ""
 
 func init() {
-	flag.StringVar(&dataStorePath, "datastore", "", "Path to Data Store directory")
-	flag.BoolVar(&kiosk, "kiosk", false, "Kisok mode(Frameless and Full screen)")
-	flag.BoolVar(&lock, "lock", false, "Lock mode edit")
+	flag.StringVar(&dataStorePath, "datastore", "", "Path to data dtore directory")
+	flag.BoolVar(&kiosk, "kiosk", false, "Kisok mode(frameless and full screen)")
+	flag.BoolVar(&lock, "lock", false, "Disable edit map")
 	flag.IntVar(&trapPort, "trapPort", 162, "SNMP TRAP port")
 	flag.IntVar(&syslogPort, "syslogPort", 514, "Syslog port")
 	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "Max log size to diplay")
 	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
-	flag.StringVar(&lang, "lang", "", "Language")
+	flag.StringVar(&lang, "lang", "", "Language(en|jp)")
 	flag.Parse()
 }
 
