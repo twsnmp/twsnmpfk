@@ -77,3 +77,7 @@ func (a *App) Backup() bool {
 	})
 	return true
 }
+
+func (a *App) GetMIBModules() []*datastore.MIBModuleEnt {
+	return datastore.MIBModules
+}

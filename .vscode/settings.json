@@ -182,6 +182,17 @@
     "Proc",
     "DBSize",
     " {\n    showForecast = false;\n  }}\n  size=\"xs\"\n>\n  ",
-    " {\n        showForecast = false;\n      }}\n      size=\"xs\"\n    >\n      "
+    " {\n        showForecast = false;\n      }}\n      size=\"xs\"\n    >\n      ",
+    " {\n              exportMIB(\"csv\");\n            }}\n            size=\"xs\"\n          >\n            ",
+    " {\n              exportMIB(\"excel\");\n            }}\n            size=\"xs\"\n          >\n            ",
+    " {\n          showMIBTree = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " showMIBTree = true}\n          size=\"xs\"\n        >\n          ",
+    " {\n            dispatch(\"select\", name);\n          }}\n        >\n          {name}({oid}{type})\n        ",
+    " {\n            dispatch(\"select\", name);\n          }}\n        >\n          {name}({oid}{type})\n        ",
+    "\n    {#if children ",
+    "& children.length > 0}\n      ",
+    "*",
+    "File",
+    "Error"
   ]
 }

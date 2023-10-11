@@ -162,6 +162,10 @@ export function GetLines() {
   return window['go']['main']['App']['GetLines']();
 }
 
+export function GetMIBModules() {
+  return window['go']['main']['App']['GetMIBModules']();
+}
+
 export function GetMIBTree() {
   return window['go']['main']['App']['GetMIBTree']();
 }

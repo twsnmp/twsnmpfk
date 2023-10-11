@@ -85,6 +85,8 @@ export function GetLine(arg1:string,arg2:string):Promise<datastore.LineEnt>;
 
 export function GetLines():Promise<Array<datastore.LineEnt>>;
 
+export function GetMIBModules():Promise<Array<datastore.MIBModuleEnt>>;
+
 export function GetMIBTree():Promise<Array<datastore.MIBTreeEnt>>;
 
 export function GetMapConf():Promise<datastore.MapConfEnt>;

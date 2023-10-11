@@ -14,7 +14,12 @@
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
-  import { snmpModeList } from "./common";
+  import {
+    snmpModeList,
+    getTableLang,
+    getStateIcon,
+    getStateColor,
+  } from "./common";
   import {
     GetMapConf,
     UpdateMapConf,
@@ -23,8 +28,13 @@
     TestNotifyConf,
     GetAIConf,
     UpdateAIConf,
+    GetMIBModules,
+    GetMIBTree,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
+  import DataTable from "datatables.net-dt";
+  import "datatables.net-select-dt";
+  import MibTree from "./MIBTree.svelte";
 
   let show: boolean = false;
   let mapConf: datastore.MapConfEnt | undefined = undefined;
@@ -99,6 +109,54 @@
     await UpdateAIConf(aiConf);
     close();
   };
+
+  let showMIBTree = false;
+  let mibTree = {
+    oid: ".1.3.6.1",
+    name: ".iso.org.dod.internet",
+    MIBInfo: null,
+    children: undefined,
+  };
+
+  const renderType = (d, t, r) => {
+    if (t == "sort") {
+      return t;
+    }
+    const state = r.Error ? "high" : "info";
+    const name = d == "int" ? $_('Config.IntMIB') : $_('Config.ExeMIB');
+    return (
+      `<span class="mdi ` +
+      getStateIcon(state) +
+      ` text-xl" style="color:` +
+      getStateColor(state) +
+      `;"></span><span class="ml-2">` +
+      name +
+      `</span>`
+    );
+  };
+
+  const showMIBModules = async () => {
+    if (!mibTree.children) {
+      mibTree.children = await GetMIBTree();
+    }
+    const mibModules = await GetMIBModules();
+    new DataTable("#mibModuleTable", {
+      data: mibModules,
+      language: getTableLang(),
+      order: [[3, "asc"]],
+      columns: [
+        { title: $_('Config.MIBType'), data: "Type", width: "10%", render: renderType },
+        { title: $_('Config.MIBName'), data: "Name", width: "30%" },
+        { title: $_('Config.MIBFile'), data: "File", width: "30%" },
+        { title: $_('Config.MIBError'), data: "Error", width: "30%" },
+      ],
+    });
+  };
+
+  const importMIB = async () => {
+
+  }
+
 </script>
 
 <Modal
@@ -439,5 +497,61 @@
         </div>
       </form>
     </TabItem>
+    <TabItem on:click={showMIBModules}>
+      <div slot="title" class="flex items-center gap-2">
+        <Icon path={icons.mdiFileTree} size={1} />
+        {$_('Config.MIB')}
+      </div>
+      <table
+        id="mibModuleTable"
+        class="display compact mt-2"
+        style="width:99%"
+      />
+      <div class="flex justify-end space-x-2 mr-2">
+        <GradientButton
+          shadow
+          color="lime"
+          type="button"
+          on:click={() => showMIBTree = true}
+          size="xs"
+        >
+          <Icon path={icons.mdiFileTree} size={1} />
+          {$_('Config.MIBTree')}
+        </GradientButton>
+        <GradientButton
+          shadow
+          type="button"
+          color="teal"
+          on:click={close}
+          size="xs"
+        >
+          <Icon path={icons.mdiCancel} size={1} />
+          {$_('Config.Close')}
+        </GradientButton>
+      </div>
+    </TabItem>
   </Tabs>
+</Modal>
+
+<Modal bind:open={showMIBTree} size="lg" permanent class="w-full min-h-[80vh]">
+  <div class="flex flex-col space-y-4">
+    <MibTree
+      tree={mibTree}
+      on:select={(e) => {}}
+    />
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={() => {
+          showMIBTree = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_('Config.Close')}
+      </GradientButton>
+    </div>
+  </div>
 </Modal>

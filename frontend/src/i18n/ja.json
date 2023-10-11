@@ -215,7 +215,17 @@
     "AIHighLevel": "重度と判定するレベル",
     "SelectAILevel": "レベルを選択",
     "AILevelLow": "軽度と判定するレベル",
-    "AIlevelWarn": "注意と判定するレベル"
+    "AIlevelWarn": "注意と判定するレベル",
+    "IntMIB": "組み込み",
+    "ExeMIB": "拡張",
+    "MIBType": "種別",
+    "MIBName": "名前",
+    "MIBFile": "ファイル",
+    "MIBError": "エラー",
+    "MIB": "MIB管理",
+    "AddMIB": "MIB追加",
+    "Close": "閉じる",
+    "MIBTree": "MIBツリー"
   },
   "DrawItem": {
     "Rect": "矩形",

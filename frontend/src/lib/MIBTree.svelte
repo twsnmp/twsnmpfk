@@ -63,7 +63,9 @@
           {name}({oid}{type})
         </span>
         {#if mibInfoTooltip}
-          <Tooltip trigger="click">{mibInfoTooltip}</Tooltip>
+          <Tooltip trigger="click">
+            <pre>{mibInfoTooltip}</pre>
+          </Tooltip>
         {/if}
       </span>
     {/if}

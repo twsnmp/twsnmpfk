@@ -433,6 +433,24 @@ export namespace datastore {
 	        this.Port = source["Port"];
 	    }
 	}
+	export class MIBModuleEnt {
+	    Type: string;
+	    File: string;
+	    Name: string;
+	    Error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new MIBModuleEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Type = source["Type"];
+	        this.File = source["File"];
+	        this.Name = source["Name"];
+	        this.Error = source["Error"];
+	    }
+	}
 	export class MIBTreeEnt {
 	    oid: string;
 	    name: string;
