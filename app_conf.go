@@ -15,6 +15,10 @@ func (a *App) GetMapConf() datastore.MapConfEnt {
 
 // UpdateMapConf save map config
 func (a *App) UpdateMapConf(m datastore.MapConfEnt) bool {
+	datastore.RestartSnmpTrapd = datastore.MapConf.SnmpMode != m.SnmpMode ||
+		datastore.MapConf.Community != m.Community ||
+		datastore.MapConf.SnmpUser != m.SnmpUser ||
+		datastore.MapConf.SnmpPassword != m.SnmpPassword
 	datastore.MapConf = m
 	return datastore.SaveMapConf() == nil
 }

@@ -94,5 +94,11 @@ func logger(ctx context.Context, wg *sync.WaitGroup) {
 				arpWatchRunning = false
 			}
 		}
+		if datastore.RestartSnmpTrapd && trapdRunning {
+			close(stopTrapd)
+			datastore.RestartSnmpTrapd = false
+			trapdRunning = false
+			log.Printf("resatrt trapd")
+		}
 	}
 }

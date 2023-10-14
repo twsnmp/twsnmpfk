@@ -33,17 +33,13 @@ var (
 	DiscoverConf DiscoverConfEnt
 	AIConf       AIConfEnt
 	AutoCharCode bool
+	// Restrt snmptrapd
+	RestartSnmpTrapd bool
 	// Map Data on Memory
 	nodes    sync.Map
 	items    sync.Map
 	lines    sync.Map
 	pollings sync.Map
-	// Report Data on Memory
-	devices sync.Map
-	users   sync.Map
-	flows   sync.Map
-	servers sync.Map
-	ips     sync.Map
 	// MAP Changed check
 	stateChangedNodes sync.Map
 	lastLogAdded      time.Time
