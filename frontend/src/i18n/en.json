@@ -224,7 +224,18 @@
     "Subject": "Subject",
     "Test": "Test",
     "TimeoutSec": "Timeout (seconds)",
-    "Warn": "Warn"
+    "Warn": "Warn",
+    "AddMIB": "Add MIB",
+    "Close": "Close",
+    "ExeMIB": "Ext",
+    "IconSize": "Icon size",
+    "IntMIB": "Int",
+    "MIB": "MIB",
+    "MIBError": "Error",
+    "MIBFile": "File",
+    "MIBName": "Name",
+    "MIBTree": "MIB Tree",
+    "MIBType": "Type"
   },
   "DarwItem": {
     "Label": "Label",

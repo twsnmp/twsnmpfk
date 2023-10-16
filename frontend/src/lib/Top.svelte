@@ -35,6 +35,7 @@
   let mainHeight = 0;
   let mapName = "";
   let page = "map";
+  let oldPage = "";
   let showConfig = false;
   let latest = true;
   let lock = false;
@@ -173,6 +174,8 @@
       <NavLi
         active={showConfig}
         on:click={() => {
+          oldPage = page;
+          page = "";
           showConfig = true;
         }}
       >
@@ -226,6 +229,7 @@
 {#if showConfig}
   <Config
     on:close={() => {
+      page = oldPage;
       updateMapName();
       showConfig = false;
     }}

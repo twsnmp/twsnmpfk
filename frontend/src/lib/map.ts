@@ -9,11 +9,12 @@ import {
   UpdateDrawItemPos,
   UpdateNodePos,
   GetImage,
+  GetMapConf,
 } from "../../wailsjs/go/main/App"
 import type { datastore } from 'wailsjs/go/models';
 
 
-const MAP_SIZE_X = 2500;
+const MAP_SIZE_X = window.screen.width > 4000 ? 5000 : 2500;
 const MAP_SIZE_Y = 5000;
 let mapRedraw = true;
 let readOnly = false;
@@ -33,6 +34,7 @@ let backImage: datastore.BackImageEnt = {
 let _backImage:any = undefined; 
 
 let fontSize = 12;
+let iconSize = 32;
 
 const selectedNodes = [];
 const selectedDrawItems = [];
@@ -60,6 +62,10 @@ export const initMAP = async (div:HTMLElement,cb :any) => {
 
 export const updateMAP = async () => {
   const dark = isDark();
+  const mapConf = await GetMapConf();
+  const z = mapConf.IconSize ||  3;
+  iconSize = 8 + z * 8;
+  fontSize = 6 + z * 2; 
   nodes = await GetNodes();
   lines = await GetLines();
   items = await GetDrawItems() || {};
@@ -229,8 +235,8 @@ const mapMain = (p5:P5) => {
       }
       const x1 = nodes[lines[k].NodeID1].X;
       const x2 = nodes[lines[k].NodeID2].X;
-      const y1 = nodes[lines[k].NodeID1].Y + 6;
-      const y2 = nodes[lines[k].NodeID2].Y + 6;
+      const y1 = nodes[lines[k].NodeID1].Y;
+      const y2 = nodes[lines[k].NodeID2].Y;
       const xm = (x1 + x2) / 2;
       const ym = (y1 + y2) / 2;
       p5.push();
@@ -336,7 +342,8 @@ const mapMain = (p5:P5) => {
           p5.fill('rgba(252,252,252,0.9)')
         }
         p5.stroke(getStateColor(nodes[k].State))
-        p5.rect(-24, -24, 48, 48)
+        const w = iconSize + 16
+        p5.rect(-w/2, -w/2, w, w)
       } else {
         if (dark) {
           p5.fill('rgba(23,23,23,0.9)')
@@ -345,10 +352,11 @@ const mapMain = (p5:P5) => {
           p5.fill('rgba(252,252,252,0.9)')
           p5.stroke('rgba(252,252,252,0.9)')
         }
-        p5.rect(-12, -12, 24, 24)
+        const w = iconSize - 8
+        p5.rect(-w/2, -w/2, w, w)
       }
       p5.textFont('Material Design Icons')
-      p5.textSize(32)
+      p5.textSize(iconSize)
       p5.textAlign(p5.CENTER, p5.CENTER)
       p5.fill(getStateColor(nodes[k].State))
       p5.text(icon, 0, 0)

@@ -225,7 +225,8 @@
     "MIB": "MIB管理",
     "AddMIB": "MIB追加",
     "Close": "閉じる",
-    "MIBTree": "MIBツリー"
+    "MIBTree": "MIBツリー",
+    "IconSize": "アイコンサイズ"
   },
   "DrawItem": {
     "Rect": "矩形",

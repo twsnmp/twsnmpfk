@@ -9,6 +9,7 @@
     Select,
     GradientButton,
     Alert,
+    Range,
   } from "flowbite-svelte";
   import { onMount, createEventDispatcher } from "svelte";
   import Icon from "mdi-svelte";
@@ -62,6 +63,7 @@
     mapConf.Timeout *= 1;
     mapConf.Retry *= 1;
     mapConf.LogDays *= 1;
+    mapConf.IconSize *=1;
     const r = await UpdateMapConf(mapConf);
     close();
   };
@@ -271,6 +273,12 @@
           <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox>
           <Checkbox bind:checked={mapConf.EnableTrapd}>SNMP TRAP</Checkbox>
           <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
+        </div>
+        <div class="grid grid-cols-8 mt-2">
+          <Label>
+            {$_('Config.IconSize')}
+            <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} ></Range>
+          </Label>
         </div>
         <div class="flex justify-end space-x-2 mr-2">
           <GradientButton

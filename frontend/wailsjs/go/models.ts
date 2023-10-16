@@ -498,6 +498,7 @@ export namespace datastore {
 	    EnableSyslogd: boolean;
 	    EnableTrapd: boolean;
 	    EnableArpWatch: boolean;
+	    IconSize: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new MapConfEnt(source);
@@ -517,6 +518,7 @@ export namespace datastore {
 	        this.EnableSyslogd = source["EnableSyslogd"];
 	        this.EnableTrapd = source["EnableTrapd"];
 	        this.EnableArpWatch = source["EnableArpWatch"];
+	        this.IconSize = source["IconSize"];
 	    }
 	}
 	export class NodeEnt {

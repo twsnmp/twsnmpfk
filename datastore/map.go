@@ -32,6 +32,7 @@ type MapConfEnt struct {
 	EnableSyslogd  bool   `json:"EnableSyslogd"`
 	EnableTrapd    bool   `json:"EnableTrapd"`
 	EnableArpWatch bool   `json:"EnableArpWatch"`
+	IconSize       int    `json:"IconSize"`
 }
 
 func initConf() {
@@ -42,6 +43,7 @@ func initConf() {
 	MapConf.Community = "public"
 	MapConf.SnmpMode = "v2c"
 	MapConf.EnableArpWatch = true
+	MapConf.IconSize = 2
 	DiscoverConf.AddPolling = true
 	DiscoverConf.Retry = 1
 	DiscoverConf.Timeout = 1
