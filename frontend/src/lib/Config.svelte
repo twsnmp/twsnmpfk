@@ -63,7 +63,7 @@
     mapConf.Timeout *= 1;
     mapConf.Retry *= 1;
     mapConf.LogDays *= 1;
-    mapConf.IconSize *=1;
+    mapConf.IconSize *= 1;
     const r = await UpdateMapConf(mapConf);
     close();
   };
@@ -125,7 +125,7 @@
       return t;
     }
     const state = r.Error ? "high" : "info";
-    const name = d == "int" ? $_('Config.IntMIB') : $_('Config.ExeMIB');
+    const name = d == "int" ? $_("Config.IntMIB") : $_("Config.ExeMIB");
     return (
       `<span class="mdi ` +
       getStateIcon(state) +
@@ -147,18 +147,20 @@
       language: getTableLang(),
       order: [[3, "asc"]],
       columns: [
-        { title: $_('Config.MIBType'), data: "Type", width: "10%", render: renderType },
-        { title: $_('Config.MIBName'), data: "Name", width: "30%" },
-        { title: $_('Config.MIBFile'), data: "File", width: "30%" },
-        { title: $_('Config.MIBError'), data: "Error", width: "30%" },
+        {
+          title: $_("Config.MIBType"),
+          data: "Type",
+          width: "10%",
+          render: renderType,
+        },
+        { title: $_("Config.MIBName"), data: "Name", width: "30%" },
+        { title: $_("Config.MIBFile"), data: "File", width: "30%" },
+        { title: $_("Config.MIBError"), data: "Error", width: "30%" },
       ],
     });
   };
 
-  const importMIB = async () => {
-
-  }
-
+  const importMIB = async () => {};
 </script>
 
 <Modal
@@ -175,15 +177,21 @@
         {$_("Config.Map")}
       </div>
       <form class="flex flex-col space-y-4" action="#">
-        <Label class="space-y-2">
-          <span>{$_("Config.MapName")}</span>
-          <Input
-            bind:value={mapConf.MapName}
-            placeholder={$_("Config.MapName")}
-            required
-            size="sm"
-          />
-        </Label>
+        <div class="grid gap-2 grid-cols-4">
+          <Label class="col-span-3 space-y-2">
+            <span>{$_("Config.MapName")}</span>
+            <Input
+              bind:value={mapConf.MapName}
+              placeholder={$_("Config.MapName")}
+              required
+              size="sm"
+            />
+          </Label>
+          <Label>
+            {$_("Config.IconSize")}
+            <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} />
+          </Label>
+        </div>
         <div class="grid gap-4 mb-4 md:grid-cols-4">
           <Label class="space-y-2">
             <span> {$_("Config.PollingIntSec")} </span>
@@ -273,12 +281,6 @@
           <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox>
           <Checkbox bind:checked={mapConf.EnableTrapd}>SNMP TRAP</Checkbox>
           <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
-        </div>
-        <div class="grid grid-cols-8 mt-2">
-          <Label>
-            {$_('Config.IconSize')}
-            <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} ></Range>
-          </Label>
         </div>
         <div class="flex justify-end space-x-2 mr-2">
           <GradientButton
@@ -508,7 +510,7 @@
     <TabItem on:click={showMIBModules}>
       <div slot="title" class="flex items-center gap-2">
         <Icon path={icons.mdiFileTree} size={1} />
-        {$_('Config.MIB')}
+        {$_("Config.MIB")}
       </div>
       <table
         id="mibModuleTable"
@@ -520,11 +522,11 @@
           shadow
           color="lime"
           type="button"
-          on:click={() => showMIBTree = true}
+          on:click={() => (showMIBTree = true)}
           size="xs"
         >
           <Icon path={icons.mdiFileTree} size={1} />
-          {$_('Config.MIBTree')}
+          {$_("Config.MIBTree")}
         </GradientButton>
         <GradientButton
           shadow
@@ -534,7 +536,7 @@
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />
-          {$_('Config.Close')}
+          {$_("Config.Close")}
         </GradientButton>
       </div>
     </TabItem>
@@ -543,10 +545,7 @@
 
 <Modal bind:open={showMIBTree} size="lg" permanent class="w-full min-h-[80vh]">
   <div class="flex flex-col space-y-4">
-    <MibTree
-      tree={mibTree}
-      on:select={(e) => {}}
-    />
+    <MibTree tree={mibTree} on:select={(e) => {}} />
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         shadow
@@ -558,7 +557,7 @@
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        {$_('Config.Close')}
+        {$_("Config.Close")}
       </GradientButton>
     </div>
   </div>
