@@ -467,7 +467,9 @@
     "Type": "Type",
     "Unit": "Unit",
     "Unknown": "Unknown",
-    "Used": "Usaed"
+    "Used": "Usaed",
+    "PhysicalPort": "Physical Port",
+    "RotateVPanel": "Rotate"
   },
   "NodeReportVM": "VM",
   "Ping": {

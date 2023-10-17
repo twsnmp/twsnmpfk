@@ -11,6 +11,7 @@
     TableHead,
     TableHeadCell,
     Spinner,
+    Toggle,
   } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
@@ -53,12 +54,15 @@
   let selectedhrStorageCount = 0;
   let selectedHrProcessCount = 0;
   let showPolling = false;
+  let physicalPort = true;
+  let showVPanelBtn = false;
 
   const clearSelectedCount = () => {
     selectedPortCount = 0;
     selectedHrSystemCount = 0;
     selectedhrStorageCount = 0;
     selectedHrProcessCount = 0;
+    showVPanelBtn = false;
   };
 
   let logTable = undefined;
@@ -98,7 +102,6 @@
   let portTable = undefined;
 
   const showPortTable = (ports) => {
-    clearSelectedCount();
     portTable = new DataTable("#portTable", {
       paging: false,
       searching: false,
@@ -182,13 +185,24 @@
     });
   };
 
+  let ports;
+  let power;
+  let waitVPanel = false;
+  let rotateVPanel = false;
+
   const showVPanel = async () => {
     clearSelectedCount();
+    showVPanelBtn = true;
     initVPanel("vpanel");
-    const ports = await GetVPanelPorts(id);
-    const power = await GetVPanelPowerInfo(id);
-    setVPanel(ports, power, 0);
-    showPortTable(ports);
+    if (!ports) {
+      waitVPanel = true;
+      ports = await GetVPanelPorts(id);
+      power = await GetVPanelPowerInfo(id);
+      waitVPanel = false;
+    }
+    const p = physicalPort ? ports.filter((e)=> e.Type == 6) : ports;
+    setVPanel(p, power, rotateVPanel);
+    showPortTable(p);
   };
 
   const renderStatus = (s) => {
@@ -750,7 +764,11 @@
       </TabItem>
       <TabItem on:click={showVPanel}>
         <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiAppsBox} size={1} />
+          {#if waitVPanel}
+            <Spinner color="red" size="6" />
+          {:else}
+            <Icon path={icons.mdiAppsBox} size={1} />
+          {/if}
           { $_('NodeReport.Panel') }
         </div>
         <div id="vpanel" style="width: 98%; height: 400px; overflow:scroll;" />
@@ -867,6 +885,14 @@
           <Icon path={icons.mdiEye} size={1} />
           { $_('NodeReport.Polling') }
         </GradientButton>
+      {/if}
+      {#if showVPanelBtn}
+        <Toggle bind:checked={physicalPort} on:change={showVPanel}>
+          {$_('NodeReport.PhysicalPort')}
+        </Toggle>
+        <Toggle bind:checked={rotateVPanel} on:change={showVPanel}>
+          {$_('NodeReport.RotateVPanel')}
+        </Toggle>
       {/if}
       <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />

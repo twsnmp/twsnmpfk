@@ -458,7 +458,9 @@
     "AddPollingIFState": "ポーリング(状態)",
     "AddPollingTraffic": "ポーリング(通信量)",
     "Polling": "ポーリング",
-    "Close": "閉じる"
+    "Close": "閉じる",
+    "PhysicalPort": "物理ポート",
+    "RotateVPanel": "回転"
   },
   "NodeReportVM": "仮想メモリ",
   "Ping": {
