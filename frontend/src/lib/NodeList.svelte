@@ -113,7 +113,7 @@
     {
       data: "State",
       title: $_('NodeList.State'),
-      width: "10%",
+      width: "5%",
       render: renderState,
     },
     {
@@ -130,7 +130,12 @@
     {
       data: "MAC",
       title: $_('NodeList.MACAddress'),
-      width: "30%",
+      width: "10%",
+    },
+    {
+      data: "Vendor",
+      title: "ベンダー",
+      width: "20%",
     },
     {
       data: "Descr",

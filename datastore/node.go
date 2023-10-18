@@ -2,7 +2,6 @@ package datastore
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -19,8 +18,8 @@ type NodeEnt struct {
 	X         int    `json:"X"`
 	Y         int    `json:"Y"`
 	IP        string `json:"IP"`
-	IPv6      string `json:"IPv6"`
 	MAC       string `json:"MAC"`
+	Vendor    string `json:"Vendor"`
 	SnmpMode  string `json:"SnmpMode"`
 	Community string `json:"Community"`
 	User      string `json:"User"`
@@ -231,25 +230,14 @@ func GetDrawItem(id string) *DrawItemEnt {
 
 func FindNodeFromIP(ip string) *NodeEnt {
 	var ret *NodeEnt
-	if strings.Contains(ip, ":") {
-		// IPv6
-		ForEachNodes(func(n *NodeEnt) bool {
-			if strings.Contains(n.IPv6, ip) {
-				ret = n
-				return false
-			}
-			return true
-		})
-	} else {
-		// IPv4
-		ForEachNodes(func(n *NodeEnt) bool {
-			if n.IP == ip {
-				ret = n
-				return false
-			}
-			return true
-		})
-	}
+	// IPv4
+	ForEachNodes(func(n *NodeEnt) bool {
+		if n.IP == ip {
+			ret = n
+			return false
+		}
+		return true
+	})
 	return ret
 }
 
@@ -320,54 +308,6 @@ func saveAllNodes() error {
 	})
 	log.Printf("saveAllNodes dur=%v", time.Since(st))
 	return nil
-}
-
-func CheckNodeAddress(ip, mac, oldmac string) {
-	if strings.Contains(ip, ":") {
-		// IPv6
-		ForEachNodes(func(n *NodeEnt) bool {
-			if oldmac != "" && strings.HasPrefix(n.MAC, oldmac) && strings.Contains(n.IPv6, ip) {
-				ipv6s := strings.Split(n.IPv6, ",")
-				n.IPv6 = ""
-				for _, ipv6 := range ipv6s {
-					if ipv6 == ip {
-						continue
-					}
-					if n.IPv6 != "" {
-						n.IPv6 += ","
-					}
-					n.IPv6 += ipv6
-				}
-			}
-			if strings.HasPrefix(n.MAC, mac) {
-				if !strings.Contains(n.IPv6, ip) {
-					if n.IPv6 != "" {
-						n.IPv6 += ","
-					}
-					n.IPv6 += ip
-				}
-				if oldmac == "" {
-					return false
-				}
-			}
-			return true
-		})
-		return
-	}
-	// IPv4
-	ForEachNodes(func(n *NodeEnt) bool {
-		if n.IP == ip {
-			if !strings.Contains(n.MAC, mac) {
-				v := FindVendor(mac)
-				if v != "" {
-					mac += fmt.Sprintf("(%s)", v)
-				}
-				n.MAC = mac
-			}
-			return false
-		}
-		return true
-	})
 }
 
 // SetNodeStateChanged :

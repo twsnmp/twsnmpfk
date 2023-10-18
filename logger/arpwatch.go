@@ -274,12 +274,11 @@ func checkNodeMAC() {
 			checkFixHostMode(n)
 			return true
 		}
-		if m, ok := arpTable[n.IP]; ok {
-			if !strings.Contains(n.MAC, m) {
-				new := m
-				v := datastore.FindVendor(m)
+		if mac, ok := arpTable[n.IP]; ok {
+			if n.MAC != mac {
+				v := datastore.FindVendor(mac)
 				if v != "" {
-					new += fmt.Sprintf("(%s)", v)
+					n.Vendor = v
 				}
 				if n.MAC == "" {
 					datastore.AddEventLog(&datastore.EventLogEnt{
@@ -287,7 +286,7 @@ func checkNodeMAC() {
 						Level:    "info",
 						NodeID:   n.ID,
 						NodeName: n.Name,
-						Event:    fmt.Sprintf(i18n.Trans("Set MAC Address %s"), new),
+						Event:    fmt.Sprintf(i18n.Trans("Set MAC Address %s"), mac),
 					})
 				} else {
 					datastore.AddEventLog(&datastore.EventLogEnt{
@@ -295,10 +294,10 @@ func checkNodeMAC() {
 						Level:    "warn",
 						NodeID:   n.ID,
 						NodeName: n.Name,
-						Event:    fmt.Sprintf(i18n.Trans("Change MAC Address %s -> %s"), n.MAC, new),
+						Event:    fmt.Sprintf(i18n.Trans("Change MAC Address %s -> %s"), n.MAC, mac),
 					})
 				}
-				n.MAC = new
+				n.MAC = mac
 			}
 		}
 		return true

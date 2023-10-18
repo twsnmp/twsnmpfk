@@ -530,8 +530,8 @@ export namespace datastore {
 	    X: number;
 	    Y: number;
 	    IP: string;
-	    IPv6: string;
 	    MAC: string;
+	    Vendor: string;
 	    SnmpMode: string;
 	    Community: string;
 	    User: string;
@@ -555,8 +555,8 @@ export namespace datastore {
 	        this.X = source["X"];
 	        this.Y = source["Y"];
 	        this.IP = source["IP"];
-	        this.IPv6 = source["IPv6"];
 	        this.MAC = source["MAC"];
+	        this.Vendor = source["Vendor"];
 	        this.SnmpMode = source["SnmpMode"];
 	        this.Community = source["Community"];
 	        this.User = source["User"];
