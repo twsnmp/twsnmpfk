@@ -108,7 +108,6 @@ func DeleteArpEnt(ip string) error {
 			if len(a) < 3 {
 				continue
 			}
-			ip := a[1]
 			if ip == a[1] {
 				c.Delete()
 			}
