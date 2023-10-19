@@ -272,6 +272,44 @@ func (a *App) ExportTraps(t, from, trapType string) string {
 	return ""
 }
 
+// ExportArpLogs  export arp watch logs
+func (a *App) ExportArpLogs(t string) string {
+	data := ExportData{
+		Title:  "TWSNMP ARP Logs",
+		Header: []string{"Time", "State", "IP", "Node", "New MAC", "New Vendor", "Old MAC", "Old Vendor"},
+	}
+	datastore.ForEachLastArpLogs(func(l *datastore.ArpLogEnt) bool {
+		e := []any{}
+		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))
+		e = append(e, l.IP)
+		if n := datastore.FindNodeFromIP(l.IP); n != nil {
+			e = append(e, n.Name)
+		} else {
+			e = append(e, "")
+		}
+		e = append(e, l.NewMAC)
+		e = append(e, datastore.FindVendor(l.NewMAC))
+		e = append(e, l.OldMAC)
+		e = append(e, datastore.FindVendor(l.OldMAC))
+		data.Data = append(data.Data, e)
+		return true
+	})
+	var err error
+	switch t {
+	case "excel":
+		err = a.exportExcel(&data)
+	case "csv":
+		err = a.exportCSV(&data)
+	default:
+		return "not suppoerted"
+	}
+	if err != nil {
+		log.Printf("Export arp log err=%v", err)
+		return fmt.Sprintf("export arp log err=%v", err)
+	}
+	return ""
+}
+
 // ExportArpTable  export arp Table
 func (a *App) ExportArpTable(t string) string {
 	data := ExportData{

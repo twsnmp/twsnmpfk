@@ -1,7 +1,10 @@
 package datastore
 
 import (
+	"bytes"
+	"encoding/json"
 	"log"
+	"strings"
 	"time"
 
 	"go.etcd.io/bbolt"
@@ -68,6 +71,49 @@ func ResetArpTable() error {
 		tx.CreateBucketIfNotExists([]byte("arp"))
 		tx.CreateBucketIfNotExists([]byte("arplog"))
 		log.Printf("ResetArpTable  dur=%v", time.Since(st))
+		return nil
+	})
+}
+
+// DeleteArpEntは、指定のIPアドレスに関連したARPテーブルとARPログを削除する
+func DeleteArpEnt(ip string) error {
+	st := time.Now()
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("arp"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, _ := c.First(); k != nil; k, _ = c.Next() {
+			if ip == string(k) {
+				c.Delete()
+			}
+		}
+		b = tx.Bucket([]byte("arplog"))
+		if b == nil {
+			return nil
+		}
+		c = b.Cursor()
+		for k, v := c.Last(); k != nil; k, v = c.Prev() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			a := strings.Split(l.Log, ",")
+			if len(a) < 3 {
+				continue
+			}
+			ip := a[1]
+			if ip == a[1] {
+				c.Delete()
+			}
+		}
+		log.Printf("DeleteArpEnt i=%s dur=%v", ip, time.Since(st))
 		return nil
 	})
 }

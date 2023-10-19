@@ -1,6 +1,6 @@
 import * as echarts from 'echarts';
 import * as ecStat from 'echarts-stat';
-import * as numeral from 'numeral';
+import numeral from 'numeral';
 import WorldData from 'world-map-geojson';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);

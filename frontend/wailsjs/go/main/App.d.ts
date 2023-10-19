@@ -25,6 +25,8 @@ export function DeleteAllSyslog():Promise<boolean>;
 
 export function DeleteAllTraps():Promise<boolean>;
 
+export function DeleteArpEnt(arg1:string):Promise<boolean>;
+
 export function DeleteDrawItems(arg1:Array<string>):Promise<void>;
 
 export function DeleteLine(arg1:string):Promise<boolean>;
@@ -34,6 +36,8 @@ export function DeleteNodes(arg1:Array<string>):Promise<void>;
 export function DeletePollings(arg1:Array<string>):Promise<void>;
 
 export function ExportAny(arg1:string,arg2:main.ExportData):Promise<string>;
+
+export function ExportArpLogs(arg1:string):Promise<string>;
 
 export function ExportArpTable(arg1:string):Promise<string>;
 
@@ -53,7 +57,7 @@ export function GetAIList():Promise<Array<main.AIList>>;
 
 export function GetAIResult(arg1:string):Promise<datastore.AIResult>;
 
-export function GetArpLogs():Promise<Array<datastore.ArpLogEnt>>;
+export function GetArpLogs():Promise<Array<main.ArpLogEnt>>;
 
 export function GetArpTable():Promise<Array<datastore.ArpEnt>>;
 

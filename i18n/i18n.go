@@ -254,6 +254,12 @@ var transMap = map[string]map[string]string{
 	"Backup done": {
 		"ja": "バックアップ完了",
 	},
+	"Delete arp ent ip=%s": {
+		"ja": "IPアドレス%sのARP監視情報を削除",
+	},
+	"Clear all arp watch info": {
+		"ja": "ARP監視情報を全削除",
+	},
 }
 
 func init() {

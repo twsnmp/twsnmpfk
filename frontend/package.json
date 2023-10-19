@@ -30,7 +30,7 @@
     "@mdi/font": "^5.9.55",
     "@mdi/js": "^7.2.96",
     "@novacbn/svelte-codejar": "^0.1.2",
-    "@types/numeral": "^2.0.3",
+    "@types/numeral": "^2.0.4",
     "datatables.net-dt": "^1.13.6",
     "datatables.net-plugins": "^1.13.6",
     "datatables.net-select-dt": "^1.7.0",

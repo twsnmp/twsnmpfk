@@ -26,6 +26,7 @@
   import Syslog from "./Syslog.svelte";
   import Trap from "./Trap.svelte";
   import Arp from "./Arp.svelte";
+  import Address from "./Address.svelte";
   import AIList from "./AIList.svelte";
   import Config from "./Config.svelte";
   import System from "./System.svelte";
@@ -116,6 +117,15 @@
       >
         <Icon path={icons.mdiLanCheck} size={1} />
         {$_("Top.Polling")}
+      </NavLi>
+      <NavLi
+        active={page == "address"}
+        on:click={() => {
+          page = "address";
+        }}
+      >
+        <Icon path={icons.mdiListStatus} size={1} />
+        Address
       </NavLi>
       <NavLi
         active={page == "eventlog"}
@@ -220,6 +230,8 @@
   <Trap />
 {:else if page == "arp"}
   <Arp />
+{:else if page == "address"}
+  <Address />
 {:else if page == "ai"}
   <AIList />
 {:else if page == "system"}

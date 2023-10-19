@@ -108,7 +108,12 @@
     "FeelsLikeC": "体感温度(℃）",
     "MemUsagePer": "メモリー使用率(%)",
     "TotalHost": "ホスト数",
-    "NumberOfLog": "件数"
+    "NumberOfLog": "件数",
+    "IPChanged": "IP変化",
+    "IPDup": "IP重複",
+    "IPNormal": "IP正常",
+    "MACChanged": "MAC変化",
+    "MACNormal": "MAC正常"
   },
   "Log": {
     "Level": "レベル",
@@ -145,17 +150,11 @@
   },
   "Arp": {
     "IPAddress": "IPアドレス",
-    "MACAddress": "MACアドレス",
-    "NodeName": "ノード名",
-    "Vendor": "ベンダー",
     "State": "状態",
     "DateTime": "日時",
     "NewMACAddress": "新MACアドレス",
     "OldMACAddress": "旧MACアドレス",
-    "NodeInfo": "ノード情報",
-    "AddNode": "ノード追加",
     "Report": "レポート",
-    "Clear": "クリア",
     "Reload": "更新"
   },
   "ArpReport": {
@@ -223,7 +222,6 @@
     "MIBFile": "ファイル",
     "MIBError": "エラー",
     "MIB": "MIB管理",
-    "AddMIB": "MIB追加",
     "Close": "閉じる",
     "MIBTree": "MIBツリー",
     "IconSize": "アイコンサイズ"
@@ -382,7 +380,8 @@
     "Delete": "削除",
     "ReCheck": "再確認",
     "CheckAll": "すべて再確認",
-    "Reload": "更新"
+    "Reload": "更新",
+    "Vendor": "ベンダー"
   },
   "NodePolling": {
     "State": "状態",
@@ -460,9 +459,9 @@
     "Polling": "ポーリング",
     "Close": "閉じる",
     "PhysicalPort": "物理ポート",
+    "VM": "仮想メモリ",
     "RotateVPanel": "回転"
   },
-  "NodeReportVM": "仮想メモリ",
   "Ping": {
     "Cont": "連続",
     "Coun1": "1回",
@@ -494,9 +493,9 @@
     "World": "経路分析",
     "Stop": "停止",
     "Start": "開始",
+    "TraceRoute": "トレースルート",
     "Close": "閉じる"
   },
-  "PingTraceRoute": "トレースルート",
   "Polling": {
     "Name": "名前",
     "Type": "種別",
@@ -634,5 +633,24 @@
     "Reload": "更新",
     "Close": "閉じる",
     "Loading": "取得しています..."
+  },
+  "Address": {
+    "EditNode": "編集",
+    "IPAddress": "アドレス",
+    "MACAddress": "MACアドレス",
+    "NodeName": "ノード名",
+    "Vendor": "ベンダー",
+    "NodeInfo": "ノードレポート",
+    "AddNode": "ノード追加",
+    "Report": "レポート",
+    "Clear": "クリア",
+    "Reload": "更新",
+    "Dup": "重複",
+    "IPChange": "IP変化",
+    "MACChange": "MAC変化",
+    "Normal": "正常",
+    "State": "状態",
+    "Last": "最終変化",
+    "Delete": "削除"
   }
 }

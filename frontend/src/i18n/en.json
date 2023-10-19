@@ -108,7 +108,12 @@
     "hrSystemMaxProcesses": "Max processes",
     "hrSystemNumUsers": "System users",
     "hrSystemProcesses": "System processes",
-    "hrSystemUptime": "System uptime"
+    "hrSystemUptime": "System uptime",
+    "IPChanged": "IP changed",
+    "IPDup": "IP duplicate",
+    "IPNormal": "IP normal",
+    "MACChanged": "MAC  changed",
+    "MACNormal": "MAC  normal"
   },
   "Top": {
     "AI": "AI",
@@ -153,19 +158,13 @@
     "TimeChart": "Time chart"
   },
   "Arp": {
-    "AddNode": "Add Node",
-    "Clear": "Clear",
     "DateTime": "Date and time",
     "IPAddress": "IP address",
-    "MACAddress": "MAC address",
     "NewMACAddress": "New MAC",
-    "NodeInfo": "Node info",
-    "NodeName": "Node name",
     "OldMACAddress": "Old MAC",
     "Reload": "Reload",
     "Report": "Report",
-    "State": "State",
-    "Vendor": "Vendor"
+    "State": "State"
   },
   "ArpReport": {
     "Chart3DByIP": "3D chart",
@@ -225,7 +224,6 @@
     "Test": "Test",
     "TimeoutSec": "Timeout (seconds)",
     "Warn": "Warn",
-    "AddMIB": "Add MIB",
     "Close": "Close",
     "ExeMIB": "Ext",
     "IconSize": "Icon size",
@@ -391,7 +389,8 @@
     "ReCheck": "Re check",
     "Reload": "Reload",
     "Report": "Report",
-    "State": "Satte"
+    "State": "Satte",
+    "Vendor": "Vendor"
   },
   "NodePolling": {
     "Add": "Add",
@@ -469,9 +468,9 @@
     "Unknown": "Unknown",
     "Used": "Usaed",
     "PhysicalPort": "Physical Port",
+    "VM": "VM",
     "RotateVPanel": "Rotate"
   },
-  "NodeReportVM": "VM",
   "Ping": {
     "Chart3D": "3D Chart",
     "Close": "Close",
@@ -503,9 +502,9 @@
     "TimeStamp": "Time",
     "Unknown": "Unknown",
     "Warn": "Warn",
+    "TraceRoute": "Trace route",
     "World": "Route analysis"
   },
-  "PingTraceRoute": "Trace route",
   "Polling": {
     "Cancel": "Cancel",
     "EditPolling": "Edit polling",
@@ -634,5 +633,24 @@
     "Reload": "Reload",
     "SizeForecast": "Forecast size",
     "Time": "Time"
+  },
+  "Address": {
+    "EditNode": "Edit",
+    "IPAddress": "Address",
+    "AddNode": " Add node",
+    "Clear": "Clear",
+    "Delete": "Delete",
+    "Dup": "Duplicate",
+    "IPChange": "IP changed",
+    "Last": "Last time",
+    "MACAddress": "MAC",
+    "MACChange": "MAC Changed",
+    "NodeInfo": "Node report",
+    "NodeName": "Node name",
+    "Normal": "Normal",
+    "Reload": "Reload",
+    "Report": "Report",
+    "State": "State",
+    "Vendor": "Vendor"
   }
 }

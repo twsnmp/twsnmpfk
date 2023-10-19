@@ -269,26 +269,6 @@ export namespace datastore {
 	        this.Vendor = source["Vendor"];
 	    }
 	}
-	export class ArpLogEnt {
-	    Time: number;
-	    State: string;
-	    IP: string;
-	    OldMAC: string;
-	    NewMAC: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new ArpLogEnt(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Time = source["Time"];
-	        this.State = source["State"];
-	        this.IP = source["IP"];
-	        this.OldMAC = source["OldMAC"];
-	        this.NewMAC = source["NewMAC"];
-	    }
-	}
 	export class BackImageEnt {
 	    X: number;
 	    Y: number;
@@ -807,6 +787,32 @@ export namespace main {
 	        this.Score = source["Score"];
 	        this.Count = source["Count"];
 	        this.LastTime = source["LastTime"];
+	    }
+	}
+	export class ArpLogEnt {
+	    Time: number;
+	    State: string;
+	    IP: string;
+	    Node: string;
+	    NewMAC: string;
+	    NewVendor: string;
+	    OldMAC: string;
+	    OldVendor: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ArpLogEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.State = source["State"];
+	        this.IP = source["IP"];
+	        this.Node = source["Node"];
+	        this.NewMAC = source["NewMAC"];
+	        this.NewVendor = source["NewVendor"];
+	        this.OldMAC = source["OldMAC"];
+	        this.OldVendor = source["OldVendor"];
 	    }
 	}
 	export class ExportData {

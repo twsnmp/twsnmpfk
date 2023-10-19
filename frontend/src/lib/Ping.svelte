@@ -137,7 +137,7 @@
   ];
 
   const ttlList = [
-    { name: $_('PingTraceRoute'), value: -1 },
+    { name: $_('Ping.TraceRoute'), value: -1 },
     { name: "1", value: 1 },
     { name: "2", value: 2 },
     { name: "4", value: 4 },

@@ -188,7 +188,7 @@ func deleteOldLogs() {
 		log.Printf("deleteOldLog err=%v", err)
 		return
 	}
-	buckets := []string{"logs", "pollingLogs", "syslog", "trap", "arplog"}
+	buckets := []string{"logs", "pollingLogs", "syslog", "trap"}
 	doneMap := make(map[string]bool)
 	doneCount := 0
 	lt := time.Now().Unix() + 50
@@ -635,8 +635,8 @@ type ArpLogEnt struct {
 	Time   int64  `json:"Time"`
 	State  string `json:"State"`
 	IP     string `json:"IP"`
-	OldMAC string `json:"OldMAC"`
 	NewMAC string `json:"NewMAC"`
+	OldMAC string `json:"OldMAC"`
 }
 
 // ForEachLastArpLogs は最新のARP Logを返します。

@@ -42,6 +42,10 @@ export function DeleteAllTraps() {
   return window['go']['main']['App']['DeleteAllTraps']();
 }
 
+export function DeleteArpEnt(arg1) {
+  return window['go']['main']['App']['DeleteArpEnt'](arg1);
+}
+
 export function DeleteDrawItems(arg1) {
   return window['go']['main']['App']['DeleteDrawItems'](arg1);
 }
@@ -60,6 +64,10 @@ export function DeletePollings(arg1) {
 
 export function ExportAny(arg1, arg2) {
   return window['go']['main']['App']['ExportAny'](arg1, arg2);
+}
+
+export function ExportArpLogs(arg1) {
+  return window['go']['main']['App']['ExportArpLogs'](arg1);
 }
 
 export function ExportArpTable(arg1) {

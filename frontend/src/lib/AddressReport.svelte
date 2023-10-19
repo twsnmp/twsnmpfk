@@ -3,28 +3,30 @@
   import { onMount, createEventDispatcher, tick } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import type { main } from "wailsjs/go/models";
-  import { showArpLogIP, showArpLogIP3D } from "./chart/arp";
+  import type { datastore} from "wailsjs/go/models";
+  import { showArpGraph } from "./chart/arp";
   import { _ } from 'svelte-i18n';
 
-  export let logs: main.ArpLogEnt[] | undefined = undefined;
+  export let arp : datastore.ArpEnt[] | undefined = undefined;
+  export let changeMAC = undefined;
+  export let changeIP = undefined;
 
   let show: boolean = false;
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
     show = true;
-    showChart("ip");
+    showChart("graphForce");
   });
 
   const showChart = async (t: string) => {
     await tick();
     switch (t) {
-      case "ip":
-        showArpLogIP(t, logs);
+      case "graphForce":
+        showArpGraph(t, arp,"force",changeIP,changeMAC);
         break;
-      case "ip3D":
-        showArpLogIP3D(t, logs);
+      case "graphCircular":
+        showArpGraph(t, arp,"circular",changeIP,changeMAC);
         break;
     }
   };
@@ -47,25 +49,25 @@
       <TabItem
         open
         on:click={() => {
-          showChart("ip");
+          showChart("graphForce");
         }}
       >
         <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiChartBarStacked} size={1} />
-          { $_('ArpReport.CountByIP') }
+          <Icon path={icons.mdiGraph} size={1} />
+          { $_('ArpReport.IPtoMACForceGraph') }
         </div>
-        <div id="ip" style="height: 600px;" />
+        <div id="graphForce" style="height: 600px;" />
       </TabItem>
       <TabItem
         on:click={() => {
-          showChart("ip3D");
+          showChart("graphCircular");
         }}
       >
         <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiChartScatterPlot} size={1} />
-          { $_('ArpReport.Chart3DByIP') }
+          <Icon path={icons.mdiCircle} size={1} />
+          { $_('ArpReport.IPtoMACCircelGraph') }
         </div>
-        <div id="ip3D" style="height: 600px;" />
+        <div id="graphCircular" style="height: 600px;" />
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">

@@ -280,11 +280,11 @@ export const showArpGraph = (div, arp, type,changeIP,changeMAC) => {
   const nodes = Array.from(nodeMap.values())
   const edges = Array.from(edgeMap.values())
   const categories = [
-    { name: 'IP Changed' },
-    { name: 'IP Duplicate' },
-    { name: 'IP Normal' },
-    { name: 'MAC Changed' },
-    { name: 'MAC Normal' },
+    { name: $_("Ts.IPChanged")},
+    { name: $_("Ts.IPDup") },
+    { name: $_("Ts.IPNormal") },
+    { name: $_("Ts.MACChanged") },
+    { name: $_("Ts.MACNormal") },
   ]
   if (chart) {
     chart.dispose()
@@ -321,7 +321,6 @@ export const showArpGraph = (div, arp, type,changeIP,changeMAC) => {
         }),
       },
     ],
-    color: ['#ea0','#e31a1c','#1f78b4','#cc0', '#165ee3' ],
     animationDurationUpdate: 1500,
     animationEasingUpdate: 'quinticInOut',
     series: [],
@@ -339,6 +338,7 @@ export const showArpGraph = (div, arp, type,changeIP,changeMAC) => {
         links: edges,
         categories,
         roam: true,
+        color: ['#ea0','#e31a1c','#1f78b4','#cc0', '#165ee3' ],
         label: {
           position: 'right',
           formatter: '{b}',
@@ -369,6 +369,7 @@ export const showArpGraph = (div, arp, type,changeIP,changeMAC) => {
           fontStyle: 'normal',
           color: '#ccc',
         },
+        color: ['#ea0','#e31a1c','#1f78b4','#cc0', '#165ee3' ],
         lineStyle: {
           color: 'source',
           curveness: 0,

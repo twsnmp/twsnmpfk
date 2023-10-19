@@ -193,6 +193,13 @@
     "& children.length > 0}\n      ",
     "*",
     "File",
-    "Error"
+    "Error",
+    " {\n          DeleteArpEnt(selectedIP);\n          refresh();\n        }}\n        size=\"xs\"\n      >\n        ",
+    "Last",
+    " (showNodeReport = true)}\n        size=\"xs\"\n      >\n        ",
+    " (showEditNode = true)}\n        size=\"xs\"\n      >\n        ",
+    "\n    {/if}\n\n    {#if selectedIP ",
+    " {\n          showAddNode = true;\n        }}\n        size=\"xs\"\n      >\n        ",
+    "& !selectedNodeID}\n      "
   ]
 }

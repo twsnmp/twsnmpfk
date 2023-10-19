@@ -248,7 +248,7 @@
       case "hrStorageFixedDisk":
         return $_('NodeReport.FixedDisk');
       case "hrStorageVirtualMemory":
-        return $_('NodeReportVM');
+        return $_('NodeReport.VM');
       case "hrStorageRam":
         return $_('NodeReport.RAM');
     }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"regexp"
 
@@ -181,14 +182,70 @@ func (a *App) ResetArpTable() bool {
 		return false
 	}
 	logger.ResetArpWatch = true
-	return datastore.ResetArpTable() == nil
+	if err := datastore.ResetArpTable(); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: i18n.Trans("Clear all arp watch info"),
+	})
+	return true
+}
+
+func (a *App) DeleteArpEnt(ip string) bool {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm delete"),
+		Message:       i18n.Trans("Do you want to delete?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return false
+	}
+	if err := datastore.DeleteArpEnt(ip); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: fmt.Sprintf(i18n.Trans("Delete arp ent ip=%s"), ip),
+	})
+	return true
+}
+
+type ArpLogEnt struct {
+	Time      int64  `json:"Time"`
+	State     string `json:"State"`
+	IP        string `json:"IP"`
+	Node      string `json:"Node"`
+	NewMAC    string `json:"NewMAC"`
+	NewVendor string `json:"NewVendor"`
+	OldMAC    string `json:"OldMAC"`
+	OldVendor string `json:"OldVendor"`
 }
 
 // GetArpLogsは、最新のARP Logを返します。
-func (a *App) GetArpLogs() []*datastore.ArpLogEnt {
-	ret := []*datastore.ArpLogEnt{}
+func (a *App) GetArpLogs() []*ArpLogEnt {
+	ret := []*ArpLogEnt{}
 	datastore.ForEachLastArpLogs(func(l *datastore.ArpLogEnt) bool {
-		ret = append(ret, l)
+		node := ""
+		if n := datastore.FindNodeFromIP(l.IP); n != nil {
+			node = n.Name
+		}
+		ret = append(ret, &ArpLogEnt{
+			Time:      l.Time,
+			State:     l.State,
+			IP:        l.IP,
+			NewMAC:    l.NewMAC,
+			OldMAC:    l.OldMAC,
+			NewVendor: datastore.FindVendor(l.NewMAC),
+			OldVendor: datastore.FindVendor(l.OldMAC),
+			Node:      node,
+		})
 		return len(ret) < maxDispLog
 	})
 	return ret

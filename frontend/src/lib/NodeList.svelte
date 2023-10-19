@@ -134,7 +134,7 @@
     },
     {
       data: "Vendor",
-      title: "ベンダー",
+      title: $_('NodeList.Vendor'),
       width: "20%",
     },
     {
