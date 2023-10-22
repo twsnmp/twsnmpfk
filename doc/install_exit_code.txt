@@ -1,0 +1,13 @@
+Installer exit code
+ 0 - Normal execution (no error)
+ 1 - Installation aborted by user (cancel button)
+ 2 - Installation aborted by script
+64 - Requires Windows 10 or higher
+65 - Architecture not supported. not amd64
+
+インストラーの終了コード
+ 0 - 正常終了
+ 1 - ユーザーのキャンセル
+ 2 - スクリプトの内部エラー
+64 - Windows 10以上が必要
+65 - amd64以外のアーキテクチャー
