@@ -9,7 +9,6 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from 'svelte-i18n';
-
   let table = undefined;
   let data = [];
   let timer: number | undefined = undefined;
@@ -24,7 +23,7 @@
       paging: false,
       searching:false,
       info:false,
-      scrollY: "180px",
+      scrollY: window.innerHeight/5 +"px",
       data: data,
       language: getTableLang(),
       order: [[1,"desc"]],

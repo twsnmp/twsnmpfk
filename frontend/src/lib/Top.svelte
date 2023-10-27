@@ -208,13 +208,13 @@
 
 {#if page == "map"}
   <div
-    class="grid grid-rows-4 grid-cols-1 gap-0 w-full"
+    class="fex fex-col w-full"
     style="height:{mainHeight}px;"
   >
-    <div class="row-span-3">
+    <div style="height: {mainHeight - window.innerHeight/5}px">
       <Map />
     </div>
-    <div class="row-span-1 ml-2 mr-2">
+    <div style="width: 99vw;margin: 0 auto;">
       <Log />
     </div>
   </div>

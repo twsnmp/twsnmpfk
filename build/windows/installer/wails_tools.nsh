@@ -5,13 +5,13 @@
 !include "FileFunc.nsh"
 
 !ifndef INFO_PROJECTNAME
-    !define INFO_PROJECTNAME "twsnmpfk"
+    !define INFO_PROJECTNAME "TWSNMP FK"
 !endif
 !ifndef INFO_COMPANYNAME
     !define INFO_COMPANYNAME "TWSNMP"
 !endif
 !ifndef INFO_PRODUCTNAME
-    !define INFO_PRODUCTNAME "twsnmpfk"
+    !define INFO_PRODUCTNAME "TWSNMP FK"
 !endif
 !ifndef INFO_PRODUCTVERSION
     !define INFO_PRODUCTVERSION "1.0.0"
