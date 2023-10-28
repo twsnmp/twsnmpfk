@@ -30,7 +30,7 @@
       paging: false,
       searching: false,
       info: false,
-      scrollY: "180px",
+      scrollY: "25vh",
       data: logs,
       order: [[0, "desc"]],
       language: getTableLang(),
@@ -145,8 +145,8 @@
 <svelte:window on:resize={resizeChart} />
 
 <div class="flex flex-col">
-  <div id="resChart" style="height: 200px;" />
-  <div id="netChart" style="height: 200px;" />
+  <div id="resChart"/>
+  <div id="netChart"/>
   <div class="m-5 grow">
     <table id="table" class="display compact" style="width:99%" />
   </div>
@@ -185,7 +185,7 @@
 </div>
 
 <Modal bind:open={showForecast} size="xl" permanent class="w-full">
-  <div id="forecast" style="height: 500px;" />
+  <div id="forecast" />
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
       shadow
@@ -211,4 +211,18 @@
 
 <style>
   @import "../assets/css/jquery.dataTables.css";
+
+  #resChart,
+  #netChart{
+    min-height: 200px;
+    height: 30vh;
+    width: 98%;
+    margin: 0 auto;
+  }
+  #forecast {
+    min-height: 500px;
+    height: 75vh;
+    width: 98%;
+    margin: 0 auto;
+  }
 </style>

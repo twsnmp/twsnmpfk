@@ -166,8 +166,9 @@ export const showAIHeatMap = (div, scores) => {
     }
     option.series[0].data.push([x, t.getHours(), e[1]])
   })
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }
 
 export const showAIPieChart = (div, scores) => {
@@ -220,8 +221,9 @@ export const showAIPieChart = (div, scores) => {
       }
     })
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }
 
 export const showAITimeChart = (div, scores) => {
@@ -320,4 +322,5 @@ export const showAITimeChart = (div, scores) => {
   }
   chart.setOption(option);
   chart.resize();
+  return chart;
 }

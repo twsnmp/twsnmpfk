@@ -1,13 +1,18 @@
 <script lang="ts">
-  import { Modal, GradientButton,Tabs,TabItem } from "flowbite-svelte";
-  import { onMount, createEventDispatcher,tick } from "svelte";
+  import { Modal, GradientButton, Tabs, TabItem } from "flowbite-svelte";
+  import { onMount, createEventDispatcher, tick } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
-  import { showEventLogStateChart,showLogHeatmap,showEventLogTimeChart,showEventLogNodeChart } from "./chart/eventlog";
+  import {
+    showEventLogStateChart,
+    showLogHeatmap,
+    showEventLogTimeChart,
+    showEventLogNodeChart,
+  } from "./chart/eventlog";
   import { _ } from "svelte-i18n";
 
-  export let logs : datastore.EventLogEnt[] | undefined =undefined;
+  export let logs: datastore.EventLogEnt[] | undefined = undefined;
   let show: boolean = false;
   const dispatch = createEventDispatcher();
 
@@ -16,32 +21,45 @@
     showChart("state");
   });
 
-  const showChart = async (t:string) => {
+  let chart = undefined;
+
+  const showChart = async (t: string) => {
     await tick();
-    switch(t) {
+    switch (t) {
       case "state":
-        showEventLogStateChart(t,logs);
+        chart = showEventLogStateChart(t, logs);
         break;
       case "heatmap":
-        showLogHeatmap(t,logs);
+        chart = showLogHeatmap(t, logs);
         break;
       case "oprate":
-        showEventLogTimeChart(t,"oprate",logs);
+        chart = showEventLogTimeChart(t, "oprate", logs);
         break;
       case "arpwatch":
-        showEventLogTimeChart(t,"arpwatch",logs);
+        chart = showEventLogTimeChart(t, "arpwatch", logs);
         break;
       case "node":
-        showEventLogNodeChart(t,logs);
+        chart = showEventLogNodeChart(t, logs);
+        break;
+      default:
+        chart = undefined;
         break;
     }
-  }
+  };
 
   const close = () => {
     show = false;
     dispatch("close", {});
   };
+
+  const resizeChart = () => {
+    if (chart) {
+      chart.resize();
+    }
+  };
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <Modal
   bind:open={show}
@@ -52,47 +70,87 @@
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem open on:click={()=>{showChart("state")}}>
+      <TabItem
+        open
+        on:click={() => {
+          showChart("state");
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
-          { $_('EventLogReport.CountByState') }
+          {$_("EventLogReport.CountByState")}
         </div>
-        <div id="state" style="height: 500px;"></div>
+        <div id="state" />
       </TabItem>
-      <TabItem on:click={()=>{showChart("heatmap")}}>
+      <TabItem
+        on:click={() => {
+          showChart("heatmap");
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
-          { $_('EventLogReport.Heatmap') }
+          {$_("EventLogReport.Heatmap")}
         </div>
-        <div id="heatmap" style="height: 500px;"></div>
+        <div id="heatmap" />
       </TabItem>
-      <TabItem on:click={()=>{showChart("node")}}>
+      <TabItem
+        on:click={() => {
+          showChart("node");
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
-          { $_('EventLogReport.CountByNode') }
+          {$_("EventLogReport.CountByNode")}
         </div>
-        <div id="node" style="height: 500px;"></div>
+        <div id="node" />
       </TabItem>
-      <TabItem on:click={()=>{showChart("oprate")}}>
+      <TabItem
+        on:click={() => {
+          showChart("oprate");
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
-          { $_('EventLogREport.Oprate') }
+          {$_("EventLogREport.Oprate")}
         </div>
-        <div id="oprate" style="height: 500px;"></div>
+        <div id="oprate" />
       </TabItem>
-      <TabItem on:click={()=>{showChart("arpwatch")}}>
+      <TabItem
+        on:click={() => {
+          showChart("arpwatch");
+        }}
+      >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
-          { $_('EventLogReport.ArpWatch') }
+          {$_("EventLogReport.ArpWatch")}
         </div>
-        <div id="arpwatch" style="height: 500px;"></div>
+        <div id="arpwatch" />
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={close}
+        size="xs"
+      >
         <Icon path={icons.mdiCancel} size={1} />
-        { $_('EventLogReport.Close') }
+        {$_("EventLogReport.Close")}
       </GradientButton>
     </div>
   </div>
 </Modal>
+
+<style>
+  #heatmap,
+  #node,
+  #state,
+  #oprate,
+  #arpwatch {
+    width: 98%;
+    height: 75vh;
+    min-height: 500px;
+    margin: 0 auto;
+  }
+</style>

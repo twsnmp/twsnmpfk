@@ -21,20 +21,24 @@
     showChart("type");
   });
 
+  let chart = undefined;
   const showChart = async (t: string) => {
     await tick();
     switch (t) {
       case "type":
-        showTrapTypeChart(t, logs);
+        chart = showTrapTypeChart(t, logs);
         break;
       case "heatmap":
-        showLogHeatmap(t, logs);
+        chart = showLogHeatmap(t, logs);
         break;
       case "from":
-        showTrapFromAddr(t, logs);
+        chart = showTrapFromAddr(t, logs);
         break;
       case "trap3D":
-        showTrapLog3D(t, logs);
+        chart = showTrapLog3D(t, logs);
+        break;
+      default:
+        chart = undefined;
         break;
     }
   };
@@ -43,7 +47,16 @@
     show = false;
     dispatch("close", {});
   };
+
+  const resizeChart = () => {
+    if (chart) {
+      chart.resize();
+    }
+  }
+
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <Modal
   bind:open={show}
@@ -64,7 +77,7 @@
           <Icon path={icons.mdiChartPie} size={1} />
           {$_("TrapReport.CountByType")}
         </div>
-        <div id="type" style="height: 500px;" />
+        <div id="type"/>
       </TabItem>
       <TabItem
         on:click={() => {
@@ -75,7 +88,7 @@
           <Icon path={icons.mdiChartBox} size={1} />
           {$_("TrapReport.Heatmap")}
         </div>
-        <div id="heatmap" style="height: 500px;" />
+        <div id="heatmap"/>
       </TabItem>
       <TabItem
         on:click={() => {
@@ -86,7 +99,7 @@
           <Icon path={icons.mdiChartBarStacked} size={1} />
           {$_("TrapReport.CountByFromAddress")}
         </div>
-        <div id="from" style="height: 500px;" />
+        <div id="from"/>
       </TabItem>
       <TabItem
         on:click={() => {
@@ -97,7 +110,7 @@
           <Icon path={icons.mdiChartScatterPlot} size={1} />
           {$_("TrapReport.Chart3D")}
         </div>
-        <div id="trap3D" style="height: 500px;" />
+        <div id="trap3D"/>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -114,3 +127,15 @@
     </div>
   </div>
 </Modal>
+
+<style>
+  #heatmap,
+  #type,
+  #from,
+  #trap3D{
+    min-height: 500px;
+    height: 75vh;
+    width: 98%;
+    margin: 0 auto;
+  }
+</style>

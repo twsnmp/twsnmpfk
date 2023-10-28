@@ -102,7 +102,8 @@ export const showSyslogHost = (div, logs) => {
       },
     ],
   })
-  chart.resize()
+  chart.resize();
+  return chart;
 }
 
 const getSyslogHostList = (logs) => {
@@ -261,8 +262,9 @@ export const showSyslogHost3D = (div, logs) => {
       },
     ],
   }
-  chart.setOption(options)
-  chart.resize()
+  chart.setOption(options);
+  chart.resize();
+  return chart;
 }
 
 const getSyslogLevel = (l) => {
@@ -475,8 +477,9 @@ export const showSyslogFFT3D = (div, logs) => {
       },
     ],
   }
-  chart.setOption(options)
-  chart.resize()
+  chart.setOption(options);
+  chart.resize();
+  return chart;
 }
 
 
@@ -537,7 +540,8 @@ export const showSyslogLevelChart = (div:string, logs) => {
       }
     })
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }
 

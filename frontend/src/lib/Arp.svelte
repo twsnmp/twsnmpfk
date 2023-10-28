@@ -130,7 +130,7 @@
 <svelte:window on:resize={resizeLogCountChart} />
 
 <div class="flex flex-col">
-  <div id="chart" style="height: 200px;" />
+  <div id="chart"/>
   <table id="arpLogTable" class="display compact" style="width:99%" />
   <div class="flex justify-end space-x-2 mr-2 mt-2">
     <GradientButton
@@ -188,4 +188,10 @@
 
 <style>
   @import "../assets/css/jquery.dataTables.css";
+  #chart {
+    min-height: 200px;
+    height: 20vh;
+    width:  98vw;
+    margin:  0 auto;
+  }
 </style>

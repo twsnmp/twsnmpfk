@@ -185,8 +185,9 @@ export const showLogHeatmap = (div, logs) => {
       sum++
     })
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }
 
 export const showEventLogStateChart = (div:string, logs) => {
@@ -254,8 +255,9 @@ export const showEventLogStateChart = (div:string, logs) => {
       }
     })
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }
 
 export const showEventLogTimeChart = (div, type, logs) => {
@@ -360,8 +362,9 @@ export const showEventLogTimeChart = (div, type, logs) => {
       })
     })
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }
 
 const getEventLogNodeList = (logs) => {
@@ -523,5 +526,6 @@ export const showEventLogNodeChart = (div, logs) => {
       },
     ],
   })
-  chart.resize()
+  chart.resize();
+  return chart;
 }

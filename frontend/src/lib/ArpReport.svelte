@@ -17,14 +17,16 @@
     showChart("ip");
   });
 
+  let chart = undefined;
   const showChart = async (t: string) => {
     await tick();
+    chart = undefined;
     switch (t) {
       case "ip":
-        showArpLogIP(t, logs);
+        chart = showArpLogIP(t, logs);
         break;
       case "ip3D":
-        showArpLogIP3D(t, logs);
+        chart= showArpLogIP3D(t, logs);
         break;
     }
   };
@@ -33,7 +35,16 @@
     show = false;
     dispatch("close", {});
   };
+
+  const resizeChart = () => {
+    if (chart) {
+      chart.resize();
+    }
+  }
+
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <Modal
   bind:open={show}
@@ -54,7 +65,7 @@
           <Icon path={icons.mdiChartBarStacked} size={1} />
           { $_('ArpReport.CountByIP') }
         </div>
-        <div id="ip" style="height: 600px;" />
+        <div id="ip"/>
       </TabItem>
       <TabItem
         on:click={() => {
@@ -65,7 +76,7 @@
           <Icon path={icons.mdiChartScatterPlot} size={1} />
           { $_('ArpReport.Chart3DByIP') }
         </div>
-        <div id="ip3D" style="height: 600px;" />
+        <div id="ip3D"/>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -76,3 +87,12 @@
     </div>
   </div>
 </Modal>
+
+<style>
+ #ip,
+ #ip3D {
+  min-height: 600px;
+  height: 75vh;
+  width: 98%;
+ } 
+</style>

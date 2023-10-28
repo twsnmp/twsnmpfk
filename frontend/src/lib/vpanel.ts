@@ -5,6 +5,8 @@ let ports = [];
 let power = false;
 let rotate = false;
 let _vpanelP5 :P5 | undefined  = undefined;
+let cw = 1000;
+let ch = 400;
 
 const vpanelMain = (p) => {
   const PORT_SIZE = 150;
@@ -21,7 +23,7 @@ const vpanelMain = (p) => {
     font = p.loadFont(inconslata);
   }
   p.setup = () => {
-    p.createCanvas(1000, 400, p.WEBGL);
+    p.createCanvas(cw, ch, p.WEBGL);
     p.frameRate(10);
     portImage = p.loadImage(port);
     p.textFont(font, 24);
@@ -129,6 +131,9 @@ export const setVPanel = (po, pw, r) => {
 }
 
 export const initVPanel = (div) => {
+  const d = document.getElementById(div);
+  cw = d.clientWidth || 1000;
+  ch = d.clientHeight || 400;
   if (_vpanelP5) {
     _vpanelP5.remove();
     _vpanelP5 = undefined;

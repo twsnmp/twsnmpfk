@@ -72,7 +72,7 @@
       paging: false,
       searching:false,
       info:false,
-      scrollY: "180px",
+      scrollY: "40vh",
       data: results,
       order: [[1, "asc"]],
       language: getTableLang(),
@@ -238,24 +238,26 @@
     },
   ];
 
+  let reportChart = undefined;
+
   const showHistogram = async () => {
     await tick();
-    showPingHistgram("histogram", results);
+    reportChart = showPingHistgram("histogram", results);
   };
 
   const show3D = async () => {
     await tick();
-    showPing3DChart("3d", results);
+    reportChart = showPing3DChart("chart3d", results);
   };
 
   const showLinear = async () => {
     await tick();
-    showPingLinearChart("linear", results);
+    reportChart = showPingLinearChart("linear", results);
   };
 
   const showWorld = async () => {
     await tick();
-    showPingMapChart("world", results);
+    reportChart = showPingMapChart("world", results);
   };
 
   const start = () => {
@@ -352,7 +354,18 @@
     show = false;
     dispatch("close", {});
   };
+  const resizeChart = () => {
+    if(reportChart) {
+      reportChart.resize();
+    }
+    if (chart) {
+      chart.resize();
+    }
+  }
+
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
   <div class="flex flex-col space-y-4">
@@ -392,7 +405,7 @@
             size="sm"
           />
         </div>
-        <div id="pingChart" class="mb-2" style="height: 200px;" />
+        <div id="pingChart" class="mb-2" />
         <table id="pingTable" class="display compact" style="width:99%" />
       </TabItem>
       {#if !wait && results.length > 0}
@@ -402,7 +415,7 @@
               <Icon path={icons.mdiChartHistogram} size={1} />
               { $_('Ping.Histogram') }
             </div>
-            <div id="histogram" style="height: 500px;" />
+            <div id="histogram"/>
           </TabItem>
         {/if}
         <TabItem on:click={show3D}>
@@ -410,7 +423,7 @@
             <Icon path={icons.mdiRotate3d} size={1} />
             { $_('Ping.Chart3D') }
           </div>
-          <div id="3d" style="height: 500px;" />
+          <div id="chart3d" />
         </TabItem>
         {#if canShowLinear}
           <TabItem on:click={showLinear}>
@@ -418,7 +431,7 @@
               <Icon path={icons.mdiChartScatterPlot} size={1} />
               { $_('Ping.LineSpeed') }
             </div>
-            <div id="linear" style="height: 500px;" />
+            <div id="linear"/>
           </TabItem>
         {/if}
         {#if canShowWorld}
@@ -427,7 +440,7 @@
               <Icon path={icons.mdiMapMarker} size={1} />
               { $_('Ping.World') }
             </div>
-            <div id="world" style="height: 500px;" />
+            <div id="world" />
           </TabItem>
         {/if}
       {/if}
@@ -453,3 +466,21 @@
     </div>
   </div>
 </Modal>
+
+<style>
+  #pingChart {
+    min-height: 200px;
+    height: 30vh;
+    width:  98%;
+    margin: 0 auto;
+  }
+  #chart3d,
+  #histogram,
+  #linear,
+  #world {
+    min-height: 500px;
+    height: 75vh;
+    width: 98%;
+    margin: 0 auto;
+  }
+</style>

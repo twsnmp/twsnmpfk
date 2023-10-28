@@ -12,6 +12,7 @@
     TableHeadCell,
     Spinner,
     Toggle,
+    P,
   } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
@@ -56,6 +57,8 @@
   let showPolling = false;
   let physicalPort = true;
   let showVPanelBtn = false;
+  let chart = undefined;
+  let chartMem = undefined;
 
   const clearSelectedCount = () => {
     selectedPortCount = 0;
@@ -63,13 +66,16 @@
     selectedhrStorageCount = 0;
     selectedHrProcessCount = 0;
     showVPanelBtn = false;
+    chart = undefined;
+    chartMem = undefined;
   };
 
   let logTable = undefined;
   const showLog = async () => {
     clearSelectedCount();
+    const logs = await GetEventLogs(id,"","","",0);
     logTable = new DataTable("#logTable", {
-      data: await GetEventLogs(id,"","","",0),
+      data: logs,
       language: getTableLang(),
       order: [[1, "desc"]],
       columns: [
@@ -101,7 +107,11 @@
 
   let portTable = undefined;
 
-  const showPortTable = (ports) => {
+  const showPortTable = (p) => {
+    if (portTable && DataTable.isDataTable("#portTable")) {
+      portTable.destroy();
+      portTable = undefined;
+    }
     portTable = new DataTable("#portTable", {
       paging: false,
       searching: false,
@@ -109,8 +119,8 @@
       select: {
         style: "single",
       },
-      scrollY: "180px",
-      data: ports,
+      scrollY: "25vh",
+      data: p,
       language: getTableLang(),
       order: [[1, "desc"]],
       columns: [
@@ -486,8 +496,8 @@
     hrProcessTable.on("deselect", () => {
       selectedHrProcessCount = hrProcessTable.rows({ selected: true }).count();
     });
-    showHrProcChart(true);
-    showHrProcChart(false);
+    chart = showHrProcChart(true);
+    chartMem = showHrProcChart(false);
   };
 
   const showHrSummaryChart = async () => {
@@ -513,7 +523,7 @@
         data.VM = e.Rate;
       }
     });
-    showHrSummary("hrSummaryChart", data);
+    chart = showHrSummary("hrSummaryChart", data);
   };
 
   const showHrStorageChart = async () => {
@@ -528,7 +538,7 @@
         });
       }
     });
-    showHrBarChart("hrStorageChart", $_('NodeReport.StorageUsgae'), "%", list);
+    chart = showHrBarChart("hrStorageChart", $_('NodeReport.StorageUsgae'), "%", list);
   };
 
   const showHrProcChart = async (bCPU) => {
@@ -553,7 +563,7 @@
     while (list.length > 20) {
       list.shift();
     }
-    showHrBarChart(
+    return showHrBarChart(
       bCPU ? "hrProcessCPUChart" : "hrProcessMemChart",
       bCPU ? $_('NodeReport.CPUUsage') : $_('NodeReport.MemUsage'),
       bCPU ? $_('NodeReport.Sec') : "Bytes",
@@ -702,7 +712,19 @@
   onDestroy(() => {
     deleteVPanel();
   });
+
+  const resizeChart = () => {
+    if (chart) {
+      chart.resize();
+    }
+    if (chartMem) {
+      chartMem.resize();
+    }
+  }
+
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <Modal
   bind:open={show}
@@ -771,8 +793,8 @@
           {/if}
           { $_('NodeReport.Panel') }
         </div>
-        <div id="vpanel" style="width: 98%; height: 400px; overflow:scroll;" />
-        <table id="portTable" class="display compact mt-2" style="width:99%" />
+        <div id="vpanel"/>
+        <table id="portTable" class="display compact mt-5" style="width:99%" />
       </TabItem>
       <TabItem
         on:click={() => {
@@ -789,10 +811,7 @@
         </div>
         {#if hostResource}
           <div class="grid grid-cols-2 gap-1">
-            <div
-              id="hrSummaryChart"
-              style="width: 350px; height: 350px; margin: 0 auto;"
-            />
+            <div id="hrSummaryChart" />
             <div>
               <table
                 id="hrSystemTable"
@@ -811,7 +830,7 @@
             <Icon path={icons.mdiDatabase} size={1} />
             { $_('NodeReport.Storage') }
           </div>
-          <div id="hrStorageChart" style="width: 98%; height: 300px;" class="mb-2" />
+          <div id="hrStorageChart" class="mb-2" />
           <table
             id="hrStorageTable"
             class="display compact mt-2"
@@ -846,8 +865,8 @@
             { $_('NodeReport.Process') }
           </div>
           <div class="grid grid-cols-2 gap-1 mb-2">
-            <div id="hrProcessCPUChart" style="width: 100%; height: 300px" />
-            <div id="hrProcessMemChart" style="width: 100%; height: 300px" />
+            <div id="hrProcessCPUChart" />
+            <div id="hrProcessMemChart" />
           </div>
           <table
             id="hrProcessTable"
@@ -911,8 +930,33 @@
   />
 {/if}
 
-<style global>
-  #vpanel canvas {
-    margin: 0 auto;
-  }
+<style>
+#vpanel {
+  width: 98%; 
+  min-height: 400px;
+  height: 50vh;
+  overflow:scroll;
+  margin:  0 auto;
+}
+
+#hrSummaryChart {
+  min-width: 350px;
+  min-height: 350px;
+  margin: 0 auto;
+  width: 40vw;
+  height: 40vw;
+}
+#hrStorageChart {
+  min-height: 300px;
+  height: 40vh;
+  width: 98%;
+
+}
+#hrProcessCPUChart,
+#hrProcessMemChart {
+  min-height: 300px;
+  height: 38vh;
+  width: 98%;
+}
+
 </style>

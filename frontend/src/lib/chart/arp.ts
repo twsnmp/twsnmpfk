@@ -84,7 +84,8 @@ export const showArpLogIP = (div, logs) => {
       },
     ],
   })
-  chart.resize()
+  chart.resize();
+  return chart;
 }
 
 const getArpLogIPList = (logs) => {
@@ -237,8 +238,9 @@ export const showArpLogIP3D = (div, logs) => {
       },
     ],
   }
-  chart.setOption(options)
-  chart.resize()
+  chart.setOption(options);
+  chart.resize();
+  return chart;
 }
 
 export const showArpGraph = (div, arp, type,changeIP,changeMAC) => {
@@ -377,6 +379,7 @@ export const showArpGraph = (div, arp, type,changeIP,changeMAC) => {
       },
     ]
   }
-  chart.setOption(options)
-  chart.resize()
+  chart.setOption(options);
+  chart.resize();
+  return chart;
 }

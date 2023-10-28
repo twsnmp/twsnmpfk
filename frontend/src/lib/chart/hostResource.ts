@@ -79,8 +79,9 @@ export const showHrBarChart = (div, type, xAxis, list, max?) => {
     option.yAxis.data.push(e.Name)
     option.series[0].data.push(e.Value)
   })
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }
 
 export const showHrSummary = (div:string, data) => {
@@ -168,8 +169,8 @@ export const showHrSummary = (div:string, data) => {
       },
     ],
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
   return chart;
 }
 

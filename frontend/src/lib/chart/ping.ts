@@ -251,8 +251,9 @@ export const showPing3DChart = (div, results) => {
       },
     ],
   }
-  chart.setOption(options)
-  chart.resize()
+  chart.setOption(options);
+  chart.resize();
+  return chart;
 }
 
 export const showPingMapChart = (div, results) => {
@@ -349,8 +350,8 @@ export const showPingMapChart = (div, results) => {
       ],
     })
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
   chart.on('dblclick', (p) => {
     const url =
       'https://www.google.com/maps/search/?api=1&zoom=10&query=' +
@@ -358,7 +359,8 @@ export const showPingMapChart = (div, results) => {
       ',' +
       p.value[0]
     window.open(url, '_blank')
-  })
+  });
+  return chart;
 }
 
 export const showPingHistgram = (div, results) => {
@@ -432,8 +434,9 @@ export const showPingHistgram = (div, results) => {
       },
     ],
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }
 
 export const showPingLinearChart = (div, results) => {
@@ -549,6 +552,7 @@ export const showPingLinearChart = (div, results) => {
       },
     ],
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }

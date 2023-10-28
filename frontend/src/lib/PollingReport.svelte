@@ -144,28 +144,37 @@
     }
     return l.join(" ");
   }
+  let chart = undefined;
 
   const showTimeChart = async () => {
     await tick();
-    showPollingChart("time",logs,selectedEnt)
+    chart = showPollingChart("time",logs,selectedEnt)
   };
 
   const showHistogram = async () => {
     await tick();
-    showPollingHistogram("histogram",logs,selectedEnt);
+    chart = showPollingHistogram("histogram",logs,selectedEnt);
   };
 
   const showAI = async () => {
     await tick();
-    showAIHeatMap("ai", aiResult.ScoreData);
+    chart = showAIHeatMap("ai", aiResult.ScoreData);
   };
 
+  const resizeChart = () => {
+    if (chart) {
+      chart.resize();
+    }
+  } 
+
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <Modal bind:open={show} size="xl" permanent class="w-full min-h-[90vh]" on:on:close={close}>
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem open>
+      <TabItem open on:click={()=> {chart= undefined;}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           { $_('PollingReport.BasicInfo') }
@@ -215,8 +224,8 @@
             <Icon path={icons.mdiLanCheck} size={1} />
             { $_('PollingReport.PollingLog') }
           </div>
-          <div id="log" style="height: 200px; margin-bottom:10px" />
-          <table id="pollingLogTable" class="display compact" style="width:99%" />
+          <div id="log"/>
+          <table id="pollingLogTable" class="display compact" style="width:99%;" />
         </TabItem>
         <TabItem on:click={showTimeChart}>
           <div slot="title" class="flex items-center gap-2">
@@ -224,7 +233,7 @@
             { $_('PollingReport.TimeChart') }
           </div>
           <Select class="mb-2" size="sm" items={entList} bind:value={selectedEnt} on:change={showTimeChart} placeholder={ $_('PollingReport.SelectVal') }/>
-          <div id="time" style="height: 500px;" />
+          <div id="time" />
         </TabItem>
         <TabItem on:click={showHistogram}>
           <div slot="title" class="flex items-center gap-2">
@@ -232,7 +241,7 @@
             { $_('PollingReport.Histogram') }
           </div>
           <Select class="mb-2" size="sm" items={entList} bind:value={selectedEnt} on:change={showHistogram} placeholder={ $_('PollingReport.SelectVal') }/>
-          <div id="histogram" style="height: 500px;" />
+          <div id="histogram"/>
         </TabItem>
         {#if polling.LogMode == 3 && aiResult}
           <TabItem on:click={showAI}>
@@ -240,7 +249,7 @@
               <Icon path={icons.mdiAppsBox} size={1} />
               { $_('PollingReport.AI') }
             </div>
-            <div id="ai" style="height: 500px;" />
+            <div id="ai"/>
           </TabItem>
         {/if}
       {/if}
@@ -253,3 +262,20 @@
     </div>
   </div>
 </Modal>
+
+<style>
+  #log {
+    min-height: 200px;
+    height:  30vh;
+    width:  98%;
+    margin: 0 auto;
+  }
+  #time,
+  #histogram,
+  #ai {
+    min-height: 500px;
+    height: 75vh;
+    widows: 98%;
+    margin:  0 auto;
+  }
+</style>

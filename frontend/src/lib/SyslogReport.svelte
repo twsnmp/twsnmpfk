@@ -17,23 +17,27 @@
     showChart("level");
   });
 
+  let chart = undefined;
   const showChart = async (t:string) => {
     await tick();
     switch(t) {
       case "level":
-        showSyslogLevelChart(t,logs);
+        chart = showSyslogLevelChart(t,logs);
         break;
       case "heatmap":
-        showLogHeatmap(t,logs);
+        chart = showLogHeatmap(t,logs);
         break;
       case "host":
-        showSyslogHost(t,logs);
+        chart = showSyslogHost(t,logs);
         break;
       case "host3D":
-        showSyslogHost3D(t,logs);
+        chart = showSyslogHost3D(t,logs);
         break;
       case "fft":
-        showSyslogFFT3D(t,logs);
+        chart = showSyslogFFT3D(t,logs);
+        break;
+      default:
+        chart = undefined;
         break;
     }
   }
@@ -42,7 +46,16 @@
     show = false;
     dispatch("close", {});
   };
+
+  const resizeChart = () => {
+    if (chart) {
+      chart.resize();
+    }
+  }
+
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <Modal
   bind:open={show}
@@ -58,35 +71,35 @@
           <Icon path={icons.mdiChartPie} size={1} />
           {$_('SyslogReport.CountByLevel')}
         </div>
-        <div id="level" style="height: 500px;"></div>
+        <div id="level"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("heatmap")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
           {$_('SyslogReport.Heatmap')}
         </div>
-        <div id="heatmap" style="height: 500px;"></div>
+        <div id="heatmap"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("host")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
           {$_('SyslogReport.CountByHost')}
         </div>
-        <div id="host" style="height: 500px;"></div>
+        <div id="host"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("host3D")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartScatterPlot} size={1} />
           {$_('SyslogReport.Chart3D')}
         </div>
-        <div id="host3D" style="height: 500px;"></div>
+        <div id="host3D"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("fft")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
           {$_('SyslogReport.FFT')}
         </div>
-        <div id="fft" style="height: 500px;"></div>
+        <div id="fft"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -97,3 +110,16 @@
     </div>
   </div>
 </Modal>
+
+<style>
+  #level,
+  #heatmap,
+  #host,
+  #host3D,
+  #fft{
+    min-height: 500px;
+    height: 75vh;
+    width: 98%;
+    margin: 0 auto;
+  }
+</style>

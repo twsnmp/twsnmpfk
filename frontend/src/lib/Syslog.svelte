@@ -183,7 +183,7 @@
 <svelte:window on:resize={resizeLogLevelChart} />
 
 <div class="flex flex-col">
-  <div id="chart" style="height: 200px;" />
+  <div id="chart"/>
   <div class="m-5 grow">
     <table id="table" class="display compact" style="width:99%" />
   </div>
@@ -348,4 +348,10 @@
 
 <style>
   @import "../assets/css/jquery.dataTables.css";
+  #chart {
+    min-height: 200px;
+    height: 20vh;
+    width:  98vw;
+    margin:  0 auto;
+  }
 </style>

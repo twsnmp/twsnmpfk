@@ -24,3 +24,9 @@
 {:else}
   <Wellcome on:done={handleDone} />
 {/if}
+
+<style global>
+  div[role=dialog] .max-w-7xl {
+    max-width: 98vw;
+  }
+</style>

@@ -100,7 +100,8 @@ export const showTrapFromAddr = (div, logs) => {
     }
   }
   chart.setOption(option);
-  chart.resize()
+  chart.resize();
+  return chart;
 }
 
 
@@ -239,8 +240,9 @@ export const showTrapLog3D = (div, logs) => {
       },
     ],
   }
-  chart.setOption(options)
-  chart.resize()
+  chart.setOption(options);
+  chart.resize();
+  return chart;
 }
 
 const getTrapTypeLevel = (l:string) :number => {
@@ -304,7 +306,8 @@ export const showTrapTypeChart = (div:string, logs) => {
       });
     });
   }
-  chart.setOption(option)
-  chart.resize()
+  chart.setOption(option);
+  chart.resize();
+  return chart;
 }
 

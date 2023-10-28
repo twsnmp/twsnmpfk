@@ -19,14 +19,16 @@
     showChart("graphForce");
   });
 
+  let chart = undefined;
   const showChart = async (t: string) => {
     await tick();
+    chart = undefined;
     switch (t) {
       case "graphForce":
-        showArpGraph(t, arp,"force",changeIP,changeMAC);
+        chart= showArpGraph(t, arp,"force",changeIP,changeMAC);
         break;
       case "graphCircular":
-        showArpGraph(t, arp,"circular",changeIP,changeMAC);
+        chart = showArpGraph(t, arp,"circular",changeIP,changeMAC);
         break;
     }
   };
@@ -35,7 +37,16 @@
     show = false;
     dispatch("close", {});
   };
+
+  const resizeChart = () => {
+    if (chart) {
+      chart.resize();
+    }
+  }
+
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <Modal
   bind:open={show}
@@ -56,7 +67,7 @@
           <Icon path={icons.mdiGraph} size={1} />
           { $_('ArpReport.IPtoMACForceGraph') }
         </div>
-        <div id="graphForce" style="height: 600px;" />
+        <div id="graphForce" />
       </TabItem>
       <TabItem
         on:click={() => {
@@ -67,7 +78,7 @@
           <Icon path={icons.mdiCircle} size={1} />
           { $_('ArpReport.IPtoMACCircelGraph') }
         </div>
-        <div id="graphCircular" style="height: 600px;" />
+        <div id="graphCircular"/>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -78,3 +89,12 @@
     </div>
   </div>
 </Modal>
+
+<style>
+  #graphForce,
+  #graphCircular {
+    min-height:  600px;
+    width:  98%;
+    height: 75vh;
+  }
+</style>

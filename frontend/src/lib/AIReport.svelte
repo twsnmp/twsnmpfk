@@ -19,17 +19,19 @@
     showChart("heatmap");
   });
 
+  let chart = undefined;
   const showChart = async (t:string) => {
     await tick();
+    chart = undefined;
     switch(t) {
       case "heatmap":
-        showAIHeatMap(t,results.ScoreData);
+        chart = showAIHeatMap(t,results.ScoreData);
         break;
       case "pie":
-        showAIPieChart(t,results.ScoreData);
+        chart = showAIPieChart(t,results.ScoreData);
         break;
       case "time":
-        showAITimeChart(t,results.ScoreData);
+        chart = showAITimeChart(t,results.ScoreData);
         break;
     }
   }
@@ -38,7 +40,15 @@
     dispatch("close", {});
   };
 
+  const resizeChart = () => {
+    if (chart) {
+      chart.resize();
+    }
+  }
+
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <Modal
   bind:open={show}
@@ -54,21 +64,21 @@
           <Icon path={icons.mdiChartBox} size={1} />
           { $_('AIReport.Heatmap') }
         </div>
-        <div id="heatmap" style="height: 500px;"></div>
+        <div id="heatmap"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("pie")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           { $_('AIReport.PieChart') }
         </div>
-        <div id="pie" style="height: 500px;"></div>
+        <div id="pie"></div>
       </TabItem>
       <TabItem on:click={()=>{showChart("time")}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
           { $_('AIReport.TimeChart') }
         </div>
-        <div id="time" style="height: 500px;"></div>
+        <div id="time"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -79,3 +89,13 @@
     </div>
   </div>
 </Modal>
+
+<style>
+  #heatmap,
+  #pie,
+  #time {
+    min-height: 600px;
+    height: 75vh;
+    width: 98%;
+  }
+</style>
