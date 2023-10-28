@@ -1,6 +1,6 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "TWSNMP FK",
+  "name": "twsnmpfk",
   "outputfilename": "twsnmpfk",
   "frontend:install": "npm install",
   "frontend:build": "npm run build",
@@ -12,7 +12,7 @@
   },
   "Info": {
     "companyName": "TWSNMP",
-    "productName": "TWSNMP FK",
+    "productName": "twsnmpfk",
     "productVersion": "1.0.0",
     "copyright": "Copyright 2023 Masayuki Yamai",
     "comments": "https://lhx98.linkclub.jp/twise.co.jp/"
