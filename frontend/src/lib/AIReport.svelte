@@ -9,7 +9,7 @@
   import { _ } from 'svelte-i18n';
 
   export let id = "";
-  export let results : datastore.AIResult | undefined =undefined;
+  let results : datastore.AIResult | undefined =undefined;
   let show: boolean = false;
   const dispatch = createEventDispatcher();
 

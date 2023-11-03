@@ -147,18 +147,6 @@
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
       shadow
-      type="button"
-      color="green"
-      on:click={() => {
-        showReport = true;
-      }}
-      size="xs"
-    >
-      <Icon path={icons.mdiChartPie} size={1} />
-      {$_("EventLog.Report")}
-    </GradientButton>
-    <GradientButton
-      shadow
       color="blue"
       type="button"
       on:click={() => (showFilter = true)}
@@ -167,36 +155,50 @@
       <Icon path={icons.mdiFilter} size={1} />
       {$_("Trap.Filter")}
     </GradientButton>
-    <GradientButton
-      shadow
-      color="red"
-      type="button"
-      on:click={deleteAll}
-      size="xs"
-    >
-      <Icon path={icons.mdiTrashCan} size={1} />
-      {$_("EventLog.DeleteAllLogs")}
-    </GradientButton>
-    <GradientButton
-      shadow
-      color="lime"
-      type="button"
-      on:click={saveCSV}
-      size="xs"
-    >
-      <Icon path={icons.mdiFileDelimited} size={1} />
-      CSV
-    </GradientButton>
-    <GradientButton
-      shadow
-      color="lime"
-      type="button"
-      on:click={saveExcel}
-      size="xs"
-    >
-      <Icon path={icons.mdiFileExcel} size={1} />
-      Excel
-    </GradientButton>
+    {#if logs.length > 0}
+      <GradientButton
+        shadow
+        color="red"
+        type="button"
+        on:click={deleteAll}
+        size="xs"
+      >
+        <Icon path={icons.mdiTrashCan} size={1} />
+        {$_("EventLog.DeleteAllLogs")}
+      </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
+        color="green"
+        on:click={() => {
+          showReport = true;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiChartPie} size={1} />
+        {$_("EventLog.Report")}
+      </GradientButton>
+      <GradientButton
+        shadow
+        color="lime"
+        type="button"
+        on:click={saveCSV}
+        size="xs"
+      >
+        <Icon path={icons.mdiFileDelimited} size={1} />
+        CSV
+      </GradientButton>
+      <GradientButton
+        shadow
+        color="lime"
+        type="button"
+        on:click={saveExcel}
+        size="xs"
+      >
+        <Icon path={icons.mdiFileExcel} size={1} />
+        Excel
+      </GradientButton>
+    {/if}
     <GradientButton
       shadow
       type="button"

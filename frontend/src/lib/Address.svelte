@@ -297,18 +297,19 @@
         {$_('Address.Delete')}
       </GradientButton>
     {/if}
-
-    <GradientButton
-      type="button"
-      color="green"
-      on:click={() => {
-        showReport = true;
-      }}
-      size="xs"
-    >
-      <Icon path={icons.mdiChartPie} size={1} />
-      {$_("Address.Report")}
-    </GradientButton>
+    {#if arp.length > 0}
+      <GradientButton
+        type="button"
+        color="green"
+        on:click={() => {
+          showReport = true;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiChartPie} size={1} />
+        {$_("Address.Report")}
+      </GradientButton>
+    {/if}
     <GradientButton shadow color="red" type="button" on:click={reset} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
       {$_("Address.Clear")}

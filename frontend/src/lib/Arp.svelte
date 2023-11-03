@@ -133,17 +133,19 @@
   <div id="chart"/>
   <table id="arpLogTable" class="display compact" style="width:99%" />
   <div class="flex justify-end space-x-2 mr-2 mt-2">
-    <GradientButton
-      type="button"
-      color="green"
-      on:click={() => {
-        showReport = true;
-      }}
-      size="xs"
-    >
-      <Icon path={icons.mdiChartPie} size={1} />
-      {$_("Arp.Report")}
-    </GradientButton>
+    {#if arpLogs.length > 0}
+      <GradientButton
+        type="button"
+        color="green"
+        on:click={() => {
+          showReport = true;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiChartPie} size={1} />
+        {$_("Arp.Report")}
+      </GradientButton>
+    {/if}
     <GradientButton
       shadow
       color="lime"
