@@ -283,9 +283,12 @@ const getSyslogLevel = (l) => {
 
 
 const getSyslogFFTMap = (logs) => {
-  const m = new Map()
-  let st = Infinity
-  let lt = 0
+  const m = new Map();
+  if (logs.length < 50) {
+    return m;
+  }
+  let st = Infinity;
+  let lt = 0;
   m.set('Total', { Name: 'Total', Count: 0, Data: [] })
   logs.forEach((l) => {
     const e = m.get(l.Host)
@@ -479,6 +482,7 @@ export const showSyslogFFT3D = (div, logs) => {
   }
   chart.setOption(options);
   chart.resize();
+  console.log(chart);
   return chart;
 }
 
