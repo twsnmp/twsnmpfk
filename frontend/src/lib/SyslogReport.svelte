@@ -118,7 +118,7 @@
   #host3D,
   #fft{
     min-height: 500px;
-    height: 75vh;
+    height: 70vh;
     width: 98%;
     margin: 0 auto;
   }

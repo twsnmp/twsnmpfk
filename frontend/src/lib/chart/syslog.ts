@@ -482,7 +482,6 @@ export const showSyslogFFT3D = (div, logs) => {
   }
   chart.setOption(options);
   chart.resize();
-  console.log(chart);
   return chart;
 }
 

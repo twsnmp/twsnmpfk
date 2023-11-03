@@ -93,8 +93,8 @@
 <style>
   #graphForce,
   #graphCircular {
-    min-height:  600px;
+    min-height:  500px;
     width:  98%;
-    height: 75vh;
+    height: 70vh;
   }
 </style>

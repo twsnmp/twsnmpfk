@@ -149,7 +149,7 @@
   #oprate,
   #arpwatch {
     width: 98%;
-    height: 75vh;
+    height: 70vh;
     min-height: 500px;
     margin: 0 auto;
   }

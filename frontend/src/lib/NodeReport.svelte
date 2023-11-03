@@ -119,7 +119,7 @@
       select: {
         style: "single",
       },
-      scrollY: "25vh",
+      scrollY: "20vh",
       data: p,
       language: getTableLang(),
       order: [[1, "desc"]],
@@ -934,7 +934,7 @@
 #vpanel {
   width: 98%; 
   min-height: 400px;
-  height: 50vh;
+  height: 40vh;
   overflow:scroll;
   margin:  0 auto;
 }

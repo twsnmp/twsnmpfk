@@ -91,8 +91,8 @@
 <style>
  #ip,
  #ip3D {
-  min-height: 600px;
-  height: 75vh;
+  min-height: 500px;
+  height: 70vh;
   width: 98%;
  } 
 </style>

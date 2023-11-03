@@ -274,7 +274,7 @@
   #histogram,
   #ai {
     min-height: 500px;
-    height: 75vh;
+    height: 70vh;
     widows: 98%;
     margin:  0 auto;
   }
