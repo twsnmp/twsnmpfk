@@ -355,6 +355,10 @@
   const showHrStorage = () => {
     clearSelectedCount();
     hrStorageTable = new DataTable("#hrStorageTable", {
+      paging: false,
+      searching: false,
+      info: false,
+      scrollY: "25vh",
       data: hostResource.Storage,
       language: getTableLang(),
       order: [[4, "desc"]],
@@ -410,6 +414,10 @@
   const showHrDevice = () => {
     clearSelectedCount();
     hrDeviceTable = new DataTable("#hrDeviceTable", {
+      paging: false,
+      searching: false,
+      info: false,
+      scrollY: "55vh",
       data: hostResource.Device,
       language: getTableLang(),
       order: [[0, "asc"]],
@@ -426,6 +434,10 @@
   const showHrFileSystem = () => {
     clearSelectedCount();
     hrFileSystemTable = new DataTable("#hrFileSystemTable", {
+      paging: false,
+      searching: false,
+      info: false,
+      scrollY: "55vh",
       data: hostResource.FileSystem,
       language: getTableLang(),
       order: [[0, "asc"]],
@@ -452,6 +464,10 @@
   const showHrProcess = () => {
     clearSelectedCount();
     hrProcessTable = new DataTable("#hrProcessTable", {
+      paging: false,
+      searching: false,
+      info: false,
+      scrollY: "25vh",
       data: hostResource.Process,
       language: getTableLang(),
       order: [[1, "asc"]],
@@ -943,19 +959,19 @@
   min-width: 350px;
   min-height: 350px;
   margin: 0 auto;
-  width: 40vw;
-  height: 40vw;
+  width: 35vw;
+  height: 35vw;
 }
 #hrStorageChart {
   min-height: 300px;
-  height: 40vh;
+  height: 35vh;
   width: 98%;
 
 }
 #hrProcessCPUChart,
 #hrProcessMemChart {
   min-height: 300px;
-  height: 38vh;
+  height: 35vh;
   width: 98%;
 }
 
