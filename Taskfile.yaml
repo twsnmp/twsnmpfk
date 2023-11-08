@@ -8,8 +8,8 @@ vars:
 tasks:
   default:
     cmds:
-      - task: mac
       - task: windows
+      - task: mac
   dev:
     cmds:
       - wails dev -appargs "-datastore ./tmp/ -syslogPort 8514 -trapPort 8162"
