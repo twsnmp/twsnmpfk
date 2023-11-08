@@ -24,7 +24,7 @@ tasks:
       - wails build  -platform darwin -debug -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   windows:
     cmds:
-      - wails build -webview2 Browser -platform windows/amd64 -nsis -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+      - wails build -clean -webview2 Browser -platform windows/amd64 -nsis -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   windebug:
     cmds:
       - wails build  -platform windows/amd64 -debug -clean -windowsconsole -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
