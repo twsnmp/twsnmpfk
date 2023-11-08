@@ -99,7 +99,7 @@ Section "uninstall"
     RMDir /r $INSTDIR
 
     Delete "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk"
-    ; Delete "$DESKTOP\${INFO_PRODUCTNAME}.lnk"
+    Delete "$DESKTOP\${INFO_PRODUCTNAME}.lnk"
 
     !insertmacro wails.deleteUninstaller
 SectionEnd
