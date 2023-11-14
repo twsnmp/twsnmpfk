@@ -224,7 +224,12 @@
     "MIB": "MIB管理",
     "Close": "閉じる",
     "MIBTree": "MIBツリー",
-    "IconSize": "アイコンサイズ"
+    "IconSize": "アイコンサイズ",
+    "LocConf": "Locatiion Conf",
+    "LocStyleError": "スタイルは、URLかJSONで指定してください。",
+    "LocStyle": "スタイル",
+    "LocCenter": "中央座標",
+    "LocZoom": "ズーム"
   },
   "DrawItem": {
     "Rect": "矩形",
@@ -652,5 +657,16 @@
     "State": "状態",
     "Last": "最終変化",
     "Delete": "削除"
+  },
+  "Location": {
+    "Edit": "編集",
+    "Polling": "ポーリング",
+    "Report": "レポート",
+    "SaveDef": "初期表示",
+    "Reload": "更新",
+    "SelectNode": "ノード選択",
+    "Node": "ノード",
+    "Add": "追加",
+    "Cancel": "キャンセル"
   }
 }

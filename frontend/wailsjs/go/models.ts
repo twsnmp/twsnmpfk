@@ -413,6 +413,24 @@ export namespace datastore {
 	        this.Port = source["Port"];
 	    }
 	}
+	export class LocConfEnt {
+	    Style: string;
+	    Center: string;
+	    Zoom: number;
+	    IconSize: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new LocConfEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Style = source["Style"];
+	        this.Center = source["Center"];
+	        this.Zoom = source["Zoom"];
+	        this.IconSize = source["IconSize"];
+	    }
+	}
 	export class MIBModuleEnt {
 	    Type: string;
 	    File: string;
@@ -520,6 +538,7 @@ export namespace datastore {
 	    URL: string;
 	    AddrMode: string;
 	    AutoAck: boolean;
+	    Loc: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new NodeEnt(source);
@@ -545,6 +564,7 @@ export namespace datastore {
 	        this.URL = source["URL"];
 	        this.AddrMode = source["AddrMode"];
 	        this.AutoAck = source["AutoAck"];
+	        this.Loc = source["Loc"];
 	    }
 	}
 	export class NotifyConfEnt {

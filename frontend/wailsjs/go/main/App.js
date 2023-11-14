@@ -170,6 +170,10 @@ export function GetLines() {
   return window['go']['main']['App']['GetLines']();
 }
 
+export function GetLocConf() {
+  return window['go']['main']['App']['GetLocConf']();
+}
+
 export function GetMIBModules() {
   return window['go']['main']['App']['GetMIBModules']();
 }
@@ -314,12 +318,20 @@ export function UpdateLine(arg1) {
   return window['go']['main']['App']['UpdateLine'](arg1);
 }
 
+export function UpdateLocConf(arg1) {
+  return window['go']['main']['App']['UpdateLocConf'](arg1);
+}
+
 export function UpdateMapConf(arg1) {
   return window['go']['main']['App']['UpdateMapConf'](arg1);
 }
 
 export function UpdateNode(arg1) {
   return window['go']['main']['App']['UpdateNode'](arg1);
+}
+
+export function UpdateNodeLoc(arg1, arg2) {
+  return window['go']['main']['App']['UpdateNodeLoc'](arg1, arg2);
 }
 
 export function UpdateNodePos(arg1) {

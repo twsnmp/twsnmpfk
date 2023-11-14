@@ -1,3 +1,9 @@
+<script context="module">
+  import Prism from "prismjs";
+  const highlight = (code, syntax) =>
+    Prism.highlight(code, Prism.languages[syntax], syntax);
+</script>
+
 <script lang="ts">
   import {
     Modal,
@@ -31,11 +37,14 @@
     UpdateAIConf,
     GetMIBModules,
     GetMIBTree,
+    GetLocConf,
+    UpdateLocConf,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import MibTree from "./MIBTree.svelte";
+  import { CodeJar } from "@novacbn/svelte-codejar";
 
   let show: boolean = false;
   let mapConf: datastore.MapConfEnt | undefined = undefined;
@@ -43,6 +52,8 @@
   let notifyConf: datastore.NotifyConfEnt | undefined = undefined;
   let showTestError: boolean = false;
   let showTestOk: boolean = false;
+  let locConf : datastore.LocConfEnt | undefined = undefined;
+  let showLocStyleError = false;
 
   const dispatch = createEventDispatcher();
 
@@ -50,6 +61,7 @@
     mapConf = await GetMapConf();
     notifyConf = await GetNotifyConf();
     aiConf = await GetAIConf();
+    locConf = await GetLocConf();
     show = true;
   });
 
@@ -160,7 +172,23 @@
     });
   };
 
-  const importMIB = async () => {};
+  const saveLocConf = async () => {
+    showLocStyleError = false;
+    locConf.Style.trim();
+    if (locConf.Style.startsWith("{")) {
+      try {
+        const s = JSON.parse(locConf.Style);
+      } catch (e) {
+        showLocStyleError = true;
+        return;
+      }
+    }
+    locConf.Zoom *= 1;
+    locConf.IconSize *= 1;
+    await UpdateLocConf(locConf);
+    close();
+  };
+
 </script>
 
 <Modal
@@ -489,6 +517,72 @@
             color="blue"
             type="button"
             on:click={saveAIConf}
+            size="xs"
+          >
+            <Icon path={icons.mdiContentSave} size={1} />
+            {$_("Config.Save")}
+          </GradientButton>
+          <GradientButton
+            shadow
+            type="button"
+            color="teal"
+            on:click={close}
+            size="xs"
+          >
+            <Icon path={icons.mdiCancel} size={1} />
+            {$_("Config.Cancel")}
+          </GradientButton>
+        </div>
+      </form>
+    </TabItem>
+    <TabItem>
+      <div slot="title" class="flex items-center gap-2">
+        <Icon path={icons.mdiMap} size={1} />
+        {$_('Config.LocConf')}
+      </div>
+      <form class="flex flex-col space-y-4" action="#">
+        {#if showLocStyleError}
+          <Alert color="red" dismissable>
+            <div class="flex">
+              <Icon path={icons.mdiAlert} size={1} />
+              {$_('Config.LocStyleError')}
+            </div>
+          </Alert>
+        {/if}
+        <Label class="space-y-2">
+          <span>{$_('Config.LocStyle')}</span>
+          <CodeJar syntax="javascript" {highlight} bind:value={locConf.Style} />
+        </Label>
+          <div class="grid gap-4 md:grid-cols-3">
+          <Label class="space-y-2">
+            <span>{$_('Config.LocCenter')}</span>
+            <Input
+              type="text"
+              bind:value={locConf.Center}
+              size="sm"
+            />
+          </Label>
+          <Label class="space-y-2">
+            <span>{$_('Config.LocZoom')}</span>
+            <Input
+              type="number"
+              min="2"
+              max="12"
+              bind:value={locConf.Zoom}
+              size="sm"
+            />
+          </Label>
+          <Label>
+            {$_("Config.IconSize")}
+            <Range size="sm" min="16" max="64" bind:value={locConf.IconSize} />
+          </Label>
+        </div>
+        <div class="flex justify-end space-x-2 mr-2">
+          <GradientButton
+            shadow
+            color="blue"
+            type="button"
+            on:click={saveLocConf}
             size="xs"
           >
             <Icon path={icons.mdiContentSave} size={1} />

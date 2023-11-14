@@ -17,6 +17,7 @@
     IsLatest,
     SetDark,
     GetSettings,
+    GetLocConf,
   } from "../../wailsjs/go/main/App";
   import Map from "./Map.svelte";
   import Log from "./Log.svelte";
@@ -31,6 +32,8 @@
   import Config from "./Config.svelte";
   import System from "./System.svelte";
   import { _ } from "svelte-i18n";
+  import Location from "./Location.svelte";
+  import type { datastore } from "wailsjs/go/models";
 
   let dark: boolean = false;
   let mainHeight = 0;
@@ -40,6 +43,12 @@
   let showConfig = false;
   let latest = true;
   let lock = false;
+  let locConf :datastore.LocConfEnt = {
+    Style: "",
+    IconSize: 24,
+    Zoom: 2,
+    Center: "",
+  };
 
   const updateMapName = async () => {
     mapName = await GetMapName();
@@ -64,6 +73,7 @@
     }
     const settings = await GetSettings();
     lock = settings.Lock;
+    locConf = await GetLocConf();
     await tick();
     mainHeight = window.innerHeight - 96;
     updateMapName();
@@ -91,15 +101,26 @@
   </NavBrand>
   <NavUl>
     {#if !lock}
-    <NavLi
-      active={page == "map"}
-      on:click={() => {
-        page = "map";
-      }}
-    >
-      <Icon path={icons.mdiLan} size={1} />
-      {$_("Top.Map")}
-    </NavLi>
+      <NavLi
+        active={page == "map"}
+        on:click={() => {
+          page = "map";
+        }}
+      >
+        <Icon path={icons.mdiLan} size={1} />
+        {$_("Top.Map")}
+      </NavLi>
+      {#if locConf.Style}
+        <NavLi
+          active={page == "loc"}
+          on:click={() => {
+            page = "loc";
+          }}
+        >
+          <Icon path={icons.mdiMap} size={1} />
+          地図
+        </NavLi>
+      {/if}
       <NavLi
         active={page == "node"}
         on:click={() => {
@@ -207,11 +228,8 @@
 </Navbar>
 
 {#if page == "map"}
-  <div
-    class="fex fex-col w-full"
-    style="height:{mainHeight}px;"
-  >
-    <div style="height: {mainHeight - window.innerHeight/5}px">
+  <div class="fex fex-col w-full" style="height:{mainHeight}px;">
+    <div style="height: {mainHeight - window.innerHeight / 5}px">
       <Map />
     </div>
     <div style="width: 99vw;margin: 0 auto;">
@@ -236,6 +254,8 @@
   <AIList />
 {:else if page == "system"}
   <System />
+{:else if page == "loc"}
+  <Location />
 {/if}
 
 {#if showConfig}

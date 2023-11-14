@@ -233,7 +233,12 @@
     "MIBFile": "File",
     "MIBName": "Name",
     "MIBTree": "MIB Tree",
-    "MIBType": "Type"
+    "MIBType": "Type",
+    "LocCenter": "Center",
+    "LocConf": "Location Conf",
+    "LocStyle": "Style",
+    "LocStyleError": "Style is URL or JSON",
+    "LocZoom": "Zoom"
   },
   "DarwItem": {
     "Label": "Label",
@@ -652,5 +657,16 @@
     "Report": "Report",
     "State": "State",
     "Vendor": "Vendor"
+  },
+  "Location": {
+    "Add": "Add",
+    "Cancel": "Cancel",
+    "Edit": "Edit",
+    "Node": "Node",
+    "Polling": "Polling",
+    "Reload": "Reload",
+    "Report": "Report",
+    "SaveDef": "Save Def",
+    "SelectNode": "Select Node"
   }
 }

@@ -55,6 +55,17 @@ func (a *App) UpdateAIConf(ai datastore.AIConfEnt) bool {
 	return datastore.SaveAIConf() == nil
 }
 
+// GetLocConf returns Loc config
+func (a *App) GetLocConf() datastore.LocConfEnt {
+	return datastore.LocConf
+}
+
+// UpdateLocConf save Loc config
+func (a *App) UpdateLocConf(loc datastore.LocConfEnt) bool {
+	datastore.LocConf = loc
+	return datastore.SaveLocConf() == nil
+}
+
 // Backupは、データベースのバックアップを作成します。
 func (a *App) Backup() bool {
 	f, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{

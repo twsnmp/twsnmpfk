@@ -89,6 +89,8 @@ export function GetLine(arg1:string,arg2:string):Promise<datastore.LineEnt>;
 
 export function GetLines():Promise<Array<datastore.LineEnt>>;
 
+export function GetLocConf():Promise<datastore.LocConfEnt>;
+
 export function GetMIBModules():Promise<Array<datastore.MIBModuleEnt>>;
 
 export function GetMIBTree():Promise<Array<datastore.MIBTreeEnt>>;
@@ -161,9 +163,13 @@ export function UpdateDrawItemPos(arg1:Array<main.UpdatePosEnt>):Promise<void>;
 
 export function UpdateLine(arg1:datastore.LineEnt):Promise<boolean>;
 
+export function UpdateLocConf(arg1:datastore.LocConfEnt):Promise<boolean>;
+
 export function UpdateMapConf(arg1:datastore.MapConfEnt):Promise<boolean>;
 
 export function UpdateNode(arg1:datastore.NodeEnt):Promise<boolean>;
+
+export function UpdateNodeLoc(arg1:string,arg2:string):Promise<void>;
 
 export function UpdateNodePos(arg1:Array<main.UpdatePosEnt>):Promise<void>;
 

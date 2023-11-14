@@ -28,6 +28,7 @@ type NodeEnt struct {
 	URL       string `json:"URL"`
 	AddrMode  string `json:"AddrMode"`
 	AutoAck   bool   `json:"AutoAck"`
+	Loc       string `json:"Loc"`
 }
 
 type DrawItemType int

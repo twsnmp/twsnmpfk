@@ -46,6 +46,7 @@
         URL: "",
         AddrMode: "ip",
         AutoAck: false,
+        Loc: "",
       };
     }
     show = true;

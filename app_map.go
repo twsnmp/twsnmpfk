@@ -265,6 +265,14 @@ func (a *App) UpdateNodePos(list []UpdatePosEnt) {
 	}
 }
 
+// UpdateNodeLoc update node location
+func (a *App) UpdateNodeLoc(id, loc string) {
+	n := datastore.GetNode(id)
+	if n != nil {
+		n.Loc = loc
+	}
+}
+
 // UpdateDrawItemPos update node positons
 func (a *App) UpdateDrawItemPos(list []UpdatePosEnt) {
 	for _, e := range list {

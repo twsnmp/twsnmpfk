@@ -200,6 +200,10 @@
     " (showEditNode = true)}\n        size=\"xs\"\n      >\n        ",
     "\n    {/if}\n\n    {#if selectedIP ",
     " {\n          showAddNode = true;\n        }}\n        size=\"xs\"\n      >\n        ",
-    "& !selectedNodeID}\n      "
+    "& !selectedNodeID}\n      ",
+    "{",
+    " (showMIBTree = true)}\n          size=\"xs\"\n        >\n          ",
+    "\n    <div class=\"icon\" style=\"height: ${divSize}px;width: ${divSize}px;background-color: ${color}; color: white;font-size: ${\n      locConf.IconSize\n    }px;text-align: center;line-height: ${divSize}px;\">\n\t\t\t<span class=\"mdi ${icon}\"></span>\n\t\t</div>\n\t\t<div style=\"font-size: ${locConf.IconSize / 2}px;text-align: center;\">${\n      n.Name\n    }</div>",
+    " {\n          showAddNode = false;\n        }}\n        size=\"xs\"\n      >\n        "
   ]
 }

@@ -32,8 +32,9 @@ var (
 	NotifyConf   NotifyConfEnt
 	DiscoverConf DiscoverConfEnt
 	AIConf       AIConfEnt
+	LocConf      LocConfEnt
 	AutoCharCode bool
-	// Restrt snmptrapd
+	// Restart snmptrapd
 	RestartSnmpTrapd bool
 	// Map Data on Memory
 	nodes    sync.Map

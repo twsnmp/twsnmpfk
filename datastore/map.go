@@ -35,6 +35,14 @@ type MapConfEnt struct {
 	IconSize       int    `json:"IconSize"`
 }
 
+// LocConfEnt : 地図設定
+type LocConfEnt struct {
+	Style    string  `json:"Style"`
+	Center   string  `json:"Center"`
+	Zoom     float64 `json:"Zoom"`
+	IconSize int     `json:"IconSize"`
+}
+
 func initConf() {
 	MapConf.PollInt = 60
 	MapConf.Retry = 1
@@ -51,6 +59,9 @@ func initConf() {
 	NotifyConf.Interval = 60
 	NotifyConf.Subject = i18n.Trans("Notify from TWSNMP")
 	NotifyConf.Level = "none"
+	LocConf.Zoom = 2
+	LocConf.Center = "139.75,35.68"
+	LocConf.IconSize = 24
 }
 
 func loadConf() error {
@@ -85,6 +96,10 @@ func loadConf() error {
 		if v != nil {
 			json.Unmarshal(v, &AIConf)
 		}
+		v = b.Get([]byte("locConf"))
+		if v != nil {
+			json.Unmarshal(v, &LocConf)
+		}
 		v = b.Get([]byte("icons"))
 		if v != nil {
 			if err := json.Unmarshal(v, &icons); err != nil {
@@ -109,6 +124,9 @@ func loadConf() error {
 		}
 		if err := SaveAIConf(); err != nil {
 			log.Printf("save ai conf err=%v", err)
+		}
+		if err := SaveLocConf(); err != nil {
+			log.Printf("save loc conf err=%v", err)
 		}
 	}
 	return err
@@ -282,5 +300,24 @@ func SetDark(dark bool) error {
 			b.Delete([]byte("dark"))
 		}
 		return nil
+	})
+}
+
+func SaveLocConf() error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	s, err := json.Marshal(LocConf)
+	if err != nil {
+		return err
+	}
+	st := time.Now()
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		log.Printf("SaveLocConf dur=%v", time.Since(st))
+		return b.Put([]byte("locConf"), s)
 	})
 }
