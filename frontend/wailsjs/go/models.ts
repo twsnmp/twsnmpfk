@@ -911,7 +911,7 @@ export namespace main {
 	}
 	export class Settings {
 	    Kiosk: boolean;
-	    Lock: boolean;
+	    Lock: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Settings(source);

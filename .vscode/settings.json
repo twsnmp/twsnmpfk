@@ -204,6 +204,19 @@
     "{",
     " (showMIBTree = true)}\n          size=\"xs\"\n        >\n          ",
     "\n    <div class=\"icon\" style=\"height: ${divSize}px;width: ${divSize}px;background-color: ${color}; color: white;font-size: ${\n      locConf.IconSize\n    }px;text-align: center;line-height: ${divSize}px;\">\n\t\t\t<span class=\"mdi ${icon}\"></span>\n\t\t</div>\n\t\t<div style=\"font-size: ${locConf.IconSize / 2}px;text-align: center;\">${\n      n.Name\n    }</div>",
-    " {\n          showAddNode = false;\n        }}\n        size=\"xs\"\n      >\n        "
+    " {\n          showAddNode = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n          page = \"map\";\n        }}\n      >\n        ",
+    " {\n            page = \"loc\";\n          }}\n        >\n          ",
+    " {\n            page = \"loc\";\n          }}\n        >\n          ",
+    " {\n          page = \"node\";\n        }}\n      >\n        ",
+    " {\n          page = \"polling\";\n        }}\n      >\n        ",
+    " {\n          page = \"address\";\n        }}\n      >\n        ",
+    " {\n          page = \"eventlog\";\n        }}\n      >\n        ",
+    " {\n          page = \"syslog\";\n        }}\n      >\n        ",
+    " {\n          page = \"trap\";\n        }}\n      >\n        ",
+    " {\n          page = \"arp\";\n        }}\n      >\n        ",
+    " {\n          page = \"ai\";\n        }}\n      >\n        ",
+    " {\n          page = \"system\";\n        }}\n      >\n        ",
+    " {\n          oldPage = page;\n          page = \"\";\n          showConfig = true;\n        }}\n      >\n        "
   ]
 }

@@ -47,7 +47,7 @@ let _mapP5 :P5 | undefined  = undefined;
 export const initMAP = async (div:HTMLElement,cb :any) => {
   const settings = await GetSettings();
   mapCallBack =cb;
-  readOnly = settings.Lock;
+  readOnly = settings.Lock != "";
   setIconCodeMap(iconList);
   setStateColorMap(stateList);
   mapRedraw = false;

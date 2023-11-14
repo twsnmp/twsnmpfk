@@ -122,7 +122,10 @@
     "Map": "Map",
     "Node": "Node",
     "Polling": "Polling",
-    "HasUpdate": "Update"
+    "HasUpdate": "Update",
+    "Address": "Address",
+    "Loc": "Location",
+    "System": "System"
   },
   "Log": {
     "Event": "Event",
@@ -667,6 +670,7 @@
     "Reload": "Reload",
     "Report": "Report",
     "SaveDef": "Save Def",
-    "SelectNode": "Select Node"
+    "SelectNode": "Select Node",
+    "Del": "Delete"
   }
 }

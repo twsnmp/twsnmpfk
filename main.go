@@ -26,7 +26,7 @@ var commit = ""
 var dataStorePath = ""
 var pingMode string
 var kiosk = false
-var lock = false
+var lock = ""
 var trapPort = 162
 var syslogPort = 514
 var maxDispLog = 10000
@@ -35,7 +35,7 @@ var lang = ""
 func init() {
 	flag.StringVar(&dataStorePath, "datastore", "", "Path to data dtore directory")
 	flag.BoolVar(&kiosk, "kiosk", false, "Kisok mode(frameless and full screen)")
-	flag.BoolVar(&lock, "lock", false, "Disable edit map")
+	flag.StringVar(&lock, "lock", "", "Disable edit map and show map of loc")
 	flag.IntVar(&trapPort, "trapPort", 162, "SNMP TRAP port")
 	flag.IntVar(&syslogPort, "syslogPort", 514, "Syslog port")
 	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "Max log size to diplay")

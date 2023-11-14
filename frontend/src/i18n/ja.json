@@ -619,7 +619,10 @@
     "Log": "ログ",
     "AI": "AI分析",
     "Config": "設定",
-    "HasUpdate": "更新版あり"
+    "HasUpdate": "更新版あり",
+    "Loc": "地図",
+    "Address": "アドレス",
+    "System": "システム"
   },
   "Traps": {
     "DeleteAllLogs": "全ログ削除"
@@ -667,6 +670,7 @@
     "SelectNode": "ノード選択",
     "Node": "ノード",
     "Add": "追加",
-    "Cancel": "キャンセル"
+    "Cancel": "キャンセル",
+    "Del": "削除"
   }
 }

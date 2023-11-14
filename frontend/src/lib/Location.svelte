@@ -11,6 +11,7 @@
     GetLocConf,
     UpdateLocConf,
     UpdateNodeLoc,
+    GetSettings,
   } from "../../wailsjs/go/main/App";
   import Node from "./Node.svelte";
   import NodeReport from "./NodeReport.svelte";
@@ -31,6 +32,7 @@
   let addNodeID = "";
   let lastLoc = "";
   let timer = undefined;
+  let lock = false;
 
   const refresh = async () => {
     if (timer) {
@@ -85,6 +87,9 @@
       n.Name
     }</div>`;
     nodeDiv.onclick = () => {
+      if(lock) {
+        return;
+      }
       if (nodeDiv.classList.contains("selected")) {
         nodeDiv.classList.remove("selected");
         selectedNode = "";
@@ -101,6 +106,9 @@
       .setLngLat(getLngLat(n.Loc))
       .addTo(map)
       .on("dragend", (e) => {
+        if (lock) {
+          return;
+        }
         const loc = e.target.getLngLat();
         UpdateNodeLoc(n.ID, loc.lng + "," + loc.lat);
       });
@@ -118,6 +126,9 @@
       zoom: locConf.Zoom,
     });
     map.on("contextmenu", (e: any) => {
+      if(lock) {
+        return;
+      }
       lastLoc = e.lngLat.lng + "," + e.lngLat.lat;
       if (lastLoc != "") {
         showAddNode = true;
@@ -128,10 +139,12 @@
         visualizePitch: true,
       })
     );
+    const setting = await GetSettings();
+    lock = setting.Lock != "";
   };
 
   const edit = () => {
-    if (!selectedNode) {
+    if (!selectedNode || lock) {
       return;
     }
     showEditNode = true;
@@ -151,17 +164,25 @@
     showPolling = true;
   };
 
-  const add = () => {
+  const add = async () => {
     if (!addNodeID || !lastLoc) {
       return;
     }
-    UpdateNodeLoc(addNodeID, lastLoc);
+    await UpdateNodeLoc(addNodeID, lastLoc);
     showAddNode = false;
     refresh();
   };
 
+  const del = async () => {
+    if (!selectedNode || lock) {
+      return;
+    }
+    await UpdateNodeLoc(selectedNode, "");
+    refresh();
+  };
+
   const saveDef = () => {
-    if (!map) {
+    if (!map || lock) {
       return;
     }
     const c = map.getCenter();
@@ -197,26 +218,38 @@
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedNode != ""}
-      <GradientButton
-        shadow
-        color="blue"
-        type="button"
-        on:click={edit}
-        size="xs"
-      >
-        <Icon path={icons.mdiPencil} size={1} />
-        {$_('Location.Edit')}
-      </GradientButton>
-      <GradientButton
-        shadow
-        color="blue"
-        type="button"
-        on:click={polling}
-        size="xs"
-      >
-        <Icon path={icons.mdiLanCheck} size={1} />
-        {$_('Location.Polling')}
-      </GradientButton>
+      {#if !lock}
+        <GradientButton
+          shadow
+          color="blue"
+          type="button"
+          on:click={edit}
+          size="xs"
+        >
+          <Icon path={icons.mdiPencil} size={1} />
+          {$_('Location.Edit')}
+        </GradientButton>
+        <GradientButton
+          shadow
+          color="blue"
+          type="button"
+          on:click={polling}
+          size="xs"
+        >
+          <Icon path={icons.mdiLanCheck} size={1} />
+          {$_('Location.Polling')}
+        </GradientButton>
+        <GradientButton
+          shadow
+          color="red"
+          type="button"
+          on:click={del}
+          size="xs"
+        >
+          <Icon path={icons.mdiTrashCan} size={1} />
+          {$_('Location.Del')}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         color="green"
@@ -228,16 +261,18 @@
         {$_('Location.Report')}
       </GradientButton>
     {/if}
-    <GradientButton
-      shadow
-      type="button"
-      color="red"
-      on:click={saveDef}
-      size="xs"
-    >
-      <Icon path={icons.mdiContentSave} size={1} />
-      {$_('Location.SaveDef')}
-    </GradientButton>
+    {#if !lock}
+      <GradientButton
+        shadow
+        type="button"
+        color="red"
+        on:click={saveDef}
+        size="xs"
+      >
+        <Icon path={icons.mdiContentSave} size={1} />
+        {$_('Location.SaveDef')}
+      </GradientButton>
+    {/if}
     <GradientButton
       shadow
       type="button"

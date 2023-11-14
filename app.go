@@ -29,8 +29,8 @@ type App struct {
 }
 
 type Settings struct {
-	Kiosk bool `json:"Kiosk"`
-	Lock  bool `json:"Lock"`
+	Kiosk bool   `json:"Kiosk"`
+	Lock  string `json:"Lock"`
 }
 
 // NewApp creates a new App application struct

@@ -42,7 +42,7 @@
   let oldPage = "";
   let showConfig = false;
   let latest = true;
-  let lock = false;
+  let lock = "";
   let locConf :datastore.LocConfEnt = {
     Style: "",
     IconSize: 24,
@@ -74,6 +74,9 @@
     const settings = await GetSettings();
     lock = settings.Lock;
     locConf = await GetLocConf();
+    if (lock == "loc" && locConf.Style != "") {
+      page = "loc";
+    }
     await tick();
     mainHeight = window.innerHeight - 96;
     updateMapName();
@@ -118,7 +121,7 @@
           }}
         >
           <Icon path={icons.mdiMap} size={1} />
-          地図
+          {$_('Top.Loc')}
         </NavLi>
       {/if}
       <NavLi
@@ -146,7 +149,7 @@
         }}
       >
         <Icon path={icons.mdiListStatus} size={1} />
-        Address
+        {$_('Top.Address')}
       </NavLi>
       <NavLi
         active={page == "eventlog"}
@@ -200,7 +203,7 @@
         }}
       >
         <Icon path={icons.mdiChartLine} size={1} />
-        System
+        {$_('Top.System')}
       </NavLi>
       <NavLi
         active={showConfig}
