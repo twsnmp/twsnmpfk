@@ -1,7 +1,7 @@
 <script lang="ts">
   import "maplibre-gl/dist/maplibre-gl.css";
   import { Map, NavigationControl, Marker } from "maplibre-gl";
-  import { GradientButton, Modal, Label, Select } from "flowbite-svelte";
+  import { GradientButton, Modal, Label, Select,Toast } from "flowbite-svelte";
   import { getIcon, getStateColor } from "./common";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -181,14 +181,17 @@
     refresh();
   };
 
-  const saveDef = () => {
+  let inSaveDef = false;
+  const saveDef = async() => {
     if (!map || lock) {
       return;
     }
+    inSaveDef = true;
     const c = map.getCenter();
     locConf.Zoom = map.getZoom();
     locConf.Center = c.lng + "," + c.lat;
-    UpdateLocConf(locConf);
+    await UpdateLocConf(locConf);
+    inSaveDef = false;
   };
 
   onMount(() => {
@@ -266,6 +269,7 @@
         shadow
         type="button"
         color="red"
+        disabled={inSaveDef}
         on:click={saveDef}
         size="xs"
       >
