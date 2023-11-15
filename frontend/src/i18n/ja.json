@@ -225,7 +225,7 @@
     "Close": "閉じる",
     "MIBTree": "MIBツリー",
     "IconSize": "アイコンサイズ",
-    "LocConf": "Locatiion Conf",
+    "LocConf": "地図設定",
     "LocStyleError": "スタイルは、URLかJSONで指定してください。",
     "LocStyle": "スタイル",
     "LocCenter": "中央座標",
