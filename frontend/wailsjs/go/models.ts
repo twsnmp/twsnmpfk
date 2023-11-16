@@ -379,6 +379,22 @@ export namespace datastore {
 	        this.LastLevel = source["LastLevel"];
 	    }
 	}
+	export class IconEnt {
+	    Name: string;
+	    Icon: string;
+	    Code: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new IconEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Name = source["Name"];
+	        this.Icon = source["Icon"];
+	        this.Code = source["Code"];
+	    }
+	}
 	export class LineEnt {
 	    ID: string;
 	    NodeID1: string;

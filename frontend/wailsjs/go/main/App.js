@@ -50,6 +50,10 @@ export function DeleteDrawItems(arg1) {
   return window['go']['main']['App']['DeleteDrawItems'](arg1);
 }
 
+export function DeleteIcon(arg1) {
+  return window['go']['main']['App']['DeleteIcon'](arg1);
+}
+
 export function DeleteLine(arg1) {
   return window['go']['main']['App']['DeleteLine'](arg1);
 }
@@ -152,6 +156,10 @@ export function GetEventLogs(arg1, arg2, arg3, arg4, arg5) {
 
 export function GetHostResource(arg1) {
   return window['go']['main']['App']['GetHostResource'](arg1);
+}
+
+export function GetIcons() {
+  return window['go']['main']['App']['GetIcons']();
 }
 
 export function GetImage(arg1) {
@@ -312,6 +320,10 @@ export function UpdateDrawItem(arg1) {
 
 export function UpdateDrawItemPos(arg1) {
   return window['go']['main']['App']['UpdateDrawItemPos'](arg1);
+}
+
+export function UpdateIcon(arg1) {
+  return window['go']['main']['App']['UpdateIcon'](arg1);
 }
 
 export function UpdateLine(arg1) {

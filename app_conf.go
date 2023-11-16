@@ -96,3 +96,26 @@ func (a *App) Backup() bool {
 func (a *App) GetMIBModules() []*datastore.MIBModuleEnt {
 	return datastore.MIBModules
 }
+
+// GetIconsは、カスタムアイコンのリストを返します。
+func (a *App) GetIcons() []*datastore.IconEnt {
+	return datastore.GetIcons()
+}
+
+// UpdateIconは、カスタムアイコンを追加または更新します。
+func (a *App) UpdateIcon(icon datastore.IconEnt) bool {
+	if err := datastore.AddOrUpdateIcon(&icon); err != nil {
+		log.Printf("UpdateIcon err=%v", err)
+		return false
+	}
+	return true
+}
+
+// DeleteIconは、カスタムアイコンを削除します。
+func (a *App) DeleteIcon(icon string) bool {
+	if err := datastore.DeleteIcon(icon); err != nil {
+		log.Printf("UpdateIcon err=%v", err)
+		return false
+	}
+	return true
+}

@@ -18,6 +18,7 @@
     SetDark,
     GetSettings,
     GetLocConf,
+    GetIcons,
   } from "../../wailsjs/go/main/App";
   import Map from "./Map.svelte";
   import Log from "./Log.svelte";
@@ -34,6 +35,7 @@
   import { _ } from "svelte-i18n";
   import Location from "./Location.svelte";
   import type { datastore } from "wailsjs/go/models";
+  import { setIconToList } from "./common";
 
   let dark: boolean = false;
   let mainHeight = 0;
@@ -76,6 +78,12 @@
     locConf = await GetLocConf();
     if (lock == "loc" && locConf.Style != "") {
       page = "loc";
+    }
+    const l = await GetIcons();
+    if(l) {
+      for(const icon of l) {
+        setIconToList(icon);
+      }
     }
     await tick();
     mainHeight = window.innerHeight - 96;

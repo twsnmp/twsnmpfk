@@ -297,10 +297,6 @@ table.dataTable tbody tr.selected a {
   color: rgb(var(--dt-row-selected-link));
 }
 
-table.dataTable tbody tr.selected span.mdi {
-  background-color: white;
-}
-
 table.dataTable tbody th,
 table.dataTable tbody td {
   padding: 8px 10px;

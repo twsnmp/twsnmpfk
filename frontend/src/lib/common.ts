@@ -148,23 +148,31 @@ export const iconList = [
   { name: 'TWSNMP', icon: 'mdi-layers-search', value: 'mdi-layers-search' ,code: 0xF1206},
 ]
 
-const iconMap = {}
+const iconCodeMap = new Map();
+
+const iconMap = new Map();
 
 iconList.forEach((e) => {
-  iconMap[e.value] = e.icon
+  iconMap.set(e.value, e.icon);
+  iconCodeMap.set(e.value,String.fromCodePoint(e.code));
 })
 
 export const getIcon = (icon:string) : string => {
-  return iconMap[icon] ? iconMap[icon] : 'mdi-comment-question-outline';
+  return iconMap.get(icon) || 'mdi-comment-question-outline';
 }
 
-export const setIcon = (e:any) => {
+export const getIconCode = (icon:string) : number => {
+  return iconCodeMap.get(icon) || String.fromCodePoint(0xF0A39);
+}
+
+export const setIconToList = (e:any) => {
   for( let i = 0; i < iconList.length; i++) {
     if(iconList[i].value === e.Icon) {
       // update icon
-      iconList[i].name = e.Name
-      iconList[i].code = e.Code
-      return
+      iconList[i].name = e.Name;
+      iconList[i].code = e.Code;
+      iconCodeMap.set(e.Icon,String.fromCodePoint(e.Code));
+      return;
     }
   }
   // add icon
@@ -174,15 +182,17 @@ export const setIcon = (e:any) => {
     value: e.Icon,
     code: e.Code,
   })
-  iconMap[e.Icon] = e.Icon
+  iconMap.set(e.Icon,e.Icon);
+  iconCodeMap.set(e.Icon,String.fromCodePoint(e.Code));
 }
 
 // delete icon
-export const delIcon = (icon) => {
+export const deleteIconFromList = (icon) => {
   for( let i = 0; i < iconList.length; i++) {
     if(iconList[i].value === icon) {
-      iconList.splice(i+1,1)
-      delete(iconMap[icon])
+      iconList.splice(i,1)
+      iconCodeMap.delete(icon);
+      iconMap.delete(icon);
       return
     }
   }
@@ -236,6 +246,20 @@ export const renderState = (state:string,type:string) => {
   }
   return `<span class="mdi ` +
       getStateIcon(state) +
+      ` text-xl" style="color:` +
+      getStateColor(state) +
+      `;"></span><span class="ml-2">` +
+      getStateName(state) +
+      `</span>`;
+};
+
+export const renderNodeState = (state:string,type:string,n:any) => {
+  if(type=="sort") {
+    return levelNum(state);
+  }
+  const icon = n.Icon ? getIcon(n.Icon) : getStateIcon(state);
+  return `<span class="mdi ` +
+      icon +
       ` text-xl" style="color:` +
       getStateColor(state) +
       `;"></span><span class="ml-2">` +

@@ -9,7 +9,7 @@
     ExportNodes,
     CheckPolling,
   } from "../../wailsjs/go/main/App";
-  import { getTableLang, renderState, renderIP } from "./common";
+  import { getTableLang, renderNodeState, renderIP } from "./common";
   import Node from "./Node.svelte";
   import NodeReport from "./NodeReport.svelte";
   import NodePolling from "./NodePolling.svelte";
@@ -114,7 +114,7 @@
       data: "State",
       title: $_('NodeList.State'),
       width: "5%",
-      render: renderState,
+      render: renderNodeState,
     },
     {
       data: "Name",

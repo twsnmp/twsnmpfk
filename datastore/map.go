@@ -231,9 +231,9 @@ func SaveBackImage() error {
 }
 
 type IconEnt struct {
-	Text string
-	Icon string
-	Code int64
+	Name string `json:"Name"`
+	Icon string `json:"Icon"`
+	Code int64  `json:"Code"`
 }
 
 var icons []*IconEnt
@@ -245,7 +245,7 @@ func GetIcons() []*IconEnt {
 func AddOrUpdateIcon(i *IconEnt) error {
 	for _, e := range icons {
 		if e.Icon == i.Icon {
-			e.Text = i.Text
+			e.Name = i.Name
 			e.Code = i.Code
 			return saveIcons()
 		}

@@ -1,5 +1,5 @@
 import P5 from 'p5';
-import {iconList,stateList} from  './common'
+import {getIconCode,getStateColor} from  './common'
 import {
   GetSettings,
   GetNodes,
@@ -39,7 +39,6 @@ let iconSize = 32;
 const selectedNodes = [];
 const selectedDrawItems = [];
 
-const iconCodeMap = {};
 const imageMap = {};
 
 let _mapP5 :P5 | undefined  = undefined;
@@ -48,8 +47,6 @@ export const initMAP = async (div:HTMLElement,cb :any) => {
   const settings = await GetSettings();
   mapCallBack =cb;
   readOnly = settings.Lock != "";
-  setIconCodeMap(iconList);
-  setStateColorMap(stateList);
   mapRedraw = false;
   if (_mapP5 != undefined) {
     return
@@ -157,28 +154,7 @@ export const grid = (g:number,test:boolean) => {
   mapRedraw = true;
 };
 
-const setIconCodeMap = (list:any) => {
-  list.forEach((e :any) => {
-    iconCodeMap[e.value] = String.fromCodePoint(e.code)
-  })
-  iconCodeMap["unknown"] = String.fromCodePoint(0xF0A39)
-}
 
-const getIconCode = (icon) => {
-  return iconCodeMap[icon] ? iconCodeMap[icon] : iconCodeMap["unknown"];
-}
-
-const stateColorMap = {}
-
-const setStateColorMap = (list:any) => {
-  list.forEach((e:any) => {
-    stateColorMap[e.value] = e.color
-  })
-}
-
-const getStateColor = (state) => {
-  return stateColorMap[state] ? stateColorMap[state] : 'gray'
-}
 
 const getLineColor = (state) => {
   if (state === 'high' || state === 'low' || state === 'warn') {
@@ -246,7 +222,7 @@ const mapMain = (p5:P5) => {
       p5.stroke(getStateColor(lines[k].State2));
       p5.line(xm, ym, x2, y2);
       if (lines[k].Info) {
-        const color = getLineColor(lines[k].State);
+        const color :any = getLineColor(lines[k].State);
         const dx = Math.abs(x1-x2);
         const dy = Math.abs(y1-y2);
         p5.textFont('Roboto');
@@ -332,7 +308,7 @@ const mapMain = (p5:P5) => {
       p5.pop();
     }
     for (const k in nodes) {
-      const icon = getIconCode(nodes[k].Icon)
+      const icon = getIconCode(nodes[k].Icon);
       p5.push()
       p5.translate(nodes[k].X, nodes[k].Y)
       if (selectedNodes.includes(nodes[k].ID)) {

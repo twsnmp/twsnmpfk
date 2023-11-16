@@ -26,6 +26,8 @@
     getTableLang,
     getStateIcon,
     getStateColor,
+    setIconToList,
+    deleteIconFromList,
   } from "./common";
   import {
     GetMapConf,
@@ -39,6 +41,9 @@
     GetMIBTree,
     GetLocConf,
     UpdateLocConf,
+    GetIcons,
+    UpdateIcon,
+    DeleteIcon,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
@@ -188,6 +193,133 @@
     await UpdateLocConf(locConf);
     close();
   };
+
+  let icon : datastore.IconEnt = {
+    Name:"",
+    Icon:"",
+    Code: 0,
+  }
+  let iconTable = undefined;
+  let showEditIcon = false;
+  let selectedIcon = 0;
+  let iconList = [];
+  let disableIconSelect = false;
+  const iconCodeMap = new Map();
+
+  const showIconList = async () => {
+    if (iconList.length < 1) {
+      makeIconList();
+    }
+    if (iconTable && DataTable.isDataTable("#iconTable")) {
+      iconTable.destroy();
+      iconTable = undefined;
+    }
+    selectedIcon = 0;
+    iconTable = new DataTable("#iconTable", {
+      order: [[1, "asc"]],
+      columns: [
+        {
+          title: "アイコン",
+          data: "Icon",
+          width: "20%",
+          render: (i) => `<span class="mdi ${i} text-2xl"></span>`,
+        },
+        { title: "名前", data: "Name", width: "50%" },
+        { title: "コード", data: "Code", width: "30%" },
+      ],
+      data: await GetIcons(),
+      language: getTableLang(),
+      select: {
+        style: "single",
+      },
+    });
+    iconTable.on("select", () => {
+      selectedIcon = iconTable.rows({ selected: true }).count();
+    });
+    iconTable.on("deselect", () => {
+      selectedIcon = iconTable.rows({ selected: true }).count();
+    });
+  }
+
+  const addIcon = () => {
+    icon = {
+      Name:"",
+      Icon:"",
+      Code: 0,
+    };
+    disableIconSelect = false;
+    showEditIcon = true;
+  }
+  const editIcon =  () => {
+    const selected = iconTable.rows({ selected: true }).data();
+    if (selected.length != 1) {
+      return;
+    }
+    icon = selected[0];
+    disableIconSelect = true;
+    showEditIcon = true;
+  }
+
+  const delIcon = async () => {
+    const selected = iconTable.rows({ selected: true }).data();
+    if (selected.length != 1) {
+      return;
+    }
+    await DeleteIcon(selected[0].Icon);
+    deleteIconFromList(selected[0].Icon);
+    showIconList();
+  }
+
+  let hasIconTextError = false;
+  const saveIocn = async () => {
+    hasIconTextError = !icon.Name;
+    if(icon && icon.Icon && icon.Name) {
+      icon.Code = iconCodeMap.get(icon.Icon);
+      if (icon.Code){
+        await UpdateIcon(icon);
+        setIconToList(icon);
+        showEditIcon = false;
+        showIconList();
+        return;
+      }
+    }
+  }
+
+  const makeIconList = () => {
+    iconList = [];
+    iconCodeMap.clear();
+    const re = /mdi-[^:]+/
+    for(const ss of document.styleSheets) {
+      if(!ss || !ss.cssRules) {
+        continue;
+      }
+      for(const cr of ss.cssRules) {
+          const e = cr as CSSStyleRule;
+          if (
+            e &&
+            e.selectorText &&
+            e.selectorText.includes('::before') &&
+            e.style &&
+            e.style.content
+          ) {
+            const m = e.selectorText.match(re)
+            if (m) {
+              const code =
+                e.style.content && e.style.content.length > 2
+                  ? e.style.content.codePointAt(1)
+                  : 0
+              if (code !== 0) {
+                iconList.push({
+                  name: m[0],
+                  value: m[0],
+                });
+                iconCodeMap.set(m[0],code);
+              }
+            }
+          }
+        }
+      }
+  }
 
 </script>
 
@@ -601,6 +733,61 @@
         </div>
       </form>
     </TabItem>
+    <TabItem on:click={showIconList}>
+      <div slot="title" class="flex items-center gap-2">
+        <Icon path={icons.mdiDotsGrid} size={1} />
+        アイコン管理
+      </div>
+      <table
+        id="iconTable"
+        class="display compact mt-2"
+        style="width:99%"
+      />
+      <div class="flex justify-end space-x-2 mr-2 mt-3">
+        <GradientButton
+          shadow
+          color="blue"
+          type="button"
+          on:click={addIcon}
+          size="xs"
+        >
+          <Icon path={icons.mdiPlus} size={1} />
+          追加
+        </GradientButton>
+        {#if selectedIcon}
+          <GradientButton
+            shadow
+            color="blue"
+            type="button"
+            on:click={editIcon}
+            size="xs"
+          >
+            <Icon path={icons.mdiPencil} size={1} />
+            編集
+          </GradientButton>
+          <GradientButton
+            shadow
+            color="red"
+            type="button"
+            on:click={delIcon}
+            size="xs"
+          >
+            <Icon path={icons.mdiTrashCan} size={1} />
+            削除
+          </GradientButton>
+        {/if}
+        <GradientButton
+          shadow
+          type="button"
+          color="teal"
+          on:click={close}
+          size="xs"
+        >
+          <Icon path={icons.mdiCancel} size={1} />
+          {$_("Config.Close")}
+        </GradientButton>
+      </div>
+    </TabItem>
     <TabItem on:click={showMIBModules}>
       <div slot="title" class="flex items-center gap-2">
         <Icon path={icons.mdiFileTree} size={1} />
@@ -655,4 +842,46 @@
       </GradientButton>
     </div>
   </div>
+</Modal>
+
+<Modal bind:open={showEditIcon} size="lg" permanent class="w-full min-h-[80vh]">
+  <form class="flex flex-col space-y-4" action="#">
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+      アイコン編集
+    </h3>
+    <div class="grid gap-4 mb-4 md:grid-cols-2">
+      <Label class="space-y-2">
+        <span> { $_('Node.Icon') } </span>
+        <Select
+          items={iconList}
+          bind:value={icon.Icon}
+          placeholder="アイコンを選択"
+          size="sm"
+          disabled={disableIconSelect}
+        />
+      </Label>
+      <div class="mt-5 ml-5">
+        <span class="mdi {icon.Icon} text-4xl" />
+      </div>
+    </div>
+    <Label class="space-y-2">
+      <span>名前</span>
+      <Input
+        bind:value={icon.Name}
+        required
+        size="sm"
+        color={hasIconTextError ? 'red' : 'base'}
+      />
+    </Label>
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton shadow color="blue" type="button" on:click={saveIocn} size="xs">
+        <Icon path={icons.mdiContentSave} size={1} />
+        保存
+      </GradientButton>
+      <GradientButton shadow type="button" color="teal" on:click={() => {showEditIcon = false}} size="xs">
+        <Icon path={icons.mdiCancel} size={1} />
+        キャンセル
+      </GradientButton>
+    </div>
+  </form>
 </Modal>

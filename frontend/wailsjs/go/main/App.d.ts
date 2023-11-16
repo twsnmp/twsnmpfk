@@ -29,6 +29,8 @@ export function DeleteArpEnt(arg1:string):Promise<boolean>;
 
 export function DeleteDrawItems(arg1:Array<string>):Promise<void>;
 
+export function DeleteIcon(arg1:string):Promise<boolean>;
+
 export function DeleteLine(arg1:string):Promise<boolean>;
 
 export function DeleteNodes(arg1:Array<string>):Promise<void>;
@@ -80,6 +82,8 @@ export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
 export function GetEventLogs(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number):Promise<Array<datastore.EventLogEnt>>;
 
 export function GetHostResource(arg1:string):Promise<backend.HostResourceEnt>;
+
+export function GetIcons():Promise<Array<datastore.IconEnt>>;
 
 export function GetImage(arg1:string):Promise<string>;
 
@@ -160,6 +164,8 @@ export function UpdateAIConf(arg1:datastore.AIConfEnt):Promise<boolean>;
 export function UpdateDrawItem(arg1:datastore.DrawItemEnt):Promise<boolean>;
 
 export function UpdateDrawItemPos(arg1:Array<main.UpdatePosEnt>):Promise<void>;
+
+export function UpdateIcon(arg1:datastore.IconEnt):Promise<boolean>;
 
 export function UpdateLine(arg1:datastore.LineEnt):Promise<boolean>;
 
