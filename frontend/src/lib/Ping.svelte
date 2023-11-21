@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { Modal, GradientButton, Tabs, TabItem, Input, Select } from "flowbite-svelte";
+  import ping_ok from "../assets/sound/ping_ok.mp3";
+  import ping_ng from "../assets/sound/ping_ng.mp3";
+  import { Modal, GradientButton, Tabs, TabItem, Input, Select,Toggle } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -45,6 +47,9 @@
   let canShowLinear = false;
   let canShowWorld = false;
   let canShowHistogram = false;
+  let beep = false;
+  let sound_ok;
+  let sound_ng;
 
   onMount(async () => {
     const node = await GetNode(nodeID);
@@ -323,6 +328,13 @@
       });
       chart.setOption(chartOption);
       chart.resize();
+      if(beep && sound_ok) {
+        sound_ok.play();
+      }
+    } else {
+      if(beep && sound_ng) {
+        sound_ng.play();
+      }
     }
     if ((count === -1 || pingReq.count < count) && !stopFlag) {
       if (size === -1) {
@@ -341,7 +353,7 @@
           return;
         }
       }
-      timer = setTimeout(() => _doPing(), 1000);
+      timer = setTimeout(() => _doPing(), beep ? 2000 : 1000);
     } else {
       wait = false;
       canShowLinear = size == -1;
@@ -447,6 +459,7 @@
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
       {#if pingTab}
+        <Toggle bind:checked={beep}>BEEP</Toggle>
         {#if wait}
           <GradientButton shadow type="button" color="red" on:click={stop} size="xs">
             <Icon path={icons.mdiStop} size={1} />
@@ -466,6 +479,9 @@
     </div>
   </div>
 </Modal>
+
+<audio src={ping_ok} bind:this={sound_ok}></audio>
+<audio src={ping_ng} bind:this={sound_ng}></audio>
 
 <style>
   #pingChart {
