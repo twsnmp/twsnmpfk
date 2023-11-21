@@ -372,7 +372,7 @@
     <Tabs style="underline">
       <TabItem bind:open={pingTab} on:click={showPing}>
         <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiChartPie} size={1} />
+          <Icon path={icons.mdiCheckNetwork} size={1} />
           { $_('Ping.DoPing') }
         </div>
         <div class="flex flex-row mb-2">

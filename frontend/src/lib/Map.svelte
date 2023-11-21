@@ -260,7 +260,7 @@
           showPing = true;
         }}
       >
-        <Icon path={icons.mdiShippingPallet} size={0.7} />
+        <Icon path={icons.mdiCheckNetwork} size={0.7} />
         <div>PING</div>
       </div>
       <div
@@ -270,7 +270,7 @@
           showMibBr = true;
         }}
       >
-        <Icon path={icons.mdiShippingPallet} size={0.7} />
+        <Icon path={icons.mdiEye} size={0.7} />
         <div>
           {$_("Map.MIBBrowser")}
         </div>
