@@ -394,8 +394,8 @@ const mapMain = (p5:P5) => {
     } 
   }
 
-  p5.mouseDragged = () => {
-    if (readOnly) {
+  p5.mouseDragged = (e:MouseEvent) => {
+    if (readOnly && !clickInCanvas) {
       return true
     }
     if (dragMode === 0) {
