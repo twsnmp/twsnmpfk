@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { initMAP, updateMAP, resetMap, deleteMap, grid } from "./map";
+  import { initMAP, updateMAP, resetMap, deleteMap, grid,setShowAllItems } from "./map";
   import { onMount, onDestroy } from "svelte";
   import { Modal, GradientButton, Label, Input } from "flowbite-svelte";
   import * as icons from "@mdi/js";
@@ -44,6 +44,7 @@
   let showPolling: boolean = false;
   let showPing: boolean = false;
   let showMibBr: boolean = false;
+  let showAllItems: boolean = false;
 
   let timer = undefined;
   let urls = [];
@@ -209,6 +210,26 @@
         <div>
           {$_("Map.Reload")}
         </div>
+      </div>
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showAllItems = !showAllItems;
+          setShowAllItems(showAllItems);
+          showMapMenu = false;
+        }}
+      >
+        {#if showAllItems}
+          <Icon path={icons.mdiEye} size={0.7} />
+          <div>
+            {$_('Map.showDrawItemNomal')}
+          </div>
+        {:else}
+          <Icon path={icons.mdiDraw} size={0.7} />
+          <div>
+            {$_('Map.showDrawItemEdit')}
+          </div>
+      {/if}
       </div>
     </div>
   </div>

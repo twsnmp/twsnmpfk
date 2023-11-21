@@ -37,10 +37,16 @@
   const drawItemList = [
     { name: $_('DrawItem.Rect'), value: 0 },
     { name: $_('DrawItem.Ellipse'), value: 1 },
-    { name: $_('DarwItem.Label'), value: 2 },
+    { name: $_('DrawItem.Label'), value: 2 },
     { name: $_('DrawItem.Image'), value: 3 },
     { name: $_('DrawItem.PollingText'), value: 4 },
     { name: $_('DrawItem.PollingGauge'), value: 5 },
+  ];
+
+  const condList = [
+    {name:$_('DrawItem.showItemsAllways'), value:0},
+    {name:$_('DrawItem.showItemsLow'), value:1},
+    {name:$_('DrawItem.showItemsHigh'), value:2},
   ];
 
   onMount(async () => {
@@ -125,6 +131,7 @@
         items={drawItemList}
         bind:value={drawItem.Type}
         placeholder={ $_('DrawItem.SelectType') }
+        disabled={drawItem.ID != ""}
         size="sm"
       />
     </Label>
@@ -156,7 +163,15 @@
           <div>{ $_('DrawItem.Color') }</div>
           <input type="color" bind:value={drawItem.Color} />
         </Label>
-        <div />
+        <Label class="space-y-2">
+          <span> {$_('DrawItem.showCond')} </span>
+          <Select
+            items={condList}
+            bind:value={drawItem.Cond}
+            placeholder={$_('DrawItem.selectShowCond')}
+            size="sm"
+          />
+        </Label>
       </div>
     {/if}
     {#if drawItem.Type == 2}
@@ -172,12 +187,20 @@
             size="sm"
           />
         </Label>
+        <div />
         <Label class="space-y-2">
           <div>{ $_('DrawItem.Color') }</div>
           <input type="color" bind:value={drawItem.Color} />
         </Label>
-        <div />
-        <div />
+        <Label class="space-y-2">
+          <span> {$_('DrawItem.showCond')} </span>
+          <Select
+            items={condList}
+            bind:value={drawItem.Cond}
+            placeholder={$_('DrawItem.selectShowCond')}
+            size="sm"
+          />
+        </Label>
       </div>
       <Label class="space-y-2">
         <span>{ $_('DrawItem.Text') }</span>
@@ -210,18 +233,26 @@
             size="sm"
           />
         </Label>
+        <Label class="space-y-2">
+          <span> {$_('DrawItem.showCond')} </span>
+          <Select
+            items={condList}
+            bind:value={drawItem.Cond}
+            placeholder={$_('DrawItem.selectShowCond')}
+            size="sm"
+          />
+        </Label>
         <GradientButton
           shadow
-          class="h-10 mt-4 w-32"
+          class="h-8 mt-6 w-28"
           type="button"
-          size="sm"
+          size="xs"
           color="blue"
           on:click={selectImage}
         >
           <Icon path={icons.mdiImage} size={1} />
-          { $_('DarwItem.Select') }
+          { $_('DrawItem.Select') }
         </GradientButton>
-        <div />
       </div>
       <Label class="space-y-2">
         <span>{ $_('DrawItem.Image') }</span>
@@ -232,10 +263,10 @@
         {/if}
       </Label>
     {/if}
-    {#if drawItem.Type == 4 || drawItem.Type == 5}
+    {#if drawItem.Type >= 4}
       <div class="grid gap-4 mb-4 md:grid-cols-4">
         <Label class="space-y-2">
-          <span>{ $_('DarwItem.Size') }</span>
+          <span>{ $_('DrawItem.Size') }</span>
           <Input
             type="number"
             min={8}
@@ -250,37 +281,37 @@
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2">
-          <span> { $_('DarwItem.Node') } </span>
+          <span> { $_('DrawItem.Node') } </span>
           <Select
             items={nodeList}
             bind:value={nodeID}
-            placeholder={ $_('DarwItem.SelectNode') }
+            placeholder={ $_('DrawItem.SelectNode') }
             size="sm"
             on:change={updatePollingList}
           />
         </Label>
         <Label class="space-y-2">
-          <span> { $_('DarwItem.Polling') } </span>
+          <span> { $_('DrawItem.Polling') } </span>
           <Select
             items={pollingList}
             bind:value={drawItem.PollingID}
-            placeholder={ $_('DarwItem.SelectPolling') }
+            placeholder={ $_('DrawItem.SelectPolling') }
             size="sm"
           />
         </Label>
       </div>
       <Label class="space-y-2">
-        <span>{ $_('DarwItem.ValName') }</span>
+        <span>{ $_('DrawItem.ValName') }</span>
         <Input
           bind:value={drawItem.VarName}
-          placeholder={ $_('DarwItem.ValNamePH') }
+          placeholder={ $_('DrawItem.ValNamePH') }
           size="sm"
         />
       </Label>
     {/if}
     {#if drawItem.Type == 4}
       <Label class="space-y-2">
-        <span>{ $_('DarwItem.TextFormat') }</span>
+        <span>{ $_('DrawItem.TextFormat') }</span>
         <Input
           bind:value={drawItem.Format}
           placeholder={ $_('DrawItem.TextFormatPH') }
@@ -298,7 +329,7 @@
       </Label>
     {/if}
     <Label class="space-y-2">
-      <span>{ $_('DarwItem.Zoom') }</span>
+      <span>{ $_('DrawItem.Zoom') }</span>
       <Input
         type="number"
         min={0.1}

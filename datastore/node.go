@@ -58,6 +58,7 @@ type DrawItemEnt struct {
 	Format    string       `json:"Format"`
 	Value     float64      `json:"Value"`
 	Scale     float64      `json:"Scale"`
+	Cond      int          `json:"Cond"`
 }
 
 func loadMapData() error {

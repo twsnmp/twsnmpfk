@@ -435,6 +435,7 @@ func (a *App) UpdateDrawItem(di datastore.DrawItemEnt) bool {
 	odi.VarName = di.VarName
 	odi.PollingID = di.PollingID
 	odi.Scale = di.Scale
+	odi.Cond = di.Cond
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "user",
 		Level: "info",
@@ -476,6 +477,7 @@ func (a *App) CopyDrawItem(id string) bool {
 	di.VarName = ds.VarName
 	di.PollingID = ds.PollingID
 	di.Scale = ds.Scale
+	di.Cond = ds.Cond
 	if !a.addDrawItem(di) {
 		log.Printf("fail to copy draw item id=%s", id)
 		return false

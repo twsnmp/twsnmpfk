@@ -250,9 +250,7 @@
     "TextFormatPH": "表示フォーマット(空欄は自動設定)",
     "GaugeLabel": "ゲージのラベル",
     "Save": "保存",
-    "Cancel": "キャンセル"
-  },
-  "DarwItem": {
+    "Cancel": "キャンセル",
     "Label": "ラベル",
     "Select": "選択",
     "Size": "サイズ",
@@ -263,7 +261,12 @@
     "ValName": "変数名",
     "ValNamePH": "変数名(空欄は自動設定)",
     "TextFormat": "表示フォーマット",
-    "Zoom": "倍率"
+    "showItemsAllways": "常に表示",
+    "Zoom": "倍率",
+    "showItemsLow": "マップ状態が軽度以上の時",
+    "showItemsHigh": "マップ状態が重度の時",
+    "showCond": "表示条件",
+    "selectShowCond": "条件を選択"
   },
   "Discover": {
     "Discover": "自動発見",
@@ -344,7 +347,9 @@
     "GridSize": "グリッドサイズ",
     "Exec": "実行",
     "Test": "テスト",
-    "Cancel": "キャンセル"
+    "Cancel": "キャンセル",
+    "showDrawItemNomal": "アイテム通常表示",
+    "showDrawItemEdit": "アイテム編集表示"
   },
   "MIBBrowser": {
     "ObjectName": "オブジェクト名",

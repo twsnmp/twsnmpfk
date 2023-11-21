@@ -39,7 +39,9 @@ let iconSize = 32;
 const selectedNodes = [];
 const selectedDrawItems = [];
 
-const imageMap = {};
+const imageMap = new Map();
+let mapState = 0;
+let showAllItems = false;
 
 let _mapP5 :P5 | undefined  = undefined;
 
@@ -74,16 +76,17 @@ export const updateMAP = async () => {
       mapRedraw = true;
     })
   }
+  _setMapState();
   for(const k in items) {
     switch (items[k].Type) {
     case 3:
-      if (!imageMap[items[k].Path] && _mapP5 != undefined) {
+      if (!imageMap.has(items[k].ID) && _mapP5 != undefined) {
         _mapP5.loadImage(await GetImage(items[k].Path),(img)=>{
-          imageMap[items[k].Path] = img;
+          imageMap.set(items[k].ID,img);
           mapRedraw = true;
         })
       }  
-      break
+      break;
     case 2:
     case 4:
       items[k].W = items[k].Size *  items[k].Text.length;
@@ -91,22 +94,35 @@ export const updateMAP = async () => {
       if(!dark) {
         items[k].Color = items[k].Color != "#eee" ? items[k].Color : "#333";
       }
-      break
+      break;
     case 5:
       items[k].H = items[k].Size * 10;
       items[k].W = items[k].Size * 10;
-      break
+      if (items[k].Value < 0.001) {
+        items[k].Value = 0.0;
+      }
+      break;
     } 
   }
   mapRedraw = true;
 }
 
-export const resetMap = () => {
-  for (const key in imageMap) {
-    if (imageMap.hasOwnProperty(key)) {
-      delete imageMap[key];
+const _setMapState = () => {
+  mapState= 0;
+  for (const id in nodes) {
+    switch(nodes[id].State) {
+      case "high":
+        mapState = 2;
+        return;
+      case "low":
+        mapState = 1;
+        break;
     }
   }
+}
+
+export const resetMap = () => {
+  imageMap.clear();
 }
 
 export const deleteMap = () => {
@@ -154,6 +170,10 @@ export const grid = (g:number,test:boolean) => {
   mapRedraw = true;
 };
 
+export const setShowAllItems = (s:boolean) => {
+  showAllItems = s;
+  mapRedraw = true;
+}
 
 
 const getLineColor = (state) => {
@@ -166,6 +186,10 @@ const getLineColor = (state) => {
 const isDark = () :boolean => {
   const  e = document.querySelector("html");
   return e.classList.contains("dark");
+}
+
+const condCheck = (c:number) => {
+  return mapState >= c || showAllItems;
 }
 
 const mapMain = (p5:P5) => {
@@ -237,6 +261,9 @@ const mapMain = (p5:P5) => {
       p5.pop();
     }
     for (const k in items) {
+      if(items[k].Type < 4 && !condCheck(items[k].Cond)) {
+        continue;
+      }
       p5.push();
       p5.translate(items[k].X, items[k].Y);
       if (selectedDrawItems.includes(items[k].ID) ) {
@@ -269,8 +296,8 @@ const mapMain = (p5:P5) => {
         p5.text(items[k].Text, 0, 0,items[k].Size *  items[k].Text.length + 10, items[k].Size + 10)
         break
       case 3: // Image
-        if (imageMap[items[k].Path]) {
-          p5.image(imageMap[items[k].Path],0,0,items[k].W,items[k].H);
+        if (imageMap.has(items[k].ID)) {
+          p5.image(imageMap.get(items[k].ID),0,0,items[k].W,items[k].H);
         }
         break
       case 5: { // Gauge
@@ -284,16 +311,16 @@ const mapMain = (p5:P5) => {
           p5.arc(x, y, r0, r0, 5*p5.QUARTER_PI, -p5.QUARTER_PI);
           if(items[k].Value > 0){
             p5.fill(items[k].Color);
-            p5.arc(x, y, r0, r0, 5*p5.QUARTER_PI, -p5.QUARTER_PI - (p5.HALF_PI - p5.HALF_PI * items[k].Value/100));
+            p5.arc(x, y, r0, r0, 5*p5.QUARTER_PI, -p5.QUARTER_PI - (p5.HALF_PI - p5.HALF_PI * Math.min(items[k].Value/100,1.0)));
           }
           p5.fill(dark ? 23 :252);
           p5.arc(x, y, r1, r1, -p5.PI, 0);
           p5.textAlign(p5.CENTER);
           p5.textSize(8);
           p5.fill(dark ? '#eee' :'#333');
-          p5.text( items[k].Value + '%', x, y - 10 );
+          p5.text( Number(items[k].Value).toFixed(3) + '%', x, y - 10);
           p5.textSize(items[k].Size);
-          p5.text( items[k].Text || "", x, y + 5);
+          p5.text( items[k].Text || "", x, y + items[k].Size);
           p5.fill('#e31a1c');
           const angle = -p5.QUARTER_PI + (p5.HALF_PI * items[k].Value/100);
           const x1 = x + r1/2 * p5.sin(angle);
@@ -592,13 +619,14 @@ const mapMain = (p5:P5) => {
   // 描画アイテムを選択する
   const setSelectItem = () => {
     for (const k in items) {
-      const w =  items[k].Type === 2 ?  (items[k].Size *  items[k].Text.length) + 10 : items[k].W +10
-      const h =  items[k].Type === 2 ?  items[k].Size + 10 : items[k].H +10
+      const w =  items[k].W +10
+      const h =  items[k].H +10
       if (
         items[k].X + w > p5.mouseX &&
         items[k].X - 10 < p5.mouseX &&
         items[k].Y + h > p5.mouseY &&
-        items[k].Y - 10 < p5.mouseY
+        items[k].Y - 10 < p5.mouseY &&
+        (condCheck(items[k].Cond) || showAllItems)
       ) {
         if (selectedDrawItems.includes(items[k].ID)) {
           return

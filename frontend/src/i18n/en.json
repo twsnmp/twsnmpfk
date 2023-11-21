@@ -243,19 +243,6 @@
     "LocStyleError": "Style is URL or JSON",
     "LocZoom": "Zoom"
   },
-  "DarwItem": {
-    "Label": "Label",
-    "Node": "Node",
-    "Polling": "Polling",
-    "Select": "Select",
-    "SelectNode": "select node",
-    "SelectPolling": "Select polling",
-    "Size": "Size",
-    "TextFormat": "Format",
-    "ValName": "Variable name",
-    "ValNamePH": "Variable name (blank fields are automatically set)",
-    "Zoom": "Zoom"
-  },
   "DrawItem": {
     "Cancel": "Cancel",
     "Color": "Color",
@@ -275,7 +262,23 @@
     "TextFormatPH": "Display format (blank fields are automatically set)",
     "TextToDisplay": "String to display",
     "Type": "Type",
-    "Width": "width"
+    "Width": "width",
+    "Label": "Label",
+    "Node": "Node",
+    "Polling": "Polling",
+    "Select": "Select",
+    "SelectNode": "select node",
+    "SelectPolling": "Select polling",
+    "Size": "Size",
+    "TextFormat": "Format",
+    "ValName": "Variable name",
+    "ValNamePH": "Variable name (blank fields are automatically set)",
+    "Zoom": "Zoom",
+    "selectShowCond": "Select conditions",
+    "showCond": "Display conditions",
+    "showItemsAllways": "always visible",
+    "showItemsHigh": "show map state high",
+    "showItemsLow": "show map state low"
   },
   "Discover": {
     "AutoAddPolling": "Polling automatic add",
@@ -356,7 +359,9 @@
     "ReCheck": "ReCheck",
     "Reload": "Reload",
     "Report": "Report",
-    "Test": "Test"
+    "Test": "Test",
+    "showDrawItemEdit": "edit mode",
+    "showDrawItemNomal": "normal mode"
   },
   "MIBBrowser": {
     "Close": "Close",
