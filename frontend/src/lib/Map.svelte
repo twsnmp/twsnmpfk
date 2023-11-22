@@ -106,6 +106,7 @@
         break;
     }
   };
+
   const refreshMap = async () => {
     if (timer) {
       clearTimeout(timer);
@@ -166,7 +167,8 @@
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showMapMenu = false;
-          CheckPolling("");
+          CheckPolling("all");
+          refreshMap();
         }}
       >
         <Icon path={icons.mdiCached} size={0.7} />
@@ -314,6 +316,7 @@
         on:click={() => {
           showNodeMenu = false;
           CheckPolling(selectedNode);
+          refreshMap();
         }}
       >
         <Icon path={icons.mdiCached} size={0.7} />
@@ -338,6 +341,7 @@
         class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           deleteNodes([selectedNode]);
+          refreshMap();
         }}
       >
         <Icon path={icons.mdiDelete} size={0.7} />
@@ -400,6 +404,7 @@
         class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           deleteDrawItems([selectedDrawItem]);
+          refreshMap();
         }}
       >
         <Icon path={icons.mdiDelete} size={0.7} />
@@ -415,6 +420,7 @@
   <Discover
     on:close={() => {
       showDiscover = false;
+      refreshMap();
     }}
   />
 {/if}
@@ -468,6 +474,7 @@
     nodeID={selectedNode}
     on:close={(e) => {
       showPolling = false;
+      refreshMap();
     }}
   />
 {/if}

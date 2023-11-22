@@ -225,6 +225,22 @@
     " selectBeep(true)}\n              size=\"xs\"\n            >\n              ",
     " deleteBeep(false)}\n              size=\"xs\"\n            >\n              ",
     " selectBeep(false)}\n              size=\"xs\"\n            >\n              ",
-    " {\n          showEditIcon = false;\n        }}\n        size=\"xs\"\n      >\n        "
+    " {\n          showEditIcon = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n          showMapMenu = false;\n          CheckPolling(\"all\");\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          showMapMenu = false;\n          CheckPolling(\"all\");\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          showMapMenu = false;\n          resetMap();\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          showNodeMenu = false;\n          CheckPolling(selectedNode);\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          showNodeMenu = false;\n          await CopyNode(selectedNode);\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          deleteNodes([selectedNode]);\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          showDrawItemMenu = false;\n          await CopyDrawItem(selectedDrawItem);\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          deleteDrawItems([selectedDrawItem]);\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          deleteDrawItems([selectedDrawItem]);\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          showReport = true;\n        }}\n        size=\"xs\"\n      >\n        ",
+    "\n        Excel\n      ",
+    " {\n          showChart(\"state\");\n        }}\n      >\n        ",
+    " {\n          showChart(\"node\");\n        }}\n      >\n        ",
+    " {\n          showChart(\"oprate\");\n        }}\n      >\n        ",
+    " {\n          showChart(\"arpwatch\");\n        }}\n      >\n        ",
+    " {\n          showChart(\"arpwatch\");\n        }}\n      >\n        "
   ]
 }

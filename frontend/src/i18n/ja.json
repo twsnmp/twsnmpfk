@@ -155,7 +155,10 @@
     "NewMACAddress": "新MACアドレス",
     "OldMACAddress": "旧MACアドレス",
     "Report": "レポート",
-    "Reload": "更新"
+    "Reload": "更新",
+    "Node": "ノード",
+    "NewVendor": "新ベンダー",
+    "OldVendor": "旧ベンダー"
   },
   "ArpReport": {
     "CountByIP": "IPアドレス別",

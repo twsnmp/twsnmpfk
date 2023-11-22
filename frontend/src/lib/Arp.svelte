@@ -63,7 +63,7 @@
     },
     {
       data: "Node",
-      title: "ノード",
+      title: $_('Arp.Node'),
       width: "15%",
     },
     {
@@ -73,7 +73,7 @@
     },
     {
       data: "NewVendor",
-      title: "新ベンダー",
+      title: $_('Arp.NewVendor'),
       width: "15%",
     },
     {
@@ -83,7 +83,7 @@
     },
     {
       data: "OldVendor",
-      title: "旧ベンダー",
+      title: $_('Arp.OldVendor'),
       width: "15%",
     },
   ];

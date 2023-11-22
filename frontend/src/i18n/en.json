@@ -167,7 +167,10 @@
     "OldMACAddress": "Old MAC",
     "Reload": "Reload",
     "Report": "Report",
-    "State": "State"
+    "State": "State",
+    "NewVendor": "New vendor",
+    "Node": "Node",
+    "OldVendor": "Old vendor"
   },
   "ArpReport": {
     "Chart3DByIP": "3D chart",
