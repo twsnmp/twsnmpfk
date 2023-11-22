@@ -250,7 +250,13 @@
     "Icon": "Icon",
     "IconMan": "Icon",
     "Name": "Name",
-    "SelectIcon": "Select icon"
+    "SelectIcon": "Select icon",
+    "AodioLow": "Sound played when a problem is more than mild",
+    "AudioHigh": "Sound played when severe failure occurs",
+    "SelectAodio": "Select",
+    "SelectAudioError": "Sound files are less than 1MB",
+    "SelectAudioHigh": "Replay file in case of severe failure",
+    "SelectAudioLow": "Playback file when a failure is more than mild"
   },
   "DrawItem": {
     "Cancel": "Cancel",

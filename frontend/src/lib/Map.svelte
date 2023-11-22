@@ -106,25 +106,25 @@
         break;
     }
   };
-  let count = 0;
   const refreshMap = async () => {
-    if (count < 2 || count % 5 == 0) {
-      updateMAP();
+    if (timer) {
+      clearTimeout(timer);
+      timer = undefined;
     }
-    count++;
-    timer = setTimeout(refreshMap, 1000);
+    updateMAP();
+    timer = setTimeout(refreshMap, 1000 * 10);
   };
 
   const deleteNodes = async (ids: string[]) => {
     await DeleteNodes(ids);
-    count = 1;
     showNodeMenu = false;
+    refreshMap();
   };
 
   const deleteDrawItems = async (ids: string[]) => {
     await DeleteDrawItems(ids);
-    count = 1;
     showDrawItemMenu = false;
+    refreshMap();
   };
 </script>
 
@@ -201,9 +201,9 @@
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
-          resetMap();
-          count = 1;
           showMapMenu = false;
+          resetMap();
+          refreshMap();
         }}
       >
         <Icon path={icons.mdiRecycle} size={0.7} />
@@ -326,7 +326,7 @@
         on:click={async () => {
           showNodeMenu = false;
           await CopyNode(selectedNode);
-          count = 1;
+          refreshMap();
         }}
       >
         <Icon path={icons.mdiContentCopy} size={0.7} />
@@ -388,7 +388,7 @@
         on:click={async () => {
           showDrawItemMenu = false;
           await CopyDrawItem(selectedDrawItem);
-          count = 1;
+          refreshMap();
         }}
       >
         <Icon path={icons.mdiContentCopy} size={0.7} />
@@ -426,7 +426,7 @@
     {posY}
     on:close={(e) => {
       showEditNode = false;
-      count = 1;
+      refreshMap();
     }}
   />
 {/if}
@@ -437,7 +437,7 @@
     nodeID2={selectedLineNode2}
     on:close={(e) => {
       showEditLine = false;
-      count = 1;
+      refreshMap();
     }}
   />
 {/if}
@@ -449,7 +449,7 @@
     {posY}
     on:close={(e) => {
       showEditDrawItem = false;
-      count = 1;
+      refreshMap();
     }}
   />
 {/if}

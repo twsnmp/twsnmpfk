@@ -208,6 +208,9 @@ func (a *App) startTWSNMP() {
 
 // GetAudio returns image data
 func (a *App) GetAudio(path string) string {
+	if s, err := os.Stat(path); err != nil || s.Size() > 1024*1024 || s.Size() < 100 {
+		return ""
+	}
 	b, err := os.ReadFile(path)
 	if err != nil {
 		log.Println(err)

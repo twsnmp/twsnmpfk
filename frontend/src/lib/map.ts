@@ -129,27 +129,22 @@ const _setMapState = () => {
   }
 }
 
-let player: HTMLAudioElement | undefined = undefined;
+let player: HTMLAudioElement = new Audio();
 
 const _checkBeep = async () => {
-  if (player) {
-    if( player.onplaying) {
-      return;
-    }
-    player.pause();
-    player.remove();
-    player = undefined;
+  if (player && player.onplaying ) {
+    return;
   }
   if (mapState < 1) {
     return;
   }
   if(mapState == 2 && beepHigh) {
-    player = new Audio(beepHigh);
+    player.src = beepHigh;
     player.play();
     return;
   }
-  if (mapState == 1 && beepLow) {
-    player = new Audio(beepLow);
+  if (beepLow) {
+    player.src = beepLow;
     player.play();
     return;
   }
@@ -756,6 +751,3 @@ const mapMain = (p5:P5) => {
     mapRedraw = true
   }
 }
-
-
-

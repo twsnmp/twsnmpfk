@@ -238,7 +238,13 @@
     "Edit": "編集",
     "Delete": "削除",
     "EditIcon": "アイコン編集",
-    "SelectIcon": "アイコンを選択"
+    "SelectIcon": "アイコンを選択",
+    "SelectAudioHigh": "重度障害時の再生ファイル",
+    "SelectAudioLow": "軽度以上の障害時の再生ファイル",
+    "SelectAudioError": "音のファイルは1MB以下です",
+    "AudioHigh": "重度障害時に再生する音",
+    "AodioLow": "軽度以上の障害時に再生する音",
+    "SelectAodio": "選択"
   },
   "DrawItem": {
     "Rect": "矩形",

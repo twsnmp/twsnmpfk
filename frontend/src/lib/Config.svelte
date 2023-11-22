@@ -108,14 +108,20 @@
     showTestOk = ok;
   };
 
+  let showAudioError = false;
   const selectBeep = async (h) => {
+    showAudioError = false;
     const p = await SelectAudioFile(
-      h ? "重度障害時の再生ファイル" : "軽度障害時の再生ファイル"
+      h ? $_('Config.SelectAudioHigh') : $_('Config.SelectAudioLow')
     );
     if (p == "") {
       return;
     }
     const s = await GetAudio(p);
+    if (s == "") {
+      showAudioError = true;
+      return;
+    }
     if (h) {
       notifyConf.BeepHigh = s;
     } else {
@@ -505,6 +511,14 @@
             </div>
           </Alert>
         {/if}
+        {#if showAudioError}
+          <Alert color="red" dismissable>
+            <div class="flex">
+              <Icon path={icons.mdiExclamation} size={1} />
+              {$_('Config.SelectAudioError')}
+            </div>
+          </Alert>
+        {/if}
         {#if showTestOk}
           <Alert class="flex" color="blue" dismissable>
             <div class="flex">
@@ -602,7 +616,7 @@
         </Label>
         <div class="grid gap-4 md:grid-cols-4">
           <Label class="space-y-2">
-            <span>重度障害時に再生する音</span>
+            <span>{$_('Config.AudioHigh')}</span>
             {#if notifyConf.BeepHigh}
               <audio src={notifyConf.BeepHigh} controls />
             {/if}
@@ -617,7 +631,7 @@
               size="xs"
             >
               <Icon path={icons.mdiTrashCan} size={1} />
-              削除
+              {$_('Config.Delete')}
             </GradientButton>
           {:else}
             <GradientButton
@@ -629,11 +643,11 @@
               size="xs"
             >
               <Icon path={icons.mdiSoundbar} size={1} />
-              選択
+              {$_('Config.SelectAodio')}
             </GradientButton>
           {/if}
           <Label class="space-y-2">
-            <span>軽度障害時に再生する音</span>
+            <span>{$_('Config.AodioLow')}</span>
             {#if notifyConf.BeepLow}
               <audio src={notifyConf.BeepLow} controls />
             {/if}
@@ -648,7 +662,7 @@
               size="xs"
             >
               <Icon path={icons.mdiTrashCan} size={1} />
-              削除
+              {$_('Config.Delete')}
             </GradientButton>
           {:else}
             <GradientButton
@@ -660,7 +674,7 @@
               size="xs"
             >
               <Icon path={icons.mdiSoundbar} size={1} />
-              選択
+              {$_('Config.SelectAodio')}
             </GradientButton>
           {/if}
         </div>

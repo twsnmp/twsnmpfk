@@ -220,6 +220,11 @@
     " {\n          oldPage = page;\n          page = \"\";\n          showConfig = true;\n        }}\n      >\n        ",
     "Icon",
     "<span class=\"mdi ${i} text-2xl\"></span>",
-    "Code"
+    "Code",
+    " deleteBeep(true)}\n              size=\"xs\"\n            >\n              ",
+    " selectBeep(true)}\n              size=\"xs\"\n            >\n              ",
+    " deleteBeep(false)}\n              size=\"xs\"\n            >\n              ",
+    " selectBeep(false)}\n              size=\"xs\"\n            >\n              ",
+    " {\n          showEditIcon = false;\n        }}\n        size=\"xs\"\n      >\n        "
   ]
 }
