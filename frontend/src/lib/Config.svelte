@@ -44,6 +44,8 @@
     GetIcons,
     UpdateIcon,
     DeleteIcon,
+    SelectAudioFile,
+    GetAudio,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
@@ -57,7 +59,7 @@
   let notifyConf: datastore.NotifyConfEnt | undefined = undefined;
   let showTestError: boolean = false;
   let showTestOk: boolean = false;
-  let locConf : datastore.LocConfEnt | undefined = undefined;
+  let locConf: datastore.LocConfEnt | undefined = undefined;
   let showLocStyleError = false;
 
   const dispatch = createEventDispatcher();
@@ -104,6 +106,29 @@
     const ok = await TestNotifyConf(notifyConf);
     showTestError = !ok;
     showTestOk = ok;
+  };
+
+  const selectBeep = async (h) => {
+    const p = await SelectAudioFile(
+      h ? "重度障害時の再生ファイル" : "軽度障害時の再生ファイル"
+    );
+    if (p == "") {
+      return;
+    }
+    const s = await GetAudio(p);
+    if (h) {
+      notifyConf.BeepHigh = s;
+    } else {
+      notifyConf.BeepLow = s;
+    }
+  };
+
+  const deleteBeep = (h) => {
+    if (h) {
+      notifyConf.BeepHigh = "";
+    } else {
+      notifyConf.BeepLow = "";
+    }
   };
 
   let aiConf: datastore.AIConfEnt | undefined = undefined;
@@ -194,11 +219,11 @@
     close();
   };
 
-  let icon : datastore.IconEnt = {
-    Name:"",
-    Icon:"",
+  let icon: datastore.IconEnt = {
+    Name: "",
+    Icon: "",
     Code: 0,
-  }
+  };
   let iconTable = undefined;
   let showEditIcon = false;
   let selectedIcon = 0;
@@ -219,13 +244,13 @@
       order: [[1, "asc"]],
       columns: [
         {
-          title: "アイコン",
+          title: $_("Config.Icon"),
           data: "Icon",
           width: "20%",
           render: (i) => `<span class="mdi ${i} text-2xl"></span>`,
         },
-        { title: "名前", data: "Name", width: "50%" },
-        { title: "コード", data: "Code", width: "30%" },
+        { title: $_("Config.Name"), data: "Name", width: "50%" },
+        { title: $_("Config.Code"), data: "Code", width: "30%" },
       ],
       data: await GetIcons(),
       language: getTableLang(),
@@ -239,18 +264,18 @@
     iconTable.on("deselect", () => {
       selectedIcon = iconTable.rows({ selected: true }).count();
     });
-  }
+  };
 
   const addIcon = () => {
     icon = {
-      Name:"",
-      Icon:"",
+      Name: "",
+      Icon: "",
       Code: 0,
     };
     disableIconSelect = false;
     showEditIcon = true;
-  }
-  const editIcon =  () => {
+  };
+  const editIcon = () => {
     const selected = iconTable.rows({ selected: true }).data();
     if (selected.length != 1) {
       return;
@@ -258,7 +283,7 @@
     icon = selected[0];
     disableIconSelect = true;
     showEditIcon = true;
-  }
+  };
 
   const delIcon = async () => {
     const selected = iconTable.rows({ selected: true }).data();
@@ -268,14 +293,14 @@
     await DeleteIcon(selected[0].Icon);
     deleteIconFromList(selected[0].Icon);
     showIconList();
-  }
+  };
 
   let hasIconTextError = false;
   const saveIocn = async () => {
     hasIconTextError = !icon.Name;
-    if(icon && icon.Icon && icon.Name) {
+    if (icon && icon.Icon && icon.Name) {
       icon.Code = iconCodeMap.get(icon.Icon);
-      if (icon.Code){
+      if (icon.Code) {
         await UpdateIcon(icon);
         setIconToList(icon);
         showEditIcon = false;
@@ -283,44 +308,43 @@
         return;
       }
     }
-  }
+  };
 
   const makeIconList = () => {
     iconList = [];
     iconCodeMap.clear();
-    const re = /mdi-[^:]+/
-    for(const ss of document.styleSheets) {
-      if(!ss || !ss.cssRules) {
+    const re = /mdi-[^:]+/;
+    for (const ss of document.styleSheets) {
+      if (!ss || !ss.cssRules) {
         continue;
       }
-      for(const cr of ss.cssRules) {
-          const e = cr as CSSStyleRule;
-          if (
-            e &&
-            e.selectorText &&
-            e.selectorText.includes('::before') &&
-            e.style &&
-            e.style.content
-          ) {
-            const m = e.selectorText.match(re)
-            if (m) {
-              const code =
-                e.style.content && e.style.content.length > 2
-                  ? e.style.content.codePointAt(1)
-                  : 0
-              if (code !== 0) {
-                iconList.push({
-                  name: m[0],
-                  value: m[0],
-                });
-                iconCodeMap.set(m[0],code);
-              }
+      for (const cr of ss.cssRules) {
+        const e = cr as CSSStyleRule;
+        if (
+          e &&
+          e.selectorText &&
+          e.selectorText.includes("::before") &&
+          e.style &&
+          e.style.content
+        ) {
+          const m = e.selectorText.match(re);
+          if (m) {
+            const code =
+              e.style.content && e.style.content.length > 2
+                ? e.style.content.codePointAt(1)
+                : 0;
+            if (code !== 0) {
+              iconList.push({
+                name: m[0],
+                value: m[0],
+              });
+              iconCodeMap.set(m[0], code);
             }
           }
         }
       }
-  }
-
+    }
+  };
 </script>
 
 <Modal
@@ -576,6 +600,70 @@
           <span> {$_("Config.ExecCommand")} </span>
           <Input class="w-full" bind:value={notifyConf.ExecCmd} size="sm" />
         </Label>
+        <div class="grid gap-4 md:grid-cols-4">
+          <Label class="space-y-2">
+            <span>重度障害時に再生する音</span>
+            {#if notifyConf.BeepHigh}
+              <audio src={notifyConf.BeepHigh} controls />
+            {/if}
+          </Label>
+          {#if notifyConf.BeepHigh}
+            <GradientButton
+              shadow
+              class="h-8 mt-6 w-28"
+              color="red"
+              type="button"
+              on:click={() => deleteBeep(true)}
+              size="xs"
+            >
+              <Icon path={icons.mdiTrashCan} size={1} />
+              削除
+            </GradientButton>
+          {:else}
+            <GradientButton
+              shadow
+              class="h-8 mt-6 w-28"
+              color="blue"
+              type="button"
+              on:click={() => selectBeep(true)}
+              size="xs"
+            >
+              <Icon path={icons.mdiSoundbar} size={1} />
+              選択
+            </GradientButton>
+          {/if}
+          <Label class="space-y-2">
+            <span>軽度障害時に再生する音</span>
+            {#if notifyConf.BeepLow}
+              <audio src={notifyConf.BeepLow} controls />
+            {/if}
+          </Label>
+          {#if notifyConf.BeepLow}
+            <GradientButton
+              shadow
+              class="h-8 mt-6 w-28"
+              color="red"
+              type="button"
+              on:click={() => deleteBeep(false)}
+              size="xs"
+            >
+              <Icon path={icons.mdiTrashCan} size={1} />
+              削除
+            </GradientButton>
+          {:else}
+            <GradientButton
+              shadow
+              class="h-8 mt-6 w-28"
+              color="blue"
+              type="button"
+              on:click={() => selectBeep(false)}
+              size="xs"
+            >
+              <Icon path={icons.mdiSoundbar} size={1} />
+              選択
+            </GradientButton>
+          {/if}
+        </div>
         <div class="flex justify-end space-x-2 mr-2">
           <GradientButton
             shadow
@@ -670,32 +758,28 @@
     <TabItem>
       <div slot="title" class="flex items-center gap-2">
         <Icon path={icons.mdiMap} size={1} />
-        {$_('Config.LocConf')}
+        {$_("Config.LocConf")}
       </div>
       <form class="flex flex-col space-y-4" action="#">
         {#if showLocStyleError}
           <Alert color="red" dismissable>
             <div class="flex">
               <Icon path={icons.mdiAlert} size={1} />
-              {$_('Config.LocStyleError')}
+              {$_("Config.LocStyleError")}
             </div>
           </Alert>
         {/if}
         <Label class="space-y-2">
-          <span>{$_('Config.LocStyle')}</span>
+          <span>{$_("Config.LocStyle")}</span>
           <CodeJar syntax="javascript" {highlight} bind:value={locConf.Style} />
         </Label>
-          <div class="grid gap-4 md:grid-cols-3">
+        <div class="grid gap-4 md:grid-cols-3">
           <Label class="space-y-2">
-            <span>{$_('Config.LocCenter')}</span>
-            <Input
-              type="text"
-              bind:value={locConf.Center}
-              size="sm"
-            />
+            <span>{$_("Config.LocCenter")}</span>
+            <Input type="text" bind:value={locConf.Center} size="sm" />
           </Label>
           <Label class="space-y-2">
-            <span>{$_('Config.LocZoom')}</span>
+            <span>{$_("Config.LocZoom")}</span>
             <Input
               type="number"
               min="2"
@@ -736,13 +820,9 @@
     <TabItem on:click={showIconList}>
       <div slot="title" class="flex items-center gap-2">
         <Icon path={icons.mdiDotsGrid} size={1} />
-        アイコン管理
+        {$_("Config.IconMan")}
       </div>
-      <table
-        id="iconTable"
-        class="display compact mt-2"
-        style="width:99%"
-      />
+      <table id="iconTable" class="display compact mt-2" style="width:99%" />
       <div class="flex justify-end space-x-2 mr-2 mt-3">
         <GradientButton
           shadow
@@ -752,7 +832,7 @@
           size="xs"
         >
           <Icon path={icons.mdiPlus} size={1} />
-          追加
+          {$_("Config.Add")}
         </GradientButton>
         {#if selectedIcon}
           <GradientButton
@@ -763,7 +843,7 @@
             size="xs"
           >
             <Icon path={icons.mdiPencil} size={1} />
-            編集
+            {$_("Config.Edit")}
           </GradientButton>
           <GradientButton
             shadow
@@ -773,7 +853,7 @@
             size="xs"
           >
             <Icon path={icons.mdiTrashCan} size={1} />
-            削除
+            {$_("Config.Delete")}
           </GradientButton>
         {/if}
         <GradientButton
@@ -847,15 +927,15 @@
 <Modal bind:open={showEditIcon} size="lg" permanent class="w-full min-h-[80vh]">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-      アイコン編集
+      {$_("Config.EditIcon")}
     </h3>
     <div class="grid gap-4 mb-4 md:grid-cols-2">
       <Label class="space-y-2">
-        <span> { $_('Node.Icon') } </span>
+        <span> {$_("Node.Icon")} </span>
         <Select
           items={iconList}
           bind:value={icon.Icon}
-          placeholder="アイコンを選択"
+          placeholder={$_("Config.SelectIcon")}
           size="sm"
           disabled={disableIconSelect}
         />
@@ -865,22 +945,36 @@
       </div>
     </div>
     <Label class="space-y-2">
-      <span>名前</span>
+      <span>{$_("Config.Name")}</span>
       <Input
         bind:value={icon.Name}
         required
         size="sm"
-        color={hasIconTextError ? 'red' : 'base'}
+        color={hasIconTextError ? "red" : "base"}
       />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton shadow color="blue" type="button" on:click={saveIocn} size="xs">
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        on:click={saveIocn}
+        size="xs"
+      >
         <Icon path={icons.mdiContentSave} size={1} />
-        保存
+        {$_("Config.Save")}
       </GradientButton>
-      <GradientButton shadow type="button" color="teal" on:click={() => {showEditIcon = false}} size="xs">
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={() => {
+          showEditIcon = false;
+        }}
+        size="xs"
+      >
         <Icon path={icons.mdiCancel} size={1} />
-        キャンセル
+        {$_("Config.Cancel")}
       </GradientButton>
     </div>
   </form>

@@ -118,6 +118,10 @@ export function GetArpTable() {
   return window['go']['main']['App']['GetArpTable']();
 }
 
+export function GetAudio(arg1) {
+  return window['go']['main']['App']['GetAudio'](arg1);
+}
+
 export function GetAutoPollings(arg1, arg2) {
   return window['go']['main']['App']['GetAutoPollings'](arg1, arg2);
 }
@@ -280,6 +284,10 @@ export function Ping(arg1) {
 
 export function ResetArpTable() {
   return window['go']['main']['App']['ResetArpTable']();
+}
+
+export function SelectAudioFile(arg1) {
+  return window['go']['main']['App']['SelectAudioFile'](arg1);
 }
 
 export function SelectDatastore() {

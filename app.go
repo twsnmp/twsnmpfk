@@ -205,3 +205,32 @@ func (a *App) startTWSNMP() {
 		log.Fatalf("start notify err=%v", err)
 	}
 }
+
+// GetAudio returns image data
+func (a *App) GetAudio(path string) string {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	t := "mp3"
+	if filepath.Ext(path) == "wav" {
+		t = "wav"
+	}
+	return fmt.Sprintf("data:audio/%s;base64,%s", t, base64.StdEncoding.EncodeToString(b))
+}
+
+// SelectAudioFile returns select local file
+func (a *App) SelectAudioFile(title string) string {
+	filter := []wails.FileFilter{
+		{DisplayName: "Audio File(*.mp3,*.wav)", Pattern: "*.mp3;*.wav"},
+	}
+	file, err := wails.OpenFileDialog(a.ctx, wails.OpenDialogOptions{
+		Title:   title,
+		Filters: filter,
+	})
+	if err != nil {
+		log.Printf("SelectAudioFile err=%v", err)
+	}
+	return file
+}

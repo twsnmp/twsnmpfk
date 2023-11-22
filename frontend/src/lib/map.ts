@@ -10,6 +10,7 @@ import {
   UpdateNodePos,
   GetImage,
   GetMapConf,
+  GetNotifyConf,
 } from "../../wailsjs/go/main/App"
 import type { datastore } from 'wailsjs/go/models';
 
@@ -44,9 +45,15 @@ let mapState = 0;
 let showAllItems = false;
 
 let _mapP5 :P5 | undefined  = undefined;
+let beepHigh = undefined;
+let beepLow = undefined;
 
 export const initMAP = async (div:HTMLElement,cb :any) => {
   const settings = await GetSettings();
+  const notifyConf = await GetNotifyConf();
+  beepHigh = notifyConf.BeepHigh;
+  beepLow = notifyConf.BeepLow;
+  
   mapCallBack =cb;
   readOnly = settings.Lock != "";
   mapRedraw = false;
@@ -77,6 +84,7 @@ export const updateMAP = async () => {
     })
   }
   _setMapState();
+  _checkBeep();
   for(const k in items) {
     switch (items[k].Type) {
     case 3:
@@ -118,6 +126,32 @@ const _setMapState = () => {
         mapState = 1;
         break;
     }
+  }
+}
+
+let player: HTMLAudioElement | undefined = undefined;
+
+const _checkBeep = async () => {
+  if (player) {
+    if( player.onplaying) {
+      return;
+    }
+    player.pause();
+    player.remove();
+    player = undefined;
+  }
+  if (mapState < 1) {
+    return;
+  }
+  if(mapState == 2 && beepHigh) {
+    player = new Audio(beepHigh);
+    player.play();
+    return;
+  }
+  if (mapState == 1 && beepLow) {
+    player = new Audio(beepLow);
+    player.play();
+    return;
   }
 }
 

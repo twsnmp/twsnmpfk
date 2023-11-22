@@ -217,6 +217,9 @@
     " {\n          page = \"arp\";\n        }}\n      >\n        ",
     " {\n          page = \"ai\";\n        }}\n      >\n        ",
     " {\n          page = \"system\";\n        }}\n      >\n        ",
-    " {\n          oldPage = page;\n          page = \"\";\n          showConfig = true;\n        }}\n      >\n        "
+    " {\n          oldPage = page;\n          page = \"\";\n          showConfig = true;\n        }}\n      >\n        ",
+    "Icon",
+    "<span class=\"mdi ${i} text-2xl\"></span>",
+    "Code"
   ]
 }

@@ -598,6 +598,8 @@ export namespace datastore {
 	    Report: boolean;
 	    NotifyRepair: boolean;
 	    ExecCmd: string;
+	    BeepHigh: string;
+	    BeepLow: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new NotifyConfEnt(source);
@@ -617,6 +619,8 @@ export namespace datastore {
 	        this.Report = source["Report"];
 	        this.NotifyRepair = source["NotifyRepair"];
 	        this.ExecCmd = source["ExecCmd"];
+	        this.BeepHigh = source["BeepHigh"];
+	        this.BeepLow = source["BeepLow"];
 	    }
 	}
 	export class PollingEnt {

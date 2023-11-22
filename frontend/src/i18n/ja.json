@@ -229,7 +229,16 @@
     "LocStyleError": "スタイルは、URLかJSONで指定してください。",
     "LocStyle": "スタイル",
     "LocCenter": "中央座標",
-    "LocZoom": "ズーム"
+    "LocZoom": "ズーム",
+    "IconMan": "アイコン管理",
+    "Icon": "アイコン",
+    "Name": "名前",
+    "Code": "コード",
+    "Add": "追加",
+    "Edit": "編集",
+    "Delete": "削除",
+    "EditIcon": "アイコン編集",
+    "SelectIcon": "アイコンを選択"
   },
   "DrawItem": {
     "Rect": "矩形",

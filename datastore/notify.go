@@ -25,6 +25,8 @@ type NotifyConfEnt struct {
 	Report             bool   `json:"Report"`
 	NotifyRepair       bool   `json:"NotifyRepair"`
 	ExecCmd            string `json:"ExecCmd"`
+	BeepHigh           string `json:"BeepHigh"`
+	BeepLow            string `json:"BeepLow"`
 }
 
 func SaveNotifyConf() error {

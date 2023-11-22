@@ -63,6 +63,8 @@ export function GetArpLogs():Promise<Array<main.ArpLogEnt>>;
 
 export function GetArpTable():Promise<Array<datastore.ArpEnt>>;
 
+export function GetAudio(arg1:string):Promise<string>;
+
 export function GetAutoPollings(arg1:string,arg2:number):Promise<Array<datastore.PollingEnt>>;
 
 export function GetBackImage():Promise<datastore.BackImageEnt>;
@@ -144,6 +146,8 @@ export function IsLatest():Promise<boolean>;
 export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 
 export function ResetArpTable():Promise<boolean>;
+
+export function SelectAudioFile(arg1:string):Promise<string>;
 
 export function SelectDatastore():Promise<boolean>;
 
