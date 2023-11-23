@@ -6,7 +6,8 @@
   import { onMount, createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { GetVersion, SelectDatastore } from "../../wailsjs/go/main/App";
-  import {Quit} from "../../wailsjs/runtime/runtime";
+  import {Quit,BrowserOpenURL} from "../../wailsjs/runtime/runtime";
+  import {lang} from '../i18n/i18n';
   const dispatch = createEventDispatcher();
   let version = "1.0.0(xxxxx)";
   let started = false;
@@ -76,7 +77,22 @@
             {$_('Wellcome.Stop')}
           </span>
         </GradientButton>
-      {/if}
+        {/if}
+        <GradientButton
+          shadow
+          type="button"
+          size="xl"
+          color="lime"
+          class="ml-2"
+          on:click={ ()=> {
+            BrowserOpenURL(`https://lhx98.linkclub.jp/twise.co.jp/download/twsnmpfk_${lang}.pdf`);
+          }}
+        >
+          <Icon path={icons.mdiHelp} size={1} />
+          <span>
+            {$_('Wellcom.Help')}
+          </span>
+        </GradientButton>
     </div>
   </Card>
 </div>

@@ -20,6 +20,8 @@
     GetLocConf,
     GetIcons,
   } from "../../wailsjs/go/main/App";
+  import {BrowserOpenURL} from "../../wailsjs/runtime";
+  import {lang} from '../i18n/i18n';
   import Map from "./Map.svelte";
   import Log from "./Log.svelte";
   import NodeList from "./NodeList.svelte";
@@ -229,13 +231,20 @@
   {#if !latest}
     <Badge border color="red">{$_("Top.HasUpdate")}</Badge>
   {/if}
-  <Button class="!p-2" color="alternative" on:click={toggleDark}>
-    {#if dark}
-      <Icon path={icons.mdiWeatherSunny} size={1} />
-    {:else}
-      <Icon path={icons.mdiMoonWaxingCrescent} size={1} />
-    {/if}
-  </Button>
+  <div class="flex justify-right">
+    <Button class="!p-2" color="alternative" on:click={toggleDark}>
+      {#if dark}
+        <Icon path={icons.mdiWeatherSunny} size={1} />
+      {:else}
+        <Icon path={icons.mdiMoonWaxingCrescent} size={1} />
+      {/if}
+    </Button>
+    <Button class="!p-2 ml-2" color="alternative" on:click={() => {
+        BrowserOpenURL(`https://lhx98.linkclub.jp/twise.co.jp/download/twsnmpfk_${lang}.pdf`);
+      }}>
+      <Icon path={icons.mdiHelp} size={1} />
+    </Button>
+  </div>
 </Navbar>
 
 {#if page == "map"}

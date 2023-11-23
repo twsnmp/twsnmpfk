@@ -241,6 +241,8 @@
     " {\n          showChart(\"node\");\n        }}\n      >\n        ",
     " {\n          showChart(\"oprate\");\n        }}\n      >\n        ",
     " {\n          showChart(\"arpwatch\");\n        }}\n      >\n        ",
-    " {\n          showChart(\"arpwatch\");\n        }}\n      >\n        "
+    " {\n          showChart(\"arpwatch\");\n        }}\n      >\n        ",
+    " {\n        BrowserOpenURL(`https://lhx98.linkclub.jp/twise.co.jp/download/twsnmpfk_${lang}.pdf`);\n      }}>\n      ",
+    " {\n            BrowserOpenURL(`https://lhx98.linkclub.jp/twise.co.jp/download/twsnmpfk_${lang}.pdf`);\n          }}\n        >\n          "
   ]
 }
