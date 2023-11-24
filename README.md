@@ -6,14 +6,14 @@ To keep maps and event logs, etc. always visible.
 It is designed to be used in Windows kiosk mode.
 Of course, it can also be used as a normal application.
 
-![](docs/images/2023-10-08_06-21-51.png)
+![](doc/images/2023-10-08_06-21-51.png)
 
 超軽量なSNMPマネージャーです。
 マップとイベントログなどを常に表示しておくため
 Windowsのキオスクモードでの利用を想定しています。
 もちろん通常のアプリとしても利用可能です。
 
-![](docs/images/2023-10-07_06-47-37.png);
+![](doc/images/2023-10-07_06-47-37.png);
 
 ## Status
 
@@ -99,8 +99,8 @@ Usage of twsnmpfk:
     	Kisok mode(frameless and full screen)
   -lang string
     	Language(en|jp)
-  -lock
-    	Disable edit map
+  -lock string
+      Disable edit map and lock page(map or loc)
   -maxDispLog int
     	Max log size to diplay (default 10000)
   -ping string
