@@ -20,8 +20,6 @@
     GetLocConf,
     GetIcons,
   } from "../../wailsjs/go/main/App";
-  import {BrowserOpenURL} from "../../wailsjs/runtime";
-  import {lang} from '../i18n/i18n';
   import Map from "./Map.svelte";
   import Log from "./Log.svelte";
   import NodeList from "./NodeList.svelte";
@@ -34,6 +32,7 @@
   import AIList from "./AIList.svelte";
   import Config from "./Config.svelte";
   import System from "./System.svelte";
+  import Help from "./Help.svelte";
   import { _ } from "svelte-i18n";
   import Location from "./Location.svelte";
   import type { datastore } from "wailsjs/go/models";
@@ -45,9 +44,10 @@
   let page = "map";
   let oldPage = "";
   let showConfig = false;
+  let showHelp = false;
   let latest = true;
   let lock = "";
-  let locConf :datastore.LocConfEnt = {
+  let locConf: datastore.LocConfEnt = {
     Style: "",
     IconSize: 24,
     Zoom: 2,
@@ -82,8 +82,8 @@
       page = "loc";
     }
     const l = await GetIcons();
-    if(l) {
-      for(const icon of l) {
+    if (l) {
+      for (const icon of l) {
         setIconToList(icon);
       }
     }
@@ -131,7 +131,7 @@
           }}
         >
           <Icon path={icons.mdiMap} size={1} />
-          {$_('Top.Loc')}
+          {$_("Top.Loc")}
         </NavLi>
       {/if}
       <NavLi
@@ -159,7 +159,7 @@
         }}
       >
         <Icon path={icons.mdiListStatus} size={1} />
-        {$_('Top.Address')}
+        {$_("Top.Address")}
       </NavLi>
       <NavLi
         active={page == "eventlog"}
@@ -213,7 +213,7 @@
         }}
       >
         <Icon path={icons.mdiChartLine} size={1} />
-        {$_('Top.System')}
+        {$_("Top.System")}
       </NavLi>
       <NavLi
         active={showConfig}
@@ -239,9 +239,15 @@
         <Icon path={icons.mdiMoonWaxingCrescent} size={1} />
       {/if}
     </Button>
-    <Button class="!p-2 ml-2" color="alternative" on:click={() => {
-        BrowserOpenURL(`https://lhx98.linkclub.jp/twise.co.jp/download/twsnmpfk_${lang}.pdf`);
-      }}>
+    <Button
+      class="!p-2 ml-2"
+      color="alternative"
+      on:click={() => {
+        oldPage = page;
+        page = "";
+        showHelp = true;
+      }}
+    >
       <Icon path={icons.mdiHelp} size={1} />
     </Button>
   </div>
@@ -284,6 +290,16 @@
       page = oldPage;
       updateMapName();
       showConfig = false;
+    }}
+  />
+{/if}
+
+{#if showHelp}
+  <Help
+    page={oldPage}
+    on:close={() => {
+      page = oldPage;
+      showHelp = false;
     }}
   />
 {/if}

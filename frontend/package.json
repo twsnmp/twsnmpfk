@@ -31,6 +31,7 @@
     "@mdi/js": "^7.2.96",
     "@novacbn/svelte-codejar": "^0.1.2",
     "@types/numeral": "^2.0.4",
+    "@types/reveal.js": "^4.4.8",
     "datatables.net-dt": "^1.13.6",
     "datatables.net-plugins": "^1.13.6",
     "datatables.net-select-dt": "^1.7.0",
@@ -45,8 +46,10 @@
     "numeral": "^2.0.6",
     "p5": "^1.7.0",
     "prismjs": "^1.29.0",
+    "reveal.js": "^5.0.2",
     "svelte-i18n": "^3.7.4",
     "tailwind-merge": "^1.14.0",
+    "vite-plugin-static-copy": "^0.17.1",
     "world-map-geojson": "^1.0.2"
   }
 }

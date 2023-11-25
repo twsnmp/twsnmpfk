@@ -52,8 +52,10 @@
   import "datatables.net-select-dt";
   import MibTree from "./MIBTree.svelte";
   import { CodeJar } from "@novacbn/svelte-codejar";
+  import Help from "./Help.svelte";
 
   let show: boolean = false;
+  let helpPage: string | undefined = undefined;
   let mapConf: datastore.MapConfEnt | undefined = undefined;
 
   let notifyConf: datastore.NotifyConfEnt | undefined = undefined;
@@ -112,7 +114,7 @@
   const selectBeep = async (h) => {
     showAudioError = false;
     const p = await SelectAudioFile(
-      h ? $_('Config.SelectAudioHigh') : $_('Config.SelectAudioLow')
+      h ? $_("Config.SelectAudioHigh") : $_("Config.SelectAudioLow")
     );
     if (p == "") {
       return;
@@ -486,6 +488,21 @@
           <GradientButton
             shadow
             type="button"
+            size="xs"
+            color="lime"
+            class="ml-2"
+            on:click={() => {
+              helpPage = "mapconf";
+            }}
+          >
+            <Icon path={icons.mdiHelp} size={1} />
+            <span>
+              {$_("Config.Help")}
+            </span>
+          </GradientButton>
+          <GradientButton
+            shadow
+            type="button"
             color="teal"
             on:click={close}
             size="xs"
@@ -515,7 +532,7 @@
           <Alert color="red" dismissable>
             <div class="flex">
               <Icon path={icons.mdiExclamation} size={1} />
-              {$_('Config.SelectAudioError')}
+              {$_("Config.SelectAudioError")}
             </div>
           </Alert>
         {/if}
@@ -616,7 +633,7 @@
         </Label>
         <div class="grid gap-4 md:grid-cols-4">
           <Label class="space-y-2">
-            <span>{$_('Config.AudioHigh')}</span>
+            <span>{$_("Config.AudioHigh")}</span>
             {#if notifyConf.BeepHigh}
               <audio src={notifyConf.BeepHigh} controls />
             {/if}
@@ -631,7 +648,7 @@
               size="xs"
             >
               <Icon path={icons.mdiTrashCan} size={1} />
-              {$_('Config.Delete')}
+              {$_("Config.Delete")}
             </GradientButton>
           {:else}
             <GradientButton
@@ -643,11 +660,11 @@
               size="xs"
             >
               <Icon path={icons.mdiSoundbar} size={1} />
-              {$_('Config.SelectAodio')}
+              {$_("Config.SelectAodio")}
             </GradientButton>
           {/if}
           <Label class="space-y-2">
-            <span>{$_('Config.AodioLow')}</span>
+            <span>{$_("Config.AodioLow")}</span>
             {#if notifyConf.BeepLow}
               <audio src={notifyConf.BeepLow} controls />
             {/if}
@@ -662,7 +679,7 @@
               size="xs"
             >
               <Icon path={icons.mdiTrashCan} size={1} />
-              {$_('Config.Delete')}
+              {$_("Config.Delete")}
             </GradientButton>
           {:else}
             <GradientButton
@@ -674,7 +691,7 @@
               size="xs"
             >
               <Icon path={icons.mdiSoundbar} size={1} />
-              {$_('Config.SelectAodio')}
+              {$_("Config.SelectAodio")}
             </GradientButton>
           {/if}
         </div>
@@ -698,6 +715,21 @@
           >
             <Icon path={icons.mdiEmail} size={1} />
             {$_("Config.Test")}
+          </GradientButton>
+          <GradientButton
+            shadow
+            type="button"
+            size="xs"
+            color="lime"
+            class="ml-2"
+            on:click={() => {
+              helpPage = "notifyconf";
+            }}
+          >
+            <Icon path={icons.mdiHelp} size={1} />
+            <span>
+              {$_("Config.Help")}
+            </span>
           </GradientButton>
           <GradientButton
             shadow
@@ -755,6 +787,21 @@
           >
             <Icon path={icons.mdiContentSave} size={1} />
             {$_("Config.Save")}
+          </GradientButton>
+          <GradientButton
+            shadow
+            type="button"
+            size="xs"
+            color="lime"
+            class="ml-2"
+            on:click={() => {
+              helpPage = "aiconf";
+            }}
+          >
+            <Icon path={icons.mdiHelp} size={1} />
+            <span>
+              {$_("Config.Help")}
+            </span>
           </GradientButton>
           <GradientButton
             shadow
@@ -821,6 +868,21 @@
           <GradientButton
             shadow
             type="button"
+            size="xs"
+            color="lime"
+            class="ml-2"
+            on:click={() => {
+              helpPage = "locconf";
+            }}
+          >
+            <Icon path={icons.mdiHelp} size={1} />
+            <span>
+              {$_("Config.Help")}
+            </span>
+          </GradientButton>
+          <GradientButton
+            shadow
+            type="button"
             color="teal"
             on:click={close}
             size="xs"
@@ -873,6 +935,21 @@
         <GradientButton
           shadow
           type="button"
+          size="xs"
+          color="lime"
+          class="ml-2"
+          on:click={() => {
+            helpPage = "iconconf";
+          }}
+        >
+          <Icon path={icons.mdiHelp} size={1} />
+          <span>
+            {$_("Config.Help")}
+          </span>
+        </GradientButton>
+        <GradientButton
+          shadow
+          type="button"
           color="teal"
           on:click={close}
           size="xs"
@@ -902,6 +979,21 @@
         >
           <Icon path={icons.mdiFileTree} size={1} />
           {$_("Config.MIBTree")}
+        </GradientButton>
+        <GradientButton
+          shadow
+          type="button"
+          size="xs"
+          color="lime"
+          class="ml-2"
+          on:click={() => {
+            helpPage = "mibconf";
+          }}
+        >
+          <Icon path={icons.mdiHelp} size={1} />
+          <span>
+            {$_("Config.Help")}
+          </span>
         </GradientButton>
         <GradientButton
           shadow
@@ -993,3 +1085,12 @@
     </div>
   </form>
 </Modal>
+
+{#if helpPage}
+  <Help
+    page={helpPage}
+    on:close={() => {
+      helpPage = undefined;
+    }}
+  />
+{/if}

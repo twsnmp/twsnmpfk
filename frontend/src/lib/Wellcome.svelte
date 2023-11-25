@@ -6,11 +6,13 @@
   import { onMount, createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { GetVersion, SelectDatastore } from "../../wailsjs/go/main/App";
-  import {Quit,BrowserOpenURL} from "../../wailsjs/runtime/runtime";
-  import {lang} from '../i18n/i18n';
+  import { Quit } from "../../wailsjs/runtime/runtime";
+  import Help from "./Help.svelte";
+
   const dispatch = createEventDispatcher();
   let version = "1.0.0(xxxxx)";
   let started = false;
+  let showHelp = false;
 
   onMount(async () => {
     version = await GetVersion();
@@ -54,12 +56,12 @@
         {#if started}
           <Spinner class="mr-3" size="4" />
           <span>
-            {$_('Wellcom.Starting')}
+            {$_("Wellcom.Starting")}
           </span>
         {:else}
           <Icon path={icons.mdiRun} size={1} />
           <span>
-            {$_('Wellcome.Start')}
+            {$_("Wellcome.Start")}
           </span>
         {/if}
       </GradientButton>
@@ -74,28 +76,37 @@
         >
           <Icon path={icons.mdiStop} size={1} />
           <span>
-            {$_('Wellcome.Stop')}
+            {$_("Wellcome.Stop")}
           </span>
         </GradientButton>
-        {/if}
-        <GradientButton
-          shadow
-          type="button"
-          size="xl"
-          color="lime"
-          class="ml-2"
-          on:click={ ()=> {
-            BrowserOpenURL(`https://lhx98.linkclub.jp/twise.co.jp/download/twsnmpfk_${lang}.pdf`);
-          }}
-        >
-          <Icon path={icons.mdiHelp} size={1} />
-          <span>
-            {$_('Wellcom.Help')}
-          </span>
-        </GradientButton>
+      {/if}
+      <GradientButton
+        shadow
+        type="button"
+        size="xl"
+        color="lime"
+        class="ml-2"
+        on:click={() => {
+          showHelp = true;
+        }}
+      >
+        <Icon path={icons.mdiHelp} size={1} />
+        <span>
+          {$_("Wellcom.Help")}
+        </span>
+      </GradientButton>
     </div>
   </Card>
 </div>
+
+{#if showHelp}
+  <Help
+    page="wellcome"
+    on:close={() => {
+      showHelp = false;
+    }}
+  />
+{/if}
 
 <style>
   #logo {

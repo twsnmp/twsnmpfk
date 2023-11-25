@@ -247,7 +247,8 @@
     "SelectAudioError": "音のファイルは1MB以下です",
     "AudioHigh": "重度障害時に再生する音",
     "AodioLow": "軽度以上の障害時に再生する音",
-    "SelectAodio": "選択"
+    "SelectAodio": "選択",
+    "Help": "ヘルプ"
   },
   "DrawItem": {
     "Rect": "矩形",
@@ -696,5 +697,9 @@
     "Add": "追加",
     "Cancel": "キャンセル",
     "Del": "削除"
+  },
+  "Help": {
+    "Close": "閉じる",
+    "Manual": "マニュアル"
   }
 }

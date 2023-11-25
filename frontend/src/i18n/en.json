@@ -259,7 +259,8 @@
     "SelectAodio": "Select",
     "SelectAudioError": "Sound files are less than 1MB",
     "SelectAudioHigh": "Replay file in case of severe failure",
-    "SelectAudioLow": "Playback file when a failure is more than mild"
+    "SelectAudioLow": "Playback file when a failure is more than mild",
+    "Help": "Help"
   },
   "DrawItem": {
     "Cancel": "Cancel",
@@ -696,5 +697,9 @@
     "SaveDef": "Save Def",
     "SelectNode": "Select Node",
     "Del": "Delete"
+  },
+  "Help": {
+    "Close": "Close",
+    "Manual": "Manual"
   }
 }
