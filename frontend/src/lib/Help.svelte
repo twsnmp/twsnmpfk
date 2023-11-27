@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { Modal, GradientButton } from "flowbite-svelte";
+  import { Modal, GradientButton,Toggle } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
-  import { BrowserOpenURL } from "../../wailsjs/runtime/runtime";
   import { lang } from "../i18n/i18n";
   import Reveal from "reveal.js";
   import Highlight from "reveal.js/plugin/highlight/highlight";
@@ -26,6 +25,7 @@
     await tick();
     reveal = new Reveal({
       plugins: [Markdown, Highlight],
+      hash: true,
     });
     reveal.initialize();
   });
@@ -44,28 +44,27 @@
   bind:open={show}
   size="xl"
   permanent
-  class="w-full min-h-[90vh] bg-gray-800"
+  class="w-full min-h-[90vh] bg-gray-800 help"
 >
   <div class="reveal max-h-[90%]">
     <div class="slides">
-      <section data-markdown={helpUrl} />
+      <section 
+        data-markdown={helpUrl}
+        data-separator-vertical="^\n>>>\n"
+      />
     </div>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
       shadow
+      color="blue"
       type="button"
-      size="xs"
-      color="lime"
-      class="ml-2"
+      class="mr-2"
       on:click={() => {
-        BrowserOpenURL(
-          `https://lhx98.linkclub.jp/twise.co.jp/download/twsnmpfk_${lang}.pdf`
-        );
+        reveal.toggleOverview();
       }}
     >
-      <Icon path={icons.mdiHelp} size={1} />
-      {$_('Help.Manual')}
+      目次
     </GradientButton>
     <GradientButton
       shadow
@@ -79,3 +78,14 @@
     </GradientButton>
   </div>
 </Modal>
+
+<style global>
+  .help .reveal img {
+    margin:  0 auto;
+  }
+
+  .help .reveal pre.code-wrapper {
+    background-color: white;
+  }
+
+</style>
