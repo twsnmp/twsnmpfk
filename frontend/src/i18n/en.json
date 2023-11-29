@@ -297,7 +297,8 @@
     "showCond": "Display conditions",
     "showItemsAllways": "always visible",
     "showItemsHigh": "show map state high",
-    "showItemsLow": "show map state low"
+    "showItemsLow": "show map state low",
+    "Help": "Help"
   },
   "Discover": {
     "AutoAddPolling": "Polling automatic add",

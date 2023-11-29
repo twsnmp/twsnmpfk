@@ -19,6 +19,7 @@
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import { _ } from 'svelte-i18n';
+  import Help from "./Help.svelte";
 
   export let id: string = "";
   export let posX = 0;
@@ -31,6 +32,7 @@
   let pollings : datastore.PollingEnt[] = [];
   let pollingList = [];
   const nodeList = [];
+  let showHelp = false;
   
   const dispatch = createEventDispatcher();
 
@@ -344,10 +346,34 @@
         <Icon path={icons.mdiContentSave} size={1} />
         { $_('DrawItem.Save') }
       </GradientButton>
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton
+      shadow
+      type="button"
+      size="xs"
+      color="lime"
+      class="ml-2"
+      on:click={() => {
+        showHelp = true;
+      }}
+    >
+      <Icon path={icons.mdiHelp} size={1} />
+      <span>
+        {$_("DrawItem.Help")}
+      </span>
+    </GradientButton>
+    <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('DrawItem.Cancel') }
       </GradientButton>
     </div>
   </form>
 </Modal>
+
+{#if showHelp}
+  <Help
+    page="drawitem"
+    on:close={() => {
+      showHelp = false;
+    }}
+  />
+{/if}

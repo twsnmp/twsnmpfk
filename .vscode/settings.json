@@ -254,6 +254,7 @@
     " {\n              helpPage = \"aiconf\";\n            }}\n          >\n            ",
     " {\n              helpPage = \"locconf\";\n            }}\n          >\n            ",
     " {\n            helpPage = \"iconconf\";\n          }}\n        >\n          ",
-    " {\n            helpPage = \"mibconf\";\n          }}\n        >\n          "
+    " {\n            helpPage = \"mibconf\";\n          }}\n        >\n          ",
+    " {\n        showHelp = true;\n      }}\n    >\n      "
   ]
 }

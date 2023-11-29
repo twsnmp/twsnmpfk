@@ -285,7 +285,8 @@
     "showItemsLow": "マップ状態が軽度以上の時",
     "showItemsHigh": "マップ状態が重度の時",
     "showCond": "表示条件",
-    "selectShowCond": "条件を選択"
+    "selectShowCond": "条件を選択",
+    "Help": "ヘルプ"
   },
   "Discover": {
     "Discover": "自動発見",
