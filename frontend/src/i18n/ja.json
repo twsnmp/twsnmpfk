@@ -300,7 +300,8 @@
     "Close": "閉じる",
     "Stats": "自動発見の進行状況",
     "Stop": "停止",
-    "AutoIPRange": "自動IP範囲"
+    "AutoIPRange": "自動IP範囲",
+    "Help": "ヘルプ"
   },
   "EventLog": {
     "Level": "レベル",

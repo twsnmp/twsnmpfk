@@ -9,7 +9,7 @@
   } from "flowbite-svelte";
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import {
-  GetDiscoverAddressRange,
+    GetDiscoverAddressRange,
     GetDiscoverConf,
     GetDiscoverStats,
     StartDiscover,
@@ -18,6 +18,7 @@
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
+  import Help from "./Help.svelte";
 
   export let posX = 0;
   export let posY = 0;
@@ -27,6 +28,7 @@
   let showConf = false;
   let showStats = false;
   let showStop = true;
+  let showHelp = false;
   let timer: number | undefined = undefined;
   const dispatch = createEventDispatcher();
 
@@ -83,21 +85,21 @@
   };
 
   let ipRanges = [];
-  let selIPRange  = 0;
+  let selIPRange = 0;
   const getIPRange = async () => {
     if (ipRanges.length < 1) {
       ipRanges = await GetDiscoverAddressRange();
     }
     if (ipRanges.length < 2) {
-      return
+      return;
     }
     conf.StartIP = ipRanges[selIPRange];
-    conf.EndIP = ipRanges[selIPRange+1];
-    selIPRange += 2
-    if (selIPRange > ipRanges.length /2) {
+    conf.EndIP = ipRanges[selIPRange + 1];
+    selIPRange += 2;
+    if (selIPRange > ipRanges.length / 2) {
       selIPRange = 0;
     }
-  }  
+  };
 </script>
 
 <Modal bind:open={showConf} size="lg" permanent class="w-full">
@@ -147,15 +149,48 @@
       >
     </div>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton shadow color="blue" type="button" on:click={start} size="xs">
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        on:click={start}
+        size="xs"
+      >
         <Icon path={icons.mdiSearchWeb} size={1} />
         {$_("Discover.Start")}
       </GradientButton>
-      <GradientButton shadow type="button" color="red" on:click={getIPRange} size="xs">
+      <GradientButton
+        shadow
+        type="button"
+        color="red"
+        on:click={getIPRange}
+        size="xs"
+      >
         <Icon path={icons.mdiMagicStaff} size={1} />
-        {$_('Discover.AutoIPRange')}
+        {$_("Discover.AutoIPRange")}
       </GradientButton>
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton
+        shadow
+        type="button"
+        size="xs"
+        color="lime"
+        class="ml-2"
+        on:click={() => {
+          showHelp = true;
+        }}
+      >
+        <Icon path={icons.mdiHelp} size={1} />
+        <span>
+          {$_("Discover.Help")}
+        </span>
+      </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={close}
+        size="xs"
+      >
         <Icon path={icons.mdiCancel} size={1} />
         {$_("Discover.Close")}
       </GradientButton>
@@ -261,15 +296,36 @@
     {/if}
     <div class="flex justify-end space-x-2 mr-2">
       {#if showStop}
-        <GradientButton shadow type="button" color="red" on:click={stop} size="xs">
+        <GradientButton
+          shadow
+          type="button"
+          color="red"
+          on:click={stop}
+          size="xs"
+        >
           <Icon path={icons.mdiStop} size={1} />
           {$_("Discover.Stop")}
         </GradientButton>
       {/if}
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={close}
+        size="xs"
+      >
         <Icon path={icons.mdiCancel} size={1} />
         {$_("Discover.Close")}
       </GradientButton>
     </div>
   </div>
 </Modal>
+
+{#if showHelp}
+  <Help
+    page="discover"
+    on:close={() => {
+      showHelp = false;
+    }}
+  />
+{/if}

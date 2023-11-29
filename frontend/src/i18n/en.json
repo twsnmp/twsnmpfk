@@ -312,7 +312,8 @@
     "Stats": "Discover progress",
     "Stop": "Stop",
     "Timeout": "Timeout (seconds)",
-    "AutoIPRange": "Auto IP range"
+    "AutoIPRange": "Auto IP range",
+    "Help": "Help"
   },
   "EventLog": {
     "Event": "Event",
