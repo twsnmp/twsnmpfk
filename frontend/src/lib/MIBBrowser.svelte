@@ -8,7 +8,13 @@
   import neko5 from "../assets/images/neko_anm5.png";
   import neko6 from "../assets/images/neko_anm6.png";
   import neko7 from "../assets/images/neko_anm7.png";
-  import { Modal, GradientButton, Search, Select, Toggle } from "flowbite-svelte";
+  import {
+    Modal,
+    GradientButton,
+    Search,
+    Select,
+    Toggle,
+  } from "flowbite-svelte";
   import { onMount, createEventDispatcher, onDestroy } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
@@ -23,6 +29,7 @@
   import "datatables.net-select-dt";
   import MibTree from "./MIBTree.svelte";
   import { _ } from "svelte-i18n";
+  import Help from "./Help.svelte";
 
   export let nodeID = "";
 
@@ -48,6 +55,7 @@
     MIBInfo: null,
     children: undefined,
   };
+  let showHelp = false;
 
   const dispatch = createEventDispatcher();
 
@@ -101,12 +109,12 @@
     },
     {
       data: "Name",
-      title: $_('MIBBrowser.ObjectName'),
+      title: $_("MIBBrowser.ObjectName"),
       width: "30%",
     },
     {
       data: "Value",
-      title: $_('MIBBrowser.Value'),
+      title: $_("MIBBrowser.Value"),
       width: "60%",
     },
   ];
@@ -245,7 +253,11 @@
   <div class="flex flex-col space-y-4">
     <div class="flex flex-row mb-2">
       <div class="flex-auto">
-        <Search size="sm" bind:value={name} placeholder={ $_('MIBBrowser.ObjectName') } />
+        <Search
+          size="sm"
+          bind:value={name}
+          placeholder={$_("MIBBrowser.ObjectName")}
+        />
       </div>
       <GradientButton
         shadow
@@ -263,7 +275,7 @@
         class="ml-2 w-64"
         items={history}
         bind:value={selected}
-        placeholder={ $_('MIBBrowser.History') }
+        placeholder={$_("MIBBrowser.History")}
         on:change={() => {
           name = selected;
         }}
@@ -272,10 +284,16 @@
     <table id="mibTable" class="display compact" style="width:99%" />
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait}
-        <Toggle bind:checked={raw}>{ $_('MIBBrowser.RawData') }</Toggle>
-        <GradientButton shadow type="button" color="blue" on:click={get} size="xs">
+        <Toggle bind:checked={raw}>{$_("MIBBrowser.RawData")}</Toggle>
+        <GradientButton
+          shadow
+          type="button"
+          color="blue"
+          on:click={get}
+          size="xs"
+        >
           <Icon path={icons.mdiPlay} size={1} />
-          { $_('MIBBrowser.Get') }
+          {$_("MIBBrowser.Get")}
         </GradientButton>
         {#if data.length > 0}
           <GradientButton
@@ -304,9 +322,30 @@
           </GradientButton>
         {/if}
       {/if}
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton
+        shadow
+        type="button"
+        size="xs"
+        color="lime"
+        class="ml-2"
+        on:click={() => {
+          showHelp = true;
+        }}
+      >
+        <Icon path={icons.mdiHelp} size={1} />
+        <span>
+          {$_("DrawItem.Help")}
+        </span>
+      </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={close}
+        size="xs"
+      >
         <Icon path={icons.mdiCancel} size={1} />
-        { $_('MIBBrowser.Close') }
+        {$_("MIBBrowser.Close")}
       </GradientButton>
     </div>
   </div>
@@ -343,8 +382,17 @@
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        { $_('MIBBrowser.Close') }
+        {$_("MIBBrowser.Close")}
       </GradientButton>
     </div>
   </div>
 </Modal>
+
+{#if showHelp}
+  <Help
+    page="mibbrowser"
+    on:close={() => {
+      showHelp = false;
+    }}
+  />
+{/if}
