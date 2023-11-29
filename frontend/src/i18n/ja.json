@@ -346,7 +346,8 @@
     "Port": "ポート",
     "Update": "更新",
     "Connect": "接続",
-    "Cancel": "キャンセル"
+    "Cancel": "キャンセル",
+    "Help": "ヘルプ"
   },
   "LIne": {
     "Disconnect": "切断"

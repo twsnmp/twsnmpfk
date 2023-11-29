@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Select, Modal, Label, Input, GradientButton } from "flowbite-svelte";
-  import { onMount, onDestroy, createEventDispatcher } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
   import {
     GetNode,
     GetLine,
@@ -12,6 +12,7 @@
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
+  import Help from "./Help.svelte";
 
   export let nodeID1: string = "";
   export let nodeID2: string = "";
@@ -20,6 +21,8 @@
   let line: datastore.LineEnt | undefined = undefined;
 
   let show: boolean = false;
+  let showHelp = false;
+
   const dispatch = createEventDispatcher();
   const pollingList = [];
   const pollingList1 = [];
@@ -53,8 +56,6 @@
     line = await GetLine(nodeID1, nodeID2);
     show = true;
   });
-
-  onDestroy(() => {});
 
   const close = () => {
     show = false;
@@ -146,13 +147,25 @@
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if line.ID != ""}
-        <GradientButton shadow color="red" type="button" on:click={disconnect} size="xs">
+        <GradientButton
+          shadow
+          color="red"
+          type="button"
+          on:click={disconnect}
+          size="xs"
+        >
           <Icon path={icons.mdiLanDisconnect} size={1} />
           {$_("LIne.Disconnect")}
         </GradientButton>
       {/if}
       {#if line.ID != ""}
-        <GradientButton shadow color="blue" type="button" on:click={connect} size="xs">
+        <GradientButton
+          shadow
+          color="blue"
+          type="button"
+          on:click={connect}
+          size="xs"
+        >
           <Icon path={icons.mdiContentSave} size={1} />
           {$_("Line.Update")}
         </GradientButton>
@@ -162,10 +175,40 @@
           {$_("Line.Connect")}
         </GradientButton>
       {/if}
-      <GradientButton shadow color="teal" type="button" on:click={close} size="xs">
+      <GradientButton
+        shadow
+        type="button"
+        size="xs"
+        color="lime"
+        class="ml-2"
+        on:click={() => {
+          showHelp = true;
+        }}
+      >
+        <Icon path={icons.mdiHelp} size={1} />
+        <span>
+          {$_("Line.Help")}
+        </span>
+      </GradientButton>
+      <GradientButton
+        shadow
+        color="teal"
+        type="button"
+        on:click={close}
+        size="xs"
+      >
         <Icon path={icons.mdiCancel} size={1} />
         {$_("Line.Cancel")}
       </GradientButton>
     </div>
   </form>
 </Modal>
+
+{#if showHelp}
+  <Help
+    page="line"
+    on:close={() => {
+      showHelp = false;
+    }}
+  />
+{/if}

@@ -361,7 +361,8 @@
     "Polling1": "Polling1",
     "Polling2": "Polling2",
     "Port": "Port",
-    "Update": "Update"
+    "Update": "Update",
+    "Help": "Help"
   },
   "Map": {
     "AddDrawItem": "Draw item",
