@@ -14,13 +14,17 @@
   import type { datastore } from "wailsjs/go/models";
   import { addrModeList, getIcon, iconList, snmpModeList } from "./common";
   import { _ } from "svelte-i18n";
+  import Help from "./Help.svelte";
 
   export let nodeID: string = "";
   export let posX = 0;
   export let posY = 0;
   export let ip = "";
+
   let node: datastore.NodeEnt | undefined = undefined;
   let show: boolean = false;
+  let showHelp = false;
+
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
@@ -48,6 +52,12 @@
         AutoAck: false,
         Loc: "",
       };
+    }
+    if(!node.AddrMode) {
+      node.AddrMode = "ip";
+    }
+    if(!node.SnmpMode) {
+      node.SnmpMode = "v2c";
     }
     show = true;
   });
@@ -113,7 +123,7 @@
       </div>
       <Checkbox bind:checked={node.AutoAck}>{ $_('Node.AutoCheck') }</Checkbox>
     </div>
-    <div class="grid gap-4 md:grid-cols-2">
+    <div class="grid gap-4 md:grid-cols-3">
       <Label class="space-y-2">
         <span> { $_('Node.SNMPMode') } </span>
         <Select
@@ -123,24 +133,26 @@
           size="sm"
         />
       </Label>
-      <Label class="space-y-2">
-        <span>SNMP Community</span>
-        <Input bind:value={node.Community} placeholder="public" size="sm" />
-      </Label>
-    </div>
-    <div class="grid gap-4 md:grid-cols-2">
-      <Label class="space-y-2">
-        <span>{ $_('Node.SnmpUser') }</span>
-        <Input bind:value={node.User} size="sm" />
-      </Label>
-      <Label class="space-y-2">
-        <span>{ $_('Node.SnmpPassword') }</span>
-        <Input
-          type="password"
-          bind:value={node.Password}
-          size="sm"
-        />
-      </Label>
+      {#if node.SnmpMode == "v1" || node.SnmpMode == "v2c"}
+        <Label class="space-y-2">
+          <span>SNMP Community</span>
+          <Input bind:value={node.Community} placeholder="public" size="sm" />
+        </Label>
+        <div></div>
+      {:else}
+        <Label class="space-y-2">
+          <span>{ $_('Node.SnmpUser') }</span>
+          <Input bind:value={node.User} size="sm" />
+        </Label>
+        <Label class="space-y-2">
+          <span>{ $_('Node.SnmpPassword') }</span>
+          <Input
+            type="password"
+            bind:value={node.Password}
+            size="sm"
+          />
+        </Label>
+      {/if}
     </div>
     <Label class="space-y-2">
       <span>{ $_('Node.PublicKey') }</span>
@@ -159,6 +171,21 @@
         <Icon path={icons.mdiContentSave} size={1} />
         { $_('Node.Save') }
       </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
+        size="xs"
+        color="lime"
+        class="ml-2"
+        on:click={() => {
+          showHelp = true;
+        }}
+      >
+        <Icon path={icons.mdiHelp} size={1} />
+        <span>
+          {$_("Line.Help")}
+        </span>
+      </GradientButton>
       <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Node.Cancel') }
@@ -166,3 +193,12 @@
     </div>
   </form>
 </Modal>
+
+{#if showHelp}
+  <Help
+    page="editnode"
+    on:close={() => {
+      showHelp = false;
+    }}
+  />
+{/if}
