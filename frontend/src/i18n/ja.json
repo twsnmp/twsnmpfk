@@ -550,7 +550,8 @@
     "Retry": "リトライ",
     "Save": "保存",
     "Cancel": "キャンセル",
-    "Select": "選択"
+    "Select": "選択",
+    "Help": "ヘルプ"
   },
   "PollingList": {
     "State": "状態",

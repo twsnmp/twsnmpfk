@@ -27,6 +27,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import Help from "./Help.svelte";
 
   export let nodeID: string = "";
   export let pollingID: string = "";
@@ -37,6 +38,8 @@
   let show: boolean = false;
   let list = [];
   let showList: boolean = false;
+  let showHelp = false;
+
   const nodeList = [];
   const dispatch = createEventDispatcher();
 
@@ -290,6 +293,21 @@
         <Icon path={icons.mdiContentSave} size={1} />
         { $_('Polling.Save') }
       </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
+        size="xs"
+        color="lime"
+        class="ml-2"
+        on:click={() => {
+          showHelp = true;
+        }}
+      >
+        <Icon path={icons.mdiHelp} size={1} />
+        <span>
+          {$_("Polling.Help")}
+        </span>
+      </GradientButton>
       <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Polling.Cancel') }
@@ -321,6 +339,15 @@
     </div>
   </div>
 </Modal>
+
+{#if showHelp}
+  <Help
+    page="editpolling"
+    on:close={() => {
+      showHelp = false;
+    }}
+  />
+{/if}
 
 <style>
   @import "prismjs/themes/prism.css";
