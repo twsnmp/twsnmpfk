@@ -526,7 +526,8 @@
     "Stop": "停止",
     "Start": "開始",
     "TraceRoute": "トレースルート",
-    "Close": "閉じる"
+    "Close": "閉じる",
+    "Help": "ヘルプ"
   },
   "Polling": {
     "Name": "名前",

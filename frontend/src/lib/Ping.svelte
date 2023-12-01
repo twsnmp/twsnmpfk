@@ -23,6 +23,7 @@
   } from "./common";
   import * as echarts from "echarts";
   import { _ } from "svelte-i18n";
+  import Help from "./Help.svelte";
 
   export let nodeID = "";
   let show: boolean = false;
@@ -50,6 +51,7 @@
   let beep = false;
   let sound_ok;
   let sound_ng;
+  let showHelp = false;
 
   onMount(async () => {
     const node = await GetNode(nodeID);
@@ -289,6 +291,7 @@
       pingReq.ttl = ttl;
     }
     results = [];
+    canShowWorld = false;
     _doPing();
   };
 
@@ -331,6 +334,9 @@
       if(beep && sound_ok) {
         sound_ok.play();
       }
+      if(r.Loc && r.Loc.startsWith("LOCAL")) {
+        canShowWorld = true;
+      }
     } else {
       if(beep && sound_ng) {
         sound_ng.play();
@@ -358,7 +364,6 @@
       wait = false;
       canShowLinear = size == -1;
       canShowHistogram = !canShowLinear;
-      canShowWorld = false;
     }
   };
 
@@ -470,6 +475,21 @@
             <Icon path={icons.mdiPlay} size={1} />
             { $_('Ping.Start') }
           </GradientButton>
+          <GradientButton
+            shadow
+            type="button"
+            size="xs"
+            color="lime"
+            class="ml-2"
+            on:click={() => {
+              showHelp = true;
+            }}
+          >
+            <Icon path={icons.mdiHelp} size={1} />
+            <span>
+              {$_("Ping.Help")}
+            </span>
+          </GradientButton>
         {/if}
       {/if}
       <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
@@ -483,10 +503,19 @@
 <audio src={ping_ok} bind:this={sound_ok}></audio>
 <audio src={ping_ng} bind:this={sound_ng}></audio>
 
+{#if showHelp}
+  <Help
+    page="ping"
+    on:close={() => {
+      showHelp = false;
+    }}
+  />
+{/if}
+
 <style>
   #pingChart {
     min-height: 200px;
-    height: 30vh;
+    height: 25vh;
     width:  98%;
     margin: 0 auto;
   }

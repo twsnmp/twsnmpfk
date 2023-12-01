@@ -538,7 +538,8 @@
     "Unknown": "Unknown",
     "Warn": "Warn",
     "TraceRoute": "Trace route",
-    "World": "Route analysis"
+    "World": "Route analysis",
+    "Help": "Help"
   },
   "Polling": {
     "Cancel": "Cancel",
