@@ -215,13 +215,13 @@
   #resChart,
   #netChart{
     min-height: 200px;
-    height: 30vh;
+    height: 25vh;
     width: 98%;
     margin: 0 auto;
   }
   #forecast {
     min-height: 500px;
-    height: 70vh;
+    height: 65vh;
     width: 98%;
     margin: 0 auto;
   }
