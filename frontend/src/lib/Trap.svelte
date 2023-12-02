@@ -177,20 +177,6 @@
         {$_("Trap.Polling")}
       </GradientButton>
     {/if}
-    {#if logs.length > 0}
-      <GradientButton
-        shadow
-        type="button"
-        color="green"
-        on:click={() => {
-          showReport = true;
-        }}
-        size="xs"
-      >
-        <Icon path={icons.mdiChartPie} size={1} />
-        {$_("Trap.Report")}
-      </GradientButton>
-    {/if}
     <GradientButton
       shadow
       color="blue"
@@ -211,6 +197,20 @@
       <Icon path={icons.mdiTrashCan} size={1} />
       {$_("Traps.DeleteAllLogs")}
     </GradientButton>
+    {#if logs.length > 0}
+      <GradientButton
+        shadow
+        type="button"
+        color="green"
+        on:click={() => {
+          showReport = true;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiChartPie} size={1} />
+        {$_("Trap.Report")}
+      </GradientButton>
+    {/if}
     <GradientButton
       shadow
       color="lime"
