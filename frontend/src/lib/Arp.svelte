@@ -46,13 +46,13 @@
     {
       data: "State",
       title: $_("Arp.State"),
-      width: "5%",
+      width: "10%",
       render: renderState,
     },
     {
       data: "Time",
       title: $_("Arp.DateTime"),
-      width: "15%",
+      width: "12%",
       render: renderTime,
     },
     {
@@ -64,7 +64,7 @@
     {
       data: "Node",
       title: $_('Arp.Node'),
-      width: "15%",
+      width: "13%",
     },
     {
       data: "NewMAC",

@@ -256,6 +256,7 @@
     " {\n            helpPage = \"iconconf\";\n          }}\n        >\n          ",
     " {\n            helpPage = \"mibconf\";\n          }}\n        >\n          ",
     " {\n        showHelp = true;\n      }}\n    >\n      ",
-    " {\n              showHelp = true;\n            }}\n          >\n            "
+    " {\n              showHelp = true;\n            }}\n          >\n            ",
+    " {\n        reveal.toggleOverview();\n      }}\n    >\n      "
   ]
 }

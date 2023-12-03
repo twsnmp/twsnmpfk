@@ -705,6 +705,7 @@
   },
   "Help": {
     "Close": "閉じる",
-    "Manual": "マニュアル"
+    "Manual": "マニュアル",
+    "Overiview": "目次"
   }
 }

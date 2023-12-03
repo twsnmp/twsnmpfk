@@ -64,7 +64,8 @@
         reveal.toggleOverview();
       }}
     >
-      目次
+      <Icon path={icons.mdiGrid} size={1} />
+      {$_('Help.Overiview')}
     </GradientButton>
     <GradientButton
       shadow

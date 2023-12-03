@@ -113,7 +113,7 @@
     {
       data: "State",
       title: $_('NodeList.State'),
-      width: "5%",
+      width: "10%",
       render: renderNodeState,
     },
     {
@@ -135,7 +135,7 @@
     {
       data: "Vendor",
       title: $_('NodeList.Vendor'),
-      width: "20%",
+      width: "15%",
     },
     {
       data: "Descr",
