@@ -34,7 +34,7 @@ At the top, there is a graph showing the number of logs in chronological order.
 | Report | Displays the analysis report of SNMP Trap.|
 | CSV | Sport the SNMP Trap to the CSV file.|
 | Excel | Export SNMP Trap to Excel file.|
-| Update | Update the SNMP Trap list to the latest state.|
+| Reload | Update the SNMP Trap list to the latest state.|
 </div>
 
 

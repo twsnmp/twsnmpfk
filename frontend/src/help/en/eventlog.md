@@ -34,7 +34,7 @@ At the top, there is a graph showing the number of logs in chronological order.
 | Report | Displays the event log analysis report.|
 | CSV | Export the event log to the CSV file.|
 | Excel | Export the event log to the Excel file.|
-| Update | Update the list of event logs to the latest state.|
+| Reload | Update the list of event logs to the latest state.|
 
 </div>
 

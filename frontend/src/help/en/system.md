@@ -35,7 +35,7 @@ At the top, there is a graph showing log resources and communication information
 | ---- | ---- |
 | Size prediction | Database size and disk usage rate are forecast for one year.|
 | Backup | Get backup.|
-| Update | Update System information to the latest state.|
+| Reload | Update System information to the latest state.|
 
 </div>
 

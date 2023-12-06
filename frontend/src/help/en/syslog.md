@@ -36,7 +36,7 @@ At the top, there is a graph showing the number of logs in chronological order.
 | Report | Displays Syslog analysis reports.|
 | Export CSV | syslog to CSV file.|
 | Excel | EXCEL file is exported to syslog.|
-| Update | Update the list of syslog to the latest state.|
+| Reload | Update the list of syslog to the latest state.|
 
 </div>
 

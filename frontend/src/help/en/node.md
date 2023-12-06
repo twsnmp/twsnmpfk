@@ -36,7 +36,7 @@ A list of nodes to be managed.
 | Remost confirmation | Reconfirm all nodes polling.|
 | CSV | Export the node list to the CSV file.|
 | Excel | Export the node list to the Excel file.|
-| Update | Update the node list to the latest state.|
+| Reload | Update the node list to the latest state.|
 
 </div>
 
@@ -76,7 +76,7 @@ A list of polling related to nodes.
 | Copy | Create a selected polling copy.|
 | Report | Displays the selected polling analysis report.|
 | <Span style = "color: red;"> Delete </span> | Delete the selected polling.|
-| Update | Update the polling list to the latest state.|
+| Reload | Update the polling list to the latest state.|
 | Close | Close the list of polling.|
 
 </div>

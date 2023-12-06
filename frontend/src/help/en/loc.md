@@ -22,7 +22,7 @@ You can select by clicking the node.You can move by dragging.Multiple choices ca
 | <Span style = "color: red;"> Delete </span> | Delete the selected node from the map screen.|
 | Report | Displays the selected node report screen.|
 | <Span style = "color: red;"> Initial display </span> | Save the center and zoom level of the map.<br> The next time you open the map screen, it will be in the same state.|
-| Update | Update the list of event logs to the latest state.|
+| Reload | Update the list of event logs to the latest state.|
 
 </div>
 

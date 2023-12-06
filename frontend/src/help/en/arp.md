@@ -1,14 +1,14 @@
-#### ARP monitoring log
+#### ARP watch log
 
 <div class="text-xl mb-2">
-ARP monitoring log screen.<br>
+ARP watch log screen.<br>
 At the top, there is a graph showing the number of logs in chronological order.
 </div>
 
-![ARP monitoring log](../../help/en/2023-12-03_06-15-40.png)
+![ARP watch log](../../help/en/2023-12-03_06-15-40.png)
 
 >>>
-#### ARP monitoring log item
+#### ARP watch log item
 
 <div class="text-xl">
 
@@ -31,10 +31,10 @@ At the top, there is a graph showing the number of logs in chronological order.
 
 | Items | Contents |
 | ---- | ---- |
-| Report | Displays the ARP monitoring log analysis report.|
-| CSV | Export the ARP monitoring log to the CSV file.|
-| Excel | Export the ARP monitoring log to the Excel file.|
-| Update | Update the list of ARP monitoring logs to the latest state.|
+| Report | Displays the ARP watch log analysis report.|
+| CSV | Export the ARP watch log to the CSV file.|
+| Excel | Export the ARP watch log to the Excel file.|
+| Reload | Update the list of ARP watch logs to the latest state.|
 </div>
 
 
@@ -52,7 +52,7 @@ The IP address with many changes is obvious at a glance.
 #### By IP address (3D)
 
 <div class="text-xl mb-2">
-This is a report of ARP monitoring logs from both IP addresses and time series.<br>
+This is a report of ARP watch logs from both IP addresses and time series.<br>
 The time of new discoveries and changes is obvious at a glance.
 </div>
 

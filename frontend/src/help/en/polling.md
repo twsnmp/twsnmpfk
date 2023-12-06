@@ -37,7 +37,7 @@ A list of polling to be managed.
 | <Span style = "color: red;"> Delete </span> | Delete the selected polling.|
 | CSV | Export the polling list to the CSV file.|
 | Excel | Export the polling list to the Excel file.|
-| Update | Update the polling list to the latest state.|
+| Reload | Update the polling list to the latest state.|
 </div>
 
 
@@ -72,7 +72,7 @@ This is the selection screen of the template displayed when adding polling.
 | Items | Contents |
 | ---- | ---- |
 | Add | Select polling.|
-| Cancellation | Polling Closes.|
+| Cancel | Polling Closes.|
 </div>
 
 

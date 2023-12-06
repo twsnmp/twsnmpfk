@@ -36,7 +36,7 @@ You can detect duplicate and the change in the address.
 | <Span style = "color: red;"> clear </span> | Clear all address lists.|
 | CSV | Export the address list to the CSV file.|
 | Excel | Export the address list to the Excel file.|
-| Update | Update the address list to the latest state.|
+| Reload | Update the address list to the latest state.|
 </div>
 
 ---

@@ -7,7 +7,7 @@ The map screen has three large parts.
 ![Map screen](../../help/en/2023-12-03_10-19-09.png)
 
 >>>
-#### Explanation of the map menu
+#### Explanation of the map
 
 <div class="text-xl">
 
@@ -50,13 +50,13 @@ Right -click the location other than the node and drawing items on the map to di
 
 | Menu | Operation |
 | ---- | ---- |
-| New node | Add the node to the map manually.|
-| Drawing item | Add drawing items to the map.|
-| Reconfirm all | Reconfirm the node that has occurred.|
-| Automatic discovery | Displays the automatic discovery screen.|
-| Grid alignment | Align the position of the node at the specified interval.|
-| Update | Update the map to the latest state.|
-| Item edit display | All drawing items are displayed regardless of the state of the map.|
+| Add node | Add the node to the map manually.|
+| Draw item | Add drawing items to the map.|
+| Check all | Reconfirm the node that has occurred.|
+| discover | Displays the automatic discovery screen.|
+| Grid | Align the position of the node at the specified interval.|
+| Relaod | Update the map to the latest state.|
+| edit mode | All drawing items are displayed regardless of the state of the map.|
 
 </div>
 

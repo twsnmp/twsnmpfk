@@ -29,7 +29,7 @@ Subject | Notification email subject.|
 </div>
 
 ---
-#### Email transmission test
+#### Email send test
 
 <div class="text-xl">
 Click the <Test> button to send the test email with the configured content.
