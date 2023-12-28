@@ -39,7 +39,8 @@
   let showNodeReport = false;
 
   const showArpTable = () => {
-    if (arpTable) {
+    if (arpTable && DataTable.isDataTable("#arpTable")) {
+      arpTable.clear();
       arpTable.destroy();
       arpTable = undefined;
     }

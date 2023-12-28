@@ -71,6 +71,7 @@
 
   const showTable = () => {
     if (table && DataTable.isDataTable("#pingTable")) {
+      table.clear();
       table.destroy();
       table = undefined;
     }

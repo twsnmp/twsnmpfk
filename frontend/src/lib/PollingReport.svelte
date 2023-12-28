@@ -75,12 +75,6 @@
     }
   });
 
-  onDestroy(() => {
-    if(pollingLogTable) {
-      pollingLogTable.destroy();
-    }
-  });
-
   const loadLogs = async () => {
     logs = await GetPollingLogs(id);
     for(let i =0; i < logs.length;i++) {
@@ -107,8 +101,10 @@
   };
 
   const showLogTable = () => {
-    if (pollingLogTable) {
+    if (pollingLogTable && DataTable.isDataTable("#pollingLogTable")) {
+      pollingLogTable.clear();
       pollingLogTable.destroy();
+      pollingLogTable = undefined;
     }
     pollingLogTable = new DataTable("#pollingLogTable", {
       data: dispLogs,

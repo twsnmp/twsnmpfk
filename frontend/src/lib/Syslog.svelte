@@ -48,7 +48,8 @@
   ];
 
   const showTable = () => {
-    if (table) {
+    if (table && DataTable.isDataTable("#table")) {
+      table.clear();
       table.destroy();
       table = undefined;
     }
@@ -136,13 +137,6 @@
 
   onMount(() => {
     refresh();
-  });
-
-  onDestroy(() => {
-    if (table) {
-      table.destroy();
-      table = undefined;
-    }
   });
 
   const saveCSV = () => {

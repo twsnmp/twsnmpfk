@@ -80,7 +80,8 @@
   });
 
   const showTable = () => {
-    if (table) {
+    if (table && DataTable.isDataTable("#mibTable")) {
+      table.clear();
       table.destroy();
       table = undefined;
     }

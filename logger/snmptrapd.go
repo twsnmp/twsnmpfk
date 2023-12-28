@@ -129,7 +129,7 @@ func snmptrapd(stopCh chan bool, port int) {
 							val = CheckCharCode(val)
 						}
 					case "DateAndTime":
-						val = getDateAndTime(vb.Value)
+						val = datastore.PrintDateAndTime(vb.Value)
 					default:
 						val = getSnmpString(vb.Value)
 					}
@@ -141,11 +141,17 @@ func snmptrapd(stopCh chan bool, port int) {
 				}
 			case gosnmp.TimeTicks:
 				val = getTimeTickStr(gosnmp.ToBigInt(vb.Value).Int64())
+			case gosnmp.IPAddress:
+				val = datastore.PrintIPAddress(vb.Value)
 			default:
-				v := int(gosnmp.ToBigInt(vb.Value).Uint64())
-				val = fmt.Sprintf("%d", v)
+				if vb.Type == gosnmp.Integer {
+					val = fmt.Sprintf("%d", gosnmp.ToBigInt(vb.Value).Int64())
+				} else {
+					val = fmt.Sprintf("%d", gosnmp.ToBigInt(vb.Value).Uint64())
+				}
 				mi := datastore.FindMIBInfo(key)
 				if mi != nil {
+					v := int(gosnmp.ToBigInt(vb.Value).Uint64())
 					if mi.Enum != "" {
 						if vn, ok := mi.EnumMap[v]; ok {
 							val += "(" + vn + ")"
@@ -239,23 +245,4 @@ func isSjis(p []byte) bool {
 		}
 	}
 	return true
-}
-
-// DISPLAY-HINT "2d-1d-1d,1d:1d:1d.1d,1a1d:1d"
-func getDateAndTime(i interface{}) string {
-	switch v := i.(type) {
-	case string:
-		return v
-	case []uint8:
-		if len(v) == 11 {
-			return fmt.Sprintf("%04d/%02d/%02d %02d:%02d:%02d.%02d%c%02d%02d",
-				(int(v[0])*256 + int(v[1])), v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10])
-		} else if len(v) == 8 {
-			return fmt.Sprintf("%04d/%02d/%02d %02d:%02d:%02d.%02d",
-				(int(v[0])*256 + int(v[1])), v[2], v[3], v[4], v[5], v[6], v[7])
-		}
-	case int, int64, uint, uint64:
-		return fmt.Sprintf("%d", v)
-	}
-	return fmt.Sprintf("Invalid Date And Time %v", i)
 }

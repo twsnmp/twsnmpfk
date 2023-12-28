@@ -2,7 +2,7 @@
   import { GradientButton } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import { onMount, tick, onDestroy } from "svelte";
+  import { onMount } from "svelte";
   import {
     GetAIList,
     DeleteAIResult,
@@ -87,7 +87,8 @@
 
   const refresh = async () => {
     data = await GetAIList();
-    if (table) {
+    if (table && DataTable.isDataTable("#table")) {
+      table.clear();
       table.destroy();
       table = undefined;
     }
@@ -112,11 +113,6 @@
     refresh();
   });
 
-  onDestroy(() => {
-    if (table) {
-      table.destroy();
-    }
-  });
 </script>
 
 <div class="flex flex-col">

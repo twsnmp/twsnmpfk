@@ -2,7 +2,7 @@
   import { GradientButton } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
   import {
     GetNodes,
     GetPollings,
@@ -36,8 +36,9 @@
       [0, "asc"],
       [1, "asc"],
     ];
-    if (table) {
+    if (table && DataTable.isDataTable("#table")) {
       order = table.order();
+      table.clear();
       table.destroy();
       table = undefined;
     }
@@ -157,13 +158,6 @@
 
   onMount(() => {
     refresh();
-  });
-
-  onDestroy(() => {
-    if (table) {
-      table.destroy();
-      table = undefined;
-    }
   });
 
   const saveCSV = () => {

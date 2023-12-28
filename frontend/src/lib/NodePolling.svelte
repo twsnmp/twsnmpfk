@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Modal, GradientButton } from "flowbite-svelte";
-  import { onMount, createEventDispatcher, onDestroy } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import { GetPollings, DeletePollings } from "../../wailsjs/go/main/App";
@@ -34,8 +34,9 @@
       [0, "asc"],
       [1, "asc"],
     ];
-    if (table) {
+    if (table && DataTable.isDataTable("#nodePollingTable")) {
       order = table.order();
+      table.clear();
       table.destroy();
       table = undefined;
     }
@@ -148,13 +149,6 @@
   onMount(() => {
     show = true;
     refresh();
-  });
-
-  onDestroy(() => {
-    if (table) {
-      table.destroy();
-      table = undefined;
-    }
   });
 
   const close = () => {

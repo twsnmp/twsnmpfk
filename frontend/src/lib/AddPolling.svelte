@@ -23,11 +23,6 @@
   const showTable = async () => {
     await tick();
     let order = [[0, "asc"]];
-    if (tmpTable) {
-      order = tmpTable.order();
-      tmpTable.destroy();
-      tmpTable = undefined;
-    }
     selectedCount = 0;
     tmpTable = new DataTable("#tmpTable", {
       columns: columns,
@@ -89,12 +84,6 @@
     showTable();
   });
 
-  onDestroy(() => {
-    if (tmpTable) {
-      tmpTable.destroy();
-      tmpTable = undefined;
-    }
-  });
   const close = () => {
     show = false;
     showEditPolling = false;

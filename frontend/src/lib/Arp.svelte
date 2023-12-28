@@ -17,7 +17,8 @@
   let arpLogTable = undefined;
 
   const showArpLogTable = () => {
-    if (arpLogTable) {
+    if (arpLogTable && DataTable.isDataTable("#arpLogTable")) {
+      arpLogTable.clear();
       arpLogTable.destroy();
       arpLogTable = undefined;
     }

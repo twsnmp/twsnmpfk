@@ -109,6 +109,7 @@
 
   const showPortTable = (p) => {
     if (portTable && DataTable.isDataTable("#portTable")) {
+      portTable.clear();
       portTable.destroy();
       portTable = undefined;
     }

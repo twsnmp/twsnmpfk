@@ -244,6 +244,7 @@
       makeIconList();
     }
     if (iconTable && DataTable.isDataTable("#iconTable")) {
+      iconTable.clear();
       iconTable.destroy();
       iconTable = undefined;
     }

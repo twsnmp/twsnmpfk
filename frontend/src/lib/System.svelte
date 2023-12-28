@@ -2,7 +2,7 @@
   import { GradientButton, Modal, Spinner } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import { onMount, tick, onDestroy } from "svelte";
+  import { onMount, tick } from "svelte";
   import { GetMonitorDatas, Backup } from "../../wailsjs/go/main/App";
   import { renderTime, getTableLang, renderBytes, renderSpeed } from "./common";
   import {
@@ -21,7 +21,8 @@
   let showLoading = false;
 
   const showTable = () => {
-    if (table) {
+    if (table && DataTable.isDataTable("#table")) {
+      table.clear();
       table.destroy();
       table = undefined;
     }
@@ -116,13 +117,6 @@
 
   onMount(() => {
     refresh();
-  });
-
-  onDestroy(() => {
-    if (table) {
-      table.destroy();
-      table = undefined;
-    }
   });
 
   const backup = async () => {

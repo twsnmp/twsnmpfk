@@ -2,7 +2,7 @@
   import { GradientButton, Modal, Spinner,Label,Select,Input } from "flowbite-svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
-  import { onMount, tick, onDestroy } from "svelte";
+  import { onMount, tick } from "svelte";
   import {
     GetEventLogs,
     ExportEventLogs,
@@ -34,7 +34,8 @@
   ];
 
   const showTable = () => {
-    if (table) {
+    if (table && DataTable.isDataTable("#table")) {
+      table.clear();
       table.destroy();
       table = undefined;
     }
@@ -113,13 +114,6 @@
 
   onMount(() => {
     refresh();
-  });
-
-  onDestroy(() => {
-    if (table) {
-      table.destroy();
-      table = undefined;
-    }
   });
 
   const saveCSV = () => {

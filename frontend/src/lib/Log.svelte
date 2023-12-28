@@ -14,7 +14,8 @@
   let timer: number | undefined = undefined;
 
   const showTable = () => {
-    if (table) {
+    if (table && DataTable.isDataTable("#table")) {
+      table.clear();
       table.destroy();
       table = undefined;
     }
@@ -74,9 +75,6 @@
     if (timer) {
       clearTimeout(timer);
       timer = undefined;
-    }
-    if(table) {
-      table.destroy();
     }
   });
 </script>

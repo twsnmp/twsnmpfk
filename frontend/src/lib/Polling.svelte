@@ -13,7 +13,7 @@
   import { CodeJar } from "@novacbn/svelte-codejar";
 
   import { Select, Modal, Label, Input, GradientButton } from "flowbite-svelte";
-  import { onMount, onDestroy, createEventDispatcher, tick } from "svelte";
+  import { onMount,createEventDispatcher, tick } from "svelte";
   import {
     GetPolling,
     UpdatePolling,
@@ -77,7 +77,8 @@
   let selectedCount = 0;
 
   const showPollingList = async () => {
-    if (pollingTable) {
+    if (pollingTable && DataTable.isDataTable("#pollingTable")) {
+      pollingTable.clear();
       pollingTable.destroy();
       pollingTable = undefined;
     }
@@ -125,12 +126,6 @@
       selectedCount = pollingTable.rows({ selected: true }).count();
     });
   };
-
-  onDestroy(() => {
-    if (pollingTable) {
-      pollingTable.destroy();
-    }
-  });
 
   const select = () => {
     const p = pollingTable.rows({ selected: true }).data();
