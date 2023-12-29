@@ -1013,7 +1013,9 @@
 
 <Modal bind:open={showMIBTree} size="lg" permanent class="w-full min-h-[80vh]">
   <div class="flex flex-col space-y-4">
-    <MibTree tree={mibTree} on:select={(e) => {}} />
+    <div id="mibtree">
+      <MibTree tree={mibTree} on:select={(e) => {}} />
+    </div>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         shadow
@@ -1095,3 +1097,10 @@
     }}
   />
 {/if}
+
+<style>
+  #mibtree {
+    height: 70vh;
+    overflow: scroll;
+  }
+</style>

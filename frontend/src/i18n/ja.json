@@ -379,7 +379,8 @@
     "History": "履歴",
     "RawData": "生データ",
     "Get": "取得",
-    "Close": "閉じる"
+    "Close": "閉じる",
+    "ScalarOnly": "スカラーのみ"
   },
   "Node": {
     "NewNode": "新規ノード",

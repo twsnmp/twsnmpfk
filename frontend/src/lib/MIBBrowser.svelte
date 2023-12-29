@@ -15,7 +15,7 @@
     Select,
     Toggle,
   } from "flowbite-svelte";
-  import { onMount, createEventDispatcher, onDestroy } from "svelte";
+  import { onMount, createEventDispatcher, onDestroy, tick } from "svelte";
   import Icon from "mdi-svelte";
   import * as icons from "@mdi/js";
   import {
@@ -82,13 +82,21 @@
   const showTable = () => {
     if (table && DataTable.isDataTable("#mibTable")) {
       table.clear();
-      table.destroy();
+      table.destroy(true);
       table = undefined;
+      const e = document.getElementById("table");
+      if(e) {
+        e.innerHTML = `<table id="mibTable" class="display compact" style="width:99%" />`;
+      }
     }
     selectedCount = 0;
     table = new DataTable("#mibTable", {
       columns: columns,
       data: data,
+      paging: false,
+      searching:true,
+      info:false,
+      scrollY: "65vh",
       language: getTableLang(),
       select: {
         style: "single",
@@ -120,33 +128,49 @@
     },
   ];
 
+  let mibs = undefined;
+  let scalar = false;
+
   const get = async () => {
     wait = true;
     waitAnimation();
-    const mibs = await SnmpWalk(nodeID, name, raw);
+    mibs = await SnmpWalk(nodeID, name, raw);
     if (!mibs) {
       neko = neko_ng;
     } else {
       updateHistory();
       neko = neko_ok;
-      if (name.endsWith("Table")) {
-        tableMIBData(mibs);
-      } else {
-        columns = basicColumns;
-        data = [];
-        let i = 1;
-        mibs.forEach((e) => {
-          data.push({
-            Index: i,
-            Name: e.Name,
-            Value: e.Value,
-          });
-          i++;
-        });
-      }
-      showTable();
+      refreshTable();
     }
     wait = false;
+  };
+
+  const refreshTable = () => {
+    if(!mibs) {
+      return;
+    }
+    if ( name.endsWith("Table")) {
+      tableMIBData();
+    } else {
+      columns = basicColumns;
+      data = [];
+      let i = 1;
+      mibs.forEach((e) => {
+        if (
+          scalar &&
+          (!e.Name.endsWith(".0") || e.Name.split(".").length != 2)
+        ) {
+          return;
+        }
+        data.push({
+          Index: i,
+          Name: e.Name,
+          Value: e.Value,
+        });
+        i++;
+      });
+    }
+    showTable();
   };
 
   const updateHistory = () => {
@@ -163,7 +187,7 @@
     history = tmp;
   };
 
-  const tableMIBData = (mibs) => {
+  const tableMIBData = () => {
     const names = [];
     const indexes = [];
     const rows = [];
@@ -174,6 +198,9 @@
       if (i > 0) {
         const base = name.substring(0, i);
         const index = name.substring(i + 1);
+        if (index == "0") {
+          return;
+        }
         if (!names.includes(base)) {
           names.push(base);
         }
@@ -282,9 +309,12 @@
         }}
       />
     </div>
-    <table id="mibTable" class="display compact" style="width:99%" />
+    <div id="table">
+      <table id="mibTable" class="display compact" style="width:99%" />
+    </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait}
+        <Toggle bind:checked={scalar} on:change={refreshTable}>{$_('MIBBrowser.ScalarOnly')}</Toggle>
         <Toggle bind:checked={raw}>{$_("MIBBrowser.RawData")}</Toggle>
         <GradientButton
           shadow
@@ -365,13 +395,15 @@
 
 <Modal bind:open={showMIBTree} size="lg" permanent class="w-full min-h-[80vh]">
   <div class="flex flex-col space-y-4">
-    <MibTree
-      tree={mibTree}
-      on:select={(e) => {
-        name = e.detail;
-        showMIBTree = false;
-      }}
-    />
+    <div id="mibtree">
+      <MibTree
+        tree={mibTree}
+        on:select={(e) => {
+          name = e.detail;
+          showMIBTree = false;
+        }}
+      />
+    </div>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         shadow
@@ -397,3 +429,13 @@
     }}
   />
 {/if}
+
+<style>
+  #table {
+    height: 70vh;
+  }
+  #mibtree {
+    height: 70vh;
+    overflow: scroll;
+  }
+</style>

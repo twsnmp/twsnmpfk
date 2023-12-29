@@ -391,7 +391,8 @@
     "History": "History",
     "ObjectName": "Object name",
     "RawData": "Raw data",
-    "Value": "Value"
+    "Value": "Value",
+    "ScalarOnly": "Scalar Only"
   },
   "Node": {
     "AddressMode": "Address mode",
