@@ -255,7 +255,7 @@
 
 {#if page == "map"}
   <div class="fex fex-col w-full" style="height:{mainHeight}px;">
-    <div style="height: {mainHeight - window.innerHeight / 5}px">
+    <div class="relative" style="height: {mainHeight - window.innerHeight / 5}px">
       <Map />
     </div>
     <div style="width: 99vw;margin: 0 auto;">

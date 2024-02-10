@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { initMAP, updateMAP, resetMap, deleteMap, grid,setShowAllItems } from "./map";
+  import { initMAP, updateMAP, resetMap, deleteMap, grid,setShowAllItems,zoom } from "./map";
   import { onMount, onDestroy } from "svelte";
-  import { Modal, GradientButton, Label, Input } from "flowbite-svelte";
+  import { Modal, GradientButton, Label, Input,Button } from "flowbite-svelte";
   import * as icons from "@mdi/js";
   import Icon from "mdi-svelte";
   import Discover from "./Dsicover.svelte";
@@ -73,7 +73,7 @@
     switch (p.Cmd) {
       case "contextMenu":
         posX = p.x;
-        posY = p.y;
+        posY = p.y -96;
         if (p.Node) {
           showNodeMenuFunc(p.Node);
         } else if (p.DrawItem) {
@@ -130,6 +130,15 @@
 </script>
 
 <div bind:this={map} class="h-full w-full overflow-scroll" />
+
+<Button color="alternative" class="!p-2 absolute end-20 bottom-6" on:click={()=>zoom(true)}>
+  <Icon path={icons.mdiMagnifyPlus}></Icon>
+</Button>
+
+<Button color="alternative" class="!p-2 absolute end-6 bottom-6" on:click={()=>zoom(false)}>
+  <Icon path={icons.mdiMagnifyMinus}></Icon>
+</Button>
+
 
 {#if showMapMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->

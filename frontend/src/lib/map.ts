@@ -13,6 +13,7 @@ import {
   GetNotifyConf,
 } from "../../wailsjs/go/main/App"
 import type { datastore } from 'wailsjs/go/models';
+import mdiFont  from "@mdi/font/fonts/materialdesignicons-webfont.ttf";
 
 
 const MAP_SIZE_X = window.screen.width > 4000 ? 5000 : 2500;
@@ -47,6 +48,7 @@ let showAllItems = false;
 let _mapP5 :P5 | undefined  = undefined;
 let beepHigh = undefined;
 let beepLow = undefined;
+let scale = 1.0;
 
 export const initMAP = async (div:HTMLElement,cb :any) => {
   const settings = await GetSettings();
@@ -114,6 +116,17 @@ export const updateMAP = async () => {
   }
   mapRedraw = true;
 }
+
+export const zoom = (zoomin:boolean) => {
+  scale += zoomin ? 0.05 : -0.05;
+
+  if(scale>3.0) {
+    scale = 3.0;
+  } else if (scale < 0.05) {
+    scale = 0.05;
+  }
+  mapRedraw = true;
+} 
 
 const _setMapState = () => {
   mapState= 0;
@@ -231,13 +244,12 @@ const mapMain = (p5:P5) => {
   const draggedNodes = [];
   const draggedItems = [];
   let clickInCanvas = false;
+  p5.preload = () => {
+    p5.loadFont(mdiFont);
+  }
   p5.setup = () => {
     const c = p5.createCanvas(MAP_SIZE_X, MAP_SIZE_Y);
     c.mousePressed(canvasMousePressed);
-    p5.push();
-    p5.textFont('Material Design Icons')
-    p5.textFont('Roboto')
-    p5.pop();
   }
 
   p5.draw = () => {
@@ -248,6 +260,9 @@ const mapMain = (p5:P5) => {
     }
     if (!mapRedraw){
       return;
+    }
+    if(scale != 1.0) {
+      p5.scale(scale);
     }
     mapRedraw = false;
     p5.background(dark ? 23 : 252 );
