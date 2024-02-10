@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import {
     GradientButton,
     Modal,
@@ -6,7 +7,7 @@
     Input,
     Spinner,
   } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import {
@@ -24,10 +25,10 @@
   import type { datastore } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
 
-  let data = [];
-  let logs = [];
+  let data :any = [];
+  let logs :any = [];
   let showReport = false;
-  let table = undefined;
+  let table :any = undefined;
   let selectedCount = 0;
   let showPolling = false;
   let showFilter = false;
@@ -123,7 +124,8 @@
     ExportTraps("excel",from,trapType);
   };
 
-  let polling: datastore.PollingEnt | undefined = undefined;
+  let polling: datastore.PollingEnt;
+
   const watch = async () => {
     const d = table.rows({ selected: true }).data();
     if (!d || d.length != 1) {
@@ -256,7 +258,7 @@
   />
 {/if}
 
-<Modal bind:open={showFilter} size="sm" permanent class="w-full">
+<Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Trap.Filter")}
@@ -299,7 +301,7 @@
   </form>
 </Modal>
 
-<Modal bind:open={showLoading} size="sm" permanent class="w-full">
+<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
   <div>
     <Spinner />
     <span class="ml-2"> {$_("Syslog.Loading")} </span>
@@ -307,7 +309,6 @@
 </Modal>
 
 <style>
-  @import "../assets/css/jquery.dataTables.css";
   #chart {
     min-height: 200px;
     height: 20vh;

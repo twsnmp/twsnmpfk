@@ -3,7 +3,7 @@ import { setZoomCallback } from './utils.js'
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart;
+let chart:any;
 
 const makeLogCountChart = (div:string) => {
   chart = echarts.init(document.getElementById(div),"dark")
@@ -38,7 +38,7 @@ const makeLogCountChart = (div:string) => {
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
-        formatter: (value, index) => {
+        formatter: (value:any, index:any) => {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -90,7 +90,7 @@ const makeLogCountChart = (div:string) => {
   chart.resize()
 }
 
-const addChartData = (data, count, ctm, newCtm) => {
+const addChartData = (data:any, count:number, ctm:number, newCtm:number) => {
   let t = new Date(ctm * 60 * 1000)
   data.push({
     name: echarts.time.format(t, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}',false),
@@ -107,17 +107,17 @@ const addChartData = (data, count, ctm, newCtm) => {
   return ctm
 }
 
-export const showLogCountChart = (div:string, logs, zoomCallback) => {
+export const showLogCountChart = (div:string, logs:any, zoomCallback:any) => {
   if (chart) {
     chart.dispose()
   }
   makeLogCountChart(div)
-  const data = []
+  const data:any = []
   let count = 0
-  let ctm :number |undefined = undefined;
+  let ctm :number  = 0;
   let st = Infinity
   let lt = 0
-  logs.forEach((e) => {
+  logs.forEach((e:any) => {
     const newCtm = Math.floor(e.Time / (1000 * 1000 * 1000 * 60))
     if (!ctm) {
       ctm = newCtm

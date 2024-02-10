@@ -1,9 +1,17 @@
 <script lang="ts">
-  import { initMAP, updateMAP, resetMap, deleteMap, grid,setShowAllItems,zoom } from "./map";
+  import {
+    initMAP,
+    updateMAP,
+    resetMap,
+    deleteMap,
+    grid,
+    setShowAllItems,
+    zoom,
+  } from "./map";
   import { onMount, onDestroy } from "svelte";
-  import { Modal, GradientButton, Label, Input,Button } from "flowbite-svelte";
+  import { Modal, GradientButton, Label, Input, Button } from "flowbite-svelte";
   import * as icons from "@mdi/js";
-  import Icon from "mdi-svelte";
+  import { Icon } from "mdi-svelte-ts";
   import Discover from "./Dsicover.svelte";
   import Node from "./Node.svelte";
   import Line from "./Line.svelte";
@@ -46,8 +54,8 @@
   let showMibBr: boolean = false;
   let showAllItems: boolean = false;
 
-  let timer = undefined;
-  let urls = [];
+  let timer: any = undefined;
+  let urls: any = [];
 
   onMount(async () => {
     initMAP(map, callBack);
@@ -69,11 +77,11 @@
     urls = n.URL.split(",");
     showNodeMenu = true;
   };
-  const callBack = (p) => {
+  const callBack = (p: any) => {
     switch (p.Cmd) {
       case "contextMenu":
         posX = p.x;
-        posY = p.y -96;
+        posY = p.y - 96;
         if (p.Node) {
           showNodeMenuFunc(p.Node);
         } else if (p.DrawItem) {
@@ -131,14 +139,21 @@
 
 <div bind:this={map} class="h-full w-full overflow-scroll" />
 
-<Button color="alternative" class="!p-2 absolute end-20 bottom-6" on:click={()=>zoom(true)}>
+<Button
+  color="alternative"
+  class="!p-2 absolute end-20 bottom-6"
+  on:click={() => zoom(true)}
+>
   <Icon path={icons.mdiMagnifyPlus}></Icon>
 </Button>
 
-<Button color="alternative" class="!p-2 absolute end-6 bottom-6" on:click={()=>zoom(false)}>
+<Button
+  color="alternative"
+  class="!p-2 absolute end-6 bottom-6"
+  on:click={() => zoom(false)}
+>
   <Icon path={icons.mdiMagnifyMinus}></Icon>
 </Button>
-
 
 {#if showMapMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -146,6 +161,7 @@
     <div
       class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
     >
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -159,6 +175,7 @@
           {$_("Map.AddNode")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -172,6 +189,7 @@
           {$_("Map.AddDrawItem")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -185,6 +203,7 @@
           {$_("Map.CheckAll")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -197,6 +216,7 @@
           {$_("Map.Discover")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -209,6 +229,7 @@
           {$_("Map.Grid")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -222,6 +243,7 @@
           {$_("Map.Reload")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -233,14 +255,14 @@
         {#if showAllItems}
           <Icon path={icons.mdiEye} size={0.7} />
           <div>
-            {$_('Map.showDrawItemNomal')}
+            {$_("Map.showDrawItemNomal")}
           </div>
         {:else}
           <Icon path={icons.mdiDraw} size={0.7} />
           <div>
-            {$_('Map.showDrawItemEdit')}
+            {$_("Map.showDrawItemEdit")}
           </div>
-      {/if}
+        {/if}
       </div>
     </div>
   </div>
@@ -252,6 +274,7 @@
     <div
       class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
     >
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -264,6 +287,7 @@
           {$_("Map.Report")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -274,6 +298,7 @@
         <Icon path={icons.mdiCheckNetwork} size={0.7} />
         <div>PING</div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -286,6 +311,7 @@
           {$_("Map.MIBBrowser")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -296,6 +322,7 @@
         <Icon path={icons.mdiAlarm} size={0.7} />
         <div>Wake On Lan</div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -308,6 +335,7 @@
           {$_("Map.Edit")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -320,6 +348,7 @@
           {$_("Map.Polling")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -333,6 +362,7 @@
           {$_("Map.ReCheck")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={async () => {
@@ -346,6 +376,7 @@
           {$_("Map.Copy")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -360,6 +391,7 @@
       </div>
       {#each urls as url}
         {#if url}
+          <!-- svelte-ignore a11y-no-static-element-interactions -->
           <div
             class="flex space-x-2 hover:bg-sky-500/[0.8]"
             on:click={() => {
@@ -384,6 +416,7 @@
     <div
       class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
     >
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -396,6 +429,7 @@
           {$_("Map.Edit")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={async () => {
@@ -409,6 +443,7 @@
           {$_("Map.Copy")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
@@ -506,7 +541,7 @@
   />
 {/if}
 
-<Modal bind:open={showGrid} size="sm" permanent class="w-full">
+<Modal bind:open={showGrid} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Map.Grid")}

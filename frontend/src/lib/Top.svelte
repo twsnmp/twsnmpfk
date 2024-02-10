@@ -8,7 +8,7 @@
     Button,
     Badge,
   } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import {
@@ -68,12 +68,14 @@
 
   onMount(async () => {
     const e = document.querySelector("html");
-    if (await IsDark()) {
-      e.classList.add("dark");
-      dark = true;
-    } else {
-      e.classList.remove("dark");
-      dark = false;
+    if (e) {
+      if (await IsDark()) {
+        e.classList.add("dark");
+        dark = true;
+      } else {
+        e.classList.remove("dark");
+        dark = false;
+      }
     }
     const settings = await GetSettings();
     lock = settings.Lock;
@@ -95,10 +97,12 @@
 
   const toggleDark = () => {
     const e = document.querySelector("html");
-    e.classList.toggle("dark");
-    dark = e.classList.contains("dark");
-    SetDark(dark);
-  };
+    if(e) {
+      e.classList.toggle("dark");
+      dark = e.classList.contains("dark");
+      SetDark(dark);
+    };
+    }
 </script>
 
 <svelte:window on:resize={() => (mainHeight = window.innerHeight - 96)} />

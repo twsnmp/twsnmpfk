@@ -13,7 +13,7 @@
     Select,
   } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import {
@@ -39,14 +39,14 @@
 
   export let id = "";
 
-  let polling: datastore.PollingEnt | undefined = undefined;
-  let node: datastore.NodeEnt | undefined = undefined;
-  let logs: datastore.PollingLogEnt[] | undefined = undefined;
-  let dispLogs: datastore.PollingLogEnt[] = [];
-  let aiResult: datastore.AIResult | undefined = undefined;
-  let entList = [];
+  let polling: any = undefined;
+  let node: any = undefined;
+  let logs: any = undefined;
+  let dispLogs: any = [];
+  let aiResult: any= undefined;
+  let entList :any = [];
   let selectedEnt = "";
-  let pollingLogTable = undefined;
+  let pollingLogTable : any = undefined;
  
   let show: boolean = false;
   const dispatch = createEventDispatcher();
@@ -133,14 +133,14 @@
     });
   };
 
-  const renderResult = (r) => {
+  const renderResult = (r:any) => {
     let l = [];
     for(const k of Object.keys(r)) {
       l.push(k +"=" + r[k]);
     }
     return l.join(" ");
   }
-  let chart = undefined;
+  let chart :any = undefined;
 
   const showTimeChart = async () => {
     await tick();
@@ -167,7 +167,7 @@
 
 <svelte:window on:resize={resizeChart} />
 
-<Modal bind:open={show} size="xl" permanent class="w-full min-h-[90vh]" on:on:close={close}>
+<Modal bind:open={show} size="xl" dismissable={false} class="w-full min-h-[90vh]" on:on:close={close}>
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem open on:click={()=> {chart= undefined;}}>

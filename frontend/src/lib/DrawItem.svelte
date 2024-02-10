@@ -15,7 +15,7 @@
     SelectFile,
     GetNodes,
   } from "../../wailsjs/go/main/App";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import { _ } from 'svelte-i18n';
@@ -24,14 +24,14 @@
   export let id: string = "";
   export let posX = 0;
   export let posY = 0;
-  let drawItem: datastore.DrawItemEnt | undefined = undefined;
+  let drawItem: any = undefined;
   let show: boolean = false;
   let image: string = "";
   let nodeID: string = "";
   let pollingID: string = "";
-  let pollings : datastore.PollingEnt[] = [];
-  let pollingList = [];
-  const nodeList = [];
+  let pollings : any = [];
+  let pollingList :any = [];
+  const nodeList : any = [];
   let showHelp = false;
   
   const dispatch = createEventDispatcher();
@@ -122,7 +122,7 @@
   };
 </script>
 
-<Modal bind:open={show} size="lg" permanent class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="lg" dismissable={false} class="w-full" on:on:close={close}>
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       { $_('DrawItem.EditDrawItem') }

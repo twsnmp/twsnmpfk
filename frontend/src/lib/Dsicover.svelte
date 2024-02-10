@@ -15,7 +15,7 @@
     StartDiscover,
     StopDiscover,
   } from "../../wailsjs/go/main/App";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
@@ -23,13 +23,13 @@
   export let posX = 0;
   export let posY = 0;
 
-  let stats = undefined;
-  let conf = undefined;
+  let stats :any = undefined;
+  let conf :any = undefined;
   let showConf = false;
   let showStats = false;
   let showStop = true;
   let showHelp = false;
-  let timer: number | undefined = undefined;
+  let timer: any = undefined;
   const dispatch = createEventDispatcher();
 
   const updateDiscover = async () => {
@@ -84,7 +84,7 @@
     await StopDiscover();
   };
 
-  let ipRanges = [];
+  let ipRanges :any  = [];
   let selIPRange = 0;
   const getIPRange = async () => {
     if (ipRanges.length < 1) {
@@ -102,7 +102,7 @@
   };
 </script>
 
-<Modal bind:open={showConf} size="lg" permanent class="w-full">
+<Modal bind:open={showConf} size="lg" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Discover.Discover")}
@@ -197,7 +197,7 @@
     </div>
   </form>
 </Modal>
-<Modal bind:open={showStats} size="lg" permanent class="w-full">
+<Modal bind:open={showStats} size="lg" dismissable={false} class="w-full">
   <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
     {$_("Discover.Stats")}
   </h3>

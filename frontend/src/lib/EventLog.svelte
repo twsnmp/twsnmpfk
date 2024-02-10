@@ -1,6 +1,7 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { GradientButton, Modal, Spinner,Label,Select,Input } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import {
@@ -15,9 +16,9 @@
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
 
-  let data = [];
-  let logs = [];
-  let table = undefined;
+  let data :any = [];
+  let logs :any  = [];
+  let table :any = undefined;
   let showReport = false;
   let showLoading = false;
   let showFilter = false;
@@ -215,14 +216,14 @@
   />
 {/if}
 
-<Modal bind:open={showLoading} size="sm" permanent class="w-full">
+<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
   <div>
     <Spinner />
     <span class="ml-2"> {$_("EventLog.Loading")} </span>
   </div>
 </Modal>
 
-<Modal bind:open={showFilter} size="sm" permanent class="w-full">
+<Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("EventLog.Filter")}
@@ -279,7 +280,6 @@
 </Modal>
 
 <style>
-  @import "../assets/css/jquery.dataTables.css";
   #chart {
     min-height: 200px;
     height: 20vh;

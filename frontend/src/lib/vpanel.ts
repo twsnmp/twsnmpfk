@@ -1,20 +1,20 @@
 import P5 from 'p5'
 import inconslata from '../assets/fonts/inconsolata.ttf';
 import port from "../assets/images/port.png";
-let ports = [];
+let ports :any = [];
 let power = false;
 let rotate = false;
 let _vpanelP5 :P5 | undefined  = undefined;
 let cw = 1000;
 let ch = 400;
 
-const vpanelMain = (p) => {
+const vpanelMain = (p:any) => {
   const PORT_SIZE = 150;
   const LED_SIZE = 10;
   const LED_XOFFSET = 300;
   const LED_YOFFSET = 75;
-  let portImage;
-  let font;
+  let portImage :any;
+  let font :any;
   let width;
   let height;
   let depth;
@@ -124,21 +124,24 @@ const vpanelMain = (p) => {
   }
 }
 
-export const setVPanel = (po, pw, r) => {
+export const setVPanel = (po:any, pw:any, r:any) => {
   ports = po
   power = pw
   rotate = r
 }
 
-export const initVPanel = (div) => {
+export const initVPanel = (div:string) => {
   const d = document.getElementById(div);
+  if(!d) {
+    return
+  }
   cw = d.clientWidth || 1000;
   ch = d.clientHeight || 400;
   if (_vpanelP5) {
     _vpanelP5.remove();
     _vpanelP5 = undefined;
   }
-  _vpanelP5 = new P5(vpanelMain, div);
+  _vpanelP5 = new P5(vpanelMain, d);
 }
 
 export const deleteVPanel = () => {

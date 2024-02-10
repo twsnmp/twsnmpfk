@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import {
     GradientButton,
     Modal,
@@ -7,7 +8,7 @@
     Select,
     Spinner,
   } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick, onDestroy } from "svelte";
   import {
@@ -26,10 +27,10 @@
   import type { datastore } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
 
-  let data = [];
-  let logs = [];
+  let data :any = [];
+  let logs :any = [];
   let showReport = false;
-  let table = undefined;
+  let table :any = undefined;
   let selectedCount = 0;
   let showPolling = false;
   let showFilter = false;
@@ -279,7 +280,7 @@
   />
 {/if}
 
-<Modal bind:open={showFilter} size="sm" permanent class="w-full">
+<Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Syslog.Filter")}
@@ -335,7 +336,7 @@
   </form>
 </Modal>
 
-<Modal bind:open={showLoading} size="sm" permanent class="w-full">
+<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
   <div>
     <Spinner />
     <span class="ml-2"> {$_("Syslog.Loading")} </span>
@@ -343,7 +344,6 @@
 </Modal>
 
 <style>
-  @import "../assets/css/jquery.dataTables.css";
   #chart {
     min-height: 200px;
     height: 20vh;

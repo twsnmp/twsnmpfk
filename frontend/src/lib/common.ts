@@ -1,6 +1,6 @@
 import * as echarts from 'echarts';
 import numeral from 'numeral';
-import ja from "datatables.net-plugins/i18n/ja.mjs";
+import ja from "datatables.net-plugins/i18n/ja.json";
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 import {lang} from '../i18n/i18n';
 const $_ = unwrapFunctionStore(_);
@@ -22,7 +22,7 @@ export const stateList = [
   { text: 'Debug', color: '#777', icon: "mdi-bug", value: 'debug' },
 ]
 
-export const stateMap = {}
+export const stateMap:any = {}
 
 stateList.forEach((e:any) => {
   stateMap[e.value] = e
@@ -187,7 +187,7 @@ export const setIconToList = (e:any) => {
 }
 
 // delete icon
-export const deleteIconFromList = (icon) => {
+export const deleteIconFromList = (icon:string) => {
   for( let i = 0; i < iconList.length; i++) {
     if(iconList[i].value === icon) {
       iconList.splice(i,1)
@@ -291,7 +291,7 @@ export const  levelNum = (s :string) :number => {
 }
 
 
-export const getLogModeName = (m) => {
+export const getLogModeName = (m:any) => {
   switch(m){
     case 0:
       return 'off'
@@ -309,8 +309,9 @@ export const getLogModeName = (m) => {
 export const getTableLang = () => {
   if (lang != "ja") {
     return undefined;
-  } 
-  ja.select = {
+  }
+  const r : any = ja;
+  r.select = {
     cells: {
       "0": "",
       "1": "1 セル選択",
@@ -327,7 +328,7 @@ export const getTableLang = () => {
       _: " %d 行選択",
     },
   };
-  return ja;
+  return r;
 }
 
 export const renderSpeed = (n:number,type:string) => {

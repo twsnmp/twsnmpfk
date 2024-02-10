@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Modal, GradientButton } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick } from "svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
   import { lang } from "../i18n/i18n";
@@ -15,7 +15,7 @@
 
   export let page = "";
   let show: boolean = false;
-  let reveal: Reveal.Api | undefined = undefined;
+  let reveal: any = undefined;
   let helpUrl = "";
 
   const dispatch = createEventDispatcher();
@@ -44,7 +44,7 @@
 <Modal
   bind:open={show}
   size="xl"
-  permanent
+  dismissable={false}
   class="w-full min-h-[90vh] bg-gray-800 help"
 >
   <div class="reveal max-h-[90%]">

@@ -3,7 +3,7 @@
   import { Map, NavigationControl, Marker } from "maplibre-gl";
   import { GradientButton, Modal, Label, Select,Toast } from "flowbite-svelte";
   import { getIcon, getStateColor } from "./common";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, onDestroy } from "svelte";
   import {
@@ -24,14 +24,14 @@
   let showPolling = false;
   let selectedNode = "";
   let nodes = undefined;
-  let map = undefined;
-  let markers = undefined;
-  let locConf = undefined;
-  let nodeList = undefined;
+  let map :any= undefined;
+  let markers :any = undefined;
+  let locConf :any = undefined;
+  let nodeList :any = undefined;
   let showAddNode = false;
   let addNodeID = "";
   let lastLoc = "";
-  let timer = undefined;
+  let timer :any = undefined;
   let lock = false;
 
   const refresh = async () => {
@@ -71,7 +71,7 @@
     return [Number(a[0]), Number(a[1])];
   };
 
-  const addNodeMarker = (n) => {
+  const addNodeMarker = (n:any) => {
     const icon = getIcon(n.Icon);
     const color = getStateColor(n.State);
     const divSize = locConf.IconSize + 8;
@@ -318,7 +318,7 @@
   />
 {/if}
 
-<Modal bind:open={showAddNode} size="sm" permanent>
+<Modal bind:open={showAddNode} size="sm" dismissable={false}>
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">{$_('Location.SelectNode')}</h3>
     <Label class="space-y-2">

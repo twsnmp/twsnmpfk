@@ -1,6 +1,7 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { GradientButton, Modal, Spinner } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import { GetMonitorDatas, Backup } from "../../wailsjs/go/main/App";
@@ -17,7 +18,7 @@
   import { _ } from "svelte-i18n";
 
   let logs: backend.MonitorDataEnt[] = [];
-  let table = undefined;
+  let table : any = undefined;
   let showLoading = false;
 
   const showTable = () => {
@@ -53,7 +54,7 @@
     showMonitorNetChart("netChart", logs);
   };
 
-  const renderPer = (v, t) => {
+  const renderPer = (v:any, t:any) => {
     if (t == "sort") {
       return v;
     }
@@ -89,7 +90,7 @@
       data: "Load",
       title: $_("System.Load"),
       width: "10%",
-      render: (v) => v.toFixed(2),
+      render: (v:any) => v.toFixed(2),
     },
     {
       data: "Net",
@@ -178,7 +179,7 @@
   </div>
 </div>
 
-<Modal bind:open={showForecast} size="xl" permanent class="w-full">
+<Modal bind:open={showForecast} size="xl" dismissable={false} class="w-full">
   <div id="forecast" />
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
@@ -196,7 +197,7 @@
   </div>
 </Modal>
 
-<Modal bind:open={showLoading} size="sm" permanent class="w-full">
+<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
   <div>
     <Spinner />
     <span class="ml-2"> $_('System.Loading') </span>
@@ -204,8 +205,6 @@
 </Modal>
 
 <style>
-  @import "../assets/css/jquery.dataTables.css";
-
   #resChart,
   #netChart{
     min-height: 200px;

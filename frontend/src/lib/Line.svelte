@@ -8,7 +8,7 @@
     DeleteLine,
     GetPollings,
   } from "../../wailsjs/go/main/App";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
@@ -16,17 +16,17 @@
 
   export let nodeID1: string = "";
   export let nodeID2: string = "";
-  let node1: datastore.NodeEnt | undefined = undefined;
-  let node2: datastore.NodeEnt | undefined = undefined;
-  let line: datastore.LineEnt | undefined = undefined;
+  let node1: any = undefined;
+  let node2: any = undefined;
+  let line: any = undefined;
 
   let show: boolean = false;
   let showHelp = false;
 
   const dispatch = createEventDispatcher();
-  const pollingList = [];
-  const pollingList1 = [];
-  const pollingList2 = [];
+  const pollingList :any= [];
+  const pollingList1 :any = [];
+  const pollingList2 :any = [];
 
   onMount(async () => {
     node1 = await GetNode(nodeID1);
@@ -66,7 +66,6 @@
     const r = await UpdateLine(line);
     if (r) {
       close();
-    } else {
     }
   };
 
@@ -79,7 +78,7 @@
   };
 </script>
 
-<Modal bind:open={show} size="lg" permanent class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="lg" dismissable={false} class="w-full" on:on:close={close}>
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Line.EditLine")}

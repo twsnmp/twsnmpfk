@@ -259,6 +259,8 @@
     " {\n              showHelp = true;\n            }}\n          >\n            ",
     " {\n        reveal.toggleOverview();\n      }}\n    >\n      ",
     "<table id=\"mibTable\" class=\"display compact\" style=\"width:99%\" />",
-    " {\n          name = e.detail;\n          showMIBTree = false;\n        }}\n      />\n    "
+    " {\n          name = e.detail;\n          showMIBTree = false;\n        }}\n      />\n    ",
+    " zoom(true)}\n>\n  ",
+    " zoom(false)}\n>\n  "
   ]
 }

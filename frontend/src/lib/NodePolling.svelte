@@ -1,7 +1,8 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { Modal, GradientButton } from "flowbite-svelte";
   import { onMount, createEventDispatcher } from "svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { GetPollings, DeletePollings } from "../../wailsjs/go/main/App";
   import {
@@ -21,12 +22,12 @@
   let show: boolean = false;
   const dispatch = createEventDispatcher();
 
-  let data = [];
+  let data :any = [];
   let showEditPolling = false;
   let showAddPolling = false;
   let showPollingReport = false;
   let selectedPolling = "";
-  let table = undefined;
+  let table :any = undefined;
   let selectedCount = 0;
 
   const showTable = () => {
@@ -74,7 +75,7 @@
   };
 
   let showCopyPolling = false;
-  let pollingTmp = undefined;
+  let pollingTmp :any = undefined;
 
   const copy = () => {
     const selected = table.rows({ selected: true }).data();
@@ -157,7 +158,7 @@
   };
 </script>
 
-<Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:on:close={close}>
   <div class="flex flex-col">
     <div class="m-5 grow">
       <table id="nodePollingTable" class="display compact" style="width:99%" />
@@ -242,6 +243,3 @@
 {/if}
 
 
-<style>
-  @import "../assets/css/jquery.dataTables.css";
-</style>

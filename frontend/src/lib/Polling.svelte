@@ -1,15 +1,6 @@
-<script context="module">
-  import Prism from "prismjs";
-  Prism.languages.grok = {
-    number: /%\{.+?\}/,
-    string: /\.\+/,
-    regex: /\\s\+/,
-  };
-  const highlight = (code, syntax) =>
-    Prism.highlight(code, Prism.languages[syntax], syntax);
-</script>
 
 <script lang="ts">
+  import "prismjs/themes/prism.css";
   import { CodeJar } from "@novacbn/svelte-codejar";
 
   import { Select, Modal, Label, Input, GradientButton } from "flowbite-svelte";
@@ -20,7 +11,7 @@
     GetAutoPollings,
     GetNodes,
   } from "../../wailsjs/go/main/App";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import { levelList, typeList, logModeList, getTableLang } from "./common";
@@ -28,19 +19,33 @@
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
+  import Prism from "prismjs";
+
+  Prism.languages.grok = {
+    number: /%\{.+?\}/,
+    string: /\.\+/,
+    regex: /\\s\+/,
+  };
+
+  const highlight = (code: string, syntax: string | undefined) => {
+    if(!syntax) {
+      return ""
+    }
+    return Prism.highlight(code, Prism.languages[syntax], syntax);
+  }
 
   export let nodeID: string = "";
   export let pollingID: string = "";
   export let pollingTmpID: number = 0;
-  export let pollingTmp = undefined;
+  export let pollingTmp :any = undefined;
 
-  let polling: datastore.PollingEnt | undefined = undefined;
+  let polling: datastore.PollingEnt;
   let show: boolean = false;
-  let list = [];
+  let list :any = [];
   let showList: boolean = false;
   let showHelp = false;
 
-  const nodeList = [];
+  const nodeList : any = [];
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
@@ -73,7 +78,7 @@
     }
   });
 
-  let pollingTable = undefined;
+  let pollingTable : any = undefined;
   let selectedCount = 0;
 
   const showPollingList = async () => {
@@ -147,27 +152,28 @@
   const save = async () => {
     filterColor = "base";
     paramsColor = "base";
-    if (polling.Filter.startsWith("TODO:")) {
-      filterColor = "red";
-      return;
+    if(polling) {
+      if (polling.Filter.startsWith("TODO:")) {
+        filterColor = "red";
+        return;
+      }
+      if (polling.Params.startsWith("TODO:")) {
+        paramsColor = "red";
+        return;
+      }
+      polling.Extractor.replaceAll("\n", "");
+      polling.Timeout *= 1;
+      polling.Retry *= 1;
+      polling.PollInt *= 1;
+      const r = await UpdatePolling(polling);
+      if (r) {
+        close();
+      }
+    };
     }
-    if (polling.Params.startsWith("TODO:")) {
-      paramsColor = "red";
-      return;
-    }
-    polling.Extractor.replaceAll("\n", "");
-    polling.Timeout *= 1;
-    polling.Retry *= 1;
-    polling.PollInt *= 1;
-    const r = await UpdatePolling(polling);
-    if (r) {
-      close();
-    } else {
-    }
-  };
 </script>
 
-<Modal bind:open={show} size="lg" permanent class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="lg" dismissable={false} class="w-full" on:on:close={close}>
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       { $_('Polling.EditPolling') }
@@ -314,7 +320,7 @@
 <Modal
   bind:open={showList}
   size="xl"
-  permanent
+  dismissable={false}
   class="w-full"
   on:on:close={close}
 >
@@ -343,7 +349,3 @@
     }}
   />
 {/if}
-
-<style>
-  @import "prismjs/themes/prism.css";
-</style>

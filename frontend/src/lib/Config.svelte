@@ -1,8 +1,3 @@
-<script context="module">
-  import Prism from "prismjs";
-  const highlight = (code, syntax) =>
-    Prism.highlight(code, Prism.languages[syntax], syntax);
-</script>
 
 <script lang="ts">
   import {
@@ -17,8 +12,8 @@
     Alert,
     Range,
   } from "flowbite-svelte";
-  import { onMount, createEventDispatcher } from "svelte";
-  import Icon from "mdi-svelte";
+  import { createEventDispatcher } from "svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import {
@@ -53,26 +48,33 @@
   import MibTree from "./MIBTree.svelte";
   import { CodeJar } from "@novacbn/svelte-codejar";
   import Help from "./Help.svelte";
+  import Prism from "prismjs";
 
-  let show: boolean = false;
-  let helpPage: string | undefined = undefined;
-  let mapConf: datastore.MapConfEnt | undefined = undefined;
+  const highlight = (code: string, syntax: string | undefined) :string => {
+    if(!syntax) {
+      return ""
+    }
+    return Prism.highlight(code, Prism.languages[syntax], syntax);
+  }
 
-  let notifyConf: datastore.NotifyConfEnt | undefined = undefined;
+  export let show: boolean = false;
+  let helpPage: any = undefined;
+  let mapConf: any = undefined;
+
+  let notifyConf: any = undefined;
   let showTestError: boolean = false;
   let showTestOk: boolean = false;
-  let locConf: datastore.LocConfEnt | undefined = undefined;
+  let locConf: any = undefined;
   let showLocStyleError = false;
 
   const dispatch = createEventDispatcher();
 
-  onMount(async () => {
+  const  onOpen = async () => {
     mapConf = await GetMapConf();
     notifyConf = await GetNotifyConf();
     aiConf = await GetAIConf();
     locConf = await GetLocConf();
-    show = true;
-  });
+  };
 
   const close = () => {
     show = false;
@@ -111,7 +113,7 @@
   };
 
   let showAudioError = false;
-  const selectBeep = async (h) => {
+  const selectBeep = async (h:any) => {
     showAudioError = false;
     const p = await SelectAudioFile(
       h ? $_("Config.SelectAudioHigh") : $_("Config.SelectAudioLow")
@@ -131,7 +133,7 @@
     }
   };
 
-  const deleteBeep = (h) => {
+  const deleteBeep = (h:any) => {
     if (h) {
       notifyConf.BeepHigh = "";
     } else {
@@ -139,7 +141,7 @@
     }
   };
 
-  let aiConf: datastore.AIConfEnt | undefined = undefined;
+  let aiConf: any = undefined;
 
   const aiLevelList = [
     { name: $_("Config.AILevel0"), value: 0 },
@@ -163,14 +165,14 @@
   };
 
   let showMIBTree = false;
-  let mibTree = {
+  let mibTree :any = {
     oid: ".1.3.6.1",
     name: ".iso.org.dod.internet",
     MIBInfo: null,
     children: undefined,
   };
 
-  const renderType = (d, t, r) => {
+  const renderType = (d:any, t:string, r:any) => {
     if (t == "sort") {
       return t;
     }
@@ -232,10 +234,10 @@
     Icon: "",
     Code: 0,
   };
-  let iconTable = undefined;
+  let iconTable :any = undefined;
   let showEditIcon = false;
   let selectedIcon = 0;
-  let iconList = [];
+  let iconList :any = [];
   let disableIconSelect = false;
   const iconCodeMap = new Map();
 
@@ -359,9 +361,9 @@
 <Modal
   bind:open={show}
   size="xl"
-  permanent
+  dismissable={false}
   class="w-full min-h-[90vh]"
-  on:on:close={close}
+  on:open={onOpen}
 >
   <Tabs style="underline">
     <TabItem open>
@@ -1011,7 +1013,7 @@
   </Tabs>
 </Modal>
 
-<Modal bind:open={showMIBTree} size="lg" permanent class="w-full min-h-[80vh]">
+<Modal bind:open={showMIBTree} size="lg" dismissable={false} class="w-full min-h-[80vh]">
   <div class="flex flex-col space-y-4">
     <div id="mibtree">
       <MibTree tree={mibTree} on:select={(e) => {}} />
@@ -1033,7 +1035,7 @@
   </div>
 </Modal>
 
-<Modal bind:open={showEditIcon} size="lg" permanent class="w-full min-h-[80vh]">
+<Modal bind:open={showEditIcon} size="lg" dismissable={false} class="w-full min-h-[80vh]">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Config.EditIcon")}

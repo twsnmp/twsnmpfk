@@ -9,7 +9,7 @@
   } from "flowbite-svelte";
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import { GetNode, UpdateNode } from "../../wailsjs/go/main/App";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import { addrModeList, getIcon, iconList, snmpModeList } from "./common";
@@ -21,7 +21,7 @@
   export let posY = 0;
   export let ip = "";
 
-  let node: datastore.NodeEnt | undefined = undefined;
+  let node: any = undefined;
   let show: boolean = false;
   let showHelp = false;
 
@@ -78,7 +78,7 @@
   };
 </script>
 
-<Modal bind:open={show} size="lg" permanent class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="lg" dismissable={false} class="w-full" on:on:close={close}>
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">{ $_('Node.EditNode') }</h3>
     <div class="grid gap-4 mb-4 md:grid-cols-3">

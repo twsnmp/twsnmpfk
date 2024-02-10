@@ -3,7 +3,7 @@
   import ping_ng from "../assets/sound/ping_ng.mp3";
   import { Modal, GradientButton, Tabs, TabItem, Input, Select,Toggle } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
     getPingChartOption,
@@ -30,10 +30,10 @@
   const dispatch = createEventDispatcher();
   let pingTab = true;
   let wait = false;
-  let table = undefined;
-  let chart = undefined;
-  let chartOption = undefined;
-  let results = [];
+  let table :any = undefined;
+  let chart :any = undefined;
+  let chartOption :any = undefined;
+  let results :any = [];
   let ip = "";
   let ipColor: any = "base";
   let size = 64;
@@ -44,13 +44,13 @@
     count: 0,
     ttl: 64,
   };
-  let timer = undefined;
+  let timer :any = undefined;
   let canShowLinear = false;
   let canShowWorld = false;
   let canShowHistogram = false;
   let beep = false;
-  let sound_ok;
-  let sound_ng;
+  let sound_ok :any;
+  let sound_ng :any;
   let showHelp = false;
 
   onMount(async () => {
@@ -157,7 +157,7 @@
     { name: "254", value: 254 },
   ];
 
-  const renderPingStat = (s, type) => {
+  const renderPingStat = (s:any, type:string) => {
     if (type == "sort") {
       return s;
     }
@@ -192,11 +192,11 @@
     );
   };
 
-  const renderTimeStamp = (ts) => {
+  const renderTimeStamp = (ts:any) => {
     return formatTime(new Date(ts * 1000), "{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}");
   };
 
-  const renderRespTime = (t) => {
+  const renderRespTime = (t:any) => {
     return (t / (1000 * 1000 * 1000)).toFixed(6);
   };
 
@@ -246,7 +246,7 @@
     },
   ];
 
-  let reportChart = undefined;
+  let reportChart :any  = undefined;
 
   const showHistogram = async () => {
     await tick();
@@ -385,7 +385,7 @@
 
 <svelte:window on:resize={resizeChart} />
 
-<Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:on:close={close}>
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem bind:open={pingTab} on:click={showPing}>

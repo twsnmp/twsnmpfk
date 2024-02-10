@@ -21,11 +21,11 @@ const MAP_SIZE_Y = 5000;
 let mapRedraw = true;
 let readOnly = false;
 
-let mapCallBack = undefined;
+let mapCallBack :any = undefined;
 
-let nodes = {};
-let lines = [];
-let items = {}
+let nodes :any = {};
+let lines :any = [];
+let items :any = {}
 let backImage: datastore.BackImageEnt = {
   X:0,
   Y:0,
@@ -38,16 +38,16 @@ let _backImage:any = undefined;
 let fontSize = 12;
 let iconSize = 32;
 
-const selectedNodes = [];
-const selectedDrawItems = [];
+const selectedNodes :any = [];
+const selectedDrawItems :any = [];
 
 const imageMap = new Map();
 let mapState = 0;
 let showAllItems = false;
 
 let _mapP5 :P5 | undefined  = undefined;
-let beepHigh = undefined;
-let beepLow = undefined;
+let beepHigh :any= undefined;
+let beepLow :any = undefined;
 let scale = 1.0;
 
 export const initMAP = async (div:HTMLElement,cb :any) => {
@@ -168,8 +168,10 @@ export const resetMap = () => {
 }
 
 export const deleteMap = () => {
-  _mapP5.remove();
-  _mapP5 = undefined;
+  if(_mapP5) {
+    _mapP5.remove();
+    _mapP5 = undefined;
+  }
 }
 
 export const grid = (g:number,test:boolean) => {
@@ -218,7 +220,7 @@ export const setShowAllItems = (s:boolean) => {
 }
 
 
-const getLineColor = (state) => {
+const getLineColor = (state:any) => {
   if (state === 'high' || state === 'low' || state === 'warn') {
     return getStateColor(state)
   }
@@ -227,6 +229,9 @@ const getLineColor = (state) => {
 
 const isDark = () :boolean => {
   const  e = document.querySelector("html");
+  if (!e) {
+    return false;
+  }
   return e.classList.contains("dark");
 }
 
@@ -241,8 +246,8 @@ const mapMain = (p5:P5) => {
   let lastMouseY = 0;
   let dragMode  = 0; // 0 : None , 1: Select , 2 :Move
   let oldDark = false;
-  const draggedNodes = [];
-  const draggedItems = [];
+  const draggedNodes :any = [];
+  const draggedItems :any = [];
   let clickInCanvas = false;
   p5.preload = () => {
     p5.loadFont(mdiFont);
@@ -554,7 +559,7 @@ const mapMain = (p5:P5) => {
     }
     return true
   }
-  const checkNodePos = (n) => {
+  const checkNodePos = (n:any) => {
     if (n.X < 16) {
       n.X = 16
     }
@@ -568,7 +573,7 @@ const mapMain = (p5:P5) => {
       n.Y = MAP_SIZE_Y - 16
     }
   }
-  const checkItemPos = (i) => {
+  const checkItemPos = (i:any) => {
     if (i.X < 16) {
       i.X = 16
     }
@@ -583,7 +588,7 @@ const mapMain = (p5:P5) => {
     }
   }
   const dragMoveNodes = () => {
-    selectedNodes.forEach((id) => {
+    selectedNodes.forEach((id:any) => {
       if (nodes[id]) {
         nodes[id].X += p5.mouseX - lastMouseX
         nodes[id].Y += p5.mouseY - lastMouseY
@@ -593,7 +598,7 @@ const mapMain = (p5:P5) => {
         }
       }
     })
-    selectedDrawItems.forEach((id) => {
+    selectedDrawItems.forEach((id:any) => {
       if (items[id]) {
         items[id].X += p5.mouseX - lastMouseX
         items[id].Y += p5.mouseY - lastMouseY
@@ -636,7 +641,7 @@ const mapMain = (p5:P5) => {
     mapRedraw = true
   }
 
-  const setSelectNode = (bMulti) => {
+  const setSelectNode = (bMulti:boolean) => {
     const l = selectedNodes.length
     for (const k in nodes) {
       if (
@@ -703,8 +708,8 @@ const mapMain = (p5:P5) => {
   }
   // Nodeの位置を保存する
   const updateNodesPos = () => {
-    const list  = []
-    draggedNodes.forEach((id) => {
+    const list :any   = []
+    draggedNodes.forEach((id:any) => {
       if (nodes[id]) {
         // 位置を保存するノード
         list.push({
@@ -719,8 +724,8 @@ const mapMain = (p5:P5) => {
   }
   // 描画アイテムの位置を保存する
   const updateItemsPos = () => {
-    const list  = []
-    draggedItems.forEach((id) => {
+    const list :any = []
+    draggedItems.forEach((id:any) => {
       if (items[id]) {
         // 位置を保存するノード
         list.push({

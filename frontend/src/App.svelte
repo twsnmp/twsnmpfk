@@ -10,7 +10,7 @@
     top = await HasDatastore();
   });
 
-  const handleDone = (e) => {
+  const handleDone = (e:any) => {
     if (e && e.detail  && e.detail) {
       top = e.detail;
     }

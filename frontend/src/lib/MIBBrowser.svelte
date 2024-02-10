@@ -16,7 +16,7 @@
     Toggle,
   } from "flowbite-svelte";
   import { onMount, createEventDispatcher, onDestroy, tick } from "svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
     GetMIBTree,
@@ -36,20 +36,20 @@
   let show: boolean = false;
   let name = "";
   let raw = false;
-  let history = [];
+  let history :any = [];
   let selected = "";
   let wait = false;
   let neko = neko1;
   let showNeko = false;
   let nekoNo = 0;
-  const nekos = [];
-  let timer = undefined;
-  let table = undefined;
-  let columns = [];
-  let data = [];
+  const nekos :any = [];
+  let timer :any = undefined;
+  let table  :any= undefined;
+  let columns :any = [];
+  let data :any = [];
   let selectedCount = 0;
   let showMIBTree = false;
-  let mibTree = {
+  let mibTree :any = {
     oid: ".1.3.6.1",
     name: ".iso.org.dod.internet",
     MIBInfo: null,
@@ -128,7 +128,7 @@
     },
   ];
 
-  let mibs = undefined;
+  let mibs :any = undefined;
   let scalar = false;
 
   const get = async () => {
@@ -155,7 +155,7 @@
       columns = basicColumns;
       data = [];
       let i = 1;
-      mibs.forEach((e) => {
+      mibs.forEach((e:any) => {
         if (
           scalar &&
           (!e.Name.endsWith(".0") || e.Name.split(".").length != 2)
@@ -188,10 +188,10 @@
   };
 
   const tableMIBData = () => {
-    const names = [];
-    const indexes = [];
-    const rows = [];
-    mibs.forEach((e) => {
+    const names :any = [];
+    const indexes :any = [];
+    const rows :any= [];
+    mibs.forEach((e:any) => {
       const name = e.Name;
       const val = e.Value;
       const i = name.indexOf(".");
@@ -220,7 +220,7 @@
         data: "Index",
       },
     ];
-    names.forEach((e) => {
+    names.forEach((e:any) => {
       columns.push({
         title: e,
         data: e,
@@ -228,8 +228,8 @@
     });
     data = [];
     let i = 1;
-    rows.forEach((e) => {
-      const d = { Index: i };
+    rows.forEach((e:any) => {
+      const d  :any = { Index: i };
       for (let i = 1; i < e.length; i++) {
         d[names[i - 1]] = e[i];
       }
@@ -260,14 +260,14 @@
   };
 
   const exportMIB = (t: string) => {
-    const ed = {
+    const ed :any = {
       Title: "TWSNMP MIB(" + name + ")",
-      Header: columns.map((e) => e.title),
+      Header: columns.map((e:any) => e.title),
       Data: [],
       Image: "",
     };
     for (const d of data) {
-      const row = [];
+      const row :any = [];
       for (const c of columns) {
         row.push(d[c.data] || "");
       }
@@ -277,7 +277,7 @@
   };
 </script>
 
-<Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:on:close={close}>
   <div class="flex flex-col space-y-4">
     <div class="flex flex-row mb-2">
       <div class="flex-auto">
@@ -385,7 +385,7 @@
 <Modal
   bind:open={showNeko}
   size="sm"
-  permanent
+  dismissable={false}
   class="w-full bg-white bg-opacity-75 dark:bg-white"
 >
   <div class="flex justify-center items-center">
@@ -393,7 +393,7 @@
   </div>
 </Modal>
 
-<Modal bind:open={showMIBTree} size="lg" permanent class="w-full min-h-[80vh]">
+<Modal bind:open={showMIBTree} size="lg" dismissable={false} class="w-full min-h-[80vh]">
   <div class="flex flex-col space-y-4">
     <div id="mibtree">
       <MibTree

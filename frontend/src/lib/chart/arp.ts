@@ -3,9 +3,9 @@ import 'echarts-gl';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart;
+let chart :any ;
 
-export const showArpLogIP = (div, logs) => {
+export const showArpLogIP = (div:string, logs:any) => {
   const list = getArpLogIPList(logs);
   const newLog = [];
   const changeLog = [];
@@ -88,9 +88,9 @@ export const showArpLogIP = (div, logs) => {
   return chart;
 }
 
-const getArpLogIPList = (logs) => {
+const getArpLogIPList = (logs:any) => {
   const m = new Map()
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     const e = m.get(l.IP)
     if (!e) {
       m.set(l.IP, {
@@ -109,9 +109,9 @@ const getArpLogIPList = (logs) => {
   return r
 }
 
-export const showArpLogIP3D = (div, logs) => {
+export const showArpLogIP3D = (div:string, logs:any) => {
   const m = new Map()
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     const t = new Date(l.Time / (1000 * 1000))
     const e = m.get(l.IP)
     if (!e) {
@@ -129,7 +129,7 @@ export const showArpLogIP3D = (div, logs) => {
   })
   const cat = Array.from(m.keys())
   const l = Array.from(m.values())
-  const data = []
+  const data :any = []
   l.forEach((e) => {
     for (let i = 0; i < e.time.length && i < 15000; i++) {
       data.push([e.ip, e.time[i],e.state[i],e.level[i]])
@@ -186,7 +186,7 @@ export const showArpLogIP3D = (div, logs) => {
       axisLabel: {
         color: '#ccc',
         fontSize: 8,
-        formatter(value, index) {
+        formatter(value :any) {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -243,10 +243,10 @@ export const showArpLogIP3D = (div, logs) => {
   return chart;
 }
 
-export const showArpGraph = (div, arp, type,changeIP,changeMAC) => {
+export const showArpGraph = (div:string, arp:any, type:any,changeIP:any,changeMAC:any) => {
   const nodeMap = new Map()
   const edgeMap = new Map()
-  arp.forEach((a) => {
+  arp.forEach((a:any) => {
     let ek = a.IP + '|' + a.MAC;
     let e = edgeMap.get(ek)
     if (!e) {
@@ -292,7 +292,7 @@ export const showArpGraph = (div, arp, type,changeIP,changeMAC) => {
     chart.dispose()
   }
   chart = echarts.init(document.getElementById(div),"dark")
-  const options = {
+  const options :any = {
     title: {
       show: false,
     },

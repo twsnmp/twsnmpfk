@@ -1,6 +1,7 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { GradientButton } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import { ExportArpLogs, GetArpLogs } from "../../wailsjs/go/main/App";
@@ -11,10 +12,10 @@
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
 
-  let arpLogs = [];
-  let arpLogData = [];
+  let arpLogs :any = [];
+  let arpLogData :any = [];
   let showReport = false;
-  let arpLogTable = undefined;
+  let arpLogTable :any = undefined;
 
   const showArpLogTable = () => {
     if (arpLogTable && DataTable.isDataTable("#arpLogTable")) {
@@ -190,7 +191,6 @@
 {/if}
 
 <style>
-  @import "../assets/css/jquery.dataTables.css";
   #chart {
     min-height: 200px;
     height: 20vh;

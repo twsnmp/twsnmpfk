@@ -1,6 +1,7 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { GradientButton } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount } from "svelte";
   import {
@@ -23,12 +24,12 @@
   import PollingReport from "./PollingReport.svelte";
   import { _ } from "svelte-i18n";
 
-  let data = [];
-  let nodes = {};
+  let data : any= [];
+  let nodes : any  = {};
   let showEditPolling = false;
   let showPollingReport = false;
   let selectedPolling = "";
-  let table = undefined;
+  let table :any = undefined;
   let selectedCount = 0;
 
   const showTable = () => {
@@ -69,7 +70,7 @@
 
   let showCopyPolling = false;
   let showAddPolling = false;
-  let pollingTmp = undefined;
+  let pollingTmp :any = undefined;
 
   const add = async () => {
     pollingTmp = await GetDefaultPolling("");
@@ -124,7 +125,7 @@
       data: "NodeID",
       title: $_('PollingList.Node'),
       width: "15%",
-      render: (id) => nodes[id].Name,
+      render: (id:any) => nodes[id].Name,
     },
     {
       data: "Name",
@@ -254,7 +255,3 @@
     }}
   />
 {/if}
-
-<style>
-  @import "../assets/css/jquery.dataTables.css";
-</style>

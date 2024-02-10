@@ -1,6 +1,6 @@
 <script>
   import logo from "../assets/images/appicon.png";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { Card, GradientButton, Spinner } from "flowbite-svelte";
   import { onMount, createEventDispatcher } from "svelte";
@@ -17,7 +17,9 @@
   onMount(async () => {
     version = await GetVersion();
     const e = document.querySelector("html");
-    e.classList.add("dark");
+    if (e) {
+      e.classList.add("dark");
+    }
   });
 
   const select = async () => {

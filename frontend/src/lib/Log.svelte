@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { onMount, onDestroy } from "svelte";
   import { GetMapEventLogs } from "../../wailsjs/go/main/App";
   import {
@@ -9,9 +10,9 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from 'svelte-i18n';
-  let table = undefined;
-  let data = [];
-  let timer: number | undefined = undefined;
+  let table :any = undefined;
+  let data :any = [];
+  let timer: any = undefined;
 
   const showTable = () => {
     if (table && DataTable.isDataTable("#table")) {
@@ -81,6 +82,3 @@
 
 <table id="table" class="display compact" style="width:98%;" />
 
-<style>
-  @import "../assets/css/jquery.dataTables.css";
-</style>

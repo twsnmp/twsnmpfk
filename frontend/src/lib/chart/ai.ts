@@ -2,9 +2,9 @@ import * as echarts from 'echarts'
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart;
+let chart :any;
 
-export const showAIHeatMap = (div, scores) => {
+export const showAIHeatMap = (div:string, scores:any) => {
   if (chart) {
     chart.dispose()
   }
@@ -35,7 +35,7 @@ export const showAIHeatMap = (div, scores) => {
     '22',
     '23',
   ]
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -56,7 +56,7 @@ export const showAIHeatMap = (div, scores) => {
     dataZoom: [{}],
     tooltip: {
       trigger: 'item',
-      formatter(params) {
+      formatter(params:any) {
         return (
           params.name +
           ' ' +
@@ -157,7 +157,7 @@ export const showAIHeatMap = (div, scores) => {
   }
   let nD = 0
   let x = -1
-  scores.forEach((e) => {
+  scores.forEach((e:any) => {
     const t = new Date(e[0] * 1000)
     if (nD !== t.getDate()) {
       option.xAxis.data.push(echarts.time.format(t, '{yyyy}/{MM}/{dd}',false))
@@ -171,7 +171,7 @@ export const showAIHeatMap = (div, scores) => {
   return chart;
 }
 
-export const showAIPieChart = (div, scores) => {
+export const showAIPieChart = (div:string, scores:any) => {
   if (chart) {
     chart.dispose()
   }
@@ -211,7 +211,7 @@ export const showAIPieChart = (div, scores) => {
     ],
   }
   if (scores) {
-    scores.forEach((e) => {
+    scores.forEach((e:any) => {
       if (e[1] > 66.0) {
         option.series[0].data[2].value++
       } else if (e[1] > 50.0) {
@@ -226,12 +226,12 @@ export const showAIPieChart = (div, scores) => {
   return chart;
 }
 
-export const showAITimeChart = (div, scores) => {
+export const showAITimeChart = (div:string, scores:any) => {
   if (chart) {
     chart.dispose()
   }
   chart = echarts.init(document.getElementById(div),"dark")
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -267,7 +267,7 @@ export const showAITimeChart = (div, scores) => {
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
-        formatter(value, index) {
+        formatter(value:any, index:any) {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -311,7 +311,7 @@ export const showAITimeChart = (div, scores) => {
     ],
   }
   if (scores) {
-    scores.forEach((e) => {
+    scores.forEach((e:any) => {
       const t = new Date(e[0] * 1000)
       const ts = echarts.time.format(t, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}',false)
       option.series[0].data.push({

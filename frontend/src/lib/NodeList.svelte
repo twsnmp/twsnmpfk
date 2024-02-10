@@ -1,6 +1,7 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { GradientButton } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount } from "svelte";
   import {
@@ -17,12 +18,12 @@
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
 
-  let data = [];
+  let data :any = [];
   let showEditNode = false;
   let showNodeReport = false;
   let showPolling = false;
   let selectedNode = "";
-  let table = undefined;
+  let table :any = undefined;
   let selectedCount = 0;
 
   const showTable = () => {
@@ -104,7 +105,7 @@
     if (selected.length < 1) {
       return;
     }
-    selected.array.forEach((n) => {
+    selected.array.forEach((n:any) => {
       CheckPolling(n);
     });
     refresh();
@@ -237,7 +238,3 @@
     }}
   />
 {/if}
-
-<style>
-  @import "../assets/css/jquery.dataTables.css";
-</style>

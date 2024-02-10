@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   // retain module scoped expansion state for each tree node
-  const _expansionState = {
+  const _expansionState :any = {
     /* treeNodeId: expanded <boolean> */
   };
 </script>
@@ -30,6 +30,7 @@
   <li>
     {#if children && children.length > 0}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <span on:click={toggleExpansion} class="hover:bg-sky-400">
         <span class="arrow" class:arrowDown>&#x25b6</span>
         <span
@@ -55,6 +56,7 @@
         {:else}
           <span class="no-arrow" />
         {/if}
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <span
           on:dblclick={() => {
             dispatch("select", name);

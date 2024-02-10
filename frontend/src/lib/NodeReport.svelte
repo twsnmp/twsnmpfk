@@ -15,7 +15,7 @@
     P,
   } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { backend, datastore } from "wailsjs/go/models";
   import {
@@ -46,7 +46,7 @@
   import { _ } from "svelte-i18n";
 
   export let id = "";
-  let node: datastore.NodeEnt | undefined = undefined;
+  let node: datastore.NodeEnt;
   let show: boolean = false;
   const dispatch = createEventDispatcher();
 
@@ -57,8 +57,8 @@
   let showPolling = false;
   let physicalPort = true;
   let showVPanelBtn = false;
-  let chart = undefined;
-  let chartMem = undefined;
+  let chart :any = undefined;
+  let chartMem :any = undefined;
 
   const clearSelectedCount = () => {
     selectedPortCount = 0;
@@ -105,9 +105,9 @@
     });
   };
 
-  let portTable = undefined;
+  let portTable :any = undefined;
 
-  const showPortTable = (p) => {
+  const showPortTable = (p:any) => {
     if (portTable && DataTable.isDataTable("#portTable")) {
       portTable.clear();
       portTable.destroy();
@@ -196,8 +196,8 @@
     });
   };
 
-  let ports;
-  let power;
+  let ports :any;
+  let power :any;
   let waitVPanel = false;
   let rotateVPanel = false;
 
@@ -211,12 +211,12 @@
       power = await GetVPanelPowerInfo(id);
       waitVPanel = false;
     }
-    const p = physicalPort ? ports.filter((e)=> e.Type == 6) : ports;
+    const p = physicalPort ? ports.filter((e:any)=> e.Type == 6) : ports;
     setVPanel(p, power, rotateVPanel);
     showPortTable(p);
   };
 
-  const renderStatus = (s) => {
+  const renderStatus = (s:any) => {
     switch (s) {
       case "Running":
         return `<span class="text-blue-700">`+$_('NodeReport.Running')+`</span>`;
@@ -233,7 +233,7 @@
     return $_('NodeReport.Unknown');
   };
 
-  const renderRate = (r) => {
+  const renderRate = (r:any) => {
     if (r < 80.0) {
       return `<span class="text-blue-700">${r.toFixed(2)}</span>`;
     } else if (r < 90.0) {
@@ -242,7 +242,7 @@
     return `<span class="text-red-700">${r.toFixed(2)}</span>`;
   };
 
-  const renderStorageType = (t) => {
+  const renderStorageType = (t:any) => {
     switch (t) {
       case "hrStorageCompactDisc":
         return $_('NodeReport.CDDrive');
@@ -266,42 +266,42 @@
     return $_('NodeReport.Other');
   };
 
-  const renderDeviceType = (t) => {
+  const renderDeviceType = (t:any) => {
     return t.replace("hrDevice", "");
   };
 
-  const renderFSType = (t) => {
+  const renderFSType = (t:any) => {
     return t.replace("hrFS", "");
   };
 
-  const renderTrueFalse = (v) => {
+  const renderTrueFalse = (v:any) => {
     if (v === 1) {
       return "Yes";
     }
     return "No";
   };
 
-  const renderAccess = (v) => {
+  const renderAccess = (v:any) => {
     if (v === 1) {
       return "R/W";
     }
     return "Read Only";
   };
 
-  const renderCPU = (v) => {
+  const renderCPU = (v:any) => {
     return (v / 100).toFixed(2);
   };
 
-  const renderMem = (v, t) => {
+  const renderMem = (v:any, t:any) => {
     return renderBytes(v * 1024, t);
   };
 
   let hostResource: backend.HostResourceEnt | undefined = undefined;
-  let hrSystemTable = undefined;
-  let hrStorageTable = undefined;
+  let hrSystemTable : any= undefined;
+  let hrStorageTable : any = undefined;
   let hrDeviceTable = undefined;
   let hrFileSystemTable = undefined;
-  let hrProcessTable = undefined;
+  let hrProcessTable :any = undefined;
   let waitHr = false;
 
   const showHrSystem = async () => {
@@ -355,6 +355,9 @@
 
   const showHrStorage = () => {
     clearSelectedCount();
+    if (!hostResource) {
+      return;
+    }
     hrStorageTable = new DataTable("#hrStorageTable", {
       paging: false,
       searching: false,
@@ -414,6 +417,9 @@
 
   const showHrDevice = () => {
     clearSelectedCount();
+    if (!hostResource) {
+      return;
+    }
     hrDeviceTable = new DataTable("#hrDeviceTable", {
       paging: false,
       searching: false,
@@ -434,6 +440,9 @@
 
   const showHrFileSystem = () => {
     clearSelectedCount();
+    if (!hostResource) {
+      return;
+    }
     hrFileSystemTable = new DataTable("#hrFileSystemTable", {
       paging: false,
       searching: false,
@@ -464,6 +473,9 @@
 
   const showHrProcess = () => {
     clearSelectedCount();
+    if (!hostResource) {
+      return;
+    }
     hrProcessTable = new DataTable("#hrProcessTable", {
       paging: false,
       searching: false,
@@ -518,6 +530,9 @@
   };
 
   const showHrSummaryChart = async () => {
+    if (!hostResource) {
+      return;
+    }
     await tick();
     const data = {
       CPU: 0,
@@ -544,8 +559,11 @@
   };
 
   const showHrStorageChart = async () => {
+    if (!hostResource) {
+      return;
+    }
     await tick();
-    const list = [];
+    const list :any = [];
     hostResource.Storage.forEach((e) => {
       const t = renderStorageType(e.Type);
       if (!t.includes($_('NodeReport.Other'))) {
@@ -558,10 +576,13 @@
     chart = showHrBarChart("hrStorageChart", $_('NodeReport.StorageUsgae'), "%", list);
   };
 
-  const showHrProcChart = async (bCPU) => {
+  const showHrProcChart = async (bCPU:boolean) => {
+    if (!hostResource) {
+      return;
+    }
     await tick();
     let max = 0;
-    const list = [];
+    const list :any = [];
     hostResource.Process.forEach((e) => {
       const v = bCPU ? e.CPU / 100.0 : e.Mem * 1024;
       if (max < v) {
@@ -572,7 +593,7 @@
         Value: v,
       });
     });
-    list.sort((a, b) => {
+    list.sort((a:any, b:any) => {
       if (a.Value < b.Value) return -1;
       if (a.Value > b.Value) return 1;
       return 0;
@@ -594,11 +615,11 @@
     dispatch("close", {});
   };
 
-  let pollingTmp = undefined;
+  let pollingTmp : any = undefined;
 
   const watchPortState = async () => {
     const d = portTable.rows({ selected: true }).data();
-    if (d.length != 1) {
+    if (d.length != 1 ) {
       return;
     }
     pollingTmp = await GetDefaultPolling(node.ID);
@@ -746,7 +767,7 @@
 <Modal
   bind:open={show}
   size="xl"
-  permanent
+  dismissable={false}
   class="w-full min-h-[90vh]"
   on:on:close={close}
 >
