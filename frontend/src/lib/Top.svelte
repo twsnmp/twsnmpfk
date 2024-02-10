@@ -288,15 +288,14 @@
   <Location />
 {/if}
 
-{#if showConfig}
-  <Config
-    on:close={() => {
-      page = oldPage;
-      updateMapName();
-      showConfig = false;
-    }}
-  />
-{/if}
+<Config
+  bind:show={showConfig}
+  on:close={() => {
+    page = oldPage;
+    updateMapName();
+    console.log(showConfig);
+  }}
+/>
 
 {#if showHelp}
   <Help

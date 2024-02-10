@@ -12,7 +12,7 @@
     Alert,
     Range,
   } from "flowbite-svelte";
-  import { createEventDispatcher } from "svelte";
+  import { onMount,createEventDispatcher } from "svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
@@ -74,7 +74,12 @@
     notifyConf = await GetNotifyConf();
     aiConf = await GetAIConf();
     locConf = await GetLocConf();
+    console.log("on open");
   };
+
+  onMount(()=> {
+    onOpen();
+  });
 
   const close = () => {
     show = false;
