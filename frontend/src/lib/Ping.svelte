@@ -504,14 +504,7 @@
 <audio src={ping_ok} bind:this={sound_ok}></audio>
 <audio src={ping_ng} bind:this={sound_ng}></audio>
 
-{#if showHelp}
-  <Help
-    page="ping"
-    on:close={() => {
-      showHelp = false;
-    }}
-  />
-{/if}
+<Help bind:show={showHelp} page="ping" />
 
 <style>
   #pingChart {

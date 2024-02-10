@@ -369,11 +369,5 @@
   </form>
 </Modal>
 
-{#if showHelp}
-  <Help
-    page="drawitem"
-    on:close={() => {
-      showHelp = false;
-    }}
-  />
-{/if}
+<Help bind:show={showHelp} page="drawitem" />
+

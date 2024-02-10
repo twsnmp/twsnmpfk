@@ -14,22 +14,20 @@
   import "reveal.js/plugin/highlight/monokai.css";
 
   export let page = "";
-  let show: boolean = false;
+  export let show: boolean = false;
   let reveal: any = undefined;
   let helpUrl = "";
 
-  const dispatch = createEventDispatcher();
-
-  onMount(async () => {
+  const onOpen = async () => {
     helpUrl = `help/${lang}/${page}.md`;
-    show = true;
     await tick();
     reveal = new Reveal({
       plugins: [Markdown, Highlight],
       hash: true,
+      center: false,
     });
     reveal.initialize();
-  });
+  };
 
   const close = () => {
     if (reveal) {
@@ -37,7 +35,6 @@
       reveal = undefined;
     }
     show = false;
-    dispatch("close", {});
   };
 </script>
 
@@ -46,6 +43,7 @@
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh] bg-gray-800 help"
+  on:open={onOpen}
 >
   <div class="reveal max-h-[90%]">
     <div class="slides">

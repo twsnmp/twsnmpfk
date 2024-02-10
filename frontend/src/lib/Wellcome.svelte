@@ -101,14 +101,7 @@
   </Card>
 </div>
 
-{#if showHelp}
-  <Help
-    page="wellcome"
-    on:close={() => {
-      showHelp = false;
-    }}
-  />
-{/if}
+<Help bind:show={showHelp} page="wellcome" />
 
 <style>
   #logo {

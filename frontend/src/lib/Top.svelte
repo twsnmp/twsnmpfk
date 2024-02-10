@@ -247,8 +247,6 @@
       class="!p-2 ml-2"
       color="alternative"
       on:click={() => {
-        oldPage = page;
-        page = "";
         showHelp = true;
       }}
     >
@@ -293,16 +291,7 @@
   on:close={() => {
     page = oldPage;
     updateMapName();
-    console.log(showConfig);
   }}
 />
 
-{#if showHelp}
-  <Help
-    page={oldPage}
-    on:close={() => {
-      page = oldPage;
-      showHelp = false;
-    }}
-  />
-{/if}
+<Help bind:show={showHelp} {page} />

@@ -421,14 +421,7 @@
   </div>
 </Modal>
 
-{#if showHelp}
-  <Help
-    page="mibbrowser"
-    on:close={() => {
-      showHelp = false;
-    }}
-  />
-{/if}
+<Help bind:show={showHelp} page="mibbrowser" />
 
 <style>
   #table {

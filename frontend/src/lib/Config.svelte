@@ -59,6 +59,7 @@
 
   export let show: boolean = false;
   let helpPage: any = undefined;
+  let showHelp = false;
   let mapConf: any = undefined;
 
   let notifyConf: any = undefined;
@@ -501,6 +502,7 @@
             class="ml-2"
             on:click={() => {
               helpPage = "mapconf";
+              showHelp = true;
             }}
           >
             <Icon path={icons.mdiHelp} size={1} />
@@ -732,6 +734,7 @@
             class="ml-2"
             on:click={() => {
               helpPage = "notifyconf";
+              showHelp = true;
             }}
           >
             <Icon path={icons.mdiHelp} size={1} />
@@ -804,6 +807,7 @@
             class="ml-2"
             on:click={() => {
               helpPage = "aiconf";
+              showHelp = true;
             }}
           >
             <Icon path={icons.mdiHelp} size={1} />
@@ -881,6 +885,7 @@
             class="ml-2"
             on:click={() => {
               helpPage = "locconf";
+              showHelp = true;
             }}
           >
             <Icon path={icons.mdiHelp} size={1} />
@@ -948,6 +953,7 @@
           class="ml-2"
           on:click={() => {
             helpPage = "iconconf";
+            showHelp = true;
           }}
         >
           <Icon path={icons.mdiHelp} size={1} />
@@ -996,6 +1002,7 @@
           class="ml-2"
           on:click={() => {
             helpPage = "mibconf";
+            showHelp = true;
           }}
         >
           <Icon path={icons.mdiHelp} size={1} />
@@ -1096,14 +1103,7 @@
   </form>
 </Modal>
 
-{#if helpPage}
-  <Help
-    page={helpPage}
-    on:close={() => {
-      helpPage = undefined;
-    }}
-  />
-{/if}
+<Help bind:show={showHelp} page={helpPage}/>
 
 <style>
   #mibtree {

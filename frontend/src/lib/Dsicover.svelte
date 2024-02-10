@@ -321,11 +321,4 @@
   </div>
 </Modal>
 
-{#if showHelp}
-  <Help
-    page="discover"
-    on:close={() => {
-      showHelp = false;
-    }}
-  />
-{/if}
+<Help bind:show={showHelp} page="discover" />

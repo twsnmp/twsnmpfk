@@ -341,11 +341,4 @@
   </div>
 </Modal>
 
-{#if showHelp}
-  <Help
-    page="editpolling"
-    on:close={() => {
-      showHelp = false;
-    }}
-  />
-{/if}
+<Help bind:show={showHelp} page="editpolling" />
