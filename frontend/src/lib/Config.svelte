@@ -377,7 +377,7 @@
         </div>
         <form class="flex flex-col space-y-4" action="#">
           <div class="grid gap-2 grid-cols-4">
-            <Label class="col-span-3 space-y-2">
+            <Label class="col-span-3 space-y-2 text-xs">
               <span>{$_("Config.MapName")}</span>
               <Input
                 bind:value={mapConf.MapName}
@@ -392,7 +392,7 @@
             </Label>
           </div>
           <div class="grid gap-4 mb-4 md:grid-cols-4">
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span> {$_("Config.PollingIntSec")} </span>
               <Input
                 type="number"
@@ -403,7 +403,7 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span> {$_("Config.TimeoutSec")} </span>
               <Input
                 type="number"
@@ -414,7 +414,7 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span> {$_("Config.Retry")} </span>
               <Input
                 type="number"
@@ -425,7 +425,7 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span> {$_("Config.LogDays")} </span>
               <Input
                 type="number"
@@ -438,7 +438,7 @@
             </Label>
           </div>
           <div class="grid gap-4 md:grid-cols-3">
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span> {$_("Config.SNMPMode")} </span>
               <Select
                 items={snmpModeList}
@@ -448,7 +448,7 @@
               />
             </Label>
             {#if mapConf.SnmpMode == "v1" || mapConf.SnmpMode == "v2c"}
-              <Label class="space-y-2">
+              <Label class="space-y-2 text-xs">
                 <span>SNMP Community</span>
                 <Input
                   bind:value={mapConf.Community}
@@ -457,7 +457,7 @@
                 />
               </Label>
             {:else}
-              <Label class="space-y-2">
+              <Label class="space-y-2 text-xs">
                 <span>{$_("Config.SnmpUser")}</span>
                 <Input
                   bind:value={mapConf.SnmpUser}
@@ -465,7 +465,7 @@
                   size="sm"
                 />
               </Label>
-              <Label class="space-y-2">
+              <Label class="space-y-2 text-xs">
                 <span>{$_("Config.SnmpPassword")}</span>
                 <Input
                   type="password"
@@ -552,8 +552,8 @@
               </div>
             </Alert>
           {/if}
-          <div class="grid gap-4 md:grid-cols-2">
-            <Label class="space-y-2">
+          <div class="grid gap-4 grid-cols-4">
+            <Label class="space-y-2 text-xs">
               <span>{$_("Config.MailServer")}</span>
               <Input
                 bind:value={notifyConf.MailServer}
@@ -565,9 +565,7 @@
             <Checkbox bind:checked={notifyConf.InsecureSkipVerify}>
               {$_("Config.NoCheckCert")}
             </Checkbox>
-          </div>
-          <div class="grid gap-4 md:grid-cols-2">
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span>{$_("Config.SmtpUser")}</span>
               <Input
                 bind:value={notifyConf.User}
@@ -575,7 +573,7 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span>{$_("Config.SmtpPassword")}</span>
               <Input
                 type="password"
@@ -585,8 +583,12 @@
               />
             </Label>
           </div>
-          <div class="grid gap-4 md:grid-cols-2">
-            <Label class="space-y-2">
+          <div class="grid gap-4 grid-cols-4">
+            <Label class="space-y-2 text-xs col-span-2">
+              <span> {$_("Config.Subject")} </span>
+              <Input bind:value={notifyConf.Subject} size="sm" />
+            </Label>
+              <Label class="space-y-2 text-xs">
               <span>{$_("Config.MailFrom")}</span>
               <Input
                 bind:value={notifyConf.MailFrom}
@@ -594,7 +596,7 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span>{$_("Config.MailTo")}</span>
               <Input
                 bind:value={notifyConf.MailTo}
@@ -603,12 +605,8 @@
               />
             </Label>
           </div>
-          <Label class="space-y-2">
-            <span> {$_("Config.Subject")} </span>
-            <Input bind:value={notifyConf.Subject} size="sm" />
-          </Label>
-          <div class="grid gap-4 md:grid-cols-4">
-            <Label class="space-y-2">
+          <div class="grid gap-4 grid-cols-4">
+            <Label class="space-y-2 text-xs">
               <span> {$_("Config.NotifyLevel")} </span>
               <Select
                 items={notifyLevelList}
@@ -617,7 +615,7 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span> {$_("Config.NotifyIntSec")} </span>
               <Input
                 type="number"
@@ -635,12 +633,12 @@
               >{$_("Config.NotifyRepair")}</Checkbox
             >
           </div>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span> {$_("Config.ExecCommand")} </span>
             <Input class="w-full" bind:value={notifyConf.ExecCmd} size="sm" />
           </Label>
-          <div class="grid gap-4 md:grid-cols-4">
-            <Label class="space-y-2">
+          <div class="grid gap-4 grid-cols-4">
+            <Label class="space-y-2 text-xs">
               <span>{$_("Config.AudioHigh")}</span>
               {#if notifyConf.BeepHigh}
                 <audio src={notifyConf.BeepHigh} controls />
@@ -671,7 +669,7 @@
                 {$_("Config.SelectAodio")}
               </GradientButton>
             {/if}
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span>{$_("Config.AodioLow")}</span>
               {#if notifyConf.BeepLow}
                 <audio src={notifyConf.BeepLow} controls />
@@ -759,7 +757,7 @@
           {$_("Config.AI")}
         </div>
         <form class="flex flex-col space-y-4" action="#">
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span> {$_("Config.AIHighLevel")} </span>
             <Select
               items={aiLevelList}
@@ -768,7 +766,7 @@
               size="sm"
             />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span> {$_("Config.AILevelLow")} </span>
             <Select
               items={aiLevelList}
@@ -777,7 +775,7 @@
               size="sm"
             />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span> {$_("Config.AIlevelWarn")} </span>
             <Select
               items={aiLevelList}
@@ -840,7 +838,7 @@
               </div>
             </Alert>
           {/if}
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span>{$_("Config.LocStyle")}</span>
             <CodeJar
               syntax="javascript"
@@ -849,11 +847,11 @@
             />
           </Label>
           <div class="grid gap-4 md:grid-cols-3">
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span>{$_("Config.LocCenter")}</span>
               <Input type="text" bind:value={locConf.Center} size="sm" />
             </Label>
-            <Label class="space-y-2">
+            <Label class="space-y-2 text-xs">
               <span>{$_("Config.LocZoom")}</span>
               <Input
                 type="number"
@@ -863,7 +861,7 @@
                 size="sm"
               />
             </Label>
-            <Label>
+            <Label class="space-y-2 text-xs">
               {$_("Config.IconSize")}
               <Range
                 size="sm"
@@ -1071,7 +1069,7 @@
       {$_("Config.EditIcon")}
     </h3>
     <div class="grid gap-4 mb-4 md:grid-cols-2">
-      <Label class="space-y-2">
+      <Label class="space-y-2 text-xs">
         <span> {$_("Node.Icon")} </span>
         <Select
           items={iconList}
@@ -1085,7 +1083,7 @@
         <span class="mdi {icon.Icon} text-4xl" />
       </div>
     </div>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_("Config.Name")}</span>
       <Input
         bind:value={icon.Name}

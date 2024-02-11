@@ -99,17 +99,17 @@
         {$_("Line.EditLine")}
       </h3>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Line.Node1")}</span>
           <Input bind:value={node1.Name} readonly size="sm" />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Line.Node2")}</span>
           <Input bind:value={node2.Name} readonly size="sm" />
         </Label>
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Line.Polling1")} </span>
           <Select
             items={pollingList1}
@@ -118,7 +118,7 @@
             size="sm"
           />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Line.Polling2")} </span>
           <Select
             items={pollingList2}
@@ -128,8 +128,8 @@
           />
         </Label>
       </div>
-      <div class="grid gap-4 md:grid-cols-2">
-        <Label class="space-y-2">
+      <div class="grid gap-4 grid-cols-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Line.InfoPolling")} </span>
           <Select
             items={pollingList}
@@ -138,13 +138,13 @@
             size="sm"
           />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Line.Info")}</span>
           <Input bind:value={line.Info} size="sm" />
         </Label>
       </div>
       <div class="grid gap-4 md:grid-cols-2">
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Line.LineWidth")}</span>
           <Input
             bind:value={line.Width}
@@ -154,7 +154,7 @@
             size="sm"
           />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Line.Port")}</span>
           <Input bind:value={line.Port} size="sm" />
         </Label>

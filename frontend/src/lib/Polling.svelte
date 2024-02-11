@@ -189,23 +189,25 @@
       <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
         {$_("Polling.EditPolling")}
       </h3>
-      {#if !nodeID}
-        <Label class="space-y-2">
-          <span> {$_("Polling.Node")} </span>
-          <Select
-            items={nodeList}
-            bind:value={polling.NodeID}
-            placeholder={$_("Polling.SelectNode")}
-            size="sm"
-          />
+      <div class="grid gap-4 mb-4 grid-cols-2">
+        {#if !nodeID}
+          <Label class="space-y-2 text-xs">
+            <span> {$_("Polling.Node")} </span>
+            <Select
+              items={nodeList}
+              bind:value={polling.NodeID}
+              placeholder={$_("Polling.SelectNode")}
+              size="sm"
+            />
+          </Label>
+        {/if}
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Polling.Name")}</span>
+          <Input bind:value={polling.Name} required size="sm" />
         </Label>
-      {/if}
-      <Label class="space-y-2">
-        <span>{$_("Polling.Name")}</span>
-        <Input bind:value={polling.Name} required size="sm" />
-      </Label>
-      <div class="grid gap-4 mb-4 md:grid-cols-4">
-        <Label class="space-y-2">
+      </div>
+      <div class="grid gap-4 mb-4 grid-cols-4">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Polling.Level")} </span>
           <Select
             items={levelList}
@@ -214,7 +216,7 @@
             size="sm"
           />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Polling.Type")} </span>
           <Select
             items={typeList}
@@ -224,11 +226,11 @@
             disabled={pollingID != ""}
           />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Mode")}</span>
           <Input bind:value={polling.Mode} size="sm" />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Polling.LogMode")} </span>
           <Select
             items={logModeList}
@@ -238,34 +240,38 @@
           />
         </Label>
       </div>
-      <Label class="space-y-2">
-        <span>{$_("Polling.Params")}</span>
-        <Input
-          bind:value={polling.Params}
-          placeholder={$_("Polling.Params")}
-          color={paramsColor}
-          size="sm"
-        />
-      </Label>
-      <Label class="space-y-2">
-        <span>{$_("Polling.Filter")}</span>
-        <Input
-          bind:value={polling.Filter}
-          placeholder={$_("Polling.Filter")}
-          color={filterColor}
-          size="sm"
-        />
-      </Label>
-      <Label class="space-y-2">
-        <span>{$_("Polling.GrokPat")}</span>
-        <CodeJar syntax="grok" {highlight} bind:value={polling.Extractor} />
-      </Label>
-      <Label class="space-y-2">
-        <span>{$_("Polling.Script")}</span>
-        <CodeJar syntax="javascript" {highlight} bind:value={polling.Script} />
-      </Label>
-      <div class="grid gap-4 md:grid-cols-3">
-        <Label class="space-y-2">
+      <div class="grid gap-4 mb-4 grid-cols-2">
+          <Label class="space-y-2 text-xs">
+          <span>{$_("Polling.Params")}</span>
+          <Input
+            bind:value={polling.Params}
+            placeholder={$_("Polling.Params")}
+            color={paramsColor}
+            size="sm"
+          />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Polling.Filter")}</span>
+          <Input
+            bind:value={polling.Filter}
+            placeholder={$_("Polling.Filter")}
+            color={filterColor}
+            size="sm"
+          />
+        </Label>
+      </div>
+      <div class="grid gap-4 mb-4 grid-cols-2">
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Polling.GrokPat")}</span>
+          <CodeJar syntax="grok" {highlight} bind:value={polling.Extractor} />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Polling.Script")}</span>
+          <CodeJar syntax="javascript" {highlight} bind:value={polling.Script} />
+        </Label>
+      </div>
+      <div class="grid gap-4 grid-cols-3">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Polling.IntSec")}</span>
           <Input
             type="number"
@@ -275,7 +281,7 @@
             size="sm"
           />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Polling.TimeoutSec")}</span>
           <Input
             type="number"
@@ -285,7 +291,7 @@
             size="sm"
           />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Retry")}</span>
           <Input
             type="number"

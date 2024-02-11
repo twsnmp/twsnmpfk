@@ -269,6 +269,7 @@
     " {\n    showNodeReport = false;\n  }}\n/>\n\n",
     " {\n    showPolling = false;\n    refreshMap();\n  }}\n/>\n\n",
     " {\n    showPolling = false;\n    refreshMap();\n  }}\n/>\n\n",
-    " {\n    page = oldPage;\n    updateMapName();\n  }}\n/>\n\n"
+    " {\n    page = oldPage;\n    updateMapName();\n  }}\n/>\n\n",
+    " {\n            showHelp = true;\n          }}\n        >\n          "
   ]
 }

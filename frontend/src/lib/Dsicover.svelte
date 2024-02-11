@@ -117,17 +117,17 @@
         {$_("Discover.Discover")}
       </h3>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Discover.StartIP")}</span>
           <Input bind:value={conf.StartIP} size="sm" />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Discover.EndIP")}</span>
           <Input bind:value={conf.EndIP} size="sm" />
         </Label>
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Discover.Timeout")} </span>
           <Input
             type="number"
@@ -138,7 +138,7 @@
             size="sm"
           />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Discover.Retry")} </span>
           <Input
             type="number"
@@ -150,7 +150,7 @@
           />
         </Label>
       </div>
-      <div class="grid gap-4 mb-4 md:grid-cols-2">
+      <div class="grid gap-4 mb-4 grid-cols-2">
         <Checkbox bind:checked={conf.PortScan}
           >{$_("Discover.PortScan")}</Checkbox
         >

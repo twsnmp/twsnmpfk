@@ -187,7 +187,7 @@
   #chart {
     min-height: 200px;
     height: 20vh;
-    width:  98vw;
+    width:  95vw;
     margin:  0 auto;
   }
 </style>

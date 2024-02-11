@@ -136,7 +136,7 @@
       <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
         {$_("DrawItem.EditDrawItem")}
       </h3>
-      <Label class="space-y-2">
+      <Label class="space-y-2 text-xs">
         <span> {$_("DrawItem.Type")} </span>
         <Select
           items={drawItemList}
@@ -148,7 +148,7 @@
       </Label>
       {#if drawItem.Type < 2}
         <div class="grid gap-4 mb-4 md:grid-cols-4">
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.Width")}</span>
             <Input
               type="number"
@@ -159,7 +159,7 @@
               size="sm"
             />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.Height")}</span>
             <Input
               type="number"
@@ -170,11 +170,11 @@
               size="sm"
             />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <div>{$_("DrawItem.Color")}</div>
             <input type="color" bind:value={drawItem.Color} />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span> {$_("DrawItem.showCond")} </span>
             <Select
               items={condList}
@@ -187,7 +187,7 @@
       {/if}
       {#if drawItem.Type == 2}
         <div class="grid gap-4 mb-4 md:grid-cols-4">
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.FontSize")}</span>
             <Input
               type="number"
@@ -199,11 +199,11 @@
             />
           </Label>
           <div />
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <div>{$_("DrawItem.Color")}</div>
             <input type="color" bind:value={drawItem.Color} />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span> {$_("DrawItem.showCond")} </span>
             <Select
               items={condList}
@@ -213,7 +213,7 @@
             />
           </Label>
         </div>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.Text")}</span>
           <Input
             bind:value={drawItem.Text}
@@ -224,7 +224,7 @@
       {/if}
       {#if drawItem.Type == 3}
         <div class="grid gap-4 mb-4 md:grid-cols-4">
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.Width")}</span>
             <Input
               type="number"
@@ -234,7 +234,7 @@
               size="sm"
             />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.Height")}</span>
             <Input
               type="number"
@@ -244,7 +244,7 @@
               size="sm"
             />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span> {$_("DrawItem.showCond")} </span>
             <Select
               items={condList}
@@ -265,7 +265,7 @@
             {$_("DrawItem.Select")}
           </GradientButton>
         </div>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.Image")}</span>
           {#if image}
             <img src={image} alt="" class="h-32" />
@@ -275,8 +275,8 @@
         </Label>
       {/if}
       {#if drawItem.Type >= 4}
-        <div class="grid gap-4 mb-4 md:grid-cols-4">
-          <Label class="space-y-2">
+        <div class="grid gap-4 mb-4 grid-cols-4">
+          <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.Size")}</span>
             <Input
               type="number"
@@ -290,8 +290,8 @@
           <div />
           <div />
         </div>
-        <div class="grid gap-4 mb-4 md:grid-cols-2">
-          <Label class="space-y-2">
+        <div class="grid gap-4 mb-4 grid-cols-2">
+          <Label class="space-y-2 text-xs">
             <span> {$_("DrawItem.Node")} </span>
             <Select
               items={nodeList}
@@ -301,7 +301,7 @@
               on:change={updatePollingList}
             />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span> {$_("DrawItem.Polling")} </span>
             <Select
               items={pollingList}
@@ -311,7 +311,7 @@
             />
           </Label>
         </div>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.ValName")}</span>
           <Input
             bind:value={drawItem.VarName}
@@ -321,7 +321,7 @@
         </Label>
       {/if}
       {#if drawItem.Type == 4}
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.TextFormat")}</span>
           <Input
             bind:value={drawItem.Format}
@@ -331,12 +331,12 @@
         </Label>
       {/if}
       {#if drawItem.Type == 5}
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.GaugeLabel")}</span>
           <Input bind:value={drawItem.Text} size="sm" />
         </Label>
       {/if}
-      <Label class="space-y-2">
+      <Label class="space-y-2 text-xs">
         <span>{$_("DrawItem.Zoom")}</span>
         <Input
           type="number"

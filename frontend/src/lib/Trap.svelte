@@ -251,11 +251,11 @@
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Trap.Filter")}
     </h3>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_("Trap.FromAddress")} </span>
       <Input bind:value={from} size="sm" />
     </Label>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_("Trap.TrapType")}</span>
       <Input bind:value={trapType} size="sm" />
     </Label>
@@ -300,7 +300,7 @@
   #chart {
     min-height: 200px;
     height: 20vh;
-    width:  98vw;
+    width:  95vw;
     margin:  0 auto;
   }
 </style>

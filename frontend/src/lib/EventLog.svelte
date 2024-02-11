@@ -221,7 +221,7 @@
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("EventLog.Filter")}
     </h3>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_("EventLog.Level")}</span>
       <Select
         items={levelList}
@@ -230,15 +230,15 @@
         size="sm"
       />
     </Label>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_('EventLog.Type')}</span>
       <Input bind:value={type} size="sm" />
     </Label>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_('EventLog.NodeName')}</span>
       <Input bind:value={node} size="sm" />
     </Label>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_('EventLog.Event')}</span>
       <Input bind:value={event} size="sm" />
     </Label>
@@ -276,7 +276,7 @@
   #chart {
     min-height: 200px;
     height: 20vh;
-    width:  98vw;
+    width:  95vw;
     margin:  0 auto;
   }
 </style>

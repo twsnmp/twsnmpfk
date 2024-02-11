@@ -89,15 +89,15 @@
         {$_("Node.EditNode")}
       </h3>
       <div class="grid gap-4 mb-4 md:grid-cols-3">
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Node.Name")}</span>
-          <Input bind:value={node.Name} required size="sm" />
+          <Input bind:value={node.Name} size="sm" />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Node.IPAddress")}</span>
-          <Input bind:value={node.IP} required size="sm" />
+          <Input bind:value={node.IP} size="sm" />
         </Label>
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Node.AddressMode")} </span>
           <Select
             items={addrModeList}
@@ -108,7 +108,7 @@
         </Label>
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-3">
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Node.Icon")} </span>
           <Select
             items={iconList}
@@ -123,7 +123,7 @@
         <Checkbox bind:checked={node.AutoAck}>{$_("Node.AutoCheck")}</Checkbox>
       </div>
       <div class="grid gap-4 md:grid-cols-3">
-        <Label class="space-y-2">
+        <Label class="space-y-2 text-xs">
           <span> {$_("Node.SNMPMode")} </span>
           <Select
             items={snmpModeList}
@@ -133,30 +133,32 @@
           />
         </Label>
         {#if node.SnmpMode == "v1" || node.SnmpMode == "v2c"}
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span>SNMP Community</span>
             <Input bind:value={node.Community} placeholder="public" size="sm" />
           </Label>
           <div></div>
         {:else}
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span>{$_("Node.SnmpUser")}</span>
             <Input bind:value={node.User} size="sm" />
           </Label>
-          <Label class="space-y-2">
+          <Label class="space-y-2 text-xs">
             <span>{$_("Node.SnmpPassword")}</span>
             <Input type="password" bind:value={node.Password} size="sm" />
           </Label>
         {/if}
       </div>
-      <Label class="space-y-2">
+      <div class="grid gap-4 md:grid-cols-2">
+        <Label class="space-y-2 text-xs">
+          <span>URL</span>
+          <Input bind:value={node.URL} placeholder="URL" size="sm" />
+        </Label>
+        <Label class="space-y-2 text-xs">
         <span>{$_("Node.PublicKey")}</span>
         <Input bind:value={node.PublicKey} size="sm" />
       </Label>
-      <Label class="space-y-2">
-        <span>URL</span>
-        <Input bind:value={node.URL} placeholder="URL" size="sm" />
-      </Label>
+      </div>
       <Label class="space-y-2">
         <span>{$_("Node.Descr")}</span>
         <Input bind:value={node.Descr} size="sm" />

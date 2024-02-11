@@ -277,7 +277,7 @@
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Syslog.Filter")}
     </h3>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_("Syslog.Level")}</span>
       <Select
         items={levelList}
@@ -286,15 +286,15 @@
         size="sm"
       />
     </Label>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_("Syslog.Host")}</span>
       <Input bind:value={host} size="sm" />
     </Label>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_("Syslog.Tag")}</span>
       <Input bind:value={tag} size="sm" />
     </Label>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_("Syslog.Message")}</span>
       <Input bind:value={msg} size="sm" />
     </Label>
@@ -339,7 +339,7 @@
   #chart {
     min-height: 200px;
     height: 20vh;
-    width: 98vw;
+    width: 95vw;
     margin: 0 auto;
   }
 </style>
