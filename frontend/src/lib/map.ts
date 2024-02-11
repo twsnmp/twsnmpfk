@@ -82,18 +82,20 @@ export const updateMAP = async () => {
     _mapP5.loadImage(backImage.Data,(img)=>{
       _backImage = img;
       mapRedraw = true;
-    })
+      console.log(img);
+    },()=>{});
   }
   _setMapState();
   _checkBeep();
   for(const k in items) {
     switch (items[k].Type) {
     case 3:
+      console.log(items[k]);
       if (!imageMap.has(items[k].ID) && _mapP5 != undefined) {
         _mapP5.loadImage(await GetImage(items[k].Path),(img)=>{
           imageMap.set(items[k].ID,img);
           mapRedraw = true;
-        })
+        },(e)=>{});
       }  
       break;
     case 2:
@@ -343,6 +345,9 @@ const mapMain = (p5:P5) => {
       case 3: // Image
         if (imageMap.has(items[k].ID)) {
           p5.image(imageMap.get(items[k].ID),0,0,items[k].W,items[k].H);
+        } else {
+          p5.fill("#aaa");
+          p5.rect(0,0,items[k].W, items[k].H);
         }
         break
       case 5: { // Gauge
