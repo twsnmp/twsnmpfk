@@ -440,7 +440,9 @@ table.dataTable.compact tfoot th,
 table.dataTable.compact tfoot td,
 table.dataTable.compact tbody th,
 table.dataTable.compact tbody td {
-  padding: 4px;
+  padding: 2px;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 table.dataTable th,
