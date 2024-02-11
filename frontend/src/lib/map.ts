@@ -13,7 +13,6 @@ import {
   GetNotifyConf,
 } from "../../wailsjs/go/main/App"
 import type { datastore } from 'wailsjs/go/models';
-import mdiFont  from "@mdi/font/fonts/materialdesignicons-webfont.ttf";
 
 
 const MAP_SIZE_X = window.screen.width > 4000 ? 5000 : 2500;
@@ -249,9 +248,6 @@ const mapMain = (p5:P5) => {
   const draggedNodes :any = [];
   const draggedItems :any = [];
   let clickInCanvas = false;
-  p5.preload = () => {
-    p5.loadFont(mdiFont);
-  }
   p5.setup = () => {
     const c = p5.createCanvas(MAP_SIZE_X, MAP_SIZE_Y);
     c.mousePressed(canvasMousePressed);
