@@ -1,8 +1,9 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { Modal, GradientButton } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import { onMount, onDestroy, tick, createEventDispatcher } from "svelte";
+  import { tick, createEventDispatcher } from "svelte";
   import { GetPollingTemplates } from "../../wailsjs/go/main/App";
   import { getTableLang } from "./common";
   import Polling from "./Polling.svelte";
@@ -12,11 +13,11 @@
   import { _ } from 'svelte-i18n';
 
   export let nodeID = "";
+  export let show = false;
   const dispatch = createEventDispatcher();
 
-  let tmpTable = undefined;
+  let tmpTable :any = undefined;
   let selectedCount = 0;
-  let show = false;
   let showEditPolling = false;
   let selectedTemplateID = 0;
 
@@ -79,10 +80,9 @@
     },
   ];
 
-  onMount(() => {
-    show = true;
+  const onOpen =() => {
     showTable();
-  });
+  };
 
   const close = () => {
     show = false;
@@ -91,7 +91,7 @@
   };
 </script>
 
-<Modal bind:open={show} size="xl" permanent class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:open={onOpen}>
   <div class="flex flex-col">
     <div class="m-5 grow">
       <table id="tmpTable" class="display compact" style="width:99%" />
@@ -111,15 +111,10 @@
   </div>
 </Modal>
 
-{#if showEditPolling}
-  <Polling
-    {nodeID}
-    pollingID={""}
-    pollingTmpID={selectedTemplateID}
-    on:close={close}
-  />
-{/if}
-
-<style>
-  @import "../assets/css/jquery.dataTables.css";
-</style>
+<Polling
+  bind:show={showEditPolling}
+  {nodeID}
+  pollingID={""}
+  pollingTmpID={selectedTemplateID}
+  on:close={close}
+/>

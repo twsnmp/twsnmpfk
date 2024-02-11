@@ -1,4 +1,3 @@
-
 <script lang="ts">
   import {
     Modal,
@@ -11,9 +10,10 @@
     GradientButton,
     Alert,
     Range,
+    Spinner,
   } from "flowbite-svelte";
-  import { onMount,createEventDispatcher } from "svelte";
-  import {Icon} from "mdi-svelte-ts";
+  import { createEventDispatcher } from "svelte";
+  import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import {
@@ -50,12 +50,12 @@
   import Help from "./Help.svelte";
   import Prism from "prismjs";
 
-  const highlight = (code: string, syntax: string | undefined) :string => {
-    if(!syntax) {
-      return ""
+  const highlight = (code: string, syntax: string | undefined): string => {
+    if (!syntax) {
+      return "";
     }
     return Prism.highlight(code, Prism.languages[syntax], syntax);
-  }
+  };
 
   export let show: boolean = false;
   let helpPage: any = undefined;
@@ -70,17 +70,12 @@
 
   const dispatch = createEventDispatcher();
 
-  const  onOpen = async () => {
+  const onOpen = async () => {
     mapConf = await GetMapConf();
     notifyConf = await GetNotifyConf();
     aiConf = await GetAIConf();
     locConf = await GetLocConf();
-    console.log("on open");
   };
-
-  onMount(()=> {
-    onOpen();
-  });
 
   const close = () => {
     show = false;
@@ -119,7 +114,7 @@
   };
 
   let showAudioError = false;
-  const selectBeep = async (h:any) => {
+  const selectBeep = async (h: any) => {
     showAudioError = false;
     const p = await SelectAudioFile(
       h ? $_("Config.SelectAudioHigh") : $_("Config.SelectAudioLow")
@@ -139,7 +134,7 @@
     }
   };
 
-  const deleteBeep = (h:any) => {
+  const deleteBeep = (h: any) => {
     if (h) {
       notifyConf.BeepHigh = "";
     } else {
@@ -171,14 +166,14 @@
   };
 
   let showMIBTree = false;
-  let mibTree :any = {
+  let mibTree: any = {
     oid: ".1.3.6.1",
     name: ".iso.org.dod.internet",
     MIBInfo: null,
     children: undefined,
   };
 
-  const renderType = (d:any, t:string, r:any) => {
+  const renderType = (d: any, t: string, r: any) => {
     if (t == "sort") {
       return t;
     }
@@ -240,10 +235,10 @@
     Icon: "",
     Code: 0,
   };
-  let iconTable :any = undefined;
+  let iconTable: any = undefined;
   let showEditIcon = false;
   let selectedIcon = 0;
-  let iconList :any = [];
+  let iconList: any = [];
   let disableIconSelect = false;
   const iconCodeMap = new Map();
 
@@ -371,512 +366,592 @@
   class="w-full min-h-[90vh]"
   on:open={onOpen}
 >
-  <Tabs style="underline">
-    <TabItem open>
-      <div slot="title" class="flex items-center gap-2">
-        <Icon path={icons.mdiCog} size={1} />
-        {$_("Config.Map")}
-      </div>
-      <form class="flex flex-col space-y-4" action="#">
-        <div class="grid gap-2 grid-cols-4">
-          <Label class="col-span-3 space-y-2">
-            <span>{$_("Config.MapName")}</span>
-            <Input
-              bind:value={mapConf.MapName}
-              placeholder={$_("Config.MapName")}
-              required
-              size="sm"
-            />
-          </Label>
-          <Label>
-            {$_("Config.IconSize")}
-            <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} />
-          </Label>
+  {#if !locConf}
+    <div class="text-center mt-10"><Spinner size={16} /></div>
+  {:else}
+    <Tabs style="underline">
+      <TabItem open>
+        <div slot="title" class="flex items-center gap-2">
+          <Icon path={icons.mdiCog} size={1} />
+          {$_("Config.Map")}
         </div>
-        <div class="grid gap-4 mb-4 md:grid-cols-4">
-          <Label class="space-y-2">
-            <span> {$_("Config.PollingIntSec")} </span>
-            <Input
-              type="number"
-              min={5}
-              max={3600 * 24}
-              step={1}
-              bind:value={mapConf.PollInt}
-              size="sm"
-            />
-          </Label>
-          <Label class="space-y-2">
-            <span> {$_("Config.TimeoutSec")} </span>
-            <Input
-              type="number"
-              min={1}
-              max={120}
-              step={1}
-              bind:value={mapConf.Timeout}
-              size="sm"
-            />
-          </Label>
-          <Label class="space-y-2">
-            <span> {$_("Config.Retry")} </span>
-            <Input
-              type="number"
-              min={0}
-              max={100}
-              step={1}
-              bind:value={mapConf.Retry}
-              size="sm"
-            />
-          </Label>
-          <Label class="space-y-2">
-            <span> {$_("Config.LogDays")} </span>
-            <Input
-              type="number"
-              min={1}
-              max={365 * 5}
-              step={1}
-              bind:value={mapConf.LogDays}
-              size="sm"
-            />
-          </Label>
-        </div>
-        <div class="grid gap-4 md:grid-cols-3">
-          <Label class="space-y-2">
-            <span> {$_("Config.SNMPMode")} </span>
-            <Select
-              items={snmpModeList}
-              bind:value={mapConf.SnmpMode}
-              placeholder={$_("Config.SelectSnmpMode")}
-              size="sm"
-            />
-          </Label>
-          {#if mapConf.SnmpMode == "v1" || mapConf.SnmpMode == "v2c"}
-            <Label class="space-y-2">
-              <span>SNMP Community</span>
+        <form class="flex flex-col space-y-4" action="#">
+          <div class="grid gap-2 grid-cols-4">
+            <Label class="col-span-3 space-y-2">
+              <span>{$_("Config.MapName")}</span>
               <Input
-                bind:value={mapConf.Community}
-                placeholder="public"
+                bind:value={mapConf.MapName}
+                placeholder={$_("Config.MapName")}
+                required
                 size="sm"
               />
             </Label>
-          {:else}
+            <Label>
+              {$_("Config.IconSize")}
+              <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} />
+            </Label>
+          </div>
+          <div class="grid gap-4 mb-4 md:grid-cols-4">
             <Label class="space-y-2">
-              <span>{$_("Config.SnmpUser")}</span>
+              <span> {$_("Config.PollingIntSec")} </span>
               <Input
-                bind:value={mapConf.SnmpUser}
-                placeholder="snmp user"
+                type="number"
+                min={5}
+                max={3600 * 24}
+                step={1}
+                bind:value={mapConf.PollInt}
                 size="sm"
               />
             </Label>
             <Label class="space-y-2">
-              <span>{$_("Config.SnmpPassword")}</span>
+              <span> {$_("Config.TimeoutSec")} </span>
+              <Input
+                type="number"
+                min={1}
+                max={120}
+                step={1}
+                bind:value={mapConf.Timeout}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2">
+              <span> {$_("Config.Retry")} </span>
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                step={1}
+                bind:value={mapConf.Retry}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2">
+              <span> {$_("Config.LogDays")} </span>
+              <Input
+                type="number"
+                min={1}
+                max={365 * 5}
+                step={1}
+                bind:value={mapConf.LogDays}
+                size="sm"
+              />
+            </Label>
+          </div>
+          <div class="grid gap-4 md:grid-cols-3">
+            <Label class="space-y-2">
+              <span> {$_("Config.SNMPMode")} </span>
+              <Select
+                items={snmpModeList}
+                bind:value={mapConf.SnmpMode}
+                placeholder={$_("Config.SelectSnmpMode")}
+                size="sm"
+              />
+            </Label>
+            {#if mapConf.SnmpMode == "v1" || mapConf.SnmpMode == "v2c"}
+              <Label class="space-y-2">
+                <span>SNMP Community</span>
+                <Input
+                  bind:value={mapConf.Community}
+                  placeholder="public"
+                  size="sm"
+                />
+              </Label>
+            {:else}
+              <Label class="space-y-2">
+                <span>{$_("Config.SnmpUser")}</span>
+                <Input
+                  bind:value={mapConf.SnmpUser}
+                  placeholder="snmp user"
+                  size="sm"
+                />
+              </Label>
+              <Label class="space-y-2">
+                <span>{$_("Config.SnmpPassword")}</span>
+                <Input
+                  type="password"
+                  bind:value={mapConf.SnmpPassword}
+                  placeholder="•••••"
+                  size="sm"
+                />
+              </Label>
+            {/if}
+          </div>
+          <div class="grid gap-4 mb-4 md:grid-cols-3">
+            <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox>
+            <Checkbox bind:checked={mapConf.EnableTrapd}>SNMP TRAP</Checkbox>
+            <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
+          </div>
+          <div class="flex justify-end space-x-2 mr-2">
+            <GradientButton
+              shadow
+              color="blue"
+              type="button"
+              on:click={saveMapConf}
+              size="xs"
+            >
+              <Icon path={icons.mdiContentSave} size={1} />
+              {$_("Config.Save")}
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              size="xs"
+              color="lime"
+              class="ml-2"
+              on:click={() => {
+                helpPage = "mapconf";
+                showHelp = true;
+              }}
+            >
+              <Icon path={icons.mdiHelp} size={1} />
+              <span>
+                {$_("Config.Help")}
+              </span>
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              color="teal"
+              on:click={close}
+              size="xs"
+            >
+              <Icon path={icons.mdiCancel} size={1} />
+              {$_("Config.Cancel")}
+            </GradientButton>
+          </div>
+        </form>
+        <!-- <MapConf on:close={close}></MapConf> -->
+      </TabItem>
+      <TabItem>
+        <div slot="title" class="flex items-center gap-2">
+          <Icon path={icons.mdiSend} size={1} />
+          {$_("Config.Notify")}
+        </div>
+        <form class="flex flex-col space-y-4" action="#">
+          {#if showTestError}
+            <Alert color="red" dismissable>
+              <div class="flex">
+                <Icon path={icons.mdiExclamation} size={1} />
+                {$_("Config.FailedSendMail")}
+              </div>
+            </Alert>
+          {/if}
+          {#if showAudioError}
+            <Alert color="red" dismissable>
+              <div class="flex">
+                <Icon path={icons.mdiExclamation} size={1} />
+                {$_("Config.SelectAudioError")}
+              </div>
+            </Alert>
+          {/if}
+          {#if showTestOk}
+            <Alert class="flex" color="blue" dismissable>
+              <div class="flex">
+                <Icon path={icons.mdiCheck} size={1} />
+                {$_("Config.SentTestMail")}
+              </div>
+            </Alert>
+          {/if}
+          <div class="grid gap-4 md:grid-cols-2">
+            <Label class="space-y-2">
+              <span>{$_("Config.MailServer")}</span>
+              <Input
+                bind:value={notifyConf.MailServer}
+                placeholder="host|ip:port"
+                required
+                size="sm"
+              />
+            </Label>
+            <Checkbox bind:checked={notifyConf.InsecureSkipVerify}>
+              {$_("Config.NoCheckCert")}
+            </Checkbox>
+          </div>
+          <div class="grid gap-4 md:grid-cols-2">
+            <Label class="space-y-2">
+              <span>{$_("Config.SmtpUser")}</span>
+              <Input
+                bind:value={notifyConf.User}
+                placeholder="smtp user"
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2">
+              <span>{$_("Config.SmtpPassword")}</span>
               <Input
                 type="password"
-                bind:value={mapConf.SnmpPassword}
+                bind:value={notifyConf.Password}
                 placeholder="•••••"
                 size="sm"
               />
             </Label>
-          {/if}
-        </div>
-        <div class="grid gap-4 mb-4 md:grid-cols-3">
-          <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox>
-          <Checkbox bind:checked={mapConf.EnableTrapd}>SNMP TRAP</Checkbox>
-          <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
-        </div>
-        <div class="flex justify-end space-x-2 mr-2">
-          <GradientButton
-            shadow
-            color="blue"
-            type="button"
-            on:click={saveMapConf}
-            size="xs"
-          >
-            <Icon path={icons.mdiContentSave} size={1} />
-            {$_("Config.Save")}
-          </GradientButton>
-          <GradientButton
-            shadow
-            type="button"
-            size="xs"
-            color="lime"
-            class="ml-2"
-            on:click={() => {
-              helpPage = "mapconf";
-              showHelp = true;
-            }}
-          >
-            <Icon path={icons.mdiHelp} size={1} />
-            <span>
-              {$_("Config.Help")}
-            </span>
-          </GradientButton>
-          <GradientButton
-            shadow
-            type="button"
-            color="teal"
-            on:click={close}
-            size="xs"
-          >
-            <Icon path={icons.mdiCancel} size={1} />
-            {$_("Config.Cancel")}
-          </GradientButton>
-        </div>
-      </form>
-      <!-- <MapConf on:close={close}></MapConf> -->
-    </TabItem>
-    <TabItem>
-      <div slot="title" class="flex items-center gap-2">
-        <Icon path={icons.mdiSend} size={1} />
-        {$_("Config.Notify")}
-      </div>
-      <form class="flex flex-col space-y-4" action="#">
-        {#if showTestError}
-          <Alert color="red" dismissable>
-            <div class="flex">
-              <Icon path={icons.mdiExclamation} size={1} />
-              {$_("Config.FailedSendMail")}
-            </div>
-          </Alert>
-        {/if}
-        {#if showAudioError}
-          <Alert color="red" dismissable>
-            <div class="flex">
-              <Icon path={icons.mdiExclamation} size={1} />
-              {$_("Config.SelectAudioError")}
-            </div>
-          </Alert>
-        {/if}
-        {#if showTestOk}
-          <Alert class="flex" color="blue" dismissable>
-            <div class="flex">
-              <Icon path={icons.mdiCheck} size={1} />
-              {$_("Config.SentTestMail")}
-            </div>
-          </Alert>
-        {/if}
-        <div class="grid gap-4 md:grid-cols-2">
+          </div>
+          <div class="grid gap-4 md:grid-cols-2">
+            <Label class="space-y-2">
+              <span>{$_("Config.MailFrom")}</span>
+              <Input
+                bind:value={notifyConf.MailFrom}
+                placeholder={$_("Config.MailFromAddress")}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2">
+              <span>{$_("Config.MailTo")}</span>
+              <Input
+                bind:value={notifyConf.MailTo}
+                placeholder={$_("Config.MailToAddress")}
+                size="sm"
+              />
+            </Label>
+          </div>
           <Label class="space-y-2">
-            <span>{$_("Config.MailServer")}</span>
-            <Input
-              bind:value={notifyConf.MailServer}
-              placeholder="host|ip:port"
-              required
-              size="sm"
-            />
+            <span> {$_("Config.Subject")} </span>
+            <Input bind:value={notifyConf.Subject} size="sm" />
           </Label>
-          <Checkbox bind:checked={notifyConf.InsecureSkipVerify}>
-            {$_("Config.NoCheckCert")}
-          </Checkbox>
-        </div>
-        <div class="grid gap-4 md:grid-cols-2">
+          <div class="grid gap-4 md:grid-cols-4">
+            <Label class="space-y-2">
+              <span> {$_("Config.NotifyLevel")} </span>
+              <Select
+                items={notifyLevelList}
+                bind:value={notifyConf.Level}
+                placeholder={$_("Config.SelectNotifyLevel")}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2">
+              <span> {$_("Config.NotifyIntSec")} </span>
+              <Input
+                type="number"
+                min={60}
+                max={3600 * 24}
+                step={10}
+                bind:value={notifyConf.Interval}
+                size="sm"
+              />
+            </Label>
+            <Checkbox bind:checked={notifyConf.Report}
+              >{$_("Config.MailReport")}</Checkbox
+            >
+            <Checkbox bind:checked={notifyConf.NotifyRepair}
+              >{$_("Config.NotifyRepair")}</Checkbox
+            >
+          </div>
           <Label class="space-y-2">
-            <span>{$_("Config.SmtpUser")}</span>
-            <Input
-              bind:value={notifyConf.User}
-              placeholder="smtp user"
-              size="sm"
-            />
+            <span> {$_("Config.ExecCommand")} </span>
+            <Input class="w-full" bind:value={notifyConf.ExecCmd} size="sm" />
           </Label>
-          <Label class="space-y-2">
-            <span>{$_("Config.SmtpPassword")}</span>
-            <Input
-              type="password"
-              bind:value={notifyConf.Password}
-              placeholder="•••••"
-              size="sm"
-            />
-          </Label>
-        </div>
-        <div class="grid gap-4 md:grid-cols-2">
-          <Label class="space-y-2">
-            <span>{$_("Config.MailFrom")}</span>
-            <Input
-              bind:value={notifyConf.MailFrom}
-              placeholder={$_("Config.MailFromAddress")}
-              size="sm"
-            />
-          </Label>
-          <Label class="space-y-2">
-            <span>{$_("Config.MailTo")}</span>
-            <Input
-              bind:value={notifyConf.MailTo}
-              placeholder={$_("Config.MailToAddress")}
-              size="sm"
-            />
-          </Label>
-        </div>
-        <Label class="space-y-2">
-          <span> {$_("Config.Subject")} </span>
-          <Input bind:value={notifyConf.Subject} size="sm" />
-        </Label>
-        <div class="grid gap-4 md:grid-cols-4">
-          <Label class="space-y-2">
-            <span> {$_("Config.NotifyLevel")} </span>
-            <Select
-              items={notifyLevelList}
-              bind:value={notifyConf.Level}
-              placeholder={$_("Config.SelectNotifyLevel")}
-              size="sm"
-            />
-          </Label>
-          <Label class="space-y-2">
-            <span> {$_("Config.NotifyIntSec")} </span>
-            <Input
-              type="number"
-              min={60}
-              max={3600 * 24}
-              step={10}
-              bind:value={notifyConf.Interval}
-              size="sm"
-            />
-          </Label>
-          <Checkbox bind:checked={notifyConf.Report}
-            >{$_("Config.MailReport")}</Checkbox
-          >
-          <Checkbox bind:checked={notifyConf.NotifyRepair}
-            >{$_("Config.NotifyRepair")}</Checkbox
-          >
-        </div>
-        <Label class="space-y-2">
-          <span> {$_("Config.ExecCommand")} </span>
-          <Input class="w-full" bind:value={notifyConf.ExecCmd} size="sm" />
-        </Label>
-        <div class="grid gap-4 md:grid-cols-4">
-          <Label class="space-y-2">
-            <span>{$_("Config.AudioHigh")}</span>
+          <div class="grid gap-4 md:grid-cols-4">
+            <Label class="space-y-2">
+              <span>{$_("Config.AudioHigh")}</span>
+              {#if notifyConf.BeepHigh}
+                <audio src={notifyConf.BeepHigh} controls />
+              {/if}
+            </Label>
             {#if notifyConf.BeepHigh}
-              <audio src={notifyConf.BeepHigh} controls />
+              <GradientButton
+                shadow
+                class="h-8 mt-6 w-28"
+                color="red"
+                type="button"
+                on:click={() => deleteBeep(true)}
+                size="xs"
+              >
+                <Icon path={icons.mdiTrashCan} size={1} />
+                {$_("Config.Delete")}
+              </GradientButton>
+            {:else}
+              <GradientButton
+                shadow
+                class="h-8 mt-6 w-28"
+                color="blue"
+                type="button"
+                on:click={() => selectBeep(true)}
+                size="xs"
+              >
+                <Icon path={icons.mdiSoundbar} size={1} />
+                {$_("Config.SelectAodio")}
+              </GradientButton>
             {/if}
-          </Label>
-          {#if notifyConf.BeepHigh}
-            <GradientButton
-              shadow
-              class="h-8 mt-6 w-28"
-              color="red"
-              type="button"
-              on:click={() => deleteBeep(true)}
-              size="xs"
-            >
-              <Icon path={icons.mdiTrashCan} size={1} />
-              {$_("Config.Delete")}
-            </GradientButton>
-          {:else}
-            <GradientButton
-              shadow
-              class="h-8 mt-6 w-28"
-              color="blue"
-              type="button"
-              on:click={() => selectBeep(true)}
-              size="xs"
-            >
-              <Icon path={icons.mdiSoundbar} size={1} />
-              {$_("Config.SelectAodio")}
-            </GradientButton>
-          {/if}
-          <Label class="space-y-2">
-            <span>{$_("Config.AodioLow")}</span>
+            <Label class="space-y-2">
+              <span>{$_("Config.AodioLow")}</span>
+              {#if notifyConf.BeepLow}
+                <audio src={notifyConf.BeepLow} controls />
+              {/if}
+            </Label>
             {#if notifyConf.BeepLow}
-              <audio src={notifyConf.BeepLow} controls />
+              <GradientButton
+                shadow
+                class="h-8 mt-6 w-28"
+                color="red"
+                type="button"
+                on:click={() => deleteBeep(false)}
+                size="xs"
+              >
+                <Icon path={icons.mdiTrashCan} size={1} />
+                {$_("Config.Delete")}
+              </GradientButton>
+            {:else}
+              <GradientButton
+                shadow
+                class="h-8 mt-6 w-28"
+                color="blue"
+                type="button"
+                on:click={() => selectBeep(false)}
+                size="xs"
+              >
+                <Icon path={icons.mdiSoundbar} size={1} />
+                {$_("Config.SelectAodio")}
+              </GradientButton>
             {/if}
-          </Label>
-          {#if notifyConf.BeepLow}
+          </div>
+          <div class="flex justify-end space-x-2 mr-2">
             <GradientButton
               shadow
-              class="h-8 mt-6 w-28"
-              color="red"
-              type="button"
-              on:click={() => deleteBeep(false)}
-              size="xs"
-            >
-              <Icon path={icons.mdiTrashCan} size={1} />
-              {$_("Config.Delete")}
-            </GradientButton>
-          {:else}
-            <GradientButton
-              shadow
-              class="h-8 mt-6 w-28"
               color="blue"
               type="button"
-              on:click={() => selectBeep(false)}
+              on:click={saveNotifyConf}
               size="xs"
             >
-              <Icon path={icons.mdiSoundbar} size={1} />
-              {$_("Config.SelectAodio")}
+              <Icon path={icons.mdiContentSave} size={1} />
+              {$_("Config.Save")}
             </GradientButton>
-          {/if}
+            <GradientButton
+              shadow
+              type="button"
+              color="red"
+              on:click={testNotifyConf}
+              size="xs"
+            >
+              <Icon path={icons.mdiEmail} size={1} />
+              {$_("Config.Test")}
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              size="xs"
+              color="lime"
+              class="ml-2"
+              on:click={() => {
+                helpPage = "notifyconf";
+                showHelp = true;
+              }}
+            >
+              <Icon path={icons.mdiHelp} size={1} />
+              <span>
+                {$_("Config.Help")}
+              </span>
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              color="teal"
+              on:click={close}
+              size="xs"
+            >
+              <Icon path={icons.mdiCancel} size={1} />
+              {$_("Config.Cancel")}
+            </GradientButton>
+          </div>
+        </form>
+      </TabItem>
+      <TabItem>
+        <div slot="title" class="flex items-center gap-2">
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("Config.AI")}
         </div>
-        <div class="flex justify-end space-x-2 mr-2">
-          <GradientButton
-            shadow
-            color="blue"
-            type="button"
-            on:click={saveNotifyConf}
-            size="xs"
-          >
-            <Icon path={icons.mdiContentSave} size={1} />
-            {$_("Config.Save")}
-          </GradientButton>
-          <GradientButton
-            shadow
-            type="button"
-            color="red"
-            on:click={testNotifyConf}
-            size="xs"
-          >
-            <Icon path={icons.mdiEmail} size={1} />
-            {$_("Config.Test")}
-          </GradientButton>
-          <GradientButton
-            shadow
-            type="button"
-            size="xs"
-            color="lime"
-            class="ml-2"
-            on:click={() => {
-              helpPage = "notifyconf";
-              showHelp = true;
-            }}
-          >
-            <Icon path={icons.mdiHelp} size={1} />
-            <span>
-              {$_("Config.Help")}
-            </span>
-          </GradientButton>
-          <GradientButton
-            shadow
-            type="button"
-            color="teal"
-            on:click={close}
-            size="xs"
-          >
-            <Icon path={icons.mdiCancel} size={1} />
-            {$_("Config.Cancel")}
-          </GradientButton>
-        </div>
-      </form>
-    </TabItem>
-    <TabItem>
-      <div slot="title" class="flex items-center gap-2">
-        <Icon path={icons.mdiBrain} size={1} />
-        {$_("Config.AI")}
-      </div>
-      <form class="flex flex-col space-y-4" action="#">
-        <Label class="space-y-2">
-          <span> {$_("Config.AIHighLevel")} </span>
-          <Select
-            items={aiLevelList}
-            bind:value={aiConf.HighThreshold}
-            placeholder={$_("Config.SelectAILevel")}
-            size="sm"
-          />
-        </Label>
-        <Label class="space-y-2">
-          <span> {$_("Config.AILevelLow")} </span>
-          <Select
-            items={aiLevelList}
-            bind:value={aiConf.LowThreshold}
-            placeholder={$_("Config.SelectAILevel")}
-            size="sm"
-          />
-        </Label>
-        <Label class="space-y-2">
-          <span> {$_("Config.AIlevelWarn")} </span>
-          <Select
-            items={aiLevelList}
-            bind:value={aiConf.WarnThreshold}
-            placeholder={$_("Config.SelectAILevel")}
-            size="sm"
-          />
-        </Label>
-        <div class="flex justify-end space-x-2 mr-2">
-          <GradientButton
-            shadow
-            color="blue"
-            type="button"
-            on:click={saveAIConf}
-            size="xs"
-          >
-            <Icon path={icons.mdiContentSave} size={1} />
-            {$_("Config.Save")}
-          </GradientButton>
-          <GradientButton
-            shadow
-            type="button"
-            size="xs"
-            color="lime"
-            class="ml-2"
-            on:click={() => {
-              helpPage = "aiconf";
-              showHelp = true;
-            }}
-          >
-            <Icon path={icons.mdiHelp} size={1} />
-            <span>
-              {$_("Config.Help")}
-            </span>
-          </GradientButton>
-          <GradientButton
-            shadow
-            type="button"
-            color="teal"
-            on:click={close}
-            size="xs"
-          >
-            <Icon path={icons.mdiCancel} size={1} />
-            {$_("Config.Cancel")}
-          </GradientButton>
-        </div>
-      </form>
-    </TabItem>
-    <TabItem>
-      <div slot="title" class="flex items-center gap-2">
-        <Icon path={icons.mdiMap} size={1} />
-        {$_("Config.LocConf")}
-      </div>
-      <form class="flex flex-col space-y-4" action="#">
-        {#if showLocStyleError}
-          <Alert color="red" dismissable>
-            <div class="flex">
-              <Icon path={icons.mdiAlert} size={1} />
-              {$_("Config.LocStyleError")}
-            </div>
-          </Alert>
-        {/if}
-        <Label class="space-y-2">
-          <span>{$_("Config.LocStyle")}</span>
-          <CodeJar syntax="javascript" {highlight} bind:value={locConf.Style} />
-        </Label>
-        <div class="grid gap-4 md:grid-cols-3">
+        <form class="flex flex-col space-y-4" action="#">
           <Label class="space-y-2">
-            <span>{$_("Config.LocCenter")}</span>
-            <Input type="text" bind:value={locConf.Center} size="sm" />
-          </Label>
-          <Label class="space-y-2">
-            <span>{$_("Config.LocZoom")}</span>
-            <Input
-              type="number"
-              min="2"
-              max="12"
-              bind:value={locConf.Zoom}
+            <span> {$_("Config.AIHighLevel")} </span>
+            <Select
+              items={aiLevelList}
+              bind:value={aiConf.HighThreshold}
+              placeholder={$_("Config.SelectAILevel")}
               size="sm"
             />
           </Label>
-          <Label>
-            {$_("Config.IconSize")}
-            <Range size="sm" min="16" max="64" bind:value={locConf.IconSize} />
+          <Label class="space-y-2">
+            <span> {$_("Config.AILevelLow")} </span>
+            <Select
+              items={aiLevelList}
+              bind:value={aiConf.LowThreshold}
+              placeholder={$_("Config.SelectAILevel")}
+              size="sm"
+            />
           </Label>
+          <Label class="space-y-2">
+            <span> {$_("Config.AIlevelWarn")} </span>
+            <Select
+              items={aiLevelList}
+              bind:value={aiConf.WarnThreshold}
+              placeholder={$_("Config.SelectAILevel")}
+              size="sm"
+            />
+          </Label>
+          <div class="flex justify-end space-x-2 mr-2">
+            <GradientButton
+              shadow
+              color="blue"
+              type="button"
+              on:click={saveAIConf}
+              size="xs"
+            >
+              <Icon path={icons.mdiContentSave} size={1} />
+              {$_("Config.Save")}
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              size="xs"
+              color="lime"
+              class="ml-2"
+              on:click={() => {
+                helpPage = "aiconf";
+                showHelp = true;
+              }}
+            >
+              <Icon path={icons.mdiHelp} size={1} />
+              <span>
+                {$_("Config.Help")}
+              </span>
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              color="teal"
+              on:click={close}
+              size="xs"
+            >
+              <Icon path={icons.mdiCancel} size={1} />
+              {$_("Config.Cancel")}
+            </GradientButton>
+          </div>
+        </form>
+      </TabItem>
+      <TabItem>
+        <div slot="title" class="flex items-center gap-2">
+          <Icon path={icons.mdiMap} size={1} />
+          {$_("Config.LocConf")}
         </div>
-        <div class="flex justify-end space-x-2 mr-2">
+        <form class="flex flex-col space-y-4" action="#">
+          {#if showLocStyleError}
+            <Alert color="red" dismissable>
+              <div class="flex">
+                <Icon path={icons.mdiAlert} size={1} />
+                {$_("Config.LocStyleError")}
+              </div>
+            </Alert>
+          {/if}
+          <Label class="space-y-2">
+            <span>{$_("Config.LocStyle")}</span>
+            <CodeJar
+              syntax="javascript"
+              {highlight}
+              bind:value={locConf.Style}
+            />
+          </Label>
+          <div class="grid gap-4 md:grid-cols-3">
+            <Label class="space-y-2">
+              <span>{$_("Config.LocCenter")}</span>
+              <Input type="text" bind:value={locConf.Center} size="sm" />
+            </Label>
+            <Label class="space-y-2">
+              <span>{$_("Config.LocZoom")}</span>
+              <Input
+                type="number"
+                min="2"
+                max="12"
+                bind:value={locConf.Zoom}
+                size="sm"
+              />
+            </Label>
+            <Label>
+              {$_("Config.IconSize")}
+              <Range
+                size="sm"
+                min="16"
+                max="64"
+                bind:value={locConf.IconSize}
+              />
+            </Label>
+          </div>
+          <div class="flex justify-end space-x-2 mr-2">
+            <GradientButton
+              shadow
+              color="blue"
+              type="button"
+              on:click={saveLocConf}
+              size="xs"
+            >
+              <Icon path={icons.mdiContentSave} size={1} />
+              {$_("Config.Save")}
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              size="xs"
+              color="lime"
+              class="ml-2"
+              on:click={() => {
+                helpPage = "locconf";
+                showHelp = true;
+              }}
+            >
+              <Icon path={icons.mdiHelp} size={1} />
+              <span>
+                {$_("Config.Help")}
+              </span>
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              color="teal"
+              on:click={close}
+              size="xs"
+            >
+              <Icon path={icons.mdiCancel} size={1} />
+              {$_("Config.Cancel")}
+            </GradientButton>
+          </div>
+        </form>
+      </TabItem>
+      <TabItem on:click={showIconList}>
+        <div slot="title" class="flex items-center gap-2">
+          <Icon path={icons.mdiDotsGrid} size={1} />
+          {$_("Config.IconMan")}
+        </div>
+        <table id="iconTable" class="display compact mt-2" style="width:99%" />
+        <div class="flex justify-end space-x-2 mr-2 mt-3">
           <GradientButton
             shadow
             color="blue"
             type="button"
-            on:click={saveLocConf}
+            on:click={addIcon}
             size="xs"
           >
-            <Icon path={icons.mdiContentSave} size={1} />
-            {$_("Config.Save")}
+            <Icon path={icons.mdiPlus} size={1} />
+            {$_("Config.Add")}
           </GradientButton>
+          {#if selectedIcon}
+            <GradientButton
+              shadow
+              color="blue"
+              type="button"
+              on:click={editIcon}
+              size="xs"
+            >
+              <Icon path={icons.mdiPencil} size={1} />
+              {$_("Config.Edit")}
+            </GradientButton>
+            <GradientButton
+              shadow
+              color="red"
+              type="button"
+              on:click={delIcon}
+              size="xs"
+            >
+              <Icon path={icons.mdiTrashCan} size={1} />
+              {$_("Config.Delete")}
+            </GradientButton>
+          {/if}
           <GradientButton
             shadow
             type="button"
@@ -884,7 +959,7 @@
             color="lime"
             class="ml-2"
             on:click={() => {
-              helpPage = "locconf";
+              helpPage = "iconconf";
               showHelp = true;
             }}
           >
@@ -901,131 +976,69 @@
             size="xs"
           >
             <Icon path={icons.mdiCancel} size={1} />
-            {$_("Config.Cancel")}
+            {$_("Config.Close")}
           </GradientButton>
         </div>
-      </form>
-    </TabItem>
-    <TabItem on:click={showIconList}>
-      <div slot="title" class="flex items-center gap-2">
-        <Icon path={icons.mdiDotsGrid} size={1} />
-        {$_("Config.IconMan")}
-      </div>
-      <table id="iconTable" class="display compact mt-2" style="width:99%" />
-      <div class="flex justify-end space-x-2 mr-2 mt-3">
-        <GradientButton
-          shadow
-          color="blue"
-          type="button"
-          on:click={addIcon}
-          size="xs"
-        >
-          <Icon path={icons.mdiPlus} size={1} />
-          {$_("Config.Add")}
-        </GradientButton>
-        {#if selectedIcon}
-          <GradientButton
-            shadow
-            color="blue"
-            type="button"
-            on:click={editIcon}
-            size="xs"
-          >
-            <Icon path={icons.mdiPencil} size={1} />
-            {$_("Config.Edit")}
-          </GradientButton>
-          <GradientButton
-            shadow
-            color="red"
-            type="button"
-            on:click={delIcon}
-            size="xs"
-          >
-            <Icon path={icons.mdiTrashCan} size={1} />
-            {$_("Config.Delete")}
-          </GradientButton>
-        {/if}
-        <GradientButton
-          shadow
-          type="button"
-          size="xs"
-          color="lime"
-          class="ml-2"
-          on:click={() => {
-            helpPage = "iconconf";
-            showHelp = true;
-          }}
-        >
-          <Icon path={icons.mdiHelp} size={1} />
-          <span>
-            {$_("Config.Help")}
-          </span>
-        </GradientButton>
-        <GradientButton
-          shadow
-          type="button"
-          color="teal"
-          on:click={close}
-          size="xs"
-        >
-          <Icon path={icons.mdiCancel} size={1} />
-          {$_("Config.Close")}
-        </GradientButton>
-      </div>
-    </TabItem>
-    <TabItem on:click={showMIBModules}>
-      <div slot="title" class="flex items-center gap-2">
-        <Icon path={icons.mdiFileTree} size={1} />
-        {$_("Config.MIB")}
-      </div>
-      <table
-        id="mibModuleTable"
-        class="display compact mt-2"
-        style="width:99%"
-      />
-      <div class="flex justify-end space-x-2 mr-2">
-        <GradientButton
-          shadow
-          color="lime"
-          type="button"
-          on:click={() => (showMIBTree = true)}
-          size="xs"
-        >
+      </TabItem>
+      <TabItem on:click={showMIBModules}>
+        <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiFileTree} size={1} />
-          {$_("Config.MIBTree")}
-        </GradientButton>
-        <GradientButton
-          shadow
-          type="button"
-          size="xs"
-          color="lime"
-          class="ml-2"
-          on:click={() => {
-            helpPage = "mibconf";
-            showHelp = true;
-          }}
-        >
-          <Icon path={icons.mdiHelp} size={1} />
-          <span>
-            {$_("Config.Help")}
-          </span>
-        </GradientButton>
-        <GradientButton
-          shadow
-          type="button"
-          color="teal"
-          on:click={close}
-          size="xs"
-        >
-          <Icon path={icons.mdiCancel} size={1} />
-          {$_("Config.Close")}
-        </GradientButton>
-      </div>
-    </TabItem>
-  </Tabs>
+          {$_("Config.MIB")}
+        </div>
+        <table
+          id="mibModuleTable"
+          class="display compact mt-2"
+          style="width:99%"
+        />
+        <div class="flex justify-end space-x-2 mr-2">
+          <GradientButton
+            shadow
+            color="lime"
+            type="button"
+            on:click={() => (showMIBTree = true)}
+            size="xs"
+          >
+            <Icon path={icons.mdiFileTree} size={1} />
+            {$_("Config.MIBTree")}
+          </GradientButton>
+          <GradientButton
+            shadow
+            type="button"
+            size="xs"
+            color="lime"
+            class="ml-2"
+            on:click={() => {
+              helpPage = "mibconf";
+              showHelp = true;
+            }}
+          >
+            <Icon path={icons.mdiHelp} size={1} />
+            <span>
+              {$_("Config.Help")}
+            </span>
+          </GradientButton>
+          <GradientButton
+            shadow
+            type="button"
+            color="teal"
+            on:click={close}
+            size="xs"
+          >
+            <Icon path={icons.mdiCancel} size={1} />
+            {$_("Config.Close")}
+          </GradientButton>
+        </div>
+      </TabItem>
+    </Tabs>
+  {/if}
 </Modal>
 
-<Modal bind:open={showMIBTree} size="lg" dismissable={false} class="w-full min-h-[80vh]">
+<Modal
+  bind:open={showMIBTree}
+  size="lg"
+  dismissable={false}
+  class="w-full min-h-[80vh]"
+>
   <div class="flex flex-col space-y-4">
     <div id="mibtree">
       <MibTree tree={mibTree} on:select={(e) => {}} />
@@ -1047,7 +1060,12 @@
   </div>
 </Modal>
 
-<Modal bind:open={showEditIcon} size="lg" dismissable={false} class="w-full min-h-[80vh]">
+<Modal
+  bind:open={showEditIcon}
+  size="lg"
+  dismissable={false}
+  class="w-full min-h-[80vh]"
+>
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Config.EditIcon")}
@@ -1103,7 +1121,7 @@
   </form>
 </Modal>
 
-<Help bind:show={showHelp} page={helpPage}/>
+<Help bind:show={showHelp} page={helpPage} />
 
 <style>
   #mibtree {

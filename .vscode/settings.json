@@ -261,6 +261,13 @@
     "<table id=\"mibTable\" class=\"display compact\" style=\"width:99%\" />",
     " {\n          name = e.detail;\n          showMIBTree = false;\n        }}\n      />\n    ",
     " zoom(true)}\n>\n  ",
-    " zoom(false)}\n>\n  "
+    " zoom(false)}\n>\n  ",
+    " {\n    refreshMap();\n  }}\n/>\n\n",
+    " {\n    showEditNode = false;\n    refreshMap();\n  }}\n/>\n\n",
+    " {\n    showEditLine = false;\n    refreshMap();\n  }}\n/>\n\n",
+    " {\n    showEditDrawItem = false;\n    refreshMap();\n  }}\n/>\n\n",
+    " {\n    showNodeReport = false;\n  }}\n/>\n\n",
+    " {\n    showPolling = false;\n    refreshMap();\n  }}\n/>\n\n",
+    " {\n    showPolling = false;\n    refreshMap();\n  }}\n/>\n\n"
   ]
 }

@@ -207,14 +207,7 @@
   </div>
 </div>
 
-{#if showReport}
-  <EventLogReport
-    {logs}
-    on:close={() => {
-      showReport = false;
-    }}
-  />
-{/if}
+<EventLogReport bind:show={showReport} {logs} />
 
 <Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
   <div>

@@ -240,23 +240,11 @@
   </div>
 </div>
 
-{#if showReport}
-  <TrapReport
-    {logs}
-    on:close={() => {
-      showReport = false;
-    }}
-  />
-{/if}
 
-{#if showPolling}
-  <Polling
-    pollingTmp={polling}
-    on:close={() => {
-      showPolling = false;
-    }}
-  />
-{/if}
+<TrapReport bind:show={showReport} {logs} />
+
+<Polling bind:show={showPolling} pollingTmp={polling} />
+
 
 <Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">

@@ -1,25 +1,23 @@
 <script lang="ts">
   import { Modal, GradientButton,Tabs,TabItem } from "flowbite-svelte";
-  import { onMount, createEventDispatcher,tick } from "svelte";
-  import Icon from "mdi-svelte";
+  import { tick } from "svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import type { datastore } from "wailsjs/go/models";
   import {showAIHeatMap,showAIPieChart,showAITimeChart } from "./chart/ai";
   import { GetAIResult } from "../../wailsjs/go/main/App";
   import { _ } from 'svelte-i18n';
 
   export let id = "";
-  let results : datastore.AIResult | undefined =undefined;
-  let show: boolean = false;
-  const dispatch = createEventDispatcher();
+  export let show: boolean = false;
 
-  onMount(async () => {
+  let results : any =undefined;
+
+  const onOpen = async () => {
     results = await GetAIResult(id);
-    show = true;
     showChart("heatmap");
-  });
+  };
 
-  let chart = undefined;
+  let chart :any = undefined;
   const showChart = async (t:string) => {
     await tick();
     chart = undefined;
@@ -35,9 +33,9 @@
         break;
     }
   }
+
   const close = () => {
     show = false;
-    dispatch("close", {});
   };
 
   const resizeChart = () => {
@@ -53,9 +51,9 @@
 <Modal
   bind:open={show}
   size="xl"
-  permanent
+  dismissable={false}
   class="w-full min-h-[90vh]"
-  on:on:close={close}
+  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">

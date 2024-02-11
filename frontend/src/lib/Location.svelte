@@ -290,33 +290,16 @@
   </div>
 </div>
 
-{#if showEditNode}
-  <Node
-    nodeID={selectedNode}
-    on:close={(e) => {
-      showEditNode = false;
-      refresh();
-    }}
-  />
-{/if}
+<Node bind:show={showEditNode}
+  nodeID={selectedNode}
+  on:close={(e) => {
+    refresh();
+  }}
+/>
 
-{#if showNodeReport}
-  <NodeReport
-    id={selectedNode}
-    on:close={(e) => {
-      showNodeReport = false;
-    }}
-  />
-{/if}
+<NodeReport bind:show={showNodeReport} id={selectedNode} />
+<NodePolling bind:show={showPolling} nodeID={selectedNode} />
 
-{#if showPolling}
-  <NodePolling
-    nodeID={selectedNode}
-    on:close={(e) => {
-      showPolling = false;
-    }}
-  />
-{/if}
 
 <Modal bind:open={showAddNode} size="sm" dismissable={false}>
   <form class="flex flex-col space-y-4" action="#">

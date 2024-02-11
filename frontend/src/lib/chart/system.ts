@@ -3,14 +3,14 @@ import * as ecStat from 'echarts-stat';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let resChart;
+let resChart:any;
 
-export const showMonitorResChart = (div, monitor) => {
+export const showMonitorResChart = (div:string, monitor:any) => {
   if (resChart) {
     resChart.dispose()
   }
   resChart = echarts.init(document.getElementById(div),"dark")
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -25,7 +25,7 @@ export const showMonitorResChart = (div, monitor) => {
     dataZoom: [{}],
     tooltip: {
       trigger: 'axis',
-      formatter: (params) => {
+      formatter: (params:any) => {
         return (
           params[0].name +
           '<br>' +
@@ -69,7 +69,7 @@ export const showMonitorResChart = (div, monitor) => {
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
-        formatter: (value, index) => {
+        formatter: (value:any) => {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -158,7 +158,7 @@ export const showMonitorResChart = (div, monitor) => {
       },
     ],
   }
-  monitor.forEach((m) => {
+  monitor.forEach((m:any) => {
     const t = new Date(m.Time / (1000 * 1000) )
     const name = echarts.time.format(t, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}',false)
     option.series[0].data.push({
@@ -182,14 +182,14 @@ export const showMonitorResChart = (div, monitor) => {
   resChart.resize()
 }
 
-let netChart;
+let netChart :any;
 
-export const showMonitorNetChart = (div, monitor) => {
+export const showMonitorNetChart = (div:string, monitor:any) => {
   if (netChart) {
     netChart.dispose()
   }
   netChart = echarts.init(document.getElementById(div),"dark")
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -204,7 +204,7 @@ export const showMonitorNetChart = (div, monitor) => {
     dataZoom: [{}],
     tooltip: {
       trigger: 'axis',
-      formatter: (params) => {
+      formatter: (params:any) => {
         return (
           params[0].name +
           '<br>' +
@@ -240,7 +240,7 @@ export const showMonitorNetChart = (div, monitor) => {
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
-        formatter: (value, index) => {
+        formatter: (value:any) => {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -316,7 +316,7 @@ export const showMonitorNetChart = (div, monitor) => {
       },
     ],
   }
-  monitor.forEach((m) => {
+  monitor.forEach((m:any) => {
     const t = new Date(m.Time /(1000 *1000));
     const name = echarts.time.format(t, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}',false);
     option.series[0].data.push({
@@ -332,14 +332,14 @@ export const showMonitorNetChart = (div, monitor) => {
   netChart.resize()
 }
 
-let forecastChart; 
+let forecastChart :any; 
 
-export  const showMonitorForecastChart = (div, monitor) => {
+export  const showMonitorForecastChart = (div:string, monitor:any) => {
   if (forecastChart) {
     forecastChart.dispose()
   }
   forecastChart = echarts.init(document.getElementById(div),"dark")
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -377,7 +377,7 @@ export  const showMonitorForecastChart = (div, monitor) => {
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
-        formatter: (value, index) => {
+        formatter: (value:any) => {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -483,9 +483,9 @@ export  const showMonitorForecastChart = (div, monitor) => {
     ],
   }
   if (monitor) {
-    const dataDisk = [];
-    const dataDB = [];
-    monitor.forEach((m) => {
+    const dataDisk :any = [];
+    const dataDB :any = [];
+    monitor.forEach((m:any) => {
       dataDisk.push([m.Time /(1000 * 1000), m.Disk]);
       dataDB.push([m.Time /(1000 * 1000), m.DBSize]);
     });
@@ -512,7 +512,7 @@ export  const showMonitorForecastChart = (div, monitor) => {
 }
 
 
-export const resizeMonitorChart = (f) => {
+export const resizeMonitorChart = (f:any) => {
   if(f && forecastChart) {
     forecastChart.resize();
   } else {

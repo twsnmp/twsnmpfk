@@ -1,6 +1,7 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { GradientButton } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount } from "svelte";
   import {
@@ -13,7 +14,7 @@
   import "datatables.net-select-dt";
   import { _ } from 'svelte-i18n';
 
-  let table = undefined;
+  let table :any = undefined;
   let data = [];
   let selectedCount = 0;
   let selectedID = "";
@@ -80,7 +81,7 @@
       data: "LastTime",
       title: $_('AIList.LastTime'),
       width: "15%",
-      render: (data, type, row, meta) =>
+      render: (data:any, type:any) =>
         renderTime(data * 1000 * 1000 * 1000,type),
     },
   ];
@@ -139,16 +140,4 @@
   </div>
 </div>
 
-{#if showReport}
-  <AIReport
-   id={selectedID}
-    on:close={() => {
-      showReport = false;
-    }}
-  />
-{/if}
-
-
-<style>
-  @import "../assets/css/jquery.dataTables.css";
-</style>
+<AIReport bind:show={showReport} id={selectedID} />

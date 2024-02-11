@@ -1,7 +1,7 @@
 <script lang="ts">
   import "../assets/css/jquery.dataTables.css";
   import { GradientButton } from "flowbite-svelte";
-  import {Icon} from "mdi-svelte-ts";
+  import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount } from "svelte";
   import {
@@ -24,12 +24,12 @@
   import PollingReport from "./PollingReport.svelte";
   import { _ } from "svelte-i18n";
 
-  let data : any= [];
-  let nodes : any  = {};
+  let data: any = [];
+  let nodes: any = {};
   let showEditPolling = false;
   let showPollingReport = false;
   let selectedPolling = "";
-  let table :any = undefined;
+  let table: any = undefined;
   let selectedCount = 0;
 
   const showTable = () => {
@@ -70,12 +70,12 @@
 
   let showCopyPolling = false;
   let showAddPolling = false;
-  let pollingTmp :any = undefined;
+  let pollingTmp: any = undefined;
 
   const add = async () => {
     pollingTmp = await GetDefaultPolling("");
     showAddPolling = true;
-  }
+  };
 
   const edit = () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
@@ -103,7 +103,7 @@
     }
     selectedPolling = selected[0];
     showPollingReport = true;
-  }
+  };
 
   const deletePollings = async () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
@@ -117,41 +117,41 @@
   const columns = [
     {
       data: "State",
-      title: $_('PollingList.State'),
+      title: $_("PollingList.State"),
       width: "10%",
       render: renderState,
     },
     {
       data: "NodeID",
-      title: $_('PollingList.Node'),
+      title: $_("PollingList.Node"),
       width: "15%",
-      render: (id:any) => nodes[id].Name,
+      render: (id: any) => nodes[id].Name,
     },
     {
       data: "Name",
-      title: $_('PollingList.Name'),
+      title: $_("PollingList.Name"),
       width: "25%",
     },
     {
       data: "Level",
-      title: $_('PollingList.Level'),
+      title: $_("PollingList.Level"),
       width: "10%",
       render: renderState,
     },
     {
       data: "Type",
-      title: $_('PollingList.Type'),
+      title: $_("PollingList.Type"),
       width: "8%",
     },
     {
       data: "LogMode",
-      title: $_('PollingList.LogMode'),
+      title: $_("PollingList.LogMode"),
       width: "7%",
       render: getLogModeName,
     },
     {
       data: "LastTime",
-      title: $_('PollingList.LastTime'),
+      title: $_("PollingList.LastTime"),
       width: "15%",
       render: renderTime,
     },
@@ -177,81 +177,110 @@
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton shadow color="blue" type="button" on:click={add} size="xs">
       <Icon path={icons.mdiPlus} size={1} />
-      { $_('PollingList.Add') }
+      {$_("PollingList.Add")}
     </GradientButton>
     {#if selectedCount == 1}
-      <GradientButton shadow color="blue" type="button" on:click={edit} size="xs">
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        on:click={edit}
+        size="xs"
+      >
         <Icon path={icons.mdiPencil} size={1} />
-        { $_('PollingList.Edit') }
+        {$_("PollingList.Edit")}
       </GradientButton>
-      <GradientButton shadow color="lime" type="button" on:click={copy} size="xs">
+      <GradientButton
+        shadow
+        color="lime"
+        type="button"
+        on:click={copy}
+        size="xs"
+      >
         <Icon path={icons.mdiContentCopy} size={1} />
-        { $_('PollingList.Copy') }
+        {$_("PollingList.Copy")}
       </GradientButton>
-      <GradientButton shadow color="green" type="button" on:click={report} size="xs">
+      <GradientButton
+        shadow
+        color="green"
+        type="button"
+        on:click={report}
+        size="xs"
+      >
         <Icon path={icons.mdiChartBar} size={1} />
-        { $_('PollingList.Report') }
+        {$_("PollingList.Report")}
       </GradientButton>
     {/if}
     {#if selectedCount > 0}
-      <GradientButton shadow color="red" type="button" on:click={deletePollings} size="xs">
+      <GradientButton
+        shadow
+        color="red"
+        type="button"
+        on:click={deletePollings}
+        size="xs"
+      >
         <Icon path={icons.mdiTrashCan} size={1} />
-        { $_('PollingList.Delete') }
+        {$_("PollingList.Delete")}
       </GradientButton>
     {/if}
-    <GradientButton shadow color="lime" type="button" on:click={saveCSV} size="xs">
+    <GradientButton
+      shadow
+      color="lime"
+      type="button"
+      on:click={saveCSV}
+      size="xs"
+    >
       <Icon path={icons.mdiFileDelimited} size={1} />
       CSV
     </GradientButton>
-    <GradientButton shadow color="lime" type="button" on:click={saveExcel} size="xs">
+    <GradientButton
+      shadow
+      color="lime"
+      type="button"
+      on:click={saveExcel}
+      size="xs"
+    >
       <Icon path={icons.mdiFileExcel} size={1} />
       Excel
     </GradientButton>
-    <GradientButton shadow type="button" color="teal" on:click={refresh} size="xs">
+    <GradientButton
+      shadow
+      type="button"
+      color="teal"
+      on:click={refresh}
+      size="xs"
+    >
       <Icon path={icons.mdiRecycle} size={1} />
-      { $_('PollingList.Reload') }
+      {$_("PollingList.Reload")}
     </GradientButton>
   </div>
 </div>
 
-{#if showEditPolling}
-  <Polling
-    nodeID=""
-    pollingID={selectedPolling}
-    on:close={(e) => {
-      showEditPolling = false;
-      refresh();
-    }}
-  />
-{/if}
+<Polling
+  bind:show={showEditPolling}
+  nodeID=""
+  pollingID={selectedPolling}
+  on:close={(e) => {
+    refresh();
+  }}
+/>
 
-{#if showCopyPolling}
-  <Polling
-    nodeID=""
-    pollingID = ""
-    {pollingTmp}
-    on:close={(e) => {
-      showCopyPolling = false;
-      refresh();
-    }}
-  />
-{/if}
+<Polling
+  bind:show={showCopyPolling}
+  nodeID=""
+  pollingID=""
+  {pollingTmp}
+  on:close={(e) => {
+    refresh();
+  }}
+/>
 
-{#if showAddPolling}
-  <AddPolling
-    nodeID=""
-    on:close={(e) => {
-      showAddPolling = false;
-      refresh();
-    }}
-  />
-{/if}
+<AddPolling
+  bind:show={showAddPolling}
+  nodeID=""
+  on:close={(e) => {
+    refresh();
+  }}
+/>
 
-{#if showPollingReport}
-  <PollingReport
-    id={selectedPolling}
-    on:close={(e) => {
-      showPollingReport = false;
-    }}
-  />
-{/if}
+<PollingReport bind:show={showPollingReport} id={selectedPolling} />

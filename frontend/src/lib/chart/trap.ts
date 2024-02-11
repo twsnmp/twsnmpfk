@@ -3,14 +3,14 @@ import 'echarts-gl';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart;
+let chart :any;
 
-export const showTrapFromAddr = (div, logs) => {
+export const showTrapFromAddr = (div:string, logs:any) => {
   if (chart) {
     chart.dispose()
   }
   chart = echarts.init(document.getElementById(div),"dark");
-  const option = {
+  const option :any= {
     title: {
       show: false,
     },
@@ -62,7 +62,7 @@ export const showTrapFromAddr = (div, logs) => {
   const fam = new Map();
   const tm = new Map();
   
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     if (!tm.get(l.TrapType)) {
       tm.set(l.TrapType,true);
     }
@@ -105,10 +105,10 @@ export const showTrapFromAddr = (div, logs) => {
 }
 
 
-export const showTrapLog3D = (div, logs) => {
+export const showTrapLog3D = (div:string, logs:any) => {
   const m = new Map();
   const tm = new Map();
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     if(!tm.has(l.TrapType)) {
       tm.set(l.TrapType,true);
     }
@@ -131,7 +131,7 @@ export const showTrapLog3D = (div, logs) => {
   const froms = Array.from(m.keys());
   const types = Array.from(tm.keys());
   const l = Array.from(m.values());
-  const data = []
+  const data :any = []
   l.forEach((e) => {
     for (let i = 0; i < e.Time.length && i < 15000; i++) {
       data.push([e.Name, e.Time[i], e.Type[i], e.Level[i]])
@@ -188,7 +188,7 @@ export const showTrapLog3D = (div, logs) => {
       axisLabel: {
         color: '#ccc',
         fontSize: 8,
-        formatter(value, index) {
+        formatter(value:any) {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -258,12 +258,12 @@ const getTrapTypeLevel = (l:string) :number => {
 
 
 
-export const showTrapTypeChart = (div:string, logs) => {
+export const showTrapTypeChart = (div:string, logs:any) => {
   if (chart) {
     chart.dispose()
   }
   chart = echarts.init(document.getElementById(div),"dark");
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -294,7 +294,7 @@ export const showTrapTypeChart = (div:string, logs) => {
   if (logs) {
     let i = 0;
     const typeMap = new Map();
-    logs.forEach((l) => {
+    logs.forEach((l:any) => {
       const t = typeMap.get(l.TrapType);
       typeMap.set(l.TrapType,t ? t+1: 1);
     });

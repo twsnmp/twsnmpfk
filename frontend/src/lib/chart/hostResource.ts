@@ -2,7 +2,7 @@ import * as echarts from 'echarts'
 
 const chartMap = new Map();
 
-export const showHrBarChart = (div, type, xAxis, list, max?) => {
+export const showHrBarChart = (div:string, type:any, xAxis:any, list:any, max?:any) => {
   if (chartMap.has(div)) {
     chartMap.get(div).dispose();
   }
@@ -11,7 +11,7 @@ export const showHrBarChart = (div, type, xAxis, list, max?) => {
 
   const yellow = max ? max * 0.8 : 80
   const red = max ? max * 0.9 : 90
-  const option = {
+  const option :any = {
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -64,7 +64,7 @@ export const showHrBarChart = (div, type, xAxis, list, max?) => {
         name: type,
         type: 'bar',
         itemStyle: {
-          color: (p) => {
+          color: (p:any) => {
             return p.value > red ? '#c00' : p.value > yellow ? '#cc0' : '#0cc'
           },
         },
@@ -75,7 +75,7 @@ export const showHrBarChart = (div, type, xAxis, list, max?) => {
   if (!list) {
     return;
   }
-  list.forEach((e) => {
+  list.forEach((e:any) => {
     option.yAxis.data.push(e.Name)
     option.series[0].data.push(e.Value)
   })
@@ -84,7 +84,7 @@ export const showHrBarChart = (div, type, xAxis, list, max?) => {
   return chart;
 }
 
-export const showHrSummary = (div:string, data) => {
+export const showHrSummary = (div:string, data:any) => {
   if (chartMap.has(div)) {
     chartMap.get(div).dispose();
   }

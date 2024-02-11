@@ -3,11 +3,11 @@ import { setZoomCallback } from './utils.js';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart;
+let chart :any;
 
-const makeLogStateChart = (div) => {
+const makeLogStateChart = (div:string) => {
   chart = echarts.init(document.getElementById(div),"dark");
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -38,7 +38,7 @@ const makeLogStateChart = (div) => {
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
-        formatter: (value, index) => {
+        formatter: (value :any) => {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -135,14 +135,14 @@ export const showLogStateChart = (div:string, logs:any, zoomCallback:any) => {
     chart.dispose();
   }
   makeLogStateChart(div);
-  const data = {
+  const data :any = {
     high: [],
     low: [],
     warn: [],
     normal: [],
     unknown: [],
   };
-  const count = {
+  const count :any = {
     high: 0,
     low: 0,
     warn: 0,

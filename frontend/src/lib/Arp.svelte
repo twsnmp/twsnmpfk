@@ -181,14 +181,7 @@
   </div>
 </div>
 
-{#if showReport}
-  <ArpReport
-    logs={arpLogs}
-    on:close={() => {
-      showReport = false;
-    }}
-  />
-{/if}
+<ArpReport bind:show={showReport} logs={arpLogs} />
 
 <style>
   #chart {

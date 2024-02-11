@@ -11,9 +11,10 @@
     TableHead,
     TableHeadCell,
     Select,
+    Spinner,
   } from "flowbite-svelte";
-  import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
-  import {Icon} from "mdi-svelte-ts";
+  import { tick } from "svelte";
+  import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import {
@@ -22,8 +23,12 @@
     GetPollingLogs,
     GetAIResult,
   } from "../../wailsjs/go/main/App";
-  import {showLogStateChart} from "./chart/logstate";
-  import {showPollingChart,showPollingHistogram,getChartParams} from "./chart/polling";
+  import { showLogStateChart } from "./chart/logstate";
+  import {
+    showPollingChart,
+    showPollingHistogram,
+    getChartParams,
+  } from "./chart/polling";
   import {
     getStateIcon,
     getStateColor,
@@ -37,56 +42,52 @@
   import { showAIHeatMap } from "./chart/ai";
   import { _ } from "svelte-i18n";
 
+  export let show: boolean = false;
   export let id = "";
 
   let polling: any = undefined;
   let node: any = undefined;
   let logs: any = undefined;
   let dispLogs: any = [];
-  let aiResult: any= undefined;
-  let entList :any = [];
+  let aiResult: any = undefined;
+  let entList: any = [];
   let selectedEnt = "";
-  let pollingLogTable : any = undefined;
- 
-  let show: boolean = false;
-  const dispatch = createEventDispatcher();
+  let pollingLogTable: any = undefined;
 
   const close = () => {
     show = false;
-    dispatch("close", {});
   };
 
-  onMount(async () => {
+  const onOpen = async () => {
     polling = await GetPolling(id);
     node = await GetNode(polling.NodeID);
-    show = true;
     if (polling.LogMode > 0) {
       loadLogs();
     }
-    if(polling && polling.Result) {
-      for(const k of Object.keys(polling.Result)) {
+    if (polling && polling.Result) {
+      for (const k of Object.keys(polling.Result)) {
         selectedEnt = k;
         const dp = getChartParams(k);
         entList.push({
-          name:dp.axis,
-          value:k,
+          name: dp.axis,
+          value: k,
         });
       }
     }
-  });
+  };
 
   const loadLogs = async () => {
     logs = await GetPollingLogs(id);
-    for(let i =0; i < logs.length;i++) {
+    for (let i = 0; i < logs.length; i++) {
       dispLogs.push(logs[i]);
     }
     logs.reverse();
     aiResult = await GetAIResult(id);
   };
 
-  const zoomCallBack = (st:number, et:number) => {
+  const zoomCallBack = (st: number, et: number) => {
     dispLogs = [];
-    for(let i = logs.length -1 ; i >= 0;i--) {
+    for (let i = logs.length - 1; i >= 0; i--) {
       if (logs[i].Time >= st && logs[i].Time <= et) {
         dispLogs.push(logs[i]);
       }
@@ -97,7 +98,7 @@
   const showLog = async () => {
     await tick();
     showLogTable();
-    showLogStateChart("log",logs,zoomCallBack);
+    showLogStateChart("log", logs, zoomCallBack);
   };
 
   const showLogTable = () => {
@@ -113,19 +114,19 @@
       columns: [
         {
           data: "State",
-          title: $_('PollingReport.State'),
+          title: $_("PollingReport.State"),
           width: "10%",
           render: renderState,
         },
         {
           data: "Time",
-          title: $_('PollingReport.Time'),
+          title: $_("PollingReport.Time"),
           width: "15%",
           render: renderTime,
         },
         {
           data: "Result",
-          title: $_('PollingReport.Result'),
+          title: $_("PollingReport.Result"),
           width: "75%",
           render: renderResult,
         },
@@ -133,23 +134,23 @@
     });
   };
 
-  const renderResult = (r:any) => {
+  const renderResult = (r: any) => {
     let l = [];
-    for(const k of Object.keys(r)) {
-      l.push(k +"=" + r[k]);
+    for (const k of Object.keys(r)) {
+      l.push(k + "=" + r[k]);
     }
     return l.join(" ");
-  }
-  let chart :any = undefined;
+  };
+  let chart: any = undefined;
 
   const showTimeChart = async () => {
     await tick();
-    chart = showPollingChart("time",logs,selectedEnt)
+    chart = showPollingChart("time", logs, selectedEnt);
   };
 
   const showHistogram = async () => {
     await tick();
-    chart = showPollingHistogram("histogram",logs,selectedEnt);
+    chart = showPollingHistogram("histogram", logs, selectedEnt);
   };
 
   const showAI = async () => {
@@ -161,109 +162,148 @@
     if (chart) {
       chart.resize();
     }
-  } 
-
+  };
 </script>
 
 <svelte:window on:resize={resizeChart} />
 
-<Modal bind:open={show} size="xl" dismissable={false} class="w-full min-h-[90vh]" on:on:close={close}>
-  <div class="flex flex-col space-y-4">
-    <Tabs style="underline">
-      <TabItem open on:click={()=> {chart= undefined;}}>
-        <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiChartPie} size={1} />
-          { $_('PollingReport.BasicInfo') }
-        </div>
-        <Table striped={true}>
-          <TableHead>
-            <TableHeadCell>{ $_('PollingReport.Item') }</TableHeadCell>
-            <TableHeadCell>{ $_('PollingReport.Content') }</TableHeadCell>
-          </TableHead>
-          <TableBody tableBodyClass="divide-y">
-            <TableBodyRow>
-              <TableBodyCell>{ $_('PollingReport.NodeName') }</TableBodyCell>
-              <TableBodyCell>{node.Name}</TableBodyCell>
-            </TableBodyRow>
-            <TableBodyRow>
-              <TableBodyCell>{ $_('PollingReport.Name') }</TableBodyCell>
-              <TableBodyCell>{polling.Name}</TableBodyCell>
-            </TableBodyRow>
-            <TableBodyRow>
-              <TableBodyCell>{ $_('PollingReport.State') }</TableBodyCell>
-              <TableBodyCell>
-                <span
-                  class="mdi {getStateIcon(polling.State)} text-xl"
-                  style="color:{getStateColor(polling.State)};"
-                />
-                <span class="ml-2 text-xs text-black dark:text-white"
-                  >{getStateName(polling.State)}</span
-                >
-              </TableBodyCell>
-            </TableBodyRow>
-            <TableBodyRow>
-              <TableBodyCell>{ $_('PollingReport.LastTime') }</TableBodyCell>
-              <TableBodyCell>{renderTime(polling.LastTime, "")}</TableBodyCell>
-            </TableBodyRow>
-            {#each Object.keys(polling.Result) as k}
+<Modal
+  bind:open={show}
+  size="xl"
+  dismissable={false}
+  class="w-full min-h-[90vh]"
+  on:open={onOpen}
+>
+  {#if !node}
+    <div class="text-center mt-10"><Spinner size={16} /></div>
+  {:else}
+    <div class="flex flex-col space-y-4">
+      <Tabs style="underline">
+        <TabItem
+          open
+          on:click={() => {
+            chart = undefined;
+          }}
+        >
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiChartPie} size={1} />
+            {$_("PollingReport.BasicInfo")}
+          </div>
+          <Table striped={true}>
+            <TableHead>
+              <TableHeadCell>{$_("PollingReport.Item")}</TableHeadCell>
+              <TableHeadCell>{$_("PollingReport.Content")}</TableHeadCell>
+            </TableHead>
+            <TableBody tableBodyClass="divide-y">
               <TableBodyRow>
-                <TableBodyCell>{k}</TableBodyCell>
-                <TableBodyCell>{polling.Result[k]}</TableBodyCell>
+                <TableBodyCell>{$_("PollingReport.NodeName")}</TableBodyCell>
+                <TableBodyCell>{node.Name}</TableBodyCell>
               </TableBodyRow>
-            {/each}
-          </TableBody>
-        </Table>
-      </TabItem>
-      {#if polling.LogMode > 0}
-        <TabItem on:click={showLog}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiLanCheck} size={1} />
-            { $_('PollingReport.PollingLog') }
-          </div>
-          <div id="log"/>
-          <table id="pollingLogTable" class="display compact" style="width:99%;" />
+              <TableBodyRow>
+                <TableBodyCell>{$_("PollingReport.Name")}</TableBodyCell>
+                <TableBodyCell>{polling.Name}</TableBodyCell>
+              </TableBodyRow>
+              <TableBodyRow>
+                <TableBodyCell>{$_("PollingReport.State")}</TableBodyCell>
+                <TableBodyCell>
+                  <span
+                    class="mdi {getStateIcon(polling.State)} text-xl"
+                    style="color:{getStateColor(polling.State)};"
+                  />
+                  <span class="ml-2 text-xs text-black dark:text-white"
+                    >{getStateName(polling.State)}</span
+                  >
+                </TableBodyCell>
+              </TableBodyRow>
+              <TableBodyRow>
+                <TableBodyCell>{$_("PollingReport.LastTime")}</TableBodyCell>
+                <TableBodyCell>{renderTime(polling.LastTime, "")}</TableBodyCell
+                >
+              </TableBodyRow>
+              {#each Object.keys(polling.Result) as k}
+                <TableBodyRow>
+                  <TableBodyCell>{k}</TableBodyCell>
+                  <TableBodyCell>{polling.Result[k]}</TableBodyCell>
+                </TableBodyRow>
+              {/each}
+            </TableBody>
+          </Table>
         </TabItem>
-        <TabItem on:click={showTimeChart}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiCalendarCheck} size={1} />
-            { $_('PollingReport.TimeChart') }
-          </div>
-          <Select class="mb-2" size="sm" items={entList} bind:value={selectedEnt} on:change={showTimeChart} placeholder={ $_('PollingReport.SelectVal') }/>
-          <div id="time" />
-        </TabItem>
-        <TabItem on:click={showHistogram}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiAppsBox} size={1} />
-            { $_('PollingReport.Histogram') }
-          </div>
-          <Select class="mb-2" size="sm" items={entList} bind:value={selectedEnt} on:change={showHistogram} placeholder={ $_('PollingReport.SelectVal') }/>
-          <div id="histogram"/>
-        </TabItem>
-        {#if polling.LogMode == 3 && aiResult}
-          <TabItem on:click={showAI}>
+        {#if polling.LogMode > 0}
+          <TabItem on:click={showLog}>
+            <div slot="title" class="flex items-center gap-2">
+              <Icon path={icons.mdiLanCheck} size={1} />
+              {$_("PollingReport.PollingLog")}
+            </div>
+            <div id="log" />
+            <table
+              id="pollingLogTable"
+              class="display compact"
+              style="width:99%;"
+            />
+          </TabItem>
+          <TabItem on:click={showTimeChart}>
+            <div slot="title" class="flex items-center gap-2">
+              <Icon path={icons.mdiCalendarCheck} size={1} />
+              {$_("PollingReport.TimeChart")}
+            </div>
+            <Select
+              class="mb-2"
+              size="sm"
+              items={entList}
+              bind:value={selectedEnt}
+              on:change={showTimeChart}
+              placeholder={$_("PollingReport.SelectVal")}
+            />
+            <div id="time" />
+          </TabItem>
+          <TabItem on:click={showHistogram}>
             <div slot="title" class="flex items-center gap-2">
               <Icon path={icons.mdiAppsBox} size={1} />
-              { $_('PollingReport.AI') }
+              {$_("PollingReport.Histogram")}
             </div>
-            <div id="ai"/>
+            <Select
+              class="mb-2"
+              size="sm"
+              items={entList}
+              bind:value={selectedEnt}
+              on:change={showHistogram}
+              placeholder={$_("PollingReport.SelectVal")}
+            />
+            <div id="histogram" />
           </TabItem>
+          {#if polling.LogMode == 3 && aiResult}
+            <TabItem on:click={showAI}>
+              <div slot="title" class="flex items-center gap-2">
+                <Icon path={icons.mdiAppsBox} size={1} />
+                {$_("PollingReport.AI")}
+              </div>
+              <div id="ai" />
+            </TabItem>
+          {/if}
         {/if}
-      {/if}
-    </Tabs>
-    <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
-        <Icon path={icons.mdiCancel} size={1} />
-        { $_('PollingReport.Close') }
-      </GradientButton>
+      </Tabs>
+      <div class="flex justify-end space-x-2 mr-2">
+        <GradientButton
+          shadow
+          type="button"
+          color="teal"
+          on:click={close}
+          size="xs"
+        >
+          <Icon path={icons.mdiCancel} size={1} />
+          {$_("PollingReport.Close")}
+        </GradientButton>
+      </div>
     </div>
-  </div>
+  {/if}
 </Modal>
 
 <style>
   #log {
     min-height: 200px;
-    height:  30vh;
-    width:  98%;
+    height: 30vh;
+    width: 98%;
     margin: 0 auto;
   }
   #time,
@@ -272,6 +312,6 @@
     min-height: 500px;
     height: 70vh;
     widows: 98%;
-    margin:  0 auto;
+    margin: 0 auto;
   }
 </style>

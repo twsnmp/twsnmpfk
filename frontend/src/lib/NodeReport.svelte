@@ -12,12 +12,10 @@
     TableHeadCell,
     Spinner,
     Toggle,
-    P,
   } from "flowbite-svelte";
-  import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
-  import {Icon} from "mdi-svelte-ts";
+  import { tick } from "svelte";
+  import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import type { backend, datastore } from "wailsjs/go/models";
   import {
     GetNode,
     GetVPanelPorts,
@@ -45,10 +43,9 @@
   import { showHrBarChart, showHrSummary } from "./chart/hostResource";
   import { _ } from "svelte-i18n";
 
+  export let show: boolean = false;
   export let id = "";
-  let node: datastore.NodeEnt;
-  let show: boolean = false;
-  const dispatch = createEventDispatcher();
+  let node: any;
 
   let selectedPortCount = 0;
   let selectedHrSystemCount = 0;
@@ -57,8 +54,8 @@
   let showPolling = false;
   let physicalPort = true;
   let showVPanelBtn = false;
-  let chart :any = undefined;
-  let chartMem :any = undefined;
+  let chart: any = undefined;
+  let chartMem: any = undefined;
 
   const clearSelectedCount = () => {
     selectedPortCount = 0;
@@ -73,7 +70,7 @@
   let logTable = undefined;
   const showLog = async () => {
     clearSelectedCount();
-    const logs = await GetEventLogs(id,"","","",0);
+    const logs = await GetEventLogs(id, "", "", "", 0);
     logTable = new DataTable("#logTable", {
       data: logs,
       language: getTableLang(),
@@ -81,33 +78,33 @@
       columns: [
         {
           data: "Level",
-          title: $_('NodeReport.Level'),
+          title: $_("NodeReport.Level"),
           width: "15%",
           render: renderState,
         },
         {
           data: "Time",
-          title: $_('NodeReport.Time'),
+          title: $_("NodeReport.Time"),
           width: "20%",
           render: renderTime,
         },
         {
           data: "Type",
-          title: $_('NodeReport.Type'),
+          title: $_("NodeReport.Type"),
           width: "15%",
         },
         {
           data: "Event",
-          title: $_('NodeReport.Event'),
+          title: $_("NodeReport.Event"),
           width: "50%",
         },
       ],
     });
   };
 
-  let portTable :any = undefined;
+  let portTable: any = undefined;
 
-  const showPortTable = (p:any) => {
+  const showPortTable = (p: any) => {
     if (portTable && DataTable.isDataTable("#portTable")) {
       portTable.clear();
       portTable.destroy();
@@ -133,55 +130,55 @@
         },
         {
           data: "State",
-          title: $_('NodePolling.State'),
+          title: $_("NodePolling.State"),
           width: "10%",
         },
         {
           data: "Name",
-          title: $_('NodeReport.Name'),
+          title: $_("NodeReport.Name"),
           width: "15%",
         },
         {
           data: "Type",
-          title: $_('NodeReport.Type'),
+          title: $_("NodeReport.Type"),
           width: "5%",
         },
         {
           data: "MAC",
-          title: $_('NodeReport.MACAddress'),
+          title: $_("NodeReport.MACAddress"),
           width: "15%",
         },
         {
           data: "Speed",
-          title: $_('NodeReport.Speed'),
+          title: $_("NodeReport.Speed"),
           width: "10%",
           render: renderSpeed,
           className: "dt-body-right",
         },
         {
           data: "OutPacktes",
-          title: $_('NodeReport.OutPacktes'),
+          title: $_("NodeReport.OutPacktes"),
           width: "10%",
           render: renderCount,
           className: "dt-body-right",
         },
         {
           data: "OutBytes",
-          title: $_('NodeReport.OutBytes'),
+          title: $_("NodeReport.OutBytes"),
           width: "10%",
           render: renderBytes,
           className: "dt-body-right",
         },
         {
           data: "InPacktes",
-          title: $_('NodeReport.InPacktes'),
+          title: $_("NodeReport.InPacktes"),
           width: "10%",
           render: renderCount,
           className: "dt-body-right",
         },
         {
           data: "InBytes",
-          title: $_('NodeReport.InBytes'),
+          title: $_("NodeReport.InBytes"),
           width: "10%",
           render: renderBytes,
           className: "dt-body-right",
@@ -196,8 +193,8 @@
     });
   };
 
-  let ports :any;
-  let power :any;
+  let ports: any;
+  let power: any;
   let waitVPanel = false;
   let rotateVPanel = false;
 
@@ -211,29 +208,35 @@
       power = await GetVPanelPowerInfo(id);
       waitVPanel = false;
     }
-    const p = physicalPort ? ports.filter((e:any)=> e.Type == 6) : ports;
+    const p = physicalPort ? ports.filter((e: any) => e.Type == 6) : ports;
     setVPanel(p, power, rotateVPanel);
     showPortTable(p);
   };
 
-  const renderStatus = (s:any) => {
+  const renderStatus = (s: any) => {
     switch (s) {
       case "Running":
-        return `<span class="text-blue-700">`+$_('NodeReport.Running')+`</span>`;
+        return (
+          `<span class="text-blue-700">` + $_("NodeReport.Running") + `</span>`
+        );
       case "Runnable":
-        return `<span class="text-blue-900">`+$_('NodeReport.Runnable')+`</span>`;
+        return (
+          `<span class="text-blue-900">` + $_("NodeReport.Runnable") + `</span>`
+        );
       case "Testing":
-        return $_('NodeReport.Testing');
+        return $_("NodeReport.Testing");
       case "NotRunnable":
-        return $_('NodeReport.NotRunnable');
+        return $_("NodeReport.NotRunnable");
       case "Invalid":
       case "Down":
-        return `<span class="text-red-800">`+$_('NodeReport.Down')+`</span>`;
+        return (
+          `<span class="text-red-800">` + $_("NodeReport.Down") + `</span>`
+        );
     }
-    return $_('NodeReport.Unknown');
+    return $_("NodeReport.Unknown");
   };
 
-  const renderRate = (r:any) => {
+  const renderRate = (r: any) => {
     if (r < 80.0) {
       return `<span class="text-blue-700">${r.toFixed(2)}</span>`;
     } else if (r < 90.0) {
@@ -242,66 +245,66 @@
     return `<span class="text-red-700">${r.toFixed(2)}</span>`;
   };
 
-  const renderStorageType = (t:any) => {
+  const renderStorageType = (t: any) => {
     switch (t) {
       case "hrStorageCompactDisc":
-        return $_('NodeReport.CDDrive');
+        return $_("NodeReport.CDDrive");
       case "hrStorageRemovableDisk":
-        return $_('NodeReport.RemovableDisk');
+        return $_("NodeReport.RemovableDisk");
       case "hrStorageFloppyDisk":
-        return $_('NodeReport.FloppyDIsk');
+        return $_("NodeReport.FloppyDIsk");
       case "hrStorageRamDisk":
-        return $_('NodeReport.RamDisk');
+        return $_("NodeReport.RamDisk");
       case "hrStorageFlashMemory":
-        return $_('NodeReport.FlashMemory');
+        return $_("NodeReport.FlashMemory");
       case "hrStorageNetworkDisk":
-        return $_('NodeReport.NetworkDIsk');
+        return $_("NodeReport.NetworkDIsk");
       case "hrStorageFixedDisk":
-        return $_('NodeReport.FixedDisk');
+        return $_("NodeReport.FixedDisk");
       case "hrStorageVirtualMemory":
-        return $_('NodeReport.VM');
+        return $_("NodeReport.VM");
       case "hrStorageRam":
-        return $_('NodeReport.RAM');
+        return $_("NodeReport.RAM");
     }
-    return $_('NodeReport.Other');
+    return $_("NodeReport.Other");
   };
 
-  const renderDeviceType = (t:any) => {
+  const renderDeviceType = (t: any) => {
     return t.replace("hrDevice", "");
   };
 
-  const renderFSType = (t:any) => {
+  const renderFSType = (t: any) => {
     return t.replace("hrFS", "");
   };
 
-  const renderTrueFalse = (v:any) => {
+  const renderTrueFalse = (v: any) => {
     if (v === 1) {
       return "Yes";
     }
     return "No";
   };
 
-  const renderAccess = (v:any) => {
+  const renderAccess = (v: any) => {
     if (v === 1) {
       return "R/W";
     }
     return "Read Only";
   };
 
-  const renderCPU = (v:any) => {
+  const renderCPU = (v: any) => {
     return (v / 100).toFixed(2);
   };
 
-  const renderMem = (v:any, t:any) => {
+  const renderMem = (v: any, t: any) => {
     return renderBytes(v * 1024, t);
   };
 
-  let hostResource: backend.HostResourceEnt | undefined = undefined;
-  let hrSystemTable : any= undefined;
-  let hrStorageTable : any = undefined;
+  let hostResource: any = undefined;
+  let hrSystemTable: any = undefined;
+  let hrStorageTable: any = undefined;
   let hrDeviceTable = undefined;
   let hrFileSystemTable = undefined;
-  let hrProcessTable :any = undefined;
+  let hrProcessTable: any = undefined;
   let waitHr = false;
 
   const showHrSystem = async () => {
@@ -333,13 +336,13 @@
         },
         {
           data: "Key",
-          title: $_('NodeReport.Name'),
+          title: $_("NodeReport.Name"),
           width: "30%",
           render: renderHrSystemName,
         },
         {
           data: "Value",
-          title: $_('MIBBrowser.Value'),
+          title: $_("MIBBrowser.Value"),
           width: "60%",
         },
       ],
@@ -371,35 +374,35 @@
       },
       columns: [
         {
-          title: $_('NodeReport.Type'),
+          title: $_("NodeReport.Type"),
           data: "Type",
           width: "20%",
           render: renderStorageType,
         },
-        { title: $_('NodeReport.Descr'), data: "Descr", width: "40%" },
+        { title: $_("NodeReport.Descr"), data: "Descr", width: "40%" },
         {
-          title: $_('NodeReport.Size'),
+          title: $_("NodeReport.Size"),
           data: "Size",
           width: "10%",
           render: renderBytes,
           className: "dt-body-right",
         },
         {
-          title: $_('NodeReport.Used'),
+          title: $_("NodeReport.Used"),
           data: "Used",
           width: "10%",
           render: renderBytes,
           className: "dt-body-right",
         },
         {
-          title: $_('NodeReport.Rate'),
+          title: $_("NodeReport.Rate"),
           data: "Rate",
           width: "10%",
           render: renderRate,
           className: "dt-body-right",
         },
         {
-          title: $_('NodeReport.Unit'),
+          title: $_("NodeReport.Unit"),
           data: "Unit",
           width: "10%",
           className: "dt-body-right",
@@ -429,11 +432,21 @@
       language: getTableLang(),
       order: [[0, "asc"]],
       columns: [
-        { title: $_('NodeReport.Status'), data: "Status", width: "10%", render: renderStatus },
-        { title: $_('NodeReport.Index'), data: "Index", width: "10%" },
-        { title: $_('NodeReport.Type'), data: "Type", width: "30%", render: renderDeviceType },
-        { title: $_('NodeReport.Descr'), data: "Descr", width: "40%" },
-        { title: $_('NodeReport.Errors'), data: "Errors", width: "10%" },
+        {
+          title: $_("NodeReport.Status"),
+          data: "Status",
+          width: "10%",
+          render: renderStatus,
+        },
+        { title: $_("NodeReport.Index"), data: "Index", width: "10%" },
+        {
+          title: $_("NodeReport.Type"),
+          data: "Type",
+          width: "30%",
+          render: renderDeviceType,
+        },
+        { title: $_("NodeReport.Descr"), data: "Descr", width: "40%" },
+        { title: $_("NodeReport.Errors"), data: "Errors", width: "10%" },
       ],
     });
   };
@@ -452,17 +465,22 @@
       language: getTableLang(),
       order: [[0, "asc"]],
       columns: [
-        { title: $_('NodeReport.Mount'), data: "Mount", width: "30%" },
-        { title: $_('NodeReport.Remote'), data: "Remote", width: "30%" },
-        { title: $_('NodePolling.Type'), data: "Type", width: "20%", render: renderFSType },
+        { title: $_("NodeReport.Mount"), data: "Mount", width: "30%" },
+        { title: $_("NodeReport.Remote"), data: "Remote", width: "30%" },
         {
-          title: $_('NodeReport.Access'),
+          title: $_("NodePolling.Type"),
+          data: "Type",
+          width: "20%",
+          render: renderFSType,
+        },
+        {
+          title: $_("NodeReport.Access"),
           data: "Access",
           width: "10%",
           render: renderAccess,
         },
         {
-          title: $_('NodeReport.Bootable'),
+          title: $_("NodeReport.Bootable"),
           data: "Bootable",
           width: "10%",
           render: renderTrueFalse,
@@ -489,20 +507,20 @@
       },
       columns: [
         {
-          title: $_('NodeReport.Status'),
+          title: $_("NodeReport.Status"),
           data: "Status",
           width: "10%",
           render: renderStatus,
         },
         { title: "PID", data: "PID", width: "10%" },
-        { title: $_('NodeReport.Type'), data: "Type", width: "10%" },
+        { title: $_("NodeReport.Type"), data: "Type", width: "10%" },
         {
-          title: $_('NodeReport.Name'),
+          title: $_("NodeReport.Name"),
           data: "Name",
           width: "15%",
         },
-        { title: $_('NodeReport.Path'), data: "Path", width: "15%" },
-        { title: $_('NodeReport.Param'), data: "Param", width: "20%" },
+        { title: $_("NodeReport.Path"), data: "Path", width: "15%" },
+        { title: $_("NodeReport.Param"), data: "Param", width: "20%" },
         {
           title: "CPU",
           data: "CPU",
@@ -539,12 +557,12 @@
       Mem: 0,
       VM: 0,
     };
-    hostResource.System.forEach((e) => {
+    hostResource.System.forEach((e: any) => {
       if (e.Key == "hrProcessorLoad") {
         data.CPU = Number(e.Value);
       }
     });
-    hostResource.Storage.forEach((e) => {
+    hostResource.Storage.forEach((e: any) => {
       if (e.Type.includes("hrStorageRam")) {
         data.Mem = e.Rate;
       }
@@ -563,27 +581,32 @@
       return;
     }
     await tick();
-    const list :any = [];
-    hostResource.Storage.forEach((e) => {
+    const list: any = [];
+    hostResource.Storage.forEach((e: any) => {
       const t = renderStorageType(e.Type);
-      if (!t.includes($_('NodeReport.Other'))) {
+      if (!t.includes($_("NodeReport.Other"))) {
         list.unshift({
           Name: e.Descr + "(" + t + ")",
           Value: e.Rate,
         });
       }
     });
-    chart = showHrBarChart("hrStorageChart", $_('NodeReport.StorageUsgae'), "%", list);
+    chart = showHrBarChart(
+      "hrStorageChart",
+      $_("NodeReport.StorageUsgae"),
+      "%",
+      list
+    );
   };
 
-  const showHrProcChart = async (bCPU:boolean) => {
+  const showHrProcChart = async (bCPU: boolean) => {
     if (!hostResource) {
       return;
     }
     await tick();
     let max = 0;
-    const list :any = [];
-    hostResource.Process.forEach((e) => {
+    const list: any = [];
+    hostResource.Process.forEach((e: any) => {
       const v = bCPU ? e.CPU / 100.0 : e.Mem * 1024;
       if (max < v) {
         max = v;
@@ -593,7 +616,7 @@
         Value: v,
       });
     });
-    list.sort((a:any, b:any) => {
+    list.sort((a: any, b: any) => {
       if (a.Value < b.Value) return -1;
       if (a.Value > b.Value) return 1;
       return 0;
@@ -603,23 +626,23 @@
     }
     return showHrBarChart(
       bCPU ? "hrProcessCPUChart" : "hrProcessMemChart",
-      bCPU ? $_('NodeReport.CPUUsage') : $_('NodeReport.MemUsage'),
-      bCPU ? $_('NodeReport.Sec') : "Bytes",
+      bCPU ? $_("NodeReport.CPUUsage") : $_("NodeReport.MemUsage"),
+      bCPU ? $_("NodeReport.Sec") : "Bytes",
       list,
       max
     );
   };
 
   const close = () => {
+    deleteVPanel();
     show = false;
-    dispatch("close", {});
   };
 
-  let pollingTmp : any = undefined;
+  let pollingTmp: any = undefined;
 
   const watchPortState = async () => {
     const d = portTable.rows({ selected: true }).data();
-    if (d.length != 1 ) {
+    if (d.length != 1) {
       return;
     }
     pollingTmp = await GetDefaultPolling(node.ID);
@@ -650,7 +673,7 @@
     if (d.length != 1) {
       return false;
     }
-    switch(d[0].Key) {
+    switch (d[0].Key) {
       case "hrSystemUptime":
       case "hrSystemDate":
       case "hrSystemProcesses":
@@ -666,7 +689,7 @@
       return;
     }
     pollingTmp = await GetDefaultPolling(node.ID);
-    switch(d[0].Key) {
+    switch (d[0].Key) {
       case "hrSystemUptime":
         pollingTmp = await GetDefaultPolling(node.ID);
         pollingTmp.Name = "SNMP restart";
@@ -674,7 +697,7 @@
         pollingTmp.Mode = "sysUpTime";
         pollingTmp.Level = "low";
         showPolling = true;
-      break;
+        break;
       case "hrSystemDate":
         pollingTmp = await GetDefaultPolling(node.ID);
         pollingTmp.Name = "System date";
@@ -683,7 +706,7 @@
         pollingTmp.Script = "diff < 1";
         pollingTmp.Level = "warn";
         showPolling = true;
-      break;
+        break;
       case "hrSystemProcesses":
         pollingTmp = await GetDefaultPolling(node.ID);
         pollingTmp.Name = "Process count";
@@ -715,7 +738,8 @@
     pollingTmp.Name = d[0].Descr + "Usage";
     pollingTmp.Type = "snmp";
     pollingTmp.Mode = "get";
-    pollingTmp.Params = 'hrStorageSize.' + d[0].Index + ',hrStorageUsed.' + d[0].Index;
+    pollingTmp.Params =
+      "hrStorageSize." + d[0].Index + ",hrStorageUsed." + d[0].Index;
     pollingTmp.Script = `
       s = hrStorageSize;
       u = hrStorageUsed;
@@ -742,14 +766,9 @@
     showPolling = true;
   };
 
-  onMount(async () => {
+  const onOpen = async () => {
     node = await GetNode(id);
-    show = true;
-  });
-
-  onDestroy(() => {
-    deleteVPanel();
-  });
+  };
 
   const resizeChart = () => {
     if (chart) {
@@ -758,8 +777,7 @@
     if (chartMem) {
       chartMem.resize();
     }
-  }
-
+  };
 </script>
 
 <svelte:window on:resize={resizeChart} />
@@ -769,232 +787,267 @@
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:on:close={close}
+  on:open={onOpen}
 >
-  <div class="flex flex-col space-y-4">
-    <Tabs style="underline">
-      <TabItem open on:click={clearSelectedCount}>
-        <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiChartPie} size={1} />
-          { $_('NodeReport.BasicInfo') }
-        </div>
-        <Table striped={true}>
-          <TableHead>
-            <TableHeadCell>{ $_('NodeReport.Item') }</TableHeadCell>
-            <TableHeadCell>{ $_('NodeReport.Content') }</TableHeadCell>
-          </TableHead>
-          <TableBody tableBodyClass="divide-y">
-            <TableBodyRow>
-              <TableBodyCell>{ $_('NodeReport.Name') }</TableBodyCell>
-              <TableBodyCell>{node.Name}</TableBodyCell>
-            </TableBodyRow>
-            <TableBodyRow>
-              <TableBodyCell>{ $_('NodeReport.Status') }</TableBodyCell>
-              <TableBodyCell>
-                <span
-                  class="mdi {getIcon(node.Icon)} text-xl"
-                  style="color:{getStateColor(node.State)};"
+  {#if !node}
+    <div class="text-center mt-10"><Spinner size={16} /></div>
+  {:else}
+    <div class="flex flex-col space-y-4">
+      <Tabs style="underline">
+        <TabItem open on:click={clearSelectedCount}>
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiChartPie} size={1} />
+            {$_("NodeReport.BasicInfo")}
+          </div>
+          <Table striped={true}>
+            <TableHead>
+              <TableHeadCell>{$_("NodeReport.Item")}</TableHeadCell>
+              <TableHeadCell>{$_("NodeReport.Content")}</TableHeadCell>
+            </TableHead>
+            <TableBody tableBodyClass="divide-y">
+              <TableBodyRow>
+                <TableBodyCell>{$_("NodeReport.Name")}</TableBodyCell>
+                <TableBodyCell>{node.Name}</TableBodyCell>
+              </TableBodyRow>
+              <TableBodyRow>
+                <TableBodyCell>{$_("NodeReport.Status")}</TableBodyCell>
+                <TableBodyCell>
+                  <span
+                    class="mdi {getIcon(node.Icon)} text-xl"
+                    style="color:{getStateColor(node.State)};"
+                  />
+                  <span class="ml-2 text-xs text-black dark:text-white"
+                    >{getStateName(node.State)}</span
+                  >
+                </TableBodyCell>
+              </TableBodyRow>
+              <TableBodyRow>
+                <TableBodyCell>{$_("NodeReport.IPAddress")}</TableBodyCell>
+                <TableBodyCell>{node.IP}</TableBodyCell>
+              </TableBodyRow>
+              <TableBodyRow>
+                <TableBodyCell>{$_("NodeReport.MACAddress")}</TableBodyCell>
+                <TableBodyCell>{node.MAC}</TableBodyCell>
+              </TableBodyRow>
+              <TableBodyRow>
+                <TableBodyCell>{$_("NodeReport.Descr")}</TableBodyCell>
+                <TableBodyCell>{node.Descr}</TableBodyCell>
+              </TableBodyRow>
+            </TableBody>
+          </Table>
+        </TabItem>
+        <TabItem on:click={showLog}>
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiCalendarCheck} size={1} />
+            {$_("NodeReport.Log")}
+          </div>
+          <table id="logTable" class="display compact" style="width:99%" />
+        </TabItem>
+        <TabItem on:click={showVPanel}>
+          <div slot="title" class="flex items-center gap-2">
+            {#if waitVPanel}
+              <Spinner color="red" size="6" />
+            {:else}
+              <Icon path={icons.mdiAppsBox} size={1} />
+            {/if}
+            {$_("NodeReport.Panel")}
+          </div>
+          <div id="vpanel" />
+          <table
+            id="portTable"
+            class="display compact mt-5"
+            style="width:99%"
+          />
+        </TabItem>
+        <TabItem
+          on:click={() => {
+            showHrSystem();
+          }}
+        >
+          <div slot="title" class="flex items-center gap-2">
+            {#if waitHr}
+              <Spinner color="red" size="6" />
+            {:else}
+              <Icon path={icons.mdiInformation} size={1} />
+            {/if}
+            <span>{$_("NodeReport.HostInfo")}</span>
+          </div>
+          {#if hostResource}
+            <div class="grid grid-cols-2 gap-1">
+              <div id="hrSummaryChart" />
+              <div>
+                <table
+                  id="hrSystemTable"
+                  class="display compact"
+                  style="width:100%"
                 />
-                <span class="ml-2 text-xs text-black dark:text-white"
-                  >{getStateName(node.State)}</span
-                >
-              </TableBodyCell>
-            </TableBodyRow>
-            <TableBodyRow>
-              <TableBodyCell>{ $_('NodeReport.IPAddress') }</TableBodyCell>
-              <TableBodyCell>{node.IP}</TableBodyCell>
-            </TableBodyRow>
-            <TableBodyRow>
-              <TableBodyCell>{ $_('NodeReport.MACAddress') }</TableBodyCell>
-              <TableBodyCell>{node.MAC}</TableBodyCell>
-            </TableBodyRow>
-            <TableBodyRow>
-              <TableBodyCell>{ $_('NodeReport.Descr') }</TableBodyCell>
-              <TableBodyCell>{node.Descr}</TableBodyCell>
-            </TableBodyRow>
-          </TableBody>
-        </Table>
-      </TabItem>
-      <TabItem on:click={showLog}>
-        <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiCalendarCheck} size={1} />
-          { $_('NodeReport.Log') }
-        </div>
-        <table id="logTable" class="display compact" style="width:99%" />
-      </TabItem>
-      <TabItem on:click={showVPanel}>
-        <div slot="title" class="flex items-center gap-2">
-          {#if waitVPanel}
-            <Spinner color="red" size="6" />
-          {:else}
-            <Icon path={icons.mdiAppsBox} size={1} />
-          {/if}
-          { $_('NodeReport.Panel') }
-        </div>
-        <div id="vpanel"/>
-        <table id="portTable" class="display compact mt-5" style="width:99%" />
-      </TabItem>
-      <TabItem
-        on:click={() => {
-          showHrSystem();
-        }}
-      >
-        <div slot="title" class="flex items-center gap-2">
-          {#if waitHr}
-            <Spinner color="red" size="6" />
-          {:else}
-            <Icon path={icons.mdiInformation} size={1} />
-          {/if}
-          <span>{ $_('NodeReport.HostInfo') }</span>
-        </div>
-        {#if hostResource}
-          <div class="grid grid-cols-2 gap-1">
-            <div id="hrSummaryChart" />
-            <div>
-              <table
-                id="hrSystemTable"
-                class="display compact"
-                style="width:100%"
-              />
+              </div>
             </div>
-          </div>
-        {:else if !waitHr}
-          <div>{ $_('NodeReport.NoHRMIB') }</div>
+          {:else if !waitHr}
+            <div>{$_("NodeReport.NoHRMIB")}</div>
+          {/if}
+        </TabItem>
+        {#if hostResource}
+          <TabItem on:click={showHrStorage}>
+            <div slot="title" class="flex items-center gap-2">
+              <Icon path={icons.mdiDatabase} size={1} />
+              {$_("NodeReport.Storage")}
+            </div>
+            <div id="hrStorageChart" class="mb-2" />
+            <table
+              id="hrStorageTable"
+              class="display compact mt-2"
+              style="width:99%"
+            />
+          </TabItem>
+          <TabItem on:click={showHrDevice}>
+            <div slot="title" class="flex items-center gap-2">
+              <Icon path={icons.mdiApplicationCog} size={1} />
+              {$_("NodeReport.Device")}
+            </div>
+            <table
+              id="hrDeviceTable"
+              class="display compact mt-2"
+              style="width:99%"
+            />
+          </TabItem>
+          <TabItem on:click={showHrFileSystem}>
+            <div slot="title" class="flex items-center gap-2">
+              <Icon path={icons.mdiFileCabinet} size={1} />
+              File System
+            </div>
+            <table
+              id="hrFileSystemTable"
+              class="display compact mt-2"
+              style="width:99%"
+            />
+          </TabItem>
+          <TabItem on:click={showHrProcess}>
+            <div slot="title" class="flex items-center gap-2">
+              <Icon path={icons.mdiViewList} size={1} />
+              {$_("NodeReport.Process")}
+            </div>
+            <div class="grid grid-cols-2 gap-1 mb-2">
+              <div id="hrProcessCPUChart" />
+              <div id="hrProcessMemChart" />
+            </div>
+            <table
+              id="hrProcessTable"
+              class="display compact mt-2"
+              style="width:99%"
+            />
+          </TabItem>
         {/if}
-      </TabItem>
-      {#if hostResource}
-        <TabItem on:click={showHrStorage}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiDatabase} size={1} />
-            { $_('NodeReport.Storage') }
-          </div>
-          <div id="hrStorageChart" class="mb-2" />
-          <table
-            id="hrStorageTable"
-            class="display compact mt-2"
-            style="width:99%"
-          />
-        </TabItem>
-        <TabItem on:click={showHrDevice}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiApplicationCog} size={1} />
-            { $_('NodeReport.Device') }
-          </div>
-          <table
-            id="hrDeviceTable"
-            class="display compact mt-2"
-            style="width:99%"
-          />
-        </TabItem>
-        <TabItem on:click={showHrFileSystem}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiFileCabinet} size={1} />
-            File System
-          </div>
-          <table
-            id="hrFileSystemTable"
-            class="display compact mt-2"
-            style="width:99%"
-          />
-        </TabItem>
-        <TabItem on:click={showHrProcess}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiViewList} size={1} />
-            { $_('NodeReport.Process') }
-          </div>
-          <div class="grid grid-cols-2 gap-1 mb-2">
-            <div id="hrProcessCPUChart" />
-            <div id="hrProcessMemChart" />
-          </div>
-          <table
-            id="hrProcessTable"
-            class="display compact mt-2"
-            style="width:99%"
-          />
-        </TabItem>
-      {/if}
-    </Tabs>
-    <div class="flex justify-end space-x-2 mr-2">
-      {#if selectedPortCount > 0}
-        <GradientButton shadow color="blue" type="button" on:click={watchPortState} size="xs">
-          <Icon path={icons.mdiEye} size={1} />
-          { $_('NodeReport.AddPollingIFState') }
+      </Tabs>
+      <div class="flex justify-end space-x-2 mr-2">
+        {#if selectedPortCount > 0}
+          <GradientButton
+            shadow
+            color="blue"
+            type="button"
+            on:click={watchPortState}
+            size="xs"
+          >
+            <Icon path={icons.mdiEye} size={1} />
+            {$_("NodeReport.AddPollingIFState")}
+          </GradientButton>
+          <GradientButton
+            shadow
+            color="blue"
+            type="button"
+            on:click={watchPortTraffic}
+            size="xs"
+          >
+            <Icon path={icons.mdiEye} size={1} />
+            {$_("NodeReport.AddPollingTraffic")}
+          </GradientButton>
+        {/if}
+        {#if selectedHrSystemCount > 0 && canWacthHrSystem()}
+          <GradientButton
+            shadow
+            color="blue"
+            type="button"
+            on:click={watchHrSystem}
+            size="xs"
+          >
+            <Icon path={icons.mdiEye} size={1} />
+            {$_("NodeReport.Polling")}
+          </GradientButton>
+        {/if}
+        {#if selectedhrStorageCount > 0}
+          <GradientButton
+            shadow
+            color="blue"
+            type="button"
+            on:click={watchHrStorage}
+            size="xs"
+          >
+            <Icon path={icons.mdiEye} size={1} />
+            {$_("NodeReport.Polling")}
+          </GradientButton>
+        {/if}
+        {#if selectedHrProcessCount > 0}
+          <GradientButton
+            shadow
+            color="blue"
+            type="button"
+            on:click={watchHrProcess}
+            size="xs"
+          >
+            <Icon path={icons.mdiEye} size={1} />
+            {$_("NodeReport.Polling")}
+          </GradientButton>
+        {/if}
+        {#if showVPanelBtn}
+          <Toggle bind:checked={physicalPort} on:change={showVPanel}>
+            {$_("NodeReport.PhysicalPort")}
+          </Toggle>
+          <Toggle bind:checked={rotateVPanel} on:change={showVPanel}>
+            {$_("NodeReport.RotateVPanel")}
+          </Toggle>
+        {/if}
+        <GradientButton
+          shadow
+          type="button"
+          color="teal"
+          on:click={close}
+          size="xs"
+        >
+          <Icon path={icons.mdiCancel} size={1} />
+          {$_("NodeReport.Close")}
         </GradientButton>
-        <GradientButton shadow color="blue" type="button" on:click={watchPortTraffic} size="xs">
-          <Icon path={icons.mdiEye} size={1} />
-          { $_('NodeReport.AddPollingTraffic') }
-        </GradientButton>
-      {/if}
-      {#if selectedHrSystemCount > 0 && canWacthHrSystem()}
-        <GradientButton shadow color="blue" type="button" on:click={watchHrSystem} size="xs">
-          <Icon path={icons.mdiEye} size={1} />
-          { $_('NodeReport.Polling') }
-        </GradientButton>
-      {/if}
-      {#if selectedhrStorageCount > 0}
-        <GradientButton shadow color="blue" type="button" on:click={watchHrStorage} size="xs">
-          <Icon path={icons.mdiEye} size={1} />
-          { $_('NodeReport.Polling') }
-        </GradientButton>
-      {/if}
-      {#if selectedHrProcessCount > 0}
-        <GradientButton shadow color="blue" type="button" on:click={watchHrProcess} size="xs">
-          <Icon path={icons.mdiEye} size={1} />
-          { $_('NodeReport.Polling') }
-        </GradientButton>
-      {/if}
-      {#if showVPanelBtn}
-        <Toggle bind:checked={physicalPort} on:change={showVPanel}>
-          {$_('NodeReport.PhysicalPort')}
-        </Toggle>
-        <Toggle bind:checked={rotateVPanel} on:change={showVPanel}>
-          {$_('NodeReport.RotateVPanel')}
-        </Toggle>
-      {/if}
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
-        <Icon path={icons.mdiCancel} size={1} />
-        { $_('NodeReport.Close') }
-      </GradientButton>
+      </div>
     </div>
-  </div>
+  {/if}
 </Modal>
 
-{#if showPolling}
-  <Polling
-    {pollingTmp}
-    on:close={() => {
-      showPolling = false;
-    }}
-  />
-{/if}
+<Polling bind:show={showPolling} {pollingTmp} />
 
 <style>
-#vpanel {
-  width: 98%; 
-  min-height: 400px;
-  height: 40vh;
-  overflow:scroll;
-  margin:  0 auto;
-}
+  #vpanel {
+    width: 98%;
+    min-height: 400px;
+    height: 40vh;
+    overflow: scroll;
+    margin: 0 auto;
+  }
 
-#hrSummaryChart {
-  min-width: 350px;
-  min-height: 350px;
-  margin: 0 auto;
-  width: 35vw;
-  height: 35vw;
-}
-#hrStorageChart {
-  min-height: 300px;
-  height: 35vh;
-  width: 98%;
-
-}
-#hrProcessCPUChart,
-#hrProcessMemChart {
-  min-height: 300px;
-  height: 35vh;
-  width: 98%;
-}
-
+  #hrSummaryChart {
+    min-width: 350px;
+    min-height: 350px;
+    margin: 0 auto;
+    width: 35vw;
+    height: 35vw;
+  }
+  #hrStorageChart {
+    min-height: 300px;
+    height: 35vh;
+    width: 98%;
+  }
+  #hrProcessCPUChart,
+  #hrProcessMemChart {
+    min-height: 300px;
+    height: 35vh;
+    width: 98%;
+  }
 </style>

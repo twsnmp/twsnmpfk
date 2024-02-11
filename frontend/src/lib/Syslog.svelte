@@ -8,7 +8,7 @@
     Select,
     Spinner,
   } from "flowbite-svelte";
-  import {Icon} from "mdi-svelte-ts";
+  import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick, onDestroy } from "svelte";
   import {
@@ -27,10 +27,10 @@
   import type { datastore } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
 
-  let data :any = [];
-  let logs :any = [];
+  let data: any = [];
+  let logs: any = [];
   let showReport = false;
-  let table :any = undefined;
+  let table: any = undefined;
   let selectedCount = 0;
   let showPolling = false;
   let showFilter = false;
@@ -141,11 +141,11 @@
   });
 
   const saveCSV = () => {
-    ExportSyslogs("csv",host,tag,msg,severity);
+    ExportSyslogs("csv", host, tag, msg, severity);
   };
 
   const saveExcel = () => {
-    ExportSyslogs("excel",host,tag,msg,severity);
+    ExportSyslogs("excel", host, tag, msg, severity);
   };
 
   let polling: datastore.PollingEnt | undefined = undefined;
@@ -178,7 +178,7 @@
 <svelte:window on:resize={resizeLogLevelChart} />
 
 <div class="flex flex-col">
-  <div id="chart"/>
+  <div id="chart" />
   <div class="m-5 grow">
     <table id="table" class="display compact" style="width:99%" />
   </div>
@@ -262,23 +262,15 @@
   </div>
 </div>
 
-{#if showReport}
-  <SyslogReport
-    {logs}
-    on:close={() => {
-      showReport = false;
-    }}
-  />
-{/if}
+<SyslogReport
+  bind:show={showReport}
+  {logs}
+  on:close={() => {
+    showReport = false;
+  }}
+/>
 
-{#if showPolling}
-  <Polling
-    pollingTmp={polling}
-    on:close={() => {
-      showPolling = false;
-    }}
-  />
-{/if}
+<Polling bind:show={showPolling} pollingTmp={polling} />
 
 <Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
@@ -347,7 +339,7 @@
   #chart {
     min-height: 200px;
     height: 20vh;
-    width:  98vw;
-    margin:  0 auto;
+    width: 98vw;
+    margin: 0 auto;
   }
 </style>

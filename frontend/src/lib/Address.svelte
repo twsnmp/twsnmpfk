@@ -1,6 +1,7 @@
 <script lang="ts">
+  import "../assets/css/jquery.dataTables.css";
   import { GradientButton } from "flowbite-svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount } from "svelte";
   import {
@@ -25,12 +26,12 @@
   import { _ } from "svelte-i18n";
 
   let arp: any = [];
-  let nodes = undefined;
+  let nodes :any= undefined;
   let showReport = false;
-  let arpTable = undefined;
+  let arpTable :any = undefined;
   let newIP = new Map();
-  let changeIP = new Map();
-  let changeMAC = new Map();
+  let changeIP:any = new Map();
+  let changeMAC:any  = new Map();
   let selectedIP = "";
   let selectedNodeID = "";
 
@@ -75,7 +76,7 @@
     });
   };
 
-  const renderNode = (id) => {
+  const renderNode = (id:any) => {
     return nodes[id] ? nodes[id].Name : id;
   };
 
@@ -207,7 +208,7 @@
         newIP.set(arpLogs[i].IP, arpLogs[i].Time);
       }
     }
-    arp.forEach((e) => {
+    arp.forEach((e:any) => {
       e.State = changeIP.has(e.IP)
         ? 1
         : e.IP.startsWith("169.254.")
@@ -348,48 +349,33 @@
   </div>
 </div>
 
-{#if showReport}
-  <AddressReport
-    {arp}
-    {changeIP}
-    {changeMAC}
-    on:close={() => {
-      showReport = false;
-    }}
-  />
-{/if}
+<AddressReport
+  bind:show ={showReport}
+  {arp}
+  {changeIP}
+  {changeMAC}
+/>
 
-{#if showAddNode}
-  <Node
-    ip={selectedIP}
-    posX={100}
-    posY={120}
-    on:close={(e) => {
-      refresh();
-      showAddNode = false;
-    }}
-  />
-{/if}
+<Node
+  bind:show={showAddNode}
+  ip={selectedIP}
+  posX={100}
+  posY={120}
+  on:close={(e) => {
+    refresh();
+  }}
+/>
 
-{#if showEditNode}
-  <Node
-    nodeID={selectedNodeID}
-    on:close={(e) => {
-      refresh();
-      showEditNode = false;
-    }}
-  />
-{/if}
+<Node
+  bind:show={showEditNode}
+  nodeID={selectedNodeID}
+  on:close={(e) => {
+    refresh();
+  }}
+/>
 
-{#if showNodeReport}
-  <NodeReport
-    id={selectedNodeID}
-    on:close={(e) => {
-      showNodeReport = false;
-    }}
-  />
-{/if}
+<NodeReport
+  bind:show={showNodeReport}
+  id={selectedNodeID}
+/>
 
-<style>
-  @import "../assets/css/jquery.dataTables.css";
-</style>

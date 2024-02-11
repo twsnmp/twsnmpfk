@@ -15,12 +15,10 @@
     Select,
     Toggle,
   } from "flowbite-svelte";
-  import { onMount, createEventDispatcher, onDestroy, tick } from "svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
     GetMIBTree,
-    GetNode,
     SnmpWalk,
     ExportAny,
   } from "../../wailsjs/go/main/App";
@@ -31,9 +29,9 @@
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
 
+  export let show: boolean = false;
   export let nodeID = "";
 
-  let show: boolean = false;
   let name = "";
   let raw = false;
   let history :any = [];
@@ -57,12 +55,9 @@
   };
   let showHelp = false;
 
-  const dispatch = createEventDispatcher();
 
-  onMount(async () => {
+  const onOpen = async () => {
     mibTree.children = await GetMIBTree();
-    const node = await GetNode(nodeID);
-    show = true;
     nekos.push(neko1);
     nekos.push(neko2);
     nekos.push(neko3);
@@ -70,14 +65,7 @@
     nekos.push(neko5);
     nekos.push(neko6);
     nekos.push(neko7);
-  });
-
-  onDestroy(() => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = undefined;
-    }
-  });
+  };
 
   const showTable = () => {
     if (table && DataTable.isDataTable("#mibTable")) {
@@ -256,7 +244,10 @@
 
   const close = () => {
     show = false;
-    dispatch("close", {});
+    if (timer) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
   };
 
   const exportMIB = (t: string) => {
@@ -277,7 +268,7 @@
   };
 </script>
 
-<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:open={onOpen}>
   <div class="flex flex-col space-y-4">
     <div class="flex flex-row mb-2">
       <div class="flex-auto">

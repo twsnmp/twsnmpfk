@@ -2,9 +2,9 @@ import * as echarts from 'echarts';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart;
+let chart:any;
 
-export const showLogHeatmap = (div, logs) => {
+export const showLogHeatmap = (div:string, logs:any) => {
   if (chart) {
     chart.dispose()
   }
@@ -35,7 +35,7 @@ export const showLogHeatmap = (div, logs) => {
     '22',
     '23',
   ]
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -56,7 +56,7 @@ export const showLogHeatmap = (div, logs) => {
     dataZoom: [{}],
     tooltip: {
       trigger: 'item',
-      formatter(params) {
+      formatter(params:any) {
         return (
           params.name +
           ' ' +
@@ -155,8 +155,8 @@ export const showLogHeatmap = (div, logs) => {
     let nH = 0
     let x = -1
     let sum = 0
-    logs.sort((a, b) => a.Time - b.Time)
-    logs.forEach((l) => {
+    logs.sort((a:any, b:any) => a.Time - b.Time)
+    logs.forEach((l:any) => {
       const t = new Date(l.Time / (1000 * 1000))
       if (nD === 0) {
         nH = t.getHours()
@@ -190,7 +190,7 @@ export const showLogHeatmap = (div, logs) => {
   return chart;
 }
 
-export const showEventLogStateChart = (div:string, logs) => {
+export const showEventLogStateChart = (div:string, logs:any) => {
   if (chart) {
     chart.dispose();
   }
@@ -233,7 +233,7 @@ export const showEventLogStateChart = (div:string, logs) => {
     ],
   }
   if (logs) {
-    logs.forEach((l) => {
+    logs.forEach((l:any) => {
       switch (l.Level) {
         case 'high':
           option.series[0].data[0].value++
@@ -260,12 +260,12 @@ export const showEventLogStateChart = (div:string, logs) => {
   return chart;
 }
 
-export const showEventLogTimeChart = (div, type, logs) => {
+export const showEventLogTimeChart = (div:string, type:any, logs:any) => {
   if (chart) {
     chart.dispose();
   }
   chart = echarts.init(document.getElementById(div),"dark");
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -301,7 +301,7 @@ export const showEventLogTimeChart = (div, type, logs) => {
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
-        formatter(value, index) {
+        formatter(value:any) {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -345,7 +345,7 @@ export const showEventLogTimeChart = (div, type, logs) => {
     ],
   }
   if (logs) {
-    logs.forEach((l) => {
+    logs.forEach((l:any) => {
       if (l.Type !== type) {
         return
       }
@@ -367,9 +367,9 @@ export const showEventLogTimeChart = (div, type, logs) => {
   return chart;
 }
 
-const getEventLogNodeList = (logs) => {
+const getEventLogNodeList = (logs:any) => {
   const m = new Map()
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     if (!l.NodeID) {
       return
     }
@@ -415,7 +415,7 @@ const getEventLogNodeList = (logs) => {
   return r
 }
 
-export const showEventLogNodeChart = (div, logs) => {
+export const showEventLogNodeChart = (div:any, logs:any) => {
   const list = getEventLogNodeList(logs)
   const high = []
   const low = []

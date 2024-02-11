@@ -1,11 +1,12 @@
 import * as echarts from 'echarts';
 import * as ecStat from 'echarts-stat';
 import numeral from 'numeral';
+//@ts-ignore
 import WorldData from 'world-map-geojson';
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart;
+let chart :any;
 
 export const getPingChartOption = () => {
   return {
@@ -42,7 +43,7 @@ export const getPingChartOption = () => {
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
-        formatter(value, index) {
+        formatter(value:any) {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}',false)
         },
@@ -124,13 +125,13 @@ export const getPingChartOption = () => {
   }
 }
 
-export const showPing3DChart = (div, results) => {
+export const showPing3DChart = (div:string, results:any) => {
   if (chart) {
     chart.dispose();
   }
   let maxRtt = 0.0
-  const data = []
-  results.forEach((r) => {
+  const data :any= []
+  results.forEach((r:any) => {
     if (r.Stat !== 1) {
       return
     }
@@ -142,7 +143,7 @@ export const showPing3DChart = (div, results) => {
     data.push([r.Size, t, rtt])
   })
   chart = echarts.init(document.getElementById(div),"dark");
-  const options = {
+  const options :any = {
     title: {
       show: false,
     },
@@ -196,7 +197,7 @@ export const showPing3DChart = (div, results) => {
       axisLabel: {
         color: '#ccc',
         fontSize: 8,
-        formatter(value, index) {
+        formatter(value:any) {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -256,13 +257,13 @@ export const showPing3DChart = (div, results) => {
   return chart;
 }
 
-export const showPingMapChart = (div, results) => {
+export const showPingMapChart = (div :string, results:any) => {
   if (chart) {
     chart.dispose()
   }
   chart = echarts.init(document.getElementById(div),"dark")
   echarts.registerMap('world', WorldData)
-  const option = {
+  const option :any = {
     grid: {
       left: '7%',
       right: '4%',
@@ -302,7 +303,7 @@ export const showPingMapChart = (div, results) => {
         },
         symbolSize: 10,
         itemStyle: {
-          color: (params) => {
+          color: (params:any) => {
             const t = params.data.value[2]
             if (t < 0.005) {
               return '#1f78b4'
@@ -323,8 +324,8 @@ export const showPingMapChart = (div, results) => {
   if (!results) {
     return
   }
-  const locMap = {}
-  results.forEach((e) => {
+  const locMap :any = {}
+  results.forEach((e:any) => {
     const loc = e.Loc
     if (!loc || loc.indexOf('LOCAL') === 0) {
       return
@@ -352,7 +353,7 @@ export const showPingMapChart = (div, results) => {
   }
   chart.setOption(option);
   chart.resize();
-  chart.on('dblclick', (p) => {
+  chart.on('dblclick', (p:any) => {
     const url =
       'https://www.google.com/maps/search/?api=1&zoom=10&query=' +
       p.value[1] +
@@ -363,12 +364,12 @@ export const showPingMapChart = (div, results) => {
   return chart;
 }
 
-export const showPingHistgram = (div, results) => {
+export const showPingHistgram = (div:string, results:any) => {
   if (chart) {
     chart.dispose()
   }
-  const data = []
-  results.forEach((r) => {
+  const data :any = []
+  results.forEach((r:any) => {
     if (r.Stat !== 1) {
       return
     }
@@ -382,7 +383,7 @@ export const showPingHistgram = (div, results) => {
     },
     tooltip: {
       trigger: 'axis',
-      formatter(params) {
+      formatter(params:any) {
         const p = params[0]
         return p.value[0] + ':' + p.value[1]
       },
@@ -439,13 +440,13 @@ export const showPingHistgram = (div, results) => {
   return chart;
 }
 
-export const showPingLinearChart = (div, results) => {
+export const showPingLinearChart = (div:string, results:any) => {
   if (chart) {
     chart.dispose()
   }
   chart = echarts.init(document.getElementById(div),"dark")
-  const data = []
-  results.forEach((r) => {
+  const data :any = []
+  results.forEach((r:any) => {
     if (r.Stat !== 1) {
       return
     }

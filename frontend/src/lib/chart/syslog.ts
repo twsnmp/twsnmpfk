@@ -5,9 +5,9 @@ import { doFFT } from './fft'
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart;
+let chart :any;
 
-export const showSyslogHost = (div, logs) => {
+export const showSyslogHost = (div:string, logs:any) => {
   const list = getSyslogHostList(logs);
   const high = []
   const low = []
@@ -106,9 +106,9 @@ export const showSyslogHost = (div, logs) => {
   return chart;
 }
 
-const getSyslogHostList = (logs) => {
+const getSyslogHostList = (logs:any) => {
   const m = new Map()
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     const e = m.get(l.Host)
     if (!e) {
       m.set(l.Host, {
@@ -131,9 +131,9 @@ const getSyslogHostList = (logs) => {
   return r
 }
 
-export const showSyslogHost3D = (div, logs) => {
+export const showSyslogHost3D = (div:string, logs:any) => {
   const m = new Map()
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     const level = getSyslogLevel(l.Level)
     const t = new Date(l.Time / (1000 * 1000))
     const e = m.get(l.Host)
@@ -154,7 +154,7 @@ export const showSyslogHost3D = (div, logs) => {
   })
   const cat = Array.from(m.keys())
   const l = Array.from(m.values())
-  const data = []
+  const data :any = []
   l.forEach((e) => {
     for (let i = 0; i < e.Time.length && i < 15000; i++) {
       data.push([e.Name, e.Time[i], e.Priority[i], e.Level[i]])
@@ -164,7 +164,7 @@ export const showSyslogHost3D = (div, logs) => {
     chart.dispose()
   }
   chart = echarts.init(document.getElementById(div),"dark");
-  const options = {
+  const options :any = {
     title: {
       show: false,
     },
@@ -211,7 +211,7 @@ export const showSyslogHost3D = (div, logs) => {
       axisLabel: {
         color: '#ccc',
         fontSize: 8,
-        formatter(value, index) {
+        formatter(value:any) {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -267,7 +267,7 @@ export const showSyslogHost3D = (div, logs) => {
   return chart;
 }
 
-const getSyslogLevel = (l) => {
+const getSyslogLevel = (l:any) => {
   switch (l) {
     case 'high':
       return 0
@@ -282,7 +282,7 @@ const getSyslogLevel = (l) => {
 }
 
 
-const getSyslogFFTMap = (logs) => {
+const getSyslogFFTMap = (logs:any) => {
   const m = new Map();
   if (logs.length < 50) {
     return m;
@@ -290,7 +290,7 @@ const getSyslogFFTMap = (logs) => {
   let st = Infinity;
   let lt = 0;
   m.set('Total', { Name: 'Total', Count: 0, Data: [] })
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     const e = m.get(l.Host)
     if (!e) {
       m.set(l.Host, { Name: l.Host, Count: 0, Data: [] })
@@ -313,8 +313,8 @@ const getSyslogFFTMap = (logs) => {
   } else if (dur > 3600 * 24) {
     sampleSec = 60
   }
-  let cts
-  logs.forEach((l) => {
+  let cts : any = undefined;
+  logs.forEach((l:any) => {
     if (!cts) {
       cts = Math.floor(l.Time / (1000 * 1000 * 1000 * sampleSec))
       m.get('Total').Count++
@@ -343,17 +343,17 @@ const getSyslogFFTMap = (logs) => {
   return m
 }
 
-export const showSyslogFFT3D = (div, logs) => {
+export const showSyslogFFT3D = (div :string, logs:any) => {
   const fftMap = getSyslogFFTMap(logs);
-  const data = [];
-  const colors = [];
-  const cat = [];
+  const data :any = [];
+  const colors :any = [];
+  const cat :any = [];
   fftMap.forEach((e) => {
     if (e.Name === 'Total') {
       return
     }
     cat.push(e.Name)
-    e.FFT.forEach((f) => {
+    e.FFT.forEach((f:any) => {
       if (f.period === 0.0) {
         return
       }
@@ -486,7 +486,7 @@ export const showSyslogFFT3D = (div, logs) => {
 }
 
 
-export const showSyslogLevelChart = (div:string, logs) => {
+export const showSyslogLevelChart = (div:string, logs:any) => {
   if (chart) {
     chart.dispose()
   }
@@ -527,7 +527,7 @@ export const showSyslogLevelChart = (div:string, logs) => {
     ],
   }
   if (logs) {
-    logs.forEach((l) => {
+    logs.forEach((l:any) => {
       switch (l.Level) {
         case 'high':
           option.series[0].data[0].value++

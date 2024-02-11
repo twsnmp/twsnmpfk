@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Modal, GradientButton,Tabs,TabItem } from "flowbite-svelte";
-  import { onMount, createEventDispatcher,tick } from "svelte";
+  import { tick } from "svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
@@ -8,14 +8,12 @@
   import { showLogHeatmap } from "./chart/eventlog";
   import { _ } from "svelte-i18n";
 
+  export let show: boolean = false;
   export let logs : datastore.SyslogEnt[] | undefined =undefined;
-  let show: boolean = false;
-  const dispatch = createEventDispatcher();
 
-  onMount(async () => {
-    show = true;
+  const onOpen = async () => {
     showChart("level");
-  });
+  };
 
   let chart :any  = undefined;
   const showChart = async (t:string) => {
@@ -44,7 +42,6 @@
 
   const close = () => {
     show = false;
-    dispatch("close", {});
   };
 
   const resizeChart = () => {
@@ -62,7 +59,7 @@
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:on:close={close}
+  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">

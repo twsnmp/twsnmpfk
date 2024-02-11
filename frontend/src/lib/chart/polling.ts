@@ -20,7 +20,7 @@ const vmapUsage = [
   },
 ];
 
-const chartParams = {
+const chartParams :any = {
   rtt: {
     mul: 1.0 / (1000 * 1000 * 1000),
     axis: $_("Ts.RespTimeSec"),
@@ -128,7 +128,7 @@ const chartParams = {
   },
 };
 
-export const getChartParams = (ent) => {
+export const getChartParams = (ent:any) => {
   const r = chartParams[ent];
   if (r) {
     return r;
@@ -139,9 +139,9 @@ export const getChartParams = (ent) => {
   };
 };
 
-let chart;
+let chart :any;
 
-const getPollingChartOption = (div) => {
+const getPollingChartOption = () => {
   return {
     title: {
       show: false,
@@ -185,7 +185,7 @@ const getPollingChartOption = (div) => {
       axisLabel: {
         color: "#ccc",
         fontSize: "8px",
-        formatter(value, index) {
+        formatter(value:any) {
           const date = new Date(value);
           return echarts.time.format(date, "{yyyy}/{MM}/{dd} {HH}:{mm}", false);
         },
@@ -230,7 +230,7 @@ const getPollingChartOption = (div) => {
   };
 };
 
-const setChartData = (series, t, values) => {
+const setChartData = (series:any, t:any, values:any) => {
   const data = [t.getTime() * 1000 * 1000];
   const name = echarts.time.format(t, "{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}", false);
   const mean = ecStat.statistics.mean(values);
@@ -265,13 +265,13 @@ const setChartData = (series, t, values) => {
   data.push(variance);
 };
 
-export const showPollingChart = (div, logs, ent) => {
+export const showPollingChart = (div:string, logs:any, ent:any) => {
   if (chart) {
     chart.dispose();
   }
   chart = echarts.init(document.getElementById(div),"dark");
 
-  const option: any = getPollingChartOption(div);
+  const option: any = getPollingChartOption();
 
   chart.setOption(option);
   if (ent === "") {
@@ -330,9 +330,9 @@ export const showPollingChart = (div, logs, ent) => {
   option.legend.data.push($_("Ts.Median"));
   option.legend.data.push($_("Ts.Variance"));
   let tS = -1;
-  const values = [];
+  const values :any = [];
   const dt = 3600 * 1000;
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     const t = new Date(l.Time / (1000 * 1000));
     const tC = Math.floor(t.getTime() / dt);
     if (tS !== tC) {
@@ -362,12 +362,12 @@ export const showPollingChart = (div, logs, ent) => {
   chart.resize();
 };
 
-const makePollingHistogram = (div) => {
+const makePollingHistogram = (div:string) => {
   if (chart) {
     chart.dispose();
   }
   chart = echarts.init(document.getElementById(div),"dark");
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -382,7 +382,7 @@ const makePollingHistogram = (div) => {
     dataZoom: [{}],
     tooltip: {
       trigger: "axis",
-      formatter(params) {
+      formatter(params:any) {
         const p = params[0];
         return p.value[0] + ":" + p.value[1];
       },
@@ -417,14 +417,14 @@ const makePollingHistogram = (div) => {
   chart.resize();
 };
 
-export const showPollingHistogram = (div, logs, ent) => {
+export const showPollingHistogram = (div:string, logs:any, ent:any) => {
   makePollingHistogram(div);
   if (ent === "") {
     return;
   }
-  const data = [];
+  const data :any = [];
   const dp = getChartParams(ent);
-  logs.forEach((l) => {
+  logs.forEach((l:any) => {
     if (!l.Result.error) {
       let numVal = getNumVal(ent, l.Result);
       numVal *= dp.mul;
@@ -446,7 +446,7 @@ export const showPollingHistogram = (div, logs, ent) => {
 };
 
 
-const getNumVal = (key, r) => {
+const getNumVal = (key:any, r:any) => {
   return r[key] || 0.0;
 };
 

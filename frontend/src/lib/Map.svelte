@@ -460,86 +460,65 @@
   </div>
 {/if}
 
-{#if showDiscover}
-  <Discover
-    on:close={() => {
-      showDiscover = false;
-      refreshMap();
-    }}
-  />
-{/if}
+<Discover
+  bind:show={showDiscover}
+  on:close={() => {
+    refreshMap();
+  }}
+/>
 
-{#if showEditNode}
-  <Node
-    nodeID={selectedNode}
-    {posX}
-    {posY}
-    on:close={(e) => {
-      showEditNode = false;
-      refreshMap();
-    }}
-  />
-{/if}
+<Node
+  bind:show={showEditNode}
+  nodeID={selectedNode}
+  {posX}
+  {posY}
+  on:close={(e) => {
+    showEditNode = false;
+    refreshMap();
+  }}
+/>
 
-{#if showEditLine}
-  <Line
-    nodeID1={selectedLineNode1}
-    nodeID2={selectedLineNode2}
-    on:close={(e) => {
-      showEditLine = false;
-      refreshMap();
-    }}
-  />
-{/if}
+<Line
+  bind:show={showEditLine}
+  nodeID1={selectedLineNode1}
+  nodeID2={selectedLineNode2}
+  on:close={(e) => {
+    showEditLine = false;
+    refreshMap();
+  }}
+/>
 
-{#if showEditDrawItem}
-  <DrawItem
-    id={selectedDrawItem}
-    {posX}
-    {posY}
-    on:close={(e) => {
-      showEditDrawItem = false;
-      refreshMap();
-    }}
-  />
-{/if}
+<DrawItem
+  bind:show={showEditDrawItem}
+  id={selectedDrawItem}
+  {posX}
+  {posY}
+  on:close={(e) => {
+    showEditDrawItem = false;
+    refreshMap();
+  }}
+/>
 
-{#if showNodeReport}
-  <NodeReport
-    id={selectedNode}
-    on:close={(e) => {
-      showNodeReport = false;
-    }}
-  />
-{/if}
+<NodeReport
+  bind:show={showNodeReport}
+  id={selectedNode}
+  on:close={(e) => {
+    showNodeReport = false;
+  }}
+/>
 
-{#if showPolling}
-  <NodePolling
-    nodeID={selectedNode}
-    on:close={(e) => {
-      showPolling = false;
-      refreshMap();
-    }}
-  />
-{/if}
+<NodePolling
+  bind:show={showPing}
+  nodeID={selectedNode}
+  on:close={(e) => {
+    showPolling = false;
+    refreshMap();
+  }}
+/>
 
-{#if showPing}
-  <Ping
-    nodeID={selectedNode}
-    on:close={(e) => {
-      showPing = false;
-    }}
-  />
-{/if}
+<Ping bind:show={showPing} nodeID={selectedNode} />
 
-{#if showMibBr}
-  <MIBBrowser
-    nodeID={selectedNode}
-    on:close={(e) => {
-      showMibBr = false;
-    }}
-  />
-{/if}
+<MIBBrowser bind:show={showMibBr} nodeID={selectedNode} />
 
 <Modal bind:open={showGrid} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">

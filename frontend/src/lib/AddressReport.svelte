@@ -1,25 +1,24 @@
 <script lang="ts">
   import { Modal, GradientButton, Tabs, TabItem } from "flowbite-svelte";
   import { onMount, createEventDispatcher, tick } from "svelte";
-  import Icon from "mdi-svelte";
+  import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import type { datastore} from "wailsjs/go/models";
   import { showArpGraph } from "./chart/arp";
   import { _ } from 'svelte-i18n';
 
-  export let arp : datastore.ArpEnt[] | undefined = undefined;
-  export let changeMAC = undefined;
-  export let changeIP = undefined;
+  export let show: boolean = false;
+  export let arp : any = undefined;
+  export let changeMAC:any = undefined;
+  export let changeIP:any = undefined;
 
-  let show: boolean = false;
   const dispatch = createEventDispatcher();
 
-  onMount(async () => {
-    show = true;
+  const onOpen = async () => {
     showChart("graphForce");
-  });
+  };
 
-  let chart = undefined;
+  let chart :any  = undefined;
   const showChart = async (t: string) => {
     await tick();
     chart = undefined;
@@ -51,9 +50,9 @@
 <Modal
   bind:open={show}
   size="xl"
-  permanent
+  dismissable={false}
   class="w-full min-h-[90vh]"
-  on:on:close={close}
+  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">

@@ -1,4 +1,4 @@
-export const getScoreIndex = (s) => {
+export const getScoreIndex = (s:any) => {
   if (s > 66) {
     return 5
   } else if (s > 50) {
@@ -15,11 +15,11 @@ const ipv4Regex = /^(\d{1,3}\.){3,3}\d{1,3}$/
 const ipv6Regex =
   /^(::)?(((\d{1,3}\.){3}(\d{1,3}){1})?([0-9a-f]){0,4}:{0,2}){1,8}(::)?$/i
 
-export const isV4Format = (ip) => {
+export const isV4Format = (ip:string) => {
   return ipv4Regex.test(ip)
 }
 
-export const isV6Format = (ip) => {
+export const isV6Format = (ip:string) => {
   return ipv6Regex.test(ip)
 }
 
@@ -39,11 +39,11 @@ export const isPrivateIP = (addr:string) :boolean => {
   )
 }
 
-export const setZoomCallback = (chart, cb, st, lt) => {
+export const setZoomCallback = (chart:any, cb:any, st:any, lt:any) => {
   if (!cb) {
     return;
   }
-  chart.on('datazoom', (e) => {
+  chart.on('datazoom', (e:any) => {
     if (e.batch && e.batch.length === 2) {
       if (e.batch[0].startValue) {
         // Select ZOOM

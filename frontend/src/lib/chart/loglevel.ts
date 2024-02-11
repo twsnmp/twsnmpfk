@@ -3,11 +3,11 @@ import { setZoomCallback } from './utils.js'
 import { _,unwrapFunctionStore } from 'svelte-i18n';
 const $_ = unwrapFunctionStore(_);
 
-let chart;
+let chart :any;
 
 const makeLogLevelChart = (div:string) => {
   chart = echarts.init(document.getElementById(div),"dark");
-  const option = {
+  const option :any = {
     title: {
       show: false,
     },
@@ -38,7 +38,7 @@ const makeLogLevelChart = (div:string) => {
       axisLabel: {
         color: '#ccc',
         fontSize: '8px',
-        formatter: (value, index) => {
+        formatter: (value :any) => {
           const date = new Date(value)
           return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
         },
@@ -122,7 +122,7 @@ const makeLogLevelChart = (div:string) => {
   chart.resize();
 }
 
-const addChartData = (data, count, ctm, newCtm) => {
+const addChartData = (data:any, count:any, ctm:any, newCtm:any) => {
   let t = new Date(ctm * 60 * 1000)
   for (const k in count) {
     data[k].push({
@@ -143,27 +143,27 @@ const addChartData = (data, count, ctm, newCtm) => {
   return ctm
 }
 
-export const showLogLevelChart = (div:string, logs, zoomCallback) => {
+export const showLogLevelChart = (div:string, logs:any, zoomCallback:any) => {
   if (chart) {
     chart.dispose();
   }
   makeLogLevelChart(div)
-  const data = {
+  const data :any = {
     high: [],
     low: [],
     warn: [],
     other: [],
   }
-  const count = {
+  const count :any = {
     high: 0,
     low: 0,
     warn: 0,
     other: 0,
   }
-  let ctm : undefined | number = undefined;
+  let ctm : any = undefined;
   let st = Infinity
   let lt = 0
-  logs.forEach((e) => {
+  logs.forEach((e:any) => {
     const lvl = data[e.Level] ? e.Level : 'other'
     const newCtm = Math.floor(e.Time / (1000 * 1000 * 1000 * 60))
     if (!ctm) {

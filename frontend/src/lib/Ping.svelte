@@ -2,7 +2,7 @@
   import ping_ok from "../assets/sound/ping_ok.mp3";
   import ping_ng from "../assets/sound/ping_ng.mp3";
   import { Modal, GradientButton, Tabs, TabItem, Input, Select,Toggle } from "flowbite-svelte";
-  import { onMount, createEventDispatcher, tick, onDestroy } from "svelte";
+  import { tick } from "svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
@@ -25,9 +25,9 @@
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
 
+  export let show: boolean = false;
   export let nodeID = "";
-  let show: boolean = false;
-  const dispatch = createEventDispatcher();
+
   let pingTab = true;
   let wait = false;
   let table :any = undefined;
@@ -53,21 +53,13 @@
   let sound_ng :any;
   let showHelp = false;
 
-  onMount(async () => {
+  const onOpen = async () => {
     const node = await GetNode(nodeID);
     if (node && node.IP) {
       ip = node.IP;
     }
-    show = true;
     showPing();
-  });
-
-  onDestroy(() => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = undefined;
-    }
-  });
+  };
 
   const showTable = () => {
     if (table && DataTable.isDataTable("#pingTable")) {
@@ -122,6 +114,7 @@
     chart.setOption(chartOption);
     chart.resize();
   };
+
   const countList = [
     { name: $_('Ping.Cont'), value: -1 },
     { name: $_('Ping.Coun1'), value: 1 },
@@ -369,8 +362,11 @@
   };
 
   const close = () => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
     show = false;
-    dispatch("close", {});
   };
   const resizeChart = () => {
     if(reportChart) {
@@ -385,7 +381,7 @@
 
 <svelte:window on:resize={resizeChart} />
 
-<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:on:close={close}>
+<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:open={onOpen}>
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem bind:open={pingTab} on:click={showPing}>
