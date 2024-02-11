@@ -195,7 +195,7 @@
     return (
       `<span class="mdi ` +
       getStateIcon(state) +
-      ` text-xl" style="color:` +
+      ` text-sm" style="color:` +
       getStateColor(state) +
       `;"></span><span class="ml-2">` +
       name +

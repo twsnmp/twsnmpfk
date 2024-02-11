@@ -114,7 +114,7 @@
         return (
           `<span class="mdi ` +
           getStateIcon("high") +
-          ` text-xl" style="color:` +
+          ` text-sm" style="color:` +
           getStateColor("high") +
           `;"></span><span class="ml-2">` +
           $_('Address.Dup') +
@@ -124,7 +124,7 @@
         return (
           `<span class="mdi ` +
           getStateIcon("low") +
-          ` text-xl" style="color:` +
+          ` text-sm" style="color:` +
           getStateColor("low") +
           `;"></span><span class="ml-2">` +
           $_('Address.IPChange') +
@@ -134,7 +134,7 @@
         return (
           `<span class="mdi ` +
           getStateIcon("warn") +
-          ` text-xl" style="color:` +
+          ` text-sm" style="color:` +
           getStateColor("warn") +
           `;"></span><span class="ml-2">` +
           $_('Address.MACChange') +
@@ -144,7 +144,7 @@
     return (
       `<span class="mdi ` +
       getStateIcon("normal") +
-      ` text-xl" style="color:` +
+      ` text-sm" style="color:` +
       getStateColor("normal") +
       `;"></span><span class="ml-2">` +
       $_('Address.Normal') +

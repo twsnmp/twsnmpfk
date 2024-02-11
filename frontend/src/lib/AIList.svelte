@@ -28,7 +28,7 @@
     return (
       `<span class="mdi ` +
       getScoreIcon(score) +
-      ` text-xl" style="color:` +
+      ` text-sm" style="color:` +
       getScoreColor(score) +
       `;"></span><span class="ml-2">` +
       score.toFixed(2) +

@@ -246,7 +246,7 @@ export const renderState = (state:string,type:string) => {
   }
   return `<span class="mdi ` +
       getStateIcon(state) +
-      ` text-xl" style="color:` +
+      ` text-sm" style="color:` +
       getStateColor(state) +
       `;"></span><span class="ml-2">` +
       getStateName(state) +
@@ -260,7 +260,7 @@ export const renderNodeState = (state:string,type:string,n:any) => {
   const icon = n.Icon ? getIcon(n.Icon) : getStateIcon(state);
   return `<span class="mdi ` +
       icon +
-      ` text-xl" style="color:` +
+      ` text-sm" style="color:` +
       getStateColor(state) +
       `;"></span><span class="ml-2">` +
       getStateName(state) +
