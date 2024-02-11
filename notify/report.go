@@ -297,7 +297,7 @@ func sendReportHTML() {
 		})
 		return
 	}
-	if err := sendMail(title, body.String()); err != nil {
+	if err := SendMail(title, body.String()); err != nil {
 		log.Printf("send report mail err=%v", err)
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",

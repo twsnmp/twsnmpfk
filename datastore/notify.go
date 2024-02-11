@@ -27,6 +27,9 @@ type NotifyConfEnt struct {
 	ExecCmd            string `json:"ExecCmd"`
 	BeepHigh           string `json:"BeepHigh"`
 	BeepLow            string `json:"BeepLow"`
+	LineNotifyRepair   bool   `json:"LineNotifyRepair"`
+	LineLevel          string `json:"LineLevel"`
+	LineToken          string `json:"LineToken"`
 }
 
 func SaveNotifyConf() error {

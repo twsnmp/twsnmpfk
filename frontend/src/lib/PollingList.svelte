@@ -118,24 +118,24 @@
     {
       data: "State",
       title: $_("PollingList.State"),
-      width: "10%",
+      width: "8%",
       render: renderState,
     },
     {
       data: "NodeID",
       title: $_("PollingList.Node"),
-      width: "15%",
+      width: "14%",
       render: (id: any) => nodes[id].Name,
     },
     {
       data: "Name",
       title: $_("PollingList.Name"),
-      width: "25%",
+      width: "23%",
     },
     {
       data: "Level",
       title: $_("PollingList.Level"),
-      width: "10%",
+      width: "8%",
       render: renderState,
     },
     {
@@ -150,9 +150,21 @@
       render: getLogModeName,
     },
     {
+      data: "FailAction",
+      title: $_('PollingList.FailAction'),
+      width: "5%",
+      render: (a:any)=> a != "" ? "Action" : "",
+    },
+    {
+      data: "RepairAction",
+      title: $_('PollingList.RepairAction'),
+      width: "5%",
+      render: (a:any)=> a != "" ? "Action" : "",
+    },
+    {
       data: "LastTime",
       title: $_("PollingList.LastTime"),
-      width: "15%",
+      width: "12%",
       render: renderTime,
     },
   ];

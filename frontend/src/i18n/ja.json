@@ -248,7 +248,11 @@
     "AudioHigh": "重度障害時に再生する音",
     "AodioLow": "軽度以上の障害時に再生する音",
     "SelectAodio": "選択",
-    "Help": "ヘルプ"
+    "Help": "ヘルプ",
+    "LineLevel": "ライン通知のレベル",
+    "LineTestNG": "LINE通知のテストに失敗しました。",
+    "LineTestOK": "LINE通知の送信に成功しました。",
+    "LineToken": "LINE通知のトークン"
   },
   "DrawItem": {
     "Rect": "矩形",
@@ -429,7 +433,9 @@
     "Report": "レポート",
     "Delete": "削除",
     "Reload": "更新",
-    "Close": "閉じる"
+    "Close": "閉じる",
+    "FailAction": "障害",
+    "RepairAction": "復帰"
   },
   "NodeReport": {
     "Level": "レベル",
@@ -552,7 +558,9 @@
     "Save": "保存",
     "Cancel": "キャンセル",
     "Select": "選択",
-    "Help": "ヘルプ"
+    "Help": "ヘルプ",
+    "FailAction": "障害時のアクション",
+    "RepairAction": "復帰時のアクション"
   },
   "PollingList": {
     "State": "状態",
@@ -567,7 +575,9 @@
     "Copy": "コピー",
     "Report": "レポート",
     "Delete": "削除",
-    "Reload": "更新"
+    "Reload": "更新",
+    "FailAction": "障害",
+    "RepairAction": "復帰"
   },
   "PollingReport": {
     "State": "状態",

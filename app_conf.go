@@ -44,6 +44,11 @@ func (a *App) TestNotifyConf(n datastore.NotifyConfEnt) bool {
 	return notify.SendTestMail(&n) == nil
 }
 
+// TestLine test line notify
+func (a *App) TestLine(n datastore.NotifyConfEnt) bool {
+	return notify.SendLine(&n, n.Subject+i18n.Trans("(LINE test)"), 8522, 16581266) == nil
+}
+
 // GetAIConf returns AI config
 func (a *App) GetAIConf() datastore.AIConfEnt {
 	return datastore.AIConf

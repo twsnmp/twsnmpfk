@@ -10,24 +10,26 @@ import (
 )
 
 type PollingEnt struct {
-	ID        string                 `json:"ID"`
-	Name      string                 `json:"Name"`
-	NodeID    string                 `json:"NodeID"`
-	Type      string                 `json:"Type"`
-	Mode      string                 `json:"Mode"`
-	Params    string                 `json:"Params"`
-	Filter    string                 `json:"Filter"`
-	Extractor string                 `json:"Extractor"`
-	Script    string                 `json:"Script"`
-	Level     string                 `json:"Level"`
-	PollInt   int                    `json:"PollInt"`
-	Timeout   int                    `json:"Timeout"`
-	Retry     int                    `json:"Retry"`
-	LogMode   int                    `json:"LogMode"`
-	NextTime  int64                  `json:"NextTime"`
-	LastTime  int64                  `json:"LastTime"`
-	Result    map[string]interface{} `json:"Result"`
-	State     string                 `json:"State"`
+	ID           string                 `json:"ID"`
+	Name         string                 `json:"Name"`
+	NodeID       string                 `json:"NodeID"`
+	Type         string                 `json:"Type"`
+	Mode         string                 `json:"Mode"`
+	Params       string                 `json:"Params"`
+	Filter       string                 `json:"Filter"`
+	Extractor    string                 `json:"Extractor"`
+	Script       string                 `json:"Script"`
+	Level        string                 `json:"Level"`
+	PollInt      int                    `json:"PollInt"`
+	Timeout      int                    `json:"Timeout"`
+	Retry        int                    `json:"Retry"`
+	LogMode      int                    `json:"LogMode"`
+	NextTime     int64                  `json:"NextTime"`
+	LastTime     int64                  `json:"LastTime"`
+	Result       map[string]interface{} `json:"Result"`
+	State        string                 `json:"State"`
+	FailAction   string                 `json:"FailAction"`
+	RepairAction string                 `json:"RepairAction"`
 }
 
 type PollingLogEnt struct {

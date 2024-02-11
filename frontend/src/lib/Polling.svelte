@@ -32,6 +32,13 @@
     regex: /\\s\+/,
   };
 
+  Prism.languages.twaction = {
+    regex: /[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}/,
+    keyword: /(wol|mail|line|wait|cmd)/,
+    number: /-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/i,
+    string: /\b(?:false|true|up|down)\b/,
+  };
+
   const highlight = (code: string, syntax: string | undefined) => {
     if (!syntax) {
       return "";
@@ -300,6 +307,16 @@
             bind:value={polling.Retry}
             size="sm"
           />
+        </Label>
+      </div>
+      <div class="grid gap-4 mb-4 grid-cols-2">
+        <Label class="space-y-2 text-xs">
+          <span>{$_('Polling.FailAction')}</span>
+          <CodeJar syntax="twaction" {highlight} bind:value={polling.FailAction} />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_('Polling.RepairAction')}</span>
+          <CodeJar syntax="twaction" {highlight} bind:value={polling.RepairAction} />
         </Label>
       </div>
       <div class="flex justify-end space-x-2 mr-2">

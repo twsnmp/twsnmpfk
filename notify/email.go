@@ -35,7 +35,7 @@ func sendNotifyMail(list []*datastore.EventLogEnt) {
 	}
 	nd := getNotifyData(list, nl)
 	if nd.failureBody != "" {
-		err := sendMail(nd.failureSubject, nd.failureBody)
+		err := SendMail(nd.failureSubject, nd.failureBody)
 		r := ""
 		level := "info"
 		if err != nil {
@@ -50,7 +50,7 @@ func sendNotifyMail(list []*datastore.EventLogEnt) {
 		})
 	}
 	if nd.repairBody != "" {
-		err := sendMail(nd.repairSubject, nd.repairBody)
+		err := SendMail(nd.repairSubject, nd.repairBody)
 		r := ""
 		level := "info"
 		if err != nil {
@@ -66,7 +66,7 @@ func sendNotifyMail(list []*datastore.EventLogEnt) {
 	}
 }
 
-func sendMail(subject, body string) error {
+func SendMail(subject, body string) error {
 	if !canSendMail() {
 		return nil
 	}

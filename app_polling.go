@@ -59,6 +59,11 @@ func (a *App) UpdatePolling(up datastore.PollingEnt) bool {
 	p.Timeout = up.Timeout
 	p.Retry = up.Retry
 	p.LogMode = up.LogMode
+	p.FailAction = up.FailAction
+	p.RepairAction = up.RepairAction
+	// Re check now
+	p.State = "unknown"
+	p.NextTime = 0
 	datastore.UpdatePolling(p, true)
 	return true
 }

@@ -260,7 +260,11 @@
     "SelectAudioError": "Sound files are less than 1MB",
     "SelectAudioHigh": "Replay file in case of severe failure",
     "SelectAudioLow": "Playback file when a failure is more than mild",
-    "Help": "Help"
+    "Help": "Help",
+    "LineLevel": "LINE Level",
+    "LineTestNG": "LINE test Failed",
+    "LineTestOK": "LINE test OK",
+    "LineToken": "LINE Notify Token"
   },
   "DrawItem": {
     "Cancel": "Cancel",
@@ -441,7 +445,9 @@
     "Reload": "Reload",
     "Report": "Report",
     "State": "State",
-    "Type": "Type"
+    "Type": "Type",
+    "FailAction": "Fail",
+    "RepairAction": "Repair"
   },
   "NodeReport": {
     "Access": "Access",
@@ -564,7 +570,9 @@
     "SelectPollingType": "Select polling type",
     "TimeoutSec": "Timeout(sec)",
     "Type": "Type",
-    "Help": "Help"
+    "Help": "Help",
+    "FailAction": "Fail Action",
+    "RepairAction": "Repair Action"
   },
   "PollingList": {
     "Add": "Add",
@@ -579,7 +587,9 @@
     "Reload": "Reload",
     "Report": "Report",
     "State": "State",
-    "Type": "Type"
+    "Type": "Type",
+    "FailAction": "Fail ",
+    "RepairAction": "Repair"
   },
   "PollingReport": {
     "AI": "AI",

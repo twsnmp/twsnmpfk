@@ -270,6 +270,22 @@
     " {\n    showPolling = false;\n    refreshMap();\n  }}\n/>\n\n",
     " {\n    showPolling = false;\n    refreshMap();\n  }}\n/>\n\n",
     " {\n    page = oldPage;\n    updateMapName();\n  }}\n/>\n\n",
-    " {\n            showHelp = true;\n          }}\n        >\n          "
+    " {\n            showHelp = true;\n          }}\n        >\n          ",
+    " {\n              helpPage = \"mibconf\";\n              showHelp = true;\n            }}\n          >\n            ",
+    " (showMIBTree = true)}\n            size=\"xs\"\n          >\n            ",
+    " {\n              helpPage = \"iconconf\";\n              showHelp = true;\n            }}\n          >\n            ",
+    " {\n                helpPage = \"locconf\";\n                showHelp = true;\n              }}\n            >\n              ",
+    " {\n                helpPage = \"aiconf\";\n                showHelp = true;\n              }}\n            >\n              ",
+    " {\n                helpPage = \"notifyconf\";\n                showHelp = true;\n              }}\n            >\n              ",
+    " selectBeep(false)}\n                size=\"xs\"\n              >\n                ",
+    " deleteBeep(false)}\n                size=\"xs\"\n              >\n                ",
+    " selectBeep(true)}\n                size=\"xs\"\n              >\n                ",
+    " deleteBeep(true)}\n                size=\"xs\"\n              >\n                ",
+    " {\n                helpPage = \"mapconf\";\n                showHelp = true;\n              }}\n            >\n              ",
+    " {\n                helpPage = \"mapconf\";\n                showHelp = true;\n              }}\n            >\n              ",
+    " {\n    refresh();\n  }}\n/>\n\n",
+    " {\n    refresh();\n  }}\n/>\n\n",
+    "Action",
+    " {\n    refresh();\n  }}\n/>\n"
   ]
 }

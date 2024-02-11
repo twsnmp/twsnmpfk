@@ -473,7 +473,6 @@
   {posX}
   {posY}
   on:close={(e) => {
-    showEditNode = false;
     refreshMap();
   }}
 />
@@ -483,7 +482,6 @@
   nodeID1={selectedLineNode1}
   nodeID2={selectedLineNode2}
   on:close={(e) => {
-    showEditLine = false;
     refreshMap();
   }}
 />
@@ -494,24 +492,16 @@
   {posX}
   {posY}
   on:close={(e) => {
-    showEditDrawItem = false;
     refreshMap();
   }}
 />
 
-<NodeReport
-  bind:show={showNodeReport}
-  id={selectedNode}
-  on:close={(e) => {
-    showNodeReport = false;
-  }}
-/>
+<NodeReport bind:show={showNodeReport} id={selectedNode} />
 
 <NodePolling
-  bind:show={showPing}
+  bind:show={showPolling}
   nodeID={selectedNode}
   on:close={(e) => {
-    showPolling = false;
     refreshMap();
   }}
 />

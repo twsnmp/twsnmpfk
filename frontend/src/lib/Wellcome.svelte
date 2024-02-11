@@ -35,7 +35,9 @@
 
 <div class="grid h-screen place-items-center">
   <Card padding="xl" size="xl">
-    <img id="logo" src={logo} alt="logo" />
+    <div class="flex justify-center">
+      <img id="logo" class="margin" src={logo} alt="logo" />
+    </div>
     <div class="flex justify-center mt-5">
       <span
         class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"

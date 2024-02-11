@@ -112,7 +112,7 @@
     {
       data: "State",
       title: $_("NodePolling.State"),
-      width: "15%",
+      width: "10%",
       render: renderState,
     },
     {
@@ -123,7 +123,7 @@
     {
       data: "Level",
       title: $_("NodePolling.Level"),
-      width: "15%",
+      width: "10%",
       render: renderState,
     },
     {
@@ -136,6 +136,18 @@
       title: $_("NodePolling.LogMode"),
       width: "10%",
       render: getLogModeName,
+    },
+    {
+      data: "FailAction",
+      title: $_('NodePolling.FailAction'),
+      width: "5%",
+      render: (a:any)=> a != "" ? "Action" : "",
+    },
+    {
+      data: "RepairAction",
+      title: $_('NodePolling.RepairAction'),
+      width: "5%",
+      render: (a:any)=> a != "" ? "Action" : "",
     },
     {
       data: "LastTime",

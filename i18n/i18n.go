@@ -260,6 +260,21 @@ var transMap = map[string]map[string]string{
 	"Clear all arp watch info": {
 		"ja": "ARP監視情報を全削除",
 	},
+	"Failed to send rapair notify to line": {
+		"ja": "復帰通知をLINEへ送信できません",
+	},
+	"Sent rapair notify to line": {
+		"ja": "復帰通知をLINEへ送信しました",
+	},
+	"Failed to send notify to line": {
+		"ja": "障害通知をLINEへ送信できません",
+	},
+	"Sent notify to line": {
+		"ja": "障害通知をLINEへ送信しました",
+	},
+	"(LINE test)": {
+		"ja": "(LINEのテスト)",
+	},
 }
 
 func init() {

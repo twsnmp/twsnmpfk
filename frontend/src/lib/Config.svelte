@@ -41,6 +41,7 @@
     DeleteIcon,
     SelectAudioFile,
     GetAudio,
+    TestLine,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
@@ -68,6 +69,9 @@
   let locConf: any = undefined;
   let showLocStyleError = false;
 
+  let showLineTestError: boolean = false;
+  let showLineTestOk: boolean = false;
+
   const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
@@ -93,6 +97,7 @@
   };
 
   const notifyLevelList = [
+    { name: $_("Config.Node"), value: "" },
     { name: $_("Config.Node"), value: "none" },
     { name: $_("Config.Warn"), value: "warn" },
     { name: $_("Config.Low"), value: "low" },
@@ -105,12 +110,20 @@
     close();
   };
 
-  const testNotifyConf = async () => {
+  const testMail= async () => {
     showTestError = false;
     notifyConf.Interval *= 1;
     const ok = await TestNotifyConf(notifyConf);
     showTestError = !ok;
     showTestOk = ok;
+  };
+
+  const testLine = async () => {
+    showLineTestError = false;
+    notifyConf.Interval *= 1;
+    const ok = await TestLine(notifyConf);
+    showLineTestError = !ok;
+    showLineTestOk = ok;
   };
 
   let showAudioError = false;
@@ -520,7 +533,6 @@
             </GradientButton>
           </div>
         </form>
-        <!-- <MapConf on:close={close}></MapConf> -->
       </TabItem>
       <TabItem>
         <div slot="title" class="flex items-center gap-2">
@@ -533,6 +545,14 @@
               <div class="flex">
                 <Icon path={icons.mdiExclamation} size={1} />
                 {$_("Config.FailedSendMail")}
+              </div>
+            </Alert>
+          {/if}
+          {#if showLineTestError}
+            <Alert color="red" dismissable>
+              <div class="flex">
+                <Icon path={icons.mdiExclamation} size={1} />
+                {$_('Config.LineTestNG')}
               </div>
             </Alert>
           {/if}
@@ -549,6 +569,14 @@
               <div class="flex">
                 <Icon path={icons.mdiCheck} size={1} />
                 {$_("Config.SentTestMail")}
+              </div>
+            </Alert>
+          {/if}
+          {#if showLineTestOk}
+            <Alert class="flex" color="blue" dismissable>
+              <div class="flex">
+                <Icon path={icons.mdiCheck} size={1} />
+                {$_('Config.LineTestOK')}
               </div>
             </Alert>
           {/if}
@@ -633,6 +661,24 @@
               >{$_("Config.NotifyRepair")}</Checkbox
             >
           </div>
+          <div class="grid gap-4 grid-cols-4">
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.LineLevel')}</span>
+              <Select
+                items={notifyLevelList}
+                bind:value={notifyConf.LineLevel}
+                placeholder={$_("Config.SelectNotifyLevel")}
+                size="sm"
+              />
+            </Label>
+            <Checkbox class="mt-6" bind:checked={notifyConf.LineNotifyRepair}>
+              {$_("Config.NotifyRepair")}
+            </Checkbox>
+            <Label class="space-y-2 text-xs col-span-2">
+              <span> {$_('Config.LineToken')} </span>
+              <Input class="w-full" type="password" bind:value={notifyConf.LineToken} size="sm" />
+            </Label>
+          </div>
           <Label class="space-y-2 text-xs">
             <span> {$_("Config.ExecCommand")} </span>
             <Input class="w-full" bind:value={notifyConf.ExecCmd} size="sm" />
@@ -716,11 +762,21 @@
               shadow
               type="button"
               color="red"
-              on:click={testNotifyConf}
+              on:click={testMail}
               size="xs"
             >
               <Icon path={icons.mdiEmail} size={1} />
               {$_("Config.Test")}
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              color="red"
+              on:click={testLine}
+              size="xs"
+            >
+              <Icon path={icons.mdiChat} size={1} />
+              LINE{$_("Config.Test")}
             </GradientButton>
             <GradientButton
               shadow
