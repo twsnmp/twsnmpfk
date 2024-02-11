@@ -124,7 +124,7 @@
           page = "map";
         }}
       >
-        <Icon path={icons.mdiLan} size={1} />
+        <Icon path={icons.mdiLan} size={1.8} />
         {$_("Top.Map")}
       </NavLi>
       {#if locConf.Style}
@@ -134,7 +134,7 @@
             page = "loc";
           }}
         >
-          <Icon path={icons.mdiMap} size={1} />
+          <Icon path={icons.mdiMap} size={1.8} />
           {$_("Top.Loc")}
         </NavLi>
       {/if}
@@ -144,7 +144,7 @@
           page = "node";
         }}
       >
-        <Icon path={icons.mdiLaptop} size={1} />
+        <Icon path={icons.mdiLaptop} size={1.8} />
         {$_("Top.Node")}
       </NavLi>
       <NavLi
@@ -153,7 +153,7 @@
           page = "polling";
         }}
       >
-        <Icon path={icons.mdiLanCheck} size={1} />
+        <Icon path={icons.mdiLanCheck} size={1.8} />
         {$_("Top.Polling")}
       </NavLi>
       <NavLi
@@ -162,7 +162,7 @@
           page = "address";
         }}
       >
-        <Icon path={icons.mdiListStatus} size={1} />
+        <Icon path={icons.mdiListStatus} size={1.8} />
         {$_("Top.Address")}
       </NavLi>
       <NavLi
@@ -171,7 +171,7 @@
           page = "eventlog";
         }}
       >
-        <Icon path={icons.mdiCalendarCheck} size={1} />
+        <Icon path={icons.mdiCalendarCheck} size={1.8} />
         {$_("Top.Log")}
       </NavLi>
       <NavLi
@@ -180,7 +180,7 @@
           page = "syslog";
         }}
       >
-        <Icon path={icons.mdiCalendarText} size={1} />
+        <Icon path={icons.mdiCalendarText} size={1.8} />
         syslog
       </NavLi>
       <NavLi
@@ -189,7 +189,7 @@
           page = "trap";
         }}
       >
-        <Icon path={icons.mdiAlert} size={1} />
+        <Icon path={icons.mdiAlert} size={1.8} />
         TRAP
       </NavLi>
       <NavLi
@@ -198,7 +198,7 @@
           page = "arp";
         }}
       >
-        <Icon path={icons.mdiCheckNetwork} size={1} />
+        <Icon path={icons.mdiCheckNetwork} size={1.8} />
         ARP
       </NavLi>
       <NavLi
@@ -207,7 +207,7 @@
           page = "ai";
         }}
       >
-        <Icon path={icons.mdiBrain} size={1} />
+        <Icon path={icons.mdiBrain} size={1.8} />
         {$_("Top.AI")}
       </NavLi>
       <NavLi
@@ -216,7 +216,7 @@
           page = "system";
         }}
       >
-        <Icon path={icons.mdiChartLine} size={1} />
+        <Icon path={icons.mdiChartLine} size={1.8} />
         {$_("Top.System")}
       </NavLi>
       <NavLi
@@ -227,7 +227,7 @@
           showConfig = true;
         }}
       >
-        <Icon path={icons.mdiCog} size={1} />
+        <Icon path={icons.mdiCog} size={1.8} />
         {$_("Top.Config")}
       </NavLi>
     {/if}
