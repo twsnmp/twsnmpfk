@@ -1001,6 +1001,24 @@ export namespace main {
 	        this.Severity = source["Severity"];
 	    }
 	}
+	export class TrapFilterEnt {
+	    Start: string;
+	    End: string;
+	    From: string;
+	    Type: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TrapFilterEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Start = source["Start"];
+	        this.End = source["End"];
+	        this.From = source["From"];
+	        this.Type = source["Type"];
+	    }
+	}
 	export class UpdatePosEnt {
 	    ID: string;
 	    X: number;

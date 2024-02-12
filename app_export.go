@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
@@ -190,27 +189,16 @@ func (a *App) ExportSyslogs(t string, filter SyslogFilterEnt) string {
 }
 
 // ExportTrap  export traps
-func (a *App) ExportTraps(t, from, trapType string) string {
-	var fromFilter *regexp.Regexp
-	var typeFilter *regexp.Regexp
-	var err error
-	if from != "" {
-		if fromFilter, err = regexp.Compile(from); err != nil {
-			log.Println(err)
-			return fmt.Sprintf("export tarps err=%v", err)
-		}
-	}
-	if trapType != "" {
-		if typeFilter, err = regexp.Compile(trapType); err != nil {
-			log.Println(err)
-			return fmt.Sprintf("export traps err=%v", err)
-		}
-	}
+func (a *App) ExportTraps(t string, filter TrapFilterEnt) string {
+	fromFilter := makeStringFilter(filter.From)
+	typeFilter := makeStringFilter(filter.Type)
+	st := makeTimeFilter(filter.Start, 24)
+	et := makeTimeFilter(filter.End, 0)
 	data := ExportData{
 		Title:  "TWSNMP TRAP",
 		Header: []string{"Time", "From", "Type", "Variables"},
 	}
-	datastore.ForEachLastTraps(func(l *datastore.TrapEnt) bool {
+	datastore.ForEachTraps(st, et, func(l *datastore.TrapEnt) bool {
 		if fromFilter != nil && !fromFilter.MatchString(l.FromAddress) {
 			return true
 		}
@@ -225,6 +213,7 @@ func (a *App) ExportTraps(t, from, trapType string) string {
 		data.Data = append(data.Data, e)
 		return true
 	})
+	var err error
 	switch t {
 	case "excel":
 		err = a.exportExcel(&data)

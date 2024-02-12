@@ -51,7 +51,7 @@ export function ExportPollings(arg1:string):Promise<string>;
 
 export function ExportSyslogs(arg1:string,arg2:main.SyslogFilterEnt):Promise<string>;
 
-export function ExportTraps(arg1:string,arg2:string,arg3:string):Promise<string>;
+export function ExportTraps(arg1:string,arg2:main.TrapFilterEnt):Promise<string>;
 
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 
@@ -129,7 +129,7 @@ export function GetSettings():Promise<main.Settings>;
 
 export function GetSyslogs(arg1:main.SyslogFilterEnt):Promise<Array<datastore.SyslogEnt>>;
 
-export function GetTraps(arg1:string,arg2:string):Promise<Array<datastore.TrapEnt>>;
+export function GetTraps(arg1:main.TrapFilterEnt):Promise<Array<datastore.TrapEnt>>;
 
 export function GetVPanelPorts(arg1:string):Promise<Array<backend.VPanelPortEnt>>;
 

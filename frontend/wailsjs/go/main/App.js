@@ -94,8 +94,8 @@ export function ExportSyslogs(arg1, arg2) {
   return window['go']['main']['App']['ExportSyslogs'](arg1, arg2);
 }
 
-export function ExportTraps(arg1, arg2, arg3) {
-  return window['go']['main']['App']['ExportTraps'](arg1, arg2, arg3);
+export function ExportTraps(arg1, arg2) {
+  return window['go']['main']['App']['ExportTraps'](arg1, arg2);
 }
 
 export function GetAIConf() {
@@ -250,8 +250,8 @@ export function GetSyslogs(arg1) {
   return window['go']['main']['App']['GetSyslogs'](arg1);
 }
 
-export function GetTraps(arg1, arg2) {
-  return window['go']['main']['App']['GetTraps'](arg1, arg2);
+export function GetTraps(arg1) {
+  return window['go']['main']['App']['GetTraps'](arg1);
 }
 
 export function GetVPanelPorts(arg1) {

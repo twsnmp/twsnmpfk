@@ -6,6 +6,7 @@
     Label,
     Input,
     Spinner,
+    Button,
   } from "flowbite-svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -22,7 +23,7 @@
   import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import type { datastore } from "wailsjs/go/models";
+  import type { datastore,main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
 
   let data :any = [];
@@ -32,8 +33,12 @@
   let selectedCount = 0;
   let showPolling = false;
   let showFilter = false;
-  let from = "";
-  let trapType = "";
+  const filter : main.TrapFilterEnt = {
+    Start: "",
+    End: "",
+    From: "",
+    Type: "",
+  }
   let showLoading = false;
 
   const showTable = () => {
@@ -62,7 +67,7 @@
 
   const refresh = async () => {
     showLoading = true;
-    logs = await GetTraps(from, trapType);
+    logs = await GetTraps(filter);
     data = [];
     for (let i = 0; i < logs.length; i++) {
       data.push(logs[i]);
@@ -117,11 +122,11 @@
   });
 
   const saveCSV = () => {
-    ExportTraps("csv",from,trapType);
+    ExportTraps("csv",filter);
   };
 
   const saveExcel = () => {
-    ExportTraps("excel",from,trapType);
+    ExportTraps("excel",filter);
   };
 
   let polling: datastore.PollingEnt;
@@ -251,13 +256,35 @@
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Trap.Filter")}
     </h3>
+    <div class="grid gap-2 grid-cols-3">
+      <Label class="space-y-2 text-xs">
+        <span>{$_('EventLog.Start')}</span>
+        <Input type="datetime-local" bind:value={filter.Start} size="sm" />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_('EventLog.End')}</span>
+        <Input type="datetime-local" bind:value={filter.End} size="sm" />
+      </Label>
+      <div class="flex">
+        <Button
+          class="!p-2 w-8 h-8 mt-6 ml-4"
+          color="red"
+          on:click={() => {
+            filter.Start = "";
+            filter.End = "";
+          }}
+        >
+          <Icon path={icons.mdiCancel} size={1} />
+        </Button>
+      </div>
+    </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("Trap.FromAddress")} </span>
-      <Input bind:value={from} size="sm" />
+      <Input bind:value={filter.From} size="sm" />
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("Trap.TrapType")}</span>
-      <Input bind:value={trapType} size="sm" />
+      <Input bind:value={filter.Type} size="sm" />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton

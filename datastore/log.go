@@ -707,6 +707,85 @@ func ForEachLastTraps(f func(*TrapEnt) bool) error {
 	})
 }
 
+// ForEachTraps  get TRAP
+func ForEachTraps(st, et int64, f func(*TrapEnt) bool) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	sk := fmt.Sprintf("%016x", st)
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("trap"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			if l.Time < st {
+				continue
+			}
+			if l.Time > et {
+				break
+			}
+			var sl = make(map[string]interface{})
+			if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+				continue
+			}
+			var ok bool
+			re := new(TrapEnt)
+			if fa, ok := sl["FromAddress"].(string); !ok {
+				continue
+			} else {
+				a := strings.SplitN(fa, ":", 2)
+				if len(a) == 2 {
+					re.FromAddress = a[0]
+					n := FindNodeFromIP(a[0])
+					if n != nil {
+						re.FromAddress += "(" + n.Name + ")"
+					}
+				} else {
+					re.FromAddress = fa
+				}
+			}
+			if re.Variables, ok = sl["Variables"].(string); !ok {
+				continue
+			}
+			var ent string
+			if ent, ok = sl["Enterprise"].(string); !ok || ent == "" {
+				a := trapOidRegexp.FindStringSubmatch(re.Variables)
+				if len(a) > 1 {
+					re.TrapType = a[1]
+				} else {
+					re.TrapType = ""
+				}
+			} else {
+				var gen float64
+				if gen, ok = sl["GenericTrap"].(float64); !ok {
+					continue
+				}
+				var spe float64
+				if spe, ok = sl["SpecificTrap"].(float64); !ok {
+					continue
+				}
+				re.TrapType = fmt.Sprintf("%s:%d:%d", ent, int(gen), int(spe))
+			}
+			re.Time = l.Time
+			if !f(re) {
+				break
+			}
+		}
+		return nil
+	})
+}
+
 type ArpLogEnt struct {
 	Time   int64  `json:"Time"`
 	State  string `json:"State"`

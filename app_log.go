@@ -114,25 +114,21 @@ func (a *App) GetSyslogs(filter SyslogFilterEnt) []*datastore.SyslogEnt {
 	return ret
 }
 
+type TrapFilterEnt struct {
+	Start string `json:"Start"`
+	End   string `json:"End"`
+	From  string `json:"From"`
+	Type  string `json:"Type"`
+}
+
 // GetTraps retunrs SNMP Trap log
-func (a *App) GetTraps(from, trapType string) []*datastore.TrapEnt {
+func (a *App) GetTraps(filter TrapFilterEnt) []*datastore.TrapEnt {
 	ret := []*datastore.TrapEnt{}
-	var fromFilter *regexp.Regexp
-	var typeFilter *regexp.Regexp
-	var err error
-	if from != "" {
-		if fromFilter, err = regexp.Compile(from); err != nil {
-			log.Println(err)
-			return ret
-		}
-	}
-	if trapType != "" {
-		if typeFilter, err = regexp.Compile(trapType); err != nil {
-			log.Println(err)
-			return ret
-		}
-	}
-	datastore.ForEachLastTraps(func(l *datastore.TrapEnt) bool {
+	fromFilter := makeStringFilter(filter.From)
+	typeFilter := makeStringFilter(filter.Type)
+	st := makeTimeFilter(filter.Start, 24)
+	et := makeTimeFilter(filter.End, 0)
+	datastore.ForEachTraps(st, et, func(l *datastore.TrapEnt) bool {
 		if fromFilter != nil && !fromFilter.MatchString(l.FromAddress) {
 			return true
 		}
