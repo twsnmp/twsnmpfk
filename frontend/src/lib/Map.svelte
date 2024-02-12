@@ -728,7 +728,7 @@
         color="teal"
         type="button"
         on:click={() => {
-          showGrid = false;
+          showEditBackImage = false;
         }}
         size="xs"
       >
