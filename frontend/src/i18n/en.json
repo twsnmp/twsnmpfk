@@ -725,6 +725,9 @@
   "Help": {
     "Close": "Close",
     "Manual": "Manual",
-    "Overiview": "Overview"
+    "Overiview": "Overview",
+    "feedbackError": "Failed to send feedback",
+    "Feedback": "Feedback",
+    "Send": "Send"
   }
 }

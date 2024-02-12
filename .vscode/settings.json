@@ -300,6 +300,9 @@
     "\n          {#if polling.LogMode == 3 ",
     "& aiResult}\n            ",
     "& aiResult}\n            ",
-    " {\n            filter.Start = \"\";\n            filter.End = \"\";\n          }}\n        >\n          "
+    " {\n            filter.Start = \"\";\n            filter.End = \"\";\n          }}\n        >\n          ",
+    " {\n          showEditBackImage = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n        showFeedback = true;\n      }}\n    >\n      ",
+    " {\n          showFeedback = false;\n        }}\n      >\n        "
   ]
 }

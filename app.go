@@ -2,12 +2,19 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"sync"
+	"time"
 
 	wails "github.com/wailsapp/wails/v2/pkg/runtime"
 
@@ -236,4 +243,62 @@ func (a *App) SelectAudioFile(title string) string {
 		log.Printf("SelectAudioFile err=%v", err)
 	}
 	return file
+}
+
+// SendFeedback send feedback to twsnmp
+func (a *App) SendFeedback(message string) bool {
+	msg := message
+	msg += fmt.Sprintf("\n-----\nTWSNMP FK\nGOOS=%s,GOARCH=%s\n", runtime.GOOS, runtime.GOARCH)
+	if len(backend.MonitorDataes) > 0 {
+		i := len(backend.MonitorDataes) - 1
+		msg += fmt.Sprintf("CPU=%f,Mem=%f,Load=%f,Disk=%f\n",
+			backend.MonitorDataes[i].CPU,
+			backend.MonitorDataes[i].Mem,
+			backend.MonitorDataes[i].Load,
+			backend.MonitorDataes[i].Disk,
+		)
+	}
+	values := url.Values{}
+	values.Set("msg", msg)
+	values.Add("hash", calcHash(msg))
+
+	req, err := http.NewRequest(
+		"POST",
+		"https://lhx98.linkclub.jp/twise.co.jp/cgi-bin/twsnmpfb.cgi",
+		strings.NewReader(values.Encode()),
+	)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	// Content-Type 設定
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	defer resp.Body.Close()
+	r, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	if string(r) != "OK" {
+		log.Println(r)
+		return false
+	}
+	return true
+}
+
+func calcHash(msg string) string {
+	h := sha256.New()
+	if _, err := h.Write([]byte(msg + time.Now().Format("2006/01/02T15"))); err != nil {
+		log.Printf("calc hash err=%v", err)
+		return ""
+	}
+	return fmt.Sprintf("%x", h.Sum(nil))
 }

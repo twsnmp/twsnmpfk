@@ -153,6 +153,8 @@ export function SelectDatastore():Promise<boolean>;
 
 export function SelectFile(arg1:string,arg2:boolean):Promise<string>;
 
+export function SendFeedback(arg1:string):Promise<boolean>;
+
 export function SetBackImage(arg1:datastore.BackImageEnt):Promise<boolean>;
 
 export function SetDark(arg1:boolean):Promise<void>;

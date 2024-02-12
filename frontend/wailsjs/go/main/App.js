@@ -298,6 +298,10 @@ export function SelectFile(arg1, arg2) {
   return window['go']['main']['App']['SelectFile'](arg1, arg2);
 }
 
+export function SendFeedback(arg1) {
+  return window['go']['main']['App']['SendFeedback'](arg1);
+}
+
 export function SetBackImage(arg1) {
   return window['go']['main']['App']['SetBackImage'](arg1);
 }

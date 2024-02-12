@@ -725,6 +725,9 @@
   "Help": {
     "Close": "閉じる",
     "Manual": "マニュアル",
-    "Overiview": "目次"
+    "Overiview": "目次",
+    "Feedback": "フィードバック",
+    "Send": "送信",
+    "feedbackError": "フィードバックを送信できませんでした。"
   }
 }
