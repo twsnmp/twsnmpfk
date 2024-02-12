@@ -97,7 +97,7 @@
   };
 
   const notifyLevelList = [
-    { name: $_("Config.Node"), value: "none" },
+    { name: $_("Config.None"), value: "none" },
     { name: $_("Config.Warn"), value: "warn" },
     { name: $_("Config.Low"), value: "low" },
     { name: $_("Config.High"), value: "high" },

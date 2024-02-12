@@ -44,7 +44,7 @@ Right -click the location other than the node and drawing items on the map to di
 ![Map menu](../../help/en/2023-12-03_10-22-50.png)
 
 >>>
-#### Explanation of the map menu
+#### Map menu
 
 <div class="text-xl">
 
@@ -70,7 +70,7 @@ Right -click the node on the map to display it.
 ![Node menu](../../help/en/2023-12-03_10-25-39.png)
 
 >>>
-#### Description of node menu
+#### Node menu
 
 <div class="text-xl">
 
@@ -97,7 +97,7 @@ Right -click the drawing item on the map to display it.
 ![Drawing item menu](../../help/en/2023-12-03_10-27-19.png)
 
 >>>
-#### Description of node menu
+#### Drawing item menu
 
 <div class="text-xl">
 

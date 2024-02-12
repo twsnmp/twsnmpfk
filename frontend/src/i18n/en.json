@@ -209,7 +209,7 @@
     "Map": "Map",
     "MapName": "Map Name",
     "NoCheckCert": "Don't check server certificate",
-    "Node": "Node",
+    "None": "Disable",
     "Notify": "Notify",
     "NotifyIntSec": "Notification interval (seconds)",
     "NotifyLevel": "Notify Level",
