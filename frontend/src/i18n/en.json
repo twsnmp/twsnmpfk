@@ -317,7 +317,9 @@
     "Stop": "Stop",
     "Timeout": "Timeout (seconds)",
     "AutoIPRange": "Auto IP range",
-    "Help": "Help"
+    "Help": "Help",
+    "Found": "Found:",
+    "Total": "Total"
   },
   "EventLog": {
     "Event": "Event",
@@ -387,7 +389,10 @@
     "Report": "Report",
     "Test": "Test",
     "showDrawItemEdit": "edit mode",
-    "showDrawItemNomal": "normal mode"
+    "showDrawItemNomal": "normal mode",
+    "BackImage": "Backgrand image",
+    "Clear": "Clear",
+    "Save": "Save"
   },
   "MIBBrowser": {
     "Close": "Close",
@@ -511,7 +516,8 @@
     "Used": "Usaed",
     "PhysicalPort": "Physical Port",
     "VM": "VM",
-    "RotateVPanel": "Rotate"
+    "RotateVPanel": "Rotate",
+    "FileSystem": "File System"
   },
   "Ping": {
     "Chart3D": "3D Chart",

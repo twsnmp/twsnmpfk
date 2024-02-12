@@ -859,11 +859,7 @@
             style="width:99%"
           />
         </TabItem>
-        <TabItem
-          on:click={() => {
-            showHrSystem();
-          }}
-        >
+        <TabItem on:click={showHrSystem} >
           <div slot="title" class="flex items-center gap-2">
             {#if waitHr}
               <Spinner color="red" size="6" />
@@ -914,7 +910,7 @@
           <TabItem on:click={showHrFileSystem}>
             <div slot="title" class="flex items-center gap-2">
               <Icon path={icons.mdiFileCabinet} size={1} />
-              File System
+              {$_('NodeReport.FileSystem')}
             </div>
             <table
               id="hrFileSystemTable"

@@ -274,7 +274,7 @@ export namespace datastore {
 	    Y: number;
 	    Width: number;
 	    Height: number;
-	    Data: string;
+	    Path: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new BackImageEnt(source);
@@ -286,7 +286,7 @@ export namespace datastore {
 	        this.Y = source["Y"];
 	        this.Width = source["Width"];
 	        this.Height = source["Height"];
-	        this.Data = source["Data"];
+	        this.Path = source["Path"];
 	    }
 	}
 	export class DiscoverConfEnt {

@@ -219,7 +219,10 @@
         : 0) + ""}
       color="blue"
       size="h-5"
-      labelOutside="Total:{stats.Sent + '/' + stats.Total}"
+      labelOutside={
+        $_("Discover.Total")
+        + stats.Sent + '/' + stats.Total
+      }
     />
     <Progressbar
       progress={(stats.Total
@@ -227,7 +230,10 @@
         : 0) + ""}
       color="indigo"
       size="h-5"
-      labelOutside="Found:{stats.Found + '/' + stats.Total}"
+      labelOutside={
+        $_("Discover.Found")
+        + stats.Found + '/' + stats.Total
+      }
     />
     <Progressbar
       progress={(stats.Found

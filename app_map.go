@@ -170,9 +170,15 @@ func autoGetPollingSetting(di *datastore.DrawItemEnt, p *datastore.PollingEnt) (
 	return
 }
 
-// GetDrawItems retunrs map backgrand image
+// GetBackIMage retunrs map backgrand image
 func (a *App) GetBackImage() datastore.BackImageEnt {
 	return datastore.BackImage
+}
+
+// SetBackImage save map backgrand image
+func (a *App) SetBackImage(backImage datastore.BackImageEnt) bool {
+	datastore.BackImage = backImage
+	return datastore.SaveBackImage() == nil
 }
 
 // GetDiscoverConf retunrs discover config

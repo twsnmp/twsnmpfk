@@ -30,7 +30,7 @@ let backImage: datastore.BackImageEnt = {
   Y:0,
   Width:0,
   Height: 0,
-  Data: '',
+  Path: '',
 };
 let _backImage:any = undefined; 
 
@@ -67,6 +67,9 @@ export const initMAP = async (div:HTMLElement,cb :any) => {
   _mapP5 = new P5(mapMain, div)
 }
 
+
+let lastBackImagePath = "";
+
 export const updateMAP = async () => {
   const dark = isDark();
   const mapConf = await GetMapConf();
@@ -78,12 +81,19 @@ export const updateMAP = async () => {
   items = await GetDrawItems() || {};
   backImage = await GetBackImage();
   _backImage = null;
-  if (backImage.Data && _mapP5 != undefined){
-    _mapP5.loadImage(backImage.Data,(img)=>{
-      _backImage = img;
-      mapRedraw = true;
-      console.log(img);
-    },()=>{});
+  if (_mapP5 != undefined){
+    if (backImage.Path != lastBackImagePath) {
+      if( backImage.Path) {
+        _mapP5.loadImage(await GetImage(backImage.Path),(img)=>{
+          _backImage = img;
+          mapRedraw = true;
+        },()=>{});
+      } else {
+        _backImage = null;
+        mapRedraw = true;
+      }
+      lastBackImagePath = backImage.Path;
+    }
   }
   _setMapState();
   _checkBeep();

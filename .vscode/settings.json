@@ -286,6 +286,19 @@
     " {\n    refresh();\n  }}\n/>\n\n",
     " {\n    refresh();\n  }}\n/>\n\n",
     "Action",
-    " {\n    refresh();\n  }}\n/>\n"
+    " {\n    refresh();\n  }}\n/>\n",
+    " {\n          backImage = await GetBackImage();\n          showMapMenu = false;\n          showEditBackImage = true;\n        }}\n      >\n        ",
+    " text-sm\" style=\"color:",
+    " text-sm\" style=\"color:",
+    "\n      {#if drawItem.Type ",
+    "< 2}\n        ",
+    "< 2}\n        ",
+    "\n        {/if}\n        {#if selectedHrSystemCount > 0 ",
+    "& canWacthHrSystem()}\n          ",
+    "& canWacthHrSystem()}\n          ",
+    " {\n            chart = undefined;\n          }}\n        >\n          ",
+    "\n          {#if polling.LogMode == 3 ",
+    "& aiResult}\n            ",
+    "& aiResult}\n            "
   ]
 }

@@ -305,7 +305,9 @@
     "Stats": "自動発見の進行状況",
     "Stop": "停止",
     "AutoIPRange": "自動IP範囲",
-    "Help": "ヘルプ"
+    "Help": "ヘルプ",
+    "Total": "トータル:",
+    "Found": "発見済み:"
   },
   "EventLog": {
     "Level": "レベル",
@@ -375,7 +377,10 @@
     "Test": "テスト",
     "Cancel": "キャンセル",
     "showDrawItemNomal": "アイテム通常表示",
-    "showDrawItemEdit": "アイテム編集表示"
+    "showDrawItemEdit": "アイテム編集表示",
+    "BackImage": "背景画像",
+    "Save": "保存",
+    "Clear": "クリア"
   },
   "MIBBrowser": {
     "ObjectName": "オブジェクト名",
@@ -499,7 +504,8 @@
     "Close": "閉じる",
     "PhysicalPort": "物理ポート",
     "VM": "仮想メモリ",
-    "RotateVPanel": "回転"
+    "RotateVPanel": "回転",
+    "FileSystem": "ファイル・システム"
   },
   "Ping": {
     "Cont": "連続",

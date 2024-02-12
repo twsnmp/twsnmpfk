@@ -27,10 +27,15 @@
     CopyDrawItem,
     WakeOnLan,
     GetNode,
+    SelectFile,
+    GetImage,
+    GetBackImage,
+    SetBackImage,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
   import { _ } from "svelte-i18n";
+  import type { datastore } from "wailsjs/go/models";
 
   let map: any;
   let posX: number = 0;
@@ -135,6 +140,45 @@
     showDrawItemMenu = false;
     refreshMap();
   };
+
+  let showEditBackImage = false;
+  let backImage: datastore.BackImageEnt;
+  let image: any = undefined;
+  const showEditBackImageDlg = async () => {
+    backImage = await GetBackImage();
+    if (backImage.Path) {
+      image = await GetImage(backImage.Path);
+    }
+    if (backImage.Height < 1) {
+      backImage.Height = 100;
+    }
+    if (backImage.Width < 1) {
+      backImage.Width = 100;
+    }
+    showMapMenu = false;
+    showEditBackImage = true;
+  };
+
+  const selectImage = async () => {
+    const p = await SelectFile($_("Map.BackImage"), true);
+    if (p) {
+      backImage.Path = p;
+      image = await GetImage(p);
+    }
+  };
+
+  const saveBackImage = async () => {
+    showEditBackImage = false;
+    await SetBackImage(backImage);
+    refreshMap();
+  };
+  const clearBackImage = async () => {
+    showEditBackImage = false;
+    backImage.Path = "";
+    image = undefined;
+    await SetBackImage(backImage);
+    refreshMap();
+  };
 </script>
 
 <div bind:this={map} class="h-full w-full overflow-scroll" />
@@ -227,6 +271,16 @@
         <Icon path={icons.mdiGrid} size={0.7} />
         <div>
           {$_("Map.Grid")}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={showEditBackImageDlg}
+      >
+        <Icon path={icons.mdiImage} size={0.7} />
+        <div>
+          {$_("Map.BackImage")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -515,7 +569,7 @@
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Map.Grid")}
     </h3>
-    <Label class="space-y-2">
+    <Label class="space-y-2 text-xs">
       <span>{$_("Map.GridSize")} </span>
       <Input
         type="number"
@@ -552,6 +606,114 @@
         <Icon path={icons.mdiTestTube} size={1} />
         {$_("Map.Test")}
       </GradientButton>
+      <GradientButton
+        shadow
+        color="teal"
+        type="button"
+        on:click={() => {
+          showGrid = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_("Map.Cancel")}
+      </GradientButton>
+    </div>
+  </form>
+</Modal>
+
+<Modal
+  bind:open={showEditBackImage}
+  size="sm"
+  dismissable={false}
+  class="w-full"
+>
+  <form class="flex flex-col space-y-4" action="#">
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+      {$_("Map.BackImage")}
+    </h3>
+    <div class="grid gap-4 mb-4 grid-cols-5">
+      <Label class="space-y-2 text-xs">
+        <span>X</span>
+        <Input
+          type="number"
+          min={0}
+          max={2000}
+          bind:value={backImage.X}
+          size="sm"
+        />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>Y</span>
+        <Input
+          type="number"
+          min={0}
+          max={2000}
+          bind:value={backImage.Y}
+          size="sm"
+        />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_("DrawItem.Width")}</span>
+        <Input
+          type="number"
+          min={10}
+          max={1000}
+          bind:value={backImage.Width}
+          size="sm"
+        />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_("DrawItem.Height")}</span>
+        <Input
+          type="number"
+          min={10}
+          max={1000}
+          bind:value={backImage.Height}
+          size="sm"
+        />
+      </Label>
+      <GradientButton
+        shadow
+        class="h-8 mt-6 w-20"
+        type="button"
+        size="xs"
+        color="blue"
+        on:click={selectImage}
+      >
+        <Icon path={icons.mdiImage} size={1} />
+        {$_("DrawItem.Select")}
+      </GradientButton>
+    </div>
+    <Label class="space-y-2 text-xs">
+      <span>{$_("DrawItem.Image")}</span>
+      {#if image}
+        <img src={image} alt="" class="h-32" />
+      {:else}
+        <div />
+      {/if}
+    </Label>
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        color="blue"
+        type="button"
+        on:click={saveBackImage}
+        size="xs"
+      >
+        <Icon path={icons.mdiContentSave} size={1} />
+        {$_("Map.Save")}
+      </GradientButton>
+      {#if backImage.Path}
+        <GradientButton
+          color="red"
+          type="button"
+          on:click={clearBackImage}
+          size="xs"
+        >
+          <Icon path={icons.mdiDelete} size={1} />
+          {$_("Map.Clear")}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         color="teal"

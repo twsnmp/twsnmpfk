@@ -262,13 +262,7 @@
   </div>
 </div>
 
-<SyslogReport
-  bind:show={showReport}
-  {logs}
-  on:close={() => {
-    showReport = false;
-  }}
-/>
+<SyslogReport bind:show={showReport} {logs} />
 
 <Polling bind:show={showPolling} pollingTmp={polling} />
 
