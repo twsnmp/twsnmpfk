@@ -465,13 +465,23 @@ table.dataTable td {
   border-radius: 3px;
   background-color: transparent;
   color: inherit;
-  font-size: 12px;
-  line-height: 12px;
+  font-size: 10px;
+  line-height: 10px;
 }
+
+.dataTables_wrapper .dataTables_length label {
+  font-size: 12px;
+}
+
 .dataTables_wrapper .dataTables_filter {
   float: right;
   text-align: right;
 }
+
+.dataTables_wrapper .dataTables_filter label {
+  font-size: 12px;
+}
+
 .dataTables_wrapper .dataTables_filter input {
   border: 1px solid #aaa;
   border-radius: 3px;
@@ -485,12 +495,16 @@ table.dataTable td {
   clear: both;
   float: left;
   padding-top: 0.755em;
+  font-size: 12px;
 }
+
 .dataTables_wrapper .dataTables_paginate {
   float: right;
   text-align: right;
   padding-top: 0.25em;
+  font-size: 12px;
 }
+
 .dataTables_wrapper .dataTables_paginate .paginate_button {
   box-sizing: border-box;
   display: inline-block;
