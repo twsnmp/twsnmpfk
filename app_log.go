@@ -78,33 +78,25 @@ func (a *App) GetMapEventLogs() []*datastore.EventLogEnt {
 	return ret
 }
 
+type SyslogFilterEnt struct {
+	Start    string `json:"Start"`
+	End      string `json:"End"`
+	Host     string `json:"Host"`
+	Tag      string `json:"Tag"`
+	Message  string `json:"Message"`
+	Severity int    `json:"Severity"`
+}
+
 // GetSyslogs retunrs syslogs
-func (a *App) GetSyslogs(severity int, host, tag, msg string) []*datastore.SyslogEnt {
+func (a *App) GetSyslogs(filter SyslogFilterEnt) []*datastore.SyslogEnt {
 	ret := []*datastore.SyslogEnt{}
-	var hostFilter *regexp.Regexp
-	var tagFilter *regexp.Regexp
-	var msgFilter *regexp.Regexp
-	var err error
-	if host != "" {
-		if hostFilter, err = regexp.Compile(host); err != nil {
-			log.Println(err)
-			return ret
-		}
-	}
-	if tag != "" {
-		if tagFilter, err = regexp.Compile(tag); err != nil {
-			log.Println(err)
-			return ret
-		}
-	}
-	if msg != "" {
-		if msgFilter, err = regexp.Compile(msg); err != nil {
-			log.Println(err)
-			return ret
-		}
-	}
-	datastore.ForEachLastSyslog(func(l *datastore.SyslogEnt) bool {
-		if severity < l.Severity {
+	hostFilter := makeStringFilter(filter.Host)
+	tagFilter := makeStringFilter(filter.Tag)
+	msgFilter := makeStringFilter(filter.Message)
+	st := makeTimeFilter(filter.Start, 1)
+	et := makeTimeFilter(filter.End, 0)
+	datastore.ForEachSyslog(st, et, func(l *datastore.SyslogEnt) bool {
+		if filter.Severity < l.Severity {
 			return true
 		}
 		if hostFilter != nil && !hostFilter.MatchString(l.Host) {

@@ -979,6 +979,28 @@ export namespace main {
 	        this.Lock = source["Lock"];
 	    }
 	}
+	export class SyslogFilterEnt {
+	    Start: string;
+	    End: string;
+	    Host: string;
+	    Tag: string;
+	    Message: string;
+	    Severity: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SyslogFilterEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Start = source["Start"];
+	        this.End = source["End"];
+	        this.Host = source["Host"];
+	        this.Tag = source["Tag"];
+	        this.Message = source["Message"];
+	        this.Severity = source["Severity"];
+	    }
+	}
 	export class UpdatePosEnt {
 	    ID: string;
 	    X: number;

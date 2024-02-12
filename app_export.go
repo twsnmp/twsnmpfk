@@ -140,35 +140,18 @@ func (a *App) ExportEventLogs(t string, filter EventLogFilterEnt) string {
 }
 
 // ExportSyslogs  export syslogs
-func (a *App) ExportSyslogs(t, host, tag, msg string, severity int) string {
-	var hostFilter *regexp.Regexp
-	var tagFilter *regexp.Regexp
-	var msgFilter *regexp.Regexp
-	var err error
-	if host != "" {
-		if hostFilter, err = regexp.Compile(host); err != nil {
-			log.Println(err)
-			return fmt.Sprintf("export syslog err=%v", err)
-		}
-	}
-	if tag != "" {
-		if tagFilter, err = regexp.Compile(tag); err != nil {
-			log.Println(err)
-			return fmt.Sprintf("export syslog err=%v", err)
-		}
-	}
-	if msg != "" {
-		if msgFilter, err = regexp.Compile(msg); err != nil {
-			log.Println(err)
-			return fmt.Sprintf("export syslog err=%v", err)
-		}
-	}
+func (a *App) ExportSyslogs(t string, filter SyslogFilterEnt) string {
+	hostFilter := makeStringFilter(filter.Host)
+	tagFilter := makeStringFilter(filter.Tag)
+	msgFilter := makeStringFilter(filter.Message)
+	st := makeTimeFilter(filter.Start, 1)
+	et := makeTimeFilter(filter.End, 0)
 	data := ExportData{
 		Title:  "TWSNMP Syslog",
 		Header: []string{"Level", "Time", "Host", "Type", "Tag", "Message"},
 	}
-	datastore.ForEachLastSyslog(func(l *datastore.SyslogEnt) bool {
-		if severity < l.Severity {
+	datastore.ForEachSyslog(st, et, func(l *datastore.SyslogEnt) bool {
+		if filter.Severity < l.Severity {
 			return true
 		}
 		if hostFilter != nil && !hostFilter.MatchString(l.Host) {
@@ -190,6 +173,7 @@ func (a *App) ExportSyslogs(t, host, tag, msg string, severity int) string {
 		data.Data = append(data.Data, e)
 		return true
 	})
+	var err error
 	switch t {
 	case "excel":
 		err = a.exportExcel(&data)

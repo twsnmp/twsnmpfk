@@ -90,8 +90,8 @@ export function ExportPollings(arg1) {
   return window['go']['main']['App']['ExportPollings'](arg1);
 }
 
-export function ExportSyslogs(arg1, arg2, arg3, arg4, arg5) {
-  return window['go']['main']['App']['ExportSyslogs'](arg1, arg2, arg3, arg4, arg5);
+export function ExportSyslogs(arg1, arg2) {
+  return window['go']['main']['App']['ExportSyslogs'](arg1, arg2);
 }
 
 export function ExportTraps(arg1, arg2, arg3) {
@@ -246,8 +246,8 @@ export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
 
-export function GetSyslogs(arg1, arg2, arg3, arg4) {
-  return window['go']['main']['App']['GetSyslogs'](arg1, arg2, arg3, arg4);
+export function GetSyslogs(arg1) {
+  return window['go']['main']['App']['GetSyslogs'](arg1);
 }
 
 export function GetTraps(arg1, arg2) {

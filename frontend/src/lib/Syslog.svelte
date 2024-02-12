@@ -7,6 +7,7 @@
     Input,
     Select,
     Spinner,
+    Button,
   } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -24,7 +25,7 @@
   import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import type { datastore } from "wailsjs/go/models";
+  import type { datastore, main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
 
   let data: any = [];
@@ -35,10 +36,15 @@
   let showPolling = false;
   let showFilter = false;
   let showLoading = false;
-  let severity = 6;
-  let host = "";
-  let tag = "";
-  let msg = "";
+
+  const filter: main.SyslogFilterEnt = {
+    Start: "",
+    End: "",
+    Severity: 6,
+    Host: "",
+    Tag: "",
+    Message: "",
+  };
 
   const levelList = [
     { name: $_("Syslog.All"), value: 7 },
@@ -73,9 +79,9 @@
   };
 
   const refresh = async () => {
-    severity *= 1;
+    filter.Severity *= 1;
     showLoading = true;
-    logs = await GetSyslogs(severity, host, tag, msg);
+    logs = await GetSyslogs(filter);
     data = [];
     for (let i = 0; i < logs.length; i++) {
       data.push(logs[i]);
@@ -141,11 +147,11 @@
   });
 
   const saveCSV = () => {
-    ExportSyslogs("csv", host, tag, msg, severity);
+    ExportSyslogs("csv", filter);
   };
 
   const saveExcel = () => {
-    ExportSyslogs("excel", host, tag, msg, severity);
+    ExportSyslogs("excel", filter);
   };
 
   let polling: datastore.PollingEnt | undefined = undefined;
@@ -271,26 +277,50 @@
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Syslog.Filter")}
     </h3>
-    <Label class="space-y-2 text-xs">
-      <span>{$_("Syslog.Level")}</span>
-      <Select
-        items={levelList}
-        bind:value={severity}
-        placeholder={$_("Syslog.SelectLevel")}
-        size="sm"
-      />
-    </Label>
-    <Label class="space-y-2 text-xs">
-      <span>{$_("Syslog.Host")}</span>
-      <Input bind:value={host} size="sm" />
-    </Label>
-    <Label class="space-y-2 text-xs">
-      <span>{$_("Syslog.Tag")}</span>
-      <Input bind:value={tag} size="sm" />
-    </Label>
+    <div class="grid gap-2 grid-cols-3">
+      <Label class="space-y-2 text-xs">
+        <span>{$_("EventLog.Start")}</span>
+        <Input type="datetime-local" bind:value={filter.Start} size="sm" />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_("EventLog.End")}</span>
+        <Input type="datetime-local" bind:value={filter.End} size="sm" />
+      </Label>
+      <div class="flex">
+        <Button
+          class="!p-2 w-8 h-8 mt-6 ml-4"
+          color="red"
+          on:click={() => {
+            filter.Start = "";
+            filter.End = "";
+          }}
+        >
+          <Icon path={icons.mdiCancel} size={1} />
+        </Button>
+      </div>
+    </div>
+    <div class="grid gap-2 grid-cols-3">
+      <Label class="space-y-2 text-xs">
+        <span>{$_("Syslog.Level")}</span>
+        <Select
+          items={levelList}
+          bind:value={filter.Severity}
+          placeholder={$_("Syslog.SelectLevel")}
+          size="sm"
+        />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_("Syslog.Host")}</span>
+        <Input bind:value={filter.Host} size="sm" />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_("Syslog.Tag")}</span>
+        <Input bind:value={filter.Tag} size="sm" />
+      </Label>
+    </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("Syslog.Message")}</span>
-      <Input bind:value={msg} size="sm" />
+      <Input bind:value={filter.Message} size="sm" />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton

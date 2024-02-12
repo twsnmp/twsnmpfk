@@ -550,6 +550,82 @@ func ForEachLastSyslog(f func(*SyslogEnt) bool) error {
 	})
 }
 
+// ForEachSyslog  get syslogs
+func ForEachSyslog(st, et int64, f func(*SyslogEnt) bool) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	sk := fmt.Sprintf("%016x", st)
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("syslog"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			if l.Time < st {
+				continue
+			}
+			if l.Time > et {
+				break
+			}
+			var sl = make(map[string]interface{})
+			if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+				continue
+			}
+			var ok bool
+			re := new(SyslogEnt)
+			var sv float64
+			if sv, ok = sl["severity"].(float64); !ok {
+				continue
+			}
+			var fac float64
+			if fac, ok = sl["facility"].(float64); !ok {
+				continue
+			}
+			if re.Host, ok = sl["hostname"].(string); !ok {
+				continue
+			}
+			if re.Tag, ok = sl["tag"].(string); !ok {
+				if re.Tag, ok = sl["app_name"].(string); !ok {
+					continue
+				}
+				re.Message = ""
+				for i, k := range []string{"proc_id", "msg_id", "message", "structured_data"} {
+					if m, ok := sl[k].(string); ok && m != "" {
+						if i > 0 {
+							re.Message += " "
+						}
+						re.Message += m
+					}
+				}
+			} else {
+				if re.Message, ok = sl["content"].(string); !ok {
+					continue
+				}
+			}
+			re.Time = l.Time
+			re.Level = getLevelFromSeverity(int(sv))
+			re.Type = getSyslogType(int(sv), int(fac))
+			re.Facility = int(fac)
+			re.Severity = int(sv)
+			if !f(re) {
+				break
+			}
+		}
+		return nil
+	})
+}
+
 type TrapEnt struct {
 	Time        int64  `json:"Time"`
 	FromAddress string `json:"FromAddress"`

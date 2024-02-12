@@ -49,7 +49,7 @@ export function ExportNodes(arg1:string):Promise<string>;
 
 export function ExportPollings(arg1:string):Promise<string>;
 
-export function ExportSyslogs(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number):Promise<string>;
+export function ExportSyslogs(arg1:string,arg2:main.SyslogFilterEnt):Promise<string>;
 
 export function ExportTraps(arg1:string,arg2:string,arg3:string):Promise<string>;
 
@@ -127,7 +127,7 @@ export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 
 export function GetSettings():Promise<main.Settings>;
 
-export function GetSyslogs(arg1:number,arg2:string,arg3:string,arg4:string):Promise<Array<datastore.SyslogEnt>>;
+export function GetSyslogs(arg1:main.SyslogFilterEnt):Promise<Array<datastore.SyslogEnt>>;
 
 export function GetTraps(arg1:string,arg2:string):Promise<Array<datastore.TrapEnt>>;
 
