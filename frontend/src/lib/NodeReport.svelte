@@ -70,7 +70,15 @@
   let logTable = undefined;
   const showLog = async () => {
     clearSelectedCount();
-    const logs = await GetEventLogs(id, "", "", "", 0);
+    const logs = await GetEventLogs({
+      NodeID:id,
+      Start: "",
+      End: "",
+      Event:"",
+      NodeName: "",
+      EventType:"",
+      Level:0,
+    });
     logTable = new DataTable("#logTable", {
       data: logs,
       language: getTableLang(),
