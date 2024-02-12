@@ -169,13 +169,22 @@
 
   const saveBackImage = async () => {
     showEditBackImage = false;
+    backImage.Height *=1;
+    backImage.Width *=1;
+    backImage.X *=1;
+    backImage.Y *=1;
     await SetBackImage(backImage);
     refreshMap();
   };
+
   const clearBackImage = async () => {
     showEditBackImage = false;
     backImage.Path = "";
     image = undefined;
+    backImage.Height *=1;
+    backImage.Width *=1;
+    backImage.X *=1;
+    backImage.Y *=1;
     await SetBackImage(backImage);
     refreshMap();
   };

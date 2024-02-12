@@ -32,6 +32,7 @@ let backImage: datastore.BackImageEnt = {
   Height: 0,
   Path: '',
 };
+
 let _backImage:any = undefined; 
 
 let fontSize = 12;
@@ -80,7 +81,6 @@ export const updateMAP = async () => {
   lines = await GetLines();
   items = await GetDrawItems() || {};
   backImage = await GetBackImage();
-  _backImage = null;
   if (_mapP5 != undefined){
     if (backImage.Path != lastBackImagePath) {
       if( backImage.Path) {
@@ -100,7 +100,6 @@ export const updateMAP = async () => {
   for(const k in items) {
     switch (items[k].Type) {
     case 3:
-      console.log(items[k]);
       if (!imageMap.has(items[k].ID) && _mapP5 != undefined) {
         _mapP5.loadImage(await GetImage(items[k].Path),(img)=>{
           imageMap.set(items[k].ID,img);
