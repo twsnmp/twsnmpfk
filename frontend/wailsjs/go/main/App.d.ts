@@ -43,7 +43,7 @@ export function ExportArpLogs(arg1:string):Promise<string>;
 
 export function ExportArpTable(arg1:string):Promise<string>;
 
-export function ExportEventLogs(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number):Promise<string>;
+export function ExportEventLogs(arg1:string,arg2:main.EventLogFilterEnt):Promise<string>;
 
 export function ExportNodes(arg1:string):Promise<string>;
 
@@ -81,7 +81,7 @@ export function GetDrawItem(arg1:string):Promise<datastore.DrawItemEnt>;
 
 export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
 
-export function GetEventLogs(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number):Promise<Array<datastore.EventLogEnt>>;
+export function GetEventLogs(arg1:main.EventLogFilterEnt):Promise<Array<datastore.EventLogEnt>>;
 
 export function GetHostResource(arg1:string):Promise<backend.HostResourceEnt>;
 

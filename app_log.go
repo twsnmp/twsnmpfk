@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"time"
 
 	wails "github.com/wailsapp/wails/v2/pkg/runtime"
 
@@ -12,33 +13,26 @@ import (
 	"github.com/twsnmp/twsnmpfk/logger"
 )
 
+type EventLogFilterEnt struct {
+	NodeID    string `json:"NodeID"`
+	Start     string `json:"Start"`
+	End       string `json:"End"`
+	EventType string `json:"EventType"`
+	NodeName  string `json:"NodeName"`
+	Event     string `json:"Event"`
+	Level     int    `json:"Level"`
+}
+
 // GetEventLogs retunrs  event logs
-func (a *App) GetEventLogs(id, eventType, node, event string, level int) []*datastore.EventLogEnt {
+func (a *App) GetEventLogs(filter EventLogFilterEnt) []*datastore.EventLogEnt {
 	ret := []*datastore.EventLogEnt{}
-	var typeFilter *regexp.Regexp
-	var nodeFilter *regexp.Regexp
-	var eventFilter *regexp.Regexp
-	var err error
-	if eventType != "" {
-		if typeFilter, err = regexp.Compile(eventType); err != nil {
-			log.Println(err)
-			return ret
-		}
-	}
-	if node != "" {
-		if nodeFilter, err = regexp.Compile(node); err != nil {
-			log.Println(err)
-			return ret
-		}
-	}
-	if event != "" {
-		if eventFilter, err = regexp.Compile(event); err != nil {
-			log.Println(err)
-			return ret
-		}
-	}
-	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
-		if id != "" && id != l.NodeID {
+	typeFilter := makeStringFilter(filter.EventType)
+	nodeFilter := makeStringFilter(filter.NodeName)
+	eventFilter := makeStringFilter(filter.Event)
+	st := makeTimeFilter(filter.Start, 24)
+	et := makeTimeFilter(filter.End, 0)
+	datastore.ForEachEventLog(st, et, func(l *datastore.EventLogEnt) bool {
+		if filter.NodeID != "" && filter.NodeID != l.NodeID {
 			return true
 		}
 		if typeFilter != nil && !typeFilter.MatchString(l.Type) {
@@ -50,7 +44,7 @@ func (a *App) GetEventLogs(id, eventType, node, event string, level int) []*data
 		if eventFilter != nil && !eventFilter.MatchString(l.Event) {
 			return true
 		}
-		if level != 0 && level > getLevelNum(l.Level) {
+		if filter.Level != 0 && filter.Level > getLevelNum(l.Level) {
 			return true
 		}
 		ret = append(ret, l)
@@ -344,4 +338,29 @@ func (a *App) DeleteAllPollingLogs() bool {
 		Event: i18n.Trans("Delete all polling logs"),
 	})
 	return true
+}
+
+func makeTimeFilter(dt string, oh int) int64 {
+	if dt == "" {
+		return time.Now().Add(-time.Hour * time.Duration(oh)).UnixNano()
+	}
+	zone, _ := time.Now().Zone()
+	var t time.Time
+	var err error
+	if t, err = time.Parse("2006-01-02T15:04 MST", dt+" "+zone); err != nil {
+		log.Println(err)
+		t = time.Now().Add(-time.Hour * time.Duration(oh))
+	}
+	return t.UnixNano()
+}
+
+func makeStringFilter(f string) *regexp.Regexp {
+	if f == "" {
+		return nil
+	}
+	r, err := regexp.Compile(f)
+	if err != nil {
+		return nil
+	}
+	return r
 }

@@ -299,6 +299,7 @@
     " {\n            chart = undefined;\n          }}\n        >\n          ",
     "\n          {#if polling.LogMode == 3 ",
     "& aiResult}\n            ",
-    "& aiResult}\n            "
+    "& aiResult}\n            ",
+    " {\n            filter.Start = \"\";\n            filter.End = \"\";\n          }}\n        >\n          "
   ]
 }

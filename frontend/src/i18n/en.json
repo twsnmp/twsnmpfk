@@ -338,7 +338,9 @@
     "Low": "Low",
     "Warn": "Warn",
     "Filter": "Filter",
-    "All": "All"
+    "All": "All",
+    "End": "End",
+    "Start": "Start"
   },
   "EventLogREport": {
     "Oprate": "Oparation rate"

@@ -326,7 +326,9 @@
     "Warn": "注意以上",
     "Low": "軽度以上",
     "High": "重度",
-    "Filter": "フィルター"
+    "Filter": "フィルター",
+    "Start": "開始日時",
+    "End": "終了日時"
   },
   "EventLogReport": {
     "CountByState": "状態別",

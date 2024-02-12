@@ -867,6 +867,30 @@ export namespace main {
 	        this.OldVendor = source["OldVendor"];
 	    }
 	}
+	export class EventLogFilterEnt {
+	    NodeID: string;
+	    Start: string;
+	    End: string;
+	    EventType: string;
+	    NodeName: string;
+	    Event: string;
+	    Level: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new EventLogFilterEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.NodeID = source["NodeID"];
+	        this.Start = source["Start"];
+	        this.End = source["End"];
+	        this.EventType = source["EventType"];
+	        this.NodeName = source["NodeName"];
+	        this.Event = source["Event"];
+	        this.Level = source["Level"];
+	    }
+	}
 	export class ExportData {
 	    Title: string;
 	    Header: string[];

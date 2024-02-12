@@ -91,34 +91,17 @@ func (a *App) ExportPollings(t string) string {
 }
 
 // ExportEventLogs  export event logs
-func (a *App) ExportEventLogs(t, eventType, node, event string, level int) string {
-	var typeFilter *regexp.Regexp
-	var nodeFilter *regexp.Regexp
-	var eventFilter *regexp.Regexp
-	var err error
-	if eventType != "" {
-		if typeFilter, err = regexp.Compile(eventType); err != nil {
-			log.Println(err)
-			return fmt.Sprintf("export eventlog err=%v", err)
-		}
-	}
-	if node != "" {
-		if nodeFilter, err = regexp.Compile(node); err != nil {
-			log.Println(err)
-			return fmt.Sprintf("export eventlog err=%v", err)
-		}
-	}
-	if event != "" {
-		if eventFilter, err = regexp.Compile(event); err != nil {
-			log.Println(err)
-			return fmt.Sprintf("export eventlog err=%v", err)
-		}
-	}
+func (a *App) ExportEventLogs(t string, filter EventLogFilterEnt) string {
+	typeFilter := makeStringFilter(filter.EventType)
+	nodeFilter := makeStringFilter(filter.NodeName)
+	eventFilter := makeStringFilter(filter.Event)
+	st := makeTimeFilter(filter.Start, 24)
+	et := makeTimeFilter(filter.End, 0)
 	data := ExportData{
 		Title:  "TWSNMP Event Log",
 		Header: []string{"Level", "Time", "Type", "Node Name", "Event"},
 	}
-	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
+	datastore.ForEachEventLog(st, et, func(l *datastore.EventLogEnt) bool {
 		if typeFilter != nil && !typeFilter.MatchString(l.Type) {
 			return true
 		}
@@ -128,7 +111,7 @@ func (a *App) ExportEventLogs(t, eventType, node, event string, level int) strin
 		if eventFilter != nil && !eventFilter.MatchString(l.Event) {
 			return true
 		}
-		if level != 0 && level > getLevelNum(l.Level) {
+		if filter.Level != 0 && filter.Level > getLevelNum(l.Level) {
 			return true
 		}
 		e := []any{}
@@ -140,6 +123,7 @@ func (a *App) ExportEventLogs(t, eventType, node, event string, level int) strin
 		data.Data = append(data.Data, e)
 		return true
 	})
+	var err error
 	switch t {
 	case "excel":
 		err = a.exportExcel(&data)

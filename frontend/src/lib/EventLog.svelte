@@ -1,7 +1,15 @@
 <script lang="ts">
   import "../assets/css/jquery.dataTables.css";
-  import { GradientButton, Modal, Spinner,Label,Select,Input } from "flowbite-svelte";
-  import {Icon} from "mdi-svelte-ts";
+  import {
+    GradientButton,
+    Modal,
+    Spinner,
+    Label,
+    Select,
+    Input,
+    Button,
+  } from "flowbite-svelte";
+  import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import {
@@ -15,17 +23,24 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import type { main } from "wailsjs/go/models";
 
-  let data :any = [];
-  let logs :any  = [];
-  let table :any = undefined;
+  let data: any = [];
+  let logs: any = [];
+  let table: any = undefined;
   let showReport = false;
   let showLoading = false;
   let showFilter = false;
-  let level = 0;
-  let type = "";
-  let node = "";
-  let event = "";
+
+  const filter: main.EventLogFilterEnt = {
+    NodeID: "",
+    Start: "",
+    End: "",
+    NodeName: "",
+    EventType: "",
+    Event: "",
+    Level: 0,
+  };
 
   const levelList = [
     { name: $_("EventLog.All"), value: 0 },
@@ -50,7 +65,7 @@
 
   const refresh = async () => {
     showLoading = true;
-    logs = await GetEventLogs("",type,node,event,level);
+    logs = await GetEventLogs(filter);
     data = [];
     for (let i = 0; i < logs.length; i++) {
       data.push(logs[i]);
@@ -118,11 +133,11 @@
   });
 
   const saveCSV = () => {
-    ExportEventLogs("csv",type,node,event,level);
+    ExportEventLogs("csv", filter);
   };
 
   const saveExcel = () => {
-    ExportEventLogs("excel",type,node,event,level);
+    ExportEventLogs("excel", filter);
   };
 
   const deleteAll = async () => {
@@ -135,7 +150,7 @@
 <svelte:window on:resize={resizeLogLevelChart} />
 
 <div class="flex flex-col">
-  <div id="chart"/>
+  <div id="chart" />
   <div class="m-5 grow">
     <table id="table" class="display compact" style="width:99%" />
   </div>
@@ -217,30 +232,54 @@
 </Modal>
 
 <Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
-  <form class="flex flex-col space-y-4" action="#">
+  <form class="flex flex-col space-y-2" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("EventLog.Filter")}
     </h3>
+    <div class="grid gap-2 grid-cols-3">
+      <Label class="space-y-2 text-xs">
+        <span>{$_('EventLog.Start')}</span>
+        <Input type="datetime-local" bind:value={filter.Start} size="sm" />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_('EventLog.End')}</span>
+        <Input type="datetime-local" bind:value={filter.End} size="sm" />
+      </Label>
+      <div class="flex">
+        <Button
+          class="!p-2 w-8 h-8 mt-6 ml-4"
+          color="red"
+          on:click={() => {
+            filter.Start = "";
+            filter.End = "";
+          }}
+        >
+          <Icon path={icons.mdiCancel} size={1} />
+        </Button>
+      </div>
+    </div>
+    <div class="grid gap-2 grid-cols-2">
+      <Label class="space-y-2 text-xs">
+        <span>{$_("EventLog.Level")}</span>
+        <Select
+          items={levelList}
+          bind:value={filter.Level}
+          placeholder={$_("EventLog.SelectLevel")}
+          size="sm"
+        />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_("EventLog.Type")}</span>
+        <Input bind:value={filter.EventType} size="sm" />
+      </Label>
+    </div>
     <Label class="space-y-2 text-xs">
-      <span>{$_("EventLog.Level")}</span>
-      <Select
-        items={levelList}
-        bind:value={level}
-        placeholder={$_("EventLog.SelectLevel")}
-        size="sm"
-      />
+      <span>{$_("EventLog.NodeName")}</span>
+      <Input bind:value={filter.NodeName} size="sm" />
     </Label>
     <Label class="space-y-2 text-xs">
-      <span>{$_('EventLog.Type')}</span>
-      <Input bind:value={type} size="sm" />
-    </Label>
-    <Label class="space-y-2 text-xs">
-      <span>{$_('EventLog.NodeName')}</span>
-      <Input bind:value={node} size="sm" />
-    </Label>
-    <Label class="space-y-2 text-xs">
-      <span>{$_('EventLog.Event')}</span>
-      <Input bind:value={event} size="sm" />
+      <span>{$_("EventLog.Event")}</span>
+      <Input bind:value={filter.Event} size="sm" />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
@@ -276,7 +315,7 @@
   #chart {
     min-height: 200px;
     height: 20vh;
-    width:  95vw;
-    margin:  0 auto;
+    width: 95vw;
+    margin: 0 auto;
   }
 </style>
