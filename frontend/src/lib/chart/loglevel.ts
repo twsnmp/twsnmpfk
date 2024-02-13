@@ -163,6 +163,7 @@ export const showLogLevelChart = (div:string, logs:any, zoomCallback:any) => {
   let ctm : any = undefined;
   let st = Infinity
   let lt = 0
+  logs.sort((a:any, b:any) => a.Time - b.Time);
   logs.forEach((e:any) => {
     const lvl = data[e.Level] ? e.Level : 'other'
     const newCtm = Math.floor(e.Time / (1000 * 1000 * 1000 * 60))

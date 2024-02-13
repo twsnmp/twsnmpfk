@@ -7,6 +7,7 @@
     NavUl,
     Button,
     Badge,
+    Tooltip,
   } from "flowbite-svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -19,6 +20,7 @@
     GetSettings,
     GetLocConf,
     GetIcons,
+    GetVersion,
   } from "../../wailsjs/go/main/App";
   import Map from "./Map.svelte";
   import Log from "./Log.svelte";
@@ -47,6 +49,7 @@
   let showHelp = false;
   let latest = true;
   let lock = "";
+  let version = "";
   let locConf: datastore.LocConfEnt = {
     Style: "",
     IconSize: 24,
@@ -89,6 +92,7 @@
         setIconToList(icon);
       }
     }
+    version = await GetVersion();
     await tick();
     mainHeight = window.innerHeight - 96;
     updateMapName();
@@ -244,6 +248,7 @@
       {/if}
     </Button>
     <Button
+      id="help"
       class="!p-2 ml-2"
       color="alternative"
       on:click={() => {
@@ -252,6 +257,7 @@
     >
       <Icon path={icons.mdiHelp} size={1} />
     </Button>
+    <Tooltip triggeredBy="#help" placement="left">{version}</Tooltip>
   </div>
 </Navbar>
 

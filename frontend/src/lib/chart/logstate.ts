@@ -152,6 +152,7 @@ export const showLogStateChart = (div:string, logs:any, zoomCallback:any) => {
   let cth :number | undefined = undefined;
   let st = Infinity;
   let lt = 0;
+  logs.sort((a:any, b:any) => a.Time - b.Time);
   logs.forEach((e:any) => {
     const lvl = data[e.State] ? e.State : 'normal';
     if (!cth) {

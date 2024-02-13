@@ -115,8 +115,9 @@ export const showLogCountChart = (div:string, logs:any, zoomCallback:any) => {
   const data:any = []
   let count = 0
   let ctm :number  = 0;
-  let st = Infinity
-  let lt = 0
+  let st = Infinity;
+  let lt = 0;
+  logs.sort((a:any, b:any) => a.Time - b.Time);
   logs.forEach((e:any) => {
     const newCtm = Math.floor(e.Time / (1000 * 1000 * 1000 * 60))
     if (!ctm) {
