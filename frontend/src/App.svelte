@@ -29,4 +29,7 @@
   div[role=dialog] .max-w-7xl {
     max-width: 90vw;
   }
+  div[active="true"] svg {
+    color: rgba(23, 146, 227, 0.6);
+  }
 </style>
