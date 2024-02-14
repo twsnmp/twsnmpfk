@@ -41,7 +41,7 @@ Upper right<span class="mdi mdi-moon-waxing-crescent"></span>Switch to dark mode
 Right -click the location other than the node and drawing items on the map to display.
 </div>
 
-![Map menu](../../help/en/2023-12-03_10-22-50.png)
+![Map menu](../../help/en/2024-02-15_04-58-57.png)
 
 >>>
 #### Map menu
@@ -55,8 +55,9 @@ Right -click the location other than the node and drawing items on the map to di
 | Check all | Reconfirm the node that has occurred.|
 | discover | Displays the automatic discovery screen.|
 | Grid | Align the position of the node at the specified interval.|
+| Backgrand image| set backgrand image to map|
 | Relaod | Update the map to the latest state.|
-| edit mode | All drawing items are displayed regardless of the state of the map.|
+| Edit mode | All drawing items are displayed regardless of the state of the map.|
 
 </div>
 

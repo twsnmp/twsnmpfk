@@ -99,7 +99,7 @@ Click the 🌙 mark on the upper right to dark mode.I like dark mode.Probably th
 
 Right -click the location other than the node and drawing items on the map to display.
 
-![h:400 center](../frontend/src/help/en/2023-12-03_10-22-50.png)
+![h:400 center](../frontend/src/help/en/2024-02-15_04-58-57.png)
 
 ---
 | Menu | Operation |
@@ -109,8 +109,9 @@ Right -click the location other than the node and drawing items on the map to di
 | Check all | Reconfirm the node that has occurred.|
 | Discover | Displays the automatic discovery screen.|
 | Grid | Align the position of the node at the specified interval.|
+| Backgrand image| set backgrand image to map|
 | Reload | Update the map to the latest state.|
-| edit mode | All drawing items are displayed regardless of the state of the map.|
+| Edit mode | All drawing items are displayed regardless of the state of the map.|
 
 
 ---
@@ -1078,7 +1079,7 @@ The port number is specified by the startup parameter of the program.
 ## Notification settings
 This is the screen to set the notification.
 
-![h:400 center](../frontend/src/help/en/2023-12-03_11-17-34.png)
+![h:400 center](../frontend/src/help/en/2024-02-15_05-32-34.png)
 
 ---
 | Items | Contents |
@@ -1100,6 +1101,12 @@ This is the screen to set the notification.
 ---
 | Items | Contents |
 | ---- | ---- |
+| Line Notification level | Specify the monitoring level to send LINE notifications.|
+| Repair notification | We will also send an email when you repair.|
+| LINE Token| LINE Notify token|
+---
+| Items | Contents |
+| ---- | ---- |
 | Command execution | Run the command specified in the state parameter when the map changes.<br> $ Level is in the map.0: Severe, 1: Mild, 2: Note, 3: Normal, -1: Unknown |
 | Sounds played during severe disorders | Specify the audio file to play when the state of the map is severe.|
 | Sounds played during mild disability | Specify the audio file to be played when the state of the map is mild.|
@@ -1109,6 +1116,7 @@ This is the screen to set the notification.
 ### Email send test
 
 Click the <Test> button to send the test email with the configured content.
+Click the <LINE Test> button to send the test LINE message  with the configured content.
 
 
 ---
