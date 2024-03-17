@@ -76,7 +76,11 @@ func ResetArpTable() error {
 }
 
 // DeleteArpEntは、指定のIPアドレスに関連したARPテーブルとARPログを削除する
-func DeleteArpEnt(ip string) error {
+func DeleteArpEnt(ips []string) error {
+	delMap := make(map[string]bool)
+	for _, ip := range ips {
+		delMap[ip] = true
+	}
 	st := time.Now()
 	return db.Batch(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("arp"))
@@ -85,7 +89,7 @@ func DeleteArpEnt(ip string) error {
 		}
 		c := b.Cursor()
 		for k, _ := c.First(); k != nil; k, _ = c.Next() {
-			if ip == string(k) {
+			if _, ok := delMap[string(k)]; ok {
 				c.Delete()
 			}
 		}
@@ -108,11 +112,11 @@ func DeleteArpEnt(ip string) error {
 			if len(a) < 3 {
 				continue
 			}
-			if ip == a[1] {
+			if _, ok := delMap[a[1]]; ok {
 				c.Delete()
 			}
 		}
-		log.Printf("DeleteArpEnt i=%s dur=%v", ip, time.Since(st))
+		log.Printf("DeleteArpEnt ips=%v dur=%v", ips, time.Since(st))
 		return nil
 	})
 }

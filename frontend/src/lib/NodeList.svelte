@@ -97,7 +97,7 @@
       return;
     }
     await DeleteNodes(selected.toArray());
-    refresh();
+    table.rows({ selected: true }).remove().draw();
   };
 
   const check = async () => {
@@ -105,8 +105,8 @@
     if (selected.length < 1) {
       return;
     }
-    selected.array.forEach((n: any) => {
-      CheckPolling(n);
+    selected.array.forEach(async (n: any) => {
+      await CheckPolling(n);
     });
     refresh();
   };

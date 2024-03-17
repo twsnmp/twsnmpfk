@@ -25,7 +25,7 @@ export function DeleteAllSyslog():Promise<boolean>;
 
 export function DeleteAllTraps():Promise<boolean>;
 
-export function DeleteArpEnt(arg1:string):Promise<boolean>;
+export function DeleteArpEnt(arg1:Array<string>):Promise<boolean>;
 
 export function DeleteDrawItems(arg1:Array<string>):Promise<void>;
 

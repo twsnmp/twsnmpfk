@@ -43,8 +43,8 @@
         const id = selected[i];
         await DeleteAIResult(id);
       }
+      table.rows({ selected: true }).remove().draw();
     }
-    refresh();
   };
 
   const show = async () => {

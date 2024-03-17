@@ -111,7 +111,7 @@
       return;
     }
     await DeletePollings(selected.toArray());
-    refresh();
+    table.rows({ selected: true }).remove().draw();
   };
 
   const columns = [

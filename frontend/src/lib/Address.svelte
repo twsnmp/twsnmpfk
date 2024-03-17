@@ -34,13 +34,16 @@
   let changeMAC:any  = new Map();
   let selectedIP = "";
   let selectedNodeID = "";
+  let selectedCount =0;
 
   let showEditNode = false;
   let showAddNode = false;
   let showNodeReport = false;
 
   const showArpTable = () => {
+    let order = [[0, "asc"]];
     if (arpTable && DataTable.isDataTable("#arpTable")) {
+      order = arpTable.order();
       arpTable.clear();
       arpTable.destroy();
       arpTable = undefined;
@@ -49,15 +52,16 @@
     arpTable = new DataTable("#arpTable", {
       columns: arpColumns,
       data: arp,
-      order: [[0, "asc"]],
+      order: order,
       language: getTableLang(),
       select: {
-        style: "single",
+        style: "multi",
       },
     });
     arpTable.on("select", () => {
       selectedIP = selectedNodeID = "";
       const d = arpTable.rows({ selected: true }).data();
+      selectedCount = d.length;
       if (!d || d.length != 1) {
         return;
       }
@@ -73,6 +77,7 @@
       if (c != 1) {
         selectedIP = selectedNodeID = "";
       }
+      selectedCount = c;
     });
   };
 
@@ -241,6 +246,17 @@
     await ResetArpTable();
     refresh();
   };
+
+  const deleteAddress = async () => {
+    const selected = arpTable.rows({ selected: true }).data().pluck("IP");
+    if (selected.length < 1) {
+      return;
+    }
+    await DeleteArpEnt(selected.toArray());
+    arpTable.rows({ selected: true }).remove().draw();
+    selectedNodeID = selectedIP = "";
+    selectedCount  = 0;
+  }
 </script>
 
 <div class="flex flex-col">
@@ -284,15 +300,12 @@
       </GradientButton>
     {/if}
 
-    {#if selectedIP }
+    {#if selectedCount > 0 }
       <GradientButton
         shadow
         color="red"
         type="button"
-        on:click={()=> {
-          DeleteArpEnt(selectedIP);
-          refresh();
-        }}
+        on:click={deleteAddress}
         size="xs"
       >
         <Icon path={icons.mdiTrashCan} size={1} />

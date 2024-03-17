@@ -176,7 +176,7 @@ func (a *App) ResetArpTable() bool {
 	return true
 }
 
-func (a *App) DeleteArpEnt(ip string) bool {
+func (a *App) DeleteArpEnt(ips []string) bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,
 		Title:         i18n.Trans("Confirm delete"),
@@ -187,14 +187,14 @@ func (a *App) DeleteArpEnt(ip string) bool {
 	if err != nil || result == "No" {
 		return false
 	}
-	if err := datastore.DeleteArpEnt(ip); err != nil {
+	if err := datastore.DeleteArpEnt(ips); err != nil {
 		log.Println(err)
 		return false
 	}
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "user",
 		Level: "info",
-		Event: fmt.Sprintf(i18n.Trans("Delete arp ent ip=%s"), ip),
+		Event: fmt.Sprintf(i18n.Trans("Delete arp ent ip=%v"), ips),
 	})
 	return true
 }
