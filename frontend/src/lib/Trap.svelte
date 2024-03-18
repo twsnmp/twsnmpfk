@@ -25,6 +25,9 @@
   import "datatables.net-select-dt";
   import type { datastore,main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
+  import { CodeJar } from "@novacbn/svelte-codejar";
+  import Prism from "prismjs";
+  import "prismjs/components/prism-regex";
 
   let data :any = [];
   let logs :any = [];
@@ -156,6 +159,14 @@
       refresh();
     }
   };
+
+  const highlight = (code: string, syntax: string | undefined) => {
+    if (!syntax) {
+      return "";
+    }
+    return Prism.highlight(code, Prism.languages[syntax], syntax);
+  };
+
 </script>
 
 <svelte:window on:resize={resizeLogCountChart} />
@@ -280,11 +291,11 @@
     </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("Trap.FromAddress")} </span>
-      <Input bind:value={filter.From} size="sm" />
+      <CodeJar syntax="regex" {highlight} bind:value={filter.From}/>
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("Trap.TrapType")}</span>
-      <Input bind:value={filter.Type} size="sm" />
+      <CodeJar syntax="regex" {highlight} bind:value={filter.Type}/>
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton

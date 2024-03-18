@@ -24,6 +24,9 @@
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
   import type { main } from "wailsjs/go/models";
+  import { CodeJar } from "@novacbn/svelte-codejar";
+  import Prism from "prismjs";
+  import "prismjs/components/prism-regex";
 
   let data: any = [];
   let logs: any = [];
@@ -144,6 +147,13 @@
     if (await DeleteAllEventLogs()) {
       refresh();
     }
+  };
+
+  const highlight = (code: string, syntax: string | undefined) => {
+    if (!syntax) {
+      return "";
+    }
+    return Prism.highlight(code, Prism.languages[syntax], syntax);
   };
 </script>
 
@@ -270,16 +280,16 @@
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.Type")}</span>
-        <Input bind:value={filter.EventType} size="sm" />
+        <CodeJar syntax="regex" {highlight} bind:value={filter.EventType}/>
       </Label>
     </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("EventLog.NodeName")}</span>
-      <Input bind:value={filter.NodeName} size="sm" />
+      <CodeJar syntax="regex" {highlight} bind:value={filter.NodeName}/>
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("EventLog.Event")}</span>
-      <Input bind:value={filter.Event} size="sm" />
+      <CodeJar syntax="regex" {highlight} bind:value={filter.Event}/>
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton

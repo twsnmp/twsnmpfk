@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { onMount, tick } from "svelte";
+  import "prismjs/themes/prism.css";
+  import { onMount } from "svelte";
   import { HasDatastore } from "../wailsjs/go/main/App";
   import Top from "./lib/Top.svelte";
   import { _ } from 'svelte-i18n';

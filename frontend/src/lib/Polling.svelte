@@ -1,6 +1,4 @@
 <script lang="ts">
-  import "prismjs/themes/prism.css";
-  import { CodeJar } from "@novacbn/svelte-codejar";
   import {
     Select,
     Modal,
@@ -18,13 +16,14 @@
   } from "../../wailsjs/go/main/App";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import type { datastore } from "wailsjs/go/models";
   import { levelList, typeList, logModeList, getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
+  import { CodeJar } from "@novacbn/svelte-codejar";
   import Prism from "prismjs";
+  import "prismjs/components/prism-regex";
 
   Prism.languages.grok = {
     number: /%\{.+?\}/,
@@ -257,24 +256,19 @@
             size="sm"
           />
         </Label>
-        <Label class="space-y-2 text-xs">
+        <Label class="space-y-2 text-xs" color={filterColor}>
           <span>{$_("Polling.Filter")}</span>
-          <Input
-            bind:value={polling.Filter}
-            placeholder={$_("Polling.Filter")}
-            color={filterColor}
-            size="sm"
-          />
+          <CodeJar syntax="regex" {highlight} bind:value={polling.Filter}/>
         </Label>
       </div>
       <div class="grid gap-4 mb-4 grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.GrokPat")}</span>
-          <CodeJar syntax="grok" {highlight} bind:value={polling.Extractor} />
+          <CodeJar syntax="grok" {highlight} bind:value={polling.Extractor}/>
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Script")}</span>
-          <CodeJar syntax="javascript" {highlight} bind:value={polling.Script} />
+          <CodeJar syntax="javascript" {highlight} bind:value={polling.Script}/>
         </Label>
       </div>
       <div class="grid gap-4 grid-cols-3">
@@ -312,11 +306,11 @@
       <div class="grid gap-4 mb-4 grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_('Polling.FailAction')}</span>
-          <CodeJar syntax="twaction" {highlight} bind:value={polling.FailAction} />
+          <CodeJar syntax="twaction" {highlight} bind:value={polling.FailAction}/>
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_('Polling.RepairAction')}</span>
-          <CodeJar syntax="twaction" {highlight} bind:value={polling.RepairAction} />
+          <CodeJar syntax="twaction" {highlight} bind:value={polling.RepairAction}/>
         </Label>
       </div>
       <div class="flex justify-end space-x-2 mr-2">

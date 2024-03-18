@@ -27,6 +27,9 @@
   import "datatables.net-select-dt";
   import type { datastore, main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
+  import { CodeJar } from "@novacbn/svelte-codejar";
+  import Prism from "prismjs";
+  import "prismjs/components/prism-regex";
 
   let data: any = [];
   let logs: any = [];
@@ -179,6 +182,14 @@
       refresh();
     }
   };
+
+  const highlight = (code: string, syntax: string | undefined) => {
+    if (!syntax) {
+      return "";
+    }
+    return Prism.highlight(code, Prism.languages[syntax], syntax);
+  };
+
 </script>
 
 <svelte:window on:resize={resizeLogLevelChart} />
@@ -311,16 +322,16 @@
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("Syslog.Host")}</span>
-        <Input bind:value={filter.Host} size="sm" />
+        <CodeJar syntax="regex" {highlight} bind:value={filter.Host}/>
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("Syslog.Tag")}</span>
-        <Input bind:value={filter.Tag} size="sm" />
+        <CodeJar syntax="regex" {highlight} bind:value={filter.Tag}/>
       </Label>
     </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("Syslog.Message")}</span>
-      <Input bind:value={filter.Message} size="sm" />
+      <CodeJar syntax="regex" {highlight} bind:value={filter.Message}/>
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
