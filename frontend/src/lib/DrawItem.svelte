@@ -44,6 +44,9 @@
     { name: $_("DrawItem.Image"), value: 3 },
     { name: $_("DrawItem.PollingText"), value: 4 },
     { name: $_("DrawItem.PollingGauge"), value: 5 },
+    { name: $_('DrawItem.NewGauge'), value: 6},
+    { name: $_('DrawItem.Bar'), value: 7 },
+    { name: $_('DrawItem.LIne'), value: 8 },
   ];
 
   const condList = [
@@ -142,7 +145,6 @@
           items={drawItemList}
           bind:value={drawItem.Type}
           placeholder={$_("DrawItem.SelectType")}
-          disabled={drawItem.ID != ""}
           size="sm"
         />
       </Label>
@@ -276,16 +278,29 @@
       {/if}
       {#if drawItem.Type >= 4}
         <div class="grid gap-4 mb-4 grid-cols-4">
-          <Label class="space-y-2 text-xs">
-            <span>{$_("DrawItem.Size")}</span>
-            <Input
-              type="number"
-              min={8}
-              max={128}
-              bind:value={drawItem.Size}
-              size="sm"
-            />
-          </Label>
+          {#if drawItem.Type < 6}
+            <Label class="space-y-2 text-xs">
+              <span>{$_("DrawItem.Size")}</span>
+              <Input
+                type="number"
+                min={8}
+                max={128}
+                bind:value={drawItem.Size}
+                size="sm"
+              />
+            </Label>
+          {:else}
+            <Label class="space-y-2 text-xs">
+              <span>{$_("DrawItem.Height")}</span>
+              <Input
+                type="number"
+                min={0}
+                max={1000}
+                bind:value={drawItem.H}
+                size="sm"
+              />
+            </Label>
+          {/if}
           <div />
           <div />
           <div />
@@ -330,7 +345,7 @@
           />
         </Label>
       {/if}
-      {#if drawItem.Type == 5}
+      {#if drawItem.Type >= 5}
         <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.GaugeLabel")}</span>
           <Input bind:value={drawItem.Text} size="sm" />

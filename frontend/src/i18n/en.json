@@ -302,7 +302,10 @@
     "showItemsAllways": "always visible",
     "showItemsHigh": "show map state high",
     "showItemsLow": "show map state low",
-    "Help": "Help"
+    "Help": "Help",
+    "NewGauge": "Polling result (new gauge)",
+    "Bar": "Polling result (bar)",
+    "Line": "Polling result (line)"
   },
   "Discover": {
     "AutoAddPolling": "Polling automatic add",

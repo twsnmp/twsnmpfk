@@ -303,6 +303,9 @@
     " {\n            filter.Start = \"\";\n            filter.End = \"\";\n          }}\n        >\n          ",
     " {\n          showEditBackImage = false;\n        }}\n        size=\"xs\"\n      >\n        ",
     " {\n        showFeedback = true;\n      }}\n    >\n      ",
-    " {\n          showFeedback = false;\n        }}\n      >\n        "
+    " {\n          showFeedback = false;\n        }}\n      >\n        ",
+    "\n          {#if drawItem.Type ",
+    "\n          {#if drawItem.Type ",
+    "< 6}\n            "
   ]
 }

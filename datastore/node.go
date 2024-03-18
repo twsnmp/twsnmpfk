@@ -40,6 +40,9 @@ const (
 	DrawItemTypeImage
 	DrawItemTypePollingText
 	DrawItemTypePollingGauge
+	DrawItemTypePollingNewGauge
+	DrawItemTypePollingBar
+	DrawItemTypePollingLine
 )
 
 type DrawItemEnt struct {
@@ -59,6 +62,7 @@ type DrawItemEnt struct {
 	Value     float64      `json:"Value"`
 	Scale     float64      `json:"Scale"`
 	Cond      int          `json:"Cond"`
+	Values    []float64    `json:"Values"`
 }
 
 func loadMapData() error {

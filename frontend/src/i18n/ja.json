@@ -290,7 +290,10 @@
     "showItemsHigh": "マップ状態が重度の時",
     "showCond": "表示条件",
     "selectShowCond": "条件を選択",
-    "Help": "ヘルプ"
+    "Help": "ヘルプ",
+    "NewGauge": "ポーリング結果(新ゲージ)",
+    "Bar": "ポーリング結果(バー)",
+    "Line": "ポーリング結果(ライン)"
   },
   "Discover": {
     "Discover": "自動発見",

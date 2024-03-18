@@ -13,7 +13,7 @@ import {
   GetNotifyConf,
 } from "../../wailsjs/go/main/App"
 import type { datastore } from 'wailsjs/go/models';
-
+import {gauge,line,bar} from './chart/drawitem';
 
 const MAP_SIZE_X = window.screen.width > 4000 ? 5000 : 2500;
 const MAP_SIZE_Y = 5000;
@@ -97,6 +97,7 @@ export const updateMAP = async () => {
   }
   _setMapState();
   _checkBeep();
+  const backColor = _mapP5 ? dark ? _mapP5.color(23).toString() : _mapP5.color(252).toString() : "#333"; 
   for(const k in items) {
     switch (items[k].Type) {
     case 3:
@@ -122,6 +123,55 @@ export const updateMAP = async () => {
         items[k].Value = 0.0;
       }
       break;
+      case 6: // New Gauge
+        items[k].W = items[k].H
+        if( _mapP5) {
+          _mapP5.loadImage(
+            gauge(
+              items[k].Text || '',
+              items[k].Value || 0,
+              backColor
+            ),
+            (img) => {
+              imageMap.set(k,img)
+              mapRedraw = true;
+            }
+          )}
+        break
+      case 7: // Bar
+        items[k].W = items[k].H * 4
+        if (_mapP5) {
+          _mapP5.loadImage(
+            bar(
+              items[k].Text || '',
+              items[k].Color || 'white',
+              items[k].Value || 0,
+              backColor
+            ),
+            (img) => {
+              imageMap.set(k,img)
+              mapRedraw = true;
+            }
+          )
+        }
+        break
+      case 8: // Line
+        items[k].W = items[k].H * 4
+        if(_mapP5) {
+          _mapP5.loadImage(
+            line(
+              items[k].Text || '',
+              items[k].Color || 'white',
+              items[k].Values || [],
+              backColor
+            ),
+            (img) => {
+              imageMap.set(k,img)
+              mapRedraw = true;
+            }
+          )
+        }
+        break
     } 
   }
   mapRedraw = true;
@@ -390,6 +440,13 @@ const mapMain = (p5:P5) => {
           const y3 = y - r2/2 * p5.cos(angle) - 5  * p5.sin(angle);
           p5.triangle(x1, y1, x2, y2, x3, y3);
         }
+        case 6: // New Gauge,Line,Bar
+        case 7:
+        case 8:
+          if (imageMap.has(k)) {
+            p5.image(imageMap.get(k), 0, 0, items[k].W, items[k].H)
+          }
+          break
       }
       p5.pop();
     }
