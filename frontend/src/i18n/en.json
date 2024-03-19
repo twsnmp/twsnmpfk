@@ -264,7 +264,10 @@
     "LineLevel": "LINE Level",
     "LineTestNG": "LINE test Failed",
     "LineTestOK": "LINE test OK",
-    "LineToken": "LINE Notify Token"
+    "LineToken": "LINE Notify Token",
+    "HostSSHPublicKey": "Allowed  host SSH public keys",
+    "MySSHPublicKey": "My SSH public key",
+    "SSHPublicKey": "SSH public key"
   },
   "DrawItem": {
     "Cancel": "Cancel",

@@ -306,6 +306,9 @@
     " {\n          showFeedback = false;\n        }}\n      >\n        ",
     "\n          {#if drawItem.Type ",
     "\n          {#if drawItem.Type ",
-    "< 6}\n            "
+    "< 6}\n            ",
+    " showSSHPublicKey = true}\n              size=\"xs\"\n            >\n              ",
+    "SSH Sever",
+    " {\n          showSSHPublicKey = false;\n        }}\n        size=\"xs\"\n      >\n        "
   ]
 }

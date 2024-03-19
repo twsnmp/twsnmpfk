@@ -12,6 +12,7 @@
     Range,
     Spinner,
     Textarea,
+    Button,
   } from "flowbite-svelte";
   import { createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -46,7 +47,7 @@
     GetSshdPublicKeys,
     SaveSshdPublicKeys,
     InitMySSHKey,
-    GetMySSHPublicKey
+    GetMySSHPublicKey,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
@@ -55,6 +56,7 @@
   import { CodeJar } from "@novacbn/svelte-codejar";
   import Help from "./Help.svelte";
   import Prism from "prismjs";
+  import { copyText } from "svelte-copy";
 
   const highlight = (code: string, syntax: string | undefined): string => {
     if (!syntax) {
@@ -80,7 +82,6 @@
   let showSSHPublicKey = false;
   let sshHostPublicKey = "";
   let sshMyPublicKey = "";
-
 
   const dispatch = createEventDispatcher();
 
@@ -121,7 +122,7 @@
     close();
   };
 
-  const testMail= async () => {
+  const testMail = async () => {
     showTestError = false;
     notifyConf.Interval *= 1;
     const ok = await TestNotifyConf(notifyConf);
@@ -381,9 +382,23 @@
       }
     }
   };
-  const saveSSHPublicKey = async() => {
+  const saveSSHPublicKey = async () => {
     await SaveSshdPublicKeys(sshHostPublicKey);
     showSSHPublicKey = false;
+  };
+
+  let copied = false;
+
+  const copyMySSHPublicKey = async () => {
+    await copyText(sshMyPublicKey);
+    copied = true;
+    setTimeout(() => {
+      copied = false;
+    }, 2000);
+  };
+  const refreshMySSHPublicKey = async () => {
+    await InitMySSHKey();
+    sshMyPublicKey = await GetMySSHPublicKey();
   }
 </script>
 
@@ -515,11 +530,11 @@
               shadow
               color="blue"
               type="button"
-              on:click={() => showSSHPublicKey = true}
+              on:click={() => (showSSHPublicKey = true)}
               size="xs"
             >
               <Icon path={icons.mdiKeyChain} size={1} />
-              SSH公開鍵
+              {$_("Config.SSHPublicKey")}
             </GradientButton>
             <GradientButton
               shadow
@@ -578,7 +593,7 @@
             <Alert color="red" dismissable>
               <div class="flex">
                 <Icon path={icons.mdiExclamation} size={1} />
-                {$_('Config.LineTestNG')}
+                {$_("Config.LineTestNG")}
               </div>
             </Alert>
           {/if}
@@ -602,7 +617,7 @@
             <Alert class="flex" color="blue" dismissable>
               <div class="flex">
                 <Icon path={icons.mdiCheck} size={1} />
-                {$_('Config.LineTestOK')}
+                {$_("Config.LineTestOK")}
               </div>
             </Alert>
           {/if}
@@ -642,7 +657,7 @@
               <span> {$_("Config.Subject")} </span>
               <Input bind:value={notifyConf.Subject} size="sm" />
             </Label>
-              <Label class="space-y-2 text-xs">
+            <Label class="space-y-2 text-xs">
               <span>{$_("Config.MailFrom")}</span>
               <Input
                 bind:value={notifyConf.MailFrom}
@@ -689,7 +704,7 @@
           </div>
           <div class="grid gap-4 grid-cols-4">
             <Label class="space-y-2 text-xs">
-              <span>{$_('Config.LineLevel')}</span>
+              <span>{$_("Config.LineLevel")}</span>
               <Select
                 items={notifyLevelList}
                 bind:value={notifyConf.LineLevel}
@@ -701,8 +716,13 @@
               {$_("Config.NotifyRepair")}
             </Checkbox>
             <Label class="space-y-2 text-xs col-span-2">
-              <span> {$_('Config.LineToken')} </span>
-              <Input class="w-full" type="password" bind:value={notifyConf.LineToken} size="sm" />
+              <span> {$_("Config.LineToken")} </span>
+              <Input
+                class="w-full"
+                type="password"
+                bind:value={notifyConf.LineToken}
+                size="sm"
+              />
             </Label>
           </div>
           <Label class="space-y-2 text-xs">
@@ -1209,15 +1229,39 @@
 >
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-      SSH公開鍵
+      {$_("Config.SSHPublicKey")}
     </h3>
     <Label class="space-y-2 text-xs">
-      <span> 自分の公開鍵 </span>
-      <Textarea rows="8" bind:value={sshMyPublicKey} readonly/>
+      <span>
+        {$_("Config.MySSHPublicKey")}
+        <Button
+          color="alternative"
+          type="button"
+          class="ml-2 !p-2"
+          on:click={copyMySSHPublicKey}
+          size="xs"
+        >
+          {#if copied}
+            <Icon path={icons.mdiCheck} size={1} />
+          {:else}
+            <Icon path={icons.mdiContentCopy} size={1} />
+          {/if}
+        </Button>
+        <Button
+          color="red"
+          type="button"
+          class="ml-2 !p-2"
+          on:click={refreshMySSHPublicKey}
+          size="xs"
+        >
+          <Icon path={icons.mdiRefresh} size={1} />
+        </Button>
+      </span>
+      <Textarea rows="8" bind:value={sshMyPublicKey} readonly />
     </Label>
     <Label class="space-y-2 text-xs">
-      <span>アクセス許可するホストのSSH公開鍵</span>
-      <Textarea rows="8" bind:value={sshHostPublicKey}/>
+      <span>{$_("Config.HostSSHPublicKey")}</span>
+      <Textarea rows="8" bind:value={sshHostPublicKey} />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
