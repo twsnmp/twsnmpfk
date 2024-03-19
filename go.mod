@@ -9,6 +9,7 @@ require (
 	github.com/beevik/ntp v1.2.0
 	github.com/codegaudi/go-iforest v0.0.1
 	github.com/dustin/go-humanize v1.0.1
+	github.com/gliderlabs/ssh v0.3.6
 	github.com/gosnmp/gosnmp v1.35.0
 	github.com/labstack/gommon v0.4.0
 	github.com/montanaflynn/stats v0.7.1
@@ -33,6 +34,7 @@ require (
 	github.com/Songmu/wrapcommander v0.1.0 // indirect
 	github.com/alecthomas/participle v0.4.1 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
+	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect

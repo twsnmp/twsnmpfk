@@ -93,7 +93,7 @@ func sshConnectToHost(pe *datastore.PollingEnt, port string) (*ssh.Client, *ssh.
 	if n == nil {
 		return nil, nil, fmt.Errorf("node not found nodeID=%s", pe.NodeID)
 	}
-	signer, err := ssh.ParsePrivateKey([]byte(datastore.GetPrivateKey()))
+	signer, err := ssh.ParsePrivateKey([]byte(datastore.GetPrivateKey(true)))
 	if err != nil {
 		return nil, nil, fmt.Errorf("no private key for ssh")
 	}

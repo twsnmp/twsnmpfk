@@ -274,11 +274,3 @@ func makeKey() string {
 func GetDataStorePath() string {
 	return dspath
 }
-
-func GetPrivateKey() []byte {
-	key, err := os.ReadFile("/home/user/.ssh/id_rsa")
-	if err != nil {
-		log.Printf("unable to read private key: %v", err)
-	}
-	return key
-}

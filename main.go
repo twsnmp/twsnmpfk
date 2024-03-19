@@ -29,6 +29,7 @@ var kiosk = false
 var lock = ""
 var trapPort = 162
 var syslogPort = 514
+var sshdPort = 2022
 var maxDispLog = 10000
 var lang = ""
 
@@ -38,6 +39,7 @@ func init() {
 	flag.StringVar(&lock, "lock", "", "Disable edit map and lock page(map or loc)")
 	flag.IntVar(&trapPort, "trapPort", 162, "SNMP TRAP port")
 	flag.IntVar(&syslogPort, "syslogPort", 514, "Syslog port")
+	flag.IntVar(&sshdPort, "sshdPort", 2022, "SSH server port")
 	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "Max log size to diplay")
 	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
 	flag.StringVar(&lang, "lang", "", "Language(en|jp)")

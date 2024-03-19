@@ -275,6 +275,15 @@ var transMap = map[string]map[string]string{
 	"(LINE test)": {
 		"ja": "(LINEのテスト)",
 	},
+	"Confirm init ssh key": {
+		"ja": "SSH秘密鍵の初期化",
+	},
+	"Do you want to init?": {
+		"ja": "初期化しますか？",
+	},
+	"Init ssh private key": {
+		"ja": "SSH秘密鍵を初期化しました",
+	},
 }
 
 func init() {

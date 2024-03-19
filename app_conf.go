@@ -124,3 +124,45 @@ func (a *App) DeleteIcon(icon string) bool {
 	}
 	return true
 }
+
+// GetSshdPublicKeysは、SSHサーバーにアクセスを許可するホストの公開鍵を取得
+func (a *App) GetSshdPublicKeys() string {
+	return datastore.GetSshdPublicKeys()
+}
+
+// SaveSshdPublicKeysは、SSHサーバーにアクセスを許可するホストの公開鍵を保存
+func (a *App) SaveSshdPublicKeys(pk string) bool {
+	if err := datastore.SaveSshdPublicKeys(pk); err != nil {
+		log.Printf("SaveSshdPublicKeys err=%v", err)
+	}
+	return true
+}
+
+// GetMySSHPublicKeyは、自分のSSH公開鍵を取得
+func (a *App) GetMySSHPublicKey() string {
+	r, err := datastore.GetSSHPublicKey()
+	if err != nil {
+		log.Printf("GetMySSHPublicKeys err=%v", err)
+	}
+	return r
+}
+
+// InitMySSHKeyは、自分のSSH秘密鍵を再作成
+func (a *App) InitMySSHKey() bool {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm init ssh key"),
+		Message:       i18n.Trans("Do you want to init?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: i18n.Trans("Init ssh private key"),
+	})
+	return len(datastore.GenSSHPrivateKey()) > 0
+}

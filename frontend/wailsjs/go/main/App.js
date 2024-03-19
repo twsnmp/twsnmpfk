@@ -210,6 +210,10 @@ export function GetMonitorDatas() {
   return window['go']['main']['App']['GetMonitorDatas']();
 }
 
+export function GetMySSHPublicKey() {
+  return window['go']['main']['App']['GetMySSHPublicKey']();
+}
+
 export function GetNode(arg1) {
   return window['go']['main']['App']['GetNode'](arg1);
 }
@@ -246,6 +250,10 @@ export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
 
+export function GetSshdPublicKeys() {
+  return window['go']['main']['App']['GetSshdPublicKeys']();
+}
+
 export function GetSyslogs(arg1) {
   return window['go']['main']['App']['GetSyslogs'](arg1);
 }
@@ -270,6 +278,10 @@ export function HasDatastore() {
   return window['go']['main']['App']['HasDatastore']();
 }
 
+export function InitMySSHKey() {
+  return window['go']['main']['App']['InitMySSHKey']();
+}
+
 export function IsDark() {
   return window['go']['main']['App']['IsDark']();
 }
@@ -284,6 +296,10 @@ export function Ping(arg1) {
 
 export function ResetArpTable() {
   return window['go']['main']['App']['ResetArpTable']();
+}
+
+export function SaveSshdPublicKeys(arg1) {
+  return window['go']['main']['App']['SaveSshdPublicKeys'](arg1);
 }
 
 export function SelectAudioFile(arg1) {

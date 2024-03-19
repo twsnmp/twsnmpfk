@@ -11,6 +11,7 @@
     Alert,
     Range,
     Spinner,
+    Textarea,
   } from "flowbite-svelte";
   import { createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -42,6 +43,10 @@
     SelectAudioFile,
     GetAudio,
     TestLine,
+    GetSshdPublicKeys,
+    SaveSshdPublicKeys,
+    InitMySSHKey,
+    GetMySSHPublicKey
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
@@ -72,6 +77,11 @@
   let showLineTestError: boolean = false;
   let showLineTestOk: boolean = false;
 
+  let showSSHPublicKey = false;
+  let sshHostPublicKey = "";
+  let sshMyPublicKey = "";
+
+
   const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
@@ -79,6 +89,8 @@
     notifyConf = await GetNotifyConf();
     aiConf = await GetAIConf();
     locConf = await GetLocConf();
+    sshHostPublicKey = await GetSshdPublicKeys();
+    sshMyPublicKey = await GetMySSHPublicKey();
   };
 
   const close = () => {
@@ -369,6 +381,10 @@
       }
     }
   };
+  const saveSSHPublicKey = async() => {
+    await SaveSshdPublicKeys(sshHostPublicKey);
+    showSSHPublicKey = false;
+  }
 </script>
 
 <Modal
@@ -488,12 +504,23 @@
               </Label>
             {/if}
           </div>
-          <div class="grid gap-4 mb-4 md:grid-cols-3">
+          <div class="grid gap-4 mb-4 md:grid-cols-4">
             <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox>
             <Checkbox bind:checked={mapConf.EnableTrapd}>SNMP TRAP</Checkbox>
             <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
+            <Checkbox bind:checked={mapConf.EnableSshd}>SSH Sever</Checkbox>
           </div>
           <div class="flex justify-end space-x-2 mr-2">
+            <GradientButton
+              shadow
+              color="blue"
+              type="button"
+              on:click={() => showSSHPublicKey = true}
+              size="xs"
+            >
+              <Icon path={icons.mdiKeyChain} size={1} />
+              SSH公開鍵
+            </GradientButton>
             <GradientButton
               shadow
               color="blue"
@@ -1164,6 +1191,51 @@
         color="teal"
         on:click={() => {
           showEditIcon = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_("Config.Cancel")}
+      </GradientButton>
+    </div>
+  </form>
+</Modal>
+
+<Modal
+  bind:open={showSSHPublicKey}
+  size="lg"
+  dismissable={false}
+  class="w-full min-h-[80vh]"
+>
+  <form class="flex flex-col space-y-4" action="#">
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+      SSH公開鍵
+    </h3>
+    <Label class="space-y-2 text-xs">
+      <span> 自分の公開鍵 </span>
+      <Textarea rows="8" bind:value={sshMyPublicKey} readonly/>
+    </Label>
+    <Label class="space-y-2 text-xs">
+      <span>アクセス許可するホストのSSH公開鍵</span>
+      <Textarea rows="8" bind:value={sshHostPublicKey}/>
+    </Label>
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        on:click={saveSSHPublicKey}
+        size="xs"
+      >
+        <Icon path={icons.mdiContentSave} size={1} />
+        {$_("Config.Save")}
+      </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={() => {
+          showSSHPublicKey = false;
         }}
         size="xs"
       >

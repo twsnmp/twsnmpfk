@@ -1,13 +1,21 @@
 package datastore
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"strings"
 	"time"
+
+	"encoding/pem"
 
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"go.etcd.io/bbolt"
+	"golang.org/x/crypto/ssh"
 )
 
 type BackImageEnt struct {
@@ -32,6 +40,7 @@ type MapConfEnt struct {
 	EnableSyslogd  bool   `json:"EnableSyslogd"`
 	EnableTrapd    bool   `json:"EnableTrapd"`
 	EnableArpWatch bool   `json:"EnableArpWatch"`
+	EnableSshd     bool   `json:"EnableSshd"`
 	IconSize       int    `json:"IconSize"`
 }
 
@@ -320,4 +329,93 @@ func SaveLocConf() error {
 		log.Printf("SaveLocConf dur=%v", time.Since(st))
 		return b.Put([]byte("locConf"), s)
 	})
+}
+
+func GetSshdPublicKeys() string {
+	r := ""
+	if db == nil {
+		return r
+	}
+	db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		r = string(b.Get([]byte("sshdPublicKeys")))
+		return nil
+	})
+	return r
+}
+
+func SaveSshdPublicKeys(pk string) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		return b.Put([]byte("sshdPublicKeys"), []byte(pk))
+	})
+}
+
+func GetPrivateKey(pm bool) []byte {
+	var kb []byte
+	if db == nil {
+		return kb
+	}
+	db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		kb = b.Get([]byte("sshdPrivateKey"))
+		return nil
+	})
+	if len(kb) < 1 {
+		kb = GenSSHPrivateKey()
+	}
+	if !pm {
+		return kb
+	}
+	block := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: kb,
+	}
+	return pem.EncodeToMemory(block)
+}
+
+func GenSSHPrivateKey() []byte {
+	key, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		log.Printf("genSSHPrivateKey err=%v", err)
+		return []byte{}
+	}
+	kb := x509.MarshalPKCS1PrivateKey(key)
+	db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		return b.Put([]byte("sshdPrivateKey"), kb)
+	})
+	return kb
+}
+
+func GetSSHPublicKey() (string, error) {
+	host, err := os.Hostname()
+	if err != nil {
+		host = "localhost"
+	}
+	comment := fmt.Sprintf("twsnmp@%s", host)
+	kb := GetPrivateKey(false)
+
+	priv, err := x509.ParsePKCS1PrivateKey(kb)
+	if err != nil {
+		return "", fmt.Errorf("key not found")
+	}
+	rsaKey := priv.PublicKey
+	pubkey, _ := ssh.NewPublicKey(&rsaKey)
+	return fmt.Sprintf("%s %s", strings.TrimSpace(string(ssh.MarshalAuthorizedKey(pubkey))), comment), nil
 }

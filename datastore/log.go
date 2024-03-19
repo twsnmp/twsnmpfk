@@ -839,3 +839,36 @@ func ForEachLastArpLogs(f func(*ArpLogEnt) bool) error {
 		return nil
 	})
 }
+
+// ForEachLogsは指定した条件のログを返します。
+func ForEachLogs(st, et int64, lt string, f func(*LogEnt) bool) error {
+	sk := fmt.Sprintf("%016x", st)
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte(lt))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			if l.Time < st {
+				continue
+			}
+			if l.Time > et {
+				break
+			}
+			if !f(&l) {
+				break
+			}
+		}
+		return nil
+	})
+}

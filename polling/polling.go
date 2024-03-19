@@ -389,7 +389,7 @@ func doActionCmd(cl []string) {
 }
 
 func setPollingError(s string, pe *datastore.PollingEnt, err error) {
-	pe.Result["error"] = fmt.Sprintf("%v", err)
+	pe.Result["error"] = fmt.Sprintf("%s err=%v", s, err)
 	setPollingState(pe, "unknown")
 }
 

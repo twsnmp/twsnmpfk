@@ -109,6 +109,8 @@ export function GetMapName():Promise<string>;
 
 export function GetMonitorDatas():Promise<Array<backend.MonitorDataEnt>>;
 
+export function GetMySSHPublicKey():Promise<string>;
+
 export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
 
 export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
@@ -127,6 +129,8 @@ export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 
 export function GetSettings():Promise<main.Settings>;
 
+export function GetSshdPublicKeys():Promise<string>;
+
 export function GetSyslogs(arg1:main.SyslogFilterEnt):Promise<Array<datastore.SyslogEnt>>;
 
 export function GetTraps(arg1:main.TrapFilterEnt):Promise<Array<datastore.TrapEnt>>;
@@ -139,6 +143,8 @@ export function GetVersion():Promise<string>;
 
 export function HasDatastore():Promise<boolean>;
 
+export function InitMySSHKey():Promise<boolean>;
+
 export function IsDark():Promise<boolean>;
 
 export function IsLatest():Promise<boolean>;
@@ -146,6 +152,8 @@ export function IsLatest():Promise<boolean>;
 export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 
 export function ResetArpTable():Promise<boolean>;
+
+export function SaveSshdPublicKeys(arg1:string):Promise<boolean>;
 
 export function SelectAudioFile(arg1:string):Promise<string>;
 

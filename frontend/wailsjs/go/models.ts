@@ -516,6 +516,7 @@ export namespace datastore {
 	    EnableSyslogd: boolean;
 	    EnableTrapd: boolean;
 	    EnableArpWatch: boolean;
+	    EnableSshd: boolean;
 	    IconSize: number;
 	
 	    static createFrom(source: any = {}) {
@@ -536,6 +537,7 @@ export namespace datastore {
 	        this.EnableSyslogd = source["EnableSyslogd"];
 	        this.EnableTrapd = source["EnableTrapd"];
 	        this.EnableArpWatch = source["EnableArpWatch"];
+	        this.EnableSshd = source["EnableSshd"];
 	        this.IconSize = source["IconSize"];
 	    }
 	}
