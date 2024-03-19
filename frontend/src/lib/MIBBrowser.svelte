@@ -28,6 +28,7 @@
   import MibTree from "./MIBTree.svelte";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
+  import { copyText } from "svelte-copy";
 
   export let show: boolean = false;
   export let nodeID = "";
@@ -54,6 +55,7 @@
     children: undefined,
   };
   let showHelp = false;
+  let isTable = false;
 
 
   const onOpen = async () => {
@@ -87,7 +89,7 @@
       scrollY: "65vh",
       language: getTableLang(),
       select: {
-        style: "single",
+        style: "multi",
       },
     });
     table.on("select", () => {
@@ -137,7 +139,8 @@
     if(!mibs) {
       return;
     }
-    if ( name.endsWith("Table")) {
+    isTable = name.endsWith("Table");
+    if ( isTable) {
       tableMIBData();
     } else {
       columns = basicColumns;
@@ -266,6 +269,27 @@
     }
     ExportAny(t, ed);
   };
+
+
+  let copied = false;
+
+  const copyMIB = () => {
+    const selected = table.rows({ selected: true }).data();
+    let s :string[] = [];
+    const h = columns.map((e:any)=> e.title);
+    s.push(h.join("\t"))
+    for(let i = 0 ;i < selected.length;i++ ) {
+      const row :any = [];
+      for (const c of columns) {
+        row.push(selected[i][c.data] || "");
+      }
+      s.push(row.join("\t"))
+    }
+    copyText(s.join("\n"))
+    copied = true;
+    setTimeout(()=> copied = false,2000);
+  }
+
 </script>
 
 <Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:open={onOpen}>
@@ -305,6 +329,22 @@
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait}
+        {#if selectedCount > 1 }
+          <GradientButton
+            shadow
+            color="cyan"
+            type="button"
+            on:click={copyMIB}
+            size="xs"
+          >
+            {#if copied }
+              <Icon path={icons.mdiCheck} size={1} />
+            {:else}
+              <Icon path={icons.mdiContentCopy} size={1} />
+            {/if}
+            Copy
+          </GradientButton>
+        {/if}
         <Toggle bind:checked={scalar} on:change={refreshTable}>{$_('MIBBrowser.ScalarOnly')}</Toggle>
         <Toggle bind:checked={raw}>{$_("MIBBrowser.RawData")}</Toggle>
         <GradientButton
