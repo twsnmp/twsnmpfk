@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -203,6 +204,9 @@ func getAIList() []aiResultEnt {
 			LastTime:    air.LastTime,
 		})
 		return true
+	})
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].LastScore > ret[j].LastScore
 	})
 	return ret
 }
