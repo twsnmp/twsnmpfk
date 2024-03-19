@@ -21,11 +21,13 @@
     GetMIBTree,
     SnmpWalk,
     ExportAny,
+    GetDefaultPolling,
   } from "../../wailsjs/go/main/App";
   import { getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import MibTree from "./MIBTree.svelte";
+  import Polling from "./Polling.svelte";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
   import { copyText } from "svelte-copy";
@@ -290,6 +292,29 @@
     setTimeout(()=> copied = false,2000);
   }
 
+  let showPolling = false;
+  let pollingTmp: any = undefined;
+
+  const addPolling = async () => {
+    const d = table.rows({ selected: true }).data();
+    if (d.length != 1) {
+      return;
+    }
+    let name = d[0].Name;
+    const a = d[0].Name.split(".");
+    if (a.length > 0) {
+      name = a[0];
+    }
+    pollingTmp = await GetDefaultPolling(nodeID);
+    pollingTmp.Name = "SNMP get " + d[0].Name;
+    pollingTmp.Type = "snmp";
+    pollingTmp.Mode = "get";
+    pollingTmp.Level = "low";
+    pollingTmp.Params = d[0].Name;
+    pollingTmp.Script = name + "==" + d[0].Value;
+    showPolling = true;
+  };
+
 </script>
 
 <Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:open={onOpen}>
@@ -329,7 +354,7 @@
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait}
-        {#if selectedCount > 1 }
+        {#if selectedCount > 0 }
           <GradientButton
             shadow
             color="cyan"
@@ -343,6 +368,18 @@
               <Icon path={icons.mdiContentCopy} size={1} />
             {/if}
             Copy
+          </GradientButton>
+        {/if}
+        {#if selectedCount == 1 && !isTable}
+          <GradientButton
+            shadow
+            color="blue"
+            type="button"
+            on:click={addPolling}
+            size="xs"
+          >
+            <Icon path={icons.mdiEye} size={1} />
+            {$_("NodeReport.Polling")}
           </GradientButton>
         {/if}
         <Toggle bind:checked={scalar} on:change={refreshTable}>{$_('MIBBrowser.ScalarOnly')}</Toggle>
@@ -451,6 +488,8 @@
     </div>
   </div>
 </Modal>
+
+<Polling bind:show={showPolling} {pollingTmp} />
 
 <Help bind:show={showHelp} page="mibbrowser" />
 
