@@ -11,16 +11,25 @@
   } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import { onMount, tick, onDestroy } from "svelte";
+  import { onMount, tick} from "svelte";
   import {
     GetSyslogs,
     ExportSyslogs,
     GetDefaultPolling,
     AutoGrok,
     DeleteAllSyslog,
+    ExportAny,
   } from "../../wailsjs/go/main/App";
   import { renderState, renderTime, getTableLang } from "./common";
   import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
+  import { 
+    showLogCountChart,
+    resizeLogCountChart,
+    showMagicTimeChart,
+    showMagicHourChart,
+    showMagicSumChart,
+    showMagicGraphChart,
+  } from "./chart/logcount";
   import SyslogReport from "./SyslogReport.svelte";
   import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
@@ -30,6 +39,7 @@
   import { CodeJar } from "@novacbn/svelte-codejar";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
+  import { copyText } from "svelte-copy";
 
   let data: any = [];
   let logs: any = [];
@@ -70,7 +80,7 @@
       order: [1, "desc"],
       language: getTableLang(),
       select: {
-        style: "single",
+        style: "multi",
       },
     });
     table.on("select", () => {
@@ -157,6 +167,28 @@
     ExportSyslogs("excel", filter);
   };
 
+  let copied = false;
+  const copy = () => {
+    const selected = table.rows({ selected: true }).data();
+    let s :string[] = [];
+    const h = columns.map((e:any)=> e.title);
+    s.push(h.join("\t"))
+    for(let i = 0 ;i < selected.length;i++ ) {
+      const row :any = [];
+      for (const c of columns) {
+        if (c.data == "Time") {
+          row.push(renderTime(selected[i][c.data] || "",""));
+        } else {
+          row.push(selected[i][c.data] || "");
+        }
+      }
+      s.push(row.join("\t"))
+    }
+    copyText(s.join("\n"))
+    copied = true;
+    setTimeout(()=> copied = false,2000);
+  };
+
   let polling: datastore.PollingEnt | undefined = undefined;
 
   const watch = async () => {
@@ -190,9 +222,333 @@
     return Prism.highlight(code, Prism.languages[syntax], syntax);
   };
 
+  let showMagic = false;
+  let magicData: any;
+  let magicDataOrg: any;
+  let magicCopied = false;
+  let magicSelectedCount = 0;
+  let magicTable: any;
+
+  const magicColumnsDefault = [
+    {
+      data: "Time",
+      title: $_("Syslog.Time"),
+      render: renderTime,
+    },
+    {
+      data: "Host",
+      title: $_("Syslog.Host"),
+    },
+    {
+      data: "Type",
+      title: $_("Syslog.Type"),
+    },
+    {
+      data: "Tag",
+      title: $_("Syslog.Tag"),
+    },
+  ];
+
+  let magicColumns :any = [];
+
+  const regCut = /[;,\]\[]+/g;
+  const regSplunk = /([a-zA-Z0-9-+]+)=(\S+)/;
+  const regs = [
+    {
+      type: "timeHHMMSS",
+      pattern: `[0-9]{2}:[0-9]{2}:[0-9]{2}`,
+      regex: undefined as any,
+      count: 0,
+    },
+    {
+      type: "timeHHMM",
+      pattern: `[0-9]{2}:[0-9]{2}`,
+      regex: undefined,
+      count: 0,
+    },
+    {
+      type: "ipv4",
+      pattern: `[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}`,
+      regex: undefined,
+      count: 0,
+    },
+    {
+      type: "mac",
+      pattern: `[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}`,
+      regex: undefined,
+      count: 0,
+    },
+    {
+      type: "url",
+      pattern: `https?:\\/\\/[a-z@A-Z_\\.-]+`,
+      regex: undefined,
+      count: 0,
+    },
+    {
+      type: "mail",
+      pattern: `[0-9a-zA-Z\\._-]+@[a-zA-Z_\\.-]+`,
+      regex: undefined,
+      count: 0,
+    },
+    {
+      type: "number",
+      pattern: `-?[0-9]+[0-9.]*`,
+      regex: undefined as any,
+      count: 0,
+    },
+  ];
+
+  const getFilter = (m: string): any => {
+    m = m.replaceAll(regCut, " ");
+    m = m.replaceAll("->", " ");
+    const a = m.split(/\s+/);
+    const r: string[] = [];
+    const h: string[] = [];
+    magicChartNumEntList = [];
+    magicChartCatEntList = [];
+    regs.forEach((p) => {
+      if (!p.regex) {
+        p.regex = new RegExp(p.pattern);
+      }
+      p.count = 1;
+    });
+    a.forEach((e: string) => {
+      if (!e) {
+        return;
+      }
+      const f = e.match(regSplunk);
+      if (f) {
+        const n = f[1];
+        h.push(n);
+        r.push(n + "=([^ ,;]+)");
+        if (f[2].match(/-?[0-9]+[0-9.]*/)) {
+          magicChartNumEntList.push({
+            name: n,
+            value: n,
+          })
+        } else {
+          magicChartCatEntList.push({
+            name: n,
+            value: n,
+          })
+        }
+        return;
+      }
+      for (const p of regs) {
+        if (e.match(p.regex)) {
+          const n = p.type + "_" + p.count;
+          h.push(n);
+          if( p.type == "number" ) {
+            magicChartNumEntList.push({
+              name: n,
+              value: n,
+            });
+          } else if (!p.type.startsWith("time")) {
+            magicChartCatEntList.push({
+              name: n,
+              value: n,
+            });
+          }
+          p.count++;
+          r.push("(" + p.pattern + ")");
+          return;
+        }
+      }
+      r.push(e);
+    });
+    return {
+      headers: h,
+      paterns: r,
+    };
+  };
+
+  const showMagicTable = async () => {
+    await tick();
+    if (magicTable && DataTable.isDataTable("#magicTable")) {
+      magicTable.clear();
+      magicTable.destroy(true);
+      magicTable = undefined;
+      const e = document.getElementById("magicTableBase");
+      if(e) {
+        e.innerHTML = `<table id="magicTable" class="display compact" style="width:99%" />`;
+      }
+    }
+    magicSelectedCount = 0;
+    magicTable = new DataTable("#magicTable", {
+      columns: magicColumns,
+      data: magicData,
+      language: getTableLang(),
+      select: {
+        style: "multi",
+      },
+    });
+    magicTable.on("select", () => {
+      magicSelectedCount = magicTable.rows({ selected: true }).count();
+    });
+    magicTable.on("deselect", () => {
+      magicSelectedCount = magicTable.rows({ selected: true }).count();
+    });
+  };
+
+  let magicChartType = "count";
+  let magicChartNumEntList: any = [];
+  let magicChartCatEntList: any = [];
+  let magicNumEnt = "";
+  let magicCatEnt = "";
+  let magicCatEnt2 = "";
+
+  let magicChartTypes :any = [];
+  
+  const showMagicChart = async () => {
+    await tick();
+    switch(magicChartType) {
+    case "count":
+        showLogCountChart("magicChart", magicData, magicZoomCallBack);
+        break;
+    case "time":
+        if (!magicNumEnt) {
+          return;
+        }
+        showMagicTimeChart("magicChart", magicData, magicNumEnt);
+        break;
+    case "hour":
+        showMagicHourChart("magicChart", magicData, magicNumEnt);
+        break;
+    case "sum":
+        showMagicSumChart("magicChart", magicData, magicCatEnt);
+        break;
+    case "graph":
+        showMagicGraphChart("magicChart", magicData, magicCatEnt,magicCatEnt2);
+        break;
+    }
+  };
+
+  const magicZoomCallBack = (st: number, et: number) => {
+    magicData = [];
+    magicDataOrg.forEach((l:any) => {
+      if (l.Time >= st && l.Time <= et) {
+        magicData.push(l);
+      }
+    });
+    showMagicTable();
+  };
+  
+
+  const magic = async () => {
+    const d = table.rows({ selected: true }).data();
+    if (!d || d.length != 1) {
+      return;
+    }
+    const f = getFilter(d[0].Message);
+    magicColumns = [];
+    magicColumnsDefault.forEach((c)=> {
+      magicColumns.push(c);
+    });
+    f.headers.forEach((h:string)=> {
+      magicColumns.push({
+        data:h,
+        title:h,
+      });
+      if (h.startsWith("number_")) {
+
+      }
+    });
+    magicDataOrg = [];
+    const reg = new RegExp(f.paterns.join(`.+?`));
+    let st = Infinity;
+    let et = 0;
+    for (let i = 0; i < logs.length; i++) {
+      const log = logs[i];
+      const m = log.Message.match(reg);
+      if (!m || m.length < f.headers.length + 1) {
+        continue;
+      }
+      const r:any = {
+          Time: log.Time,
+          Host: log.Host,
+          Type: log.Type,
+          Tag:  log.Tag,
+      };
+      f.headers.forEach((e:string,i:number)=> {
+        r[e] = m[i+1];
+      });
+      st = Math.min(st,log.Time);
+      et = Math.max(et,log.Time);
+      magicDataOrg.push(r);
+    }
+    magicData = [];
+    magicDataOrg.forEach((l:any)=>{
+      magicData.push(l);
+    });
+    showMagic = true;
+    magicChartType = "count";
+    magicChartTypes =  [
+      { name: "件数", value: "count" }
+    ];
+    if (magicChartNumEntList.length > 0 ) {
+      magicChartTypes.push({ name: "時系列", value: "time" });
+      if( et-st > 3600 * 1000 * 1000 * 1000) {
+        magicChartTypes.push({ name: "時間単位集計", value: "hour" });
+      } 
+    }
+    if (magicChartCatEntList.length > 0) {
+      magicChartTypes.push({ name: "割合", value: "sum" });
+      if(magicChartCatEntList.length> 1) {
+        magicChartTypes.push({ name: "関係グラフ", value: "graph" });
+      }
+    }
+    showMagicTable();
+    showMagicChart();
+  };
+
+  const exportMagic = (t: string) => {
+    const ed :any = {
+      Title: "TWSNMP_Syslog_Magic",
+      Header: magicColumns.map((e:any) => e.title),
+      Data: [],
+      Image: "",
+    };
+    for (const d of magicData) {
+      const row :any = [];
+      for (const c of magicColumns) {
+        if (c.data == "Time") {
+          row.push(renderTime(d[c.data] || "",""));
+        } else {
+          row.push(d[c.data] || "");
+        }
+      }
+      ed.Data.push(row);
+    }
+    ExportAny(t, ed);
+  };
+
+  const copyMagic = () => {
+    const selected = magicTable.rows({ selected: true }).data();
+    let s :string[] = [];
+    const h = magicColumns.map((e:any)=> e.title);
+    s.push(h.join("\t"))
+    for(let i = 0 ;i < selected.length;i++ ) {
+      const row :any = [];
+      for (const c of magicColumns) {
+        if (c.data == "Time") {
+          row.push(renderTime(selected[i][c.data] || "",""));
+        } else {
+          row.push(selected[i][c.data] || "");
+        }
+      }
+      s.push(row.join("\t"))
+    }
+    copyText(s.join("\n"))
+    magicCopied = true;
+    setTimeout(()=> magicCopied = false,2000);
+  };
+
 </script>
 
-<svelte:window on:resize={resizeLogLevelChart} />
+<svelte:window on:resize={()=> {
+    resizeLogLevelChart();
+    resizeLogCountChart();
+}} />
 
 <div class="flex flex-col">
   <div id="chart" />
@@ -211,6 +567,32 @@
         <Icon path={icons.mdiEye} size={1} />
         {$_("Syslog.Polling")}
       </GradientButton>
+      <GradientButton
+        shadow
+        color="cyan"
+        type="button"
+        on:click={magic}
+        size="xs"
+      >
+        <Icon path={icons.mdiMagicStaff} size={1} />
+        マジック分析
+      </GradientButton>
+    {/if}
+    {#if selectedCount > 1}
+      <GradientButton
+      shadow
+      color="cyan"
+      type="button"
+      on:click={copy}
+      size="xs"
+    >
+      {#if copied}
+        <Icon path={icons.mdiCheck} size={1} />
+      {:else}
+        <Icon path={icons.mdiContentCopy} size={1} />
+      {/if}
+      Copy
+    </GradientButton>
     {/if}
     <GradientButton
       shadow
@@ -322,16 +704,16 @@
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("Syslog.Host")}</span>
-        <CodeJar syntax="regex" {highlight} bind:value={filter.Host}/>
+        <CodeJar syntax="regex" {highlight} bind:value={filter.Host} />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("Syslog.Tag")}</span>
-        <CodeJar syntax="regex" {highlight} bind:value={filter.Tag}/>
+        <CodeJar syntax="regex" {highlight} bind:value={filter.Tag} />
       </Label>
     </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("Syslog.Message")}</span>
-      <CodeJar syntax="regex" {highlight} bind:value={filter.Message}/>
+      <CodeJar syntax="regex" {highlight} bind:value={filter.Message} />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
@@ -370,11 +752,117 @@
   </div>
 </Modal>
 
+<Modal bind:open={showMagic} size="xl" dismissable={false} class="w-full">
+  <div class="flex flex-col space-y-4">
+    <div id="magicChart" />
+    <div class="m-5 grow" id="magicTableBase">
+      <table id="magicTable" class="display compact" style="width:99%" />
+    </div>
+    <div class="flex justify-end space-x-2 mr-2">
+      {#if magicData.length > 0}
+        <Select
+          size="sm"
+          items={magicChartTypes}
+          bind:value={magicChartType}
+          placeholder="グラフタイプ"
+          class="w-96"
+          on:change={showMagicChart}
+        />
+        {#if magicChartType == "hour" || magicChartType == "time"}
+          <Select
+            size="sm"
+            items={magicChartNumEntList}
+            bind:value={magicNumEnt}
+            placeholder="数値データ"
+            class="w-96"
+            on:change={showMagicChart}
+          />
+        {:else if magicChartType == "sum" || magicChartType == "graph"}
+          <Select
+            size="sm"
+            items={magicChartCatEntList}
+            bind:value={magicCatEnt}
+            placeholder="カテゴリーデータ"
+            class="w-96"
+            on:change={showMagicChart}
+          />
+          {#if magicChartType == "graph"}
+            <Select
+              size="sm"
+              items={magicChartCatEntList}
+              bind:value={magicCatEnt2}
+              placeholder="カテゴリーデータ"
+              class="w-96"
+              on:change={showMagicChart}
+            />
+          {/if}
+        {/if}
+        {#if magicSelectedCount > 0}
+          <GradientButton
+            shadow
+            color="cyan"
+            type="button"
+            on:click={copyMagic}
+            size="xs"
+          >
+            {#if magicCopied}
+              <Icon path={icons.mdiCheck} size={1} />
+            {:else}
+              <Icon path={icons.mdiContentCopy} size={1} />
+            {/if}
+            Copy
+          </GradientButton>
+        {/if}
+        <GradientButton
+          shadow
+          color="lime"
+          type="button"
+          on:click={() => {
+            exportMagic("csv");
+          }}
+          size="xs"
+        >
+          <Icon path={icons.mdiFileDelimited} size={1} />
+          CSV
+        </GradientButton>
+        <GradientButton
+          shadow
+          color="lime"
+          type="button"
+          on:click={() => {
+            exportMagic("excel");
+          }}
+          size="xs"
+        >
+          <Icon path={icons.mdiFileExcel} size={1} />
+          Excel
+        </GradientButton>
+      {/if}
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={() => (showMagic = false)}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_("MIBBrowser.Close")}
+      </GradientButton>
+    </div>
+  </div>
+</Modal>
+
 <style>
-  #chart {
+  #chart{
     min-height: 200px;
     height: 20vh;
     width: 95vw;
+    margin: 0 auto;
+  }
+  #magicChart {
+    min-height: 200px;
+    height: 20vh;
+    width: 95%;
     margin: 0 auto;
   }
 </style>

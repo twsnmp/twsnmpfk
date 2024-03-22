@@ -231,38 +231,33 @@ const getPollingChartOption = () => {
 };
 
 const setChartData = (series:any, t:any, values:any) => {
-  const data = [t.getTime() * 1000 * 1000];
   const name = echarts.time.format(t, "{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}", false);
   const mean = ecStat.statistics.mean(values);
+  console.log(values,mean);
   series[0].data.push({
     name,
     value: [t, mean],
   });
-  data.push(mean);
   const max = ecStat.statistics.max(values);
   series[1].data.push({
     name,
     value: [t, max],
   });
-  data.push(max);
   const min = ecStat.statistics.min(values);
   series[2].data.push({
     name,
     value: [t, min],
   });
-  data.push(min);
   const median = ecStat.statistics.median(values);
   series[3].data.push({
     name,
     value: [t, median],
   });
-  data.push(median);
   const variance = ecStat.statistics.sampleVariance(values);
   series[4].data.push({
     name,
     value: [t, variance],
   });
-  data.push(variance);
 };
 
 export const showPollingChart = (div:string, logs:any, ent:any) => {
