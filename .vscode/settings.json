@@ -320,6 +320,11 @@
     "\n          Excel\n        ",
     "\n          Excel\n        ",
     "\n          {/if}\n          Copy\n        ",
-    "\n        {/if}\n        Copy\n      "
+    "\n        {/if}\n        Copy\n      ",
+    "SNMP get ",
+    "\n        {/if}\n        {#if selectedCount == 1 ",
+    "\n        {/if}\n        {#if selectedCount == 1 ",
+    "& !isTable}\n          ",
+    " (showSSHPublicKey = true)}\n              size=\"xs\"\n            >\n              "
   ]
 }

@@ -12,6 +12,7 @@
     TableHeadCell,
     Spinner,
     Toggle,
+    Button,
   } from "flowbite-svelte";
   import { tick } from "svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -42,6 +43,7 @@
   import "datatables.net-select-dt";
   import { showHrBarChart, showHrSummary } from "./chart/hostResource";
   import { _ } from "svelte-i18n";
+  import { copyText } from "svelte-copy";
 
   export let show: boolean = false;
   export let id = "";
@@ -786,6 +788,10 @@
       chartMem.resize();
     }
   };
+
+  let copiedIP = false;
+  let copiedMAC = false;
+
 </script>
 
 <svelte:window on:resize={resizeChart} />
@@ -831,11 +837,55 @@
               </TableBodyRow>
               <TableBodyRow>
                 <TableBodyCell>{$_("NodeReport.IPAddress")}</TableBodyCell>
-                <TableBodyCell>{node.IP}</TableBodyCell>
+                <TableBodyCell>
+                  {node.IP}
+                  <Button
+                    color="alternative"
+                    type="button"
+                    class="ml-2 !p-2"
+                    on:click={async () => {
+                      copiedIP = true
+                      copyText(node.IP)
+                      setTimeout(()=> copiedIP = false,2000);
+                    }}
+                    size="xs"
+                  >
+                    {#if copiedIP}
+                      <Icon path={icons.mdiCheck} size={1} />
+                    {:else}
+                      <Icon path={icons.mdiContentCopy} size={1} />
+                    {/if}
+                  </Button>
+                </TableBodyCell>
               </TableBodyRow>
               <TableBodyRow>
                 <TableBodyCell>{$_("NodeReport.MACAddress")}</TableBodyCell>
-                <TableBodyCell>{node.MAC}</TableBodyCell>
+                <TableBodyCell>
+                  {node.MAC}
+                  {#if node.MAC}
+                    <Button
+                      color="alternative"
+                      type="button"
+                      class="ml-2 !p-2"
+                      on:click={async () => {
+                        copiedMAC = true
+                        copyText(node.MAC)
+                        setTimeout(()=> copiedMAC = false,2000);
+                      }}
+                      size="xs"
+                    >
+                      {#if copiedMAC}
+                        <Icon path={icons.mdiCheck} size={1} />
+                      {:else}
+                        <Icon path={icons.mdiContentCopy} size={1} />
+                      {/if}
+                    </Button>
+                  {/if}
+                </TableBodyCell>
+              </TableBodyRow>
+              <TableBodyRow>
+                <TableBodyCell>{$_('NodeList.Vendor')}</TableBodyCell>
+                <TableBodyCell>{node.Vendor}</TableBodyCell>
               </TableBodyRow>
               <TableBodyRow>
                 <TableBodyCell>{$_("NodeReport.Descr")}</TableBodyCell>
