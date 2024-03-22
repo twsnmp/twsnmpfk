@@ -319,6 +319,7 @@
     " (showMagic = false)}\n        size=\"xs\"\n      >\n        ",
     "\n          Excel\n        ",
     "\n          Excel\n        ",
-    "\n          {/if}\n          Copy\n        "
+    "\n          {/if}\n          Copy\n        ",
+    "\n        {/if}\n        Copy\n      "
   ]
 }

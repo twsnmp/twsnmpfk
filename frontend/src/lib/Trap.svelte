@@ -145,7 +145,8 @@
         if (c.data == "Time") {
           row.push(renderTime(selected[i][c.data] || "", ""));
         } else {
-          row.push(selected[i][c.data].replaceAll("\n"," ") || "");
+          const d = selected[i][c.data] || "" 
+          row.push(d.replaceAll("\n"," "));
         }
       }
       s.push(row.join("\t"));

@@ -17,6 +17,7 @@
     renderTime,
     getStateColor,
     getStateIcon,
+    renderState,
   } from "./common";
   import AddressReport from "./AddressReport.svelte";
   import Node from "./Node.svelte";
@@ -24,6 +25,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { copyText } from "svelte-copy";
 
   let arp: any = [];
   let nodes :any= undefined;
@@ -157,6 +159,18 @@
     );
   };
 
+  const renderArpStateString = (s: string) => {
+    switch (Number(s)) {
+      case 0:
+        return $_('Address.Dup');
+      case 1:
+        return $_('Address.IPChange');
+      case 2:
+        return $_('Address.MACChange');
+    }
+    return $_('Address.Normal');
+  };
+
   const arpColumns = [
     {
       data: "State",
@@ -186,7 +200,6 @@
       data: "Vendor",
       title: $_("Address.Vendor"),
       width: "25%",
-      render: renderNode,
     },
     {
       data: "Last",
@@ -242,6 +255,36 @@
     ExportArpTable("excel");
   };
 
+  let copied = false;
+  const copy = () => {
+    const selected = arpTable.rows({ selected: true }).data();
+    let s: string[] = [];
+    const h = arpColumns.map((e: any) => e.title);
+    s.push(h.join("\t"));
+    for (let i = 0; i < selected.length; i++) {
+      const row: any = [];
+      for (const c of arpColumns) {
+        switch (c.data){
+        case "Last":
+          row.push(renderTime(selected[i][c.data] || "", ""));
+          break;
+        case "State":
+          row.push(renderArpStateString(selected[i][c.data] || ""));
+          break;
+        case  "NodeID":
+          row.push(renderNode(selected[i][c.data] || ""));
+          break;
+        default:
+          row.push(selected[i][c.data] || "");
+        }
+      }
+      s.push(row.join("\t"));
+    }
+    copyText(s.join("\n"));
+    copied = true;
+    setTimeout(() => (copied = false), 2000);
+  };
+ 
   const reset = async () => {
     await ResetArpTable();
     refresh();
@@ -301,6 +344,20 @@
     {/if}
 
     {#if selectedCount > 0 }
+      <GradientButton
+        shadow
+        color="cyan"
+        type="button"
+        on:click={copy}
+        size="xs"
+      >
+        {#if copied}
+          <Icon path={icons.mdiCheck} size={1} />
+        {:else}
+          <Icon path={icons.mdiContentCopy} size={1} />
+        {/if}
+        Copy
+      </GradientButton>
       <GradientButton
         shadow
         color="red"
