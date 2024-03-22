@@ -630,7 +630,15 @@
     "Search": "検索",
     "Calcel": "キャンセル",
     "Loading": "検索しています...",
-    "DeleteAllLogs": "全ログ削除"
+    "DeleteAllLogs": "全ログ削除",
+    "MagicBtn": "マジック分析",
+    "Count": "件数",
+    "TimeChart": "時系列",
+    "PerHourSum": "時間単位集計",
+    "MagicBarChart": "割合",
+    "ChartType": "グラフタイプ",
+    "NumData": "数値データ",
+    "CatData": "カテゴリーデータ"
   },
   "SyslogReport": {
     "CountByLevel": "状態別",
@@ -735,5 +743,6 @@
     "Feedback": "フィードバック",
     "Send": "送信",
     "feedbackError": "フィードバックを送信できませんでした。"
-  }
+  },
+  "SyslogMagicGraph": "関係グラフ"
 }

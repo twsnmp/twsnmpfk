@@ -483,18 +483,18 @@
     showMagic = true;
     magicChartType = "count";
     magicChartTypes =  [
-      { name: "件数", value: "count" }
+      { name: $_('Syslog.Count'), value: "count" }
     ];
     if (magicChartNumEntList.length > 0 ) {
-      magicChartTypes.push({ name: "時系列", value: "time" });
+      magicChartTypes.push({ name: $_('Syslog.TimeChart'), value: "time" });
       if( et-st > 3600 * 1000 * 1000 * 1000) {
-        magicChartTypes.push({ name: "時間単位集計", value: "hour" });
+        magicChartTypes.push({ name: $_('Syslog.PerHourSum'), value: "hour" });
       } 
     }
     if (magicChartCatEntList.length > 0) {
-      magicChartTypes.push({ name: "割合", value: "sum" });
+      magicChartTypes.push({ name: $_('Syslog.MagicBarChart'), value: "sum" });
       if(magicChartCatEntList.length> 1) {
-        magicChartTypes.push({ name: "関係グラフ", value: "graph" });
+        magicChartTypes.push({ name: $_('SyslogMagicGraph'), value: "graph" });
       }
     }
     showMagicTable();
@@ -575,7 +575,7 @@
         size="xs"
       >
         <Icon path={icons.mdiMagicStaff} size={1} />
-        マジック分析
+        {$_('Syslog.MagicBtn')}
       </GradientButton>
     {/if}
     {#if selectedCount > 1}
@@ -764,7 +764,7 @@
           size="sm"
           items={magicChartTypes}
           bind:value={magicChartType}
-          placeholder="グラフタイプ"
+          placeholder="$_('Syslog.ChartType')"
           class="w-96"
           on:change={showMagicChart}
         />
@@ -773,7 +773,7 @@
             size="sm"
             items={magicChartNumEntList}
             bind:value={magicNumEnt}
-            placeholder="数値データ"
+            placeholder="$_('Syslog.NumData')"
             class="w-96"
             on:change={showMagicChart}
           />
@@ -782,7 +782,7 @@
             size="sm"
             items={magicChartCatEntList}
             bind:value={magicCatEnt}
-            placeholder="カテゴリーデータ"
+            placeholder="$_('Syslog.CatData')"
             class="w-96"
             on:change={showMagicChart}
           />
@@ -791,7 +791,7 @@
               size="sm"
               items={magicChartCatEntList}
               bind:value={magicCatEnt2}
-              placeholder="カテゴリーデータ"
+              placeholder="$_('Syslog.CatData')"
               class="w-96"
               on:change={showMagicChart}
             />

@@ -309,6 +309,16 @@
     "< 6}\n            ",
     " showSSHPublicKey = true}\n              size=\"xs\"\n            >\n              ",
     "SSH Sever",
-    " {\n          showSSHPublicKey = false;\n        }}\n        size=\"xs\"\n      >\n        "
+    " {\n          showSSHPublicKey = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n    resizeLogLevelChart();\n    resizeLogCountChart();\n}} />\n\n",
+    "\n      {/if}\n      Copy\n    ",
+    "<table id=\"magicTable\" class=\"display compact\" style=\"width:99%\" />",
+    "\n            {/if}\n            Copy\n          ",
+    " {\n            exportMagic(\"csv\");\n          }}\n          size=\"xs\"\n        >\n          ",
+    " {\n            exportMagic(\"excel\");\n          }}\n          size=\"xs\"\n        >\n          ",
+    " (showMagic = false)}\n        size=\"xs\"\n      >\n        ",
+    "\n          Excel\n        ",
+    "\n          Excel\n        ",
+    "\n          {/if}\n          Copy\n        "
   ]
 }

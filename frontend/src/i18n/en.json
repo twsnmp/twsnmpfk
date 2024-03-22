@@ -642,7 +642,15 @@
     "Search": "Search",
     "SelectLevel": "Select level",
     "Warn": "Warn",
-    "DeleteAllLogs": "Delete all logs"
+    "DeleteAllLogs": "Delete all logs",
+    "CatData": "Category Data",
+    "ChartType": "Chart type",
+    "Count": "Count",
+    "MagicBarChart": "Bar chart",
+    "MagicBtn": "Magic analyzer",
+    "NumData": "Number",
+    "PerHourSum": "Hour sumarry",
+    "TimeChart": "Time chart"
   },
   "SyslogReport": {
     "Chart3D": "3D chart",
@@ -735,5 +743,6 @@
     "feedbackError": "Failed to send feedback",
     "Feedback": "Feedback",
     "Send": "Send"
-  }
+  },
+  "SyslogMagicGraph": "Graph"
 }

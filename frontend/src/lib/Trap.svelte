@@ -8,7 +8,7 @@
     Spinner,
     Button,
   } from "flowbite-svelte";
-  import {Icon} from "mdi-svelte-ts";
+  import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import {
@@ -23,25 +23,26 @@
   import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import type { datastore,main } from "wailsjs/go/models";
+  import type { datastore, main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
   import { CodeJar } from "@novacbn/svelte-codejar";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
+  import { copyText } from "svelte-copy";
 
-  let data :any = [];
-  let logs :any = [];
+  let data: any = [];
+  let logs: any = [];
   let showReport = false;
-  let table :any = undefined;
+  let table: any = undefined;
   let selectedCount = 0;
   let showPolling = false;
   let showFilter = false;
-  const filter : main.TrapFilterEnt = {
+  const filter: main.TrapFilterEnt = {
     Start: "",
     End: "",
     From: "",
     Type: "",
-  }
+  };
   let showLoading = false;
 
   const showTable = () => {
@@ -57,7 +58,7 @@
       order: [[0, "desc"]],
       language: getTableLang(),
       select: {
-        style: "single",
+        style: "multi",
       },
     });
     table.on("select", () => {
@@ -125,11 +126,33 @@
   });
 
   const saveCSV = () => {
-    ExportTraps("csv",filter);
+    ExportTraps("csv", filter);
   };
 
   const saveExcel = () => {
-    ExportTraps("excel",filter);
+    ExportTraps("excel", filter);
+  };
+
+  let copied = false;
+  const copy = () => {
+    const selected = table.rows({ selected: true }).data();
+    let s: string[] = [];
+    const h = columns.map((e: any) => e.title);
+    s.push(h.join("\t"));
+    for (let i = 0; i < selected.length; i++) {
+      const row: any = [];
+      for (const c of columns) {
+        if (c.data == "Time") {
+          row.push(renderTime(selected[i][c.data] || "", ""));
+        } else {
+          row.push(selected[i][c.data].replaceAll("\n"," ") || "");
+        }
+      }
+      s.push(row.join("\t"));
+    }
+    copyText(s.join("\n"));
+    copied = true;
+    setTimeout(() => (copied = false), 2000);
   };
 
   let polling: datastore.PollingEnt;
@@ -166,13 +189,12 @@
     }
     return Prism.highlight(code, Prism.languages[syntax], syntax);
   };
-
 </script>
 
 <svelte:window on:resize={resizeLogCountChart} />
 
 <div class="flex flex-col">
-  <div id="chart"/>
+  <div id="chart" />
   <div class="m-5 grow">
     <table id="table" class="display compact" style="width:99%" />
   </div>
@@ -222,6 +244,22 @@
         <Icon path={icons.mdiChartPie} size={1} />
         {$_("Trap.Report")}
       </GradientButton>
+      {#if selectedCount > 0}
+        <GradientButton
+          shadow
+          color="cyan"
+          type="button"
+          on:click={copy}
+          size="xs"
+        >
+          {#if copied}
+            <Icon path={icons.mdiCheck} size={1} />
+          {:else}
+            <Icon path={icons.mdiContentCopy} size={1} />
+          {/if}
+          Copy
+        </GradientButton>
+      {/if}
     {/if}
     <GradientButton
       shadow
@@ -256,11 +294,9 @@
   </div>
 </div>
 
-
 <TrapReport bind:show={showReport} {logs} />
 
 <Polling bind:show={showPolling} pollingTmp={polling} />
-
 
 <Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
@@ -269,11 +305,11 @@
     </h3>
     <div class="grid gap-2 grid-cols-3">
       <Label class="space-y-2 text-xs">
-        <span>{$_('EventLog.Start')}</span>
+        <span>{$_("EventLog.Start")}</span>
         <Input type="datetime-local" bind:value={filter.Start} size="sm" />
       </Label>
       <Label class="space-y-2 text-xs">
-        <span>{$_('EventLog.End')}</span>
+        <span>{$_("EventLog.End")}</span>
         <Input type="datetime-local" bind:value={filter.End} size="sm" />
       </Label>
       <div class="flex">
@@ -291,11 +327,11 @@
     </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("Trap.FromAddress")} </span>
-      <CodeJar syntax="regex" {highlight} bind:value={filter.From}/>
+      <CodeJar syntax="regex" {highlight} bind:value={filter.From} />
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("Trap.TrapType")}</span>
-      <CodeJar syntax="regex" {highlight} bind:value={filter.Type}/>
+      <CodeJar syntax="regex" {highlight} bind:value={filter.Type} />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
@@ -338,7 +374,7 @@
   #chart {
     min-height: 200px;
     height: 20vh;
-    width:  95vw;
-    margin:  0 auto;
+    width: 95vw;
+    margin: 0 auto;
   }
 </style>
