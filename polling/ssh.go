@@ -4,6 +4,7 @@ package polling
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"strings"
 	"time"
@@ -31,7 +32,9 @@ func doPollingSSH(pe *datastore.PollingEnt) {
 	}
 	client, session, err := sshConnectToHost(pe, port)
 	if err != nil {
+		log.Println(err)
 		setPollingError("ssh", pe, err)
+		log.Printf("ssh error pe=%+v", pe)
 		return
 	}
 	defer func() {
@@ -98,7 +101,7 @@ func sshConnectToHost(pe *datastore.PollingEnt, port string) (*ssh.Client, *ssh.
 		return nil, nil, fmt.Errorf("no private key for ssh")
 	}
 	sshConfig := &ssh.ClientConfig{
-		User:    n.User,
+		User:    n.SSHUser,
 		Auth:    []ssh.AuthMethod{},
 		Timeout: time.Duration(pe.Timeout) * time.Second,
 	}

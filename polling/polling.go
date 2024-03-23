@@ -209,7 +209,6 @@ func doPolling(pe *datastore.PollingEnt) {
 func setPollingState(pe *datastore.PollingEnt, newState string) {
 	sendEvent := false
 	oldState := pe.State
-	delete(pe.Result, "error")
 	if v, ok := pe.Result["_level"]; ok {
 		if l, ok := v.(string); ok {
 			log.Printf("setPollingState set level from JavaScript %s to %s", newState, l)
@@ -219,6 +218,7 @@ func setPollingState(pe *datastore.PollingEnt, newState string) {
 	}
 	switch newState {
 	case "normal":
+		delete(pe.Result, "error")
 		if pe.State != "normal" && pe.State != "repair" {
 			if pe.State == "unknown" ||
 				pe.Type == "syslog" || pe.Type == "trap" ||

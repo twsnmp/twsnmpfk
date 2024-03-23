@@ -60,6 +60,7 @@
 
   const onOpen = async () => {
     polling = await GetPolling(id);
+    console.log(polling);
     node = await GetNode(polling.NodeID);
     if (polling.LogMode > 0) {
       loadLogs();

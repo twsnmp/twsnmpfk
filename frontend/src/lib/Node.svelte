@@ -45,6 +45,7 @@
         SnmpMode: "v2c",
         Community: "public",
         User: "",
+        SSHUser: "",
         Password: "",
         PublicKey: "",
         URL: "",
@@ -140,7 +141,7 @@
           <div></div>
         {:else}
           <Label class="space-y-2 text-xs">
-            <span>{$_("Node.SnmpUser")}</span>
+            <span>SNMP{$_("Node.SnmpUser")}</span>
             <Input bind:value={node.User} size="sm" />
           </Label>
           <Label class="space-y-2 text-xs">
@@ -149,10 +150,14 @@
           </Label>
         {/if}
       </div>
+      <Label class="space-y-2 text-xs">
+        <span>URL</span>
+        <Input bind:value={node.URL} placeholder="URL" size="sm" />
+      </Label>
       <div class="grid gap-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
-          <span>URL</span>
-          <Input bind:value={node.URL} placeholder="URL" size="sm" />
+          <span>SSH{$_("Node.SnmpUser")}</span>
+          <Input bind:value={node.SSHUser} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
         <span>{$_("Node.PublicKey")}</span>

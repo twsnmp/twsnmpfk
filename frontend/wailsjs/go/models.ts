@@ -555,6 +555,7 @@ export namespace datastore {
 	    SnmpMode: string;
 	    Community: string;
 	    User: string;
+	    SSHUser: string;
 	    Password: string;
 	    PublicKey: string;
 	    URL: string;
@@ -581,6 +582,7 @@ export namespace datastore {
 	        this.SnmpMode = source["SnmpMode"];
 	        this.Community = source["Community"];
 	        this.User = source["User"];
+	        this.SSHUser = source["SSHUser"];
 	        this.Password = source["Password"];
 	        this.PublicKey = source["PublicKey"];
 	        this.URL = source["URL"];

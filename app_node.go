@@ -52,6 +52,7 @@ func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
 	n.SnmpMode = nu.SnmpMode
 	n.Community = nu.Community
 	n.User = nu.User
+	n.SSHUser = nu.SSHUser
 	n.Password = nu.Password
 	n.PublicKey = nu.PublicKey
 	n.URL = nu.URL
@@ -101,6 +102,7 @@ func (a *App) CopyNode(id string) bool {
 	n.SnmpMode = ns.SnmpMode
 	n.Community = ns.Community
 	n.User = ns.User
+	n.SSHUser = ns.SSHUser
 	n.Password = ns.Password
 	n.PublicKey = ns.PublicKey
 	n.URL = ns.URL

@@ -23,6 +23,7 @@ type NodeEnt struct {
 	SnmpMode  string `json:"SnmpMode"`
 	Community string `json:"Community"`
 	User      string `json:"User"`
+	SSHUser   string `json:"SSHUser"`
 	Password  string `json:"Password"`
 	PublicKey string `json:"PublicKey"`
 	URL       string `json:"URL"`
