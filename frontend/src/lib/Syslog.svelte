@@ -251,8 +251,9 @@
 
   let magicColumns :any = [];
 
-  const regCut = /[;,\]\[]+/g;
-  const regSplunk = /([a-zA-Z0-9-+]+)=(\S+)/;
+  const regCut = /[\{\}"'[;,\]\[]+?/g;
+  const regSplunk = /^([a-zA-Z0-9-+]+)=(\S+)$/;
+  const regJson = /^\s*\{.*\}\s*$/;
   const regs = [
     {
       type: "timeHHMMSS",
@@ -286,7 +287,7 @@
     },
     {
       type: "mail",
-      pattern: `[0-9a-zA-Z\\._-]+@[a-zA-Z_\\.-]+`,
+      pattern: `[a-zA-Z]+[0-9a-zA-Z\\._-]+@[a-zA-Z_\\.-]+`,
       regex: undefined,
       count: 0,
     },
@@ -299,6 +300,37 @@
   ];
 
   const getFilter = (m: string): any => {
+    const j = m.match(regJson)
+    if(j) {
+      try {
+        const o = JSON.parse(m);
+        if( typeof o == "object") {
+          const keys = Object.keys(o);
+          if(keys.length > 0){
+            keys.forEach((k:string)=> {
+              const v = o[k];
+              if (typeof v == "number" || v.match(/^-?[0-9]+[0-9.]*$/)) {
+                magicChartNumEntList.push({
+                  name: k,
+                  value: k,
+                })
+              } else {
+                magicChartCatEntList.push({
+                  name: k,
+                  value: k,
+                })
+              }
+            })
+            return {
+              headers: keys,
+              json: true,
+            }
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
     m = m.replaceAll(regCut, " ");
     m = m.replaceAll("->", " ");
     const a = m.split(/\s+/);
@@ -308,12 +340,12 @@
     magicChartCatEntList = [];
     regs.forEach((p) => {
       if (!p.regex) {
-        p.regex = new RegExp(p.pattern);
+        p.regex = new RegExp("^"+p.pattern +"$");
       }
       p.count = 1;
     });
     a.forEach((e: string) => {
-      if (!e) {
+      if (!e || e == ":") {
         return;
       }
       const f = e.match(regSplunk);
@@ -350,7 +382,7 @@
             });
           }
           p.count++;
-          r.push("(" + p.pattern + ")");
+          r.push("(" + p.pattern + ")+");
           return;
         }
       }
@@ -359,6 +391,7 @@
     return {
       headers: h,
       paterns: r,
+      json:false,
     };
   };
 
@@ -449,32 +482,62 @@
         data:h,
         title:h,
       });
-      if (h.startsWith("number_")) {
-
-      }
     });
     magicDataOrg = [];
-    const reg = new RegExp(f.paterns.join(`.+?`));
     let st = Infinity;
     let et = 0;
-    for (let i = 0; i < logs.length; i++) {
-      const log = logs[i];
-      const m = log.Message.match(reg);
-      if (!m || m.length < f.headers.length + 1) {
-        continue;
+    if (f.json) {
+      for (let i = 0; i < logs.length; i++) {
+        const log = logs[i];
+        try {
+          const o = JSON.parse(log.Message);
+          let hit = true;
+          for(const k of f.headers) {
+            if (!Object.hasOwn(o,k)) {
+              hit = false;
+              break
+            }
+          }
+          if (!hit) {
+            continue;
+          }
+          const r:any = {
+            Time: log.Time,
+            Host: log.Host,
+            Type: log.Type,
+            Tag:  log.Tag,
+          };
+          f.headers.forEach((k:string)=> {
+            r[k] = o[k];
+          });
+          st = Math.min(st,log.Time);
+          et = Math.max(et,log.Time);
+          magicDataOrg.push(r);
+        } catch {
+         continue; 
+        }
       }
-      const r:any = {
-          Time: log.Time,
-          Host: log.Host,
-          Type: log.Type,
-          Tag:  log.Tag,
-      };
-      f.headers.forEach((e:string,i:number)=> {
-        r[e] = m[i+1];
-      });
-      st = Math.min(st,log.Time);
-      et = Math.max(et,log.Time);
-      magicDataOrg.push(r);
+    } else {
+      const reg = new RegExp(f.paterns.join(`.+?`));
+      for (let i = 0; i < logs.length; i++) {
+        const log = logs[i];
+        const m = log.Message.match(reg);
+        if (!m || m.length < f.headers.length + 1) {
+          continue;
+        }
+        const r:any = {
+            Time: log.Time,
+            Host: log.Host,
+            Type: log.Type,
+            Tag:  log.Tag,
+        };
+        f.headers.forEach((e:string,i:number)=> {
+          r[e] = m[i+1];
+        });
+        st = Math.min(st,log.Time);
+        et = Math.max(et,log.Time);
+        magicDataOrg.push(r);
+      }
     }
     magicData = [];
     magicDataOrg.forEach((l:any)=>{
@@ -578,7 +641,7 @@
         {$_('Syslog.MagicBtn')}
       </GradientButton>
     {/if}
-    {#if selectedCount > 1}
+    {#if selectedCount > 0}
       <GradientButton
       shadow
       color="cyan"
@@ -764,7 +827,7 @@
           size="sm"
           items={magicChartTypes}
           bind:value={magicChartType}
-          placeholder="$_('Syslog.ChartType')"
+          placeholder={$_('Syslog.ChartType')}
           class="w-96"
           on:change={showMagicChart}
         />
@@ -773,7 +836,7 @@
             size="sm"
             items={magicChartNumEntList}
             bind:value={magicNumEnt}
-            placeholder="$_('Syslog.NumData')"
+            placeholder={$_('Syslog.NumData')}
             class="w-96"
             on:change={showMagicChart}
           />
@@ -782,7 +845,7 @@
             size="sm"
             items={magicChartCatEntList}
             bind:value={magicCatEnt}
-            placeholder="$_('Syslog.CatData')"
+            placeholder={$_('Syslog.CatData')}
             class="w-96"
             on:change={showMagicChart}
           />
@@ -791,7 +854,7 @@
               size="sm"
               items={magicChartCatEntList}
               bind:value={magicCatEnt2}
-              placeholder="$_('Syslog.CatData')"
+              placeholder={$_('Syslog.CatData')}
               class="w-96"
               on:change={showMagicChart}
             />
