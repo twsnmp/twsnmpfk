@@ -31,6 +31,7 @@ SNMP TRAPログの画面です。<br>
 |ポーリング|選択したSNMP TRAPからポーリングを登録します。|
 |フィルター|検索条件を指定してSNMP TRAPを表示します。|
 |<span style="color: red;">全ログ削除</span>|全てのSyslogを削除します。|
+|コピー|選択したログをコピーします。|
 |レポート|SNMP TRAPの分析レポートを表示します。|
 |CSV|SNMP TRAPをCSVファイルにエクスポートします。|
 |Excel|SNMP TRAPをExcelファイルにエクスポートします。|
