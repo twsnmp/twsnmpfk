@@ -325,6 +325,7 @@
     "\n        {/if}\n        {#if selectedCount == 1 ",
     "\n        {/if}\n        {#if selectedCount == 1 ",
     "& !isTable}\n          ",
-    " (showSSHPublicKey = true)}\n              size=\"xs\"\n            >\n              "
+    " (showSSHPublicKey = true)}\n              size=\"xs\"\n            >\n              ",
+    " {\n          showMapMenu = false;\n          ImportV4Map();\n          refreshMap();\n        }}\n      >\n        "
   ]
 }

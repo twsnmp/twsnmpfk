@@ -278,6 +278,10 @@ export function HasDatastore() {
   return window['go']['main']['App']['HasDatastore']();
 }
 
+export function ImportV4Map() {
+  return window['go']['main']['App']['ImportV4Map']();
+}
+
 export function InitMySSHKey() {
   return window['go']['main']['App']['InitMySSHKey']();
 }

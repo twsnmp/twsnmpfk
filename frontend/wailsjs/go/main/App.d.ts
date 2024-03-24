@@ -143,6 +143,8 @@ export function GetVersion():Promise<string>;
 
 export function HasDatastore():Promise<boolean>;
 
+export function ImportV4Map():Promise<boolean>;
+
 export function InitMySSHKey():Promise<boolean>;
 
 export function IsDark():Promise<boolean>;

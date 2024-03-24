@@ -388,7 +388,8 @@
     "showDrawItemEdit": "アイテム編集表示",
     "BackImage": "背景画像",
     "Save": "保存",
-    "Clear": "クリア"
+    "Clear": "クリア",
+    "Import": "インポート"
   },
   "MIBBrowser": {
     "ObjectName": "オブジェクト名",

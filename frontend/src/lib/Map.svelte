@@ -31,6 +31,7 @@
     GetImage,
     GetBackImage,
     SetBackImage,
+    ImportV4Map,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
@@ -267,6 +268,20 @@
         <Icon path={icons.mdiFileFind} size={0.7} />
         <div>
           {$_("Map.Discover")}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={async () => {
+          showMapMenu = false;
+          ImportV4Map();
+          refreshMap();
+        }}
+      >
+        <Icon path={icons.mdiImport} size={0.7} />
+        <div>
+          {$_('Map.Import')}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->

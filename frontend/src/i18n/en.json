@@ -400,7 +400,8 @@
     "showDrawItemNomal": "Normal mode",
     "BackImage": "Backgrand image",
     "Clear": "Clear",
-    "Save": "Save"
+    "Save": "Save",
+    "Import": "Import"
   },
   "MIBBrowser": {
     "Close": "Close",

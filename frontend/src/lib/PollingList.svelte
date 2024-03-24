@@ -125,7 +125,7 @@
       data: "NodeID",
       title: $_("PollingList.Node"),
       width: "14%",
-      render: (id: any) => nodes[id].Name,
+      render: (id: any) => nodes[id] ? nodes[id].Name : "???",
     },
     {
       data: "Name",
