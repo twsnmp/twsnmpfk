@@ -1059,6 +1059,7 @@ This is the screen to set the management map.
 | SNMP password | Password name for SNMPv3.|
 | Syslog | Receive syslog.|
 | SNMP Trap | Receive SNMP Trap.|
+| SSH Seerver | SSH Server|
 | ARP Watch | Enable ARP monitoring function.|
 
 ---
@@ -1071,6 +1072,8 @@ The port number is specified by the startup parameter of the program.
     	Syslog port (default 514)
   -trapPort int
       SNMP TRAP port (default 162)
+  -sshdPort int
+      SSH Server port (default 2022)
 ```
 
 *If SYSLOG or SNMP Trap cannot be received, check the OS and security software firewall settings.
@@ -1294,6 +1297,8 @@ Usage of twsnmpfk:
     	Syslog port (default 514)
   -trapPort int
       SNMP TRAP port (default 162)
+  -sshdPort int
+      SSH Server port (default 2022)
 ```
 
 ---
@@ -1307,5 +1312,6 @@ Usage of twsnmpfk:
 | ping <Mode> | Ping operation mode (ICMP or UDP) |
 | syslogPort <PORT> | Syslog receiving port (default 514) |
 | trapPort <Port> | SNMP TRAP Reception port (Default 162) |
+| sshdPort <Port> | SSH server port (Default 162) |
 
 

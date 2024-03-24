@@ -1163,6 +1163,8 @@ System情報の画面です。上部にログのリソースと通信の情報�
     	Syslog port (default 514)
   -trapPort int
       SNMP TRAP port (default 162)
+  -sshdPort int
+      SSH Server port (default 2022)
 ```
 
 ※ syslogやSNMP TRAPが受信できない時は、OSやセキュリティーソフトのファイヤーウオールの設定を確認ください。
@@ -1392,6 +1394,8 @@ Usage of twsnmpfk:
     	Syslog port (default 514)
   -trapPort int
       SNMP TRAP port (default 162)
+  -sshdPort int
+      SSH Server port (default 2022)
 ```
 
 ---
@@ -1404,5 +1408,6 @@ Usage of twsnmpfk:
 |ping <mode>|pingの動作モード(icmp又はudp)|
 |syslogPort <port>|syslogの受信ポート(デフォルト514)|
 |trapPort <port>| SNMP TRAP受信ポート(デフォルト162)|
+|sshdPort <port>| SSH Server受信ポート(デフォルト162)|
 
 

@@ -23,6 +23,7 @@
 |SNMP パスワード|SNMPv3の時のパスワード名です。|
 |Syslog|Syslogを受信します。|
 |SNMP TRAP|SNMP TRAPを受信します。|
+|SSH Server|SSHサーバーを起動します。|
 |ARP Watch|ARP監視機能を有効にします。|
 
 </div>
@@ -41,6 +42,8 @@
     	Syslog port (default 514)
   -trapPort int
       SNMP TRAP port (default 162)
+  -sshdPort int
+      SSH server port (default 2022)
 ```
 
 <p style="color:red;font-size: 16px;">

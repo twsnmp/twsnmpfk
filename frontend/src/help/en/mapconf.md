@@ -23,6 +23,7 @@ This is the screen to set the management map.
 | SNMP password | Password name for SNMPv3.|
 | Syslog | Receive syslog.|
 | SNMP Trap | Receive SNMP Trap.|
+| SSH Server | start SSH server.|
 | ARP Watch | Enable ARP monitoring function.|
 </div>
 
@@ -40,6 +41,8 @@ The port number is specified by the startup parameter of the program.
     	Syslog port (default 514)
   -trapPort int
       SNMP TRAP port (default 162)
+  -sshdPort int
+      SSH Server port (default 2022)
 ```
 
 <p style="color:red;font-size: 16px;">
