@@ -78,6 +78,13 @@ func SendMail(subject, body string) error {
 		ServerName:         host,
 		InsecureSkipVerify: datastore.NotifyConf.InsecureSkipVerify,
 	}
+	if datastore.NotifyConf.InsecureSkipVerify {
+		for _, e := range tls.CipherSuites() {
+			tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, e.ID)
+		}
+		tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, tls.TLS_RSA_WITH_AES_128_GCM_SHA256)
+		tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, tls.TLS_RSA_WITH_AES_256_GCM_SHA384)
+	}
 	var c *smtp.Client
 	if strings.HasSuffix(datastore.NotifyConf.MailServer, ":465") {
 		conn, err := tls.Dial("tcp", datastore.NotifyConf.MailServer, tlsconfig)
@@ -147,6 +154,13 @@ func SendTestMail(testConf *datastore.NotifyConfEnt) error {
 	tlsconfig := &tls.Config{
 		ServerName:         host,
 		InsecureSkipVerify: testConf.InsecureSkipVerify,
+	}
+	if testConf.InsecureSkipVerify {
+		for _, e := range tls.CipherSuites() {
+			tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, e.ID)
+		}
+		tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, tls.TLS_RSA_WITH_AES_128_GCM_SHA256)
+		tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, tls.TLS_RSA_WITH_AES_256_GCM_SHA384)
 	}
 	var c *smtp.Client
 	if strings.HasSuffix(testConf.MailServer, ":465") {
