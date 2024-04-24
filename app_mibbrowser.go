@@ -29,15 +29,14 @@ func (a *App) SnmpWalk(nodeID, name string, raw bool) []*MibEnt {
 		return ret
 	}
 	agent := &gosnmp.GoSNMP{
-		Target:             n.IP,
-		Port:               161,
-		Transport:          "udp",
-		Community:          n.Community,
-		Version:            gosnmp.Version2c,
-		Timeout:            time.Duration(datastore.MapConf.Timeout) * time.Second,
-		Retries:            datastore.MapConf.Retry,
-		ExponentialTimeout: true,
-		MaxOids:            gosnmp.MaxOids,
+		Target:    n.IP,
+		Port:      161,
+		Transport: "udp",
+		Community: n.Community,
+		Version:   gosnmp.Version2c,
+		Timeout:   time.Duration(datastore.MapConf.Timeout) * time.Second,
+		Retries:   datastore.MapConf.Retry,
+		MaxOids:   gosnmp.MaxOids,
 	}
 	switch n.SnmpMode {
 	case "v3auth":
