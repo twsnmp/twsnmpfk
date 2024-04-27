@@ -53,6 +53,7 @@
     selectedIP = selectedNodeID = "";
     arpTable = new DataTable("#arpTable", {
       columns: arpColumns,
+      pageLength: window.innerHeight > 800 ? 25 : 10,
       data: arp,
       order: order,
       language: getTableLang(),
@@ -121,7 +122,7 @@
         return (
           `<span class="mdi ` +
           getStateIcon("high") +
-          ` text-sm" style="color:` +
+          ` text-xs" style="color:` +
           getStateColor("high") +
           `;"></span><span class="ml-2">` +
           $_('Address.Dup') +
@@ -131,7 +132,7 @@
         return (
           `<span class="mdi ` +
           getStateIcon("low") +
-          ` text-sm" style="color:` +
+          ` text-xs" style="color:` +
           getStateColor("low") +
           `;"></span><span class="ml-2">` +
           $_('Address.IPChange') +
@@ -141,7 +142,7 @@
         return (
           `<span class="mdi ` +
           getStateIcon("warn") +
-          ` text-sm" style="color:` +
+          ` text-xs" style="color:` +
           getStateColor("warn") +
           `;"></span><span class="ml-2">` +
           $_('Address.MACChange') +
@@ -151,7 +152,7 @@
     return (
       `<span class="mdi ` +
       getStateIcon("normal") +
-      ` text-sm" style="color:` +
+      ` text-xs" style="color:` +
       getStateColor("normal") +
       `;"></span><span class="ml-2">` +
       $_('Address.Normal') +

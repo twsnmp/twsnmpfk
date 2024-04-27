@@ -23,12 +23,11 @@
 
   const showTable = async () => {
     await tick();
-    let order = [[0, "asc"]];
     selectedCount = 0;
     tmpTable = new DataTable("#tmpTable", {
       columns: columns,
       data: await GetPollingTemplates(),
-      order: order,
+      order: [[0, "asc"]],
       language: getTableLang(),
       select: {
         style: "single",

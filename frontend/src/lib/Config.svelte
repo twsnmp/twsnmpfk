@@ -207,7 +207,7 @@
     return (
       `<span class="mdi ` +
       getStateIcon(state) +
-      ` text-sm" style="color:` +
+      ` text-xs" style="color:` +
       getStateColor(state) +
       `;"></span><span class="ml-2">` +
       name +
@@ -222,6 +222,7 @@
     const mibModules = await GetMIBModules();
     new DataTable("#mibModuleTable", {
       data: mibModules,
+      pageLength: window.innerHeight > 1000 ? 25 : 10,
       language: getTableLang(),
       order: [[3, "asc"]],
       columns: [
@@ -279,6 +280,7 @@
     selectedIcon = 0;
     iconTable = new DataTable("#iconTable", {
       order: [[1, "asc"]],
+      pageLength: window.innerHeight > 1000 ? 25 : 10,
       columns: [
         {
           title: $_("Config.Icon"),

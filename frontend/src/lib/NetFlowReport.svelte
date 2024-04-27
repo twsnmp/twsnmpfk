@@ -135,7 +135,7 @@
   const showTable = () => {
     let order = [[1, "desc"]];
     if (table && DataTable.isDataTable("#topTable")) {
-      order = table.order;
+      order = table.order();
       table.clear();
       table.destroy();
       table = undefined;
@@ -144,7 +144,7 @@
     table = new DataTable("#topTable", {
       columns: columns,
       data: topList,
-      pageLength: 25,
+      pageLength: window.innerHeight > 1000 ? 25 : 10,
       order,
       language: getTableLang(),
       select: {

@@ -22,7 +22,7 @@
   import NetFlowReport from "./NetFlowReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import type { datastore, main } from "wailsjs/go/models";
+  import type { main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
   import { CodeJar } from "@novacbn/svelte-codejar";
   import Prism from "prismjs";
@@ -52,7 +52,9 @@
   let showLoading = false;
 
   const showTable = () => {
+    let order = [[0, "desc"]];
     if (table && DataTable.isDataTable("#table")) {
+      order = table.order();
       table.clear();
       table.destroy();
       table = undefined;
@@ -60,8 +62,9 @@
     selectedCount = 0;
     table = new DataTable("#table", {
       columns: columns,
+      pageLength: window.innerHeight > 1000 ? 25 : 10,
       data: data,
-      order: [[0, "desc"]],
+      order,
       language: getTableLang(),
       select: {
         style: "multi",
@@ -203,8 +206,6 @@
     copied = true;
     setTimeout(() => (copied = false), 2000);
   };
-
-  let polling: datastore.PollingEnt;
 
   const deleteAll = async () => {
     if (await DeleteAllNetFlow()) {

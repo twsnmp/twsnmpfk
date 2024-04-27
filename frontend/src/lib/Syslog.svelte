@@ -68,7 +68,9 @@
   ];
 
   const showTable = () => {
+    let order = [[1,"desc"]];
     if (table && DataTable.isDataTable("#table")) {
+      order = table.order();
       table.clear();
       table.destroy();
       table = undefined;
@@ -77,7 +79,8 @@
     table = new DataTable("#table", {
       columns: columns,
       data: data,
-      order: [1, "desc"],
+      pageLength: window.innerHeight > 1000 ? 25 : 10,
+      order,
       language: getTableLang(),
       select: {
         style: "multi",

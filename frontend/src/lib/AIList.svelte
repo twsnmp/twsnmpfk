@@ -21,14 +21,14 @@
   let showReport = false;
 
 
-  const formatScore = (score: number,type:string): string => {
+  const formatScore = (score: number,type:string)=> {
     if (type == "sort") {
-      return score + "";
+      return score;
     }
     return (
       `<span class="mdi ` +
       getScoreIcon(score) +
-      ` text-sm" style="color:` +
+      ` text-xs" style="color:` +
       getScoreColor(score) +
       `;"></span><span class="ml-2">` +
       score.toFixed(2) +
@@ -88,7 +88,9 @@
 
   const refresh = async () => {
     data = await GetAIList();
+    let order = [[0, "asc"]];
     if (table && DataTable.isDataTable("#table")) {
+      order = table.order();
       table.clear();
       table.destroy();
       table = undefined;
@@ -96,7 +98,9 @@
     selectedCount = 0;
     table = new DataTable("#table", {
       columns: columns,
+      pageLength: window.innerHeight > 800 ? 25 : 10,
       data: data,
+      order,
       language: getTableLang(),
       select: {
         style: "multi",

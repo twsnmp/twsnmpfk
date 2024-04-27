@@ -18,15 +18,18 @@
   let arpLogTable :any = undefined;
 
   const showArpLogTable = () => {
+    let order = [[1, "desc"]];
     if (arpLogTable && DataTable.isDataTable("#arpLogTable")) {
+      order = arpLogTable.order();
       arpLogTable.clear();
       arpLogTable.destroy();
       arpLogTable = undefined;
     }
     arpLogTable = new DataTable("#arpLogTable", {
       columns: arpLogColumns,
+      pageLength: window.innerHeight > 1000 ? 25 : 10,
       data: arpLogData,
-      order: [[1, "desc"]],
+      order,
       language: getTableLang(),
     });
   };

@@ -53,16 +53,19 @@
   ];
 
   const showTable = () => {
+    let order = [[1, "desc"]];
     if (table && DataTable.isDataTable("#table")) {
+      order = table.order();
       table.clear();
       table.destroy();
       table = undefined;
     }
     table = new DataTable("#table", {
+      pageLength: window.innerHeight > 1000 ? 25 : 10,
       columns: columns,
-      data: data,
+      data,
       language: getTableLang(),
-      order: [[1, "desc"]],
+      order,
     });
   };
 
