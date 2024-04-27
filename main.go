@@ -30,6 +30,7 @@ var lock = ""
 var trapPort = 162
 var syslogPort = 514
 var sshdPort = 2022
+var netflowPort = 2055
 var maxDispLog = 10000
 var lang = ""
 
@@ -40,6 +41,7 @@ func init() {
 	flag.IntVar(&trapPort, "trapPort", 162, "SNMP TRAP port")
 	flag.IntVar(&syslogPort, "syslogPort", 514, "Syslog port")
 	flag.IntVar(&sshdPort, "sshdPort", 2022, "SSH server port")
+	flag.IntVar(&netflowPort, "netflowPort", 2055, "Netflow port")
 	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "Max log size to diplay")
 	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
 	flag.StringVar(&lang, "lang", "", "Language(en|jp)")

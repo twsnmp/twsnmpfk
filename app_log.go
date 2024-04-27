@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"regexp"
 	"time"
 
@@ -90,7 +91,7 @@ type SyslogFilterEnt struct {
 // GetSyslogs retunrs syslogs
 func (a *App) GetSyslogs(filter SyslogFilterEnt) []*datastore.SyslogEnt {
 	ret := []*datastore.SyslogEnt{}
-	hostFilter := makeStringFilter(filter.Host)
+	hostFilter := makeIPFilter(filter.Host)
 	tagFilter := makeStringFilter(filter.Tag)
 	msgFilter := makeStringFilter(filter.Message)
 	st := makeTimeFilter(filter.Start, 1)
@@ -124,7 +125,7 @@ type TrapFilterEnt struct {
 // GetTraps retunrs SNMP Trap log
 func (a *App) GetTraps(filter TrapFilterEnt) []*datastore.TrapEnt {
 	ret := []*datastore.TrapEnt{}
-	fromFilter := makeStringFilter(filter.From)
+	fromFilter := makeIPFilter(filter.From)
 	typeFilter := makeStringFilter(filter.Type)
 	st := makeTimeFilter(filter.Start, 24)
 	et := makeTimeFilter(filter.End, 0)
@@ -133,6 +134,74 @@ func (a *App) GetTraps(filter TrapFilterEnt) []*datastore.TrapEnt {
 			return true
 		}
 		if typeFilter != nil && !typeFilter.MatchString(l.TrapType) {
+			return true
+		}
+		ret = append(ret, l)
+		return len(ret) < maxDispLog
+	})
+	return ret
+}
+
+type NetFlowFilterEnt struct {
+	Start    string `json:"Start"`
+	End      string `json:"End"`
+	Single   bool   `json:"Single"`
+	SrcAddr  string `json:"SrcAddr"`
+	SrcPort  int    `json:"SrcPort"`
+	SrcLoc   string `json:"SrcLoc"`
+	DstAddr  string `json:"DstAddr"`
+	DstPort  int    `json:"DstPort"`
+	DstLoc   string `json:"DstLoc"`
+	Protocol string `json:"Protocol"`
+	TCPFlags string `json:"TCPFlags"`
+}
+
+// GetNetFlow retunrs NetFlow log
+func (a *App) GetNetFlow(filter NetFlowFilterEnt) []*datastore.NetFlowEnt {
+	ret := []*datastore.NetFlowEnt{}
+	srcFilter := makeIPFilter(filter.SrcAddr)
+	srcLocFilter := makeStringFilter(filter.SrcLoc)
+	dstFilter := makeIPFilter(filter.DstAddr)
+	dstLocFilter := makeStringFilter(filter.DstLoc)
+	tcpFlagsFilter := makeStringFilter(filter.TCPFlags)
+	protocolFilter := makeStringFilter(filter.Protocol)
+	st := makeTimeFilter(filter.Start, 1)
+	et := makeTimeFilter(filter.End, 0)
+	datastore.ForEachNetFlow(st, et, func(l *datastore.NetFlowEnt) bool {
+		if filter.Single {
+			if srcFilter != nil && (!srcFilter.MatchString(l.SrcAddr) && !srcFilter.MatchString(l.DstAddr)) {
+				return true
+			}
+			if srcLocFilter != nil && (!srcLocFilter.MatchString(l.SrcLoc) && !srcLocFilter.MatchString(l.DstLoc)) {
+				return true
+			}
+			if filter.SrcPort > 0 && (filter.SrcPort != l.SrcPort && filter.SrcPort != l.DstPort) {
+				return true
+			}
+		} else {
+			if srcFilter != nil && !srcFilter.MatchString(l.SrcAddr) {
+				return true
+			}
+			if srcLocFilter != nil && !srcLocFilter.MatchString(l.SrcLoc) {
+				return true
+			}
+			if dstFilter != nil && !dstFilter.MatchString(l.DstAddr) {
+				return true
+			}
+			if dstLocFilter != nil && !dstLocFilter.MatchString(l.DstLoc) {
+				return true
+			}
+			if filter.SrcPort > 0 && filter.SrcPort != l.SrcPort {
+				return true
+			}
+			if filter.DstPort > 0 && filter.DstPort != l.DstPort {
+				return true
+			}
+		}
+		if tcpFlagsFilter != nil && !tcpFlagsFilter.MatchString(l.TCPFlags) {
+			return true
+		}
+		if protocolFilter != nil && !protocolFilter.MatchString(l.Protocol) {
 			return true
 		}
 		ret = append(ret, l)
@@ -304,6 +373,30 @@ func (a *App) DeleteAllTraps() bool {
 	return true
 }
 
+// DeleteAllNetFlowは、NetFlow logを全て削除します。
+func (a *App) DeleteAllNetFlow() bool {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm delete"),
+		Message:       i18n.Trans("Do you want to delete?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return false
+	}
+	if err := datastore.DeleteAllLogs("netflow"); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: i18n.Trans("Delete all NetFlow logs"),
+	})
+	return true
+}
+
 // DeleteAllPollingLogsは、ポーリングログを全て削除します。
 func (a *App) DeleteAllPollingLogs() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
@@ -345,6 +438,20 @@ func makeTimeFilter(dt string, oh int) int64 {
 func makeStringFilter(f string) *regexp.Regexp {
 	if f == "" {
 		return nil
+	}
+	r, err := regexp.Compile(f)
+	if err != nil {
+		return nil
+	}
+	return r
+}
+
+func makeIPFilter(f string) *regexp.Regexp {
+	if f == "" {
+		return nil
+	}
+	if ip := net.ParseIP(f); ip != nil {
+		f = regexp.QuoteMeta(f)
 	}
 	r, err := regexp.Compile(f)
 	if err != nil {

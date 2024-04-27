@@ -229,6 +229,89 @@ func (a *App) ExportTraps(t string, filter TrapFilterEnt) string {
 	return ""
 }
 
+// ExportNetFlow  export traps
+func (a *App) ExportNetFlow(t string, filter NetFlowFilterEnt) string {
+	srcFilter := makeStringFilter(filter.SrcAddr)
+	srcLocFilter := makeStringFilter(filter.SrcLoc)
+	dstFilter := makeStringFilter(filter.DstAddr)
+	dstLocFilter := makeStringFilter(filter.DstLoc)
+	tcpFlagsFilter := makeStringFilter(filter.TCPFlags)
+	protocolFilter := makeStringFilter(filter.Protocol)
+	st := makeTimeFilter(filter.Start, 24)
+	et := makeTimeFilter(filter.End, 0)
+	data := ExportData{
+		Title:  "TWSNMP NetFlow",
+		Header: []string{"Time", "Src IP", "Src Port", "Src Loc", "Dst IP", "Dst Port", "Dst Loc", "Protocol", "TCPFlags", "Packets", "Bytes", "Dur"},
+	}
+	datastore.ForEachNetFlow(st, et, func(l *datastore.NetFlowEnt) bool {
+		if filter.Single {
+			if srcFilter != nil && (!srcFilter.MatchString(l.SrcAddr) && !srcFilter.MatchString(l.DstAddr)) {
+				return true
+			}
+			if srcLocFilter != nil && (!srcLocFilter.MatchString(l.SrcLoc) && !srcLocFilter.MatchString(l.DstLoc)) {
+				return true
+			}
+			if filter.SrcPort > 0 && (filter.SrcPort != l.SrcPort && filter.SrcPort != l.DstPort) {
+				return true
+			}
+		} else {
+			if srcFilter != nil && !srcFilter.MatchString(l.SrcAddr) {
+				return true
+			}
+			if srcLocFilter != nil && !srcLocFilter.MatchString(l.SrcLoc) {
+				return true
+			}
+			if dstFilter != nil && !dstFilter.MatchString(l.DstAddr) {
+				return true
+			}
+			if dstLocFilter != nil && !dstLocFilter.MatchString(l.DstLoc) {
+				return true
+			}
+			if filter.SrcPort > 0 && filter.SrcPort != l.SrcPort {
+				return true
+			}
+			if filter.DstPort > 0 && filter.DstPort != l.DstPort {
+				return true
+			}
+		}
+		if tcpFlagsFilter != nil && !tcpFlagsFilter.MatchString(l.TCPFlags) {
+			return true
+		}
+		if protocolFilter != nil && !protocolFilter.MatchString(l.Protocol) {
+			return true
+		}
+		e := []any{}
+		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))
+		e = append(e, l.SrcAddr)
+		e = append(e, l.SrcPort)
+		e = append(e, l.SrcLoc)
+		e = append(e, l.DstAddr)
+		e = append(e, l.DstPort)
+		e = append(e, l.DstLoc)
+		e = append(e, l.Protocol)
+		e = append(e, l.TCPFlags)
+		e = append(e, l.Packets)
+		e = append(e, l.Bytes)
+		e = append(e, l.Dur)
+		data.Data = append(data.Data, e)
+		return true
+	})
+	var err error
+	switch t {
+	case "excel":
+		err = a.exportExcel(&data)
+	case "csv":
+		err = a.exportCSV(&data)
+	default:
+		return "not suppoerted"
+	}
+	if err != nil {
+		log.Printf("Export NetFlow err=%v", err)
+		return fmt.Sprintf("export NetFlow err=%v", err)
+	}
+	return ""
+}
+
 // ExportArpLogs  export arp watch logs
 func (a *App) ExportArpLogs(t string) string {
 	data := ExportData{

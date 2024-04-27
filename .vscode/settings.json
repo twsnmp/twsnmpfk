@@ -326,6 +326,22 @@
     "\n        {/if}\n        {#if selectedCount == 1 ",
     "& !isTable}\n          ",
     " (showSSHPublicKey = true)}\n              size=\"xs\"\n            >\n              ",
-    " {\n          showMapMenu = false;\n          ImportV4Map();\n          refreshMap();\n        }}\n      >\n        "
+    " {\n          showMapMenu = false;\n          ImportV4Map();\n          refreshMap();\n        }}\n      >\n        ",
+    "Protocol",
+    "TCPFlags",
+    "Packets",
+    "Dur",
+    "Total",
+    " {\n          showHeatmap();\n        }}\n      >\n        ",
+    " {\n          showHistogram();\n        }}\n      >\n        ",
+    " {\n          showTraffic();\n        }}\n      >\n        ",
+    " {\n          showTopList();\n        }}\n      >\n        ",
+    " {\n          showTopList3D();\n        }}\n      >\n        ",
+    " {\n          showFlow();\n        }}\n      >\n        ",
+    " {\n          showFFT();\n        }}\n      >\n        ",
+    " {\n          showFFT3D();\n        }}\n      >\n        ",
+    " {\n            showTopList();\n          }}\n        />\n        ",
+    " {\n            showTopList3D();\n          }}\n        />\n        ",
+    " {\n            updateFFT();\n          }}\n        />\n        "
   ]
 }

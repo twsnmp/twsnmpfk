@@ -245,6 +245,9 @@ var transMap = map[string]map[string]string{
 	"Delete all TRAP logs": {
 		"ja": "TRAP全削除",
 	},
+	"Delete all NetFlow logs": {
+		"ja": "NetFlow全削除",
+	},
 	"Delete all polling logs": {
 		"ja": "ポーリングログ全削除",
 	},

@@ -206,11 +206,25 @@ export const formatTime = (date:any, format:string) => {
 }
 
 export const renderTime = (t:number,type:string) => {
+  if(type=="sort") {
+    return t;
+  }
   if (t < 1) {
     return "";
   }
   const d = new Date(t /(1000*1000));
   return  formatTime(d,"");
+}
+
+export const renderTimeMili = (t:number,type:string) => {
+  if(type=="sort") {
+    return t;
+  }
+  if (t < 1) {
+    return "";
+  }
+  const d = new Date(t /(1000*1000));
+  return  formatTime(d,'{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}.{SSS}');
 }
 
 export const getScoreColor = (s:number) => {

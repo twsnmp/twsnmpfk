@@ -280,16 +280,16 @@
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.Type")}</span>
-        <CodeJar syntax="regex" {highlight} bind:value={filter.EventType}/>
+        <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.EventType}/>
       </Label>
     </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("EventLog.NodeName")}</span>
-      <CodeJar syntax="regex" {highlight} bind:value={filter.NodeName}/>
+      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.NodeName}/>
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("EventLog.Event")}</span>
-      <CodeJar syntax="regex" {highlight} bind:value={filter.Event}/>
+      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Event}/>
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton

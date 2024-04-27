@@ -233,7 +233,6 @@ const getPollingChartOption = () => {
 const setChartData = (series:any, t:any, values:any) => {
   const name = echarts.time.format(t, "{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}", false);
   const mean = ecStat.statistics.mean(values);
-  console.log(values,mean);
   series[0].data.push({
     name,
     value: [t, mean],

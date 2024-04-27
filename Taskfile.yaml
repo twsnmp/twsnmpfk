@@ -12,10 +12,10 @@ tasks:
       - task: mac
   dev:
     cmds:
-      - wails dev -appargs "-datastore ./tmp/ -syslogPort 8514 -trapPort 8162"
+      - wails dev -appargs "-datastore ./tmp/ -syslogPort 8514 -trapPort 8162 -netflowPort 2056 -sshdPort 2023"
   deven:
     cmds:
-      - wails dev -appargs "-datastore ./tmp/ -syslogPort 8514 -trapPort 8162 -lang en"
+      - wails dev -appargs "-datastore ./tmp/ -syslogPort 8514 -trapPort 8162 -netflowPort 2056 -sshdPort 2023 -lang en"
   devens:
     cmds:
       - wails dev -appargs "-lang en"

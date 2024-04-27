@@ -767,16 +767,16 @@
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("Syslog.Host")}</span>
-        <CodeJar syntax="regex" {highlight} bind:value={filter.Host} />
+        <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Host} />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("Syslog.Tag")}</span>
-        <CodeJar syntax="regex" {highlight} bind:value={filter.Tag} />
+        <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Tag} />
       </Label>
     </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("Syslog.Message")}</span>
-      <CodeJar syntax="regex" {highlight} bind:value={filter.Message} />
+      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Message} />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton

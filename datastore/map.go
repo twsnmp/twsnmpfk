@@ -40,6 +40,7 @@ type MapConfEnt struct {
 	EnableSyslogd  bool   `json:"EnableSyslogd"`
 	EnableTrapd    bool   `json:"EnableTrapd"`
 	EnableArpWatch bool   `json:"EnableArpWatch"`
+	EnableNetflowd bool   `json:"EnableNetflowd"`
 	EnableSshd     bool   `json:"EnableSshd"`
 	IconSize       int    `json:"IconSize"`
 }

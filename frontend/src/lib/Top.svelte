@@ -29,6 +29,7 @@
   import EventLog from "./EventLog.svelte";
   import Syslog from "./Syslog.svelte";
   import Trap from "./Trap.svelte";
+  import NetFlow from "./NetFlow.svelte";
   import Arp from "./Arp.svelte";
   import Address from "./Address.svelte";
   import AIList from "./AIList.svelte";
@@ -197,6 +198,15 @@
         TRAP
       </NavLi>
       <NavLi
+        active={page == "netflow"}
+        on:click={() => {
+          page = "netflow";
+        }}
+      >
+        <Icon path={icons.mdiCompareHorizontal} size={1.8} />
+        NetFlow
+      </NavLi>
+      <NavLi
         active={page == "arp"}
         on:click={() => {
           page = "arp";
@@ -280,6 +290,8 @@
   <Syslog />
 {:else if page == "trap"}
   <Trap />
+{:else if page == "netflow"}
+  <NetFlow />
 {:else if page == "arp"}
   <Arp />
 {:else if page == "address"}

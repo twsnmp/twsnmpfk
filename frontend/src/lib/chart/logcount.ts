@@ -541,7 +541,6 @@ export const showMagicSumChart = (div: string, logs: any, ent: string) => {
       data: [list[i][1]],
     });
   }
-  console.log(option);
   chart.setOption(option);
   chart.resize();
 };

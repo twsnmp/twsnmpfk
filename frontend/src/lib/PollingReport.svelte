@@ -16,7 +16,6 @@
   import { tick } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import type { datastore } from "wailsjs/go/models";
   import {
     GetNode,
     GetPolling,
@@ -60,7 +59,6 @@
 
   const onOpen = async () => {
     polling = await GetPolling(id);
-    console.log(polling);
     node = await GetNode(polling.NodeID);
     if (polling.LogMode > 0) {
       loadLogs();

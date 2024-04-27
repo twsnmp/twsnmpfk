@@ -212,6 +212,7 @@ func initDB() error {
 	buckets := []string{
 		"config", "nodes", "items", "lines", "pollings", "logs", "pollingLogs",
 		"syslog", "trap", "arplog", "arp", "ai", "grok", "images",
+		"ipfix", "netflow",
 	}
 	initConf()
 	return db.Update(func(tx *bbolt.Tx) error {

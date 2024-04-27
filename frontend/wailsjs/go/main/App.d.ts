@@ -19,6 +19,8 @@ export function DeleteAIResult(arg1:string):Promise<boolean>;
 
 export function DeleteAllEventLogs():Promise<boolean>;
 
+export function DeleteAllNetFlow():Promise<boolean>;
+
 export function DeleteAllPollingLogs():Promise<boolean>;
 
 export function DeleteAllSyslog():Promise<boolean>;
@@ -44,6 +46,8 @@ export function ExportArpLogs(arg1:string):Promise<string>;
 export function ExportArpTable(arg1:string):Promise<string>;
 
 export function ExportEventLogs(arg1:string,arg2:main.EventLogFilterEnt):Promise<string>;
+
+export function ExportNetFlow(arg1:string,arg2:main.NetFlowFilterEnt):Promise<string>;
 
 export function ExportNodes(arg1:string):Promise<string>;
 
@@ -110,6 +114,8 @@ export function GetMapName():Promise<string>;
 export function GetMonitorDatas():Promise<Array<backend.MonitorDataEnt>>;
 
 export function GetMySSHPublicKey():Promise<string>;
+
+export function GetNetFlow(arg1:main.NetFlowFilterEnt):Promise<Array<datastore.NetFlowEnt>>;
 
 export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
 

@@ -340,6 +340,7 @@ func SaveLogBuffer(logBuffer []*LogEnt) {
 		syslog := tx.Bucket([]byte("syslog"))
 		trap := tx.Bucket([]byte("trap"))
 		arp := tx.Bucket([]byte("arplog"))
+		netflow := tx.Bucket([]byte("netflow"))
 		sc := 0
 		nfc := 0
 		tc := 0
@@ -366,6 +367,9 @@ func SaveLogBuffer(logBuffer []*LogEnt) {
 			case "arplog":
 				ac++
 				arp.Put([]byte(k), []byte(s))
+			case "netflow":
+				nfc++
+				netflow.Put([]byte(k), []byte(s))
 			default:
 				oc++
 			}
@@ -866,6 +870,64 @@ func ForEachLogs(st, et int64, lt string, f func(*LogEnt) bool) error {
 				break
 			}
 			if !f(&l) {
+				break
+			}
+		}
+		return nil
+	})
+}
+
+type NetFlowEnt struct {
+	Time     int64   `json:"Time"`
+	SrcAddr  string  `json:"SrcAddr"`
+	SrcPort  int     `json:"SrcPort"`
+	SrcLoc   string  `json:"SrcLoc"`
+	DstAddr  string  `json:"DstAddr"`
+	DstPort  int     `json:"DstPort"`
+	DstLoc   string  `json:"DstLoc"`
+	Bytes    int     `json:"Bytes"`
+	Packets  int     `json:"Packets"`
+	TCPFlags string  `json:"TCPFlags"`
+	Protocol string  `json:"Protocol"`
+	ToS      int     `json:"ToS"`
+	Dur      float64 `json:"Dur"`
+}
+
+// ForEachNetFlow  get NetFlow log
+func ForEachNetFlow(st, et int64, f func(*NetFlowEnt) bool) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	sk := fmt.Sprintf("%016x", st)
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("netflow"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			if l.Time < st {
+				continue
+			}
+			if l.Time > et {
+				break
+			}
+			var nf = new(NetFlowEnt)
+			if err := json.Unmarshal([]byte(l.Log), nf); err != nil {
+				log.Println(err)
+				continue
+			}
+			nf.Time = l.Time
+			if !f(nf) {
 				break
 			}
 		}

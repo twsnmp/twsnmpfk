@@ -516,6 +516,7 @@ export namespace datastore {
 	    EnableSyslogd: boolean;
 	    EnableTrapd: boolean;
 	    EnableArpWatch: boolean;
+	    EnableNetflowd: boolean;
 	    EnableSshd: boolean;
 	    IconSize: number;
 	
@@ -537,8 +538,45 @@ export namespace datastore {
 	        this.EnableSyslogd = source["EnableSyslogd"];
 	        this.EnableTrapd = source["EnableTrapd"];
 	        this.EnableArpWatch = source["EnableArpWatch"];
+	        this.EnableNetflowd = source["EnableNetflowd"];
 	        this.EnableSshd = source["EnableSshd"];
 	        this.IconSize = source["IconSize"];
+	    }
+	}
+	export class NetFlowEnt {
+	    Time: number;
+	    SrcAddr: string;
+	    SrcPort: number;
+	    SrcLoc: string;
+	    DstAddr: string;
+	    DstPort: number;
+	    DstLoc: string;
+	    Bytes: number;
+	    Packets: number;
+	    TCPFlags: string;
+	    Protocol: string;
+	    ToS: number;
+	    Dur: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new NetFlowEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.SrcAddr = source["SrcAddr"];
+	        this.SrcPort = source["SrcPort"];
+	        this.SrcLoc = source["SrcLoc"];
+	        this.DstAddr = source["DstAddr"];
+	        this.DstPort = source["DstPort"];
+	        this.DstLoc = source["DstLoc"];
+	        this.Bytes = source["Bytes"];
+	        this.Packets = source["Packets"];
+	        this.TCPFlags = source["TCPFlags"];
+	        this.Protocol = source["Protocol"];
+	        this.ToS = source["ToS"];
+	        this.Dur = source["Dur"];
 	    }
 	}
 	export class NodeEnt {
@@ -927,6 +965,38 @@ export namespace main {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Name = source["Name"];
 	        this.Value = source["Value"];
+	    }
+	}
+	export class NetFlowFilterEnt {
+	    Start: string;
+	    End: string;
+	    Single: boolean;
+	    SrcAddr: string;
+	    SrcPort: number;
+	    SrcLoc: string;
+	    DstAddr: string;
+	    DstPort: number;
+	    DstLoc: string;
+	    Protocol: string;
+	    TCPFlags: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new NetFlowFilterEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Start = source["Start"];
+	        this.End = source["End"];
+	        this.Single = source["Single"];
+	        this.SrcAddr = source["SrcAddr"];
+	        this.SrcPort = source["SrcPort"];
+	        this.SrcLoc = source["SrcLoc"];
+	        this.DstAddr = source["DstAddr"];
+	        this.DstPort = source["DstPort"];
+	        this.DstLoc = source["DstLoc"];
+	        this.Protocol = source["Protocol"];
+	        this.TCPFlags = source["TCPFlags"];
 	    }
 	}
 	export class PingReq {

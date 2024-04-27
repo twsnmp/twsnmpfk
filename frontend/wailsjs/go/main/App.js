@@ -30,6 +30,10 @@ export function DeleteAllEventLogs() {
   return window['go']['main']['App']['DeleteAllEventLogs']();
 }
 
+export function DeleteAllNetFlow() {
+  return window['go']['main']['App']['DeleteAllNetFlow']();
+}
+
 export function DeleteAllPollingLogs() {
   return window['go']['main']['App']['DeleteAllPollingLogs']();
 }
@@ -80,6 +84,10 @@ export function ExportArpTable(arg1) {
 
 export function ExportEventLogs(arg1, arg2) {
   return window['go']['main']['App']['ExportEventLogs'](arg1, arg2);
+}
+
+export function ExportNetFlow(arg1, arg2) {
+  return window['go']['main']['App']['ExportNetFlow'](arg1, arg2);
 }
 
 export function ExportNodes(arg1) {
@@ -212,6 +220,10 @@ export function GetMonitorDatas() {
 
 export function GetMySSHPublicKey() {
   return window['go']['main']['App']['GetMySSHPublicKey']();
+}
+
+export function GetNetFlow(arg1) {
+  return window['go']['main']['App']['GetNetFlow'](arg1);
 }
 
 export function GetNode(arg1) {

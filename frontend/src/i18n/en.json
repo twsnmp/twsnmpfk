@@ -745,5 +745,48 @@
     "Feedback": "Feedback",
     "Send": "Send"
   },
-  "SyslogMagicGraph": "Graph"
+  "SyslogMagicGraph": "Graph",
+  "NetFlow": {
+    "Bytes": "Bytes",
+    "DstAddr": "Dst Addr",
+    "Dur": "Duration",
+    "Loc": "Location",
+    "Packets": "Packets",
+    "Port": "Port",
+    "Protocol": "Protocol",
+    "Simgle": "Single Mode",
+    "SrcAddr": "Src Addr",
+    "TCPFlags": "TCP Flags"
+  },
+  "NetFlowREport": {
+    "Sec": "Sec",
+    "Size": "Size"
+  },
+  "NetFlowReport": {
+    "BPS": "BPS",
+    "Bytes": "Bytes",
+    "Circular": "Circular",
+    "DIspType": "Disp type",
+    "DataType": "Data type",
+    "Dur": "Duration",
+    "FFT": "FFT",
+    "FFT3D": "FFT(3D)",
+    "Flow": "Flow",
+    "FlowType": "Flow graph",
+    "FlowGraph": "Flow graph",
+    "Force": "Force model",
+    "GL": "3D model",
+    "HZ": "Freq",
+    "Name": "Name",
+    "Packets": "PPS",
+    "PPS": "PPS",
+    "Sender": "Sender",
+    "Service": "Service",
+    "Speed": "Speed",
+    "SumType": "Sum type",
+    "TopList3D": "Top list",
+    "TopLIst": "Top list",
+    "Total": "Total",
+    "Traffic": "Traffic"
+  }
 }

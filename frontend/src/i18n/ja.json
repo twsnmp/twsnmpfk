@@ -745,5 +745,48 @@
     "Send": "送信",
     "feedbackError": "フィードバックを送信できませんでした。"
   },
-  "SyslogMagicGraph": "関係グラフ"
+  "SyslogMagicGraph": "関係グラフ",
+  "NetFlow": {
+    "SrcAddr": "送信元",
+    "Port": "ポート",
+    "Loc": "位置",
+    "DstAddr": "宛先",
+    "Protocol": "プロトコル",
+    "TCPFlags": "TCPフラグ",
+    "Packets": "パケット",
+    "Bytes": "バイト",
+    "Dur": "期間",
+    "Simgle": "簡単モード"
+  },
+  "NetFlowREport": {
+    "Size": "サイズ",
+    "Sec": "周期"
+  },
+  "NetFlowReport": {
+    "Dur": "通信時間",
+    "Speed": "通信速度",
+    "Bytes": "バイト",
+    "Packets": "パケット",
+    "BPS": "バイト/秒",
+    "PPS": "パケット/秒",
+    "Sender": "送信元別",
+    "Service": "サービス別",
+    "Flow": "IPペアー別",
+    "Name": "項目名",
+    "Force": "力学モデル",
+    "Circular": "円形",
+    "GL": "3Dモデル",
+    "HZ": "周波数",
+    "Total": "トータル",
+    "Traffic": "トラフィック",
+    "TopLIst": "TOPリスト",
+    "TopList3D": "TOPリスト(3D)",
+    "FlowGraph": "IPペアーフロー",
+    "FFT": "FFT分析",
+    "FFT3D": "FFT分析(3D)",
+    "DataType": "データ種別",
+    "SumType": "集計種別",
+    "FlowType": "フロー表示種別",
+    "DIspType": "表示切り替え"
+  }
 }

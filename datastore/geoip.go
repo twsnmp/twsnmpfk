@@ -5,30 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os"
-	"path/filepath"
 
 	"github.com/oschwald/geoip2-golang"
 )
-
-// UpdateGeoIP : GeoIP DBを更新する
-func UpdateGeoIP(path string) error {
-	DeleteGeoIP()
-	dst := filepath.Join(dspath, "geoip.mmdb")
-	if err := os.Rename(path, dst); err != nil {
-		return err
-	}
-	return openGeoIP(dst)
-}
-
-// DeleteGeoIP : GeoIP DBを削除する
-func DeleteGeoIP() {
-	closeGeoIP()
-	dst := filepath.Join(dspath, "geoip.mmdb")
-	if _, err := os.Stat(dst); err == nil {
-		os.Remove(dst)
-	}
-}
 
 func openGeoIP(path string) error {
 	var err error

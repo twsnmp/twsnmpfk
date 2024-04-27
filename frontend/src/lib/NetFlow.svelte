@@ -7,20 +7,19 @@
     Input,
     Spinner,
     Button,
+    Checkbox,
   } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import {
-    GetTraps,
-    ExportTraps,
-    GetDefaultPolling,
-    DeleteAllTraps,
+    GetNetFlow,
+    ExportNetFlow,
+    DeleteAllNetFlow,
   } from "../../wailsjs/go/main/App";
-  import { renderTime, getTableLang } from "./common";
+  import { renderTime, getTableLang, renderTimeMili } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
-  import TrapReport from "./TrapReport.svelte";
-  import Polling from "./Polling.svelte";
+  import NetFlowReport from "./NetFlowReport.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import type { datastore, main } from "wailsjs/go/models";
@@ -35,14 +34,21 @@
   let showReport = false;
   let table: any = undefined;
   let selectedCount = 0;
-  let showPolling = false;
   let showFilter = false;
-  const filter: main.TrapFilterEnt = {
+  const filter: main.NetFlowFilterEnt = {
     Start: "",
     End: "",
-    From: "",
-    Type: "",
+    Single: true,
+    SrcAddr: "",
+    SrcPort: 0,
+    SrcLoc: "",
+    DstAddr: "",
+    DstPort: 0,
+    DstLoc: "",
+    TCPFlags: "",
+    Protocol: "",
   };
+
   let showLoading = false;
 
   const showTable = () => {
@@ -71,7 +77,9 @@
 
   const refresh = async () => {
     showLoading = true;
-    logs = await GetTraps(filter);
+    filter.SrcPort *= 1;
+    filter.DstPort *= 1;
+    logs = await GetNetFlow(filter);
     data = [];
     for (let i = 0; i < logs.length; i++) {
       data.push(logs[i]);
@@ -101,23 +109,63 @@
     {
       data: "Time",
       title: $_("Trap.Time"),
-      width: "20%",
-      render: renderTime,
-    },
-    {
-      data: "FromAddress",
-      title: $_("Trap.FromAddress"),
       width: "15%",
+      render: renderTimeMili,
     },
     {
-      data: "TrapType",
-      title: $_("Trap.TrapType"),
-      width: "15%",
+      data: "SrcAddr",
+      title: $_('NetFlow.SrcAddr'),
+      width: "10%",
     },
     {
-      data: "Variables",
-      title: $_("Trap.Variables"),
-      width: "50%",
+      data: "SrcPort",
+      title: $_('NetFlow.Port'),
+      width: "5%",
+    },
+    {
+      data: "SrcLoc",
+      title: $_('NetFlow.Loc'),
+      width: "10%",
+    },
+    {
+      data: "DstAddr",
+      title: $_('NetFlow.DstAddr'),
+      width: "10%",
+    },
+    {
+      data: "DstPort",
+      title: $_('NetFlow.Port'),
+      width: "5%",
+    },
+    {
+      data: "DstLoc",
+      title: $_('NetFlow.Loc'),
+      width: "10%",
+    },
+    {
+      data: "Protocol",
+      title: $_('NetFlow.Protocol'),
+      width: "7%",
+    },
+    {
+      data: "TCPFlags",
+      title: $_('NetFlow.TCPFlags'),
+      width: "8%",
+    },
+    {
+      data: "Packets",
+      title: $_('NetFlow.Packets'),
+      width: "5%",
+    },
+    {
+      data: "Bytes",
+      title: $_('NetFlow.Bytes'),
+      width: "5%",
+    },
+    {
+      data: "Dur",
+      title: $_('NetFlow.Dur'),
+      width: "5%",
     },
   ];
 
@@ -126,11 +174,11 @@
   });
 
   const saveCSV = () => {
-    ExportTraps("csv", filter);
+    ExportNetFlow("csv", filter);
   };
 
   const saveExcel = () => {
-    ExportTraps("excel", filter);
+    ExportNetFlow("excel", filter);
   };
 
   let copied = false;
@@ -158,28 +206,8 @@
 
   let polling: datastore.PollingEnt;
 
-  const watch = async () => {
-    const d = table.rows({ selected: true }).data();
-    if (!d || d.length != 1) {
-      return;
-    }
-    let ip = d[0].FromAddress;
-    const a = ip.split("(");
-    if (a.length > 1) {
-      ip = a[0];
-    }
-    polling = await GetDefaultPolling(ip);
-    polling.Name = `${d[0].TrapType}`;
-    polling.Type = "trap";
-    polling.Mode = "count";
-    polling.Script = "count < 1";
-    polling.Params = d[0].FromAddress;
-    polling.Filter = d[0].TrapType;
-    showPolling = true;
-  };
-
   const deleteAll = async () => {
-    if (await DeleteAllTraps()) {
+    if (await DeleteAllNetFlow()) {
       refresh();
     }
   };
@@ -200,18 +228,6 @@
     <table id="table" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-    {#if selectedCount == 1}
-      <GradientButton
-        shadow
-        color="blue"
-        type="button"
-        on:click={watch}
-        size="xs"
-      >
-        <Icon path={icons.mdiEye} size={1} />
-        {$_("Trap.Polling")}
-      </GradientButton>
-    {/if}
     <GradientButton
       shadow
       color="blue"
@@ -295,9 +311,7 @@
   </div>
 </div>
 
-<TrapReport bind:show={showReport} {logs} />
-
-<Polling bind:show={showPolling} pollingTmp={polling} />
+<NetFlowReport bind:show={showReport} {logs} />
 
 <Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
@@ -326,14 +340,62 @@
         </Button>
       </div>
     </div>
-    <Label class="space-y-2 text-xs">
-      <span>{$_("Trap.FromAddress")} </span>
-      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.From} />
-    </Label>
-    <Label class="space-y-2 text-xs">
-      <span>{$_("Trap.TrapType")}</span>
-      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Type} />
-    </Label>
+    <Checkbox bind:checked={filter.Single}>{$_('NetFlow.Simgle')}</Checkbox>
+    {#if filter.Single}
+      <div class="grid gap-2 grid-cols-3">
+        <Label class="space-y-2 text-xs">
+          <span>IP</span>
+          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcAddr} />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_('NetFlow.Port')}</span>
+          <Input type="number" min=0 max=65554 bind:value={filter.SrcPort} size="sm" />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_('NetFlow.Loc')}</span>
+          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcLoc} />
+        </Label>
+      </div>
+    {:else}
+      <div class="grid gap-2 grid-cols-3">
+          <Label class="space-y-2 text-xs">
+            <span>{$_('NetFlow.SrcAddr')}</span>
+            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcAddr} />
+          </Label>
+          <Label class="space-y-2 text-xs">
+            <span>{$_('NetFlow.Port')}</span>
+            <Input type="number" min=0 max=65554 bind:value={filter.SrcPort} size="sm" />
+          </Label>
+          <Label class="space-y-2 text-xs">
+            <span>{$_('NetFlow.Loc')}</span>
+            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcLoc} />
+          </Label>
+      </div>
+      <div class="grid gap-2 grid-cols-3">
+          <Label class="space-y-2 text-xs">
+            <span>{$_('NetFlow.DstAddr')}</span>
+            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.DstAddr} />
+          </Label>
+          <Label class="space-y-2 text-xs">
+            <span>{$_('NetFlow.Port')}</span>
+            <Input type="number" min=0 max=65554 bind:value={filter.DstPort} size="sm" />
+          </Label>
+          <Label class="space-y-2 text-xs">
+            <span>{$_('NetFlow.Loc')}</span>
+            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.DstLoc} />
+          </Label>
+      </div>
+    {/if}
+    <div class="grid gap-2 grid-cols-2">
+        <Label class="space-y-2 text-xs">
+          <span>{$_('NetFlow.Protocol')}</span>
+          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Protocol} />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_('NetFlow.TCPFlags')}</span>
+          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.TCPFlags} />
+        </Label>
+    </div>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         shadow
