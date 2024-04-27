@@ -196,7 +196,7 @@
         if (c.data == "Time") {
           row.push(renderTime(selected[i][c.data] || "", ""));
         } else {
-          const d = selected[i][c.data] || "" 
+          const d = (selected[i][c.data] || "") + ""; 
           row.push(d.replaceAll("\n"," "));
         }
       }
