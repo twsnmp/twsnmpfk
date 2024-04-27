@@ -384,7 +384,7 @@
       >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiWaveform} size={1} />
-          $_('NetFlowReport.FFT3D')
+          {$_('NetFlowReport.FFT3D')}
         </div>
         <div id="fft3d" />
       </TabItem>
