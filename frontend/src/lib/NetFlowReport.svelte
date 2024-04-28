@@ -1,4 +1,6 @@
 <script lang="ts">
+  import "maplibre-gl/dist/maplibre-gl.css";
+  import { Map as MapGl, NavigationControl, Marker,Popup } from "maplibre-gl";
   import {
     Modal,
     GradientButton,
@@ -9,6 +11,7 @@
   import { tick } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
+  import {GetLocConf} from "../../wailsjs/go/main/App";
   import {
     getNetFlowIPFlowList,
     getNetFlowSenderList,
@@ -263,6 +266,68 @@
     chart = showNetFlowFFT3D("fft3d", fftMap, fftType);
   };
 
+  const getLngLat = (loc: string): [number, number] => {
+    const a = loc.split(",");
+    if (a.length < 2) {
+      return [0, 0];
+    }
+    if (a.length == 2) {
+      return [Number(a[0]), Number(a[1])];
+    }
+    return [Number(a[2]), Number(a[1])];
+  };
+
+  const showMap = async () => {
+    await tick();
+    const locConf = await GetLocConf();
+    const s = locConf.Style.startsWith("{") ? JSON.parse(locConf.Style) : locConf.Style;
+    const map = new MapGl({
+      container: "map",
+      style: s,
+      center: getLngLat(locConf.Center),
+      zoom: locConf.Zoom,
+    });
+    const srcLocs = new Map();
+    const dstLocs = new Map();
+    logs.forEach((l:any) => {
+      if(l.SrcLoc && !l.SrcLoc.startsWith("LOCAL") && !l.SrcLoc.startsWith(",0")) {
+        srcLocs.set(l.SrcLoc,l.SrcAddr + "<br/>" +l.SrcLoc);
+      }
+      if(l.DstLoc && !l.DstLoc.startsWith("LOCAL") && !l.DstLoc.startsWith(",0")) {
+        dstLocs.set(l.DstLoc,l.DstAddr + "<br/>" +l.DstLoc);
+      }
+    });
+    srcLocs.forEach((v,k)=> {
+      if (dstLocs.has(k)) {
+        const marker = new Marker({
+          color: "#00c",
+        }).setLngLat(getLngLat(k))
+        .setPopup(new Popup().setHTML("Both<br/>" + v))
+        .addTo(map);
+      } else {
+        const marker = new Marker({
+          color: "#cc0",
+        }).setLngLat(getLngLat(k))
+        .setPopup(new Popup().setHTML("Only Src<br/>" + v))
+        .addTo(map);
+      }
+    });
+    dstLocs.forEach((v,k)=> {
+      if (!srcLocs.has(k)) {
+        const marker = new Marker({
+          color: "#c00",
+        }).setLngLat(getLngLat(k))
+        .setPopup(new Popup().setHTML("Only Dst<br/>" + v))
+        .addTo(map);
+      }
+    });
+    map.addControl(
+      new NavigationControl({
+        visualizePitch: true,
+      })
+    );
+  }
+
   let copied = false;
   const copy = () => {
     const selected = table.rows({ selected: true }).data();
@@ -387,6 +452,17 @@
           {$_('NetFlowReport.FFT3D')}
         </div>
         <div id="fft3d" />
+      </TabItem>
+      <TabItem
+        on:click={() => {
+          showMap();
+        }}
+      >
+        <div slot="title" class="flex items-center gap-2">
+          <Icon path={icons.mdiMapMarker} size={1} />
+          地図
+        </div>
+        <div id="map" />
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -552,4 +628,10 @@
     width: 98%;
     margin: 0 auto;
   }
+  #map {
+    height: 70vh;
+    width: 98%;
+    margin: 0 auto;
+  }
+
 </style>

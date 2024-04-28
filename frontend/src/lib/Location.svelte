@@ -1,7 +1,7 @@
 <script lang="ts">
   import "maplibre-gl/dist/maplibre-gl.css";
   import { Map, NavigationControl, Marker } from "maplibre-gl";
-  import { GradientButton, Modal, Label, Select,Toast } from "flowbite-svelte";
+  import { GradientButton, Modal, Label, Select} from "flowbite-svelte";
   import { getIcon, getStateColor } from "./common";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -17,7 +17,6 @@
   import NodeReport from "./NodeReport.svelte";
   import NodePolling from "./NodePolling.svelte";
   import { _ } from "svelte-i18n";
-  import { time } from "echarts";
 
   let showEditNode = false;
   let showNodeReport = false;

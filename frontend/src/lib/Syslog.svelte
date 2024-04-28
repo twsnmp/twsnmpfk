@@ -331,7 +331,7 @@
           }
         }
       } catch (e) {
-        console.log(e);
+        console.warn(e);
       }
     }
     m = m.replaceAll(regCut, " ");
