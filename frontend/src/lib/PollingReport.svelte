@@ -52,6 +52,8 @@
   let entList: any = [];
   let selectedEnt = "";
   let pollingLogTable: any = undefined;
+  let resultTable: any = undefined;
+  let resultData: any = [];
 
   const close = () => {
     show = false;
@@ -63,6 +65,7 @@
     if (polling.LogMode > 0) {
       loadLogs();
     }
+    resultData = [];
     if (polling && polling.Result) {
       for (const k of Object.keys(polling.Result)) {
         selectedEnt = k;
@@ -71,8 +74,40 @@
           name: dp.axis,
           value: k,
         });
+        resultData.push({
+          name: k,
+          value: polling.Result[k],
+        });
       }
     }
+    showResultTable();
+  };
+
+  const showResultTable = async () => {
+    await tick();
+    if (resultTable && DataTable.isDataTable("#resultTable")) {
+      resultTable.clear();
+      resultTable.destroy();
+      resultTable = undefined;
+    }
+    resultTable = new DataTable("#resultTable", {
+      columns: [
+        {
+          data: "name",
+          title: $_("PollingReport.Item"),
+        },
+        {
+          data: "value",
+          title: $_("PollingReport.Content"),
+        },
+      ],
+      paging: false,
+      searching: false,
+      info: false,
+      scrollY: "60vh",
+      data: resultData,
+      language: getTableLang(),
+    });
   };
 
   const loadLogs = async () => {
@@ -183,51 +218,50 @@
           open
           on:click={() => {
             chart = undefined;
+            showResultTable();
           }}
         >
           <div slot="title" class="flex items-center gap-2">
             <Icon path={icons.mdiChartPie} size={1} />
             {$_("PollingReport.BasicInfo")}
           </div>
-          <Table striped={true}>
-            <TableHead>
-              <TableHeadCell>{$_("PollingReport.Item")}</TableHeadCell>
-              <TableHeadCell>{$_("PollingReport.Content")}</TableHeadCell>
-            </TableHead>
-            <TableBody tableBodyClass="divide-y">
-              <TableBodyRow>
-                <TableBodyCell>{$_("PollingReport.NodeName")}</TableBodyCell>
-                <TableBodyCell>{node.Name}</TableBodyCell>
-              </TableBodyRow>
-              <TableBodyRow>
-                <TableBodyCell>{$_("PollingReport.Name")}</TableBodyCell>
-                <TableBodyCell>{polling.Name}</TableBodyCell>
-              </TableBodyRow>
-              <TableBodyRow>
-                <TableBodyCell>{$_("PollingReport.State")}</TableBodyCell>
-                <TableBodyCell>
-                  <span
-                    class="mdi {getStateIcon(polling.State)} text-xl"
-                    style="color:{getStateColor(polling.State)};"
-                  />
-                  <span class="ml-2 text-xs text-black dark:text-white"
-                    >{getStateName(polling.State)}</span
-                  >
-                </TableBodyCell>
-              </TableBodyRow>
-              <TableBodyRow>
-                <TableBodyCell>{$_("PollingReport.LastTime")}</TableBodyCell>
-                <TableBodyCell>{renderTime(polling.LastTime, "")}</TableBodyCell
-                >
-              </TableBodyRow>
-              {#each Object.keys(polling.Result) as k}
+          <div class="grid gap-2 grid-cols-2">
+            <Table striped={true}>
+              <TableHead>
+                <TableHeadCell>{$_("PollingReport.Item")}</TableHeadCell>
+                <TableHeadCell>{$_("PollingReport.Content")}</TableHeadCell>
+              </TableHead>
+              <TableBody tableBodyClass="divide-y">
                 <TableBodyRow>
-                  <TableBodyCell>{k}</TableBodyCell>
-                  <TableBodyCell>{polling.Result[k]}</TableBodyCell>
+                  <TableBodyCell>{$_("PollingReport.NodeName")}</TableBodyCell>
+                  <TableBodyCell>{node.Name}</TableBodyCell>
                 </TableBodyRow>
-              {/each}
-            </TableBody>
-          </Table>
+                <TableBodyRow>
+                  <TableBodyCell>{$_("PollingReport.Name")}</TableBodyCell>
+                  <TableBodyCell>{polling.Name}</TableBodyCell>
+                </TableBodyRow>
+                <TableBodyRow>
+                  <TableBodyCell>{$_("PollingReport.State")}</TableBodyCell>
+                  <TableBodyCell>
+                    <span
+                      class="mdi {getStateIcon(polling.State)} text-xl"
+                      style="color:{getStateColor(polling.State)};"
+                    />
+                    <span class="ml-2 text-xs text-black dark:text-white"
+                      >{getStateName(polling.State)}</span
+                    >
+                  </TableBodyCell>
+                </TableBodyRow>
+                <TableBodyRow>
+                  <TableBodyCell>{$_("PollingReport.LastTime")}</TableBodyCell>
+                  <TableBodyCell
+                    >{renderTime(polling.LastTime, "")}</TableBodyCell
+                  >
+                </TableBodyRow>
+              </TableBody>
+            </Table>
+            <table id="resultTable" class="display compact" style="width:99%" />
+          </div>
         </TabItem>
         {#if polling.LogMode > 0}
           <TabItem on:click={showLog}>
