@@ -224,6 +224,7 @@
       data: mibModules,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       language: getTableLang(),
+      stateSave: true,
       order: [[3, "asc"]],
       columns: [
         {
@@ -279,6 +280,7 @@
     }
     selectedIcon = 0;
     iconTable = new DataTable("#iconTable", {
+      stateSave: true,
       order: [[1, "asc"]],
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       columns: [

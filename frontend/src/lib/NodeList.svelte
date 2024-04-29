@@ -27,21 +27,20 @@
   let selectedCount = 0;
 
   const showTable = () => {
-    let order = [
-      [0, "asc"],
-      [2, "asc"],
-    ];
-    if (table && DataTable.isDataTable("#table")) {
-      order = table.order();
+    if (table && DataTable.isDataTable("#nodeListTable")) {
       table.clear();
       table.destroy();
       table = undefined;
     }
     selectedCount = 0;
-    table = new DataTable("#table", {
+    table = new DataTable("#nodeListTable", {
       columns: columns,
       data: data,
-      order: order,
+      stateSave: true,
+      order: [
+        [0, "asc"],
+        [2, "asc"],
+      ],
       pageLength: window.innerHeight > 800 ? 25 : 10,
       language: getTableLang(),
       select: {
@@ -166,7 +165,7 @@
 
 <div class="flex flex-col">
   <div class="m-5 grow">
-    <table id="table" class="display compact" style="width:99%" />
+    <table id="nodeListTable" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1}

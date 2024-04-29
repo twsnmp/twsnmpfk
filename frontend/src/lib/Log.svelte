@@ -15,12 +15,12 @@
   let timer: any = undefined;
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#table")) {
+    if (table && DataTable.isDataTable("#logTable")) {
       table.clear();
       table.destroy();
       table = undefined;
     }
-    table = new DataTable("#table", {
+    table = new DataTable("#logTable", {
       columns: columns,
       paging: false,
       searching:false,
@@ -80,5 +80,5 @@
   });
 </script>
 
-<table id="table" class="display compact" style="width:98%;" />
+<table id="logTable" class="display compact" style="width:98%;" />
 

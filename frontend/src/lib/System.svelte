@@ -22,12 +22,12 @@
   let showLoading = false;
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#table")) {
+    if (table && DataTable.isDataTable("#systemTable")) {
       table.clear();
       table.destroy();
       table = undefined;
     }
-    table = new DataTable("#table", {
+    table = new DataTable("#systemTable", {
       columns: columns,
       paging: false,
       searching: false,
@@ -143,7 +143,7 @@
   <div id="resChart"/>
   <div id="netChart"/>
   <div class="m-5 grow">
-    <table id="table" class="display compact" style="width:99%" />
+    <table id="systemTable" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton

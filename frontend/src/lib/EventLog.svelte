@@ -53,19 +53,18 @@
   ];
 
   const showTable = () => {
-    let order = [[1, "desc"]];
-    if (table && DataTable.isDataTable("#table")) {
-      order = table.order();
+    if (table && DataTable.isDataTable("#eventLogTable")) {
       table.clear();
       table.destroy();
       table = undefined;
     }
-    table = new DataTable("#table", {
+    table = new DataTable("#eventLogTable", {
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       columns: columns,
+      stateSave: true,
       data,
       language: getTableLang(),
-      order,
+      order:[[1,"desc"]],
     });
   };
 
@@ -165,7 +164,7 @@
 <div class="flex flex-col">
   <div id="chart" />
   <div class="m-5 grow">
-    <table id="table" class="display compact" style="width:99%" />
+    <table id="eventLogTable" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton

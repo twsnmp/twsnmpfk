@@ -108,6 +108,7 @@
     }
     pollingLogTable = new DataTable("#pollingLogTable", {
       data: dispLogs,
+      stateSave: true,
       order: [[0, "desc"]],
       language: getTableLang(),
       columns: [

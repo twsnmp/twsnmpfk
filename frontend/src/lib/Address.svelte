@@ -43,9 +43,7 @@
   let showNodeReport = false;
 
   const showArpTable = () => {
-    let order = [[0, "asc"]];
     if (arpTable && DataTable.isDataTable("#arpTable")) {
-      order = arpTable.order();
       arpTable.clear();
       arpTable.destroy();
       arpTable = undefined;
@@ -54,8 +52,9 @@
     arpTable = new DataTable("#arpTable", {
       columns: arpColumns,
       pageLength: window.innerHeight > 800 ? 25 : 10,
+      stateSave: true,
       data: arp,
-      order: order,
+      order: [[0,"asc"]],
       language: getTableLang(),
       select: {
         style: "multi",

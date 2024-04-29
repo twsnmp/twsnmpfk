@@ -29,12 +29,7 @@
   let selectedCount = 0;
 
   const showTable = () => {
-    let order = [
-      [0, "asc"],
-      [1, "asc"],
-    ];
     if (table && DataTable.isDataTable("#nodePollingTable")) {
-      order = table.order();
       table.clear();
       table.destroy();
       table = undefined;
@@ -42,8 +37,12 @@
     selectedCount = 0;
     table = new DataTable("#nodePollingTable", {
       columns: columns,
+      stateSave: true,
       data: data,
-      order: order,
+      order: [
+        [0, "asc"],
+        [1, "asc"],
+      ],
       language: getTableLang(),
       select: {
         style: "multi",

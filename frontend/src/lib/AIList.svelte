@@ -88,19 +88,18 @@
 
   const refresh = async () => {
     data = await GetAIList();
-    let order = [[0, "desc"]];
-    if (table && DataTable.isDataTable("#table")) {
-      order = table.order();
+    if (table && DataTable.isDataTable("#aiListTable")) {
       table.clear();
       table.destroy();
       table = undefined;
     }
     selectedCount = 0;
-    table = new DataTable("#table", {
+    table = new DataTable("#aiListTable", {
       columns: columns,
       pageLength: window.innerHeight > 800 ? 25 : 10,
+      stateSave: true,
       data: data,
-      order,
+      order:[[0,"desc"]],
       language: getTableLang(),
       select: {
         style: "multi",
@@ -122,7 +121,7 @@
 
 <div class="flex flex-col">
   <div class="m-5 grow">
-    <table id="table" class="display compact" style="width:99%" />
+    <table id="aiListTable" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
   {#if selectedCount == 1}

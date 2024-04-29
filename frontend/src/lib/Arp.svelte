@@ -18,9 +18,7 @@
   let arpLogTable :any = undefined;
 
   const showArpLogTable = () => {
-    let order = [[1, "desc"]];
     if (arpLogTable && DataTable.isDataTable("#arpLogTable")) {
-      order = arpLogTable.order();
       arpLogTable.clear();
       arpLogTable.destroy();
       arpLogTable = undefined;
@@ -29,7 +27,8 @@
       columns: arpLogColumns,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       data: arpLogData,
-      order,
+      stateSave: true,
+      order:[[1,"desc"]],
       language: getTableLang(),
     });
   };

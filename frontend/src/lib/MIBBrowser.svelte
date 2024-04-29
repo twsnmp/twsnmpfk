@@ -76,7 +76,7 @@
       table.clear();
       table.destroy(true);
       table = undefined;
-      const e = document.getElementById("table");
+      const e = document.getElementById("mibbrTable");
       if(e) {
         e.innerHTML = `<table id="mibTable" class="display compact" style="width:99%" />`;
       }
@@ -349,7 +349,7 @@
         }}
       />
     </div>
-    <div id="table">
+    <div id="mibbrTable">
       <table id="mibTable" class="display compact" style="width:99%" />
     </div>
     <div class="flex justify-end space-x-2 mr-2">

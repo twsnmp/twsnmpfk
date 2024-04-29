@@ -27,6 +27,7 @@
     tmpTable = new DataTable("#tmpTable", {
       columns: columns,
       data: await GetPollingTemplates(),
+      stateSave: true,
       order: [[0, "asc"]],
       language: getTableLang(),
       select: {

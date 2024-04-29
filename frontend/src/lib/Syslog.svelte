@@ -68,19 +68,18 @@
   ];
 
   const showTable = () => {
-    let order = [[1,"desc"]];
-    if (table && DataTable.isDataTable("#table")) {
-      order = table.order();
+    if (table && DataTable.isDataTable("#syslogTable")) {
       table.clear();
       table.destroy();
       table = undefined;
     }
     selectedCount = 0;
-    table = new DataTable("#table", {
+    table = new DataTable("#syslogTable", {
       columns: columns,
       data: data,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
-      order,
+      stateSave: true,
+      order:[[1,"desc"]],
       language: getTableLang(),
       select: {
         style: "multi",
@@ -619,7 +618,7 @@
 <div class="flex flex-col">
   <div id="chart" />
   <div class="m-5 grow">
-    <table id="table" class="display compact" style="width:99%" />
+    <table id="syslogTable" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1}
