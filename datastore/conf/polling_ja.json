@@ -341,5 +341,24 @@
     "Script": "count < 1",
     "Level": "off",
     "Descr": "ARPログからMACアドレスの変化を検知"
+  },
+  {
+    "Name": "NetFlow統計",
+    "Type": "netflow",
+    "Mode": "stats",
+    "Params": "",
+    "Level": "off",
+    "Descr": "NetFlowの統計",
+    "AutoMode": "disable"
+  },
+  {
+    "Name": "NetFlow通信量測定",
+    "Type": "netflow",
+    "Mode": "traffic",
+    "Filter": "TODO:フィルター条件",
+    "Params": "",
+    "Level": "off",
+    "Descr": "NetFlowの情報から通信量を集計",
+    "AutoMode": "disable"
   }
 ]

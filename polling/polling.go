@@ -187,6 +187,8 @@ func doPolling(pe *datastore.PollingEnt) {
 		doPollingSyslog(pe)
 	case "trap":
 		doPollingTrap(pe)
+	case "netflow":
+		doPollingNetFlow(pe)
 	case "arplog":
 		doPollingArpLog(pe)
 	case "cmd":

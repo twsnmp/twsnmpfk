@@ -217,5 +217,24 @@
     "Script": "count < 1",
     "Level": "off",
     "Descr": "change MAC by arp watch"
+  },
+  {
+    "Name": "NetFlow stats",
+    "Type": "netflow",
+    "Mode": "stats",
+    "Params": "",
+    "Level": "off",
+    "Descr": "NetFlow stats",
+    "AutoMode": "disable"
+  },
+  {
+    "Name": "NetFlow traffic",
+    "Type": "netflow",
+    "Mode": "traffic",
+    "Filter": "TODO:Filter",
+    "Params": "",
+    "Level": "off",
+    "Descr": "NetFlow traffic",
+    "AutoMode": "disable"
   }
 ]

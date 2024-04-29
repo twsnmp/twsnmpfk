@@ -75,6 +75,7 @@ export const typeList = [
   { name: 'SYSLOG', value: 'syslog' },
   { name: 'SNMP TRAP', value: 'trap' },
   { name: 'ARP Log', value: 'arplog' },
+  { name: 'NetFlow', value: 'netflow' },
   { name: 'Command', value: 'cmd' },
   { name: 'SSH', value: 'ssh' },
   { name: 'Report', value: 'report' },
