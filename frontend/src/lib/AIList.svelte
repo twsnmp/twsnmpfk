@@ -88,7 +88,7 @@
 
   const refresh = async () => {
     data = await GetAIList();
-    let order = [[0, "asc"]];
+    let order = [[0, "desc"]];
     if (table && DataTable.isDataTable("#table")) {
       order = table.order();
       table.clear();

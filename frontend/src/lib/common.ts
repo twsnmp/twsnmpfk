@@ -229,26 +229,26 @@ export const renderTimeMili = (t:number,type:string) => {
 }
 
 export const getScoreColor = (s:number) => {
-  if (s > 66) {
+  if (s < 34) {
     return getStateColor('repair')
-  } else if (s >= 50) {
+  } else if (s <= 50) {
     return getStateColor('info')
-  } else if (s > 42) {
+  } else if (s < 68) {
     return getStateColor('warn')
-  } else if (s > 33) {
+  } else if (s < 77) {
     return getStateColor('low')
   }
   return getStateColor('high')
 }
 
 export const getScoreIcon = (s:number) => {
-  if (s > 66) {
+  if (s > 34) {
     return 'mdi-emoticon-excited-outline'
-  } else if (s >= 50) {
+  } else if (s <= 50) {
     return 'mdi-emoticon-outline'
-  } else if (s > 42) {
+  } else if (s < 68) {
     return 'mdi-emoticon-sad-outline'
-  } else if (s > 33) {
+  } else if (s < 77) {
     return 'mdi-emoticon-sick-outline'
   }
   return 'mdi-emoticon-dead-outline'
