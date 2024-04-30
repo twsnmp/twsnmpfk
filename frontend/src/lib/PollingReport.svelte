@@ -130,6 +130,7 @@
   };
 
   const showLog = async () => {
+    showSelectEnt = "";
     await tick();
     showLogTable();
     showLogStateChart("log", logs, zoomCallBack);
@@ -176,19 +177,24 @@
     }
     return l.join(" ");
   };
+
   let chart: any = undefined;
+  let showSelectEnt = "";
 
   const showTimeChart = async () => {
+    showSelectEnt = "time";
     await tick();
     chart = showPollingChart("time", logs, selectedEnt);
   };
 
   const showHistogram = async () => {
+    showSelectEnt = "histogram";
     await tick();
     chart = showPollingHistogram("histogram", logs, selectedEnt);
   };
 
   const showAI = async () => {
+    showSelectEnt = "";
     await tick();
     chart = showAIHeatMap("ai", aiResult.ScoreData);
   };
@@ -218,6 +224,7 @@
           open
           on:click={() => {
             chart = undefined;
+            showSelectEnt = "";
             showResultTable();
           }}
         >
@@ -281,14 +288,6 @@
               <Icon path={icons.mdiCalendarCheck} size={1} />
               {$_("PollingReport.TimeChart")}
             </div>
-            <Select
-              class="mb-2"
-              size="sm"
-              items={entList}
-              bind:value={selectedEnt}
-              on:change={showTimeChart}
-              placeholder={$_("PollingReport.SelectVal")}
-            />
             <div id="time" />
           </TabItem>
           <TabItem on:click={showHistogram}>
@@ -296,14 +295,6 @@
               <Icon path={icons.mdiAppsBox} size={1} />
               {$_("PollingReport.Histogram")}
             </div>
-            <Select
-              class="mb-2"
-              size="sm"
-              items={entList}
-              bind:value={selectedEnt}
-              on:change={showHistogram}
-              placeholder={$_("PollingReport.SelectVal")}
-            />
             <div id="histogram" />
           </TabItem>
           {#if polling.LogMode == 3 && aiResult}
@@ -318,6 +309,26 @@
         {/if}
       </Tabs>
       <div class="flex justify-end space-x-2 mr-2">
+        {#if showSelectEnt == "time"}
+          <Select
+            class="w-64"
+            size="sm"
+            items={entList}
+            bind:value={selectedEnt}
+            on:change={showTimeChart}
+            placeholder={$_("PollingReport.SelectVal")}
+          />
+        {/if}
+        {#if showSelectEnt == "histogram"}
+          <Select
+            class="w-64"
+            size="sm"
+            items={entList}
+            bind:value={selectedEnt}
+            on:change={showHistogram}
+            placeholder={$_("PollingReport.SelectVal")}
+          />
+        {/if}
         <GradientButton
           shadow
           type="button"
