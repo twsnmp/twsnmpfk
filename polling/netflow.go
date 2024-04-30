@@ -96,7 +96,7 @@ func doPollingNetFlowTraffic(pe *datastore.PollingEnt) {
 		totalDur += float64(l.Dur)
 		return true
 	})
-	pe.Result["lastTime"] = et
+	pe.Result["lastTime"] = float64(et)
 	pe.Result["bytes"] = totalBytes
 	pe.Result["packets"] = totalPackets
 	pe.Result["duration"] = totalDur
@@ -175,8 +175,10 @@ func doPollingNetFlowStats(pe *datastore.PollingEnt) {
 	var ntpBytes float64
 	var snmpPackets float64
 	var snmpBytes float64
+	var count float64
 
 	datastore.ForEachNetFlow(st, et, func(l *datastore.NetFlowEnt) bool {
+		count++
 		k := l.SrcAddr + l.DstAddr
 		if _, ok := flowMap[k]; !ok {
 			flowCount++
@@ -246,8 +248,9 @@ func doPollingNetFlowStats(pe *datastore.PollingEnt) {
 		totalDur += float64(l.Dur)
 		return true
 	})
-	pe.Result["lastTime"] = et
+	pe.Result["lastTime"] = float64(et)
 	pe.Result["bytes"] = totalBytes
+	pe.Result["count"] = count
 	pe.Result["packets"] = totalPackets
 	pe.Result["duration"] = totalDur
 	if totalDur > 0 {
