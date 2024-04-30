@@ -97,6 +97,8 @@ func getStringFromIPFIXFieldValue(i interface{}) string {
 		return v
 	case net.IPAddr:
 		return v.String()
+	case net.IP:
+		return v.String()
 	}
 	return ""
 }
@@ -117,6 +119,12 @@ func getIntFromIPFIXFieldValue(i interface{}) int {
 		return int(v)
 	case uint8:
 		return int(v)
+	case int64:
+		return int(v)
+	case uint64:
+		return int(v)
+	case float64:
+		return int(v)
 	}
 	return 0
 }
@@ -130,37 +138,44 @@ func logIPFIX(p *ipfix.Message) {
 			var record = datastore.NetFlowEnt{}
 			first := 0
 			last := 0
+			icmpType := 0
 			for _, f := range dr.Fields {
 				if f.Translated != nil {
 					switch f.Translated.Name {
-					case "srcAddr":
+					case "sourceIPv4Address", "sourceIPv6Address":
 						record.SrcAddr = getStringFromIPFIXFieldValue(f.Translated.Value)
-					case "srcPort":
+					case "sourceTransportPort":
 						record.SrcPort = getIntFromIPFIXFieldValue(f.Translated.Value)
-					case "dstAddr":
+					case "destinationIPv4Address", "destinationIPv6Address":
 						record.DstAddr = getStringFromIPFIXFieldValue(f.Translated.Value)
-					case "dstPort":
+					case "destinationTransportPort":
 						record.DstPort = getIntFromIPFIXFieldValue(f.Translated.Value)
-					case "bytes":
+					case "octetDeltaCount":
 						record.Bytes = getIntFromIPFIXFieldValue(f.Translated.Value)
-					case "packets":
+					case "packetDeltaCount":
 						record.Packets = getIntFromIPFIXFieldValue(f.Translated.Value)
-					case "first":
+					case "flowStartSysUpTime":
 						first = getIntFromIPFIXFieldValue(f.Translated.Value)
-					case "last":
+					case "flowEndSysUpTime":
 						last = getIntFromIPFIXFieldValue(f.Translated.Value)
 					case "tcpControlBits":
 						record.TCPFlags = read.TCPFlags(uint8(getIntFromIPFIXFieldValue(f.Translated.Value)))
 					case "protocolIdentifier":
 						record.Protocol = read.Protocol(uint8(getIntFromIPFIXFieldValue(f.Translated.Value)))
-					case "tos":
+					case "ipClassOfService":
 						record.ToS = getIntFromIPFIXFieldValue(f.Translated.Value)
+					case "icmpTypeCodeIPv6", "icmpTypeCodeIPv4":
+						icmpType = getIntFromIPFIXFieldValue(f.Translated.Value)
 					}
 				}
 			}
 			record.Dur = float64(last-first) / 100
 			record.SrcLoc = datastore.GetLoc(record.SrcAddr)
 			record.DstLoc = datastore.GetLoc(record.DstAddr)
+			if icmpType > 0 && strings.Contains(record.Protocol, "icmp") {
+				record.SrcPort = icmpType / 256
+				record.DstPort = icmpType % 256
+			}
 			s, err := json.Marshal(record)
 			if err != nil {
 				continue
