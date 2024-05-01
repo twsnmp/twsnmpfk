@@ -64,6 +64,10 @@
     node = await GetNode(polling.NodeID);
     if (polling.LogMode > 0) {
       loadLogs();
+    } else {
+      logs = undefined;
+      dispLogs = [];
+      aiResult = undefined;
     }
     resultData = [];
     if (polling && polling.Result) {
