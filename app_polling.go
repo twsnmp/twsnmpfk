@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 
+	wails "github.com/wailsapp/wails/v2/pkg/runtime"
+
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/polling"
@@ -85,6 +87,26 @@ func (a *App) DeletePollings(ids []string) {
 		Type:  "user",
 		Level: "info",
 		Event: fmt.Sprintf(i18n.Trans("Delete Polling(%d)"), len(ids)),
+	})
+}
+
+// DeletePollingLogs delete polling logs
+func (a *App) DeletePollingLogs(ids []string) {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm delete"),
+		Message:       i18n.Trans("Do you want to delete?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return
+	}
+	datastore.ClearPollingLogs(ids)
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: fmt.Sprintf(i18n.Trans("Delete Polling logs(%d)"), len(ids)),
 	})
 }
 

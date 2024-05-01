@@ -8,6 +8,7 @@
     GetNodes,
     GetPollings,
     DeletePollings,
+    DeletePollingLogs,
     ExportPollings,
     GetDefaultPolling,
   } from "../../wailsjs/go/main/App";
@@ -112,6 +113,14 @@
     }
     await DeletePollings(selected.toArray());
     table.rows({ selected: true }).remove().draw();
+  };
+
+  const deletePollingLogs = async () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length < 1) {
+      return;
+    }
+    await DeletePollingLogs(selected.toArray());
   };
 
   const columns = [
@@ -224,6 +233,16 @@
       </GradientButton>
     {/if}
     {#if selectedCount > 0}
+      <GradientButton
+        shadow
+        color="red"
+        type="button"
+        on:click={deletePollingLogs}
+        size="xs"
+      >
+        <Icon path={icons.mdiTrashCan} size={1} />
+        {$_('PollingList.DeleteLogs')}
+      </GradientButton>
       <GradientButton
         shadow
         color="red"

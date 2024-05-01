@@ -282,10 +282,17 @@ type ArpLogEnt struct {
 // GetArpLogsは、最新のARP Logを返します。
 func (a *App) GetArpLogs() []*ArpLogEnt {
 	ret := []*ArpLogEnt{}
+	nodeMap := make(map[string]string)
 	datastore.ForEachLastArpLogs(func(l *datastore.ArpLogEnt) bool {
 		node := ""
-		if n := datastore.FindNodeFromIP(l.IP); n != nil {
-			node = n.Name
+		var ok bool
+		if node, ok = nodeMap[l.IP]; !ok {
+			if n := datastore.FindNodeFromIP(l.IP); n != nil {
+				node = n.Name
+				nodeMap[l.IP] = n.Name
+			} else {
+				nodeMap[l.IP] = ""
+			}
 		}
 		ret = append(ret, &ArpLogEnt{
 			Time:      l.Time,

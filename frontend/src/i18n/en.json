@@ -604,7 +604,8 @@
     "State": "State",
     "Type": "Type",
     "FailAction": "Fail ",
-    "RepairAction": "Repair"
+    "RepairAction": "Repair",
+    "DeleteLogs": "Delete logs"
   },
   "PollingReport": {
     "AI": "AI",

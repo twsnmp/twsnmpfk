@@ -37,6 +37,8 @@ export function DeleteLine(arg1:string):Promise<boolean>;
 
 export function DeleteNodes(arg1:Array<string>):Promise<void>;
 
+export function DeletePollingLogs(arg1:Array<string>):Promise<void>;
+
 export function DeletePollings(arg1:Array<string>):Promise<void>;
 
 export function ExportAny(arg1:string,arg2:main.ExportData):Promise<string>;

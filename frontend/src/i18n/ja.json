@@ -592,7 +592,8 @@
     "Delete": "削除",
     "Reload": "更新",
     "FailAction": "障害",
-    "RepairAction": "復帰"
+    "RepairAction": "復帰",
+    "DeleteLogs": "ログ削除"
   },
   "PollingReport": {
     "State": "状態",

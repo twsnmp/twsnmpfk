@@ -56,6 +56,9 @@ var transMap = map[string]map[string]string{
 	"Delete Polling(%d)": {
 		"ja": "ポーリングを削除(%d件)",
 	},
+	"Delete Polling logs(%d)": {
+		"ja": "ポーリングログを削除(%d件)",
+	},
 	"AI report:%s(%s):%f": {
 		"ja": "AI分析レポート:%s(%s):%f",
 	},

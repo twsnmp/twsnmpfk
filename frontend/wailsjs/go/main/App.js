@@ -66,6 +66,10 @@ export function DeleteNodes(arg1) {
   return window['go']['main']['App']['DeleteNodes'](arg1);
 }
 
+export function DeletePollingLogs(arg1) {
+  return window['go']['main']['App']['DeletePollingLogs'](arg1);
+}
+
 export function DeletePollings(arg1) {
   return window['go']['main']['App']['DeletePollings'](arg1);
 }

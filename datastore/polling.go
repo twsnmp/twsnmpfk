@@ -119,7 +119,7 @@ func DeletePollings(ids []string) error {
 		}
 		return nil
 	})
-	go clearDeletedPollingLogs(ids)
+	go ClearPollingLogs(ids)
 	log.Printf("DeletePollings dur=%v", time.Since(st))
 	return nil
 }
@@ -202,22 +202,8 @@ func ForEachLastPollingLog(pollingID string, f func(*PollingLogEnt) bool) error 
 	})
 }
 
-// ClearPollingLog : ポーリングログを削除する
-func ClearPollingLog(pollingID string) error {
-	st := time.Now()
-	return db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("pollingLogs"))
-		if b == nil {
-			return fmt.Errorf("bucket pollingLogs not found")
-		}
-		b.DeleteBucket([]byte(pollingID))
-		log.Printf("ClearPollingLog id=%s,dur=%v", pollingID, time.Since(st))
-		return nil
-	})
-}
-
-// clearDeletedPollingLogs : ポーリングログの削除をまとめて行う
-func clearDeletedPollingLogs(ids []string) error {
+// ClearPollingLogs : ポーリングログの削除をまとめて行う
+func ClearPollingLogs(ids []string) error {
 	st := time.Now()
 	return db.Batch(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("pollingLogs"))
@@ -227,7 +213,7 @@ func clearDeletedPollingLogs(ids []string) error {
 		for _, id := range ids {
 			b.DeleteBucket([]byte(id))
 		}
-		log.Printf("clearDeletedPollingLogs dur=%v", time.Since(st))
+		log.Printf("ClearPollingLogs dur=%v", time.Since(st))
 		return nil
 	})
 }
