@@ -111,6 +111,7 @@
   };
 
   const loadLogs = async () => {
+    dispLogs = [];
     logs = await GetPollingLogs(id);
     for (let i = 0; i < logs.length; i++) {
       dispLogs.push(logs[i]);
