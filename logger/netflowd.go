@@ -161,7 +161,26 @@ func logIPFIX(p *ipfix.Message) {
 					case "tcpControlBits":
 						record.TCPFlags = read.TCPFlags(uint8(getIntFromIPFIXFieldValue(f.Translated.Value)))
 					case "protocolIdentifier":
-						record.Protocol = read.Protocol(uint8(getIntFromIPFIXFieldValue(f.Translated.Value)))
+						pi := uint8(getIntFromIPFIXFieldValue(f.Translated.Value))
+						switch pi {
+						case 1:
+							record.Protocol = "icmp"
+						case 2:
+							record.Protocol = "igmp"
+						case 6:
+							record.Protocol = "tcp"
+						case 8:
+							record.Protocol = "egp"
+						case 17:
+							record.Protocol = "udp"
+						case 58:
+							record.Protocol = "ipv6-icmp"
+						default:
+							record.Protocol = read.Protocol(pi)
+							if record.Protocol == "" {
+								record.Protocol = fmt.Sprintf("%d", pi)
+							}
+						}
 					case "ipClassOfService":
 						record.ToS = getIntFromIPFIXFieldValue(f.Translated.Value)
 					case "icmpTypeCodeIPv6", "icmpTypeCodeIPv4":
