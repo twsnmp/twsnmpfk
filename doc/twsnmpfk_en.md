@@ -917,6 +917,95 @@ This is a report displayed in the source host, type, and three -dimensional grap
 
 ![h:400 center](../frontend/src/help/en/2023-12-03_12-00-49.png)
 
+
+---
+### NetFlow
+
+This is the analysis screen of Netflow.
+
+![h:400 center](2024-05-02_17-24-41.png)
+
+---
+#### Explanation of table items
+
+
+| Items | Contents |
+| ---- | ---- |
+| Date and time | The date and time of receiving Netflow.|
+| Sending source | It is the source IP.|
+| Port | It is the port number of the source.|
+| Location | It is the source of the source.GEOIP DB is required.|
+| Address | IP for the destination.|
+| Port | The destination port number.|
+| Location | It is the destination position.GEOIP DB is required.|
+---
+| Items | Contents |
+| ---- | ---- |
+| Protocol | Protocol such as TCP/UDP/ICMP.|
+| TCP flag | TCP flag.|
+| Packet | The number of sending packets.|
+| Byte | The number of sending bytes.|
+| Period | Flow communication time.|
+
+---
+
+#### Button
+
+| Items | Contents |
+| ---- | ---- |
+| Filter | Specify the search conditions and display Netflow.|
+| Delete all logs | Delete all Netflow.|
+| Copy | Copy the selected log.|
+| Report | Displays Netflow analysis reports.|
+| CSV | Export Netflow to CSV file.|
+| Excel | Export Netflow to Excel file.|
+| Update | Update the Netflow list to the latest state.|
+
+
+---
+
+#### Filter item
+
+It is a filter for netflow search.
+
+![center](2024-05-02_17-24-58.png)
+
+---
+| Items | Contents |
+| ---- | ---- |
+| Start date and time | Specify the date and time of the search start.|
+| End date and time | Specify the date and time of the search termination.|
+| Simple mode | Mode to apply IP, port, and position in both directions.|
+| IP | In the case of simple mode, specify the source and destination IP.|
+| Port | In the case of simple mode, specify the source and destination port.|
+| Location | Specify the source and destination position in the case of simple mode.|
+---
+| Items | Contents |
+| ---- | ---- |
+| Sending source IP | Specify the source IP.|
+| Port | Specify the source port.|
+| Location | Specify the source position.|
+| Destination IP | Specify the destination IP.|
+| Port | Specify the destination port.|
+| Location | Specify the destination position.|
+| Protocol | Specify the protocol name.|
+| TCP flag | Specify the TCP flag.|
+
+---
+#### Netflow report
+
+| Report name | Contents |
+| ---- | ---- |
+| Heat Map | Heat map by time zone of Netflow's receiving number.|
+| Histogram | Histgram of numerical data.|
+| Traffic | This is a time -series graph of traffic.|
+| TOP List | This is a ranking report for each item.|
+| TOP list (3D) | Ranking reports for each item are displayed in 3D graphs.|
+| IP Pair Flow | The combination of communication is displayed in a graph.|
+| FFT Analysis | Analyzing the communication cycle with FFT.|
+| FFT Analysis (3D) | Analyze the communication cycle with FFT and display it on the 3D graph.|
+| Map | Display the position of the IP address on the map.|
+
 ---
 ## ARP warch log
 
