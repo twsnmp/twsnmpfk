@@ -19,7 +19,11 @@ func (a *App) UpdateMapConf(m datastore.MapConfEnt) bool {
 		datastore.MapConf.Community != m.Community ||
 		datastore.MapConf.SnmpUser != m.SnmpUser ||
 		datastore.MapConf.SnmpPassword != m.SnmpPassword
+	if m.MapName != datastore.MapConf.MapName {
+		a.setMenu()
+	}
 	datastore.MapConf = m
+
 	return datastore.SaveMapConf() == nil
 }
 

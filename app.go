@@ -16,6 +16,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/wailsapp/wails/v2/pkg/menu"
+	"github.com/wailsapp/wails/v2/pkg/menu/keys"
 	wails "github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"github.com/twsnmp/twsnmpfk/backend"
@@ -58,6 +60,7 @@ func (a *App) startup(ctx context.Context) {
 	if dataStorePath != "" {
 		a.startTWSNMP()
 	}
+	a.setMenu()
 }
 
 func (a *App) shutdown(ctx context.Context) {
@@ -78,6 +81,86 @@ func (a *App) shutdown(ctx context.Context) {
 			log.Println("shutdown wait end")
 			datastore.CloseDB()
 		}
+	}
+}
+
+// Menu
+func (a *App) setMenu() {
+	myMenu := menu.NewMenu()
+	if runtime.GOOS == "darwin" {
+		myMenu.Append(menu.AppMenu())
+		myMenu.Append(menu.EditMenu())
+		if !kiosk {
+			winMenu := myMenu.AddSubmenu("Window")
+			winMenu.AddText("Minimize", keys.CmdOrCtrl("m"), func(cd *menu.CallbackData) {
+				wails.WindowMinimise(a.ctx)
+			})
+			winMenu.AddCheckbox("Zoom", wails.WindowIsMaximised(a.ctx), nil, func(cd *menu.CallbackData) {
+				if wails.WindowIsMaximised(a.ctx) {
+					wails.WindowUnmaximise(a.ctx)
+				} else {
+					wails.WindowMaximise(a.ctx)
+				}
+			})
+			winMenu.AddCheckbox("Full Screen", wails.WindowIsFullscreen(a.ctx), keys.CmdOrCtrl("f"), func(cd *menu.CallbackData) {
+				if wails.WindowIsFullscreen(a.ctx) {
+					wails.WindowUnfullscreen(a.ctx)
+				} else {
+					wails.WindowFullscreen(a.ctx)
+				}
+			})
+			winMenu.AddSeparator()
+			winMenu.AddText("Reload", nil, func(cd *menu.CallbackData) {
+				wails.WindowReload(a.ctx)
+			})
+			winMenu.AddSeparator()
+			winMenu.AddText("TWSNMP FK -"+datastore.MapConf.MapName, nil, func(cd *menu.CallbackData) {
+				wails.WindowUnminimise(a.ctx)
+			})
+		}
+		wails.MenuSetApplicationMenu(a.ctx, myMenu)
+		wails.MenuUpdateApplicationMenu(a.ctx)
+	} else {
+		fileMenu := myMenu.AddSubmenu("File")
+		fileMenu.AddText("About", nil, func(cd *menu.CallbackData) {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.InfoDialog,
+				Title:   "About TWSNMP FK",
+				Message: fmt.Sprintf("TWSNMP FK %s(%s)", version, commit),
+			})
+		})
+		fileMenu.AddText("Quit", keys.CmdOrCtrl("q"), func(cd *menu.CallbackData) {
+			wails.Quit(a.ctx)
+		})
+		if !kiosk {
+			winMenu := myMenu.AddSubmenu("Window")
+			winMenu.AddText("Minimize", keys.CmdOrCtrl("m"), func(cd *menu.CallbackData) {
+				wails.WindowMinimise(a.ctx)
+			})
+			winMenu.AddCheckbox("Zoom", wails.WindowIsMaximised(a.ctx), nil, func(cd *menu.CallbackData) {
+				if wails.WindowIsMaximised(a.ctx) {
+					wails.WindowUnmaximise(a.ctx)
+				} else {
+					wails.WindowMaximise(a.ctx)
+				}
+			})
+			winMenu.AddCheckbox("Full Screen", wails.WindowIsFullscreen(a.ctx), keys.CmdOrCtrl("f"), func(cd *menu.CallbackData) {
+				if wails.WindowIsFullscreen(a.ctx) {
+					wails.WindowUnfullscreen(a.ctx)
+				} else {
+					wails.WindowFullscreen(a.ctx)
+				}
+			})
+			winMenu.AddSeparator()
+			winMenu.AddText("Reload", nil, func(cd *menu.CallbackData) {
+				wails.WindowReload(a.ctx)
+			})
+		}
+	}
+	wails.MenuSetApplicationMenu(a.ctx, myMenu)
+	wails.MenuUpdateApplicationMenu(a.ctx)
+	if datastore.MapConf.MapName != "" {
+		wails.WindowSetTitle(a.ctx, "TWSNMP FK - "+datastore.MapConf.MapName)
 	}
 }
 
@@ -175,6 +258,7 @@ func (a *App) SelectDatastore() bool {
 	}
 	if dataStorePath != "" {
 		a.startTWSNMP()
+		a.setMenu()
 		return true
 	}
 	return false
