@@ -45,6 +45,7 @@ var (
 	busyPollings sync.Map
 )
 var stopPolling = false
+var checkingPolling = false
 
 func Start(ctx context.Context, wg *sync.WaitGroup) error {
 	doPollingCh = make(chan string, maxPolling)
@@ -126,7 +127,11 @@ func pollingBackend(ctx context.Context, wg *sync.WaitGroup) {
 			log.Println("stop polling")
 			return
 		case <-timer.C:
-			checkPolling()
+			if !checkingPolling {
+				go checkPolling()
+			} else {
+				log.Panicln("skip polling check")
+			}
 		case id := <-doPollingCh:
 			pe := datastore.GetPolling(id)
 			if pe != nil && pe.NextTime <= time.Now().UnixNano() {
@@ -140,20 +145,27 @@ func pollingBackend(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 func checkPolling() {
+	checkingPolling = true
+	defer func() {
+		checkingPolling = false
+	}()
 	now := time.Now().UnixNano()
 	list := []*datastore.PollingEnt{}
+	total := 0
+	st := time.Now()
 	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
 		if p.Level != "off" && p.NextTime <= now {
 			if _, busy := busyPollings.Load(p.ID); !busy {
 				list = append(list, p)
 			}
+			total++
 		}
 		return true
 	})
 	if len(list) < 1 {
 		return
 	}
-	log.Printf("check polling len=%d NumGoroutine=%d", len(list), runtime.NumGoroutine())
+	log.Printf("check polling len=%d total=%d NumGoroutine=%d dur=%v", len(list), total, runtime.NumGoroutine(), time.Since(st))
 	sort.Slice(list, func(i, j int) bool {
 		return list[i].NextTime < list[j].NextTime
 	})
