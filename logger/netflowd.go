@@ -237,7 +237,6 @@ func logIPFIX(p *ipfix.Message) {
 				record.SrcPort = icmpType / 256
 				record.DstPort = icmpType % 256
 			}
-			log.Printf("record =%+v", record)
 			s, err := json.Marshal(record)
 			if err != nil {
 				continue
