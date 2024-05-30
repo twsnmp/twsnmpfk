@@ -15,6 +15,13 @@ const ipv4Regex = /^(\d{1,3}\.){3,3}\d{1,3}$/
 const ipv6Regex =
   /^(::)?(((\d{1,3}\.){3}(\d{1,3}){1})?([0-9a-f]){0,4}:{0,2}){1,8}(::)?$/i
 
+  const macRegex =
+  /^[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}$/
+
+export const isMACFormat = (mac:string) => {
+  return macRegex.test(mac)
+}
+
 export const isV4Format = (ip:string) => {
   return ipv4Regex.test(ip)
 }

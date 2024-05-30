@@ -882,14 +882,18 @@ type NetFlowEnt struct {
 	SrcAddr  string  `json:"SrcAddr"`
 	SrcPort  int     `json:"SrcPort"`
 	SrcLoc   string  `json:"SrcLoc"`
+	SrcMAC   string  `json:"SrcMAC"`
 	DstAddr  string  `json:"DstAddr"`
 	DstPort  int     `json:"DstPort"`
 	DstLoc   string  `json:"DstLoc"`
+	DstMAC   string  `json:"DstMAC"`
 	Bytes    int     `json:"Bytes"`
 	Packets  int     `json:"Packets"`
 	TCPFlags string  `json:"TCPFlags"`
 	Protocol string  `json:"Protocol"`
 	ToS      int     `json:"ToS"`
+	Start    int64   `json:"Start"`
+	End      int64   `json:"End"`
 	Dur      float64 `json:"Dur"`
 }
 

@@ -99,8 +99,38 @@ func getStringFromIPFIXFieldValue(i interface{}) string {
 		return v.String()
 	case net.IP:
 		return v.String()
+	case net.HardwareAddr:
+		return v.String()
 	}
 	return ""
+}
+
+func getInt64FromIPFIXFieldValue(i interface{}) int64 {
+	switch v := i.(type) {
+	case int:
+		return int64(v)
+	case int32:
+		return int64(v)
+	case uint32:
+		return int64(v)
+	case int16:
+		return int64(v)
+	case uint16:
+		return int64(v)
+	case int8:
+		return int64(v)
+	case uint8:
+		return int64(v)
+	case int64:
+		return v
+	case uint64:
+		return int64(v)
+	case float64:
+		return int64(v)
+	case time.Time:
+		return v.UnixNano()
+	}
+	return 0
 }
 
 func getIntFromIPFIXFieldValue(i interface{}) int {
@@ -144,10 +174,14 @@ func logIPFIX(p *ipfix.Message) {
 					switch f.Translated.Name {
 					case "sourceIPv4Address", "sourceIPv6Address":
 						record.SrcAddr = getStringFromIPFIXFieldValue(f.Translated.Value)
+					case "sourceMacAddress":
+						record.SrcMAC = getStringFromIPFIXFieldValue(f.Translated.Value)
 					case "sourceTransportPort":
 						record.SrcPort = getIntFromIPFIXFieldValue(f.Translated.Value)
 					case "destinationIPv4Address", "destinationIPv6Address":
 						record.DstAddr = getStringFromIPFIXFieldValue(f.Translated.Value)
+					case "destinationMacAddress":
+						record.DstMAC = getStringFromIPFIXFieldValue(f.Translated.Value)
 					case "destinationTransportPort":
 						record.DstPort = getIntFromIPFIXFieldValue(f.Translated.Value)
 					case "octetDeltaCount":
@@ -158,6 +192,10 @@ func logIPFIX(p *ipfix.Message) {
 						first = getIntFromIPFIXFieldValue(f.Translated.Value)
 					case "flowEndSysUpTime":
 						last = getIntFromIPFIXFieldValue(f.Translated.Value)
+					case "flowStartMilliseconds":
+						record.Start = getInt64FromIPFIXFieldValue(f.Translated.Value)
+					case "flowEndMilliseconds":
+						record.End = getInt64FromIPFIXFieldValue(f.Translated.Value)
 					case "tcpControlBits":
 						record.TCPFlags = read.TCPFlags(uint8(getIntFromIPFIXFieldValue(f.Translated.Value)))
 					case "protocolIdentifier":
@@ -188,13 +226,18 @@ func logIPFIX(p *ipfix.Message) {
 					}
 				}
 			}
-			record.Dur = float64(last-first) / 100
+			if last > 0 {
+				record.Dur = float64(last-first) / 100
+			} else if record.Start > 0 {
+				record.Dur = float64((record.End - record.Start)) / (1000 * 1000 * 1000)
+			}
 			record.SrcLoc = datastore.GetLoc(record.SrcAddr)
 			record.DstLoc = datastore.GetLoc(record.DstAddr)
 			if icmpType > 0 && strings.Contains(record.Protocol, "icmp") {
 				record.SrcPort = icmpType / 256
 				record.DstPort = icmpType % 256
 			}
+			log.Printf("record =%+v", record)
 			s, err := json.Marshal(record)
 			if err != nil {
 				continue

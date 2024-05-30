@@ -342,6 +342,10 @@
     " {\n          showFFT3D();\n        }}\n      >\n        ",
     " {\n            showTopList();\n          }}\n        />\n        ",
     " {\n            showTopList3D();\n          }}\n        />\n        ",
-    " {\n            updateFFT();\n          }}\n        />\n        "
+    " {\n            updateFFT();\n          }}\n        />\n        ",
+    " {\n          showMap();\n        }}\n      >\n        ",
+    " {\n            showFlow();\n          }}\n        />\n        ",
+    "Only Src<br/>",
+    "Only Dst<br/>"
   ]
 }

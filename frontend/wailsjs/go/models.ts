@@ -548,14 +548,18 @@ export namespace datastore {
 	    SrcAddr: string;
 	    SrcPort: number;
 	    SrcLoc: string;
+	    SrcMAC: string;
 	    DstAddr: string;
 	    DstPort: number;
 	    DstLoc: string;
+	    DstMAC: string;
 	    Bytes: number;
 	    Packets: number;
 	    TCPFlags: string;
 	    Protocol: string;
 	    ToS: number;
+	    Start: number;
+	    End: number;
 	    Dur: number;
 	
 	    static createFrom(source: any = {}) {
@@ -568,14 +572,18 @@ export namespace datastore {
 	        this.SrcAddr = source["SrcAddr"];
 	        this.SrcPort = source["SrcPort"];
 	        this.SrcLoc = source["SrcLoc"];
+	        this.SrcMAC = source["SrcMAC"];
 	        this.DstAddr = source["DstAddr"];
 	        this.DstPort = source["DstPort"];
 	        this.DstLoc = source["DstLoc"];
+	        this.DstMAC = source["DstMAC"];
 	        this.Bytes = source["Bytes"];
 	        this.Packets = source["Packets"];
 	        this.TCPFlags = source["TCPFlags"];
 	        this.Protocol = source["Protocol"];
 	        this.ToS = source["ToS"];
+	        this.Start = source["Start"];
+	        this.End = source["End"];
 	        this.Dur = source["Dur"];
 	    }
 	}

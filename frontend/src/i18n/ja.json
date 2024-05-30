@@ -757,13 +757,11 @@
     "Packets": "パケット",
     "Bytes": "バイト",
     "Dur": "期間",
-    "Simgle": "簡単モード"
-  },
-  "NetFlowREport": {
-    "Size": "サイズ",
-    "Sec": "周期"
+    "Single": "簡単モード"
   },
   "NetFlowReport": {
+    "Size": "サイズ",
+    "Sec": "周期",
     "Dur": "通信時間",
     "Speed": "通信速度",
     "Bytes": "バイト",
@@ -782,12 +780,18 @@
     "Traffic": "トラフィック",
     "TopLIst": "TOPリスト",
     "TopList3D": "TOPリスト(3D)",
-    "FlowGraph": "IPペアーフロー",
+    "FlowGraph": "フロー分析",
     "FFT": "FFT分析",
     "FFT3D": "FFT分析(3D)",
     "DataType": "データ種別",
     "SumType": "集計種別",
     "FlowType": "フロー表示種別",
-    "DIspType": "表示切り替え"
+    "DIspType": "表示切り替え",
+    "Map": "地図",
+    "SrcMacIP": "Src MAC to IP",
+    "SrcDstMac": "送信元MACと宛先MAC",
+    "SrcDstIP": "送信元IPと宛先IP",
+    "DstMacIP": "宛先MACとIP",
+    "FlowMode": "集計方法"
   }
 }

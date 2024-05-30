@@ -755,15 +755,13 @@
     "Packets": "Packets",
     "Port": "Port",
     "Protocol": "Protocol",
-    "Simgle": "Single Mode",
+    "Single": "Single Mode",
     "SrcAddr": "Src Addr",
     "TCPFlags": "TCP Flags"
   },
-  "NetFlowREport": {
-    "Sec": "Sec",
-    "Size": "Size"
-  },
   "NetFlowReport": {
+    "Sec": "Sec",
+    "Size": "Size",
     "BPS": "BPS",
     "Bytes": "Bytes",
     "Circular": "Circular",
@@ -788,6 +786,11 @@
     "TopList3D": "Top list",
     "TopLIst": "Top list",
     "Total": "Total",
-    "Traffic": "Traffic"
+    "Traffic": "Traffic",
+    "Map": "Map",
+    "DstMacIP": "Dst MAC to IP",
+    "FlowMode": "Graph mode",
+    "SrcDstIP": "Src IP to Dst IP",
+    "SrcDstMac": "Src MAC to Dst MAC"
   }
 }

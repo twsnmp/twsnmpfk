@@ -1,7 +1,7 @@
 import * as echarts from 'echarts';
 import * as ecStat from 'echarts-stat';
 import 'echarts-gl';
-import { isPrivateIP, isV4Format } from './utils.js'
+import { isMACFormat, isPrivateIP, isV4Format } from './utils.js'
 import { doFFT } from './fft.js'
 
 
@@ -15,21 +15,11 @@ const makeNetFlowHistogram = (div:string) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const option = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     toolbox: {
       iconStyle: {
         color: '#ccc',
@@ -132,21 +122,11 @@ const makeNetFlowTraffic = (div:string, type:string) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const option = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     toolbox: {
       iconStyle: {
         color: '#ccc',
@@ -348,28 +328,10 @@ export const showNetFlowTop = (div : string, list:any, type:string) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   chart.setOption({
     title: {
       show: false,
-    },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {
       trigger: 'axis',
@@ -582,43 +544,63 @@ export const getNetFlowIPFlowList = (logs:any) => {
   return r
 }
 
-export const showNetFlowGraph = (div:string, logs:any, type:string) => {
+export const showNetFlowGraph = (div:string, logs:any,mode :number, type:string) => {
   const nodeMap = new Map()
   const edgeMap = new Map()
   logs.forEach((l:any) => {
-    let ek = l.SrcAddr + '|' + l.DstAddr
+    let n1 = "";
+    let n2 = "";
+    switch (mode) {
+      case 1:
+        n1 = l.SrcMAC;
+        n2 = l.DstMAC;
+        break;
+      case 2:
+        n1 = l.SrcAddr;
+        n2 = l.SrcMAC;
+        break;
+      case 3:
+        n1 = l.DstAddr;
+        n2 = l.DstMAC;
+        break;
+      default:
+        n1 = l.SrcAddr;
+        n2 = l.DstAddr;
+        break;
+    }
+    let ek = n1 + '|' + n2
     let e = edgeMap.get(ek)
     if (!e) {
-      ek = l.DstAddr + '|' + l.SrcAddr
+      ek = n2 + '|' + n1
       e = edgeMap.get(ek)
     }
     if (!e) {
       edgeMap.set(ek, {
-        source: l.SrcAddr,
-        target: l.DstAddr,
+        source: n1,
+        target: n2,
         value: l.Bytes,
       })
     } else {
       e.value += l.Bytes
     }
-    let n = nodeMap.get(l.Src)
+    let n = nodeMap.get(n1)
     if (!n) {
-      nodeMap.set(l.SrcAddr, {
-        name: l.SrcAddr,
+      nodeMap.set(n1, {
+        name: n1,
         value: l.Bytes,
         draggable: true,
-        category: getNodeCategory(l.SrcAddr),
+        category: getNodeCategory(n1),
       })
     } else {
       n.value += l.Bytes
     }
-    n = nodeMap.get(l.DstAddr)
+    n = nodeMap.get(n2)
     if (!n) {
-      nodeMap.set(l.DstAddr, {
-        name: l.DstAddr,
+      nodeMap.set(n2, {
+        name: n2,
         value: 0,
         draggable: true,
-        category: getNodeCategory(l.DstAddr),
+        category: getNodeCategory(n2),
       })
     }
   })
@@ -640,6 +622,7 @@ export const showNetFlowGraph = (div:string, logs:any, type:string) => {
     { name: 'IPv6 Private' },
     { name: 'IPv4 Global' },
     { name: 'IPV6 Global' },
+    { name: 'MAC Address' },
   ]
   let mul = 1.0
   if (type === 'gl') {
@@ -658,34 +641,16 @@ export const showNetFlowGraph = (div:string, logs:any, type:string) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const options :any = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     grid: {
       left: '7%',
       right: '4%',
       bottom: '3%',
       containLabel: true,
-    },
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {
       trigger: 'item',
@@ -708,7 +673,7 @@ export const showNetFlowGraph = (div:string, logs:any, type:string) => {
         }),
       },
     ],
-    color: ['#1f78b4', '#a6cee3', '#e31a1c', '#fb9a99'],
+    color: ['#1f78b4', '#a6cee3', '#e31a1c', '#fb9a99', '#fbca00'],
     animationDurationUpdate: 1500,
     animationEasingUpdate: 'quinticInOut',
     series: [],
@@ -716,7 +681,7 @@ export const showNetFlowGraph = (div:string, logs:any, type:string) => {
   if (type === 'circular') {
     options.series = [
       {
-        name: 'IP Flows',
+        name: 'Flows',
         type: 'graph',
         layout: 'circular',
         circular: {
@@ -727,11 +692,12 @@ export const showNetFlowGraph = (div:string, logs:any, type:string) => {
         categories,
         roam: true,
         label: {
+          show: true,
           position: 'right',
           formatter: '{b}',
-          fontSize: 8,
+          fontSize: 10,
           fontStyle: 'normal',
-          color: '#ccc',
+          color: '#eee',
         },
         lineStyle: {
           color: 'source',
@@ -742,7 +708,7 @@ export const showNetFlowGraph = (div:string, logs:any, type:string) => {
   } else if (type === 'gl') {
     options.series = [
       {
-        name: 'IP Flows',
+        name: 'Flows',
         type: 'graphGL',
         nodes,
         edges,
@@ -778,18 +744,19 @@ export const showNetFlowGraph = (div:string, logs:any, type:string) => {
         },
         categories,
         label: {
+          show: true,
           position: 'right',
           formatter: '{b}',
-          fontSize: 8,
+          fontSize: 10,
           fontStyle: 'normal',
-          color: '#ccc',
+          color: '#eee',
         },
       },
     ]
   } else {
     options.series = [
       {
-        name: 'IP Flows',
+        name: 'Flows',
         type: 'graph',
         layout: 'force',
         data: nodes,
@@ -799,9 +766,9 @@ export const showNetFlowGraph = (div:string, logs:any, type:string) => {
         label: {
           position: 'right',
           formatter: '{b}',
-          fontSize: 8,
+          fontSize: 10,
           fontStyle: 'normal',
-          color: '#ccc',
+          color: '#eee',
         },
         lineStyle: {
           color: 'source',
@@ -815,6 +782,9 @@ export const showNetFlowGraph = (div:string, logs:any, type:string) => {
 }
 
 const getNodeCategory = (ip:string) => {
+  if (isMACFormat(ip)){
+    return 4
+  }
   if (isPrivateIP(ip)) {
     if (isV4Format(ip)) {
       return 0
@@ -914,24 +884,6 @@ export const showNetFlowService3D = (div:string, logs:any, type:string) => {
   const options = {
     title: {
       show: false,
-    },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {},
     animationDurationUpdate: 1500,
@@ -1122,28 +1074,10 @@ export const showNetFlowSender3D = (div:string, logs:any, type:string) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const options = {
     title: {
       show: false,
-    },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {},
     animationDurationUpdate: 1500,
@@ -1339,28 +1273,10 @@ export const showNetFlowIPFlow3D = (div:string, logs:any, type:string) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const options = {
     title: {
       show: false,
-    },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {},
     animationDurationUpdate: 1500,
@@ -1556,21 +1472,11 @@ export const showNetFlowFFT = (div:string, fftMap:any, src:string, type:string) 
       fft.push([e.period, e.magnitude])
     })
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const options = {
     title: {
       show: false,
     },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -1589,7 +1495,6 @@ export const showNetFlowFFT = (div:string, fftMap:any, src:string, type:string) 
       },
       feature: {
         dataZoom: {},
-        saveAsImage: { name: 'twsnmp_' + div },
       },
     },
     dataZoom: [{}],
@@ -1681,28 +1586,10 @@ export const showNetFlowFFT3D = (div:string, fftMap:any, fftType:string) => {
   if (chart) {
     chart.dispose()
   }
-  chart = echarts.init(document.getElementById(div))
+  chart = echarts.init(document.getElementById(div),"dark")
   const options = {
     title: {
       show: false,
-    },
-    backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [
-      {
-        offset: 0,
-        color: '#4b5769',
-      },
-      {
-        offset: 1,
-        color: '#404a59',
-      },
-    ]),
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
     },
     tooltip: {},
     animationDurationUpdate: 1500,

@@ -66,7 +66,7 @@
 
   let histogramType: string = "size";
   const histogramTypes = [
-    { value: "size", name: $_('NetFlowREport.Size') },
+    { value: "size", name: $_('NetFlowReport.Size') },
     { value: "dur", name: $_('NetFlowReport.Dur') },
     { value: "speed", name: $_('NetFlowReport.Speed') },
   ];
@@ -207,17 +207,25 @@
     }
   };
 
-  let flowType: string = "force";
+  let flowType: string = "circular";
   const flowTypes = [
     { value: "force", name: $_('NetFlowReport.Force') },
     { value: "circular", name: $_('NetFlowReport.Circular') },
     { value: "gl", name: $_('NetFlowReport.GL') },
   ];
 
+  let flowMode: number = 0;
+  const flowModes = [
+    { value: 0, name: $_('NetFlowReport.SrcDstIP')},
+    { value: 1, name: $_('NetFlowReport.SrcDstMac')},
+    { value: 2, name: $_('NetFlowReport.SrcMacIP') },
+    { value: 3, name: $_('NetFlowReport.DstMacIP') },
+  ];
+
   const showFlow = async () => {
     await tick();
     tab = "flow";
-    chart = showNetFlowGraph("flow", logs, flowType);
+    chart = showNetFlowGraph("flow", logs, flowMode, flowType);
   };
 
   let fftSrc: string = "Total";
@@ -226,7 +234,7 @@
   let fftType: string = "hz";
   const fftTypes = [
     { value: "hz", name: $_('NetFlowReport.HZ') },
-    { value: "sec", name: $_('NetFlowREport.Sec') },
+    { value: "sec", name: $_('NetFlowReport.Sec') },
   ];
 
   const showFFT = async () => {
@@ -460,7 +468,7 @@
       >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiMapMarker} size={1} />
-          地図
+          {$_('NetFlowReport.Map')}
         </div>
         <div id="map" />
       </TabItem>
@@ -551,6 +559,16 @@
         />
       {/if}
       {#if tab == "flow"}
+        <Select
+          placeholder={$_('NetFlowReport.FlowMode')}
+          class="ml-10 w-48"
+          items={flowModes}
+          bind:value={flowMode}
+          size="sm"
+          on:change={() => {
+            showFlow();
+          }}
+        />
         <Select
           placeholder={$_('NetFlowReport.FlowType')}
           class="ml-10 w-48"

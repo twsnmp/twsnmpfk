@@ -111,38 +111,48 @@
     {
       data: "Time",
       title: $_("Trap.Time"),
-      width: "15%",
+      width: "13%",
       render: renderTimeMili,
     },
     {
       data: "SrcAddr",
       title: $_('NetFlow.SrcAddr'),
-      width: "10%",
+      width: "8%",
     },
     {
       data: "SrcPort",
       title: $_('NetFlow.Port'),
-      width: "5%",
+      width: "4%",
     },
     {
       data: "SrcLoc",
       title: $_('NetFlow.Loc'),
-      width: "10%",
+      width: "8%",
+    },
+    {
+      data: "SrcMAC",
+      title: "MAC",
+      width: "6%",
     },
     {
       data: "DstAddr",
       title: $_('NetFlow.DstAddr'),
-      width: "10%",
+      width: "8%",
     },
     {
       data: "DstPort",
       title: $_('NetFlow.Port'),
-      width: "5%",
+      width: "4%",
     },
     {
       data: "DstLoc",
       title: $_('NetFlow.Loc'),
-      width: "10%",
+      width: "8%",
+    },
+    {
+      data: "DstMAC",
+      title: "MAC",
+      width: "6%",
     },
     {
       data: "Protocol",
@@ -340,7 +350,7 @@
         </Button>
       </div>
     </div>
-    <Checkbox bind:checked={filter.Single}>{$_('NetFlow.Simgle')}</Checkbox>
+    <Checkbox bind:checked={filter.Single}>{$_('NetFlow.Single')}</Checkbox>
     {#if filter.Single}
       <div class="grid gap-2 grid-cols-3">
         <Label class="space-y-2 text-xs">
