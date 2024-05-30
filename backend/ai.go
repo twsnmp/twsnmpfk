@@ -37,11 +37,12 @@ type AIReq struct {
 }
 
 func checkAI() {
+	st := time.Now().Unix()
 	datastore.ForEachPollings(func(pe *datastore.PollingEnt) bool {
 		if pe.LogMode == datastore.LogModeAI {
 			doAI(pe)
 		}
-		return true
+		return time.Now().Unix()-st < 50
 	})
 }
 
@@ -79,7 +80,7 @@ func doAI(pe *datastore.PollingEnt) {
 		log.Printf("make ai data id=%s name=%s err=%v", pe.ID, pe.Name, err)
 		return
 	}
-	if err != nil || len(req.Data) < 10 {
+	if len(req.Data) < 10 {
 		return
 	}
 	nextAIReqTimeMap[pe.ID] = time.Now().Unix() + 60*60
