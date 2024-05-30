@@ -277,7 +277,7 @@
           <Input
             type="number"
             min="5"
-            max="3600"
+            max="86400"
             bind:value={polling.PollInt}
             size="sm"
           />
