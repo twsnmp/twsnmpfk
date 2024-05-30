@@ -791,6 +791,7 @@
     "DstMacIP": "Dst MAC to IP",
     "FlowMode": "Graph mode",
     "SrcDstIP": "Src IP to Dst IP",
-    "SrcDstMac": "Src MAC to Dst MAC"
+    "SrcDstMac": "Src MAC to Dst MAC",
+    "SrcMacIP": "Src MAC to IP"
   }
 }
