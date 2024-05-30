@@ -346,6 +346,8 @@
     " {\n          showMap();\n        }}\n      >\n        ",
     " {\n            showFlow();\n          }}\n        />\n        ",
     "Only Src<br/>",
-    "Only Dst<br/>"
+    "Only Dst<br/>",
+    "Source",
+    "Target"
   ]
 }

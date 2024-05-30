@@ -113,7 +113,13 @@
     "IPDup": "IP duplicate",
     "IPNormal": "IP normal",
     "MACChanged": "MAC  changed",
-    "MACNormal": "MAC  normal"
+    "MACNormal": "MAC  normal",
+    "BPS": "Bytes/Sec",
+    "Bytes": "Bytes",
+    "FrequencyHz": "Hz",
+    "Dur": "Duration",
+    "Packets": "Packets",
+    "PPS": "Packets/Sec"
   },
   "Top": {
     "AI": "AI",
@@ -792,6 +798,8 @@
     "FlowMode": "Graph mode",
     "SrcDstIP": "Src IP to Dst IP",
     "SrcDstMac": "Src MAC to Dst MAC",
-    "SrcMacIP": "Src MAC to IP"
+    "SrcMacIP": "Src MAC to IP",
+    "MACFlow": "MAC to MAC",
+    "SenderMAC": "MAC"
   }
 }

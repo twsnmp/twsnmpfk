@@ -13,7 +13,7 @@
   import * as icons from "@mdi/js";
   import {GetLocConf} from "../../wailsjs/go/main/App";
   import {
-    getNetFlowIPFlowList,
+    getNetFlowFlowList,
     getNetFlowSenderList,
     getNetFlowServiceList,
     showNetFlowHistogram,
@@ -22,7 +22,7 @@
     showNetFlowGraph,
     showNetFlowSender3D,
     showNetFlowService3D,
-    showNetFlowIPFlow3D,
+    showNetFlowFlow3D,
     getNetFlowFFTMap,
     showNetFlowFFT,
     showNetFlowFFT3D,
@@ -41,8 +41,10 @@
   let topList: any = [];
   let fftMap: any = undefined;
   let tab: string = "heatmap";
-  let table: any = undefined;
-  let selectedCount = 0;
+  let tableTop: any = undefined;
+  let selectedCountTop = 0;
+  let tableFlow: any = undefined;
+  let selectedCountFlow = 0;
 
   const onOpen = () => {
     showHeatmap();
@@ -94,8 +96,10 @@
   let topListType: string = "sender";
   const topListTypes = [
     { value: "sender", name: $_('NetFlowReport.Sender') },
+    { value: "sender_mac", name: $_('NetFlowReport.SenderMAC') },
     { value: "service", name: $_('NetFlowReport.Service') },
     { value: "flow", name: $_('NetFlowReport.Flow') },
+    { value: "flow_mac", name: $_('NetFlowReport.MACFlow') },
   ];
 
   let topListDataType: string = "bytes";
@@ -107,7 +111,7 @@
     { value: "pps", name: $_('NetFlowReport.PPS') },
   ];
 
-  const columns = [
+  const columnsTop = [
     {
       data: "Name",
       title: $_('NetFlowReport.Name'),
@@ -135,17 +139,17 @@
     },
   ];
 
-  const showTable = () => {
+  const showTopTable = () => {
     let order = [[1, "desc"]];
-    if (table && DataTable.isDataTable("#topTable")) {
-      order = table.order();
-      table.clear();
-      table.destroy();
-      table = undefined;
+    if (tableTop && DataTable.isDataTable("#topTable")) {
+      order = tableTop.order();
+      tableTop.clear();
+      tableTop.destroy();
+      tableTop = undefined;
     }
-    selectedCount = 0;
-    table = new DataTable("#topTable", {
-      columns: columns,
+    selectedCountTop = 0;
+    tableTop = new DataTable("#topTable", {
+      columns: columnsTop,
       data: topList,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       order,
@@ -154,11 +158,11 @@
         style: "multi",
       },
     });
-    table.on("select", () => {
-      selectedCount = table.rows({ selected: true }).count();
+    tableTop.on("select", () => {
+      selectedCountTop = tableTop.rows({ selected: true }).count();
     });
-    table.on("deselect", () => {
-      selectedCount = table.rows({ selected: true }).count();
+    tableTop.on("deselect", () => {
+      selectedCountTop = tableTop.rows({ selected: true }).count();
     });
   };
 
@@ -166,17 +170,23 @@
     tab = "topList";
     switch (topListType) {
       case "sender":
-        topList = getNetFlowSenderList(logs);
+        topList = getNetFlowSenderList(logs,false);
+        break;
+      case "sender_mac":
+        topList = getNetFlowSenderList(logs,true);
         break;
       case "service":
         topList = getNetFlowServiceList(logs);
         break;
       case "flow":
-        topList = getNetFlowIPFlowList(logs);
+        topList = getNetFlowFlowList(logs,false);
+        break;
+      case "flow_mac":
+        topList = getNetFlowFlowList(logs,true);
         break;
     }
     await tick();
-    showTable();
+    showTopTable();
     chart = showNetFlowTop("topList", topList, topListDataType);
   };
 
@@ -196,13 +206,19 @@
     await tick();
     switch (topListType) {
       case "sender":
-        chart = showNetFlowSender3D("topList3D", logs, topListDataType);
+        chart = showNetFlowSender3D("topList3D", logs, topListDataType,false);
+        break;
+      case "sender_mac":
+        chart = showNetFlowSender3D("topList3D", logs, topListDataType,true);
         break;
       case "service":
         chart = showNetFlowService3D("topList3D", logs, topListDataType);
         break;
       case "flow":
-        chart = showNetFlowIPFlow3D("topList3D", logs, topListDataType);
+        chart = showNetFlowFlow3D("topList3D", logs, topListDataType,false);
+        break;
+      case "flow_mac":
+        chart = showNetFlowFlow3D("topList3D", logs, topListDataType,true);
         break;
     }
   };
@@ -222,11 +238,61 @@
     { value: 3, name: $_('NetFlowReport.DstMacIP') },
   ];
 
+  let flowList :any = [];
+
   const showFlow = async () => {
     await tick();
     tab = "flow";
-    chart = showNetFlowGraph("flow", logs, flowMode, flowType);
+    const r = showNetFlowGraph("flow", logs, flowMode, flowType);
+    chart = r.chart;
+    flowList = r.edges;
+    showFlowTable();
   };
+
+  const columnsFlow = [
+    {
+      data: "source",
+      title: "Source",
+      width: "40%",
+    },
+    {
+      data: "target",
+      title: "Target",
+      width: "40%",
+    },
+    {
+      data: "value",
+      title: $_('NetFlowReport.Bytes'),
+      width: "20%",
+    },
+  ];
+ 
+  const showFlowTable = async () => {
+    let order = [[1, "desc"]];
+    if (tableFlow && DataTable.isDataTable("#flowTable")) {
+      order = tableFlow.order();
+      tableFlow.clear();
+      tableFlow.destroy();
+      tableFlow = undefined;
+    }
+    selectedCountFlow = 0;
+    tableFlow = new DataTable("#flowTable", {
+      columns: columnsFlow,
+      data: flowList,
+      pageLength: window.innerHeight > 1000 ? 25 : 10,
+      order,
+      language: getTableLang(),
+      select: {
+        style: "multi",
+      },
+    });
+    tableFlow.on("select", () => {
+      selectedCountFlow = tableFlow.rows({ selected: true }).count();
+    });
+    tableFlow.on("deselect", () => {
+      selectedCountFlow = tableFlow.rows({ selected: true }).count();
+    });
+  }
 
   let fftSrc: string = "Total";
   const fftSrcs: any = [];
@@ -336,23 +402,42 @@
     );
   }
 
-  let copied = false;
-  const copy = () => {
-    const selected = table.rows({ selected: true }).data();
+  let copiedTop = false;
+  const copyTop = () => {
+    const selected = tableTop.rows({ selected: true }).data();
     let s: string[] = [];
-    const h = columns.map((e: any) => e.title);
+    const h = columnsTop.map((e: any) => e.title);
     s.push(h.join("\t"));
     for (let i = 0; i < selected.length; i++) {
       const row: any = [];
-      for (const c of columns) {
+      for (const c of columnsTop) {
         const d = (selected[i][c.data] || "") + "";
         row.push(d.replaceAll("\n", " "));
       }
       s.push(row.join("\t"));
     }
     copyText(s.join("\n"));
-    copied = true;
-    setTimeout(() => (copied = false), 2000);
+    copiedTop = true;
+    setTimeout(() => (copiedTop = false), 2000);
+  };
+
+  let copiedFlow = false;
+  const copyFlow = () => {
+    const selected = tableFlow.rows({ selected: true }).data();
+    let s: string[] = [];
+    const h = columnsFlow.map((e: any) => e.title);
+    s.push(h.join("\t"));
+    for (let i = 0; i < selected.length; i++) {
+      const row: any = [];
+      for (const c of columnsFlow) {
+        const d = (selected[i][c.data] || "") + "";
+        row.push(d.replaceAll("\n", " "));
+      }
+      s.push(row.join("\t"));
+    }
+    copyText(s.join("\n"));
+    copiedFlow = true;
+    setTimeout(() => (copiedFlow = false), 2000);
   };
 </script>
 
@@ -437,7 +522,12 @@
           <Icon path={icons.mdiFormatListNumbered} size={1} />
           {$_('NetFlowReport.FlowGraph')}
         </div>
-        <div id="flow" />
+        <div class="grid gap-2 grid-cols-5">
+          <div id="flow" class="col-span-3" />
+          <div class="col-span-2">
+            <table id="flowTable" class="display compact" style="width:99%" />
+          </div>
+        </div>
       </TabItem>
       <TabItem
         on:click={() => {
@@ -519,15 +609,15 @@
             updateTopList();
           }}
         />
-        {#if selectedCount > 0}
+        {#if selectedCountTop > 0}
           <GradientButton
             shadow
             color="cyan"
             type="button"
-            on:click={copy}
+            on:click={copyTop}
             size="xs"
           >
-            {#if copied}
+            {#if copiedTop}
               <Icon path={icons.mdiCheck} size={1} />
             {:else}
               <Icon path={icons.mdiContentCopy} size={1} />
@@ -579,6 +669,22 @@
             showFlow();
           }}
         />
+        {#if selectedCountFlow > 0}
+          <GradientButton
+            shadow
+            color="cyan"
+            type="button"
+            on:click={copyFlow}
+            size="xs"
+          >
+            {#if copiedFlow}
+              <Icon path={icons.mdiCheck} size={1} />
+            {:else}
+              <Icon path={icons.mdiContentCopy} size={1} />
+            {/if}
+            Copy
+          </GradientButton>
+        {/if}
       {/if}
       {#if tab == "fft"}
         <Select

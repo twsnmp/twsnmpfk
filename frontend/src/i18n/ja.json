@@ -103,6 +103,7 @@
     "CycleSec": "周期(Sec)",
     "Cycle": "周期",
     "Frequency": "周波数",
+    "FrequencyHz": "周波数(Hz)",
     "Sender": "送信元",
     "LogCount": "ログ件数",
     "FeelsLikeC": "体感温度(℃）",
@@ -113,7 +114,12 @@
     "IPDup": "IP重複",
     "IPNormal": "IP正常",
     "MACChanged": "MAC変化",
-    "MACNormal": "MAC正常"
+    "MACNormal": "MAC正常",
+    "Bytes": "バイト数",
+    "Packets": "パケット数",
+    "BPS": "バイト/秒",
+    "PPS": "パケット/秒",
+    "Dur": "通信期間(Sec)"
   },
   "Log": {
     "Level": "レベル",
@@ -792,6 +798,8 @@
     "SrcDstMac": "送信元MACと宛先MAC",
     "SrcDstIP": "送信元IPと宛先IP",
     "DstMacIP": "宛先MACとIP",
-    "FlowMode": "集計方法"
+    "FlowMode": "集計方法",
+    "SenderMAC": "送信元MAC別",
+    "MACFlow": "MACペアー別"
   }
 }
