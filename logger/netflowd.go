@@ -174,13 +174,13 @@ func logIPFIX(p *ipfix.Message) {
 					switch f.Translated.Name {
 					case "sourceIPv4Address", "sourceIPv6Address":
 						record.SrcAddr = getStringFromIPFIXFieldValue(f.Translated.Value)
-					case "sourceMacAddress":
+					case "sourceMacAddress", "postSourceMacAddress":
 						record.SrcMAC = getStringFromIPFIXFieldValue(f.Translated.Value)
 					case "sourceTransportPort":
 						record.SrcPort = getIntFromIPFIXFieldValue(f.Translated.Value)
 					case "destinationIPv4Address", "destinationIPv6Address":
 						record.DstAddr = getStringFromIPFIXFieldValue(f.Translated.Value)
-					case "destinationMacAddress":
+					case "destinationMacAddress", "postDestinationMacAddress":
 						record.DstMAC = getStringFromIPFIXFieldValue(f.Translated.Value)
 					case "destinationTransportPort":
 						record.DstPort = getIntFromIPFIXFieldValue(f.Translated.Value)
@@ -192,9 +192,9 @@ func logIPFIX(p *ipfix.Message) {
 						first = getIntFromIPFIXFieldValue(f.Translated.Value)
 					case "flowEndSysUpTime":
 						last = getIntFromIPFIXFieldValue(f.Translated.Value)
-					case "flowStartMilliseconds":
+					case "flowStartMilliseconds", "flowStartSeconds", "flowStartNanoSeconds":
 						record.Start = getInt64FromIPFIXFieldValue(f.Translated.Value)
-					case "flowEndMilliseconds":
+					case "flowEndMilliseconds", "flowEndSeconds", "flowEndNanoSeconds":
 						record.End = getInt64FromIPFIXFieldValue(f.Translated.Value)
 					case "tcpControlBits":
 						record.TCPFlags = read.TCPFlags(uint8(getIntFromIPFIXFieldValue(f.Translated.Value)))
