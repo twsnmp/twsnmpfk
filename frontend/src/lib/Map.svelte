@@ -7,6 +7,9 @@
     grid,
     setShowAllItems,
     zoom,
+    horizontal,
+    vertical,
+    circle,
   } from "./map";
   import { onMount, onDestroy } from "svelte";
   import { Modal, GradientButton, Label, Input, Button } from "flowbite-svelte";
@@ -44,6 +47,7 @@
   let showMapMenu: boolean = false;
   let showNodeMenu: boolean = false;
   let showDrawItemMenu: boolean = false;
+  let showFormatNodesMenu: boolean = false;
   let showEditNode: boolean = false;
   let selectedNode: string = "";
   let showEditLine: boolean = false;
@@ -83,6 +87,9 @@
     urls = n.URL.split(",");
     showNodeMenu = true;
   };
+
+  let selectedNodes :any = [];
+
   const callBack = (p: any) => {
     switch (p.Cmd) {
       case "contextMenu":
@@ -114,6 +121,15 @@
         break;
       case "deleteNodes":
         deleteNodes(p.Param);
+        break;
+      case "formatNodes":
+        posX = p.x;
+        posY = p.y - 96;
+        selectedNodes = [];
+        for(const id of p.Nodes) {
+          selectedNodes.push(id);
+        }
+        showFormatNodesMenu = true;
         break;
       case "deleteDrawItems":
         deleteDrawItems(p.Param);
@@ -538,6 +554,58 @@
   </div>
 {/if}
 
+{#if showFormatNodesMenu}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+    <div
+      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
+    >
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showFormatNodesMenu = false;
+          horizontal(selectedNodes);
+          selectedNodes = [];
+        }}
+      >
+        <Icon path={icons.mdiFormatVerticalAlignCenter} size={0.7} />
+        <div>
+          {$_('Map.Horizontal')}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showFormatNodesMenu = false;
+          vertical(selectedNodes);
+          selectedNodes = [];
+        }}
+      >
+        <Icon path={icons.mdiFormatHorizontalAlignCenter} size={0.7} />
+        <div>
+          {$_('Map.Vertical')}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showFormatNodesMenu = false;
+          circle(selectedNodes);
+          selectedNodes = [];
+        }}
+      >
+        <Icon path={icons.mdiCircleOutline} size={0.7} />
+        <div>
+          {$_('Map.Circle')}
+        </div>
+      </div>
+    </div>
+  </div>
+{/if}
+
 <Discover
   bind:show={showDiscover}
   on:close={() => {
@@ -759,5 +827,6 @@
     showMapMenu = false;
     showNodeMenu = false;
     showDrawItemMenu = false;
+    showFormatNodesMenu = false;
   }}
 />

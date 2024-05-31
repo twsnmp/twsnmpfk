@@ -407,7 +407,10 @@
     "BackImage": "Backgrand image",
     "Clear": "Clear",
     "Save": "Save",
-    "Import": "Import"
+    "Import": "Import",
+    "Circle": "Circle",
+    "Horizontal": "Horizontal",
+    "Vertical": "Vertical"
   },
   "MIBBrowser": {
     "Close": "Close",

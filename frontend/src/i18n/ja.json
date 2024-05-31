@@ -395,7 +395,10 @@
     "BackImage": "背景画像",
     "Save": "保存",
     "Clear": "クリア",
-    "Import": "インポート"
+    "Import": "インポート",
+    "Horizontal": "水平に整列",
+    "Vertical": "垂直に整列",
+    "Circle": "円形に整列"
   },
   "MIBBrowser": {
     "ObjectName": "オブジェクト名",

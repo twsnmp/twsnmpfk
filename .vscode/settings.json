@@ -348,6 +348,10 @@
     "Only Src<br/>",
     "Only Dst<br/>",
     "Source",
-    "Target"
+    "Target",
+    " {\n          showFormatNodesMenu = false;\n          horizontal(selectedNodes);\n          selectedNodes = [];\n        }}\n      >\n        ",
+    " {\n          showFormatNodesMenu = false;\n          vertical(selectedNodes);\n          selectedNodes = [];\n        }}\n      >\n        ",
+    " {\n          showFormatNodesMenu = false;\n          circle(selectedNodes);\n          selectedNodes = [];\n        }}\n      >\n        ",
+    " {\n    showMapMenu = false;\n    showNodeMenu = false;\n    showDrawItemMenu = false;\n    showFormatNodesMenu = false;\n  }}\n/>\n"
   ]
 }

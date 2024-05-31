@@ -274,6 +274,86 @@ export const grid = (g:number,test:boolean) => {
   mapRedraw = true;
 };
 
+export const horizontal = (selected:any) => {
+  const list = [];
+  if (!selected || selected.length < 2){
+    return;
+  }
+  selected.sort((a:any,b:any)=>{
+    return nodes[a].X - nodes[b].X;
+  });
+  const id0 = selected[0];
+  for(const id of selected) {
+    if (id != id0) {
+      nodes[id].Y = nodes[id0].Y
+      list.push({
+        ID: id,
+        X: nodes[id].X,
+        Y: nodes[id].Y,
+      })  
+    }
+  }
+  if (list.length > 0) {
+    UpdateNodePos(list);
+  }
+  mapRedraw = true;
+}
+
+export const vertical = (selected:any) => {
+  const list = [];
+  if (!selected || selected.length < 2){
+    return;
+  }
+  selected.sort((a:any,b:any)=>{
+    return nodes[a].Y - nodes[b].Y;
+  });
+  const id0 = selected[0];
+  for(const id of selected) {
+    if (id != id0) {
+      nodes[id].X = nodes[id0].X
+      list.push({
+        ID: id,
+        X: nodes[id].X,
+        Y: nodes[id].Y,
+      })  
+    }
+  }
+  if (list.length > 0) {
+    UpdateNodePos(list);
+  }
+  mapRedraw = true;
+}
+
+export const circle = (selected:any) => {
+  const list = [];
+  if (!selected || selected.length < 2){
+    return;
+  }
+  selected.sort((a:any,b:any)=>{
+    return nodes[a].X - nodes[b].X;
+  });
+  const c = 120 * selected.length;
+  const r = Math.trunc(c/3.14/2);
+  const cx = nodes[selected[0]].X + r;
+  const cy = nodes[selected[0]].Y;
+  for(let i =0; i < selected.length;i++) {
+    const id = selected[i];
+    const d  = (180 - (i*(360 / selected.length)));
+    const a =  d * Math.PI /180;
+    nodes[id].X = Math.trunc(r * Math.cos(a) +cx)
+    nodes[id].Y = Math.trunc(r * Math.sin(a) +cy)
+    list.push({
+        ID: id,
+        X: nodes[id].X,
+        Y: nodes[id].Y,
+    })  
+  }
+  if (list.length > 0) {
+    UpdateNodePos(list);
+  }
+  mapRedraw = true;
+}
+
 export const setShowAllItems = (s:boolean) => {
   showAllItems = s;
   mapRedraw = true;
@@ -573,6 +653,16 @@ const mapMain = (p5:P5) => {
           Cmd: 'contextMenu',
           Node: selectedNodes[0] || '',
           DrawItem: selectedDrawItems[0] || '',
+          x: p5.winMouseX,
+          y: p5.winMouseY,
+        })
+      }
+    }
+    if(p5.mouseButton === p5.RIGHT && selectedNodes.length > 1 ) {
+      if (mapCallBack) {
+        mapCallBack({
+          Cmd: 'formatNodes',
+          Nodes: selectedNodes,
           x: p5.winMouseX,
           y: p5.winMouseY,
         })
