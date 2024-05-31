@@ -332,16 +332,19 @@ export const circle = (selected:any) => {
   selected.sort((a:any,b:any)=>{
     return nodes[a].X - nodes[b].X;
   });
-  const c = 120 * selected.length;
-  const r = Math.trunc(c/3.14/2);
+  const c = 80 * selected.length;
+  const r = Math.min(Math.trunc(c/3.14/2),MAP_SIZE_X / 2 - 80);
   const cx = nodes[selected[0]].X + r;
-  const cy = nodes[selected[0]].Y;
+  let cy = nodes[selected[0]].Y;
+  if (cy - r < 0 ) {
+    cy = 40 + r;
+  }
   for(let i =0; i < selected.length;i++) {
     const id = selected[i];
     const d  = (180 - (i*(360 / selected.length)));
     const a =  d * Math.PI /180;
-    nodes[id].X = Math.trunc(r * Math.cos(a) +cx)
-    nodes[id].Y = Math.trunc(r * Math.sin(a) +cy)
+    nodes[id].X = Math.max(Math.trunc(r * Math.cos(a) +cx),0)
+    nodes[id].Y = Math.max(Math.trunc(r * Math.sin(a) +cy),0)
     list.push({
         ID: id,
         X: nodes[id].X,
