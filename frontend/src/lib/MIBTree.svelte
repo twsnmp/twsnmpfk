@@ -9,7 +9,7 @@
   import { createEventDispatcher } from "svelte";
   import { Tooltip } from "flowbite-svelte";
   export let tree;
-  const { oid, name, MIBInfo, children } = tree;
+  const { oid, name, MIBInfo, children,count } = tree;
   const dispatch = createEventDispatcher();
 
   let mibInfoTooltip = "";
@@ -39,6 +39,9 @@
           }}
         >
           {name}({oid}{type})
+          {#if count >0 } 
+            : {count}
+          {/if}
         </span>
         {#if mibInfoTooltip}
           <Tooltip trigger="hover">{mibInfoTooltip}</Tooltip>
@@ -63,6 +66,9 @@
           }}
         >
           {name}({oid}{type})
+          {#if count >0 } 
+            : {count}
+          {/if}
         </span>
         {#if mibInfoTooltip}
           <Tooltip trigger="hover">

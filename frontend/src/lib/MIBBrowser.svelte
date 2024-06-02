@@ -15,7 +15,7 @@
     Select,
     Toggle,
   } from "flowbite-svelte";
-  import {Icon} from "mdi-svelte-ts";
+  import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
     GetMIBTree,
@@ -37,20 +37,20 @@
 
   let name = "";
   let raw = false;
-  let history :any = [];
+  let history: any = [];
   let selected = "";
   let wait = false;
   let neko = neko1;
   let showNeko = false;
   let nekoNo = 0;
-  const nekos :any = [];
-  let timer :any = undefined;
-  let table  :any= undefined;
-  let columns :any = [];
-  let data :any = [];
+  const nekos: any = [];
+  let timer: any = undefined;
+  let table: any = undefined;
+  let columns: any = [];
+  let data: any = [];
   let selectedCount = 0;
   let showMIBTree = false;
-  let mibTree :any = {
+  let mibTree: any = {
     oid: ".1.3.6.1",
     name: ".iso.org.dod.internet",
     MIBInfo: null,
@@ -59,9 +59,13 @@
   let showHelp = false;
   let isTable = false;
 
+  let showResultMIBTree = false;
+  let resultMibTree: any = {};
 
   const onOpen = async () => {
     mibTree.children = await GetMIBTree();
+    data = [];
+    resultMibTree = {};
     nekos.push(neko1);
     nekos.push(neko2);
     nekos.push(neko3);
@@ -77,7 +81,7 @@
       table.destroy(true);
       table = undefined;
       const e = document.getElementById("mibbrTable");
-      if(e) {
+      if (e) {
         e.innerHTML = `<table id="mibTable" class="display compact" style="width:99%" />`;
       }
     }
@@ -86,8 +90,8 @@
       columns: columns,
       data: data,
       paging: false,
-      searching:true,
-      info:false,
+      searching: true,
+      info: false,
       scrollY: "65vh",
       language: getTableLang(),
       select: {
@@ -120,7 +124,7 @@
     },
   ];
 
-  let mibs :any = undefined;
+  let mibs: any = undefined;
   let scalar = false;
 
   const get = async () => {
@@ -131,6 +135,7 @@
       neko = neko_ng;
     } else {
       updateHistory();
+      resultMibTree = [];
       neko = neko_ok;
       refreshTable();
     }
@@ -138,17 +143,17 @@
   };
 
   const refreshTable = () => {
-    if(!mibs) {
+    if (!mibs) {
       return;
     }
     isTable = name.endsWith("Table");
-    if ( isTable) {
+    if (isTable) {
       tableMIBData();
     } else {
       columns = basicColumns;
       data = [];
       let i = 1;
-      mibs.forEach((e:any) => {
+      mibs.forEach((e: any) => {
         if (
           scalar &&
           (!e.Name.endsWith(".0") || e.Name.split(".").length != 2)
@@ -181,10 +186,10 @@
   };
 
   const tableMIBData = () => {
-    const names :any = [];
-    const indexes :any = [];
-    const rows :any= [];
-    mibs.forEach((e:any) => {
+    const names: any = [];
+    const indexes: any = [];
+    const rows: any = [];
+    mibs.forEach((e: any) => {
       const name = e.Name;
       const val = e.Value;
       const i = name.indexOf(".");
@@ -213,7 +218,7 @@
         data: "Index",
       },
     ];
-    names.forEach((e:any) => {
+    names.forEach((e: any) => {
       columns.push({
         title: e,
         data: e,
@@ -221,14 +226,81 @@
     });
     data = [];
     let i = 1;
-    rows.forEach((e:any) => {
-      const d  :any = { Index: i };
+    rows.forEach((e: any) => {
+      const d: any = { Index: i };
       for (let i = 1; i < e.length; i++) {
         d[names[i - 1]] = e[i];
       }
       data.push(d);
       i++;
     });
+  };
+
+  const updateResultMibTree = () => {
+    const nameMap = new Map();
+    mibs.forEach((e: any) => {
+      const a = e.Name.split(".", 2);
+      const t = getTreePath(a[0], mibTree.children);
+      if (t) {
+        for (const n of t) {
+          if (nameMap.has(n)) {
+            nameMap.set(n, nameMap.get(n) + 1);
+          } else {
+            nameMap.set(n, 1);
+          }
+        }
+      }
+    });
+    const c = makeTreeData(nameMap, mibTree.children);
+    if (c && c.length > 0) {
+      resultMibTree = {
+        oid: ".1.3.6.1",
+        name: ".iso.org.dod.internet",
+        MIBInfo: null,
+        children: c,
+      };
+    }
+  };
+
+  const getTreePath = (name: string, list: any): string[] | undefined => {
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].name === name) {
+        return [name];
+      }
+      if (list[i].children) {
+        const n = getTreePath(name, list[i].children);
+        if (n) {
+          n.push(list[i].name);
+          return n;
+        }
+      }
+    }
+    return undefined;
+  };
+
+  const makeTreeData = (nameMap: any, list: any): any => {
+    const r: any = [];
+    for (let i = 0; i < list.length; i++) {
+      if (nameMap.has(list[i].name)) {
+        const e: any = {
+          name: list[i].name,
+          oid: list[i].oid,
+          children: [],
+          MIBInfo: list[i].MIBInfo,
+          count: nameMap.get(list[i].name),
+        };
+        if (list[i].children) {
+          const cl = makeTreeData(nameMap, list[i].children);
+          if (cl) {
+            for (const c of cl) {
+              e.children.push(c);
+            }
+          }
+        }
+        r.push(e);
+      }
+    }
+    return r;
   };
 
   const waitAnimation = () => {
@@ -256,14 +328,14 @@
   };
 
   const exportMIB = (t: string) => {
-    const ed :any = {
+    const ed: any = {
       Title: "TWSNMP MIB(" + name + ")",
-      Header: columns.map((e:any) => e.title),
+      Header: columns.map((e: any) => e.title),
       Data: [],
       Image: "",
     };
     for (const d of data) {
-      const row :any = [];
+      const row: any = [];
       for (const c of columns) {
         row.push(d[c.data] || "");
       }
@@ -272,25 +344,24 @@
     ExportAny(t, ed);
   };
 
-
   let copied = false;
 
   const copyMIB = () => {
     const selected = table.rows({ selected: true }).data();
-    let s :string[] = [];
-    const h = columns.map((e:any)=> e.title);
-    s.push(h.join("\t"))
-    for(let i = 0 ;i < selected.length;i++ ) {
-      const row :any = [];
+    let s: string[] = [];
+    const h = columns.map((e: any) => e.title);
+    s.push(h.join("\t"));
+    for (let i = 0; i < selected.length; i++) {
+      const row: any = [];
       for (const c of columns) {
         row.push(selected[i][c.data] || "");
       }
-      s.push(row.join("\t"))
+      s.push(row.join("\t"));
     }
-    copyText(s.join("\n"))
+    copyText(s.join("\n"));
     copied = true;
-    setTimeout(()=> copied = false,2000);
-  }
+    setTimeout(() => (copied = false), 2000);
+  };
 
   let showPolling = false;
   let pollingTmp: any = undefined;
@@ -314,10 +385,15 @@
     pollingTmp.Script = name + "==" + d[0].Value;
     showPolling = true;
   };
-
 </script>
 
-<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:open={onOpen}>
+<Modal
+  bind:open={show}
+  size="xl"
+  dismissable={false}
+  class="w-full"
+  on:open={onOpen}
+>
   <div class="flex flex-col space-y-4">
     <div class="flex flex-row mb-2">
       <div class="flex-auto">
@@ -354,7 +430,7 @@
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait}
-        {#if selectedCount > 0 }
+        {#if selectedCount > 0}
           <GradientButton
             shadow
             color="cyan"
@@ -362,7 +438,7 @@
             on:click={copyMIB}
             size="xs"
           >
-            {#if copied }
+            {#if copied}
               <Icon path={icons.mdiCheck} size={1} />
             {:else}
               <Icon path={icons.mdiContentCopy} size={1} />
@@ -382,7 +458,9 @@
             {$_("NodeReport.Polling")}
           </GradientButton>
         {/if}
-        <Toggle bind:checked={scalar} on:change={refreshTable}>{$_('MIBBrowser.ScalarOnly')}</Toggle>
+        <Toggle bind:checked={scalar} on:change={refreshTable}
+          >{$_("MIBBrowser.ScalarOnly")}</Toggle
+        >
         <Toggle bind:checked={raw}>{$_("MIBBrowser.RawData")}</Toggle>
         <GradientButton
           shadow
@@ -395,6 +473,21 @@
           {$_("MIBBrowser.Get")}
         </GradientButton>
         {#if data.length > 0}
+          <GradientButton
+            shadow
+            color="cyan"
+            type="button"
+            on:click={() => {
+              if (!resultMibTree || resultMibTree.length == 0) {
+                updateResultMibTree();
+              }
+              showResultMIBTree = true;
+            }}
+            size="xs"
+          >
+            <Icon path={icons.mdiTree} size={1} />
+            MIB Tree
+          </GradientButton>
           <GradientButton
             shadow
             color="lime"
@@ -461,7 +554,12 @@
   </div>
 </Modal>
 
-<Modal bind:open={showMIBTree} size="lg" dismissable={false} class="w-full min-h-[80vh]">
+<Modal
+  bind:open={showMIBTree}
+  size="lg"
+  dismissable={false}
+  class="w-full min-h-[80vh]"
+>
   <div class="flex flex-col space-y-4">
     <div id="mibtree">
       <MibTree
@@ -489,12 +587,46 @@
   </div>
 </Modal>
 
+<Modal
+  bind:open={showResultMIBTree}
+  size="lg"
+  dismissable={false}
+  class="w-full min-h-[80vh]"
+>
+  <div class="flex flex-col space-y-4">
+    <div id="mibtree">
+      <MibTree
+        tree={resultMibTree}
+        on:select={(e) => {
+          name = e.detail;
+          showResultMIBTree = false;
+          get();
+        }}
+      />
+    </div>
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={() => {
+          showResultMIBTree = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_("MIBBrowser.Close")}
+      </GradientButton>
+    </div>
+  </div>
+</Modal>
+
 <Polling bind:show={showPolling} {pollingTmp} />
 
 <Help bind:show={showHelp} page="mibbrowser" />
 
 <style>
-  #table {
+  #mibTable {
     height: 70vh;
   }
   #mibtree {
