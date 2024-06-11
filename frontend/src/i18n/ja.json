@@ -407,7 +407,9 @@
     "RawData": "生データ",
     "Get": "取得",
     "Close": "閉じる",
-    "ScalarOnly": "スカラーのみ"
+    "ScalarOnly": "スカラーのみ",
+    "Stop": "中止",
+    "An": "分析中..."
   },
   "Node": {
     "NewNode": "新規ノード",

@@ -356,6 +356,9 @@
     " {\n          name = e.detail;\n          showResultMIBTree = false;\n          get();\n        }}\n      />\n    ",
     " {\n          showResultMIBTree = false;\n        }}\n        size=\"xs\"\n      >\n        ",
     " {\n              if (!resultMibTree || resultMibTree.length == 0) {\n                updateResultMibTree();\n              }\n              showResultMIBTree = true;\n            }}\n            size=\"xs\"\n          >\n            ",
-    "\n            MIB Tree\n          "
+    "\n            MIB Tree\n          ",
+    " {\n              showResultMIBTree = true;\n              if (!resultMibTree || resultMibTree.length == 0) {\n                updateResultMibTree();\n              }\n            }}\n            size=\"xs\"\n          >\n            ",
+    " {\n          stopResultMibTree = true;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n              showResultMIBTree = true;\n              if (!resultMibTree || resultMibTree.length == 0 || stopResultMibTree) {\n                updateResultMibTree();\n              }\n            }}\n            size=\"xs\"\n          >\n            "
   ]
 }

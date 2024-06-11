@@ -419,7 +419,9 @@
     "ObjectName": "Object name",
     "RawData": "Raw data",
     "Value": "Value",
-    "ScalarOnly": "Scalar Only"
+    "ScalarOnly": "Scalar Only",
+    "An": "Analyzing...",
+    "Stop": "Stop"
   },
   "Node": {
     "AddressMode": "Address mode",

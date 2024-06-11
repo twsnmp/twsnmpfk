@@ -14,6 +14,7 @@
     Search,
     Select,
     Toggle,
+    Progressbar,
   } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -61,6 +62,9 @@
 
   let showResultMIBTree = false;
   let resultMibTree: any = {};
+  let resultMibTreeWait = false;
+  let resultMibTreeProgress :string = "0";
+  let stopResultMibTree = false;
 
   const onOpen = async () => {
     mibTree.children = await GetMIBTree();
@@ -236,9 +240,23 @@
     });
   };
 
-  const updateResultMibTree = () => {
-    const nameMap = new Map();
-    mibs.forEach((e: any) => {
+  const updateResultMibTree = async () => {
+    stopResultMibTree = false
+    resultMibTreeWait = true
+    resultMibTreeProgress = "0"
+    let i = 0
+    const nameMap = new Map()
+    for (const e of mibs) {
+      if (stopResultMibTree) {
+        break
+      }
+      if (i % 500 === 0) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0)
+        })
+        resultMibTreeProgress = ((100.0 * i) / mibs.length).toFixed(2)
+      }
+        i++
       const a = e.Name.split(".", 2);
       const t = getTreePath(a[0], mibTree.children);
       if (t) {
@@ -250,7 +268,7 @@
           }
         }
       }
-    });
+    }
     const c = makeTreeData(nameMap, mibTree.children);
     if (c && c.length > 0) {
       resultMibTree = {
@@ -260,6 +278,7 @@
         children: c,
       };
     }
+    resultMibTreeWait = false
   };
 
   const getTreePath = (name: string, list: any): string[] | undefined => {
@@ -478,10 +497,10 @@
             color="cyan"
             type="button"
             on:click={() => {
-              if (!resultMibTree || resultMibTree.length == 0) {
+              showResultMIBTree = true;
+              if (!resultMibTree || resultMibTree.length == 0 || stopResultMibTree) {
                 updateResultMibTree();
               }
-              showResultMIBTree = true;
             }}
             size="xs"
           >
@@ -594,6 +613,23 @@
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
+  {#if resultMibTreeWait}
+    <Progressbar progress={resultMibTreeProgress} labelOutside={$_('MIBBrowser.An')} />
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        type="button"
+        color="red"
+        on:click={() => {
+          stopResultMibTree = true;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_('MIBBrowser.Stop')}
+      </GradientButton>
+    </div>
+  {:else}
     <div id="mibtree">
       <MibTree
         tree={resultMibTree}
@@ -618,6 +654,7 @@
         {$_("MIBBrowser.Close")}
       </GradientButton>
     </div>
+  {/if}
   </div>
 </Modal>
 
