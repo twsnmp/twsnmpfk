@@ -352,6 +352,10 @@
     " {\n          showFormatNodesMenu = false;\n          horizontal(selectedNodes);\n          selectedNodes = [];\n        }}\n      >\n        ",
     " {\n          showFormatNodesMenu = false;\n          vertical(selectedNodes);\n          selectedNodes = [];\n        }}\n      >\n        ",
     " {\n          showFormatNodesMenu = false;\n          circle(selectedNodes);\n          selectedNodes = [];\n        }}\n      >\n        ",
-    " {\n    showMapMenu = false;\n    showNodeMenu = false;\n    showDrawItemMenu = false;\n    showFormatNodesMenu = false;\n  }}\n/>\n"
+    " {\n    showMapMenu = false;\n    showNodeMenu = false;\n    showDrawItemMenu = false;\n    showFormatNodesMenu = false;\n  }}\n/>\n",
+    " {\n          name = e.detail;\n          showResultMIBTree = false;\n          get();\n        }}\n      />\n    ",
+    " {\n          showResultMIBTree = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n              if (!resultMibTree || resultMibTree.length == 0) {\n                updateResultMibTree();\n              }\n              showResultMIBTree = true;\n            }}\n            size=\"xs\"\n          >\n            ",
+    "\n            MIB Tree\n          "
   ]
 }
