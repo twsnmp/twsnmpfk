@@ -283,15 +283,25 @@ export const horizontal = (selected:any) => {
     return nodes[a].X - nodes[b].X;
   });
   const id0 = selected[0];
+  let  dx = nodes[selected[1]].X - nodes[id0].X
+  if (dx < 40) {
+    dx = 40
+  }
+  let idLast = "";
   for(const id of selected) {
     if (id != id0) {
-      nodes[id].Y = nodes[id0].Y
+      nodes[id].Y = nodes[id0].Y;
+      nodes[id].X = nodes[idLast].X + dx;
+      if(nodes[id].X > MAP_SIZE_X - 80) {
+        nodes[id].X = MAP_SIZE_X - 80;
+      }
       list.push({
         ID: id,
         X: nodes[id].X,
         Y: nodes[id].Y,
       })  
     }
+    idLast = id
   }
   if (list.length > 0) {
     UpdateNodePos(list);
@@ -308,15 +318,25 @@ export const vertical = (selected:any) => {
     return nodes[a].Y - nodes[b].Y;
   });
   const id0 = selected[0];
+  let dy = nodes[selected[1]].Y - nodes[id0].Y;
+  if (dy < 60) {
+    dy = 60
+  }
+  let idLast = "";
   for(const id of selected) {
     if (id != id0) {
       nodes[id].X = nodes[id0].X
+      nodes[id].Y = nodes[idLast].Y + dy;
+      if (nodes[id].Y > MAP_SIZE_Y - 80) {
+        nodes[id].Y = MAP_SIZE_Y - 80;
+      }
       list.push({
         ID: id,
         X: nodes[id].X,
         Y: nodes[id].Y,
       })  
     }
+    idLast = id
   }
   if (list.length > 0) {
     UpdateNodePos(list);
@@ -628,6 +648,8 @@ const mapMain = (p5:P5) => {
       editLine()
       selectedNodes.length = 0
       return false
+    } else if (p5.keyIsDown(p5.ALT)) {
+      setSelectNode(true);
     } else  if (dragMode !== 3) {
         setSelectNode(false)
         setSelectItem()
