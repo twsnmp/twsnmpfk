@@ -835,6 +835,10 @@ const mapMain = (p5:P5) => {
         nodes[k].Y - 32 < y
      ) {
         if (selectedNodes.includes(nodes[k].ID)) {
+          if (bMulti) {
+            const i = selectedNodes.indexOf(nodes[k].ID);
+            selectedNodes.splice(i,1)
+          }
           return false
         }
         if (!bMulti) {
