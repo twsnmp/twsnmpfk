@@ -1,6 +1,6 @@
 <script lang="ts">
   import "../assets/css/jquery.dataTables.css";
-  import { GradientButton } from "flowbite-svelte";
+  import { GradientButton,Dropdown,DropdownItem } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount } from "svelte";
@@ -9,11 +9,14 @@
     DeleteNodes,
     ExportNodes,
     CheckPolling,
+    WakeOnLan,
   } from "../../wailsjs/go/main/App";
   import { getTableLang, renderNodeState, renderIP } from "./common";
   import Node from "./Node.svelte";
   import NodeReport from "./NodeReport.svelte";
   import NodePolling from "./NodePolling.svelte";
+  import Ping from "./Ping.svelte";
+  import MIBBrowser from "./MIBBrowser.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
@@ -25,6 +28,10 @@
   let selectedNode = "";
   let table: any = undefined;
   let selectedCount = 0;
+
+  let showPing: boolean = false;
+  let showMibBr: boolean = false;
+  let actionOpen: boolean = false;
 
   const showTable = () => {
     if (table && DataTable.isDataTable("#nodeListTable")) {
@@ -90,6 +97,34 @@
     selectedNode = selected[0];
     showPolling = true;
   };
+
+  const ping = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedNode = selected[0];
+    showPing = true;
+  };
+
+  const MIBBr = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedNode = selected[0];
+    showMibBr = true;
+  };
+
+  const doWakeOnLan = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedNode = selected[0];
+    WakeOnLan(selectedNode);
+    actionOpen= false;
+  }
 
   const deleteNodes = async () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
@@ -199,6 +234,12 @@
         <Icon path={icons.mdiChartBar} size={1} />
         {$_("NodeList.Report")}
       </GradientButton>
+      <GradientButton>{$_('NodeList.Action')}<Icon path={icons.mdiChevronDown} size={1} /></GradientButton>
+      <Dropdown bind:open={actionOpen}>
+        <DropdownItem on:click={ping}>PING</DropdownItem>
+        <DropdownItem on:click={MIBBr}>{$_('Map.MIBBrowser')}</DropdownItem>
+        <DropdownItem on:click={doWakeOnLan}>Wake On Lan</DropdownItem>
+      </Dropdown>
     {/if}
     {#if selectedCount > 0}
       <GradientButton
@@ -276,3 +317,7 @@
 <NodeReport bind:show={showNodeReport} id={selectedNode} />
 
 <NodePolling bind:show={showPolling} nodeID={selectedNode} />
+
+<Ping bind:show={showPing} nodeID={selectedNode} />
+
+<MIBBrowser bind:show={showMibBr} nodeID={selectedNode} />

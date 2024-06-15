@@ -443,7 +443,8 @@
     "ReCheck": "再確認",
     "CheckAll": "すべて再確認",
     "Reload": "更新",
-    "Vendor": "ベンダー"
+    "Vendor": "ベンダー",
+    "Action": "操作"
   },
   "NodePolling": {
     "State": "状態",

@@ -455,7 +455,8 @@
     "Reload": "Reload",
     "Report": "Report",
     "State": "Satte",
-    "Vendor": "Vendor"
+    "Vendor": "Vendor",
+    "Action": "Action"
   },
   "NodePolling": {
     "Add": "Add",
