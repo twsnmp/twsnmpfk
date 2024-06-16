@@ -22,12 +22,12 @@ require (
 	github.com/twsnmp/go-mibdb v0.0.0-20210104220414-91387072cee7
 	github.com/twsnmp/lxi v0.3.2
 	github.com/vjeantet/grok v1.0.1
-	github.com/wailsapp/wails/v2 v2.8.0
+	github.com/wailsapp/wails/v2 v2.8.2
 	github.com/xuri/excelize/v2 v2.7.1
 	go.etcd.io/bbolt v1.3.7
-	golang.org/x/crypto v0.18.0
-	golang.org/x/net v0.20.0
-	golang.org/x/text v0.14.0
+	golang.org/x/crypto v0.23.0
+	golang.org/x/net v0.25.0
+	golang.org/x/text v0.15.0
 	gopkg.in/mcuadros/go-syslog.v2 v2.3.0
 )
 
@@ -70,6 +70,6 @@ require (
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 )
