@@ -18,7 +18,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.23.6
 	github.com/signalsciences/ipv4 v1.4.0
 	github.com/sleepinggenius2/gosmi v0.4.4
-	github.com/tehmaze/netflow v0.0.0-20240303214733-8c13bb004068
+	github.com/tehmaze/netflow v0.0.0-20170921210347-852af103667f
 	github.com/twsnmp/go-mibdb v0.0.0-20210104220414-91387072cee7
 	github.com/twsnmp/lxi v0.3.2
 	github.com/vjeantet/grok v1.0.1
