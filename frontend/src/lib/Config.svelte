@@ -523,9 +523,10 @@
               </Label>
             {/if}
           </div>
-          <div class="grid gap-4 mb-4 md:grid-cols-5">
+          <div class="grid gap-4 mb-4 md:grid-cols-6">
             <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox>
             <Checkbox bind:checked={mapConf.EnableNetflowd}>NetFlow</Checkbox>
+            <Checkbox bind:checked={mapConf.EnableSFlowd}>sFlow</Checkbox>
             <Checkbox bind:checked={mapConf.EnableTrapd}>SNMP TRAP</Checkbox>
             <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
             <Checkbox bind:checked={mapConf.EnableSshd}>SSH Sever</Checkbox>

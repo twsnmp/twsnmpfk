@@ -119,7 +119,9 @@
     "Packets": "パケット数",
     "BPS": "バイト/秒",
     "PPS": "パケット/秒",
-    "Dur": "通信期間(Sec)"
+    "Dur": "通信期間(Sec)",
+    "Load": "負荷",
+    "Available": "利用可能容量"
   },
   "Log": {
     "Level": "レベル",
@@ -807,5 +809,12 @@
     "FlowMode": "集計方法",
     "SenderMAC": "送信元MAC別",
     "MACFlow": "MACペアー別"
+  },
+  "SFlow": {
+    "Reason": "破棄理由",
+    "Type": "種別",
+    "Data": "データ",
+    "Remote": "送信元",
+    "SelectType": "種別を選択"
   }
 }

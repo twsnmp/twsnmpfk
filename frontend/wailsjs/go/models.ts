@@ -518,6 +518,7 @@ export namespace datastore {
 	    EnableArpWatch: boolean;
 	    EnableNetflowd: boolean;
 	    EnableSshd: boolean;
+	    EnableSFlowd: boolean;
 	    IconSize: number;
 	
 	    static createFrom(source: any = {}) {
@@ -540,6 +541,7 @@ export namespace datastore {
 	        this.EnableArpWatch = source["EnableArpWatch"];
 	        this.EnableNetflowd = source["EnableNetflowd"];
 	        this.EnableSshd = source["EnableSshd"];
+	        this.EnableSFlowd = source["EnableSFlowd"];
 	        this.IconSize = source["IconSize"];
 	    }
 	}
@@ -781,6 +783,60 @@ export namespace datastore {
 	        this.AutoParam = source["AutoParam"];
 	    }
 	}
+	export class SFlowCounterEnt {
+	    Time: number;
+	    Remote: string;
+	    Type: string;
+	    Data: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SFlowCounterEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.Remote = source["Remote"];
+	        this.Type = source["Type"];
+	        this.Data = source["Data"];
+	    }
+	}
+	export class SFlowEnt {
+	    Time: number;
+	    SrcAddr: string;
+	    SrcPort: number;
+	    SrcLoc: string;
+	    SrcMAC: string;
+	    DstAddr: string;
+	    DstPort: number;
+	    DstLoc: string;
+	    DstMAC: string;
+	    Bytes: number;
+	    TCPFlags: string;
+	    Protocol: string;
+	    Reason: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SFlowEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.SrcAddr = source["SrcAddr"];
+	        this.SrcPort = source["SrcPort"];
+	        this.SrcLoc = source["SrcLoc"];
+	        this.SrcMAC = source["SrcMAC"];
+	        this.DstAddr = source["DstAddr"];
+	        this.DstPort = source["DstPort"];
+	        this.DstLoc = source["DstLoc"];
+	        this.DstMAC = source["DstMAC"];
+	        this.Bytes = source["Bytes"];
+	        this.TCPFlags = source["TCPFlags"];
+	        this.Protocol = source["Protocol"];
+	        this.Reason = source["Reason"];
+	    }
+	}
 	export class SyslogEnt {
 	    Time: number;
 	    Level: string;
@@ -982,9 +1038,11 @@ export namespace main {
 	    SrcAddr: string;
 	    SrcPort: number;
 	    SrcLoc: string;
+	    SrcMAC: string;
 	    DstAddr: string;
 	    DstPort: number;
 	    DstLoc: string;
+	    DstMAC: string;
 	    Protocol: string;
 	    TCPFlags: string;
 	
@@ -1000,9 +1058,11 @@ export namespace main {
 	        this.SrcAddr = source["SrcAddr"];
 	        this.SrcPort = source["SrcPort"];
 	        this.SrcLoc = source["SrcLoc"];
+	        this.SrcMAC = source["SrcMAC"];
 	        this.DstAddr = source["DstAddr"];
 	        this.DstPort = source["DstPort"];
 	        this.DstLoc = source["DstLoc"];
+	        this.DstMAC = source["DstMAC"];
 	        this.Protocol = source["Protocol"];
 	        this.TCPFlags = source["TCPFlags"];
 	    }
@@ -1047,6 +1107,62 @@ export namespace main {
 	        this.RecvTTL = source["RecvTTL"];
 	        this.RecvSrc = source["RecvSrc"];
 	        this.Loc = source["Loc"];
+	    }
+	}
+	export class SFlowCounterFilterEnt {
+	    Start: string;
+	    End: string;
+	    Type: string;
+	    Remote: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SFlowCounterFilterEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Start = source["Start"];
+	        this.End = source["End"];
+	        this.Type = source["Type"];
+	        this.Remote = source["Remote"];
+	    }
+	}
+	export class SFlowFilterEnt {
+	    Start: string;
+	    End: string;
+	    Single: boolean;
+	    SrcAddr: string;
+	    SrcPort: number;
+	    SrcLoc: string;
+	    SrcMAC: string;
+	    DstAddr: string;
+	    DstPort: number;
+	    DstLoc: string;
+	    DstMAC: string;
+	    Protocol: string;
+	    TCPFlags: string;
+	    Reason: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SFlowFilterEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Start = source["Start"];
+	        this.End = source["End"];
+	        this.Single = source["Single"];
+	        this.SrcAddr = source["SrcAddr"];
+	        this.SrcPort = source["SrcPort"];
+	        this.SrcLoc = source["SrcLoc"];
+	        this.SrcMAC = source["SrcMAC"];
+	        this.DstAddr = source["DstAddr"];
+	        this.DstPort = source["DstPort"];
+	        this.DstLoc = source["DstLoc"];
+	        this.DstMAC = source["DstMAC"];
+	        this.Protocol = source["Protocol"];
+	        this.TCPFlags = source["TCPFlags"];
+	        this.Reason = source["Reason"];
 	    }
 	}
 	export class Settings {

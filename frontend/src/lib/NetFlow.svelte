@@ -42,9 +42,11 @@
     SrcAddr: "",
     SrcPort: 0,
     SrcLoc: "",
+    SrcMAC: "",
     DstAddr: "",
     DstPort: 0,
     DstLoc: "",
+    DstMAC: "",
     TCPFlags: "",
     Protocol: "",
   };
@@ -352,7 +354,7 @@
     </div>
     <Checkbox bind:checked={filter.Single}>{$_('NetFlow.Single')}</Checkbox>
     {#if filter.Single}
-      <div class="grid gap-2 grid-cols-3">
+      <div class="grid gap-2 grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>IP</span>
           <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcAddr} />
@@ -361,13 +363,19 @@
           <span>{$_('NetFlow.Port')}</span>
           <Input type="number" min=0 max=65554 bind:value={filter.SrcPort} size="sm" />
         </Label>
+      </div>
+      <div class="grid gap-2 grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_('NetFlow.Loc')}</span>
           <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcLoc} />
         </Label>
+        <Label class="space-y-2 text-xs">
+          <span>MAC</span>
+          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcMAC} />
+        </Label>
       </div>
     {:else}
-      <div class="grid gap-2 grid-cols-3">
+      <div class="grid gap-2 grid-cols-2">
           <Label class="space-y-2 text-xs">
             <span>{$_('NetFlow.SrcAddr')}</span>
             <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcAddr} />
@@ -376,12 +384,18 @@
             <span>{$_('NetFlow.Port')}</span>
             <Input type="number" min=0 max=65554 bind:value={filter.SrcPort} size="sm" />
           </Label>
+      </div>
+      <div class="grid gap-2 grid-cols-2">
           <Label class="space-y-2 text-xs">
             <span>{$_('NetFlow.Loc')}</span>
             <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcLoc} />
           </Label>
+          <Label class="space-y-2 text-xs">
+            <span>MAC</span>
+            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcMAC} />
+          </Label>
       </div>
-      <div class="grid gap-2 grid-cols-3">
+      <div class="grid gap-2 grid-cols-2">
           <Label class="space-y-2 text-xs">
             <span>{$_('NetFlow.DstAddr')}</span>
             <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.DstAddr} />
@@ -390,9 +404,15 @@
             <span>{$_('NetFlow.Port')}</span>
             <Input type="number" min=0 max=65554 bind:value={filter.DstPort} size="sm" />
           </Label>
+      </div>
+      <div class="grid gap-2 grid-cols-2">
           <Label class="space-y-2 text-xs">
             <span>{$_('NetFlow.Loc')}</span>
             <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.DstLoc} />
+          </Label>
+          <Label class="space-y-2 text-xs">
+            <span>MAC</span>
+            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.DstMAC} />
           </Label>
       </div>
     {/if}

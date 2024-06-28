@@ -119,7 +119,9 @@
     "FrequencyHz": "Hz",
     "Dur": "Duration",
     "Packets": "Packets",
-    "PPS": "Packets/Sec"
+    "PPS": "Packets/Sec",
+    "Load": "Load",
+    "Available": "Available"
   },
   "Top": {
     "AI": "AI",
@@ -807,5 +809,12 @@
     "SrcMacIP": "Src MAC to IP",
     "MACFlow": "MAC to MAC",
     "SenderMAC": "MAC"
+  },
+  "SFlow": {
+    "Reason": "Discard reason",
+    "Data": " Data",
+    "Remote": "Remote",
+    "SelectType": "Select type",
+    "Type": "Type"
   }
 }

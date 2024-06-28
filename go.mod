@@ -3,6 +3,7 @@ module github.com/twsnmp/twsnmpfk
 go 1.21
 
 require (
+	github.com/Cistern/sflow v0.0.0-20240622235316-ed105e3cf9fb
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/Songmu/timeout v0.4.0
 	github.com/Xuanwo/go-locale v1.1.0
@@ -10,6 +11,7 @@ require (
 	github.com/codegaudi/go-iforest v0.0.1
 	github.com/dustin/go-humanize v1.0.1
 	github.com/gliderlabs/ssh v0.3.6
+	github.com/google/gopacket v1.1.19
 	github.com/gosnmp/gosnmp v1.35.0
 	github.com/labstack/gommon v0.4.0
 	github.com/montanaflynn/stats v0.7.1

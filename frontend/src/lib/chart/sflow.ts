@@ -9,115 +9,7 @@ const $_ = unwrapFunctionStore(_);
 
 let chart :any;
 
-
-const makeNetFlowHistogram = (div:string) => {
-  if (chart) {
-    chart.dispose()
-  }
-  chart = echarts.init(document.getElementById(div),"dark")
-  const option = {
-    title: {
-      show: false,
-    },
-    toolbox: {
-      iconStyle: {
-        color: '#ccc',
-      },
-      feature: {
-        dataZoom: {},
-      },
-    },
-    dataZoom: [{}],
-    tooltip: {
-      trigger: 'axis',
-      formatter(params:any) {
-        const p = params[0]
-        return p.value[0] + ':' + p.value[1]
-      },
-      axisPointer: {
-        type: 'shadow',
-      },
-    },
-    grid: {
-      left: '10%',
-      right: '10%',
-      top: 30,
-      buttom: 0,
-    },
-    xAxis: {
-      scale: true,
-      min: 0,
-    },
-    yAxis: {
-      name: $_("Ts.Count"),
-    },
-    series: [
-      {
-        color: '#1f78b4',
-        type: 'bar',
-        showSymbol: false,
-        barWidth: '99.3%',
-        data: [],
-      },
-    ],
-  }
-  chart.setOption(option)
-  chart.resize()
-  return chart
-}
-
-export const showNetFlowHistogram = (div:string, logs:any,type:string) => {
-  makeNetFlowHistogram(div)
-  if (type === '') {
-    type = 'size'
-  }
-  const data :any = []
-  logs.forEach((l:any) => {
-    if (type === 'size') {
-      if (l.Packets > 0) {
-        data.push(l.Bytes / l.Packets)
-      }
-    } else if (type === 'dur') {
-      if (l.Dur >= 0.0) {
-        data.push(l.Dur)
-      }
-    } else if (type === 'speed') {
-      if (l.Dur > 0) {
-        data.push(l.Bytes / l.Dur)
-      }
-    }
-  })
-  const bins = ecStat.histogram(data,"squareRoot")
-  chart.setOption({
-    xAxis: {
-      name: type,
-    },
-    series: [
-      {
-        data: bins.data,
-      },
-    ],
-  })
-  chart.resize();
-  return chart;
-}
-
-const makeNetFlowTraffic = (div:string, type:string) => {
-  let yAxis = ''
-  switch (type) {
-    case 'bytes':
-      yAxis = $_("Ts.Bytes")
-      break
-    case 'packets':
-      yAxis = $_("Ts.Packets")
-      break
-    case 'bps':
-      yAxis = $_("Ts.BPS")
-      break
-    case 'pps':
-      yAxis = $_("Ts.PPS")
-      break
-  }
+const makeSFlowTraffic = (div:string) => {
   if (chart) {
     chart.dispose()
   }
@@ -174,7 +66,7 @@ const makeNetFlowTraffic = (div:string, type:string) => {
     },
     yAxis: {
       type: 'value',
-      name: yAxis,
+      name: $_("Ts.Bytes"),
       nameTextStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -205,27 +97,8 @@ const makeNetFlowTraffic = (div:string, type:string) => {
   return chart;
 }
 
-const addChartData = (data :any, type :string, ent:any, ctm:number, newCtm:number) => {
+const addChartData = (data :any, d:number, ctm:number, newCtm:number) => {
   let t = new Date(ctm * 60 * 1000)
-  let d = 0
-  switch (type) {
-    case 'bytes':
-      d = ent.bytes
-      break
-    case 'packets':
-      d = ent.packets
-      break
-    case 'bps':
-      if (ent.dur > 0) {
-        d = ent.bytes / ent.dur
-      }
-      break
-    case 'pps':
-      if (ent.dur > 0) {
-        d = ent.packets / ent.dur
-      }
-      break
-  }
   data.push({
     name: echarts.time.format(t, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}',false),
     value: [t, d],
@@ -241,14 +114,10 @@ const addChartData = (data :any, type :string, ent:any, ctm:number, newCtm:numbe
   return ctm
 }
 
-export const showNetFlowTraffic = (div:string, logs:any, type:string) => {
-  makeNetFlowTraffic(div, type)
-  const data :any = []
-  const ent = {
-    bytes: 0,
-    packets: 0,
-    dur: 0,
-  }
+export const showSFlowTraffic = (div:string, logs:any) => {
+  makeSFlowTraffic(div)
+  const data :any = [];
+  let bytes = 0;
   let ctm:number = 0
   logs.forEach((l:any) => {
     const newCtm = Math.floor(l.Time / (1000 * 1000 * 1000 * 60))
@@ -256,16 +125,12 @@ export const showNetFlowTraffic = (div:string, logs:any, type:string) => {
       ctm = newCtm
     }
     if (ctm !== newCtm) {
-      ctm = addChartData(data, type, ent, ctm, newCtm)
-      ent.bytes = 0
-      ent.dur = 0
-      ent.packets = 0
+      ctm = addChartData(data, bytes, ctm, newCtm)
+      bytes = 0
     }
-    ent.bytes += l.Bytes
-    ent.dur += l.Dur
-    ent.packets += l.Packets
+    bytes += l.Bytes
   })
-  addChartData(data, type, ent, ctm, ctm + 1)
+  addChartData(data,bytes, ctm, ctm + 1)
   chart.setOption({
     series: [
       {
@@ -277,52 +142,13 @@ export const showNetFlowTraffic = (div:string, logs:any, type:string) => {
   return chart;
 }
 
-export const showNetFlowTop = (div : string, list:any, type:string) => {
+export const showSFlowTop = (div : string, list:any) => {
   const data = []
   const category = []
-
-  let xAxis = ''
-  switch (type) {
-    case 'bytes':
-      xAxis = $_("Ts.Bytes");
-      list.sort((a:any, b:any) => b.Bytes - a.Bytes)
-      for (let i = list.length > 20 ? 19 : list.length - 1; i >= 0; i--) {
-        data.push(list[i].Bytes)
-        category.push(list[i].Name)
-      }
-      break
-    case 'packets':
-      xAxis = $_("Ts.Packets");
-      list.sort((a:any, b:any) => b.Packets - a.Packets)
-      for (let i = list.length > 20 ? 19 : list.length - 1; i >= 0; i--) {
-        data.push(list[i].Packets)
-        category.push(list[i].Name)
-      }
-      break
-    case 'dur':
-      xAxis = $_("Ts.Dur")
-      list.sort((a:any, b:any) => b.Dur - a.Dur)
-      for (let i = list.length > 20 ? 19 : list.length - 1; i >= 0; i--) {
-        data.push(list[i].Dur)
-        category.push(list[i].Name)
-      }
-      break
-    case 'bps':
-      xAxis =$_("Ts.BPS");
-      list.sort((a:any, b:any) => b.bps - a.bps)
-      for (let i = list.length > 20 ? 19 : list.length - 1; i >= 0; i--) {
-        data.push(list[i].bps)
-        category.push(list[i].Name)
-      }
-      break
-    case 'pps':
-      xAxis =  $_("Ts.PPS")
-      list.sort((a:any, b:any) => b.pps - a.pps)
-      for (let i = list.length > 20 ? 19 : list.length - 1; i >= 0; i--) {
-        data.push(list[i].pps)
-        category.push(list[i].Name)
-      }
-      break
+  list.sort((a:any, b:any) => b.Count - a.Count)
+  for (let i = list.length > 20 ? 19 : list.length - 1; i >= 0; i--) {
+    data.push(list[i].Count)
+    category.push(list[i].Name)
   }
   if (chart) {
     chart.dispose()
@@ -346,7 +172,7 @@ export const showNetFlowTop = (div : string, list:any, type:string) => {
     },
     xAxis: {
       type: 'value',
-      name: xAxis,
+      name: "件数",
       boundaryGap: [0, 0.01],
     },
     yAxis: {
@@ -370,7 +196,7 @@ export const showNetFlowTop = (div : string, list:any, type:string) => {
     },
     series: [
       {
-        name: xAxis,
+        name: "Count",
         type: 'bar',
         data,
       },
@@ -380,7 +206,7 @@ export const showNetFlowTop = (div : string, list:any, type:string) => {
   return chart;
 }
 
-export const getNetFlowSenderList = (logs:any,mac: boolean) => {
+export const getSFlowSenderList = (logs:any,mac: boolean) => {
   const m = new Map()
   logs.forEach((l:any) => {
     const k = mac ? l.SrcMAC : l.SrcAddr;
@@ -388,31 +214,18 @@ export const getNetFlowSenderList = (logs:any,mac: boolean) => {
     if (!e) {
       m.set(k, {
         Name: k,
+        Count: 1,
         Bytes: l.Bytes,
-        Packets: l.Packets,
-        Dur: l.Dur,
       })
     } else {
-      e.Bytes += l.Bytes
-      e.Packets += l.Packets
-      e.Dur += l.Dur
+      e.Bytes += l.Bytes;
+      e.Count++;
     }
   })
-  const r = Array.from(m.values())
-  r.forEach((e) => {
-    if (e.Dur > 0) {
-      e.bps = (e.Bytes / e.Dur).toFixed(3)
-      e.pps = (e.Packets / e.Dur).toFixed(3)
-      e.Dur = e.Dur.toFixed(3)
-    } else {
-      e.bps = 0
-      e.pps = 0
-    }
-  })
-  return r
+  return Array.from(m.values())
 }
 
-export const getNetFlowServiceList = (logs:any) => {
+export const getSFlowServiceList = (logs:any) => {
   const m = new Map()
   logs.forEach((l:any) => {
     let k = getServiceName(l.SrcPort + '/' + l.Protocol)
@@ -423,28 +236,15 @@ export const getNetFlowServiceList = (logs:any) => {
     if (!e) {
       m.set(k, {
         Name: k,
+        Count: 1,
         Bytes: l.Bytes,
-        Packets: l.Packets,
-        Dur: l.Dur,
       })
     } else {
       e.Bytes += l.Bytes
-      e.Packets += l.Packets
-      e.Dur += l.Dur
+      e.Count++;
     }
   })
-  const r = Array.from(m.values())
-  r.forEach((e) => {
-    if (e.Dur > 0) {
-      e.bps = (e.Bytes / e.Dur).toFixed(3)
-      e.pps = (e.Packets / e.Dur).toFixed(3)
-      e.Dur = e.Dur.toFixed(3)
-    } else {
-      e.bps = 0
-      e.pps = 0
-    }
-  })
-  return r
+  return Array.from(m.values())
 }
 
 // Service Name Map
@@ -501,7 +301,7 @@ const getServiceName = (s:any) => {
   return 'Other'
 }
 
-export const getNetFlowFlowList = (logs:any,mac:boolean) => {
+export const getSFlowFlowList = (logs:any,mac:boolean) => {
   const m = new Map()
   logs.forEach((l:any) => {
     let k = mac ? l.SrcMAC + '<->' + l.DstMAC : l.SrcAddr + '<->' + l.DstAddr
@@ -513,9 +313,8 @@ export const getNetFlowFlowList = (logs:any,mac:boolean) => {
     if (!e) {
       m.set(k, {
         Name: k,
+        Count: 1,
         Bytes: l.Bytes,
-        Packets: l.Packets,
-        Dur: l.Dur,
       })
     } else {
       const kalt = mac ? l.SrcMAC + '<->' + l.DstMAC : l.SrcAddr + '<->' + l.DstAddr;
@@ -523,29 +322,37 @@ export const getNetFlowFlowList = (logs:any,mac:boolean) => {
         // 逆報告もある場合
         e.bidir = true
       }
-      e.Bytes += l.Bytes
-      e.Packets += l.Packets
-      e.Dur += l.Dur
+      e.Bytes += l.Bytes;
+      e.Count++
     }
   })
-  const r = Array.from(m.values())
-  r.forEach((e) => {
-    if (e.Dur > 0) {
-      if (e.bidir) {
-        e.Dur /= 2.0
-      }
-      e.bps = (e.Bytes / e.Dur).toFixed(3)
-      e.pps = (e.Packets / e.Dur).toFixed(3)
-      e.Dur = e.Dur.toFixed(3)
-    } else {
-      e.bps = 0
-      e.pps = 0
-    }
-  })
-  return r
+  return Array.from(m.values())
 }
 
-export const showNetFlowGraph = (div:string, logs:any,mode :number, type:string) => {
+export const getSFlowReasonList = (logs:any) => {
+  const m = new Map()
+  logs.forEach((l:any) => {
+    let k = l.Reason;
+    if (!k) {
+      return;
+    }
+    const e = m.get(k)
+    if (!e) {
+      m.set(k, {
+        Name: k,
+        Count: 1,
+        Bytes: l.Bytes,
+      })
+    } else {
+      e.Bytes += l.Bytes
+      e.Count++;
+    }
+  })
+  return Array.from(m.values())
+}
+
+
+export const showSFlowGraph = (div:string, logs:any,mode :number, type:string) => {
   const nodeMap = new Map()
   const edgeMap = new Map()
   logs.forEach((l:any) => {
@@ -799,7 +606,7 @@ const getNodeCategory = (ip:string) => {
   return 3
 }
 
-export const showNetFlowService3D = (div:string, logs:any, type:string) => {
+export const showSFlowService3D = (div:string, logs:any) => {
   const m = new Map()
   logs.forEach((l:any) => {
     let k = getServiceName(l.SrcPort + '/' + l.Protocol)
@@ -815,70 +622,29 @@ export const showNetFlowService3D = (div:string, logs:any, type:string) => {
         TotalBytes: l.Bytes,
         Time: [t],
         Bytes: [l.Bytes],
-        Packets: [l.Packets],
-        Dur: [l.Dur],
         IPType: [ipt],
       })
     } else {
       e.TotalBytes += l.Bytes
       e.Time.push(t)
       e.Bytes.push(l.Bytes)
-      e.Packets.push(l.Packets)
-      e.Dur.push(l.Dur)
       e.IPType.push(ipt)
     }
   })
   const cat = Array.from(m.keys())
   const l = Array.from(m.values())
   const data :any  = []
-  let dim :any = []
-  switch (type) {
-    case 'bytes':
-      dim = ['Service', 'Time', 'Bytes', 'Packtes', 'Duration', 'IPType']
-      l.forEach((e) => {
-        for (let i = 0; i < e.Time.length && i < 15000; i++) {
-          data.push([
-            e.Name,
-            e.Time[i],
-            e.Bytes[i],
-            e.Packets[i],
-            e.Dur[i],
-            e.IPType[i],
-          ])
-        }
-      })
-      break
-    case 'packets':
-      dim = ['Service', 'Time', 'Packtes', 'Bytes', 'Duration', 'IPType']
-      l.forEach((e) => {
-        for (let i = 0; i < e.Time.length && i < 15000; i++) {
-          data.push([
-            e.Name,
-            e.Time[i],
-            e.Packets[i],
-            e.Bytes[i],
-            e.Dur[i],
-            e.IPType[i],
-          ])
-        }
-      })
-      break
-    case 'dur':
-      dim = ['Service', 'Time', 'Duration', 'Bytes', 'Packtes', 'IPType']
-      l.forEach((e) => {
-        for (let i = 0; i < e.Time.length && i < 15000; i++) {
-          data.push([
-            e.Name,
-            e.Time[i],
-            e.Dur[i],
-            e.Bytes[i],
-            e.Packets[i],
-            e.IPType[i],
-          ])
-        }
-      })
-      break
-  }
+  const dim = ['Service', 'Time', 'Bytes', 'IPType']
+  l.forEach((e) => {
+    for (let i = 0; i < e.Time.length && i < 15000; i++) {
+      data.push([
+        e.Name,
+        e.Time[i],
+        e.Bytes[i],
+        e.IPType[i],
+      ])
+    }
+  })
   if (chart) {
     chart.dispose()
   }
@@ -894,7 +660,7 @@ export const showNetFlowService3D = (div:string, logs:any, type:string) => {
       show: false,
       min: 0,
       max: 4,
-      dimension: 5,
+      dimension: 3,
       inRange: {
         color: ['#1f78b4', '#a6cee3', '#e31a1c', '#fb9a99', '#fbca00'],
       },
@@ -943,7 +709,7 @@ export const showNetFlowService3D = (div:string, logs:any, type:string) => {
     },
     zAxis3D: {
       type: 'value',
-      name: type,
+      name: "バイト数",
       nameTextStyle: {
         color: '#eee',
         fontSize: 12,
@@ -986,7 +752,7 @@ export const showNetFlowService3D = (div:string, logs:any, type:string) => {
   return chart;
 }
 
-export const showNetFlowSender3D = (div:string, logs:any, type:string, mac:boolean) => {
+export const showSFlowSender3D = (div:string, logs:any, mac:boolean) => {
   const m = new Map()
   logs.forEach((l:any) => {
     const k = mac ? l.SrcMAC : l.SrcAddr;
@@ -999,16 +765,12 @@ export const showNetFlowSender3D = (div:string, logs:any, type:string, mac:boole
         TotalBytes: l.Bytes,
         Time: [t],
         Bytes: [l.Bytes],
-        Packets: [l.Packets],
-        Dur: [l.Dur],
         IPType: [ipt],
       })
     } else {
       e.TotalBytes += l.Bytes
       e.Time.push(t)
       e.Bytes.push(l.Bytes)
-      e.Packets.push(l.Packets)
-      e.Dur.push(l.Dur)
       e.IPType.push(ipt)
     }
   })
@@ -1027,54 +789,17 @@ export const showNetFlowSender3D = (div:string, logs:any, type:string, mac:boole
   const cat = Array.from(m.keys())
   const l = Array.from(m.values())
   const data :any = []
-  let dim :any = []
-  switch (type) {
-    case 'bytes':
-      dim = ['Sender', 'Time', 'Bytes', 'Packtes', 'Duration', 'IPType']
-      l.forEach((e) => {
-        for (let i = 0; i < e.Time.length && i < 15000; i++) {
-          data.push([
-            e.Name,
-            e.Time[i],
-            e.Bytes[i],
-            e.Packets[i],
-            e.Dur[i],
-            e.IPType[i],
-          ])
-        }
-      })
-      break
-    case 'packets':
-      dim = ['Sender', 'Time', 'Packtes', 'Bytes', 'Duration', 'IPType']
-      l.forEach((e) => {
-        for (let i = 0; i < e.Time.length && i < 15000; i++) {
-          data.push([
-            e.Name,
-            e.Time[i],
-            e.Packets[i],
-            e.Bytes[i],
-            e.Dur[i],
-            e.IPType[i],
-          ])
-        }
-      })
-      break
-    case 'dur':
-      dim = ['Sender', 'Time', 'Duration', 'Bytes', 'Packtes', 'IPType']
-      l.forEach((e) => {
-        for (let i = 0; i < e.Time.length && i < 15000; i++) {
-          data.push([
-            e.Name,
-            e.Time[i],
-            e.Dur[i],
-            e.Bytes[i],
-            e.Packets[i],
-            e.IPType[i],
-          ])
-        }
-      })
-      break
-  }
+  const dim = ['Sender', 'Time', 'Bytes', 'IPType']
+  l.forEach((e) => {
+    for (let i = 0; i < e.Time.length && i < 15000; i++) {
+      data.push([
+        e.Name,
+        e.Time[i],
+        e.Bytes[i],
+        e.IPType[i],
+      ])
+    }
+  })
   if (chart) {
     chart.dispose()
   }
@@ -1090,7 +815,7 @@ export const showNetFlowSender3D = (div:string, logs:any, type:string, mac:boole
       show: false,
       min: 0,
       max: 4,
-      dimension: 5,
+      dimension: 3,
       inRange: {
         color: ['#1f78b4', '#a6cee3', '#e31a1c', '#fb9a99','#fbca00'],
       },
@@ -1139,7 +864,7 @@ export const showNetFlowSender3D = (div:string, logs:any, type:string, mac:boole
     },
     zAxis3D: {
       type: 'value',
-      name: type,
+      name: "バイト数",
       nameTextStyle: {
         color: '#eee',
         fontSize: 12,
@@ -1182,7 +907,7 @@ export const showNetFlowSender3D = (div:string, logs:any, type:string, mac:boole
   return chart;
 }
 
-export const showNetFlowFlow3D = (div:string, logs:any, type:string,mac:boolean) => {
+export const showSFlowFlow3D = (div:string, logs:any,mac:boolean) => {
   const m = new Map()
   logs.forEach((l:any) => {
     let k = mac ? l.SrcMAC + '<->' + l.DstMAC : l.SrcAddr + '<->' + l.DstAddr
@@ -1199,16 +924,12 @@ export const showNetFlowFlow3D = (div:string, logs:any, type:string,mac:boolean)
         TotalBytes: l.Bytes,
         Time: [t],
         Bytes: [l.Bytes],
-        Packets: [l.Packets],
-        Dur: [l.Dur],
         IPType: [ipt],
       })
     } else {
       e.TotalBytes += l.Bytes
       e.Time.push(t)
       e.Bytes.push(l.Bytes)
-      e.Packets.push(l.Packets)
-      e.Dur.push(l.Dur)
       e.IPType.push(ipt)
     }
   })
@@ -1227,54 +948,17 @@ export const showNetFlowFlow3D = (div:string, logs:any, type:string,mac:boolean)
   const cat = Array.from(m.keys())
   const l = Array.from(m.values())
   const data :any = []
-  let dim :any = []
-  switch (type) {
-    case 'bytes':
-      dim = [mac ? 'MAC':'IPs', 'Time', 'Bytes', 'Packtes', 'Duration', 'IPType']
-      l.forEach((e) => {
-        for (let i = 0; i < e.Time.length && i < 15000; i++) {
-          data.push([
-            e.Name,
-            e.Time[i],
-            e.Bytes[i],
-            e.Packets[i],
-            e.Dur[i],
-            e.IPType[i],
-          ])
-        }
-      })
-      break
-    case 'packets':
-      dim = [mac ? 'MAC':'IPs', 'Time', 'Packtes', 'Bytes', 'Duration', 'IPType']
-      l.forEach((e) => {
-        for (let i = 0; i < e.Time.length && i < 15000; i++) {
-          data.push([
-            e.Name,
-            e.Time[i],
-            e.Packets[i],
-            e.Bytes[i],
-            e.Dur[i],
-            e.IPType[i],
-          ])
-        }
-      })
-      break
-    case 'dur':
-      dim = [mac ? 'MAC':'IPs', 'Time', 'Duration', 'Bytes', 'Packtes', 'IPType']
-      l.forEach((e) => {
-        for (let i = 0; i < e.Time.length && i < 15000; i++) {
-          data.push([
-            e.Name,
-            e.Time[i],
-            e.Dur[i],
-            e.Bytes[i],
-            e.Packets[i],
-            e.IPType[i],
-          ])
-        }
-      })
-      break
-  }
+  const dim = [mac ? 'MAC':'IPs', 'Time', 'Bytes', 'IPType']
+  l.forEach((e) => {
+    for (let i = 0; i < e.Time.length && i < 15000; i++) {
+      data.push([
+        e.Name,
+        e.Time[i],
+        e.Bytes[i],
+        e.IPType[i],
+      ])
+    }
+  })
   if (chart) {
     chart.dispose()
   }
@@ -1290,7 +974,7 @@ export const showNetFlowFlow3D = (div:string, logs:any, type:string,mac:boolean)
       show: false,
       min: 0,
       max: 4,
-      dimension: 5,
+      dimension: 3,
       inRange: {
         color: ['#1f78b4', '#a6cee3', '#e31a1c', '#fb9a99', '#fbca00'],
       },
@@ -1339,7 +1023,7 @@ export const showNetFlowFlow3D = (div:string, logs:any, type:string,mac:boolean)
     },
     zAxis3D: {
       type: 'value',
-      name: type,
+      name: "バイト数",
       nameTextStyle: {
         color: '#eee',
         fontSize: 12,
@@ -1382,20 +1066,168 @@ export const showNetFlowFlow3D = (div:string, logs:any, type:string,mac:boolean)
   return chart;
 }
 
-export const getNetFlowFFTMap = (logs:any) => {
+export const showSFlowReason3D = (div:string, logs:any) => {
+  const m = new Map()
+  logs.forEach((l:any) => {
+    if(!l.Reason) {
+      return
+    }
+    const k = l.Reason + "";
+    const ipt = getNodeCategory(l.SrcAddr)
+    const t = new Date(l.Time / (1000 * 1000))
+    const e = m.get(k)
+    if (!e) {
+      m.set(k, {
+        Name: k,
+        TotalBytes: l.Bytes,
+        Time: [t],
+        Bytes: [l.Bytes],
+        IPType: [ipt],
+      })
+      console.log(k)
+    } else {
+      e.TotalBytes += l.Bytes
+      e.Time.push(t)
+      e.Bytes.push(l.Bytes)
+      e.IPType.push(ipt)
+    }
+  })
+  const cat = Array.from(m.keys())
+  const l = Array.from(m.values())
+  const data :any  = []
+  const dim = ['Reason', 'Time', 'Bytes', 'IPType']
+  l.forEach((e) => {
+    for (let i = 0; i < e.Time.length && i < 15000; i++) {
+      data.push([
+        e.Name,
+        e.Time[i],
+        e.Bytes[i],
+        e.IPType[i],
+      ])
+    }
+  })
+  if (chart) {
+    chart.dispose()
+  }
+  chart = echarts.init(document.getElementById(div))
+  const options = {
+    title: {
+      show: false,
+    },
+    tooltip: {},
+    animationDurationUpdate: 1500,
+    animationEasingUpdate: 'quinticInOut',
+    visualMap: {
+      show: false,
+      min: 0,
+      max: 4,
+      dimension: 3,
+      inRange: {
+        color: ['#1f78b4', '#a6cee3', '#e31a1c', '#fb9a99', '#fbca00'],
+      },
+    },
+    xAxis3D: {
+      type: 'category',
+      name: 'Reason',
+      data: cat,
+      nameTextStyle: {
+        color: '#eee',
+        fontSize: 12,
+        margin: 2,
+      },
+      axisLabel: {
+        color: '#eee',
+        fontSize: 10,
+        margin: 2,
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#ccc',
+        },
+      },
+    },
+    yAxis3D: {
+      type: 'time',
+      name: 'Time',
+      nameTextStyle: {
+        color: '#eee',
+        fontSize: 12,
+        margin: 2,
+      },
+      axisLabel: {
+        color: '#eee',
+        fontSize: 8,
+        formatter(value:any) {
+          const date = new Date(value)
+          return echarts.time.format(date, '{yyyy}/{MM}/{dd} {HH}:{mm}',false)
+        },
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#ccc',
+        },
+      },
+    },
+    zAxis3D: {
+      type: 'value',
+      name: "バイト数",
+      nameTextStyle: {
+        color: '#eee',
+        fontSize: 12,
+        margin: 2,
+      },
+      axisLabel: {
+        color: '#ccc',
+        fontSize: 8,
+        margin: 2,
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#ccc',
+        },
+      },
+    },
+    grid3D: {
+      axisLine: {
+        lineStyle: { color: '#eee' },
+      },
+      axisPointer: {
+        lineStyle: { color: '#eee' },
+      },
+      viewControl: {
+        projection: 'orthographic',
+      },
+    },
+    series: [
+      {
+        name: 'Reason',
+        type: 'scatter3D',
+        symbolSize: 4,
+        dimensions: dim,
+        data,
+      },
+    ],
+  }
+  chart.setOption(options);
+  chart.resize();
+  return chart;
+}
+
+
+export const getSFlowFFTMap = (logs:any) => {
   const m = new Map()
   m.set('Total', { Name: 'Total', Count: 0, Data: [], Total: 0 })
-  let packets = 0
+  let bytes = 0
   let st = Infinity
   let lt = 0
   logs.forEach((l:any) => {
     const e = m.get(l.SrcAddr)
     if (!e) {
-      m.set(l.SrcAddr, { Name: l.SrcAddr, Count: 0, Data: [], Total: l.Packets })
+      m.set(l.SrcAddr, { Name: l.SrcAddr, Count: 0, Data: [], Total: l.Bytes })
     } else {
-      e.Total += l.Packets
+      e.Total += l.Bytes
     }
-    packets += l.Packets
+    bytes += l.Bytes
     if (st > l.Time) {
       st = l.Time
     }
@@ -1403,7 +1235,7 @@ export const getNetFlowFFTMap = (logs:any) => {
       lt = l.Time
     }
   })
-  m.get('Total').Total = packets
+  m.get('Total').Total = bytes
   let sampleSec = 1
   const dur = (lt - st) / (1000 * 1000 * 1000)
   if (dur > 3600 * 24 * 365) {
@@ -1459,7 +1291,7 @@ export const getNetFlowFFTMap = (logs:any) => {
   return m
 }
 
-export const showNetFlowFFT = (div:string, fftMap:any, src:string, type:string) => {
+export const showSFlowFFT = (div:string, fftMap:any, src:string, type:string) => {
   if (chart) {
     chart.dispose()
   }
@@ -1562,7 +1394,7 @@ export const showNetFlowFFT = (div:string, fftMap:any, src:string, type:string) 
   return chart;
 }
 
-export const showNetFlowFFT3D = (div:string, fftMap:any, fftType:string) => {
+export const showSFlowFFT3D = (div:string, fftMap:any, fftType:string) => {
   const data :any = []
   const freq = fftType === 'hz'
   const colors :any = []

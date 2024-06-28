@@ -149,20 +149,24 @@ type NetFlowFilterEnt struct {
 	SrcAddr  string `json:"SrcAddr"`
 	SrcPort  int    `json:"SrcPort"`
 	SrcLoc   string `json:"SrcLoc"`
+	SrcMAC   string `json:"SrcMAC"`
 	DstAddr  string `json:"DstAddr"`
 	DstPort  int    `json:"DstPort"`
 	DstLoc   string `json:"DstLoc"`
+	DstMAC   string `json:"DstMAC"`
 	Protocol string `json:"Protocol"`
 	TCPFlags string `json:"TCPFlags"`
 }
 
-// GetNetFlow retunrs NetFlow log
+// GetNetFlowはNetFlowログを返します。
 func (a *App) GetNetFlow(filter NetFlowFilterEnt) []*datastore.NetFlowEnt {
 	ret := []*datastore.NetFlowEnt{}
 	srcFilter := makeIPFilter(filter.SrcAddr)
 	srcLocFilter := makeStringFilter(filter.SrcLoc)
+	srcMACFilter := makeStringFilter(filter.SrcMAC)
 	dstFilter := makeIPFilter(filter.DstAddr)
 	dstLocFilter := makeStringFilter(filter.DstLoc)
+	dstMACFilter := makeStringFilter(filter.DstMAC)
 	tcpFlagsFilter := makeStringFilter(filter.TCPFlags)
 	protocolFilter := makeStringFilter(filter.Protocol)
 	st := makeTimeFilter(filter.Start, 1)
@@ -175,6 +179,9 @@ func (a *App) GetNetFlow(filter NetFlowFilterEnt) []*datastore.NetFlowEnt {
 			if srcLocFilter != nil && (!srcLocFilter.MatchString(l.SrcLoc) && !srcLocFilter.MatchString(l.DstLoc)) {
 				return true
 			}
+			if srcMACFilter != nil && (!srcMACFilter.MatchString(l.SrcMAC) && !srcMACFilter.MatchString(l.DstMAC)) {
+				return true
+			}
 			if filter.SrcPort > 0 && (filter.SrcPort != l.SrcPort && filter.SrcPort != l.DstPort) {
 				return true
 			}
@@ -185,10 +192,16 @@ func (a *App) GetNetFlow(filter NetFlowFilterEnt) []*datastore.NetFlowEnt {
 			if srcLocFilter != nil && !srcLocFilter.MatchString(l.SrcLoc) {
 				return true
 			}
+			if srcMACFilter != nil && !srcLocFilter.MatchString(l.SrcMAC) {
+				return true
+			}
 			if dstFilter != nil && !dstFilter.MatchString(l.DstAddr) {
 				return true
 			}
 			if dstLocFilter != nil && !dstLocFilter.MatchString(l.DstLoc) {
+				return true
+			}
+			if dstMACFilter != nil && !dstMACFilter.MatchString(l.DstMAC) {
 				return true
 			}
 			if filter.SrcPort > 0 && filter.SrcPort != l.SrcPort {
@@ -202,6 +215,117 @@ func (a *App) GetNetFlow(filter NetFlowFilterEnt) []*datastore.NetFlowEnt {
 			return true
 		}
 		if protocolFilter != nil && !protocolFilter.MatchString(l.Protocol) {
+			return true
+		}
+		ret = append(ret, l)
+		return len(ret) < maxDispLog
+	})
+	return ret
+}
+
+type SFlowFilterEnt struct {
+	Start    string `json:"Start"`
+	End      string `json:"End"`
+	Single   bool   `json:"Single"`
+	SrcAddr  string `json:"SrcAddr"`
+	SrcPort  int    `json:"SrcPort"`
+	SrcLoc   string `json:"SrcLoc"`
+	SrcMAC   string `json:"SrcMAC"`
+	DstAddr  string `json:"DstAddr"`
+	DstPort  int    `json:"DstPort"`
+	DstLoc   string `json:"DstLoc"`
+	DstMAC   string `json:"DstMAC"`
+	Protocol string `json:"Protocol"`
+	TCPFlags string `json:"TCPFlags"`
+	Reason   int    `json:"Reason"`
+}
+
+// GetSFlow は sFlowログを返します
+func (a *App) GetSFlow(filter SFlowFilterEnt) []*datastore.SFlowEnt {
+	ret := []*datastore.SFlowEnt{}
+	srcFilter := makeIPFilter(filter.SrcAddr)
+	srcLocFilter := makeStringFilter(filter.SrcLoc)
+	srcMACFilter := makeStringFilter(filter.SrcMAC)
+	dstFilter := makeIPFilter(filter.DstAddr)
+	dstLocFilter := makeStringFilter(filter.DstLoc)
+	dstMACFilter := makeStringFilter(filter.DstMAC)
+	tcpFlagsFilter := makeStringFilter(filter.TCPFlags)
+	protocolFilter := makeStringFilter(filter.Protocol)
+	st := makeTimeFilter(filter.Start, 6)
+	et := makeTimeFilter(filter.End, 0)
+	datastore.ForEachSFlow(st, et, func(l *datastore.SFlowEnt) bool {
+		if filter.Single {
+			if srcFilter != nil && (!srcFilter.MatchString(l.SrcAddr) && !srcFilter.MatchString(l.DstAddr)) {
+				return true
+			}
+			if srcLocFilter != nil && (!srcLocFilter.MatchString(l.SrcLoc) && !srcLocFilter.MatchString(l.DstLoc)) {
+				return true
+			}
+			if srcMACFilter != nil && (!srcMACFilter.MatchString(l.SrcMAC) && !srcMACFilter.MatchString(l.DstMAC)) {
+				return true
+			}
+			if filter.SrcPort > 0 && (filter.SrcPort != l.SrcPort && filter.SrcPort != l.DstPort) {
+				return true
+			}
+		} else {
+			if srcFilter != nil && !srcFilter.MatchString(l.SrcAddr) {
+				return true
+			}
+			if srcLocFilter != nil && !srcLocFilter.MatchString(l.SrcLoc) {
+				return true
+			}
+			if srcMACFilter != nil && !srcLocFilter.MatchString(l.SrcMAC) {
+				return true
+			}
+			if dstFilter != nil && !dstFilter.MatchString(l.DstAddr) {
+				return true
+			}
+			if dstLocFilter != nil && !dstLocFilter.MatchString(l.DstLoc) {
+				return true
+			}
+			if dstMACFilter != nil && !dstMACFilter.MatchString(l.DstMAC) {
+				return true
+			}
+			if filter.SrcPort > 0 && filter.SrcPort != l.SrcPort {
+				return true
+			}
+			if filter.DstPort > 0 && filter.DstPort != l.DstPort {
+				return true
+			}
+		}
+		if tcpFlagsFilter != nil && !tcpFlagsFilter.MatchString(l.TCPFlags) {
+			return true
+		}
+		if protocolFilter != nil && !protocolFilter.MatchString(l.Protocol) {
+			return true
+		}
+		if filter.Reason > 0 && filter.Reason != l.Reason {
+			return true
+		}
+		ret = append(ret, l)
+		return len(ret) < maxDispLog
+	})
+	return ret
+}
+
+type SFlowCounterFilterEnt struct {
+	Start  string `json:"Start"`
+	End    string `json:"End"`
+	Type   string `json:"Type"`
+	Remote string `json:"Remote"`
+}
+
+// GetSFlowCounter は sFlow Counterログを返します
+func (a *App) GetSFlowCounter(filter SFlowCounterFilterEnt) []*datastore.SFlowCounterEnt {
+	ret := []*datastore.SFlowCounterEnt{}
+	remoteFilter := makeIPFilter(filter.Remote)
+	st := makeTimeFilter(filter.Start, 24)
+	et := makeTimeFilter(filter.End, 0)
+	datastore.ForEachSFlowCounter(st, et, func(l *datastore.SFlowCounterEnt) bool {
+		if remoteFilter != nil && !remoteFilter.MatchString(l.Remote) {
+			return true
+		}
+		if filter.Type != "" && filter.Type != l.Type {
 			return true
 		}
 		ret = append(ret, l)
@@ -400,6 +524,34 @@ func (a *App) DeleteAllNetFlow() bool {
 		Type:  "user",
 		Level: "info",
 		Event: i18n.Trans("Delete all NetFlow logs"),
+	})
+	return true
+}
+
+// DeleteAllSFlowは、sFlow logを全て削除します。
+func (a *App) DeleteAllSFlow() bool {
+	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:          wails.QuestionDialog,
+		Title:         i18n.Trans("Confirm delete"),
+		Message:       i18n.Trans("Do you want to delete?"),
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+	if err != nil || result == "No" {
+		return false
+	}
+	if err := datastore.DeleteAllLogs("sflow"); err != nil {
+		log.Println(err)
+		return false
+	}
+	if err := datastore.DeleteAllLogs("sflowCounter"); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "user",
+		Level: "info",
+		Event: i18n.Trans("Delete all sFlow and sFlow Counter logs"),
 	})
 	return true
 }

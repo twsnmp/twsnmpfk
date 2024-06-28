@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -229,19 +230,21 @@ func (a *App) ExportTraps(t string, filter TrapFilterEnt) string {
 	return ""
 }
 
-// ExportNetFlow  export traps
+// ExportNetFlow  export netflow
 func (a *App) ExportNetFlow(t string, filter NetFlowFilterEnt) string {
 	srcFilter := makeStringFilter(filter.SrcAddr)
 	srcLocFilter := makeStringFilter(filter.SrcLoc)
+	srcMACFilter := makeStringFilter(filter.SrcMAC)
 	dstFilter := makeStringFilter(filter.DstAddr)
 	dstLocFilter := makeStringFilter(filter.DstLoc)
+	dstMACFilter := makeStringFilter(filter.DstMAC)
 	tcpFlagsFilter := makeStringFilter(filter.TCPFlags)
 	protocolFilter := makeStringFilter(filter.Protocol)
 	st := makeTimeFilter(filter.Start, 24)
 	et := makeTimeFilter(filter.End, 0)
 	data := ExportData{
 		Title:  "TWSNMP NetFlow",
-		Header: []string{"Time", "Src IP", "Src Port", "Src Loc", "Dst IP", "Dst Port", "Dst Loc", "Protocol", "TCPFlags", "Packets", "Bytes", "Dur"},
+		Header: []string{"Time", "Src IP", "Src Port", "Src Loc", "Src MAC", "Dst IP", "Dst Port", "Dst Loc", "Dst MAC", "Protocol", "TCPFlags", "Packets", "Bytes", "Dur"},
 	}
 	datastore.ForEachNetFlow(st, et, func(l *datastore.NetFlowEnt) bool {
 		if filter.Single {
@@ -249,6 +252,9 @@ func (a *App) ExportNetFlow(t string, filter NetFlowFilterEnt) string {
 				return true
 			}
 			if srcLocFilter != nil && (!srcLocFilter.MatchString(l.SrcLoc) && !srcLocFilter.MatchString(l.DstLoc)) {
+				return true
+			}
+			if srcMACFilter != nil && (!srcMACFilter.MatchString(l.SrcMAC) && !srcMACFilter.MatchString(l.DstMAC)) {
 				return true
 			}
 			if filter.SrcPort > 0 && (filter.SrcPort != l.SrcPort && filter.SrcPort != l.DstPort) {
@@ -261,10 +267,16 @@ func (a *App) ExportNetFlow(t string, filter NetFlowFilterEnt) string {
 			if srcLocFilter != nil && !srcLocFilter.MatchString(l.SrcLoc) {
 				return true
 			}
+			if srcMACFilter != nil && !srcMACFilter.MatchString(l.SrcMAC) {
+				return true
+			}
 			if dstFilter != nil && !dstFilter.MatchString(l.DstAddr) {
 				return true
 			}
 			if dstLocFilter != nil && !dstLocFilter.MatchString(l.DstLoc) {
+				return true
+			}
+			if dstMACFilter != nil && !dstMACFilter.MatchString(l.DstMAC) {
 				return true
 			}
 			if filter.SrcPort > 0 && filter.SrcPort != l.SrcPort {
@@ -285,9 +297,11 @@ func (a *App) ExportNetFlow(t string, filter NetFlowFilterEnt) string {
 		e = append(e, l.SrcAddr)
 		e = append(e, l.SrcPort)
 		e = append(e, l.SrcLoc)
+		e = append(e, l.SrcMAC)
 		e = append(e, l.DstAddr)
 		e = append(e, l.DstPort)
 		e = append(e, l.DstLoc)
+		e = append(e, l.DstMAC)
 		e = append(e, l.Protocol)
 		e = append(e, l.TCPFlags)
 		e = append(e, l.Packets)
@@ -310,6 +324,154 @@ func (a *App) ExportNetFlow(t string, filter NetFlowFilterEnt) string {
 		return fmt.Sprintf("export NetFlow err=%v", err)
 	}
 	return ""
+}
+
+// ExportSFlow  export sFlow
+func (a *App) ExportSFlow(t string, filter SFlowFilterEnt) string {
+	srcFilter := makeStringFilter(filter.SrcAddr)
+	srcLocFilter := makeStringFilter(filter.SrcLoc)
+	srcMACFilter := makeStringFilter(filter.SrcMAC)
+	dstFilter := makeStringFilter(filter.DstAddr)
+	dstLocFilter := makeStringFilter(filter.DstLoc)
+	dstMACFilter := makeStringFilter(filter.DstMAC)
+	tcpFlagsFilter := makeStringFilter(filter.TCPFlags)
+	protocolFilter := makeStringFilter(filter.Protocol)
+	st := makeTimeFilter(filter.Start, 24)
+	et := makeTimeFilter(filter.End, 0)
+	data := ExportData{
+		Title:  "TWSNMP sFlow",
+		Header: []string{"Time", "Src IP", "Src Port", "Src Loc", "Src MAC", "Dst IP", "Dst Port", "Dst Loc", "Dst MAC", "Protocol", "TCPFlags", "Bytes", "Reason"},
+	}
+	datastore.ForEachSFlow(st, et, func(l *datastore.SFlowEnt) bool {
+		if filter.Single {
+			if srcFilter != nil && (!srcFilter.MatchString(l.SrcAddr) && !srcFilter.MatchString(l.DstAddr)) {
+				return true
+			}
+			if srcLocFilter != nil && (!srcLocFilter.MatchString(l.SrcLoc) && !srcLocFilter.MatchString(l.DstLoc)) {
+				return true
+			}
+			if srcMACFilter != nil && (!srcMACFilter.MatchString(l.SrcMAC) && !srcMACFilter.MatchString(l.DstMAC)) {
+				return true
+			}
+			if filter.SrcPort > 0 && (filter.SrcPort != l.SrcPort && filter.SrcPort != l.DstPort) {
+				return true
+			}
+		} else {
+			if srcFilter != nil && !srcFilter.MatchString(l.SrcAddr) {
+				return true
+			}
+			if srcLocFilter != nil && !srcLocFilter.MatchString(l.SrcLoc) {
+				return true
+			}
+			if srcMACFilter != nil && !srcMACFilter.MatchString(l.SrcMAC) {
+				return true
+			}
+			if dstFilter != nil && !dstFilter.MatchString(l.DstAddr) {
+				return true
+			}
+			if dstLocFilter != nil && !dstLocFilter.MatchString(l.DstLoc) {
+				return true
+			}
+			if dstMACFilter != nil && !dstMACFilter.MatchString(l.DstMAC) {
+				return true
+			}
+			if filter.SrcPort > 0 && filter.SrcPort != l.SrcPort {
+				return true
+			}
+			if filter.DstPort > 0 && filter.DstPort != l.DstPort {
+				return true
+			}
+		}
+		if tcpFlagsFilter != nil && !tcpFlagsFilter.MatchString(l.TCPFlags) {
+			return true
+		}
+		if protocolFilter != nil && !protocolFilter.MatchString(l.Protocol) {
+			return true
+		}
+		e := []any{}
+		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))
+		e = append(e, l.SrcAddr)
+		e = append(e, l.SrcPort)
+		e = append(e, l.SrcLoc)
+		e = append(e, l.SrcMAC)
+		e = append(e, l.DstAddr)
+		e = append(e, l.DstPort)
+		e = append(e, l.DstLoc)
+		e = append(e, l.DstMAC)
+		e = append(e, l.Protocol)
+		e = append(e, l.TCPFlags)
+		e = append(e, l.Bytes)
+		e = append(e, l.Reason)
+		data.Data = append(data.Data, e)
+		return true
+	})
+	var err error
+	switch t {
+	case "excel":
+		err = a.exportExcel(&data)
+	case "csv":
+		err = a.exportCSV(&data)
+	default:
+		return "not suppoerted"
+	}
+	if err != nil {
+		log.Printf("Export sFlow err=%v", err)
+		return fmt.Sprintf("export sFlow err=%v", err)
+	}
+	return ""
+}
+
+// ExportSFlowCounter  export sFlow Counter log
+func (a *App) ExportSFlowCounter(t string, filter SFlowCounterFilterEnt) string {
+	remoteFilter := makeIPFilter(filter.Remote)
+	st := makeTimeFilter(filter.Start, 24)
+	et := makeTimeFilter(filter.End, 0)
+	data := ExportData{
+		Title:  "TWSNMP sFlow Counter",
+		Header: []string{"Time", "Type", "Remote", "Data"},
+	}
+	datastore.ForEachSFlowCounter(st, et, func(l *datastore.SFlowCounterEnt) bool {
+		if remoteFilter != nil && !remoteFilter.MatchString(l.Remote) {
+			return true
+		}
+		if filter.Type != "" && filter.Type != l.Type {
+			return true
+		}
+		e := []any{}
+		e = append(e, time.Unix(0, l.Time).Format("2006/01/02 15:04:05"))
+		e = append(e, l.Type)
+		e = append(e, l.Remote)
+		e = append(e, makeJSONDataToString(l.Data))
+		data.Data = append(data.Data, e)
+		return true
+	})
+	var err error
+	switch t {
+	case "excel":
+		err = a.exportExcel(&data)
+	case "csv":
+		err = a.exportCSV(&data)
+	default:
+		return "not suppoerted"
+	}
+	if err != nil {
+		log.Printf("Export sFlow counter err=%v", err)
+		return fmt.Sprintf("export sFlow  countererr=%v", err)
+	}
+	return ""
+}
+
+// CSVのためのデータ変換
+func makeJSONDataToString(j string) string {
+	m := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(j), &m); err == nil {
+		r := []string{}
+		for k, v := range m {
+			r = append(r, fmt.Sprintf("%s=%v", k, v))
+		}
+		j = strings.Join(r, " ")
+	}
+	return strings.ReplaceAll(j, ",", " ")
 }
 
 // ExportArpLogs  export arp watch logs

@@ -23,6 +23,8 @@ export function DeleteAllNetFlow():Promise<boolean>;
 
 export function DeleteAllPollingLogs():Promise<boolean>;
 
+export function DeleteAllSFlow():Promise<boolean>;
+
 export function DeleteAllSyslog():Promise<boolean>;
 
 export function DeleteAllTraps():Promise<boolean>;
@@ -54,6 +56,10 @@ export function ExportNetFlow(arg1:string,arg2:main.NetFlowFilterEnt):Promise<st
 export function ExportNodes(arg1:string):Promise<string>;
 
 export function ExportPollings(arg1:string):Promise<string>;
+
+export function ExportSFlow(arg1:string,arg2:main.SFlowFilterEnt):Promise<string>;
+
+export function ExportSFlowCounter(arg1:string,arg2:main.SFlowCounterFilterEnt):Promise<string>;
 
 export function ExportSyslogs(arg1:string,arg2:main.SyslogFilterEnt):Promise<string>;
 
@@ -134,6 +140,10 @@ export function GetPollingTemplate(arg1:number):Promise<datastore.PollingTemplat
 export function GetPollingTemplates():Promise<Array<datastore.PollingTemplateEnt>>;
 
 export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
+
+export function GetSFlow(arg1:main.SFlowFilterEnt):Promise<Array<datastore.SFlowEnt>>;
+
+export function GetSFlowCounter(arg1:main.SFlowCounterFilterEnt):Promise<Array<datastore.SFlowCounterEnt>>;
 
 export function GetSettings():Promise<main.Settings>;
 

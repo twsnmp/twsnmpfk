@@ -188,7 +188,7 @@ func deleteOldLogs() {
 		log.Printf("deleteOldLog err=%v", err)
 		return
 	}
-	buckets := []string{"logs", "pollingLogs", "syslog", "trap"}
+	buckets := []string{"logs", "pollingLogs", "syslog", "trap", "sflow", "sflowCounter"}
 	doneMap := make(map[string]bool)
 	doneCount := 0
 	lt := time.Now().Unix() + 50
@@ -341,11 +341,14 @@ func SaveLogBuffer(logBuffer []*LogEnt) {
 		trap := tx.Bucket([]byte("trap"))
 		arp := tx.Bucket([]byte("arplog"))
 		netflow := tx.Bucket([]byte("netflow"))
+		sflow := tx.Bucket([]byte("sflow"))
+		sflowCounter := tx.Bucket([]byte("sflowCounter"))
 		sc := 0
 		nfc := 0
 		tc := 0
 		ac := 0
 		oc := 0
+		sf := 0
 		for i, l := range logBuffer {
 			k := fmt.Sprintf("%016x", l.Time+int64(i))
 			s, err := json.Marshal(l)
@@ -370,11 +373,17 @@ func SaveLogBuffer(logBuffer []*LogEnt) {
 			case "netflow":
 				nfc++
 				netflow.Put([]byte(k), []byte(s))
+			case "sflow":
+				sf++
+				sflow.Put([]byte(k), []byte(s))
+			case "sflowCounter":
+				sf++
+				sflowCounter.Put([]byte(k), []byte(s))
 			default:
 				oc++
 			}
 		}
-		log.Printf("syslog=%d,netflow=%d,trap=%d,arplog=%d,other=%d,dur=%v", sc, nfc, tc, ac, oc, time.Since(st))
+		log.Printf("syslog=%d,netflow=%d,trap=%d,arplog=%d,sflow=%d,other=%d,dur=%v", sc, nfc, tc, ac, sf, oc, time.Since(st))
 		return nil
 	})
 }
@@ -932,6 +941,113 @@ func ForEachNetFlow(st, et int64, f func(*NetFlowEnt) bool) error {
 			}
 			nf.Time = l.Time
 			if !f(nf) {
+				break
+			}
+		}
+		return nil
+	})
+}
+
+type SFlowEnt struct {
+	Time     int64  `json:"Time"`
+	SrcAddr  string `json:"SrcAddr"`
+	SrcPort  int    `json:"SrcPort"`
+	SrcLoc   string `json:"SrcLoc"`
+	SrcMAC   string `json:"SrcMAC"`
+	DstAddr  string `json:"DstAddr"`
+	DstPort  int    `json:"DstPort"`
+	DstLoc   string `json:"DstLoc"`
+	DstMAC   string `json:"DstMAC"`
+	Bytes    int    `json:"Bytes"`
+	TCPFlags string `json:"TCPFlags"`
+	Protocol string `json:"Protocol"`
+	Reason   int    `json:"Reason"`
+}
+
+// ForEachSFlow  get sFlow log
+func ForEachSFlow(st, et int64, f func(*SFlowEnt) bool) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	sk := fmt.Sprintf("%016x", st)
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("sflow"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			if l.Time < st {
+				continue
+			}
+			if l.Time > et {
+				break
+			}
+			var sf = new(SFlowEnt)
+			if err := json.Unmarshal([]byte(l.Log), sf); err != nil {
+				log.Println(err)
+				continue
+			}
+			sf.Time = l.Time
+			if !f(sf) {
+				break
+			}
+		}
+		return nil
+	})
+}
+
+type SFlowCounterEnt struct {
+	Time   int64  `json:"Time"`
+	Remote string `json:"Remote"`
+	Type   string `json:"Type"`
+	Data   string `json:"Data"`
+}
+
+// ForEachsFlow  get sFlow log
+func ForEachSFlowCounter(st, et int64, f func(*SFlowCounterEnt) bool) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	sk := fmt.Sprintf("%016x", st)
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("sflowCounter"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
+			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
+				v = deCompressLog(v)
+			}
+			var l LogEnt
+			err := json.Unmarshal(v, &l)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			if l.Time < st {
+				continue
+			}
+			if l.Time > et {
+				break
+			}
+			var sfc = new(SFlowCounterEnt)
+			if err := json.Unmarshal([]byte(l.Log), sfc); err != nil {
+				log.Println(err)
+				continue
+			}
+			sfc.Time = l.Time
+			if !f(sfc) {
 				break
 			}
 		}

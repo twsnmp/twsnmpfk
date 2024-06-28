@@ -38,6 +38,10 @@ export function DeleteAllPollingLogs() {
   return window['go']['main']['App']['DeleteAllPollingLogs']();
 }
 
+export function DeleteAllSFlow() {
+  return window['go']['main']['App']['DeleteAllSFlow']();
+}
+
 export function DeleteAllSyslog() {
   return window['go']['main']['App']['DeleteAllSyslog']();
 }
@@ -100,6 +104,14 @@ export function ExportNodes(arg1) {
 
 export function ExportPollings(arg1) {
   return window['go']['main']['App']['ExportPollings'](arg1);
+}
+
+export function ExportSFlow(arg1, arg2) {
+  return window['go']['main']['App']['ExportSFlow'](arg1, arg2);
+}
+
+export function ExportSFlowCounter(arg1, arg2) {
+  return window['go']['main']['App']['ExportSFlowCounter'](arg1, arg2);
 }
 
 export function ExportSyslogs(arg1, arg2) {
@@ -260,6 +272,14 @@ export function GetPollingTemplates() {
 
 export function GetPollings(arg1) {
   return window['go']['main']['App']['GetPollings'](arg1);
+}
+
+export function GetSFlow(arg1) {
+  return window['go']['main']['App']['GetSFlow'](arg1);
+}
+
+export function GetSFlowCounter(arg1) {
+  return window['go']['main']['App']['GetSFlowCounter'](arg1);
 }
 
 export function GetSettings() {
