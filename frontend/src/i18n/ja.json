@@ -815,6 +815,7 @@
     "Type": "種別",
     "Data": "データ",
     "Remote": "送信元",
-    "SelectType": "種別を選択"
+    "SelectType": "種別を選択",
+    "Counter": "カウンター"
   }
 }

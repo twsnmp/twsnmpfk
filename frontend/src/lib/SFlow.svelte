@@ -310,7 +310,7 @@
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     <Toggle bind:checked={counter} on:change={refresh}>
-      Counter Sample
+       {$_('SFlow.Counter')}
     </Toggle>
     <GradientButton
       shadow
