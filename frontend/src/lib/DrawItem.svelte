@@ -46,7 +46,7 @@
     { name: $_("DrawItem.PollingGauge"), value: 5 },
     { name: $_('DrawItem.NewGauge'), value: 6},
     { name: $_('DrawItem.Bar'), value: 7 },
-    { name: $_('DrawItem.LIne'), value: 8 },
+    { name: $_('DrawItem.Line'), value: 8 },
   ];
 
   const condList = [
