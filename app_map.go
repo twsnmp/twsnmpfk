@@ -530,7 +530,7 @@ func (a *App) CopyDrawItem(id string) bool {
 }
 
 // GetVPanelPorts returns port info of node
-func (a *App) GetVPanelPorts(id string) []backend.VPanelPortEnt {
+func (a *App) GetVPanelPorts(id string) []*backend.VPanelPortEnt {
 	return backend.GetVPanelPorts(id)
 }
 

@@ -11,10 +11,15 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
+	"unicode"
 
+	"github.com/gosnmp/gosnmp"
 	"github.com/sleepinggenius2/gosmi/parser"
 	gomibdb "github.com/twsnmp/go-mibdb"
 	"github.com/twsnmp/twsnmpfk/i18n"
+	"golang.org/x/text/encoding/japanese"
+	"golang.org/x/text/transform"
 )
 
 type MIBInfo struct {
@@ -187,7 +192,9 @@ PTOPO-MIB.mib
 RADIUS-ACC-CLIENT-MIB.mib
 RADIUS-ACCT-SERVER-MIB.mib
 RADIUS-STAT-MIB.mib
-SYSAPPL-MIB.mib`
+SYSAPPL-MIB.mib
+LLDP-MIB.mib
+`
 
 func loadMIBsFromFS() {
 	skipList := []string{}
@@ -200,7 +207,7 @@ func loadMIBsFromFS() {
 		log.Printf("load mib path=%s", path)
 		if r, err := conf.Open(path); err == nil {
 			if asn1, err := io.ReadAll(r); err == nil {
-				if !loadExtMIB(asn1, "int", path, false) {
+				if loadExtMIB(asn1, "int", path, false) {
 					skipList = append(skipList, path)
 				}
 			} else {
@@ -576,12 +583,8 @@ func addToMibTree(oid, name, poid string) {
 
 func makeMibTreeList() {
 	oids := []string{}
-	minLen := len(".1.3.6.1")
 	for _, n := range MIBDB.GetNameList() {
 		oid := MIBDB.NameToOID(n)
-		if len(oid) <= minLen {
-			continue
-		}
 		oids = append(oids, oid)
 	}
 	sort.Slice(oids, func(i, j int) bool {
@@ -600,7 +603,7 @@ func makeMibTreeList() {
 		}
 		return len(a) < len(b)
 	})
-	addToMibTree(".1.3.6.1", "iso.org.dod.internet", "")
+	addToMibTree(".1", "iso", "")
 	for _, oid := range oids {
 		name := MIBDB.OIDToName(oid)
 		if name == "" {
@@ -759,15 +762,39 @@ func PrintIPAddress(i interface{}) string {
 }
 
 func PrintMIBStringVal(i interface{}) string {
+	r := ""
 	switch v := i.(type) {
 	case string:
-		return v
+		r = v
 	case []uint8:
-		return string(v)
+		r = string(v)
 	case int, int64, uint, uint64:
 		return fmt.Sprintf("%d", v)
 	}
-	return ""
+	if AutoCharCode {
+		r = CheckCharCode(r)
+	}
+	return r
+}
+
+func getPrintableMIBStringVal(i interface{}) string {
+	r := ""
+	switch v := i.(type) {
+	case string:
+		r = v
+	case []uint8:
+		r = string(v)
+	case int, int64, uint, uint64:
+		return fmt.Sprintf("%d", v)
+	default:
+		return fmt.Sprintf("%v", i)
+	}
+	for _, a := range r {
+		if !unicode.IsPrint(a) {
+			return fmt.Sprintf("%x", r)
+		}
+	}
+	return r
 }
 
 // DISPLAY-HINT "2d-1d-1d,1d:1d:1d.1d,1a1d:1d"
@@ -787,4 +814,142 @@ func PrintDateAndTime(i interface{}) string {
 		return fmt.Sprintf("%d", v)
 	}
 	return fmt.Sprintf("Invalid Date And Time %v", i)
+}
+
+func GetMIBValueString(name string, variable *gosnmp.SnmpPDU, raw bool) string {
+	value := ""
+	switch variable.Type {
+	case gosnmp.OctetString:
+		mi := FindMIBInfo(name)
+		if mi != nil {
+			switch mi.Type {
+			case "PhysAddress", "OctetString":
+				a, ok := variable.Value.([]uint8)
+				if !ok {
+					a = []uint8(PrintMIBStringVal(variable.Value))
+				}
+				mac := []string{}
+				for _, m := range a {
+					mac = append(mac, fmt.Sprintf("%02X", m&0x00ff))
+				}
+				value = strings.Join(mac, ":")
+			case "PtopoChassisId", "PtopoGenAddr", "LldpChassisId", "LldpPortId":
+				value = getPrintableMIBStringVal(variable.Value)
+			case "LldpManAddress":
+				value = PrintIPAddress(variable.Value)
+			case "BITS", "LldpSystemCapabilitiesMap":
+				a, ok := variable.Value.([]uint8)
+				if !ok {
+					a = []uint8(PrintMIBStringVal(variable.Value))
+				}
+				hex := []string{}
+				ap := []string{}
+				bit := 0
+				for _, m := range a {
+					hex = append(hex, fmt.Sprintf("%02X", m&0x00ff))
+					if !raw && mi.Enum != "" {
+						for i := 0; i < 8; i++ {
+							if (m & 0x80) == 0x80 {
+								if n, ok := mi.EnumMap[bit]; ok {
+									ap = append(ap, fmt.Sprintf("%s(%d)", n, bit))
+								}
+							}
+							m <<= 1
+							bit++
+						}
+					}
+				}
+				value = strings.Join(hex, " ")
+				if len(ap) > 0 {
+					value += " " + strings.Join(ap, " ")
+				}
+			case "DisplayString":
+				value = PrintMIBStringVal(variable.Value)
+			case "DateAndTime":
+				value = PrintDateAndTime(variable.Value)
+			default:
+				value = PrintMIBStringVal(variable.Value)
+			}
+		} else {
+			value = PrintMIBStringVal(variable.Value)
+		}
+	case gosnmp.ObjectIdentifier:
+		value = MIBDB.OIDToName(PrintMIBStringVal(variable.Value))
+	case gosnmp.TimeTicks:
+		t := gosnmp.ToBigInt(variable.Value).Uint64()
+		if raw {
+			value = fmt.Sprintf("%d", t)
+		} else {
+			if t > (24 * 3600 * 100) {
+				d := t / (24 * 3600 * 100)
+				t -= d * (24 * 3600 * 100)
+				value = fmt.Sprintf("%d(%d days, %v)", t, d, time.Duration(t*10*uint64(time.Millisecond)))
+			} else {
+				value = fmt.Sprintf("%d(%v)", t, time.Duration(t*10*uint64(time.Millisecond)))
+			}
+		}
+	case gosnmp.IPAddress:
+		value = PrintIPAddress(variable.Value)
+	default:
+		if variable.Type == gosnmp.Integer {
+			value = fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Int64())
+		} else {
+			value = fmt.Sprintf("%d", gosnmp.ToBigInt(variable.Value).Uint64())
+		}
+		if !raw {
+			mi := FindMIBInfo(name)
+			if mi != nil {
+				v := int(gosnmp.ToBigInt(variable.Value).Uint64())
+				if mi.Enum != "" {
+					if vn, ok := mi.EnumMap[v]; ok {
+						value += "(" + vn + ")"
+					}
+				} else {
+					if mi.Hint != "" {
+						value = PrintHintedMIBIntVal(int32(v), mi.Hint, variable.Type != gosnmp.Integer)
+					}
+					if mi.Units != "" {
+						value += " " + mi.Units
+					}
+				}
+			}
+		}
+	}
+	return value
+}
+
+func CheckCharCode(s string) string {
+	if !AutoCharCode {
+		return s
+	}
+	if isSjis([]byte(s)) {
+		dec := japanese.ShiftJIS.NewDecoder()
+		if b, _, err := transform.Bytes(dec, []byte(s)); err == nil {
+			return string(b)
+		}
+	}
+	return s
+}
+
+func isSjis(p []byte) bool {
+	f := false
+	for _, c := range p {
+		if f {
+			if c < 0x0040 || c > 0x00fc {
+				return false
+			}
+			f = false
+			continue
+		}
+		if c < 0x007f {
+			continue
+		}
+		if (c >= 0x0081 && c <= 0x9f) ||
+			(c >= 0x00e0 && c <= 0x00ef) {
+			f = true
+		} else {
+			return false
+		}
+	}
+	return true
 }

@@ -192,8 +192,8 @@
 
   let showMIBTree = false;
   let mibTree: any = {
-    oid: ".1.3.6.1",
-    name: ".iso.org.dod.internet",
+    oid: ".1",
+    name: ".iso",
     MIBInfo: null,
     children: undefined,
   };

@@ -417,8 +417,8 @@ func getSWRunTypeName(t int64) string {
 	return "Unknown"
 }
 
-func getPortsBySNMP(id string) []VPanelPortEnt {
-	ports := []VPanelPortEnt{}
+func getPortsBySNMP(id string) []*VPanelPortEnt {
+	ports := []*VPanelPortEnt{}
 	n := datastore.GetNode(id)
 	agent := getSNMPAgent(n)
 	if agent == nil {
@@ -521,7 +521,7 @@ func getPortsBySNMP(id string) []VPanelPortEnt {
 		} else {
 			e.State = "off"
 		}
-		ports = append(ports, *e)
+		ports = append(ports, e)
 	}
 	sort.Slice(ports, func(i, j int) bool {
 		return ports[i].Index < ports[j].Index

@@ -52,8 +52,8 @@
   let selectedCount = 0;
   let showMIBTree = false;
   let mibTree: any = {
-    oid: ".1.3.6.1",
-    name: ".iso.org.dod.internet",
+    oid: ".1",
+    name: ".iso",
     MIBInfo: null,
     children: undefined,
   };
@@ -272,8 +272,8 @@
     const c = makeTreeData(nameMap, mibTree.children);
     if (c && c.length > 0) {
       resultMibTree = {
-        oid: ".1.3.6.1",
-        name: ".iso.org.dod.internet",
+        oid: ".1",
+        name: ".iso",
         MIBInfo: null,
         children: c,
       };

@@ -47,7 +47,7 @@ func GetVPanelPowerInfo(id string) bool {
 // 1.ポーリングの設定
 // 2.SNMPから取得
 // 3.ラインの設定
-func GetVPanelPorts(id string) []VPanelPortEnt {
+func GetVPanelPorts(id string) []*VPanelPortEnt {
 	// ポーリングから取得
 	if ports := getPortsFromPolling(id); len(ports) > 0 {
 		return ports
@@ -60,8 +60,8 @@ func GetVPanelPorts(id string) []VPanelPortEnt {
 	return getPortsFromLine(id)
 }
 
-func getPortsFromPolling(id string) []VPanelPortEnt {
-	ports := []VPanelPortEnt{}
+func getPortsFromPolling(id string) []*VPanelPortEnt {
+	ports := []*VPanelPortEnt{}
 	traffPollings := make(map[string]*datastore.PollingEnt)
 	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
 		if p.NodeID == id && p.Type == "snmp" {
@@ -81,7 +81,7 @@ func getPortsFromPolling(id string) []VPanelPortEnt {
 				case "unknown":
 					state = "off"
 				}
-				ports = append(ports, VPanelPortEnt{
+				ports = append(ports, &VPanelPortEnt{
 					Index:        i,
 					Name:         a[1],
 					pollingIndex: p.Params,
@@ -118,8 +118,8 @@ func getTraffData(k string, p *datastore.PollingEnt) int64 {
 	return 0
 }
 
-func getPortsFromLine(id string) []VPanelPortEnt {
-	ports := []VPanelPortEnt{}
+func getPortsFromLine(id string) []*VPanelPortEnt {
+	ports := []*VPanelPortEnt{}
 	max := int64(0)
 	datastore.ForEachLines(func(l *datastore.LineEnt) bool {
 		if l.NodeID1 != id && l.NodeID2 != id {
@@ -158,7 +158,7 @@ func getPortsFromLine(id string) []VPanelPortEnt {
 		case "unknown":
 			state = "off"
 		}
-		ports = append(ports, VPanelPortEnt{
+		ports = append(ports, &VPanelPortEnt{
 			Index: i,
 			Name:  name,
 			State: state,
