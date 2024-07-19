@@ -52,7 +52,7 @@ type discoverInfoEnt struct {
 	HostName    string
 	SysName     string
 	SysObjectID string
-	IfIndexList []string
+	IfMap       map[string]string
 	ServerList  map[string]bool
 	X           int
 	Y           int
@@ -123,9 +123,9 @@ func Discover() error {
 				r := ping.DoPing(ipstr, datastore.DiscoverConf.Timeout, datastore.DiscoverConf.Retry, 64, 0)
 				if r.Stat == ping.PingOK {
 					dent := discoverInfoEnt{
-						IP:          ipstr,
-						IfIndexList: []string{},
-						ServerList:  make(map[string]bool),
+						IP:         ipstr,
+						IfMap:      make(map[string]string),
+						ServerList: make(map[string]bool),
 					}
 					r := &net.Resolver{}
 					ctx, cancel := context.WithTimeout(context.TODO(), time.Millisecond*50)
@@ -270,7 +270,16 @@ func getSnmpInfo(t string, dent *discoverInfoEnt) {
 		if len(a) == 2 &&
 			a[0] == "ifType" &&
 			gosnmp.ToBigInt(variable.Value).Int64() == 6 {
-			dent.IfIndexList = append(dent.IfIndexList, a[1])
+			dent.IfMap[a[1]] = fmt.Sprintf("#%s", a[1])
+		}
+		return nil
+	})
+	agent.Walk(datastore.MIBDB.NameToOID("ifName"), func(variable gosnmp.SnmpPDU) error {
+		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
+		if len(a) == 2 {
+			if _, ok := dent.IfMap[a[1]]; ok {
+				dent.IfMap[a[1]] = datastore.GetMIBValueString(a[0], &variable, false)
+			}
 		}
 		return nil
 	})
@@ -447,11 +456,11 @@ func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 		log.Printf("discover err=%v", err)
 		return
 	}
-	for _, i := range dent.IfIndexList {
+	for i, name := range dent.IfMap {
 		p = &datastore.PollingEnt{
 			NodeID:  n.ID,
 			Type:    "snmp",
-			Name:    "I/F " + i,
+			Name:    fmt.Sprintf("%s(%s)", name, i),
 			Mode:    "ifOperStatus",
 			Params:  i,
 			Level:   "off",

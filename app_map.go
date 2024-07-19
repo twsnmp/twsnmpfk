@@ -42,6 +42,16 @@ func (a *App) GetDrawItems() map[string]datastore.DrawItemEnt {
 	return ret
 }
 
+// GetDrawNetworks retunrs map draw items
+func (a *App) GetNetworks() map[string]datastore.NetworkEnt {
+	ret := make(map[string]datastore.NetworkEnt)
+	datastore.ForEachNetworks(func(i *datastore.NetworkEnt) bool {
+		ret[i.ID] = *i
+		return true
+	})
+	return ret
+}
+
 func checkDrawItem(di *datastore.DrawItemEnt) {
 	if di.Type < 4 || di.PollingID == "" {
 		return
@@ -241,6 +251,14 @@ func (a *App) UpdateDrawItemPos(list []UpdatePosEnt) {
 	}
 }
 
+// UpdateNetworkPos update node positons
+func (a *App) UpdateNetworkPos(pe UpdatePosEnt) {
+	if n := datastore.GetNetwork(pe.ID); n != nil {
+		n.X = pe.X
+		n.Y = pe.Y
+	}
+}
+
 func setLineState(l *datastore.LineEnt) {
 	l.State1 = "unknown"
 	if l.PollingID1 != "" {
@@ -275,6 +293,35 @@ func (a *App) GetLine(node1, node2 string) datastore.LineEnt {
 		return true
 	})
 	return ret
+}
+
+// GetLineByID retunrs line
+func (a *App) GetLineByID(id string) datastore.LineEnt {
+	return *datastore.GetLine(id)
+}
+
+// GetLinesByNode retunrs lines conneted to node
+func (a *App) GetLinesByNode(id string) []datastore.LineEnt {
+	ret := []datastore.LineEnt{}
+	datastore.ForEachLines(func(l *datastore.LineEnt) bool {
+		if l.NodeID1 == id || l.NodeID2 == id {
+			ret = append(ret, *l)
+		}
+		return true
+	})
+	return ret
+}
+
+// FindNeighborNetworksAndLines returns neighbor networks and lines connected node
+func (a *App) FindNeighborNetworksAndLines(id string) backend.FindNeighborNetworksAndLinesResp {
+	n := datastore.GetNetwork(id)
+	if n == nil {
+		return backend.FindNeighborNetworksAndLinesResp{
+			Networks: []datastore.NetworkEnt{},
+			Lines:    []datastore.LineEnt{},
+		}
+	}
+	return backend.FindNeighborNetworksAndLines(n)
 }
 
 // addLine add line
@@ -455,4 +502,62 @@ func (a *App) GetVPanelPorts(id string) []*backend.VPanelPortEnt {
 // GetVPanelPowerInfo returns power info of node
 func (a *App) GetVPanelPowerInfo(id string) bool {
 	return backend.GetVPanelPowerInfo(id)
+}
+
+// addNetwork add network
+func (a *App) addNetwork(n datastore.NetworkEnt) bool {
+	if err := datastore.AddNetwork(&n); err != nil {
+		log.Println(err)
+		return false
+	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeName: n.Name,
+		Event:    i18n.Trans("Add Network"),
+	})
+	return true
+}
+
+// GetNetwork returns draw network
+func (a *App) GetNetwork(id string) datastore.NetworkEnt {
+	n := datastore.GetNetwork(id)
+	if n == nil {
+		return datastore.NetworkEnt{}
+	}
+	return *n
+}
+
+// UpdateNetwork update draw network
+func (a *App) UpdateNetwork(n datastore.NetworkEnt) bool {
+	rn := datastore.GetNetwork(n.ID)
+	if rn == nil {
+		if n.ID != "" {
+			log.Printf("netwrok not found id=%s", n.ID)
+		}
+		return a.addNetwork(n)
+	}
+	datastore.UpdateNetwork(&n)
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeName: n.Name,
+		Event:    i18n.Trans("Update Network"),
+	})
+	return true
+}
+
+// DeleteDrawItems delete draw items
+func (a *App) DeleteNetwork(id string) {
+	n := datastore.GetNetwork(id)
+	if n == nil {
+		return
+	}
+	datastore.DeleteNetwork(id)
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeName: n.Name,
+		Event:    i18n.Trans("Delete Network"),
+	})
 }

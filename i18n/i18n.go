@@ -47,6 +47,15 @@ var transMap = map[string]map[string]string{
 	"Delete Node": {
 		"ja": "ノードを削除",
 	},
+	"Add Network": {
+		"ja": "ネットワークを追加",
+	},
+	"Update Network": {
+		"ja": "ネットワークを更新",
+	},
+	"Delete Network": {
+		"ja": "ネットワークを削除",
+	},
 	"Copy Node": {
 		"ja": "ノードをコピー",
 	},

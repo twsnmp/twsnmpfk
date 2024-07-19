@@ -10,9 +10,11 @@
   import {
     GetNode,
     GetLine,
+    GetLineByID,
     UpdateLine,
     DeleteLine,
     GetPollings,
+    GetNetwork,
   } from "../../wailsjs/go/main/App";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -21,11 +23,15 @@
   import { createEventDispatcher } from "svelte";
 
   export let show: boolean = false;
+  export let id: string = "";
   export let nodeID1: string = "";
   export let nodeID2: string = "";
   let node1: any = undefined;
   let node2: any = undefined;
   let line: any = undefined;
+  let net1:boolean = false;
+  let net2:boolean = false;
+  let wait:boolean = false;
 
   const dispatch = createEventDispatcher();
 
@@ -36,31 +42,67 @@
   const pollingList2: any = [];
 
   const onOpen = async () => {
-    node1 = await GetNode(nodeID1);
-    node2 = await GetNode(nodeID2);
-    const pollings1 = await GetPollings(nodeID1);
-    const pollings2 = await GetPollings(nodeID2);
-    for (let p of pollings1) {
-      pollingList1.push({
-        name: p.Name,
-        value: p.ID,
-      });
-      pollingList.push({
-        name: p.Name,
-        value: p.ID,
-      });
+    wait = true;
+    if (id != "") {
+      line = await GetLineByID(id)
+      net1 = line.NodeID1.startsWith("NET:");
+      net2 = line.NodeID2.startsWith("NET:");
+      node1 = net1 ? await GetNetwork(line.NodeID1) : await GetNode(line.NodeID1);
+      node2 = net2 ? await GetNetwork(line.NodeID2) : await GetNode(line.NodeID2);
+      if (!net1) {
+        const pollings = await GetPollings(nodeID1);
+        for (let p of pollings) {
+          pollingList1.push({
+            name: p.Name,
+            value: p.ID,
+          });
+          pollingList.push({
+            name: p.Name,
+            value: p.ID,
+          });
+        }
+      }
+      if (!net2) {
+        const pollings = await GetPollings(nodeID2);
+        for (let p of pollings) {
+          pollingList1.push({
+            name: p.Name,
+            value: p.ID,
+          });
+          pollingList.push({
+            name: p.Name,
+            value: p.ID,
+          });
+        }
+      }
+    } else {
+      node1 = await GetNode(nodeID1);
+      node2 = await GetNode(nodeID2);
+      const pollings1 = await GetPollings(nodeID1);
+      const pollings2 = await GetPollings(nodeID2);
+      for (let p of pollings1) {
+        pollingList1.push({
+          name: p.Name,
+          value: p.ID,
+        });
+        pollingList.push({
+          name: p.Name,
+          value: p.ID,
+        });
+      }
+      for (let p of pollings2) {
+        pollingList2.push({
+          name: p.Name,
+          value: p.ID,
+        });
+        pollingList.push({
+          name: p.Name,
+          value: p.ID,
+        });
+      }
+      line = await GetLine(nodeID1, nodeID2);
     }
-    for (let p of pollings2) {
-      pollingList2.push({
-        name: p.Name,
-        value: p.ID,
-      });
-      pollingList.push({
-        name: p.Name,
-        value: p.ID,
-      });
-    }
-    line = await GetLine(nodeID1, nodeID2);
+    wait = false;
   };
 
   const close = () => {
@@ -91,7 +133,7 @@
   class="w-full"
   on:open={onOpen}
 >
-  {#if !line}
+  {#if wait}
     <div class="text-center mt-10"><Spinner size={16} /></div>
   {:else}
     <form class="flex flex-col space-y-4" action="#">
@@ -109,24 +151,38 @@
         </Label>
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
-        <Label class="space-y-2 text-xs">
-          <span> {$_("Line.Polling1")} </span>
-          <Select
-            items={pollingList1}
-            bind:value={line.PollingID1}
-            placeholder={$_("Line.Node1Polling")}
-            size="sm"
-          />
-        </Label>
-        <Label class="space-y-2 text-xs">
-          <span> {$_("Line.Polling2")} </span>
-          <Select
-            items={pollingList2}
-            bind:value={line.PollingID2}
-            placeholder={$_("Line.Node2Polling")}
-            size="sm"
-          />
-        </Label>
+        {#if net1}
+          <Label class="space-y-2 text-xs">
+            <span> {$_("Line.Polling1")} </span>
+            <Input bind:value={line.PollingID1} readonly size="sm" />
+          </Label>
+        {:else}
+          <Label class="space-y-2 text-xs">
+            <span> {$_("Line.Polling1")} </span>
+            <Select
+              items={pollingList1}
+              bind:value={line.PollingID1}
+              placeholder={$_("Line.Node1Polling")}
+              size="sm"
+            />
+          </Label>
+        {/if}
+        {#if net1}
+          <Label class="space-y-2 text-xs">
+            <span> {$_("Line.Polling2")} </span>
+            <Input bind:value={line.PollingID2} readonly size="sm" />
+          </Label>
+        {:else}
+          <Label class="space-y-2 text-xs">
+            <span> {$_("Line.Polling2")} </span>
+            <Select
+              items={pollingList2}
+              bind:value={line.PollingID2}
+              placeholder={$_("Line.Node2Polling")}
+              size="sm"
+            />
+          </Label>
+        {/if}
       </div>
       <div class="grid gap-4 grid-cols-2">
         <Label class="space-y-2 text-xs">

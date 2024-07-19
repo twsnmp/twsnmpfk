@@ -18,13 +18,13 @@ import (
 
 func mapBackend(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	log.Println("start map")
+	log.Println("start map backend")
 	clearPollingState()
 	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
 		updateNodeState(n)
 		return true
 	})
-	hasLineInfo := updateLineState()
+	updateLineState()
 	go checkNewVersion()
 	timer := time.NewTicker(time.Second * 10)
 	newVersionTimer := time.NewTicker(time.Hour * 24)
@@ -35,7 +35,7 @@ func mapBackend(ctx context.Context, wg *sync.WaitGroup) {
 		case <-ctx.Done():
 			timer.Stop()
 			newVersionTimer.Stop()
-			log.Println("stop map")
+			log.Println("stop map backend")
 			return
 		case <-newVersionTimer.C:
 			datastore.SaveMapData()
@@ -51,13 +51,13 @@ func mapBackend(ctx context.Context, wg *sync.WaitGroup) {
 				return true
 			})
 			if change > 0 {
-				hasLineInfo = updateLineState()
+				updateLineState()
 				checkOR = true
 			}
 			i++
 			if i > 5 {
-				if hasLineInfo {
-					hasLineInfo = updateLineState()
+				if !checkOR {
+					updateLineState()
 				}
 				if checkOR {
 					checkOperationRate()
@@ -148,18 +148,53 @@ func updateNodeState(n *datastore.NodeEnt) {
 	})
 }
 
-func updateLineState() bool {
-	hasLineInfo := false
+func updateLineState() {
 	datastore.ForEachLines(func(l *datastore.LineEnt) bool {
 		l.State1 = "unknown"
-		if p := datastore.GetPolling(l.PollingID1); p != nil {
-			l.State1 = p.State
+		if strings.HasPrefix(l.NodeID1, "NET:") {
+			n := datastore.GetNetwork(l.NodeID1)
+			hit := false
+			if n != nil {
+				for _, p := range n.Ports {
+					if p.ID == l.PollingID1 {
+						l.State1 = p.State
+						hit = true
+					}
+				}
+			}
+			if !hit {
+				log.Printf("delete not used line=%+v", l)
+				datastore.DeleteLine(l.ID)
+				return true
+			}
+		} else {
+			if p := datastore.GetPolling(l.PollingID1); p != nil {
+				l.State1 = p.State
+			}
 		}
 		l.State2 = l.State1
-		if p := datastore.GetPolling(l.PollingID2); p != nil {
-			l.State2 = p.State
-			if l.PollingID1 == "" {
-				l.State1 = l.State2
+		if strings.HasPrefix(l.NodeID2, "NET:") {
+			n := datastore.GetNetwork(l.NodeID2)
+			hit := false
+			if n != nil {
+				for _, p := range n.Ports {
+					if p.ID == l.PollingID2 {
+						l.State2 = p.State
+						hit = true
+					}
+				}
+			}
+			if !hit {
+				log.Printf("delete not used line=%+v", l)
+				datastore.DeleteLine(l.ID)
+				return true
+			}
+		} else {
+			if p := datastore.GetPolling(l.PollingID2); p != nil {
+				l.State2 = p.State
+				if l.PollingID1 == "" {
+					l.State1 = l.State2
+				}
 			}
 		}
 		if l.PollingID != "" {
@@ -171,20 +206,17 @@ func updateLineState() bool {
 						if l.Width > 5 {
 							l.Width = 5
 						}
-						hasLineInfo = true
 						l.Info = humanize.Bytes(uint64(vf)) + "PS"
 					}
 				} else {
 					if v, ok := p.Result["pps"]; ok {
 						if vf, ok := v.(float64); ok {
-							hasLineInfo = true
 							l.Info = humanize.Commaf(vf) + "PPS"
 						}
 					}
 				}
 				if v, ok := p.Result["obps"]; ok {
 					if vf, ok := v.(float64); ok {
-						hasLineInfo = true
 						l.Info += "/" + humanize.Bytes(uint64(vf)) + "PS"
 					}
 				}
@@ -192,7 +224,6 @@ func updateLineState() bool {
 		}
 		return true
 	})
-	return hasLineInfo
 }
 
 func checkNewVersion() {

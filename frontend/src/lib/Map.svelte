@@ -17,11 +17,14 @@
   import { Icon } from "mdi-svelte-ts";
   import Discover from "./Dsicover.svelte";
   import Node from "./Node.svelte";
+  import Network from "./Network.svelte";
   import Line from "./Line.svelte";
   import DrawItem from "./DrawItem.svelte";
   import NodeReport from "./NodeReport.svelte";
   import NodePolling from "./NodePolling.svelte";
   import Ping from "./Ping.svelte";
+  import NetworkLines from "./NetworkLines.svelte";
+  import NeighborNetworksAndLines from "./NeighborNetworksAndLines.svelte";
   import {
     CheckPolling,
     DeleteDrawItems,
@@ -35,6 +38,7 @@
     GetBackImage,
     SetBackImage,
     ImportV4Map,
+    DeleteNetwork,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
@@ -47,14 +51,21 @@
   let showMapMenu: boolean = false;
   let showNodeMenu: boolean = false;
   let showDrawItemMenu: boolean = false;
+  let showNetworkMenu: boolean = false;
   let showFormatNodesMenu: boolean = false;
   let showEditNode: boolean = false;
   let selectedNode: string = "";
   let showEditLine: boolean = false;
   let selectedLineNode1: string = "";
   let selectedLineNode2: string = "";
+  let selectedLineID: string = "";
   let showEditDrawItem: boolean = false;
   let selectedDrawItem: string = "";
+  let showEditNetwork: boolean = false;
+  let selectedNetwork: string = "";
+  let networkTemplate: any = undefined;
+  let showNetworkLines: boolean = false;
+  let showNeighborNetworksAndLines: boolean = false;
   let showDiscover: boolean = false;
   let showGrid: boolean = false;
   let gridSize: number = 40;
@@ -89,6 +100,8 @@
   };
 
   let selectedNodes :any = [];
+  let mapPosX = 0;
+  let mapPosY = 0;
 
   const callBack = (p: any) => {
     switch (p.Cmd) {
@@ -100,15 +113,26 @@
         } else if (p.DrawItem) {
           showDrawItemMenu = true;
           selectedDrawItem = p.DrawItem;
+        } else if (p.Network) {
+          selectedNetwork =  p.Network;
+          networkTemplate = undefined;
+          showNetworkMenu = true;
         } else {
           showMapMenu = true;
+          mapPosX = p.x;
+          mapPosY = p.y;
+          if (map) {
+            mapPosX = Math.trunc(mapPosX +map.scrollLeft);
+            mapPosY = Math.trunc(mapPosY +map.scrollTop);
+          }
         }
         break;
       case "editLine":
         if (p.Param) {
-          showEditLine = true;
           selectedLineNode1 = p.Param[0];
           selectedLineNode2 = p.Param[1];
+          selectedLineID = "";
+          showEditLine = true;
         }
         break;
       case "nodeDoubleClicked":
@@ -118,6 +142,10 @@
       case "itemDoubleClicked":
         selectedDrawItem = p.Param;
         showEditDrawItem = true;
+        break;
+      case "networkDoubleClicked":
+        selectedNetwork = p.Param;
+        showEditNetwork = true;
         break;
       case "deleteNodes":
         deleteNodes(p.Param);
@@ -133,6 +161,9 @@
         break;
       case "deleteDrawItems":
         deleteDrawItems(p.Param);
+        break;
+      case "deleteNetwork":
+        deleteNetwork(p.Param);
         break;
     }
   };
@@ -155,6 +186,12 @@
   const deleteDrawItems = async (ids: string[]) => {
     await DeleteDrawItems(ids);
     showDrawItemMenu = false;
+    refreshMap();
+  };
+
+  const deleteNetwork = async (id:string) => {
+    await DeleteNetwork(id);
+    showNetworkMenu = false;
     refreshMap();
   };
 
@@ -257,6 +294,20 @@
         <Icon path={icons.mdiDrawing} size={0.7} />
         <div>
           {$_("Map.AddDrawItem")}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          selectedNetwork = "";
+          showEditNetwork = true;
+          showMapMenu = false;
+        }}
+      >
+        <Icon path={icons.mdiDrawing} size={0.7} />
+        <div>
+          新規ネットワーク
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -554,6 +605,68 @@
   </div>
 {/if}
 
+{#if showNetworkMenu}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+    <div
+      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
+    >
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showNetworkMenu = false;
+          showEditNetwork = true;
+        }}
+      >
+        <Icon path={icons.mdiPencil} size={0.7} />
+        <div>
+          {$_("Map.Edit")}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showNetworkMenu = false;
+          showNetworkLines = true;
+        }}
+      >
+        <Icon path={icons.mdiPlaylistEdit} size={0.7} />
+        <div>
+          ライン編集
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showNetworkMenu = false;
+          showNeighborNetworksAndLines = true;
+        }}
+      >
+        <Icon path={icons.mdiLanConnect} size={0.7} />
+        <div>
+          接続先を探す
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          deleteNetwork(selectedNetwork);
+          refreshMap();
+        }}
+      >
+        <Icon path={icons.mdiDelete} size={0.7} />
+        <div>
+          {$_("Map.Delete")}
+        </div>
+      </div>
+    </div>
+  </div>
+{/if}
+
 {#if showFormatNodesMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
@@ -616,8 +729,8 @@
 <Node
   bind:show={showEditNode}
   nodeID={selectedNode}
-  {posX}
-  {posY}
+  posX={mapPosX}
+  posY={mapPosY}
   on:close={(e) => {
     refreshMap();
   }}
@@ -627,6 +740,7 @@
   bind:show={showEditLine}
   nodeID1={selectedLineNode1}
   nodeID2={selectedLineNode2}
+  id={selectedLineID}
   on:close={(e) => {
     refreshMap();
   }}
@@ -635,10 +749,48 @@
 <DrawItem
   bind:show={showEditDrawItem}
   id={selectedDrawItem}
-  {posX}
-  {posY}
+  posX={mapPosX}
+  posY={mapPosY}
   on:close={(e) => {
     refreshMap();
+  }}
+/>
+
+<Network
+  bind:show={showEditNetwork}
+  id={selectedNetwork}
+  template={networkTemplate}
+  posX={mapPosX}
+  posY={mapPosY}
+  on:close={(e) => {
+    networkTemplate = undefined;
+    refreshMap();
+  }}
+/>
+
+<NetworkLines
+  bind:show={showNetworkLines}
+  id={selectedNetwork}
+  on:close={(e) => {
+    refreshMap();
+  }}
+  on:editLine={(e) => {
+    selectedLineID = e.detail;
+    selectedLineNode1= "";
+    selectedLineNode2= "";
+    showEditLine = true;
+  }}
+/>
+
+<NeighborNetworksAndLines
+  bind:show={showNeighborNetworksAndLines}
+  id={selectedNetwork}
+  on:close={(e) => {
+    refreshMap();
+  }}
+  on:addNetwork={(e) => {
+    networkTemplate = e.detail;
+    showEditNetwork = true;
   }}
 />
 

@@ -26,6 +26,10 @@ func resetArpTable() {
 	macToIPTable = make(map[string]string)
 }
 
+func UpdateArpTable(ip, mac string) {
+	updateArpTable(ip, mac)
+}
+
 func arpWatch(stopCh chan bool) {
 	log.Println("start arp")
 	datastore.AddEventLog(&datastore.EventLogEnt{

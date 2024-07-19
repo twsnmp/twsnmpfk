@@ -12,9 +12,13 @@ import {
   GetImage,
   GetMapConf,
   GetNotifyConf,
+  GetNetworks,
+  UpdateNetworkPos,
 } from "../../wailsjs/go/main/App";
 import type { datastore } from "wailsjs/go/models";
 import { gauge, line, bar } from "./chart/drawitem";
+import port from "../assets/images/port.png";
+
 
 const MAP_SIZE_X = window.screen.width > 4000 ? 5000 : 2500;
 const MAP_SIZE_Y = 5000;
@@ -26,6 +30,7 @@ let mapCallBack: any = undefined;
 let nodes: any = {};
 let lines: any = [];
 let items: any = {};
+let networks: any = {};
 let backImage: datastore.BackImageEnt = {
   X: 0,
   Y: 0,
@@ -41,6 +46,7 @@ let iconSize = 32;
 
 const selectedNodes: any = [];
 const selectedDrawItems: any = [];
+let selectedNetwork = "";
 
 const imageMap = new Map();
 let mapState = 0;
@@ -80,6 +86,7 @@ export const updateMAP = async () => {
   nodes = await GetNodes();
   lines = await GetLines();
   items = (await GetDrawItems()) || {};
+  networks = (await GetNetworks()) || {};
   backImage = await GetBackImage();
   if (_mapP5 != undefined) {
     if (backImage.Path != lastBackImagePath) {
@@ -122,6 +129,9 @@ export const updateMAP = async () => {
         break;
       case 2:
       case 4:
+        if(items[k].Text.length==0) {
+          items[k].Text = "Empty Draw Item";
+        }
         items[k].W = items[k].Size * items[k].Text.length;
         items[k].H = items[k].Size;
         if (!dark) {
@@ -398,6 +408,40 @@ const getLineColor = (state: any) => {
   return 250;
 };
 
+const getLinePos = (id:string,polling :string) => {
+  if (id.startsWith('NET:')) {
+    const a = id.split(":")
+    if(a.length !== 2 ) {
+      return undefined
+    }
+    const net = networks[a[1]]
+    if (!net) {
+      return undefined
+    }
+    let pi =  -1
+    for(let i = 0; i <  net.Ports.length;i++) {
+      if (net.Ports[i].ID === polling) {
+        pi = i
+        break
+      }
+    }
+    if (pi < 0 ) {
+      return undefined
+    }
+    return {
+      X: net.X + net.Ports[pi].X * 45 + 10 + 20,
+      Y: net.Y + net.Ports[pi].Y * 55 + fontSize + 20 + 10
+    }
+  }
+  if (!nodes[id]) {
+    return undefined
+  }
+  return {
+    X:nodes[id].X,
+    Y:nodes[id].Y + 6,
+  }
+}
+
 const isDark = (): boolean => {
   const e = document.querySelector("html");
   if (!e) {
@@ -417,9 +461,14 @@ const mapMain = (p5: P5) => {
   let lastMouseY = 0;
   let dragMode = 0; // 0 : None , 1: Select , 2 :Move
   let oldDark = false;
+  let draggedNetwork = ""
   const draggedNodes: any = [];
   const draggedItems: any = [];
   let clickInCanvas = false;
+  let portImage: any = undefined;
+  p5.preload = () => {
+    portImage = p5.loadImage(port);
+  }
   p5.setup = () => {
     const c = p5.createCanvas(MAP_SIZE_X, MAP_SIZE_Y);
     c.mousePressed(canvasMousePressed);
@@ -452,14 +501,55 @@ const mapMain = (p5: P5) => {
         p5.image(_backImage, backImage.X, backImage.Y);
       }
     }
-    for (const k in lines) {
-      if (!nodes[lines[k].NodeID1] || !nodes[lines[k].NodeID2]) {
-        continue;
+    for (const k in networks) {
+      p5.push()
+      p5.translate(networks[k].X,networks[k].Y)
+      if (selectedNetwork === networks[k].ID) {
+        p5.stroke('#02c')
+      } else {
+        p5.stroke('#999')
       }
-      const x1 = nodes[lines[k].NodeID1].X;
-      const x2 = nodes[lines[k].NodeID2].X;
-      const y1 = nodes[lines[k].NodeID1].Y;
-      const y2 = nodes[lines[k].NodeID2].Y;
+      p5.fill('rgba(23,23,23,0.9)')
+      p5.rect(0,0,networks[k].W,networks[k].H)
+      p5.textFont('Roboto')
+      p5.textSize(fontSize)
+      p5.fill('#eee')
+      p5.text(networks[k].Name,5, fontSize + 5)
+      if (networks[k].Ports.length < 1) {
+        if (networks[k].Error !== ""){
+          p5.fill('#cc3300')
+          p5.text(networks[k].Error,15,fontSize * 2 + 15)
+        } else {
+          p5.fill('#11ee00')
+          p5.text('構成を分析中...',15,fontSize * 2 + 15)
+        }
+      } else {
+        p5.textSize(6)
+        for(const p of networks[k].Ports) {
+          const x = p.X * 45 + 10
+          const y = p.Y * 55 + fontSize +15
+          p5.image(portImage,x, y ,40,40)
+          p5.fill(p.State === 'up' ? '#11ee00' : ' #999')
+          p5.circle(x+4,y+4,8)
+          p5.fill('#eee')
+          p5.text(p.Name,x,y + 40 + 10)
+        }
+      }
+      p5.pop()
+    }
+    for (const k in lines) {
+      const lp1 = getLinePos(lines[k].NodeID1,lines[k].PollingID1)
+      if (!lp1) {
+        continue
+      }
+      const lp2 = getLinePos(lines[k].NodeID2,lines[k].PollingID2)
+      if(!lp2){
+        continue
+      }
+      const x1 = lp1.X
+      const x2 = lp2.X
+      const y1 = lp1.Y
+      const y2 = lp2.Y
       const xm = (x1 + x2) / 2;
       const ym = (y1 + y2) / 2;
       p5.push();
@@ -647,7 +737,7 @@ const mapMain = (p5: P5) => {
       return true;
     }
     if (dragMode === 0) {
-      if (selectedNodes.length > 0 || selectedDrawItems.length > 0) {
+      if (selectedNodes.length > 0 || selectedDrawItems.length > 0 || selectedNetwork !== "") {
         dragMode = 2;
       } else {
         dragMode = 1;
@@ -682,6 +772,7 @@ const mapMain = (p5: P5) => {
     } else if (dragMode !== 3) {
       setSelectNode(false);
       setSelectItem();
+      setSelectNetwork();
     }
     lastMouseX = p5.mouseX / scale;
     lastMouseY = p5.mouseY / scale;
@@ -710,6 +801,7 @@ const mapMain = (p5: P5) => {
           Cmd: "contextMenu",
           Node: selectedNodes[0] || "",
           DrawItem: selectedDrawItems[0] || "",
+          Network: selectedNetwork || "",
           x: p5.winMouseX,
           y: p5.winMouseY,
         });
@@ -743,6 +835,14 @@ const mapMain = (p5: P5) => {
     }
     if (draggedItems.length > 0) {
       updateItemsPos();
+    }
+    if (draggedNetwork !== "") {
+      UpdateNetworkPos({
+        ID:draggedNetwork,
+        X: networks[draggedNetwork].X,
+        Y: networks[draggedNetwork].Y,
+      })
+      draggedNetwork = ""
     }
     return false;
   };
@@ -782,6 +882,8 @@ const mapMain = (p5: P5) => {
       nodeDoubleClicked();
     } else if (selectedDrawItems.length === 1) {
       itemDoubleClicked();
+    } else if (selectedNetwork !== "") {
+      networkDoubleClicked();
     }
     return true;
   };
@@ -872,8 +974,8 @@ const mapMain = (p5: P5) => {
   const dragMoveNodes = () => {
     selectedNodes.forEach((id: any) => {
       if (nodes[id]) {
-        nodes[id].X += p5.mouseX / scale - lastMouseX;
-        nodes[id].Y += p5.mouseY / scale - lastMouseY;
+        nodes[id].X += Math.trunc(p5.mouseX / scale - lastMouseX);
+        nodes[id].Y += Math.trunc(p5.mouseY / scale - lastMouseY);
         checkNodePos(nodes[id]);
         if (!draggedNodes.includes(id)) {
           draggedNodes.push(id);
@@ -882,14 +984,19 @@ const mapMain = (p5: P5) => {
     });
     selectedDrawItems.forEach((id: any) => {
       if (items[id]) {
-        items[id].X += p5.mouseX / scale - lastMouseX;
-        items[id].Y += p5.mouseY / scale - lastMouseY;
+        items[id].X += Math.trunc(p5.mouseX / scale - lastMouseX);
+        items[id].Y += Math.trunc(p5.mouseY / scale - lastMouseY);
         checkItemPos(items[id]);
         if (!draggedItems.includes(id)) {
           draggedItems.push(id);
         }
       }
     });
+    if (selectedNetwork !== "" && networks[selectedNetwork]) {
+      networks[selectedNetwork].X += Math.trunc(p5.mouseX / scale - lastMouseX)
+      networks[selectedNetwork].Y += Math.trunc(p5.mouseY / scale - lastMouseY)
+      draggedNetwork = selectedNetwork
+    }
     mapRedraw = true;
   };
 
@@ -976,6 +1083,25 @@ const mapMain = (p5: P5) => {
     }
     selectedDrawItems.length = 0;
   };
+  // Networkを選択する
+  const setSelectNetwork = () => {
+    const x = p5.mouseX / scale
+    const y = p5.mouseY / scale
+    for (const k in networks) {
+      const w = networks[k].W + 10
+      const h = networks[k].H
+      if (
+        networks[k].X + w > x &&
+        networks[k].X - 10 < x &&
+        networks[k].Y + h > y &&
+        networks[k].Y - 10 < y
+      ) {
+        selectedNetwork = networks[k].ID
+        return
+      }
+    }
+    selectedNetwork = ''
+  };
   // ノードを削除する
   const deleteNodes = () => {
     if (mapCallBack) {
@@ -1043,6 +1169,15 @@ const mapMain = (p5: P5) => {
       mapCallBack({
         Cmd: "itemDoubleClicked",
         Param: selectedDrawItems[0],
+      });
+    }
+  };
+  // networkをダブルクリックした場合
+  const networkDoubleClicked = () => {
+    if (mapCallBack) {
+      mapCallBack({
+        Cmd: "networkDoubleClicked",
+        Param: selectedNetwork,
       });
     }
   };

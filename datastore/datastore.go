@@ -40,6 +40,7 @@ var (
 	nodes    sync.Map
 	items    sync.Map
 	lines    sync.Map
+	networks sync.Map
 	pollings sync.Map
 	// MAP Changed check
 	stateChangedNodes sync.Map
@@ -210,7 +211,7 @@ func openDB(path string) error {
 
 func initDB() error {
 	buckets := []string{
-		"config", "nodes", "items", "lines", "pollings", "logs", "pollingLogs",
+		"config", "nodes", "items", "lines", "networks", "pollings", "logs", "pollingLogs",
 		"syslog", "trap", "arplog", "arp", "ai", "grok", "images",
 		"ipfix", "netflow",
 		"sflow", "sflowCounter",

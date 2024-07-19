@@ -1,5 +1,37 @@
 export namespace backend {
 	
+	export class FindNeighborNetworksAndLinesResp {
+	    Networks: datastore.NetworkEnt[];
+	    Lines: datastore.LineEnt[];
+	
+	    static createFrom(source: any = {}) {
+	        return new FindNeighborNetworksAndLinesResp(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Networks = this.convertValues(source["Networks"], datastore.NetworkEnt);
+	        this.Lines = this.convertValues(source["Lines"], datastore.LineEnt);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class HrProcess {
 	    PID: string;
 	    Name: string;
@@ -589,6 +621,96 @@ export namespace datastore {
 	        this.Dur = source["Dur"];
 	    }
 	}
+	export class PortEnt {
+	    ID: string;
+	    Name: string;
+	    Polling: string;
+	    Index: string;
+	    X: number;
+	    Y: number;
+	    State: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PortEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Polling = source["Polling"];
+	        this.Index = source["Index"];
+	        this.X = source["X"];
+	        this.Y = source["Y"];
+	        this.State = source["State"];
+	    }
+	}
+	export class NetworkEnt {
+	    ID: string;
+	    Name: string;
+	    Descr: string;
+	    IP: string;
+	    SnmpMode: string;
+	    Community: string;
+	    User: string;
+	    Password: string;
+	    URL: string;
+	    ArpWatch: boolean;
+	    HPorts: number;
+	    X: number;
+	    Y: number;
+	    W: number;
+	    H: number;
+	    SystemID: string;
+	    Error: string;
+	    LLDP: boolean;
+	    Ports: PortEnt[];
+	
+	    static createFrom(source: any = {}) {
+	        return new NetworkEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Descr = source["Descr"];
+	        this.IP = source["IP"];
+	        this.SnmpMode = source["SnmpMode"];
+	        this.Community = source["Community"];
+	        this.User = source["User"];
+	        this.Password = source["Password"];
+	        this.URL = source["URL"];
+	        this.ArpWatch = source["ArpWatch"];
+	        this.HPorts = source["HPorts"];
+	        this.X = source["X"];
+	        this.Y = source["Y"];
+	        this.W = source["W"];
+	        this.H = source["H"];
+	        this.SystemID = source["SystemID"];
+	        this.Error = source["Error"];
+	        this.LLDP = source["LLDP"];
+	        this.Ports = this.convertValues(source["Ports"], PortEnt);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class NodeEnt {
 	    ID: string;
 	    Name: string;
@@ -783,6 +905,7 @@ export namespace datastore {
 	        this.AutoParam = source["AutoParam"];
 	    }
 	}
+	
 	export class SFlowCounterEnt {
 	    Time: number;
 	    Remote: string;

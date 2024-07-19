@@ -1084,7 +1084,6 @@ export const showSFlowReason3D = (div:string, logs:any) => {
         Bytes: [l.Bytes],
         IPType: [ipt],
       })
-      console.log(k)
     } else {
       e.TotalBytes += l.Bytes
       e.Time.push(t)

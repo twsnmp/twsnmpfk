@@ -66,6 +66,10 @@ export function DeleteLine(arg1) {
   return window['go']['main']['App']['DeleteLine'](arg1);
 }
 
+export function DeleteNetwork(arg1) {
+  return window['go']['main']['App']['DeleteNetwork'](arg1);
+}
+
 export function DeleteNodes(arg1) {
   return window['go']['main']['App']['DeleteNodes'](arg1);
 }
@@ -120,6 +124,10 @@ export function ExportSyslogs(arg1, arg2) {
 
 export function ExportTraps(arg1, arg2) {
   return window['go']['main']['App']['ExportTraps'](arg1, arg2);
+}
+
+export function FindNeighborNetworksAndLines(arg1) {
+  return window['go']['main']['App']['FindNeighborNetworksAndLines'](arg1);
 }
 
 export function GetAIConf() {
@@ -202,8 +210,16 @@ export function GetLine(arg1, arg2) {
   return window['go']['main']['App']['GetLine'](arg1, arg2);
 }
 
+export function GetLineByID(arg1) {
+  return window['go']['main']['App']['GetLineByID'](arg1);
+}
+
 export function GetLines() {
   return window['go']['main']['App']['GetLines']();
+}
+
+export function GetLinesByNode(arg1) {
+  return window['go']['main']['App']['GetLinesByNode'](arg1);
 }
 
 export function GetLocConf() {
@@ -240,6 +256,14 @@ export function GetMySSHPublicKey() {
 
 export function GetNetFlow(arg1) {
   return window['go']['main']['App']['GetNetFlow'](arg1);
+}
+
+export function GetNetwork(arg1) {
+  return window['go']['main']['App']['GetNetwork'](arg1);
+}
+
+export function GetNetworks() {
+  return window['go']['main']['App']['GetNetworks']();
 }
 
 export function GetNode(arg1) {
@@ -412,6 +436,14 @@ export function UpdateLocConf(arg1) {
 
 export function UpdateMapConf(arg1) {
   return window['go']['main']['App']['UpdateMapConf'](arg1);
+}
+
+export function UpdateNetwork(arg1) {
+  return window['go']['main']['App']['UpdateNetwork'](arg1);
+}
+
+export function UpdateNetworkPos(arg1) {
+  return window['go']['main']['App']['UpdateNetworkPos'](arg1);
 }
 
 export function UpdateNode(arg1) {

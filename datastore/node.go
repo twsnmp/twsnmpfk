@@ -58,6 +58,16 @@ func loadMapData() error {
 				return nil
 			})
 		}
+		b = tx.Bucket([]byte("networks"))
+		if b != nil {
+			_ = b.ForEach(func(k, v []byte) error {
+				var n NetworkEnt
+				if err := json.Unmarshal(v, &n); err == nil {
+					networks.Store(n.ID, &n)
+				}
+				return nil
+			})
+		}
 		b = tx.Bucket([]byte("lines"))
 		if b != nil {
 			_ = b.ForEach(func(k, v []byte) error {
@@ -217,6 +227,15 @@ func saveAllNodes() error {
 			s, err := json.Marshal(di)
 			if err == nil {
 				b.Put([]byte(di.ID), s)
+			}
+			return true
+		})
+		b = tx.Bucket([]byte("networks"))
+		networks.Range(func(_, p interface{}) bool {
+			n := p.(*NetworkEnt)
+			s, err := json.Marshal(n)
+			if err == nil {
+				b.Put([]byte(n.ID), s)
 			}
 			return true
 		})
