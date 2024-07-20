@@ -25,11 +25,11 @@ require (
 	github.com/twsnmp/lxi v0.3.2
 	github.com/vjeantet/grok v1.0.1
 	github.com/wailsapp/wails/v2 v2.8.2
-	github.com/xuri/excelize/v2 v2.7.1
+	github.com/xuri/excelize/v2 v2.8.1
 	go.etcd.io/bbolt v1.3.7
-	golang.org/x/crypto v0.23.0
-	golang.org/x/net v0.25.0
-	golang.org/x/text v0.15.0
+	golang.org/x/crypto v0.25.0
+	golang.org/x/net v0.27.0
+	golang.org/x/text v0.16.0
 	gopkg.in/mcuadros/go-syslog.v2 v2.3.0
 )
 
@@ -68,10 +68,10 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/wailsapp/go-webview2 v1.0.10 // indirect
 	github.com/wailsapp/mimetype v1.4.1 // indirect
-	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
-	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
+	github.com/xuri/efp v0.0.0-20240408161823-9ad904a10d6d // indirect
+	github.com/xuri/nfp v0.0.0-20240318013403-ab9948c2c4a7 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
-	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 )

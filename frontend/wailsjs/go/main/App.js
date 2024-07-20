@@ -98,6 +98,10 @@ export function ExportEventLogs(arg1, arg2) {
   return window['go']['main']['App']['ExportEventLogs'](arg1, arg2);
 }
 
+export function ExportMap(arg1) {
+  return window['go']['main']['App']['ExportMap'](arg1);
+}
+
 export function ExportNetFlow(arg1, arg2) {
   return window['go']['main']['App']['ExportNetFlow'](arg1, arg2);
 }

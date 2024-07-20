@@ -53,6 +53,8 @@ export function ExportArpTable(arg1:string):Promise<string>;
 
 export function ExportEventLogs(arg1:string,arg2:main.EventLogFilterEnt):Promise<string>;
 
+export function ExportMap(arg1:string):Promise<void>;
+
 export function ExportNetFlow(arg1:string,arg2:main.NetFlowFilterEnt):Promise<string>;
 
 export function ExportNodes(arg1:string):Promise<string>;

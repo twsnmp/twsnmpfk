@@ -5,12 +5,16 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	_ "image/jpeg"
+	_ "image/png"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	wails "github.com/wailsapp/wails/v2/pkg/runtime"
 	"github.com/xuri/excelize/v2"
 )
@@ -610,6 +614,7 @@ func (a *App) exportExcel(data *ExportData) error {
 			File:      img,
 		})
 	}
+	f.SetSheetName("Sheet1", data.Title)
 	if err := f.SaveAs(file); err != nil {
 		return err
 	}
@@ -648,4 +653,78 @@ func (a *App) exportCSV(data *ExportData) error {
 	}
 	w.Flush()
 	return w.Error()
+}
+
+// ExportMapは、マップのイメージを画像またはExcelに保存します。
+func (a *App) ExportMap(data string) error {
+	d := time.Now().Format("20060102150405")
+	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
+		Title:                i18n.Trans("Export MAP"),
+		DefaultFilename:      "TWSNMPFK_MAP" + "_" + d + ".xlsx",
+		CanCreateDirectories: true,
+		Filters: []wails.FileFilter{{
+			DisplayName: "PNG;Excel",
+			Pattern:     "*.png;*.xlsx",
+		}},
+	})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	if file == "" {
+		return nil
+	}
+	v := strings.SplitN(data, ",", 2)
+	if len(v) != 2 {
+		return fmt.Errorf("invalid image data")
+	}
+	img, err := base64.StdEncoding.DecodeString(v[1])
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	if filepath.Ext(file) == ".png" {
+		return os.WriteFile(file, img, 0640)
+	}
+	f := excelize.NewFile()
+	f.SetCellValue("Sheet1", "A1", "TWSNMP FK MAP"+"-"+d)
+	err = f.AddPictureFromBytes("Sheet1", "A3", &excelize.Picture{
+		Extension: ".png",
+		File:      img,
+		Format:    &excelize.GraphicOptions{AltText: "MAP"},
+	})
+	if err != nil {
+		log.Println(err)
+	}
+	f.SetSheetName("Sheet1", "MAP")
+	f.NewSheet("Sheet2")
+	f.SetCellValue("Sheet2", "A1", "TWSNMP FK Node List"+"-"+d)
+	row := 3
+	col := 'A'
+	for _, h := range []string{"Name", "IP", "MAC", "Descr"} {
+		f.SetCellValue("Sheet2", fmt.Sprintf("%c%d", col, row), h)
+		col++
+	}
+	row++
+	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+		f.SetCellValue("Sheet2", fmt.Sprintf("A%d", row), n.Name)
+		f.SetCellValue("Sheet2", fmt.Sprintf("B%d", row), n.IP)
+		f.SetCellValue("Sheet2", fmt.Sprintf("C%d", row), n.MAC)
+		f.SetCellValue("Sheet2", fmt.Sprintf("D%d", row), n.Descr)
+		row++
+		return true
+	})
+	datastore.ForEachNetworks(func(n *datastore.NetworkEnt) bool {
+		f.SetCellValue("Sheet2", fmt.Sprintf("A%d", row), n.Name)
+		f.SetCellValue("Sheet2", fmt.Sprintf("B%d", row), n.IP)
+		f.SetCellValue("Sheet2", fmt.Sprintf("C%d", row), "")
+		f.SetCellValue("Sheet2", fmt.Sprintf("D%d", row), n.Descr)
+		row++
+		return true
+	})
+	f.SetSheetName("Sheet2", "Node List")
+	if err := f.SaveAs(file); err != nil {
+		return err
+	}
+	return nil
 }

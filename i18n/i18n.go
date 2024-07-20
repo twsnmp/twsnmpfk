@@ -299,6 +299,9 @@ var transMap = map[string]map[string]string{
 	"Init ssh private key": {
 		"ja": "SSH秘密鍵を初期化しました",
 	},
+	"Export MAP": {
+		"ja": "マップを保存",
+	},
 }
 
 func init() {

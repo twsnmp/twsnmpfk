@@ -39,6 +39,7 @@
     SetBackImage,
     ImportV4Map,
     DeleteNetwork,
+    ExportMap,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
@@ -242,9 +243,23 @@
     await SetBackImage(backImage);
     refreshMap();
   };
+  const saveMap = async () => {
+    const map = document.getElementById("defaultCanvas0") as HTMLCanvasElement | undefined;
+    if (map) {
+      ExportMap(map.toDataURL())
+    }
+  }
 </script>
 
 <div bind:this={map} class="h-full w-full overflow-scroll" />
+
+<Button
+  color="alternative"
+  class="!p-2 absolute end-6 bottom-16"
+  on:click={saveMap}
+>
+  <Icon path={icons.mdiContentSave}></Icon>
+</Button>
 
 <Button
   color="alternative"
