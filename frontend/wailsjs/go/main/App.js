@@ -202,6 +202,14 @@ export function GetImage(arg1) {
   return window['go']['main']['App']['GetImage'](arg1);
 }
 
+export function GetImageIcon(arg1) {
+  return window['go']['main']['App']['GetImageIcon'](arg1);
+}
+
+export function GetImageIconList() {
+  return window['go']['main']['App']['GetImageIconList']();
+}
+
 export function GetLang() {
   return window['go']['main']['App']['GetLang']();
 }

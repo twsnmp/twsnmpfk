@@ -207,6 +207,30 @@ func (a *App) GetImage(path string) string {
 	return fmt.Sprintf("data:image/%s;base64,%s", t, base64.StdEncoding.EncodeToString(b))
 }
 
+// GetImageIconList return IconMap
+func (a *App) GetImageIconList() []string {
+	ret := []string{}
+	if dataStorePath == "" {
+		return ret
+	}
+	if files, err := filepath.Glob(filepath.Join(dataStorePath, "icons", "*.png")); err == nil {
+		for _, p := range files {
+			ret = append(ret, filepath.Base(p))
+		}
+	}
+	if files, err := filepath.Glob(filepath.Join(dataStorePath, "icons", "*.jpg")); err == nil {
+		for _, p := range files {
+			ret = append(ret, filepath.Base(p))
+		}
+	}
+	return ret
+}
+
+// GetImageIcon returns icon image data
+func (a *App) GetImageIcon(icon string) string {
+	return a.GetImage(filepath.Join(dataStorePath, "icons", icon))
+}
+
 // GetLangは言語を返します。
 func (a *App) GetLang() string {
 	return i18n.GetLang()

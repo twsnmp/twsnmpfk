@@ -212,7 +212,6 @@
     }
     const i = lineData.indexOf(sels[0]);
     const j = sels[0].Index;
-    console.log(sels,i,j);
     if (i < 0 || j >= resp.Lines.length) {
       return;
     }

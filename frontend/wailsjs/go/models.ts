@@ -716,6 +716,7 @@ export namespace datastore {
 	    Name: string;
 	    Descr: string;
 	    Icon: string;
+	    Image: string;
 	    State: string;
 	    X: number;
 	    Y: number;
@@ -743,6 +744,7 @@ export namespace datastore {
 	        this.Name = source["Name"];
 	        this.Descr = source["Descr"];
 	        this.Icon = source["Icon"];
+	        this.Image = source["Image"];
 	        this.State = source["State"];
 	        this.X = source["X"];
 	        this.Y = source["Y"];

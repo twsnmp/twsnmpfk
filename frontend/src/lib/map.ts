@@ -14,6 +14,8 @@ import {
   GetNotifyConf,
   GetNetworks,
   UpdateNetworkPos,
+  GetImageIconList,
+  GetImageIcon,
 } from "../../wailsjs/go/main/App";
 import type { datastore } from "wailsjs/go/models";
 import { gauge, line, bar } from "./chart/drawitem";
@@ -73,6 +75,17 @@ export const initMAP = async (div: HTMLElement, cb: any) => {
     e.preventDefault();
   };
   _mapP5 = new P5(mapMain, div);
+  const icons = await GetImageIconList();
+  if (icons) {
+    for(const icon of icons) {
+      if (!imageMap.has(icon)) {
+        const img =  _mapP5.loadImage(await GetImageIcon(icon));
+        if (img) {
+          imageMap.set(icon,img);
+        } 
+      }
+    }
+  }
 };
 
 let lastBackImagePath = "";
@@ -676,39 +689,67 @@ const mapMain = (p5: P5) => {
       const icon = getIconCode(nodes[k].Icon);
       p5.push();
       p5.translate(nodes[k].X, nodes[k].Y);
-      if (selectedNodes.includes(nodes[k].ID)) {
-        if (dark) {
-          p5.fill("rgba(23,23,23,0.9)");
+      if(nodes[k].Image && imageMap.has(nodes[k].Image)) {
+        const w = 48 + 16;
+        p5.fill(0,0);
+        if (selectedNodes.includes(nodes[k].ID)) {
+          if (dark) {
+            p5.stroke(250);
+          } else {
+            p5.stroke(23);
+          }
+          p5.rect(-w / 2, -w / 2, w, w);
         } else {
-          p5.fill("rgba(252,252,252,0.9)");
+          p5.strokeWeight(3);
+          p5.stroke(getStateColor(nodes[k].State));
+          p5.rect(-w / 2, -w / 2, w, w);
+          p5.strokeWeight(1);
         }
-        p5.stroke(getStateColor(nodes[k].State));
-        const w = iconSize + 16;
-        p5.rect(-w / 2, -w / 2, w, w);
-      } else {
+        p5.image(imageMap.get(nodes[k].Image),-24,-24,48,48);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.textFont("Roboto");
+        p5.textSize(fontSize);
         if (dark) {
-          p5.fill("rgba(23,23,23,0.9)");
-          p5.stroke("rgba(23,23,23,0.9)");
+          p5.fill(250);
         } else {
-          p5.fill("rgba(252,252,252,0.9)");
-          p5.stroke("rgba(252,252,252,0.9)");
+          p5.fill(23);
         }
-        const w = iconSize - 8;
-        p5.rect(-w / 2, -w / 2, w, w);
-      }
-      p5.textFont("Material Design Icons");
-      p5.textSize(iconSize);
-      p5.textAlign(p5.CENTER, p5.CENTER);
-      p5.fill(getStateColor(nodes[k].State));
-      p5.text(icon, 0, 0);
-      p5.textFont("Roboto");
-      p5.textSize(fontSize);
-      if (dark) {
-        p5.fill(250);
+        p5.text(nodes[k].Name, 0, 48);
       } else {
-        p5.fill(23);
+        if (selectedNodes.includes(nodes[k].ID)) {
+          if (dark) {
+            p5.fill("rgba(23,23,23,0.9)");
+          } else {
+            p5.fill("rgba(252,252,252,0.9)");
+          }
+          p5.stroke(getStateColor(nodes[k].State));
+          const w = iconSize + 16;
+          p5.rect(-w / 2, -w / 2, w, w);
+        } else {
+          if (dark) {
+            p5.fill("rgba(23,23,23,0.9)");
+            p5.stroke("rgba(23,23,23,0.9)");
+          } else {
+            p5.fill("rgba(252,252,252,0.9)");
+            p5.stroke("rgba(252,252,252,0.9)");
+          }
+          const w = iconSize - 8;
+          p5.rect(-w / 2, -w / 2, w, w);
+        }
+        p5.textFont("Material Design Icons");
+        p5.textSize(iconSize);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.fill(getStateColor(nodes[k].State));
+        p5.text(icon, 0, 0);
+        p5.textFont("Roboto");
+        p5.textSize(fontSize);
+        if (dark) {
+          p5.fill(250);
+        } else {
+          p5.fill(23);
+        }
+        p5.text(nodes[k].Name, 0, 32);
       }
-      p5.text(nodes[k].Name, 0, 32);
       p5.pop();
     }
     if (dragMode === 1) {

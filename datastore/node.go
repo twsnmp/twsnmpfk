@@ -14,6 +14,7 @@ type NodeEnt struct {
 	Name      string `json:"Name"`
 	Descr     string `json:"Descr"`
 	Icon      string `json:"Icon"`
+	Image     string `json:"Image"`
 	State     string `json:"State"`
 	X         int    `json:"X"`
 	Y         int    `json:"Y"`

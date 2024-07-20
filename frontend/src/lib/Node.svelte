@@ -9,7 +9,12 @@
     Spinner,
   } from "flowbite-svelte";
   import { createEventDispatcher } from "svelte";
-  import { GetNode, UpdateNode } from "../../wailsjs/go/main/App";
+  import {
+    GetNode,
+    UpdateNode,
+    GetImageIconList,
+    GetImageIcon,
+  } from "../../wailsjs/go/main/App";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { addrModeList, getIcon, iconList, snmpModeList } from "./common";
@@ -24,6 +29,8 @@
 
   let node: any = undefined;
   let showHelp = false;
+  let imageIcon : any  = undefined;
+  const imageIconList: any = [];
 
   const dispatch = createEventDispatcher();
 
@@ -36,6 +43,7 @@
         Name: $_("Node.NewNode"),
         Descr: "",
         Icon: "",
+        Image: "",
         State: "",
         X: posX,
         Y: posY,
@@ -60,6 +68,23 @@
     if (!node.SnmpMode) {
       node.SnmpMode = "v2c";
     }
+    const icons = await GetImageIconList();
+    imageIconList.length = 0;
+    imageIconList.push({
+      name: "なし",
+      value: "",
+    });
+    if (icons) {
+      for (const icon of icons) {
+        imageIconList.push({
+          name: icon,
+          value: icon,
+        });
+      }
+    }
+    if (node.Image) {
+      imageIcon = await GetImageIcon(node.Image);
+    }
   };
 
   const close = () => {
@@ -73,6 +98,15 @@
       close();
     }
   };
+
+  const selectImageIcon = async () => {
+    if (node.Image) {
+      imageIcon = await GetImageIcon(node.Image);
+    } else {
+      imageIcon = undefined;
+    }
+  }
+
 </script>
 
 <Modal
@@ -123,6 +157,23 @@
         </div>
         <Checkbox bind:checked={node.AutoAck}>{$_("Node.AutoCheck")}</Checkbox>
       </div>
+      <div class="grid gap-4 mb-4 md:grid-cols-3">
+        <Label class="space-y-2 text-xs col-span-2">
+          <span> イメージ </span>
+          <Select
+            items={imageIconList}
+            bind:value={node.Image}
+            on:change={selectImageIcon}
+            placeholder="アイコンイメージを選択"
+            size="sm"
+          />
+        </Label>
+        <div class="mt-5 ml-5">
+          {#if imageIcon}
+            <img src={imageIcon} alt="" class="h-[48px]" />
+          {/if}
+        </div>
+      </div>
       <div class="grid gap-4 md:grid-cols-3">
         <Label class="space-y-2 text-xs">
           <span> {$_("Node.SNMPMode")} </span>
@@ -160,9 +211,9 @@
           <Input bind:value={node.SSHUser} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
-        <span>{$_("Node.PublicKey")}</span>
-        <Input bind:value={node.PublicKey} size="sm" />
-      </Label>
+          <span>{$_("Node.PublicKey")}</span>
+          <Input bind:value={node.PublicKey} size="sm" />
+        </Label>
       </div>
       <Label class="space-y-2">
         <span>{$_("Node.Descr")}</span>

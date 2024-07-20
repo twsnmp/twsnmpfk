@@ -105,6 +105,10 @@ export function GetIcons():Promise<Array<datastore.IconEnt>>;
 
 export function GetImage(arg1:string):Promise<string>;
 
+export function GetImageIcon(arg1:string):Promise<string>;
+
+export function GetImageIconList():Promise<Array<string>>;
+
 export function GetLang():Promise<string>;
 
 export function GetLine(arg1:string,arg2:string):Promise<datastore.LineEnt>;
