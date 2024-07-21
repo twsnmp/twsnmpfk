@@ -322,7 +322,7 @@
       >
         <Icon path={icons.mdiDrawing} size={0.7} />
         <div>
-          新規ネットワーク
+          {$_('Map.AddNetwork')}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -649,7 +649,7 @@
       >
         <Icon path={icons.mdiPlaylistEdit} size={0.7} />
         <div>
-          ライン編集
+          {$_('Map.EditLine')}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -662,7 +662,7 @@
       >
         <Icon path={icons.mdiLanConnect} size={0.7} />
         <div>
-          接続先を探す
+          {$_('Map.FindNeighbor')}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->

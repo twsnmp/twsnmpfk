@@ -412,7 +412,10 @@
     "Import": "Import",
     "Circle": "Circle",
     "Horizontal": "Horizontal",
-    "Vertical": "Vertical"
+    "Vertical": "Vertical",
+    "AddNetwork": "New Network",
+    "EditLine": "Edit line",
+    "FindNeighbor": "Find neighbor"
   },
   "MIBBrowser": {
     "Close": "Close",
@@ -442,7 +445,10 @@
     "SelectIcon": "Select icon",
     "SelectSnmpMode": "Select SNMP mode",
     "SnmpPassword": "SNMP password",
-    "SnmpUser": "SNMP user"
+    "SnmpUser": "SNMP user",
+    "Image": "Image",
+    "None": "None",
+    "SelectImageIcon": "Select image icon"
   },
   "NodeList": {
     "CheckAll": "Check all",
@@ -817,5 +823,22 @@
     "SelectType": "Select type",
     "Type": "Type",
     "Counter": "Counter"
+  },
+  "NeighborNetworksAndLines": {
+    "AddNetwork": "Add network",
+    "ConnectLine": "Connect line",
+    "Descr": "Descrption",
+    "Title": "Find neighbor"
+  },
+  "Network": {
+    "ArpWatch": "Arp watch",
+    "EditNetwork": "Edit network",
+    "EditPort": "Edit port",
+    "HPorts": "Horisontal max port",
+    "ReNumberPort": "Re number port",
+    "ReSearch": "Refresh network "
+  },
+  "NetworkLine": {
+    "EditLine": "Edit line"
   }
 }

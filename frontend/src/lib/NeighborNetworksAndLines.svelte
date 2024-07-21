@@ -103,7 +103,7 @@
     },
     {
       data: "Descr",
-      title: "説明",
+      title: $_('NeighborNetworksAndLines.Descr'),
       width: "50%",
     },
   ];
@@ -140,22 +140,22 @@
   const lineColumns = [
     {
       data: "Node1",
-      title: "ノード1",
+      title: $_('Line.Node1'),
       width: "20%",
     },
     {
       data: "Polling1",
-      title: "ポーリング1",
+      title: $_('Line.Polling1'),
       width: "30%",
     },
     {
       data: "Node2",
-      title: "ノード2",
+      title: $_('Line.Node2'),
       width: "20%",
     },
     {
       data: "Polling2",
-      title: "ポーリング2",
+      title: $_('Line.Polling2'),
       width: "30%",
     },
   ];
@@ -234,7 +234,7 @@
   {:else}
     <form class="flex flex-col space-y-4" action="#">
       <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-        ネットワークの接続先を探す
+        {$_('NeighborNetworksAndLines.Title')}
       </h3>
       <div class="m-5 grow">
         <table id="networkTable" class="display compact" style="width:99%" />
@@ -252,7 +252,7 @@
             size="xs"
           >
             <Icon path={icons.mdiPlus} size={1} />
-            ネットワーク追加
+            {$_('NeighborNetworksAndLines.AddNetwork')}
           </GradientButton>
         {/if}
         {#if lineSelectedCount > 0}
@@ -264,7 +264,7 @@
             size="xs"
           >
             <Icon path={icons.mdiLanConnect} size={1} />
-            ライン接続
+            {$_('NeighborNetworksAndLines.ConnectLine')}
           </GradientButton>
         {/if}
         <GradientButton
@@ -275,7 +275,7 @@
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />
-          閉じる
+          {$_('Config.Close')}
         </GradientButton>
       </div>
     </form>

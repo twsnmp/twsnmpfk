@@ -71,7 +71,7 @@
     const icons = await GetImageIconList();
     imageIconList.length = 0;
     imageIconList.push({
-      name: "なし",
+      name: $_('Node.None'),
       value: "",
     });
     if (icons) {
@@ -159,12 +159,12 @@
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-3">
         <Label class="space-y-2 text-xs col-span-2">
-          <span> イメージ </span>
+          <span> {$_('Node.Image')} </span>
           <Select
             items={imageIconList}
             bind:value={node.Image}
             on:change={selectImageIcon}
-            placeholder="アイコンイメージを選択"
+            placeholder={$_('Node.SelectImageIcon')}
             size="sm"
           />
         </Label>

@@ -69,22 +69,22 @@
   const columns = [
     {
       data: "Node1",
-      title: "ノード1",
+      title: $_('Line.Node1'),
       width: "20%",
     },
     {
       data: "Polling1",
-      title: "ポーリング1",
+      title: $_('Line.Polling1'),
       width: "30%",
     },
     {
       data: "Node2",
-      title: "ノード2",
+      title: $_('Line.Node2'),
       width: "20%",
     },
     {
       data: "Polling2",
-      title: "ポーリング2",
+      title: $_('Line.Polling2'),
       width: "30%",
     },
   ];
@@ -157,7 +157,7 @@
   {:else}
     <form class="flex flex-col space-y-4" action="#">
       <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-        ネットワークのライン編集
+        {$_('NetworkLine.EditLine')}
       </h3>
       <div class="m-5 grow">
         <table id="lineTable" class="display compact" style="width:99%" />
@@ -191,7 +191,7 @@
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />
-          閉じる
+          {$_('Config.Close')}
         </GradientButton>
       </div>
     </form>

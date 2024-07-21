@@ -400,7 +400,10 @@
     "Import": "インポート",
     "Horizontal": "水平に整列",
     "Vertical": "垂直に整列",
-    "Circle": "円形に整列"
+    "Circle": "円形に整列",
+    "AddNetwork": "新規ネットワーク",
+    "EditLine": "ライン編集",
+    "FindNeighbor": "接続先を探す"
   },
   "MIBBrowser": {
     "ObjectName": "オブジェクト名",
@@ -430,7 +433,10 @@
     "PublicKey": "公開鍵",
     "Descr": "説明",
     "Save": "保存",
-    "Cancel": "キャンセル"
+    "Cancel": "キャンセル",
+    "None": "なし",
+    "Image": "イメージ",
+    "SelectImageIcon": "アイコンイメージを選択"
   },
   "NodeList": {
     "State": "状態",
@@ -817,5 +823,22 @@
     "Remote": "送信元",
     "SelectType": "種別を選択",
     "Counter": "カウンター"
+  },
+  "NeighborNetworksAndLines": {
+    "Descr": "説明",
+    "Title": "ネットワークの接続先を探す",
+    "AddNetwork": "ネットワーク追加",
+    "ConnectLine": "ライン接続"
+  },
+  "Network": {
+    "EditNetwork": "ネットワークの編集",
+    "HPorts": "横の最大ポート数",
+    "ArpWatch": "ARP監視",
+    "ReNumberPort": "ポート再配置",
+    "ReSearch": "再検索",
+    "EditPort": "ポートの編集"
+  },
+  "NetworkLine": {
+    "EditLine": "ネットワークのライン編集"
   }
 }

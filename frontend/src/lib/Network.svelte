@@ -24,7 +24,7 @@
   export let posX = 0;
   export let posY = 0;
   export let ip = "";
-  export let template:any = undefined;
+  export let template: any = undefined;
 
   let network: any = undefined;
   let showHelp = false;
@@ -90,7 +90,7 @@
     },
     {
       data: "Polling",
-      title: "ポーリング",
+      title: $_("NodeList.Polling"),
       width: "10%",
     },
     {
@@ -232,9 +232,9 @@
     close();
   };
   let showEditPort = false;
-  let editPort : any = {};
-  let selectedPortIndex = -1; 
-  const portEdit = ()=> {
+  let editPort: any = {};
+  let selectedPortIndex = -1;
+  const portEdit = () => {
     if (selectedCount != 1) {
       return;
     }
@@ -247,14 +247,14 @@
     selectedPortIndex = i;
     showEditPort = true;
   };
-  const savePort= () => {
+  const savePort = () => {
     showEditPort = false;
     if (selectedPortIndex < 0 || selectedPortIndex >= network.Ports.length) {
       return;
     }
     network.Ports[selectedPortIndex] = editPort;
     showTable();
-  }
+  };
 </script>
 
 <Modal
@@ -269,7 +269,7 @@
   {:else}
     <form class="flex flex-col space-y-4" action="#">
       <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-        ネットワークの編集
+        {$_("Network.EditNetwork")}
       </h3>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
@@ -283,7 +283,7 @@
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-3">
         <Label class="space-y-2 text-xs">
-          <span>横の最大ポート数</span>
+          <span>{$_("Network.HPorts")}</span>
           <Input
             type="number"
             min="5"
@@ -299,7 +299,9 @@
             <Badge rounded color="red" class="m-8">Not LLDP</Badge>
           {/if}
         </div>
-        <Checkbox bind:checked={network.ArpWatch}>ARP監視</Checkbox>
+        <Checkbox bind:checked={network.ArpWatch}
+          >{$_("Network.ArpWatch")}</Checkbox
+        >
       </div>
       <div class="grid gap-4 md:grid-cols-3">
         <Label class="space-y-2 text-xs">
@@ -409,7 +411,7 @@
             size="xs"
           >
             <Icon path={icons.mdiOrderNumericAscending} size={1} />
-            ポート再配置
+            {$_("Network.ReNumberPort")}
           </GradientButton>
           <GradientButton
             shadow
@@ -419,7 +421,7 @@
             size="xs"
           >
             <Icon path={icons.mdiRefresh} size={1} />
-            再検索
+            {$_("Network.ReSearch")}
           </GradientButton>
         {/if}
         <GradientButton
@@ -464,13 +466,15 @@
 
 <Modal bind:open={showEditPort} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
-    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">ポートの編集</h3>
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+      {$_("Network.EditPort")}
+    </h3>
     <Label class="space-y-2 text-xs">
       <span>{$_("Node.Name")}</span>
       <Input bind:value={editPort.Name} size="sm" />
     </Label>
     <Label class="space-y-2 text-xs">
-      <span>ポーリング</span>
+      <span>{$_("NodeList.Polling")}</span>
       <Input bind:value={editPort.Polling} size="sm" />
     </Label>
 
@@ -511,7 +515,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={()=> {
+        on:click={() => {
           showEditPort = false;
         }}
         size="xs"

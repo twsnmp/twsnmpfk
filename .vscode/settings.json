@@ -386,6 +386,19 @@
     "Network",
     "\n      Counter Sample\n    ",
     "\n          I/F BPS\n        ",
-    "\n          I/F PPS\n        "
+    "\n          I/F PPS\n        ",
+    " {\n          selectedNetwork = \"\";\n          showEditNetwork = true;\n          showMapMenu = false;\n        }}\n      >\n        ",
+    " {\n          selectedNetwork = \"\";\n          showEditNetwork = true;\n          showMapMenu = false;\n        }}\n      >\n        ",
+    " {\n          showNetworkMenu = false;\n          showEditNetwork = true;\n        }}\n      >\n        ",
+    " {\n          showNetworkMenu = false;\n          showNetworkLines = true;\n        }}\n      >\n        ",
+    " {\n          showNetworkMenu = false;\n          showNeighborNetworksAndLines = true;\n        }}\n      >\n        ",
+    " {\n          deleteNetwork(selectedNetwork);\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n    networkTemplate = undefined;\n    refreshMap();\n  }}\n/>\n\n",
+    " {\n    refreshMap();\n  }}\n  on:editLine={(e) => {\n    selectedLineID = e.detail;\n    selectedLineNode1= \"\";\n    selectedLineNode2= \"\";\n    showEditLine = true;\n  }}\n/>\n\n",
+    " {\n    refreshMap();\n  }}\n  on:addNetwork={(e) => {\n    networkTemplate = e.detail;\n    showEditNetwork = true;\n  }}\n/>\n\n",
+    "Not LLDP",
+    "\n        {/if}\n        {#if id ",
+    "& !template}\n          ",
+    " {\n          showEditPort = false;\n        }}\n        size=\"xs\"\n      >\n        "
   ]
 }
