@@ -84,9 +84,10 @@
     showLoading = false;
   };
 
+  let chart : any = undefined;
   const showChart = async () => {
     await tick();
-    showLogCountChart("chart", data, zoomCallBack);
+    chart = showLogCountChart("chart", data, zoomCallBack);
   };
 
   const zoomCallBack = (st: number, et: number) => {
@@ -128,11 +129,11 @@
   });
 
   const saveCSV = () => {
-    ExportTraps("csv", filter);
+    ExportTraps("csv", filter,"");
   };
 
   const saveExcel = () => {
-    ExportTraps("excel", filter);
+    ExportTraps("excel", filter,chart ? chart.getDataURL() : "");
   };
 
   let copied = false;

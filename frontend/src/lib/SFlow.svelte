@@ -118,10 +118,10 @@
     showChart();
     showLoading = false;
   };
-
+  let chart :any = undefined;
   const showChart = async () => {
     await tick();
-    showLogCountChart("chart", data, zoomCallBack);
+    chart = showLogCountChart("chart", data, zoomCallBack);
   };
 
   const zoomCallBack = (st: number, et: number) => {
@@ -250,17 +250,17 @@
 
   const saveCSV = () => {
     if(counter) {
-      ExportSFlowCounter("csv",filterCounter);
+      ExportSFlowCounter("csv",filterCounter,"");
     } else {
-      ExportSFlow("csv", filter);
+      ExportSFlow("csv", filter,"");
     }
   };
 
   const saveExcel = () => {
     if(counter) {
-      ExportSFlowCounter("excel",filterCounter);
+      ExportSFlowCounter("excel",filterCounter,chart ? chart.getDataURL() : "");
     } else {
-      ExportSFlow("excel", filter);
+      ExportSFlow("excel", filter,chart ? chart.getDataURL() : "");
     }
   };
 

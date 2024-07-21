@@ -158,6 +158,7 @@ export const showLogCountChart = (
   });
   chart.resize();
   setZoomCallback(chart, zoomCallback, st, lt);
+  return chart;
 };
 
 const makeMagicTimeChart = (div: string, ent: string) => {

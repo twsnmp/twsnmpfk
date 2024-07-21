@@ -86,24 +86,24 @@ export function ExportAny(arg1, arg2) {
   return window['go']['main']['App']['ExportAny'](arg1, arg2);
 }
 
-export function ExportArpLogs(arg1) {
-  return window['go']['main']['App']['ExportArpLogs'](arg1);
+export function ExportArpLogs(arg1, arg2) {
+  return window['go']['main']['App']['ExportArpLogs'](arg1, arg2);
 }
 
 export function ExportArpTable(arg1) {
   return window['go']['main']['App']['ExportArpTable'](arg1);
 }
 
-export function ExportEventLogs(arg1, arg2) {
-  return window['go']['main']['App']['ExportEventLogs'](arg1, arg2);
+export function ExportEventLogs(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ExportEventLogs'](arg1, arg2, arg3);
 }
 
 export function ExportMap(arg1) {
   return window['go']['main']['App']['ExportMap'](arg1);
 }
 
-export function ExportNetFlow(arg1, arg2) {
-  return window['go']['main']['App']['ExportNetFlow'](arg1, arg2);
+export function ExportNetFlow(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ExportNetFlow'](arg1, arg2, arg3);
 }
 
 export function ExportNodes(arg1) {
@@ -114,20 +114,20 @@ export function ExportPollings(arg1) {
   return window['go']['main']['App']['ExportPollings'](arg1);
 }
 
-export function ExportSFlow(arg1, arg2) {
-  return window['go']['main']['App']['ExportSFlow'](arg1, arg2);
+export function ExportSFlow(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ExportSFlow'](arg1, arg2, arg3);
 }
 
-export function ExportSFlowCounter(arg1, arg2) {
-  return window['go']['main']['App']['ExportSFlowCounter'](arg1, arg2);
+export function ExportSFlowCounter(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ExportSFlowCounter'](arg1, arg2, arg3);
 }
 
-export function ExportSyslogs(arg1, arg2) {
-  return window['go']['main']['App']['ExportSyslogs'](arg1, arg2);
+export function ExportSyslogs(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ExportSyslogs'](arg1, arg2, arg3);
 }
 
-export function ExportTraps(arg1, arg2) {
-  return window['go']['main']['App']['ExportTraps'](arg1, arg2);
+export function ExportTraps(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ExportTraps'](arg1, arg2, arg3);
 }
 
 export function FindNeighborNetworksAndLines(arg1) {

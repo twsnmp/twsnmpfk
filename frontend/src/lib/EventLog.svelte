@@ -80,10 +80,10 @@
     showChart();
     showLoading = false;
   };
-
+  let chart :any = undefined;
   const showChart = async () => {
     await tick();
-    showLogLevelChart("chart", logs, zoomCallBack);
+    chart = showLogLevelChart("chart", logs, zoomCallBack);
   };
 
   const zoomCallBack = (st: number, et: number) => {
@@ -138,11 +138,11 @@
   });
 
   const saveCSV = () => {
-    ExportEventLogs("csv", filter);
+    ExportEventLogs("csv", filter,"");
   };
 
   const saveExcel = () => {
-    ExportEventLogs("excel", filter);
+    ExportEventLogs("excel", filter, chart ? chart.getDataURL() : "");
   };
 
   const deleteAll = async () => {

@@ -102,10 +102,11 @@
     showArpLogTable();
     showChart();
   };
+  let chart : any = undefined;
 
   const showChart = async () => {
     await tick();
-    showLogCountChart("chart", arpLogData, zoomCallBack);
+    chart = showLogCountChart("chart", arpLogData, zoomCallBack);
   };
 
   const zoomCallBack = (st: number, et: number) => {
@@ -123,11 +124,11 @@
   });
 
   const saveCSV = () => {
-    ExportArpLogs("csv");
+    ExportArpLogs("csv", "");
   };
 
   const saveExcel = () => {
-    ExportArpLogs("excel");
+    ExportArpLogs("excel",chart ? chart.getDataURL() : "");
   };
 </script>
 

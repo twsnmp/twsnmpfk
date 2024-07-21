@@ -203,6 +203,7 @@ export const showLogLevelChart = (div:string, logs:any, zoomCallback:any) => {
   });
   chart.resize();
   setZoomCallback(chart, zoomCallback, st, lt);
+  return chart;
 }
 
 export const resizeLogLevelChart = () => {

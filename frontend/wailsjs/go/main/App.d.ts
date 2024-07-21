@@ -47,27 +47,27 @@ export function DeletePollings(arg1:Array<string>):Promise<void>;
 
 export function ExportAny(arg1:string,arg2:main.ExportData):Promise<string>;
 
-export function ExportArpLogs(arg1:string):Promise<string>;
+export function ExportArpLogs(arg1:string,arg2:string):Promise<string>;
 
 export function ExportArpTable(arg1:string):Promise<string>;
 
-export function ExportEventLogs(arg1:string,arg2:main.EventLogFilterEnt):Promise<string>;
+export function ExportEventLogs(arg1:string,arg2:main.EventLogFilterEnt,arg3:string):Promise<string>;
 
 export function ExportMap(arg1:string):Promise<void>;
 
-export function ExportNetFlow(arg1:string,arg2:main.NetFlowFilterEnt):Promise<string>;
+export function ExportNetFlow(arg1:string,arg2:main.NetFlowFilterEnt,arg3:string):Promise<string>;
 
 export function ExportNodes(arg1:string):Promise<string>;
 
 export function ExportPollings(arg1:string):Promise<string>;
 
-export function ExportSFlow(arg1:string,arg2:main.SFlowFilterEnt):Promise<string>;
+export function ExportSFlow(arg1:string,arg2:main.SFlowFilterEnt,arg3:string):Promise<string>;
 
-export function ExportSFlowCounter(arg1:string,arg2:main.SFlowCounterFilterEnt):Promise<string>;
+export function ExportSFlowCounter(arg1:string,arg2:main.SFlowCounterFilterEnt,arg3:string):Promise<string>;
 
-export function ExportSyslogs(arg1:string,arg2:main.SyslogFilterEnt):Promise<string>;
+export function ExportSyslogs(arg1:string,arg2:main.SyslogFilterEnt,arg3:string):Promise<string>;
 
-export function ExportTraps(arg1:string,arg2:main.TrapFilterEnt):Promise<string>;
+export function ExportTraps(arg1:string,arg2:main.TrapFilterEnt,arg3:string):Promise<string>;
 
 export function FindNeighborNetworksAndLines(arg1:string):Promise<backend.FindNeighborNetworksAndLinesResp>;
 

@@ -95,7 +95,7 @@ func (a *App) ExportPollings(t string) string {
 }
 
 // ExportEventLogs  export event logs
-func (a *App) ExportEventLogs(t string, filter EventLogFilterEnt) string {
+func (a *App) ExportEventLogs(t string, filter EventLogFilterEnt, image string) string {
 	typeFilter := makeStringFilter(filter.EventType)
 	nodeFilter := makeStringFilter(filter.NodeName)
 	eventFilter := makeStringFilter(filter.Event)
@@ -104,6 +104,7 @@ func (a *App) ExportEventLogs(t string, filter EventLogFilterEnt) string {
 	data := ExportData{
 		Title:  "TWSNMP Event Log",
 		Header: []string{"Level", "Time", "Type", "Node Name", "Event"},
+		Image:  image,
 	}
 	datastore.ForEachEventLog(st, et, func(l *datastore.EventLogEnt) bool {
 		if typeFilter != nil && !typeFilter.MatchString(l.Type) {
@@ -144,7 +145,7 @@ func (a *App) ExportEventLogs(t string, filter EventLogFilterEnt) string {
 }
 
 // ExportSyslogs  export syslogs
-func (a *App) ExportSyslogs(t string, filter SyslogFilterEnt) string {
+func (a *App) ExportSyslogs(t string, filter SyslogFilterEnt, image string) string {
 	hostFilter := makeStringFilter(filter.Host)
 	tagFilter := makeStringFilter(filter.Tag)
 	msgFilter := makeStringFilter(filter.Message)
@@ -153,6 +154,7 @@ func (a *App) ExportSyslogs(t string, filter SyslogFilterEnt) string {
 	data := ExportData{
 		Title:  "TWSNMP Syslog",
 		Header: []string{"Level", "Time", "Host", "Type", "Tag", "Message"},
+		Image:  image,
 	}
 	datastore.ForEachSyslog(st, et, func(l *datastore.SyslogEnt) bool {
 		if filter.Severity < l.Severity {
@@ -194,7 +196,7 @@ func (a *App) ExportSyslogs(t string, filter SyslogFilterEnt) string {
 }
 
 // ExportTrap  export traps
-func (a *App) ExportTraps(t string, filter TrapFilterEnt) string {
+func (a *App) ExportTraps(t string, filter TrapFilterEnt, image string) string {
 	fromFilter := makeStringFilter(filter.From)
 	typeFilter := makeStringFilter(filter.Type)
 	st := makeTimeFilter(filter.Start, 24)
@@ -235,7 +237,7 @@ func (a *App) ExportTraps(t string, filter TrapFilterEnt) string {
 }
 
 // ExportNetFlow  export netflow
-func (a *App) ExportNetFlow(t string, filter NetFlowFilterEnt) string {
+func (a *App) ExportNetFlow(t string, filter NetFlowFilterEnt, image string) string {
 	srcFilter := makeStringFilter(filter.SrcAddr)
 	srcLocFilter := makeStringFilter(filter.SrcLoc)
 	srcMACFilter := makeStringFilter(filter.SrcMAC)
@@ -331,7 +333,7 @@ func (a *App) ExportNetFlow(t string, filter NetFlowFilterEnt) string {
 }
 
 // ExportSFlow  export sFlow
-func (a *App) ExportSFlow(t string, filter SFlowFilterEnt) string {
+func (a *App) ExportSFlow(t string, filter SFlowFilterEnt, image string) string {
 	srcFilter := makeStringFilter(filter.SrcAddr)
 	srcLocFilter := makeStringFilter(filter.SrcLoc)
 	srcMACFilter := makeStringFilter(filter.SrcMAC)
@@ -345,6 +347,7 @@ func (a *App) ExportSFlow(t string, filter SFlowFilterEnt) string {
 	data := ExportData{
 		Title:  "TWSNMP sFlow",
 		Header: []string{"Time", "Src IP", "Src Port", "Src Loc", "Src MAC", "Dst IP", "Dst Port", "Dst Loc", "Dst MAC", "Protocol", "TCPFlags", "Bytes", "Reason"},
+		Image:  image,
 	}
 	datastore.ForEachSFlow(st, et, func(l *datastore.SFlowEnt) bool {
 		if filter.Single {
@@ -426,13 +429,14 @@ func (a *App) ExportSFlow(t string, filter SFlowFilterEnt) string {
 }
 
 // ExportSFlowCounter  export sFlow Counter log
-func (a *App) ExportSFlowCounter(t string, filter SFlowCounterFilterEnt) string {
+func (a *App) ExportSFlowCounter(t string, filter SFlowCounterFilterEnt, image string) string {
 	remoteFilter := makeIPFilter(filter.Remote)
 	st := makeTimeFilter(filter.Start, 24)
 	et := makeTimeFilter(filter.End, 0)
 	data := ExportData{
 		Title:  "TWSNMP sFlow Counter",
 		Header: []string{"Time", "Type", "Remote", "Data"},
+		Image:  image,
 	}
 	datastore.ForEachSFlowCounter(st, et, func(l *datastore.SFlowCounterEnt) bool {
 		if remoteFilter != nil && !remoteFilter.MatchString(l.Remote) {
@@ -479,10 +483,11 @@ func makeJSONDataToString(j string) string {
 }
 
 // ExportArpLogs  export arp watch logs
-func (a *App) ExportArpLogs(t string) string {
+func (a *App) ExportArpLogs(t, image string) string {
 	data := ExportData{
 		Title:  "TWSNMP ARP Logs",
 		Header: []string{"Time", "State", "IP", "Node", "New MAC", "New Vendor", "Old MAC", "Old Vendor"},
+		Image:  image,
 	}
 	datastore.ForEachLastArpLogs(func(l *datastore.ArpLogEnt) bool {
 		e := []any{}
@@ -593,7 +598,6 @@ func (a *App) exportExcel(data *ExportData) error {
 		f.SetCellValue("Sheet1", fmt.Sprintf("%c%d", col, row), h)
 		col++
 	}
-	imgCol := col + 2
 	row++
 	for _, l := range data.Data {
 		col = 'A'
@@ -603,18 +607,19 @@ func (a *App) exportExcel(data *ExportData) error {
 		}
 		row++
 	}
-	if data.Image != "" {
-		b64data := data.Image[strings.IndexByte(data.Image, ',')+1:]
-		img, err := base64.StdEncoding.DecodeString(b64data)
-		if err != nil {
-			return err
-		}
-		f.AddPictureFromBytes("Sheet1", fmt.Sprintf("%c2", imgCol), &excelize.Picture{
-			Extension: ".png",
-			File:      img,
-		})
-	}
 	f.SetSheetName("Sheet1", data.Title)
+	if data.Image != "" {
+		v := strings.SplitN(data.Image, ",", 2)
+		if len(v) == 2 {
+			if img, err := base64.StdEncoding.DecodeString(v[1]); err == nil {
+				f.NewSheet("Chart")
+				f.AddPictureFromBytes("Chart", "A1", &excelize.Picture{
+					Extension: ".png",
+					File:      img,
+				})
+			}
+		}
+	}
 	if err := f.SaveAs(file); err != nil {
 		return err
 	}

@@ -107,9 +107,10 @@
     showLoading = false;
   };
 
+  let chart : any = undefined;
   const showChart = async () => {
     await tick();
-    showLogLevelChart("chart", logs, zoomCallBack);
+   chart = showLogLevelChart("chart", logs, zoomCallBack);
   };
 
   const zoomCallBack = (st: number, et: number) => {
@@ -162,11 +163,11 @@
   });
 
   const saveCSV = () => {
-    ExportSyslogs("csv", filter);
+    ExportSyslogs("csv", filter,"");
   };
 
   const saveExcel = () => {
-    ExportSyslogs("excel", filter);
+    ExportSyslogs("excel", filter,chart ? chart.getDataURL() : "");
   };
 
   let copied = false;
