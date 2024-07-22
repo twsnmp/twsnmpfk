@@ -70,12 +70,12 @@ func networkBackend(ctx context.Context, wg *sync.WaitGroup) {
 func getNetworkPorts(n *datastore.NetworkEnt) {
 	agent := getSNMPAgentForNetwork(n)
 	if agent == nil {
-		n.Error = "SNMPのパラメータエラー"
+		n.Error = "Invalid SNMP config"
 		return
 	}
 	err := agent.Connect()
 	if err != nil {
-		n.Error = fmt.Sprintf("SNMPアクセスエラー err=%s", err)
+		n.Error = fmt.Sprintf("SNMP access err=%s", err)
 		return
 	}
 	defer agent.Conn.Close()
@@ -175,7 +175,7 @@ func getNetworkPorts(n *datastore.NetworkEnt) {
 		return nil
 	})
 	if err != nil {
-		n.Error = fmt.Sprintf("SNMP取得エラー err=%v", err)
+		n.Error = fmt.Sprintf("SNMP walk err=%v", err)
 		return
 	}
 	for _, index := range ifIndexs {
@@ -231,12 +231,12 @@ func FindNeighborNetworksAndLines(n *datastore.NetworkEnt) FindNeighborNetworksA
 	}
 	agent := getSNMPAgentForNetwork(n)
 	if agent == nil {
-		n.Error = "SNMPパラメータエラー"
+		n.Error = "Invalid SNMP config"
 		return ret
 	}
 	err := agent.Connect()
 	if err != nil {
-		n.Error = fmt.Sprintf("SNMP接続エラー err=%s", err)
+		n.Error = fmt.Sprintf("SNMP connect err=%s", err)
 		return ret
 	}
 	defer agent.Conn.Close()
@@ -403,12 +403,12 @@ func FindNeighborNetworksAndLines(n *datastore.NetworkEnt) FindNeighborNetworksA
 func checkNetworkPortState(n *datastore.NetworkEnt) {
 	agent := getSNMPAgentForNetwork(n)
 	if agent == nil {
-		n.Error = "SNMPパラメータエラー"
+		n.Error = "Invalid SNMP config"
 		return
 	}
 	err := agent.Connect()
 	if err != nil {
-		n.Error = fmt.Sprintf("SNMPアクセス err=%s", err)
+		n.Error = fmt.Sprintf("SNMP access err=%s", err)
 		return
 	}
 	defer agent.Conn.Close()
@@ -422,7 +422,7 @@ func checkNetworkPortState(n *datastore.NetworkEnt) {
 		}
 		r, err := agent.Get([]string{datastore.MIBDB.NameToOID(a[0])})
 		if err != nil {
-			n.Error = fmt.Sprintf("SNMP%s取得 err=%s", p.Polling, err)
+			n.Error = fmt.Sprintf("SNMP %s get err=%s", p.Polling, err)
 			continue
 		}
 		for _, variable := range r.Variables {

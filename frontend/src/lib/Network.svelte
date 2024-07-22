@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+    Alert,
     Select,
     Modal,
     Label,
@@ -271,6 +272,14 @@
       <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
         {$_("Network.EditNetwork")}
       </h3>
+      {#if network.Error}
+        <Alert color="red" dismissable>
+          <div class="flex">
+            <Icon path={icons.mdiExclamation} size={1} />
+            {network.Error}
+          </div>
+        </Alert>
+      {/if}
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Name")}</span>
