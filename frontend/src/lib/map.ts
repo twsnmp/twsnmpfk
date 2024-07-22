@@ -14,7 +14,6 @@ import {
   GetNotifyConf,
   GetNetworks,
   UpdateNetworkPos,
-  GetImageIconList,
   GetImageIcon,
 } from "../../wailsjs/go/main/App";
 import type { datastore } from "wailsjs/go/models";
@@ -75,17 +74,6 @@ export const initMAP = async (div: HTMLElement, cb: any) => {
     e.preventDefault();
   };
   _mapP5 = new P5(mapMain, div);
-  const icons = await GetImageIconList();
-  if (icons) {
-    for(const icon of icons) {
-      if (!imageMap.has(icon)) {
-        const img =  _mapP5.loadImage(await GetImageIcon(icon));
-        if (img) {
-          imageMap.set(icon,img);
-        } 
-      }
-    }
-  }
 };
 
 let lastBackImagePath = "";
@@ -126,6 +114,17 @@ export const updateMAP = async () => {
       ? _mapP5.color(23).toString()
       : _mapP5.color(252).toString()
     : "#333";
+  if (_mapP5) {
+    for (const k in nodes) {
+      const icon = nodes[k].Image;
+      if (icon && !imageMap.has(icon)) {
+        const img = _mapP5.loadImage(await GetImageIcon(icon));
+        if (img) {
+          imageMap.set(icon,img);
+        }
+      }
+    }
+  }
   for (const k in items) {
     switch (items[k].Type) {
       case 3:
@@ -690,31 +689,41 @@ const mapMain = (p5: P5) => {
       p5.push();
       p5.translate(nodes[k].X, nodes[k].Y);
       if(nodes[k].Image && imageMap.has(nodes[k].Image)) {
-        const w = 48 + 16;
-        p5.fill(0,0);
+        const img = imageMap.get(nodes[k].Image)
+        const w = 48 + 16
+        const h = img.height + 16 + fontSize
         if (selectedNodes.includes(nodes[k].ID)) {
           if (dark) {
-            p5.stroke(250);
+            p5.fill("rgba(23,23,23,0.9)");
           } else {
-            p5.stroke(23);
+            p5.fill("rgba(252,252,252,0.9)");
           }
-          p5.rect(-w / 2, -w / 2, w, w);
+          p5.stroke(getStateColor(nodes[k].State))
+          p5.rect(-w / 2, -h / 2, w, h)
         } else {
-          p5.strokeWeight(3);
-          p5.stroke(getStateColor(nodes[k].State));
-          p5.rect(-w / 2, -w / 2, w, w);
-          p5.strokeWeight(1);
+          const w = 40
+          if (dark) {
+            p5.fill("rgba(23,23,23,0.9)");
+            p5.stroke("rgba(23,23,23,0.9)");
+          } else {
+            p5.fill("rgba(252,252,252,0.9)");
+            p5.stroke("rgba(252,252,252,0.9)");
+          }
+          p5.rect(-w / 2 , -h / 2, w, h)
         }
-        p5.image(imageMap.get(nodes[k].Image),-24,-24,48,48);
+        p5.tint(getStateColor(nodes[k].State))
+        p5.image(img,-24,-h/2 + 10,48)
+        p5.noTint()
         p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.textFont("Roboto");
+        p5.textFont("Roboto")
+        p5.textSize(fontSize)
         p5.textSize(fontSize);
         if (dark) {
           p5.fill(250);
         } else {
           p5.fill(23);
         }
-        p5.text(nodes[k].Name, 0, 48);
+        p5.text(nodes[k].Name, 0, img.height);
       } else {
         if (selectedNodes.includes(nodes[k].ID)) {
           if (dark) {
