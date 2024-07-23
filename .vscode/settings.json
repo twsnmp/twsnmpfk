@@ -399,6 +399,9 @@
     "Not LLDP",
     "\n        {/if}\n        {#if id ",
     "& !template}\n          ",
-    " {\n          showEditPort = false;\n        }}\n        size=\"xs\"\n      >\n        "
+    " {\n          showEditPort = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    "Auto",
+    "2894x4093 A4P",
+    "4093x2894 A4L"
   ]
 }

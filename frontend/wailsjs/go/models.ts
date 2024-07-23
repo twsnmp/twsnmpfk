@@ -552,6 +552,7 @@ export namespace datastore {
 	    EnableSshd: boolean;
 	    EnableSFlowd: boolean;
 	    IconSize: number;
+	    MapSize: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new MapConfEnt(source);
@@ -575,6 +576,7 @@ export namespace datastore {
 	        this.EnableSshd = source["EnableSshd"];
 	        this.EnableSFlowd = source["EnableSFlowd"];
 	        this.IconSize = source["IconSize"];
+	        this.MapSize = source["MapSize"];
 	    }
 	}
 	export class NetFlowEnt {

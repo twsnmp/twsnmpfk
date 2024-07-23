@@ -44,6 +44,7 @@ type MapConfEnt struct {
 	EnableSshd     bool   `json:"EnableSshd"`
 	EnableSFlowd   bool   `json:"EnableSFlowd"`
 	IconSize       int    `json:"IconSize"`
+	MapSize        int    `json:"MapSize"`
 }
 
 // LocConfEnt : 地図設定

@@ -263,7 +263,9 @@
     "LineToken": "LINE通知のトークン",
     "SSHPublicKey": "SSH公開鍵",
     "MySSHPublicKey": "自分の公開鍵",
-    "HostSSHPublicKey": "アクセス許可するホストのSSH公開鍵"
+    "HostSSHPublicKey": "アクセス許可するホストのSSH公開鍵",
+    "MapSize": "マップサイズ",
+    "SelectMapSize": "マップサイズを選択"
   },
   "DrawItem": {
     "Rect": "矩形",

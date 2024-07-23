@@ -275,7 +275,9 @@
     "LineToken": "LINE Notify Token",
     "HostSSHPublicKey": "Allowed  host SSH public keys",
     "MySSHPublicKey": "My SSH public key",
-    "SSHPublicKey": "SSH public key"
+    "SSHPublicKey": "SSH public key",
+    "MapSize": "Map Size",
+    "SelectMapSize": "Select Map size"
   },
   "DrawItem": {
     "Cancel": "Cancel",

@@ -20,9 +20,8 @@ import type { datastore } from "wailsjs/go/models";
 import { gauge, line, bar } from "./chart/drawitem";
 import port from "../assets/images/port.png";
 
-
-const MAP_SIZE_X = window.screen.width > 4000 ? 5000 : 2500;
-const MAP_SIZE_Y = 5000;
+let mapSizeX = window.screen.width > 4000 ? 5000 : 2500;
+let mapSizeY = 5000;
 let mapRedraw = true;
 let readOnly = false;
 
@@ -57,10 +56,26 @@ let _mapP5: P5 | undefined = undefined;
 let beepHigh: any = undefined;
 let beepLow: any = undefined;
 let scale = 1.0;
+let mapConf: any = undefined;
 
 export const initMAP = async (div: HTMLElement, cb: any) => {
   const settings = await GetSettings();
   const notifyConf = await GetNotifyConf();
+  mapConf = await GetMapConf();
+  switch (mapConf.MapSize) {
+    case 1:
+      mapSizeX = 2894;
+      mapSizeY = 4093;
+      break;
+    case 2:
+      mapSizeX = 4093;
+      mapSizeY = 2894;
+      break;
+    default:
+      // Auto
+      mapSizeX = window.screen.width > 4000 ? 5000 : 2500;
+      mapSizeX = 5000;
+  }
   beepHigh = notifyConf.BeepHigh;
   beepLow = notifyConf.BeepLow;
 
@@ -80,7 +95,9 @@ let lastBackImagePath = "";
 
 export const updateMAP = async () => {
   const dark = isDark();
-  const mapConf = await GetMapConf();
+  if (!mapConf) {
+    mapConf = await GetMapConf()
+  }
   const z = mapConf.IconSize || 3;
   iconSize = 8 + z * 8;
   fontSize = 6 + z * 2;
@@ -120,7 +137,7 @@ export const updateMAP = async () => {
       if (icon && !imageMap.has(icon)) {
         const img = _mapP5.loadImage(await GetImageIcon(icon));
         if (img) {
-          imageMap.set(icon,img);
+          imageMap.set(icon, img);
         }
       }
     }
@@ -141,7 +158,7 @@ export const updateMAP = async () => {
         break;
       case 2:
       case 4:
-        if(items[k].Text.length==0) {
+        if (items[k].Text.length == 0) {
           items[k].Text = "Empty Draw Item";
         }
         items[k].W = items[k].Size * items[k].Text.length;
@@ -267,8 +284,8 @@ export const deleteMap = () => {
 
 export const grid = (g: number, test: boolean) => {
   const list = [];
-  const mx = Math.ceil(MAP_SIZE_X / g);
-  const my = Math.ceil(MAP_SIZE_Y / g);
+  const mx = Math.ceil(mapSizeX / g);
+  const my = Math.ceil(mapSizeY / g);
   const m = new Array(mx);
   for (let x = 0; x < m.length; x++) {
     m[x] = new Array(my);
@@ -323,8 +340,8 @@ export const horizontal = (selected: any) => {
     if (id != id0) {
       nodes[id].Y = nodes[id0].Y;
       nodes[id].X = nodes[idLast].X + dx;
-      if (nodes[id].X > MAP_SIZE_X - 80) {
-        nodes[id].X = MAP_SIZE_X - 80;
+      if (nodes[id].X > mapSizeX - 80) {
+        nodes[id].X = mapSizeX - 80;
       }
       list.push({
         ID: id,
@@ -358,8 +375,8 @@ export const vertical = (selected: any) => {
     if (id != id0) {
       nodes[id].X = nodes[id0].X;
       nodes[id].Y = nodes[idLast].Y + dy;
-      if (nodes[id].Y > MAP_SIZE_Y - 80) {
-        nodes[id].Y = MAP_SIZE_Y - 80;
+      if (nodes[id].Y > mapSizeY - 80) {
+        nodes[id].Y = mapSizeY - 80;
       }
       list.push({
         ID: id,
@@ -384,7 +401,7 @@ export const circle = (selected: any) => {
     return nodes[a].X - nodes[b].X;
   });
   const c = 80 * selected.length;
-  const r = Math.min(Math.trunc(c / 3.14 / 2), MAP_SIZE_X / 2 - 80);
+  const r = Math.min(Math.trunc(c / 3.14 / 2), mapSizeX / 2 - 80);
   const cx = nodes[selected[0]].X + r;
   let cy = nodes[selected[0]].Y;
   if (cy - r < 0) {
@@ -420,39 +437,39 @@ const getLineColor = (state: any) => {
   return 250;
 };
 
-const getLinePos = (id:string,polling :string) => {
-  if (id.startsWith('NET:')) {
-    const a = id.split(":")
-    if(a.length !== 2 ) {
-      return undefined
+const getLinePos = (id: string, polling: string) => {
+  if (id.startsWith("NET:")) {
+    const a = id.split(":");
+    if (a.length !== 2) {
+      return undefined;
     }
-    const net = networks[a[1]]
+    const net = networks[a[1]];
     if (!net) {
-      return undefined
+      return undefined;
     }
-    let pi =  -1
-    for(let i = 0; i <  net.Ports.length;i++) {
+    let pi = -1;
+    for (let i = 0; i < net.Ports.length; i++) {
       if (net.Ports[i].ID === polling) {
-        pi = i
-        break
+        pi = i;
+        break;
       }
     }
-    if (pi < 0 ) {
-      return undefined
+    if (pi < 0) {
+      return undefined;
     }
     return {
       X: net.X + net.Ports[pi].X * 45 + 10 + 20,
-      Y: net.Y + net.Ports[pi].Y * 55 + fontSize + 20 + 10
-    }
+      Y: net.Y + net.Ports[pi].Y * 55 + fontSize + 20 + 10,
+    };
   }
   if (!nodes[id]) {
-    return undefined
+    return undefined;
   }
   return {
-    X:nodes[id].X,
-    Y:nodes[id].Y + 6,
-  }
-}
+    X: nodes[id].X,
+    Y: nodes[id].Y + 6,
+  };
+};
 
 const isDark = (): boolean => {
   const e = document.querySelector("html");
@@ -473,16 +490,16 @@ const mapMain = (p5: P5) => {
   let lastMouseY = 0;
   let dragMode = 0; // 0 : None , 1: Select , 2 :Move
   let oldDark = false;
-  let draggedNetwork = ""
+  let draggedNetwork = "";
   const draggedNodes: any = [];
   const draggedItems: any = [];
   let clickInCanvas = false;
   let portImage: any = undefined;
   p5.preload = () => {
     portImage = p5.loadImage(port);
-  }
+  };
   p5.setup = () => {
-    const c = p5.createCanvas(MAP_SIZE_X, MAP_SIZE_Y);
+    const c = p5.createCanvas(mapSizeX, mapSizeY);
     c.mousePressed(canvasMousePressed);
   };
 
@@ -514,57 +531,57 @@ const mapMain = (p5: P5) => {
       }
     }
     for (const k in networks) {
-      p5.push()
-      p5.translate(networks[k].X,networks[k].Y)
+      p5.push();
+      p5.translate(networks[k].X, networks[k].Y);
       if (selectedNetwork === networks[k].ID) {
-        p5.stroke('#02c')
+        p5.stroke("#02c");
       } else if (networks[k].Error != "") {
-        p5.stroke('#cc3300')
+        p5.stroke("#cc3300");
       } else {
-        p5.stroke('#999')
+        p5.stroke("#999");
       }
-      p5.fill('rgba(23,23,23,0.9)')
-      p5.rect(0,0,networks[k].W,networks[k].H)
-      p5.stroke('#999')
-      p5.textFont('Roboto')
-      p5.textSize(fontSize)
-      p5.fill('#eee')
-      p5.text(networks[k].Name,5, fontSize + 5)
+      p5.fill("rgba(23,23,23,0.9)");
+      p5.rect(0, 0, networks[k].W, networks[k].H);
+      p5.stroke("#999");
+      p5.textFont("Roboto");
+      p5.textSize(fontSize);
+      p5.fill("#eee");
+      p5.text(networks[k].Name, 5, fontSize + 5);
       if (networks[k].Ports.length < 1) {
-        if (networks[k].Error !== ""){
-          p5.fill('#cc3300')
-          p5.text(networks[k].Error,15,fontSize * 2 + 15)
+        if (networks[k].Error !== "") {
+          p5.fill("#cc3300");
+          p5.text(networks[k].Error, 15, fontSize * 2 + 15);
         } else {
-          p5.fill('#11ee00')
-          p5.text('構成を分析中...',15,fontSize * 2 + 15)
+          p5.fill("#11ee00");
+          p5.text("構成を分析中...", 15, fontSize * 2 + 15);
         }
       } else {
-        p5.textSize(6)
-        for(const p of networks[k].Ports) {
-          const x = p.X * 45 + 10
-          const y = p.Y * 55 + fontSize +15
-          p5.image(portImage,x, y ,40,40)
-          p5.fill(p.State === 'up' ? '#11ee00' : ' #999')
-          p5.circle(x+4,y+4,8)
-          p5.fill('#eee')
-          p5.text(p.Name,x,y + 40 + 10)
+        p5.textSize(6);
+        for (const p of networks[k].Ports) {
+          const x = p.X * 45 + 10;
+          const y = p.Y * 55 + fontSize + 15;
+          p5.image(portImage, x, y, 40, 40);
+          p5.fill(p.State === "up" ? "#11ee00" : " #999");
+          p5.circle(x + 4, y + 4, 8);
+          p5.fill("#eee");
+          p5.text(p.Name, x, y + 40 + 10);
         }
       }
-      p5.pop()
+      p5.pop();
     }
     for (const k in lines) {
-      const lp1 = getLinePos(lines[k].NodeID1,lines[k].PollingID1)
+      const lp1 = getLinePos(lines[k].NodeID1, lines[k].PollingID1);
       if (!lp1) {
-        continue
+        continue;
       }
-      const lp2 = getLinePos(lines[k].NodeID2,lines[k].PollingID2)
-      if(!lp2){
-        continue
+      const lp2 = getLinePos(lines[k].NodeID2, lines[k].PollingID2);
+      if (!lp2) {
+        continue;
       }
-      const x1 = lp1.X
-      const x2 = lp2.X
-      const y1 = lp1.Y
-      const y2 = lp2.Y
+      const x1 = lp1.X;
+      const x2 = lp2.X;
+      const y1 = lp1.Y;
+      const y2 = lp2.Y;
       const xm = (x1 + x2) / 2;
       const ym = (y1 + y2) / 2;
       p5.push();
@@ -691,20 +708,20 @@ const mapMain = (p5: P5) => {
       const icon = getIconCode(nodes[k].Icon);
       p5.push();
       p5.translate(nodes[k].X, nodes[k].Y);
-      if(nodes[k].Image && imageMap.has(nodes[k].Image)) {
-        const img = imageMap.get(nodes[k].Image)
-        const w = 48 + 16
-        const h = img.height + 16 + fontSize
+      if (nodes[k].Image && imageMap.has(nodes[k].Image)) {
+        const img = imageMap.get(nodes[k].Image);
+        const w = 48 + 16;
+        const h = img.height + 16 + fontSize;
         if (selectedNodes.includes(nodes[k].ID)) {
           if (dark) {
             p5.fill("rgba(23,23,23,0.9)");
           } else {
             p5.fill("rgba(252,252,252,0.9)");
           }
-          p5.stroke(getStateColor(nodes[k].State))
-          p5.rect(-w / 2, -h / 2, w, h)
+          p5.stroke(getStateColor(nodes[k].State));
+          p5.rect(-w / 2, -h / 2, w, h);
         } else {
-          const w = 40
+          const w = 40;
           if (dark) {
             p5.fill("rgba(23,23,23,0.9)");
             p5.stroke("rgba(23,23,23,0.9)");
@@ -712,14 +729,14 @@ const mapMain = (p5: P5) => {
             p5.fill("rgba(252,252,252,0.9)");
             p5.stroke("rgba(252,252,252,0.9)");
           }
-          p5.rect(-w / 2 , -h / 2, w, h)
+          p5.rect(-w / 2, -h / 2, w, h);
         }
-        p5.tint(getStateColor(nodes[k].State))
-        p5.image(img,-24,-h/2 + 10,48)
-        p5.noTint()
+        p5.tint(getStateColor(nodes[k].State));
+        p5.image(img, -24, -h / 2 + 10, 48);
+        p5.noTint();
         p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.textFont("Roboto")
-        p5.textSize(fontSize)
+        p5.textFont("Roboto");
+        p5.textSize(fontSize);
         p5.textSize(fontSize);
         if (dark) {
           p5.fill(250);
@@ -790,7 +807,11 @@ const mapMain = (p5: P5) => {
       return true;
     }
     if (dragMode === 0) {
-      if (selectedNodes.length > 0 || selectedDrawItems.length > 0 || selectedNetwork !== "") {
+      if (
+        selectedNodes.length > 0 ||
+        selectedDrawItems.length > 0 ||
+        selectedNetwork !== ""
+      ) {
         dragMode = 2;
       } else {
         dragMode = 1;
@@ -891,11 +912,11 @@ const mapMain = (p5: P5) => {
     }
     if (draggedNetwork !== "") {
       UpdateNetworkPos({
-        ID:draggedNetwork,
+        ID: draggedNetwork,
         X: networks[draggedNetwork].X,
         Y: networks[draggedNetwork].Y,
-      })
-      draggedNetwork = ""
+      });
+      draggedNetwork = "";
     }
     return false;
   };
@@ -1003,11 +1024,11 @@ const mapMain = (p5: P5) => {
     if (n.Y < 16) {
       n.Y = 16;
     }
-    if (n.X > MAP_SIZE_X) {
-      n.X = MAP_SIZE_X - 16;
+    if (n.X > mapSizeX) {
+      n.X = mapSizeX - 16;
     }
-    if (n.Y > MAP_SIZE_Y) {
-      n.Y = MAP_SIZE_Y - 16;
+    if (n.Y > mapSizeY) {
+      n.Y = mapSizeY - 16;
     }
   };
   const checkItemPos = (i: any) => {
@@ -1017,11 +1038,11 @@ const mapMain = (p5: P5) => {
     if (i.Y < 16) {
       i.Y = 16;
     }
-    if (i.X > MAP_SIZE_X - i.W) {
-      i.X = MAP_SIZE_X - i.W;
+    if (i.X > mapSizeX - i.W) {
+      i.X = mapSizeX - i.W;
     }
-    if (i.Y > MAP_SIZE_Y - i.H) {
-      i.Y = MAP_SIZE_Y - i.H;
+    if (i.Y > mapSizeY - i.H) {
+      i.Y = mapSizeY - i.H;
     }
   };
   const dragMoveNodes = () => {
@@ -1046,9 +1067,9 @@ const mapMain = (p5: P5) => {
       }
     });
     if (selectedNetwork !== "" && networks[selectedNetwork]) {
-      networks[selectedNetwork].X += Math.trunc(p5.mouseX / scale - lastMouseX)
-      networks[selectedNetwork].Y += Math.trunc(p5.mouseY / scale - lastMouseY)
-      draggedNetwork = selectedNetwork
+      networks[selectedNetwork].X += Math.trunc(p5.mouseX / scale - lastMouseX);
+      networks[selectedNetwork].Y += Math.trunc(p5.mouseY / scale - lastMouseY);
+      draggedNetwork = selectedNetwork;
     }
     mapRedraw = true;
   };
@@ -1138,22 +1159,22 @@ const mapMain = (p5: P5) => {
   };
   // Networkを選択する
   const setSelectNetwork = () => {
-    const x = p5.mouseX / scale
-    const y = p5.mouseY / scale
+    const x = p5.mouseX / scale;
+    const y = p5.mouseY / scale;
     for (const k in networks) {
-      const w = networks[k].W + 10
-      const h = networks[k].H
+      const w = networks[k].W + 10;
+      const h = networks[k].H;
       if (
         networks[k].X + w > x &&
         networks[k].X - 10 < x &&
         networks[k].Y + h > y &&
         networks[k].Y - 10 < y
       ) {
-        selectedNetwork = networks[k].ID
-        return
+        selectedNetwork = networks[k].ID;
+        return;
       }
     }
-    selectedNetwork = ''
+    selectedNetwork = "";
   };
   // ノードを削除する
   const deleteNodes = () => {

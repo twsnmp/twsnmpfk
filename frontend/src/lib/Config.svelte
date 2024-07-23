@@ -105,10 +105,15 @@
     mapConf.Retry *= 1;
     mapConf.LogDays *= 1;
     mapConf.IconSize *= 1;
+    mapConf.MapSize *= 1;
     const r = await UpdateMapConf(mapConf);
     close();
   };
-
+  const mapSizeList = [
+    { name: 'Auto'         , value: 0 },
+    { name: '2894x4093 A4P', value: 1 },
+    { name: '4093x2894 A4L', value: 2 },
+  ];
   const notifyLevelList = [
     { name: $_("Config.None"), value: "none" },
     { name: $_("Config.Warn"), value: "warn" },
@@ -430,6 +435,15 @@
                 bind:value={mapConf.MapName}
                 placeholder={$_("Config.MapName")}
                 required
+                size="sm"
+              />
+            </Label>
+            <Label>
+              {$_('Config.MapSize')}
+              <Select
+                items={mapSizeList}
+                bind:value={mapConf.MapSize}
+                placeholder={$_('Config.SelectMapSize')}
                 size="sm"
               />
             </Label>
