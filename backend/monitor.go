@@ -3,6 +3,8 @@ package backend
 import (
 	"context"
 	"log"
+	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -55,13 +57,21 @@ func updateMonData() {
 	if err == nil {
 		m.Disk = d.UsedPercent
 	}
-	n, err := gopsnet.IOCounters(false)
+	n, err := gopsnet.IOCounters(true)
 	if err == nil {
-		m.Bytes = float64(n[0].BytesRecv)
-		m.Bytes += float64(n[0].BytesSent)
+		for _, nif := range n {
+			if isMonitorIF(nif.Name) {
+				m.Bytes += float64(nif.BytesRecv)
+				m.Bytes += float64(nif.BytesSent)
+			}
+		}
 		if len(MonitorDataes) > 1 {
 			o := MonitorDataes[len(MonitorDataes)-1]
-			m.Net = float64(1000*1000*1000*8.0*(m.Bytes-o.Bytes)) / float64(m.Time-o.Time)
+			if m.Bytes >= o.Bytes && m.Time > o.Time {
+				m.Net = float64(1000*1000*1000*8.0*(m.Bytes-o.Bytes)) / float64(m.Time-o.Time)
+			} else {
+				log.Println("skip net monior")
+			}
 		}
 	}
 	conn, err := gopsnet.Connections("tcp")
@@ -77,6 +87,18 @@ func updateMonData() {
 		MonitorDataes = append(MonitorDataes[:0], MonitorDataes[1:]...)
 	}
 	MonitorDataes = append(MonitorDataes, m)
+}
+
+func isMonitorIF(n string) bool {
+	if runtime.GOOS == "darwin" {
+		if strings.HasPrefix(n, "utun") {
+			return false
+		}
+		if strings.HasPrefix(n, "lo") {
+			return false
+		}
+	}
+	return true
 }
 
 // monitor :
