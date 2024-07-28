@@ -65,7 +65,7 @@ func updateMonData() {
 				m.Bytes += float64(nif.BytesSent)
 			}
 		}
-		if len(MonitorDataes) > 1 {
+		if len(MonitorDataes) >= 1 {
 			o := MonitorDataes[len(MonitorDataes)-1]
 			if m.Bytes >= o.Bytes && m.Time > o.Time {
 				m.Net = float64(1000*1000*1000*8.0*(m.Bytes-o.Bytes)) / float64(m.Time-o.Time)
