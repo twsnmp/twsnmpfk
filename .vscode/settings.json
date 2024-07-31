@@ -402,6 +402,13 @@
     " {\n          showEditPort = false;\n        }}\n        size=\"xs\"\n      >\n        ",
     "Auto",
     "2894x4093 A4P",
-    "4093x2894 A4L"
+    "4093x2894 A4L",
+    " {\n            chart = undefined;\n            showSelectEnt = \"\";\n            showResultTable();\n          }}\n        >\n          ",
+    " {\n            chart = undefined;\n            selectedTab = \"\";\n            showResultTable();\n          }}\n        >\n          ",
+    "\n        {/if}\n        {#if selectedTab == \"log\" ",
+    " exportLogs(\"csv\")}\n            size=\"xs\"\n          >\n            ",
+    " exportLogs(\"excel\")}\n            size=\"xs\"\n          >\n            ",
+    " exportLogs(\"excel\")}\n            size=\"xs\"\n          >\n            ",
+    "& logs.length > 0 }\n          "
   ]
 }

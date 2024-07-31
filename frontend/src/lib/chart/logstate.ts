@@ -212,4 +212,5 @@ export const showLogStateChart = (div:string, logs:any, zoomCallback:any) => {
   });
   chart.resize();
   setZoomCallback(chart, zoomCallback, st, lt);
+  return chart;
 }

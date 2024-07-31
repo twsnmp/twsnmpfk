@@ -21,6 +21,7 @@
     GetPolling,
     GetPollingLogs,
     GetAIResult,
+    ExportAny,
   } from "../../wailsjs/go/main/App";
   import { showLogStateChart } from "./chart/logstate";
   import {
@@ -55,6 +56,9 @@
   let resultTable: any = undefined;
   let resultData: any = [];
 
+  let chart: any = undefined;
+  let selectedTab = "";
+
   const close = () => {
     show = false;
   };
@@ -70,6 +74,8 @@
       aiResult = undefined;
     }
     resultData = [];
+    entList.length = 0;
+    selectedTab = "";
     if (polling && polling.Result) {
       for (const k of Object.keys(polling.Result)) {
         selectedEnt = k;
@@ -135,11 +141,40 @@
   };
 
   const showLog = async () => {
-    showSelectEnt = "";
+    selectedTab = "log";
     await tick();
     showLogTable();
-    showLogStateChart("log", logs, zoomCallBack);
+    chart = showLogStateChart("log", logs, zoomCallBack);
   };
+
+  const renderResult = (r: any) => {
+    let l = [];
+    for (const k of Object.keys(r)) {
+      l.push(k + "=" + r[k]);
+    }
+    return l.join(" ");
+  };
+
+  const logsColumns = [
+    {
+      data: "State",
+      title: $_("PollingReport.State"),
+      width: "10%",
+      render: renderState,
+    },
+    {
+      data: "Time",
+      title: $_("PollingReport.Time"),
+      width: "15%",
+      render: renderTime,
+    },
+    {
+      data: "Result",
+      title: $_("PollingReport.Result"),
+      width: "75%",
+      render: renderResult,
+    },
+  ];
 
   const showLogTable = () => {
     if (pollingLogTable && DataTable.isDataTable("#pollingLogTable")) {
@@ -152,54 +187,24 @@
       stateSave: true,
       order: [[0, "desc"]],
       language: getTableLang(),
-      columns: [
-        {
-          data: "State",
-          title: $_("PollingReport.State"),
-          width: "10%",
-          render: renderState,
-        },
-        {
-          data: "Time",
-          title: $_("PollingReport.Time"),
-          width: "15%",
-          render: renderTime,
-        },
-        {
-          data: "Result",
-          title: $_("PollingReport.Result"),
-          width: "75%",
-          render: renderResult,
-        },
-      ],
+      columns: logsColumns,
     });
   };
 
-  const renderResult = (r: any) => {
-    let l = [];
-    for (const k of Object.keys(r)) {
-      l.push(k + "=" + r[k]);
-    }
-    return l.join(" ");
-  };
-
-  let chart: any = undefined;
-  let showSelectEnt = "";
-
   const showTimeChart = async () => {
-    showSelectEnt = "time";
+    selectedTab = "time";
     await tick();
     chart = showPollingChart("time", logs, selectedEnt);
   };
 
   const showHistogram = async () => {
-    showSelectEnt = "histogram";
+    selectedTab = "histogram";
     await tick();
     chart = showPollingHistogram("histogram", logs, selectedEnt);
   };
 
   const showAI = async () => {
-    showSelectEnt = "";
+    selectedTab = "ai";
     await tick();
     chart = showAIHeatMap("ai", aiResult.ScoreData);
   };
@@ -208,6 +213,32 @@
     if (chart) {
       chart.resize();
     }
+  };
+  const exportLogs = (t: string) => {
+    const ed: any = {
+      Title: "TWSNMP_Polling_Log",
+      Header: logsColumns.map((e: any) => e.title),
+      Data: [],
+      Image: t == "excel" && chart ? chart.getDataURL() : "",
+    };
+    for (const l of logs) {
+      const row: any = [];
+      for (const c of logsColumns) {
+        switch (c.data) {
+          case "Time":
+            row.push(renderTime(l.Time, ""));
+            break;
+          case "State":
+            row.push(l.State || "");
+            break;
+          case "Result":
+            row.push(renderResult(l.Result));
+            break;
+        }
+      }
+      ed.Data.push(row);
+    }
+    ExportAny(t, ed);
   };
 </script>
 
@@ -229,7 +260,7 @@
           open
           on:click={() => {
             chart = undefined;
-            showSelectEnt = "";
+            selectedTab = "";
             showResultTable();
           }}
         >
@@ -314,7 +345,7 @@
         {/if}
       </Tabs>
       <div class="flex justify-end space-x-2 mr-2">
-        {#if showSelectEnt == "time"}
+        {#if selectedTab == "time"}
           <Select
             class="w-64"
             size="sm"
@@ -324,7 +355,7 @@
             placeholder={$_("PollingReport.SelectVal")}
           />
         {/if}
-        {#if showSelectEnt == "histogram"}
+        {#if selectedTab == "histogram"}
           <Select
             class="w-64"
             size="sm"
@@ -333,6 +364,28 @@
             on:change={showHistogram}
             placeholder={$_("PollingReport.SelectVal")}
           />
+        {/if}
+        {#if selectedTab == "log" && logs.length > 0 }
+          <GradientButton
+            shadow
+            color="lime"
+            type="button"
+            on:click={() => exportLogs("csv")}
+            size="xs"
+          >
+            <Icon path={icons.mdiFileDelimited} size={1} />
+            CSV
+          </GradientButton>
+          <GradientButton
+            shadow
+            color="lime"
+            type="button"
+            on:click={() => exportLogs("excel")}
+            size="xs"
+          >
+            <Icon path={icons.mdiFileExcel} size={1} />
+            Excel
+          </GradientButton>
         {/if}
         <GradientButton
           shadow
