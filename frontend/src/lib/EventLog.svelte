@@ -53,12 +53,8 @@
   ];
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#eventLogTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     table = new DataTable("#eventLogTable", {
+      destroy: true,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       columns: columns,
       stateSave: true,

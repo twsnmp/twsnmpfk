@@ -54,13 +54,9 @@
   let showLoading = false;
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#netFlowTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     selectedCount = 0;
     table = new DataTable("#netFlowTable", {
+      destroy: true,
       columns: columns,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       stateSave: true,

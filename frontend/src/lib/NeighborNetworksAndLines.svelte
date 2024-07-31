@@ -110,13 +110,9 @@
 
   const showNetworkTable = async () => {
     await tick();
-    if (networkTable && DataTable.isDataTable("#networkTable")) {
-      networkTable.clear();
-      networkTable.destroy();
-      networkTable = undefined;
-    }
     networkSelectedCount = 0;
     networkTable = new DataTable("#networkTable", {
+      destroy: true,
       columns: networkColumns,
       data: networkData,
       paging: false,
@@ -162,13 +158,9 @@
 
   const showLineTable = async () => {
     await tick();
-    if (lineTable && DataTable.isDataTable("#lineTable")) {
-      lineTable.clear();
-      lineTable.destroy();
-      lineTable = undefined;
-    }
     lineSelectedCount = 0;
     lineTable = new DataTable("#lineTable", {
+      destroy: true,
       columns: lineColumns,
       data: lineData,
       paging: false,

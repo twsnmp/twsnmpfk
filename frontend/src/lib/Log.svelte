@@ -15,12 +15,9 @@
   let timer: any = undefined;
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#logTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     table = new DataTable("#logTable", {
+      destroy: true,
+      stateSave: true,
       columns: columns,
       paging: false,
       searching:false,

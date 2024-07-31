@@ -18,12 +18,8 @@
   let arpLogTable :any = undefined;
 
   const showArpLogTable = () => {
-    if (arpLogTable && DataTable.isDataTable("#arpLogTable")) {
-      arpLogTable.clear();
-      arpLogTable.destroy();
-      arpLogTable = undefined;
-    }
     arpLogTable = new DataTable("#arpLogTable", {
+      destroy: true,
       columns: arpLogColumns,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       data: arpLogData,

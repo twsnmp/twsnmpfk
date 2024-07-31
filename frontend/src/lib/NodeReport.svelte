@@ -115,12 +115,9 @@
   let portTable: any = undefined;
 
   const showPortTable = (p: any) => {
-    if (portTable && DataTable.isDataTable("#portTable")) {
-      portTable.clear();
-      portTable.destroy();
-      portTable = undefined;
-    }
     portTable = new DataTable("#portTable", {
+      destroy: true,
+      stateSave: true,
       paging: false,
       searching: false,
       info: false,

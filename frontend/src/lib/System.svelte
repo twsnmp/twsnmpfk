@@ -22,12 +22,9 @@
   let showLoading = false;
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#systemTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     table = new DataTable("#systemTable", {
+      destroy: true,
+      stateSave: true,
       columns: columns,
       paging: false,
       searching: false,

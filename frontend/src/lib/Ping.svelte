@@ -62,12 +62,8 @@
   };
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#pingTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     table = new DataTable("#pingTable", {
+      destroy: true,
       columns: columns,
       paging: false,
       searching:false,

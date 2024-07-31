@@ -29,13 +29,9 @@
   let selectedCount = 0;
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#nodePollingTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     selectedCount = 0;
     table = new DataTable("#nodePollingTable", {
+      destroy: true,
       columns: columns,
       stateSave: true,
       data: data,

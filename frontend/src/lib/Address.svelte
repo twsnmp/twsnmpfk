@@ -43,13 +43,9 @@
   let showNodeReport = false;
 
   const showArpTable = () => {
-    if (arpTable && DataTable.isDataTable("#arpTable")) {
-      arpTable.clear();
-      arpTable.destroy();
-      arpTable = undefined;
-    }
     selectedIP = selectedNodeID = "";
     arpTable = new DataTable("#arpTable", {
+      destroy: true,
       columns: arpColumns,
       pageLength: window.innerHeight > 800 ? 25 : 10,
       stateSave: true,

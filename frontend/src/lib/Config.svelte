@@ -278,13 +278,9 @@
     if (iconList.length < 1) {
       makeIconList();
     }
-    if (iconTable && DataTable.isDataTable("#iconTable")) {
-      iconTable.clear();
-      iconTable.destroy();
-      iconTable = undefined;
-    }
     selectedIcon = 0;
     iconTable = new DataTable("#iconTable", {
+      destroy: true,
       stateSave: true,
       order: [[1, "asc"]],
       pageLength: window.innerHeight > 1000 ? 25 : 10,

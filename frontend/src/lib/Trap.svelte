@@ -46,13 +46,9 @@
   let showLoading = false;
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#trapTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     selectedCount = 0;
     table = new DataTable("#trapTable", {
+      destroy: true,
       columns: columns,
       stateSave: true,
       data: data,

@@ -91,13 +91,10 @@
 
   const showTable = async () => {
     await tick();
-    if (table && DataTable.isDataTable("#lineTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     selectedCount = 0;
     table = new DataTable("#lineTable", {
+      destroy: true,
+      stateSave: true,
       columns: columns,
       data: data,
       paging: false,

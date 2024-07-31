@@ -34,13 +34,9 @@
   let actionOpen: boolean = false;
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#nodeListTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     selectedCount = 0;
     table = new DataTable("#nodeListTable", {
+      destroy: true,
       columns: columns,
       data: data,
       stateSave: true,

@@ -108,18 +108,15 @@
 
   const showTable = async () => {
     await tick();
-    if (table && DataTable.isDataTable("#portTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     selectedCount = 0;
     data = [];
     for (const p of network.Ports) {
       data.push(p);
     }
     table = new DataTable("#portTable", {
+      destroy: true,
       columns: columns,
+      stateSave: true,
       data: data,
       paging: false,
       searching: false,

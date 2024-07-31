@@ -90,14 +90,11 @@
   let selectedCount = 0;
 
   const showPollingList = async () => {
-    if (pollingTable && DataTable.isDataTable("#pollingTable")) {
-      pollingTable.clear();
-      pollingTable.destroy();
-      pollingTable = undefined;
-    }
     await tick();
     selectedCount = 0;
     pollingTable = new DataTable("#pollingTable", {
+      destroy: true,
+      stateSave: true,
       data: list,
       language: getTableLang(),
       order: [[1, "desc"]],

@@ -88,13 +88,9 @@
 
   const refresh = async () => {
     data = await GetAIList();
-    if (table && DataTable.isDataTable("#aiListTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     selectedCount = 0;
     table = new DataTable("#aiListTable", {
+      destroy: true,
       columns: columns,
       pageLength: window.innerHeight > 800 ? 25 : 10,
       stateSave: true,

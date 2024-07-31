@@ -95,12 +95,9 @@
 
   const showResultTable = async () => {
     await tick();
-    if (resultTable && DataTable.isDataTable("#resultTable")) {
-      resultTable.clear();
-      resultTable.destroy();
-      resultTable = undefined;
-    }
     resultTable = new DataTable("#resultTable", {
+      destroy: true,
+      stateSave: true,
       columns: [
         {
           data: "name",
@@ -177,12 +174,8 @@
   ];
 
   const showLogTable = () => {
-    if (pollingLogTable && DataTable.isDataTable("#pollingLogTable")) {
-      pollingLogTable.clear();
-      pollingLogTable.destroy();
-      pollingLogTable = undefined;
-    }
     pollingLogTable = new DataTable("#pollingLogTable", {
+      destroy: true,
       data: dispLogs,
       stateSave: true,
       order: [[0, "desc"]],

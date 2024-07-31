@@ -104,14 +104,10 @@
 
   const showTopTable = () => {
     let order = [[1, "desc"]];
-    if (tableTop && DataTable.isDataTable("#topTable")) {
-      order = tableTop.order();
-      tableTop.clear();
-      tableTop.destroy();
-      tableTop = undefined;
-    }
     selectedCountTop = 0;
     tableTop = new DataTable("#topTable", {
+      destroy: true,
+      stateSave: true,
       columns: columnsTop,
       data: topList,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
@@ -226,14 +222,9 @@
  
   const showFlowTable = async () => {
     let order = [[1, "desc"]];
-    if (tableFlow && DataTable.isDataTable("#flowTable")) {
-      order = tableFlow.order();
-      tableFlow.clear();
-      tableFlow.destroy();
-      tableFlow = undefined;
-    }
     selectedCountFlow = 0;
     tableFlow = new DataTable("#flowTable", {
+      destroy: true,
       columns: columnsFlow,
       data: flowList,
       pageLength: window.innerHeight > 1000 ? 25 : 10,

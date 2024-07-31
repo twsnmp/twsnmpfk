@@ -68,13 +68,9 @@
   ];
 
   const showTable = () => {
-    if (table && DataTable.isDataTable("#syslogTable")) {
-      table.clear();
-      table.destroy();
-      table = undefined;
-    }
     selectedCount = 0;
     table = new DataTable("#syslogTable", {
+      destroy: true,
       columns: columns,
       data: data,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
