@@ -10,6 +10,10 @@ export function Backup() {
   return window['go']['main']['App']['Backup']();
 }
 
+export function CheckNetwork(arg1) {
+  return window['go']['main']['App']['CheckNetwork'](arg1);
+}
+
 export function CheckPolling(arg1) {
   return window['go']['main']['App']['CheckPolling'](arg1);
 }

@@ -39,6 +39,7 @@
     SetBackImage,
     ImportV4Map,
     DeleteNetwork,
+    CheckNetwork,
     ExportMap,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
@@ -631,6 +632,20 @@
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNetworkMenu = false;
+          CheckNetwork(selectedNetwork);
+          refreshMap();
+        }}
+      >
+        <Icon path={icons.mdiCached} size={0.7} />
+        <div>
+          {$_("Map.ReCheck")}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showNetworkMenu = false;
           showEditNetwork = true;
         }}
       >
@@ -992,6 +1007,7 @@
 <svelte:window
   on:click={() => {
     showMapMenu = false;
+    showNetworkMenu = false;
     showNodeMenu = false;
     showDrawItemMenu = false;
     showFormatNodesMenu = false;

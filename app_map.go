@@ -42,7 +42,7 @@ func (a *App) GetDrawItems() map[string]datastore.DrawItemEnt {
 	return ret
 }
 
-// GetDrawNetworks retunrs map draw items
+// GetNetworks retunrs map networks
 func (a *App) GetNetworks() map[string]datastore.NetworkEnt {
 	ret := make(map[string]datastore.NetworkEnt)
 	datastore.ForEachNetworks(func(i *datastore.NetworkEnt) bool {
@@ -560,4 +560,9 @@ func (a *App) DeleteNetwork(id string) {
 		NodeName: n.Name,
 		Event:    i18n.Trans("Delete Network"),
 	})
+}
+
+// CheckNetwork check network state
+func (a *App) CheckNetwork(id string) {
+	backend.CheckNetwork(id)
 }
