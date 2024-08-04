@@ -25,8 +25,7 @@ func (a *App) GetDiscoverAddressRange() []string {
 		if (i.Flags&net.FlagLoopback) == net.FlagLoopback ||
 			(i.Flags&net.FlagUp) != net.FlagUp ||
 			(i.Flags&net.FlagPointToPoint) == net.FlagPointToPoint ||
-			len(i.HardwareAddr) != 6 ||
-			i.HardwareAddr[0]&0x02 == 0x02 {
+			len(i.HardwareAddr) != 6 {
 			continue
 		}
 		addrs, err := i.Addrs()
