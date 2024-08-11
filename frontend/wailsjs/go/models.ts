@@ -658,6 +658,7 @@ export namespace datastore {
 	    Password: string;
 	    URL: string;
 	    ArpWatch: boolean;
+	    Unmanaged: boolean;
 	    HPorts: number;
 	    X: number;
 	    Y: number;
@@ -684,6 +685,7 @@ export namespace datastore {
 	        this.Password = source["Password"];
 	        this.URL = source["URL"];
 	        this.ArpWatch = source["ArpWatch"];
+	        this.Unmanaged = source["Unmanaged"];
 	        this.HPorts = source["HPorts"];
 	        this.X = source["X"];
 	        this.Y = source["Y"];

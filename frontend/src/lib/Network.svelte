@@ -32,6 +32,7 @@
   let data: any = [];
   let table: any = undefined;
   let selectedCount = 0;
+  let toltalPorts = 8;
 
   const dispatch = createEventDispatcher();
 
@@ -40,6 +41,7 @@
       network = template;
     } else if (id) {
       network = await GetNetwork(id);
+      toltalPorts = network.Ports.length;
     } else {
       network = {
         ID: "",
@@ -56,6 +58,7 @@
         HPorts: 24,
         LLDP: false,
         ArpWatch: false,
+        Unmanaged: false,
         Ports: [],
       };
     }
@@ -70,7 +73,31 @@
     dispatch("close", {});
   };
 
+  const updateUnmanagedNetworkPort = () => {
+    if (toltalPorts != network.Ports.length) {
+      let x = 0;
+      let y = 0;
+      network.Ports.length = 0;
+      for(let i = 0 ; i < toltalPorts;i++ ) {
+        network.Ports.push({
+          ID: "#" + i,
+          Name: "#" + i,
+          X: x,
+          Y: y,
+        })
+        x++
+        if (x >= network.HPorts) {
+          y++
+          x++
+        }
+      }
+    }
+  }
+
   const save = async () => {
+    if (network.Unmanaged) {
+      updateUnmanagedNetworkPort()
+    }
     const r = await UpdateNetwork(network);
     if (r) {
       close();
@@ -287,59 +314,89 @@
           <Input bind:value={network.IP} size="sm" />
         </Label>
       </div>
-      <div class="grid gap-4 mb-4 md:grid-cols-3">
-        <Label class="space-y-2 text-xs">
-          <span>{$_("Network.HPorts")}</span>
-          <Input
-            type="number"
-            min="5"
-            max="100"
-            bind:value={network.HPorts}
-            size="sm"
-          />
-        </Label>
-        <div>
-          {#if network.LLDP}
-            <Badge rounded color="green" class="m-8">LLDP</Badge>
-          {:else}
-            <Badge rounded color="red" class="m-8">Not LLDP</Badge>
-          {/if}
-        </div>
-        <Checkbox bind:checked={network.ArpWatch}
-          >{$_("Network.ArpWatch")}</Checkbox
-        >
-      </div>
-      <div class="grid gap-4 md:grid-cols-3">
-        <Label class="space-y-2 text-xs">
-          <span> {$_("Node.SNMPMode")} </span>
-          <Select
-            items={snmpModeList}
-            bind:value={network.SnmpMode}
-            placeholder={$_("Node.SelectSnmpMode")}
-            size="sm"
-          />
-        </Label>
-        {#if network.SnmpMode == "v1" || network.SnmpMode == "v2c"}
+      {#if !id}
+        <Checkbox bind:checked={network.Unmanaged}>
+          SNMP非対応
+        </Checkbox>
+      {/if}
+      {#if network.Unmanaged}
+        <div class="grid gap-4 mb-4 md:grid-cols-2">
           <Label class="space-y-2 text-xs">
-            <span>SNMP Community</span>
+            <span>全ポート数</span>
             <Input
-              bind:value={network.Community}
-              placeholder="public"
+              type="number"
+              min="5"
+              max="100"
+              bind:value={toltalPorts}
               size="sm"
             />
           </Label>
-          <div></div>
-        {:else}
           <Label class="space-y-2 text-xs">
-            <span>SNMP{$_("Node.SnmpUser")}</span>
-            <Input bind:value={network.User} size="sm" />
+            <span>{$_("Network.HPorts")}</span>
+            <Input
+              type="number"
+              min="5"
+              max="100"
+              bind:value={network.HPorts}
+              size="sm"
+            />
           </Label>
+        </div>
+      {:else}
+        <div class="grid gap-4 mb-4 md:grid-cols-3">
           <Label class="space-y-2 text-xs">
-            <span>{$_("Node.SnmpPassword")}</span>
-            <Input type="password" bind:value={network.Password} size="sm" />
+            <span>{$_("Network.HPorts")}</span>
+            <Input
+              type="number"
+              min="5"
+              max="100"
+              bind:value={network.HPorts}
+              size="sm"
+            />
           </Label>
-        {/if}
-      </div>
+          <div>
+            {#if network.LLDP}
+              <Badge rounded color="green" class="m-8">LLDP</Badge>
+            {:else}
+              <Badge rounded color="red" class="m-8">Not LLDP</Badge>
+            {/if}
+          </div>
+          <Checkbox bind:checked={network.ArpWatch}
+            >{$_("Network.ArpWatch")}</Checkbox
+          >
+        </div>
+        <div class="grid gap-4 md:grid-cols-3">
+          <Label class="space-y-2 text-xs">
+            <span> {$_("Node.SNMPMode")} </span>
+            <Select
+              items={snmpModeList}
+              bind:value={network.SnmpMode}
+              placeholder={$_("Node.SelectSnmpMode")}
+              size="sm"
+            />
+          </Label>
+          {#if network.SnmpMode == "v1" || network.SnmpMode == "v2c"}
+            <Label class="space-y-2 text-xs">
+              <span>SNMP Community</span>
+              <Input
+                bind:value={network.Community}
+                placeholder="public"
+                size="sm"
+              />
+            </Label>
+            <div></div>
+          {:else}
+            <Label class="space-y-2 text-xs">
+              <span>SNMP{$_("Node.SnmpUser")}</span>
+              <Input bind:value={network.User} size="sm" />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_("Node.SnmpPassword")}</span>
+              <Input type="password" bind:value={network.Password} size="sm" />
+            </Label>
+          {/if}
+        </div>
+      {/if}
       <Label class="space-y-2 text-xs">
         <span>URL</span>
         <Input bind:value={network.URL} placeholder="URL" size="sm" />

@@ -30,6 +30,7 @@ type NetworkEnt struct {
 	Password  string    `json:"Password"`
 	URL       string    `json:"URL"`
 	ArpWatch  bool      `json:"ArpWatch"`
+	Unmanaged bool      `json:"Unmanaged"`
 	HPorts    int       `json:"HPorts"`
 	X         int       `json:"X"`
 	Y         int       `json:"Y"`
