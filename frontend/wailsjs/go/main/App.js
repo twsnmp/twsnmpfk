@@ -118,6 +118,10 @@ export function ExportPollings(arg1) {
   return window['go']['main']['App']['ExportPollings'](arg1);
 }
 
+export function ExportPortDef(arg1) {
+  return window['go']['main']['App']['ExportPortDef'](arg1);
+}
+
 export function ExportSFlow(arg1, arg2, arg3) {
   return window['go']['main']['App']['ExportSFlow'](arg1, arg2, arg3);
 }
@@ -352,6 +356,10 @@ export function GetVersion() {
 
 export function HasDatastore() {
   return window['go']['main']['App']['HasDatastore']();
+}
+
+export function ImportPortDef() {
+  return window['go']['main']['App']['ImportPortDef']();
 }
 
 export function ImportV4Map() {

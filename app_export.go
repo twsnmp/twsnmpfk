@@ -733,3 +733,48 @@ func (a *App) ExportMap(data string) error {
 	}
 	return nil
 }
+
+func (a *App) ExportPortDef(d string) error {
+	ts := time.Now().Format("20060102150405")
+	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
+		DefaultFilename:      "twsnmpfk_port_def_" + ts + ".csv",
+		CanCreateDirectories: true,
+		Filters: []wails.FileFilter{{
+			DisplayName: "JSON",
+			Pattern:     "*.json",
+		}},
+	})
+	if err != nil {
+		return err
+	}
+	if file == "" {
+		return nil
+	}
+	return os.WriteFile(file, []byte(d), 0644)
+}
+
+func (a *App) ImportPortDef() string {
+	file, err := wails.OpenFileDialog(a.ctx, wails.OpenDialogOptions{
+		Title: "TWSNMP FK Port Def file",
+		Filters: []wails.FileFilter{{
+			DisplayName: "TWSNMP FK Port Def file(*.json)",
+			Pattern:     "*.json;",
+		}},
+	})
+	if err != nil {
+		log.Printf("err=%v", err)
+		return ""
+	}
+	if file == "" {
+		return ""
+	}
+	d, err := os.ReadFile(file)
+	if err != nil {
+		log.Printf("err=%v", err)
+		return ""
+	}
+	if len(d) > 1024*1024 {
+		return ""
+	}
+	return string(d)
+}

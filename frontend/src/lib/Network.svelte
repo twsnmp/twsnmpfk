@@ -11,7 +11,7 @@
     Badge,
   } from "flowbite-svelte";
   import { createEventDispatcher, tick } from "svelte";
-  import { GetNetwork, UpdateNetwork } from "../../wailsjs/go/main/App";
+  import { GetNetwork, UpdateNetwork, ImportPortDef, ExportPortDef } from "../../wailsjs/go/main/App";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { snmpModeList, getTableLang, renderNodeState } from "./common";
@@ -487,6 +487,55 @@
             {$_("Network.ReSearch")}
           </GradientButton>
         {/if}
+        <GradientButton
+          shadow
+          color="cyan"
+          type="button"
+          on:click={() => {
+            const ports = [];
+            for(const p of network.Ports) {
+              ports.push({
+                Name: p.Name,
+                X: p.X,
+                Y: p.Y,
+                Polling: p.Polling,
+              })
+            }
+            ExportPortDef(JSON.stringify(ports,null,"  "));
+          }}
+          size="xs"
+        >
+          <Icon path={icons.mdiDownload} size={1} />
+        </GradientButton>
+        <GradientButton
+          shadow
+          color="cyan"
+          type="button"
+          on:click={async () => {
+            const d = await ImportPortDef();
+            if (!d) {
+              return;
+            }
+            const ports = JSON.parse(d);
+            if(!ports) {
+              return;
+            }
+            for(let i = 0; i < ports.length;i ++) {
+              if (i < network.Ports.length) {
+                network.Ports[i].Name = ports[i].Name || "";
+                network.Ports[i].X = ports[i].X || 0;
+                network.Ports[i].Y = ports[i].Y || 0;
+                if (ports[i].Polling) {
+                  network.Ports[i].Polling = ports[i].Polling;
+                }
+              }
+            }
+            showTable();
+          }}
+          size="xs"
+        >
+          <Icon path={icons.mdiUpload} size={1} />
+        </GradientButton>
         <GradientButton
           shadow
           color="blue"

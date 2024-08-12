@@ -63,6 +63,8 @@ export function ExportNodes(arg1:string):Promise<string>;
 
 export function ExportPollings(arg1:string):Promise<string>;
 
+export function ExportPortDef(arg1:string):Promise<void>;
+
 export function ExportSFlow(arg1:string,arg2:main.SFlowFilterEnt,arg3:string):Promise<string>;
 
 export function ExportSFlowCounter(arg1:string,arg2:main.SFlowCounterFilterEnt,arg3:string):Promise<string>;
@@ -180,6 +182,8 @@ export function GetVPanelPowerInfo(arg1:string):Promise<boolean>;
 export function GetVersion():Promise<string>;
 
 export function HasDatastore():Promise<boolean>;
+
+export function ImportPortDef():Promise<string>;
 
 export function ImportV4Map():Promise<boolean>;
 
