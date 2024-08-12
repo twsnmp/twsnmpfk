@@ -409,6 +409,7 @@
     " exportLogs(\"csv\")}\n            size=\"xs\"\n          >\n            ",
     " exportLogs(\"excel\")}\n            size=\"xs\"\n          >\n            ",
     " exportLogs(\"excel\")}\n            size=\"xs\"\n          >\n            ",
-    "& logs.length > 0 }\n          "
+    "& logs.length > 0 }\n          ",
+    " {\n        BrowserOpenURL(\n          `https://lhx98.linkclub.jp/twise.co.jp/#sec06`\n        );\n      }}\n    >\n      "
   ]
 }

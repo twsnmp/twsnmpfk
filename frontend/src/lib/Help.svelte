@@ -92,6 +92,21 @@
     </GradientButton>
     <GradientButton
       shadow
+      type="button"
+      color="lime"
+      class="mr-2"
+      size="xs"
+      on:click={() => {
+        BrowserOpenURL(
+          `https://lhx98.linkclub.jp/twise.co.jp/#sec06`
+        );
+      }}
+    >
+      <Icon path={icons.mdiSearchWeb} size={1} />
+      {$_('Help.Search')}
+    </GradientButton>
+    <GradientButton
+      shadow
       color="red"
       type="button"
       class="mr-2"

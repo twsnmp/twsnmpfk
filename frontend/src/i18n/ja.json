@@ -766,7 +766,8 @@
     "Overiview": "目次",
     "Feedback": "フィードバック",
     "Send": "送信",
-    "feedbackError": "フィードバックを送信できませんでした。"
+    "feedbackError": "フィードバックを送信できませんでした。",
+    "Search": "検索"
   },
   "SyslogMagicGraph": "関係グラフ",
   "NetFlow": {

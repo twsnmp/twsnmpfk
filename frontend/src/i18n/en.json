@@ -766,7 +766,8 @@
     "Overiview": "Overview",
     "feedbackError": "Failed to send feedback",
     "Feedback": "Feedback",
-    "Send": "Send"
+    "Send": "Send",
+    "Search": "Search"
   },
   "SyslogMagicGraph": "Graph",
   "NetFlow": {
