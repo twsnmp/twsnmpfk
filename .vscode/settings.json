@@ -410,6 +410,11 @@
     " exportLogs(\"excel\")}\n            size=\"xs\"\n          >\n            ",
     " exportLogs(\"excel\")}\n            size=\"xs\"\n          >\n            ",
     "& logs.length > 0 }\n          ",
-    " {\n        BrowserOpenURL(\n          `https://lhx98.linkclub.jp/twise.co.jp/#sec06`\n        );\n      }}\n    >\n      "
+    " {\n        BrowserOpenURL(\n          `https://lhx98.linkclub.jp/twise.co.jp/#sec06`\n        );\n      }}\n    >\n      ",
+    " {\n            const ports = [];\n            for(const p of network.Ports) {\n              ports.push({\n                Name: p.Name,\n                X: p.X,\n                Y: p.Y,\n                Polling: p.Polling,\n              })\n            }\n            ExportPortDef(JSON.stringify(ports,null,\"  \"));\n          }}\n          size=\"xs\"\n        >\n          ",
+    " {\n            const d = await ImportPortDef();\n            if (!d) {\n              return;\n            }\n            const ports = JSON.parse(d);\n            if(!ports) {\n              return;\n            }\n            for(let i = 0; i ",
+    " {\n            const d = await ImportPortDef();\n            if (!d) {\n              return;\n            }\n            const ports = JSON.parse(d);\n            if(!ports) {\n              return;\n            }\n            for(let i = 0; i ",
+    "< network.Ports.length) {\n                network.Ports[i].Name = ports[i].Name || \"\";\n                network.Ports[i].X = ports[i].X || 0;\n                network.Ports[i].Y = ports[i].Y || 0;\n                if (ports[i].Polling) {\n                  network.Ports[i].Polling = ports[i].Polling;\n                }\n              }\n            }\n            showTable();\n          }}\n          size=\"xs\"\n        >\n          ",
+    "< ports.length;i ++) {\n              if (i "
   ]
 }

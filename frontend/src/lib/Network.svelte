@@ -316,13 +316,13 @@
       </div>
       {#if !id}
         <Checkbox bind:checked={network.Unmanaged}>
-          SNMP非対応
+          {$_('Network.Unmanaged')}
         </Checkbox>
       {/if}
       {#if network.Unmanaged}
         <div class="grid gap-4 mb-4 md:grid-cols-2">
           <Label class="space-y-2 text-xs">
-            <span>全ポート数</span>
+            <span>{$_('Network.AllPort')}</span>
             <Input
               type="number"
               min="5"

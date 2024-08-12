@@ -839,7 +839,9 @@
     "EditPort": "Edit port",
     "HPorts": "Horisontal max port",
     "ReNumberPort": "Re number port",
-    "ReSearch": "Refresh network "
+    "ReSearch": "Refresh network ",
+    "AllPort": "Number of ports",
+    "Unmanaged": "Unmanaged Switch"
   },
   "NetworkLine": {
     "EditLine": "Edit line"

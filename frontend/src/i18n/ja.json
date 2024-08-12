@@ -839,7 +839,9 @@
     "ArpWatch": "ARP監視",
     "ReNumberPort": "ポート再配置",
     "ReSearch": "再検索",
-    "EditPort": "ポートの編集"
+    "EditPort": "ポートの編集",
+    "Unmanaged": "SNMP非対応",
+    "AllPort": "全ポート数"
   },
   "NetworkLine": {
     "EditLine": "ネットワークのライン編集"
