@@ -428,7 +428,11 @@
     "Value": "Value",
     "ScalarOnly": "Scalar Only",
     "An": "Analyzing...",
-    "Stop": "Stop"
+    "Stop": "Stop",
+    "Count": "Count",
+    "Missing": "Missing Ext MIB",
+    "Name": "Name",
+    "Search": "Search"
   },
   "Node": {
     "AddressMode": "Address mode",

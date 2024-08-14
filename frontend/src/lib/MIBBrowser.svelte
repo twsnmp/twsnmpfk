@@ -24,6 +24,7 @@
     ExportAny,
     GetDefaultPolling,
   } from "../../wailsjs/go/main/App";
+  import { BrowserOpenURL } from "../../wailsjs/runtime";
   import { getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -32,6 +33,7 @@
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
   import { copyText } from "svelte-copy";
+  import { tick } from "svelte";
 
   export let show: boolean = false;
   export let nodeID = "";
@@ -63,8 +65,11 @@
   let showResultMIBTree = false;
   let resultMibTree: any = {};
   let resultMibTreeWait = false;
-  let resultMibTreeProgress :string = "0";
+  let resultMibTreeProgress: string = "0";
   let stopResultMibTree = false;
+  let showMissing = false;
+  let missingList: any = [];
+  let selectedMissingCount = 0;
 
   const onOpen = async () => {
     mibTree.children = await GetMIBTree();
@@ -241,25 +246,37 @@
   };
 
   const updateResultMibTree = async () => {
-    stopResultMibTree = false
-    resultMibTreeWait = true
-    resultMibTreeProgress = "0"
-    let i = 0
-    const nameMap = new Map()
+    stopResultMibTree = false;
+    resultMibTreeWait = true;
+    resultMibTreeProgress = "0";
+    let i = 0;
+    const nameMap = new Map();
+    const missingMap = new Map();
     for (const e of mibs) {
       if (stopResultMibTree) {
-        break
+        break;
       }
       if (i % 500 === 0) {
         await new Promise((resolve) => {
-          setTimeout(resolve, 0)
-        })
-        resultMibTreeProgress = ((100.0 * i) / mibs.length).toFixed(2)
+          setTimeout(resolve, 0);
+        });
+        resultMibTreeProgress = ((100.0 * i) / mibs.length).toFixed(2);
       }
-        i++
-      const a = e.Name.split(".", 2);
+      i++;
+      const a = e.Name.split(".");
+      if (a.length < 2) {
+        continue;
+      }
       const t = getTreePath(a[0], mibTree.children);
       if (t) {
+        if (hasChildren(t[0], mibTree.children)) {
+          const mn = t[0] + "." + a[1];
+          if (missingMap.has(mn)) {
+            missingMap.set(mn, missingMap.get(mn) + 1);
+          } else {
+            missingMap.set(mn, 1);
+          }
+        }
         for (const n of t) {
           if (nameMap.has(n)) {
             nameMap.set(n, nameMap.get(n) + 1);
@@ -278,7 +295,109 @@
         children: c,
       };
     }
-    resultMibTreeWait = false
+    resultMibTreeWait = false;
+    missingList.length = 0;
+    missingMap.forEach((v, k) => {
+      missingList.push({
+        name: k,
+        oid: getOID(k, mibTree.children),
+        count: v,
+      });
+    });
+  };
+
+  const hasChildren = (name: string, list: any): boolean => {
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].name === name) {
+        return list[i].children.length > 0;
+      }
+      if (list[i].children) {
+        if (hasChildren(name, list[i].children)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const getOID = (name: string, list: any): string => {
+    const a = name.split(".");
+    let idx = "";
+    if (a.length > 1) {
+      name = a[0];
+      idx = "." + a[1];
+    }
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].name === name) {
+        return list[i].oid + idx;
+      }
+      if (list[i].children) {
+        const oid = getOID(name, list[i].children);
+        if (oid) {
+          return oid + idx;
+        }
+      }
+    }
+    return "";
+  };
+
+  let missingTable: any = undefined;
+
+  const searchExtMIB = () => {
+    if (!missingTable) {
+      return;
+    }
+    const d = missingTable.rows({ selected: true }).data();
+    if (d.length != 1) {
+      return;
+    }
+    let oid = d[0].oid;
+    oid = oid.startsWith(".") ? oid.replace(".", "") : oid;
+    const url =
+      "https://mibbrowser.online/mibdb_search.php?search=" +
+      oid +
+      "&userdropdown=anymatch";
+    BrowserOpenURL(url);
+  };
+
+  const missingColumns = [
+    {
+      data: "name",
+      title: $_('MIBBrowser.Name'),
+      width: "40%",
+    },
+    {
+      data: "oid",
+      title: "OID",
+      width: "50%",
+    },
+    {
+      data: "count",
+      title: $_('MIBBrowser.Count'),
+      width: "10%",
+    },
+  ];
+
+  const showMissingDialog = async () => {
+    showMissing = true;
+    await tick();
+    missingTable = new DataTable("#missingTable", {
+      destroy: true,
+      pageLength: 10,
+      columns: missingColumns,
+      stateSave: true,
+      data: missingList,
+      language: getTableLang(),
+      select: {
+        style: "single",
+      },
+    });
+    missingTable.on("select", () => {
+      selectedMissingCount = missingTable.rows({ selected: true }).count();
+    });
+    missingTable.on("deselect", () => {
+      selectedMissingCount = missingTable.rows({ selected: true }).count();
+    });
   };
 
   const getTreePath = (name: string, list: any): string[] | undefined => {
@@ -498,7 +617,11 @@
             type="button"
             on:click={() => {
               showResultMIBTree = true;
-              if (!resultMibTree || resultMibTree.length == 0 || stopResultMibTree) {
+              if (
+                !resultMibTree ||
+                resultMibTree.length == 0 ||
+                stopResultMibTree
+              ) {
                 updateResultMibTree();
               }
             }}
@@ -613,48 +736,98 @@
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
-  {#if resultMibTreeWait}
-    <Progressbar progress={resultMibTreeProgress} labelOutside={$_('MIBBrowser.An')} />
-    <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton
-        shadow
-        type="button"
-        color="red"
-        on:click={() => {
-          stopResultMibTree = true;
-        }}
-        size="xs"
-      >
-        <Icon path={icons.mdiCancel} size={1} />
-        {$_('MIBBrowser.Stop')}
-      </GradientButton>
-    </div>
-  {:else}
-    <div id="mibtree">
-      <MibTree
-        tree={resultMibTree}
-        on:select={(e) => {
-          name = e.detail;
-          showResultMIBTree = false;
-          get();
-        }}
+    {#if resultMibTreeWait}
+      <Progressbar
+        progress={resultMibTreeProgress}
+        labelOutside={$_("MIBBrowser.An")}
       />
-    </div>
+      <div class="flex justify-end space-x-2 mr-2">
+        <GradientButton
+          shadow
+          type="button"
+          color="red"
+          on:click={() => {
+            stopResultMibTree = true;
+          }}
+          size="xs"
+        >
+          <Icon path={icons.mdiCancel} size={1} />
+          {$_("MIBBrowser.Stop")}
+        </GradientButton>
+      </div>
+    {:else}
+      <div id="mibtree">
+        <MibTree
+          tree={resultMibTree}
+          on:select={(e) => {
+            name = e.detail;
+            showResultMIBTree = false;
+            get();
+          }}
+        />
+      </div>
+      <div class="flex justify-end space-x-2 mr-2">
+        {#if missingList}
+          <GradientButton
+            shadow
+            color="red"
+            type="button"
+            on:click={showMissingDialog}
+            size="xs"
+          >
+            <Icon path={icons.mdiCheck} size={1} />
+            {$_('MIBBrowser.Missing')}
+          </GradientButton>
+        {/if}
+        <GradientButton
+          shadow
+          type="button"
+          color="teal"
+          on:click={() => {
+            showResultMIBTree = false;
+          }}
+          size="xs"
+        >
+          <Icon path={icons.mdiCancel} size={1} />
+          {$_("MIBBrowser.Close")}
+        </GradientButton>
+      </div>
+    {/if}
+  </div>
+</Modal>
+
+<Modal
+  bind:open={showMissing}
+  size="lg"
+  dismissable={false}
+  class="w-full min-h-[80vh]"
+>
+  <div class="flex flex-col space-y-4">
+    <table id="missingTable" class="display compact" style="width:99%" />
     <div class="flex justify-end space-x-2 mr-2">
+      {#if selectedMissingCount == 1}
+        <GradientButton
+          shadow
+          color="lime"
+          type="button"
+          on:click={searchExtMIB}
+          size="xs"
+        >
+          <Icon path={icons.mdiSearchWeb} size={1} />
+          {$_('MIBBrowser.Search')}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         type="button"
         color="teal"
-        on:click={() => {
-          showResultMIBTree = false;
-        }}
+        on:click={() => (showMissing = false)}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
         {$_("MIBBrowser.Close")}
       </GradientButton>
     </div>
-  {/if}
   </div>
 </Modal>
 

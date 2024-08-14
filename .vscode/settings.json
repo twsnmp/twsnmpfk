@@ -415,6 +415,12 @@
     " {\n            const d = await ImportPortDef();\n            if (!d) {\n              return;\n            }\n            const ports = JSON.parse(d);\n            if(!ports) {\n              return;\n            }\n            for(let i = 0; i ",
     " {\n            const d = await ImportPortDef();\n            if (!d) {\n              return;\n            }\n            const ports = JSON.parse(d);\n            if(!ports) {\n              return;\n            }\n            for(let i = 0; i ",
     "< network.Ports.length) {\n                network.Ports[i].Name = ports[i].Name || \"\";\n                network.Ports[i].X = ports[i].X || 0;\n                network.Ports[i].Y = ports[i].Y || 0;\n                if (ports[i].Polling) {\n                  network.Ports[i].Polling = ports[i].Polling;\n                }\n              }\n            }\n            showTable();\n          }}\n          size=\"xs\"\n        >\n          ",
-    "< ports.length;i ++) {\n              if (i "
+    "< ports.length;i ++) {\n              if (i ",
+    " {\n              showResultMIBTree = true;\n              if (\n                !resultMibTree ||\n                resultMibTree.length == 0 ||\n                stopResultMibTree\n              ) {\n                updateResultMibTree();\n              }\n            }}\n            size=\"xs\"\n          >\n            ",
+    " {\n            stopResultMibTree = true;\n          }}\n          size=\"xs\"\n        >\n          ",
+    " {\n            name = e.detail;\n            showResultMIBTree = false;\n            get();\n          }}\n        />\n      ",
+    " {\n            showResultMIBTree = false;\n          }}\n          size=\"xs\"\n        >\n          ",
+    " (showMissing = false)}\n        size=\"xs\"\n      >\n        ",
+    " (showMissing = false)}\n        size=\"xs\"\n      >\n        "
   ]
 }

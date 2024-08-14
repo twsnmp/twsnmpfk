@@ -416,7 +416,11 @@
     "Close": "閉じる",
     "ScalarOnly": "スカラーのみ",
     "Stop": "中止",
-    "An": "分析中..."
+    "An": "分析中...",
+    "Name": "名前",
+    "Count": "件数",
+    "Missing": "不足している拡張MIB",
+    "Search": "検索"
   },
   "Node": {
     "NewNode": "新規ノード",
