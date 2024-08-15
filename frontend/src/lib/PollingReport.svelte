@@ -214,6 +214,15 @@
       Data: [],
       Image: t == "excel" && chart ? chart.getDataURL() : "",
     };
+    const rkeys = [];
+    if (logs.length > 1) {
+      for (const k of  Object.keys(logs[0].Result)) {
+        if (k != "error") {
+          rkeys.push(k);
+          ed.Header.push(k);
+        }
+      }
+    }
     for (const l of logs) {
       const row: any = [];
       for (const c of logsColumns) {
@@ -226,6 +235,9 @@
             break;
           case "Result":
             row.push(renderResult(l.Result));
+            for (const k of rkeys) {
+              row.push(l.Result[k] || "");
+            }
             break;
         }
       }
@@ -358,7 +370,7 @@
             placeholder={$_("PollingReport.SelectVal")}
           />
         {/if}
-        {#if selectedTab == "log" && logs.length > 0 }
+        {#if selectedTab == "log" && logs.length > 0}
           <GradientButton
             shadow
             color="lime"
