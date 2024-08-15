@@ -14,6 +14,15 @@ import (
 func (a *App) GetNode(id string) datastore.NodeEnt {
 	n := datastore.GetNode(id)
 	if n == nil {
+		if strings.HasPrefix(id, "NET:") {
+			nt := datastore.GetNetwork(id)
+			if nt != nil {
+				return datastore.NodeEnt{
+					ID: id,
+					IP: nt.IP,
+				}
+			}
+		}
 		return datastore.NodeEnt{}
 	}
 	return *n

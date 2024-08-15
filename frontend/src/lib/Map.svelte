@@ -672,6 +672,32 @@
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNetworkMenu = false;
+          selectedNode = "NET:" + selectedNetwork;
+          showPing = true;
+        }}
+      >
+        <Icon path={icons.mdiCheckNetwork} size={0.7} />
+        <div>PING</div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showNetworkMenu = false;
+          selectedNode = "NET:" + selectedNetwork;
+          showMibBr = true;
+        }}
+      >
+        <Icon path={icons.mdiEye} size={0.7} />
+        <div>
+          {$_("Map.MIBBrowser")}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showNetworkMenu = false;
           showNeighborNetworksAndLines = true;
         }}
       >

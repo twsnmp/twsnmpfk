@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/gosnmp/gosnmp"
@@ -24,7 +25,21 @@ func (a *App) SnmpWalk(nodeID, name string, raw bool) []*MibEnt {
 	var ret []*MibEnt
 	n := datastore.GetNode(nodeID)
 	if n == nil {
-		return ret
+		if !strings.HasPrefix(nodeID, "NET:") {
+			return ret
+		}
+		nt := datastore.GetNetwork(nodeID)
+		if nt == nil {
+			return ret
+		}
+		n = &datastore.NodeEnt{
+			ID:        nodeID,
+			IP:        nt.IP,
+			SnmpMode:  nt.SnmpMode,
+			Community: nt.Community,
+			User:      nt.User,
+			Password:  nt.Password,
+		}
 	}
 	agent := &gosnmp.GoSNMP{
 		Target:    n.IP,
