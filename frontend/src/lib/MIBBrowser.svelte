@@ -836,9 +836,6 @@
 <Help bind:show={showHelp} page="mibbrowser" />
 
 <style>
-  #mibTable {
-    height: 70vh;
-  }
   #mibtree {
     height: 70vh;
     overflow: scroll;
