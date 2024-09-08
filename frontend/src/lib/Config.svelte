@@ -205,7 +205,7 @@
 
   const renderType = (d: any, t: string, r: any) => {
     if (t == "sort") {
-      return t;
+      return d;
     }
     const state = r.Error ? "high" : "info";
     const name = d == "int" ? $_("Config.IntMIB") : $_("Config.ExeMIB");
