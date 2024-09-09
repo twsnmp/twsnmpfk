@@ -14,7 +14,7 @@
     !define INFO_PRODUCTNAME "twsnmpfk"
 !endif
 !ifndef INFO_PRODUCTVERSION
-    !define INFO_PRODUCTVERSION "1.11.0"
+    !define INFO_PRODUCTVERSION "1.12.0"
 !endif
 !ifndef INFO_COPYRIGHT
     !define INFO_COPYRIGHT "Copyright 2023 Masayuki Yamai"
