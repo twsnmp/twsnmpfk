@@ -100,13 +100,13 @@
     {
       data: "Time",
       title: $_("Trap.Time"),
-      width: "20%",
+      width: "15%",
       render: renderTime,
     },
     {
       data: "FromAddress",
       title: $_("Trap.FromAddress"),
-      width: "15%",
+      width: "20%",
     },
     {
       data: "TrapType",
