@@ -21,13 +21,15 @@ var syslogPort = 514
 var sshdPort = 2222
 var netflowPort = 2055
 var sFlowPort = 6343
+var tcpdPort = 8086
 
-func Start(ctx context.Context, wg *sync.WaitGroup, _syslogPort, _trapPort, _sshdPort, _netflowPort, _sFlowPort int) error {
+func Start(ctx context.Context, wg *sync.WaitGroup, _syslogPort, _trapPort, _sshdPort, _netflowPort, _sFlowPort, _tcpdPort int) error {
 	syslogPort = _syslogPort
 	trapPort = _trapPort
 	sshdPort = _sshdPort
 	netflowPort = _netflowPort
 	sFlowPort = _sFlowPort
+	tcpdPort = _tcpdPort
 	wg.Add(1)
 	go logger(ctx, wg)
 	return nil
@@ -41,12 +43,14 @@ func logger(ctx context.Context, wg *sync.WaitGroup) {
 	var sshdRunning = false
 	var netflowdRunning = false
 	var sflowdRunning = false
+	var tcpdRunning = false
 	var stopSyslogd chan bool
 	var stopTrapd chan bool
 	var stopArpWatch chan bool
 	var stopSshd chan bool
 	var stopNetflowd chan bool
 	var stopSflowd chan bool
+	var stopTcpd chan bool
 	log.Println("start logger")
 	timer1 := time.NewTicker(time.Second * 10)
 	timer2 := time.NewTicker(time.Second * 1)
@@ -74,6 +78,9 @@ func logger(ctx context.Context, wg *sync.WaitGroup) {
 				}
 				if sflowdRunning {
 					close(stopSflowd)
+				}
+				if tcpdRunning {
+					close(stopTcpd)
 				}
 				if len(logBuffer) > 0 {
 					datastore.SaveLogBuffer(logBuffer)
@@ -136,6 +143,14 @@ func logger(ctx context.Context, wg *sync.WaitGroup) {
 			} else if !datastore.MapConf.EnableSFlowd && sflowdRunning {
 				close(stopSflowd)
 				sflowdRunning = false
+			}
+			if datastore.MapConf.EnableTcpd && !tcpdRunning {
+				stopTcpd = make(chan bool)
+				tcpdRunning = true
+				go tcpd(stopTcpd)
+			} else if !datastore.MapConf.EnableTcpd && tcpdRunning {
+				close(stopTcpd)
+				tcpdRunning = false
 			}
 		}
 		if datastore.RestartSnmpTrapd && trapdRunning {

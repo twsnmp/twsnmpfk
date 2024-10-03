@@ -32,6 +32,7 @@ var syslogPort = 514
 var sshdPort = 2022
 var netflowPort = 2055
 var sFlowPort = 6343
+var tcpdPort = 8086
 var maxDispLog = 10000
 var lang = ""
 
@@ -44,6 +45,7 @@ func init() {
 	flag.IntVar(&sshdPort, "sshdPort", 2022, "SSH server port")
 	flag.IntVar(&netflowPort, "netflowPort", 2055, "Netflow port")
 	flag.IntVar(&sFlowPort, "sFlowPort", 6343, "sFlow port")
+	flag.IntVar(&tcpdPort, "tcpdPort", 8086, "tcp server port")
 	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "Max log size to diplay")
 	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
 	flag.StringVar(&lang, "lang", "", "Language(en|jp)")

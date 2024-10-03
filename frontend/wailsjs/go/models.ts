@@ -551,6 +551,7 @@ export namespace datastore {
 	    EnableNetflowd: boolean;
 	    EnableSshd: boolean;
 	    EnableSFlowd: boolean;
+	    EnableTcpd: boolean;
 	    IconSize: number;
 	    MapSize: number;
 	
@@ -575,6 +576,7 @@ export namespace datastore {
 	        this.EnableNetflowd = source["EnableNetflowd"];
 	        this.EnableSshd = source["EnableSshd"];
 	        this.EnableSFlowd = source["EnableSFlowd"];
+	        this.EnableTcpd = source["EnableTcpd"];
 	        this.IconSize = source["IconSize"];
 	        this.MapSize = source["MapSize"];
 	    }

@@ -43,6 +43,7 @@ type MapConfEnt struct {
 	EnableNetflowd bool   `json:"EnableNetflowd"`
 	EnableSshd     bool   `json:"EnableSshd"`
 	EnableSFlowd   bool   `json:"EnableSFlowd"`
+	EnableTcpd     bool   `json:"EnableTcpd"`
 	IconSize       int    `json:"IconSize"`
 	MapSize        int    `json:"MapSize"`
 }

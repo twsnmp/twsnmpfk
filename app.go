@@ -304,7 +304,7 @@ func (a *App) startTWSNMP() {
 		log.Fatalf("start ping err=%v", err)
 	}
 	log.Println("call logger.Start")
-	if err := logger.Start(a.ctx, a.wg, syslogPort, trapPort, sshdPort, netflowPort, sFlowPort); err != nil {
+	if err := logger.Start(a.ctx, a.wg, syslogPort, trapPort, sshdPort, netflowPort, sFlowPort, tcpdPort); err != nil {
 		log.Fatalf("start logger err=%v", err)
 	}
 	log.Println("call polling.Start")
