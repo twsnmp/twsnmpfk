@@ -1,6 +1,8 @@
 module github.com/twsnmp/twsnmpfk
 
-go 1.21
+go 1.21.1
+
+toolchain go1.22.7
 
 require (
 	github.com/Cistern/sflow v0.0.0-20240622235316-ed105e3cf9fb
@@ -15,6 +17,8 @@ require (
 	github.com/gosnmp/gosnmp v1.35.0
 	github.com/labstack/gommon v0.4.0
 	github.com/montanaflynn/stats v0.7.1
+	github.com/openconfig/gnmi v0.11.0
+	github.com/openconfig/gnmic/pkg/api v0.1.8
 	github.com/oschwald/geoip2-golang v1.9.0
 	github.com/robertkrimen/otto v0.2.1
 	github.com/shirou/gopsutil/v3 v3.23.6
@@ -34,15 +38,20 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	github.com/AlekSi/pointer v1.2.0 // indirect
 	github.com/Songmu/wrapcommander v0.1.0 // indirect
 	github.com/alecthomas/participle v0.4.1 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
 	github.com/bep/debounce v1.2.1 // indirect
+	github.com/bufbuild/protocompile v0.13.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
+	github.com/jhump/protoreflect v1.16.0 // indirect
 	github.com/labstack/echo/v4 v4.10.2 // indirect
 	github.com/leaanthony/go-ansi-parser v1.6.0 // indirect
 	github.com/leaanthony/gosod v1.0.3 // indirect
@@ -52,6 +61,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/openconfig/grpctunnel v0.1.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.11.0 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -72,6 +82,10 @@ require (
 	github.com/xuri/nfp v0.0.0-20240318013403-ab9948c2c4a7 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
+	golang.org/x/oauth2 v0.19.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be // indirect
+	google.golang.org/grpc v1.63.2 // indirect
+	google.golang.org/protobuf v1.33.1-0.20240408130810-98873a205002 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 )

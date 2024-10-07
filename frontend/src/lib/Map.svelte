@@ -44,6 +44,7 @@
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
+  import GNMITool from "./GNMITool.svelte";
   import { _ } from "svelte-i18n";
   import type { datastore } from "wailsjs/go/models";
 
@@ -76,6 +77,8 @@
   let showPing: boolean = false;
   let showMibBr: boolean = false;
   let showAllItems: boolean = false;
+
+  let showGNMITool: boolean = false;
 
   let timer: any = undefined;
   let urls: any = [];
@@ -477,6 +480,19 @@
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNodeMenu = false;
+          showGNMITool = true;
+        }}
+      >
+        <Icon path={icons.mdiEye} size={0.7} />
+        <div>
+          {$_('GNMITool.gNMITool')}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showNodeMenu = false;
           WakeOnLan(selectedNode);
         }}
       >
@@ -863,6 +879,8 @@
 <Ping bind:show={showPing} nodeID={selectedNode} />
 
 <MIBBrowser bind:show={showMibBr} nodeID={selectedNode} />
+
+<GNMITool bind:show={showGNMITool} nodeID={selectedNode} />
 
 <Modal bind:open={showGrid} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">

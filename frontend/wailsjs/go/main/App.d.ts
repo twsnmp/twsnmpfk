@@ -75,6 +75,10 @@ export function ExportTraps(arg1:string,arg2:main.TrapFilterEnt,arg3:string):Pro
 
 export function FindNeighborNetworksAndLines(arg1:string):Promise<backend.FindNeighborNetworksAndLinesResp>;
 
+export function GNMICapabilities(arg1:string,arg2:string):Promise<main.GNMICapEnt>;
+
+export function GNMIGet(arg1:string,arg2:string,arg3:string):Promise<Array<main.GNMIGetEnt>>;
+
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 
 export function GetAIList():Promise<Array<main.AIList>>;

@@ -201,6 +201,16 @@
           </Label>
         {/if}
       </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        <Label class="space-y-2 text-xs">
+          <span>{$_('Node.GNMIUser')}</span>
+          <Input bind:value={node.GNMIUser} size="sm" />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_('Node.GNMIPassword')}</span>
+          <Input type="password" bind:value={node.GNMIPassword} size="sm" />
+        </Label>
+      </div>
       <Label class="space-y-2 text-xs">
         <span>URL</span>
         <Input bind:value={node.URL} placeholder="URL" size="sm" />

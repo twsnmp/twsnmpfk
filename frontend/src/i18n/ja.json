@@ -442,7 +442,9 @@
     "Cancel": "キャンセル",
     "None": "なし",
     "Image": "イメージ",
-    "SelectImageIcon": "アイコンイメージを選択"
+    "SelectImageIcon": "アイコンイメージを選択",
+    "GNMIUser": "gNMIユーザー",
+    "GNMIPassword": "gNMIパスワード"
   },
   "NodeList": {
     "State": "状態",
@@ -849,5 +851,13 @@
   },
   "NetworkLine": {
     "EditLine": "ネットワークのライン編集"
+  },
+  "GNMITool": {
+    "Name": "識別名",
+    "Org": "組織",
+    "Version": "バージョン",
+    "Target": "ターゲット",
+    "YangInfo": "YANG情報",
+    "gNMITool": "gNMIツール"
   }
 }

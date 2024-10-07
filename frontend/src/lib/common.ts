@@ -67,6 +67,7 @@ export const filterEventTypeList = [
 export const typeList = [
   { name: 'PING', value: 'ping' },
   { name: 'SNMP', value: 'snmp' },
+  { name: 'gNMI', value: 'gnmi' },
   { name: 'TCP', value: 'tcp' },
   { name: 'HTTP', value: 'http' },
   { name: 'TLS', value: 'tls' },

@@ -454,7 +454,9 @@
     "SnmpUser": "SNMP user",
     "Image": "Image",
     "None": "None",
-    "SelectImageIcon": "Select image icon"
+    "SelectImageIcon": "Select image icon",
+    "GNMIPassword": "gNMI Password",
+    "GNMIUser": "gNMI User"
   },
   "NodeList": {
     "CheckAll": "Check all",
@@ -849,5 +851,13 @@
   },
   "NetworkLine": {
     "EditLine": "Edit line"
+  },
+  "GNMITool": {
+    "Name": "Name",
+    "Org": "Organization",
+    "Target": "Target",
+    "Version": "Version",
+    "YangInfo": "YANG Info",
+    "gNMITool": "gNMI Tool"
   }
 }

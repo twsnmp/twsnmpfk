@@ -10,27 +10,29 @@ import (
 )
 
 type NodeEnt struct {
-	ID        string `json:"ID"`
-	Name      string `json:"Name"`
-	Descr     string `json:"Descr"`
-	Icon      string `json:"Icon"`
-	Image     string `json:"Image"`
-	State     string `json:"State"`
-	X         int    `json:"X"`
-	Y         int    `json:"Y"`
-	IP        string `json:"IP"`
-	MAC       string `json:"MAC"`
-	Vendor    string `json:"Vendor"`
-	SnmpMode  string `json:"SnmpMode"`
-	Community string `json:"Community"`
-	User      string `json:"User"`
-	SSHUser   string `json:"SSHUser"`
-	Password  string `json:"Password"`
-	PublicKey string `json:"PublicKey"`
-	URL       string `json:"URL"`
-	AddrMode  string `json:"AddrMode"`
-	AutoAck   bool   `json:"AutoAck"`
-	Loc       string `json:"Loc"`
+	ID           string `json:"ID"`
+	Name         string `json:"Name"`
+	Descr        string `json:"Descr"`
+	Icon         string `json:"Icon"`
+	Image        string `json:"Image"`
+	State        string `json:"State"`
+	X            int    `json:"X"`
+	Y            int    `json:"Y"`
+	IP           string `json:"IP"`
+	MAC          string `json:"MAC"`
+	Vendor       string `json:"Vendor"`
+	SnmpMode     string `json:"SnmpMode"`
+	Community    string `json:"Community"`
+	User         string `json:"User"`
+	SSHUser      string `json:"SSHUser"`
+	Password     string `json:"Password"`
+	GNMIUser     string `json:"GNMIUser"`
+	GNMIPassword string `json:"GNMIPassword"`
+	PublicKey    string `json:"PublicKey"`
+	URL          string `json:"URL"`
+	AddrMode     string `json:"AddrMode"`
+	AutoAck      bool   `json:"AutoAck"`
+	Loc          string `json:"Loc"`
 }
 
 func loadMapData() error {

@@ -421,6 +421,20 @@
     " {\n            name = e.detail;\n            showResultMIBTree = false;\n            get();\n          }}\n        />\n      ",
     " {\n            showResultMIBTree = false;\n          }}\n          size=\"xs\"\n        >\n          ",
     " (showMissing = false)}\n        size=\"xs\"\n      >\n        ",
-    " (showMissing = false)}\n        size=\"xs\"\n      >\n        "
+    " (showMissing = false)}\n        size=\"xs\"\n      >\n        ",
+    "TWSNMP gMMI(",
+    "gNMI get ",
+    "value == '",
+    " {\n          path = selected;\n        }}\n      />\n    ",
+    "\n          Capabilities\n        ",
+    "{\n            BrowserOpenURL(\"https://github.com/YangModels/yang\");\n          }}\n          size=\"xs\"\n        >\n          ",
+    "gNMI Version:{ capData.Version }",
+    "Encodings:{ capData.Encodings }",
+    " {\n          showCap = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n          showNodeMenu = false;\n          showGNMITool = true;\n        }}\n      >\n        ",
+    " {\n          showNetworkMenu = false;\n          CheckNetwork(selectedNetwork);\n          refreshMap();\n        }}\n      >\n        ",
+    " {\n          showNetworkMenu = false;\n          selectedNode = \"NET:\" + selectedNetwork;\n          showPing = true;\n        }}\n      >\n        ",
+    " {\n          showNetworkMenu = false;\n          selectedNode = \"NET:\" + selectedNetwork;\n          showMibBr = true;\n        }}\n      >\n        ",
+    " {\n    showMapMenu = false;\n    showNetworkMenu = false;\n    showNodeMenu = false;\n    showDrawItemMenu = false;\n    showFormatNodesMenu = false;\n  }}\n/>\n"
   ]
 }

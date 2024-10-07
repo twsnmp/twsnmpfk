@@ -142,6 +142,14 @@ export function FindNeighborNetworksAndLines(arg1) {
   return window['go']['main']['App']['FindNeighborNetworksAndLines'](arg1);
 }
 
+export function GNMICapabilities(arg1, arg2) {
+  return window['go']['main']['App']['GNMICapabilities'](arg1, arg2);
+}
+
+export function GNMIGet(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GNMIGet'](arg1, arg2, arg3);
+}
+
 export function GetAIConf() {
   return window['go']['main']['App']['GetAIConf']();
 }
