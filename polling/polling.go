@@ -81,6 +81,10 @@ func PollNowNode(nodeID string) {
 				NodeName: n.Name,
 				Event:    i18n.Trans("re check polling:") + pe.Name,
 			})
+			if pe.Type == "gnmi" && pe.Mode == "subscribe" {
+				GNMIStopSubscription(pe.ID)
+				time.Sleep(time.Millisecond * 20)
+			}
 			datastore.UpdatePolling(pe, false)
 			doPollingCh <- pe.ID
 		}
@@ -107,6 +111,10 @@ func CheckAllPoll() {
 				Event:    i18n.Trans("re check polling:") + pe.Name,
 			})
 			datastore.SetNodeStateChanged(n.ID)
+			if pe.Type == "gnmi" && pe.Mode == "subscribe" {
+				GNMIStopSubscription(pe.ID)
+				time.Sleep(time.Millisecond * 20)
+			}
 			datastore.UpdatePolling(pe, false)
 			doPollingCh <- pe.ID
 		}
@@ -123,6 +131,7 @@ func pollingBackend(ctx context.Context, wg *sync.WaitGroup) {
 	for {
 		select {
 		case <-ctx.Done():
+			gNMIStopAllSubscription()
 			stopPolling = true
 			log.Println("stop polling")
 			return
@@ -211,6 +220,11 @@ func doPolling(pe *datastore.PollingEnt) {
 		doPollingTWSNMP(pe)
 	case "lxi":
 		doPollingLxi(pe)
+	case "gnmi":
+		doPollingGNMI(pe)
+		if pe.Mode == "subscribe" {
+			return
+		}
 	}
 	datastore.UpdatePolling(pe, false)
 	if pe.LogMode == datastore.LogModeAlways || pe.LogMode == datastore.LogModeAI || (pe.LogMode == datastore.LogModeOnChange && oldState != pe.State) {

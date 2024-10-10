@@ -5,6 +5,7 @@ import (
 	"log"
 	"regexp"
 	"strings"
+	"time"
 
 	wails "github.com/wailsapp/wails/v2/pkg/runtime"
 
@@ -49,6 +50,10 @@ func (a *App) UpdatePolling(up datastore.PollingEnt) bool {
 		log.Printf("polling not found id=%+v", up)
 		return false
 	}
+	if p.Type == "gnmi" && p.Mode == "subscribe" {
+		polling.GNMIStopSubscription(p.ID)
+		time.Sleep(time.Millisecond * 20)
+	}
 	p.Name = up.Name
 	p.Type = up.Type
 	p.Mode = up.Mode
@@ -83,6 +88,12 @@ func (a *App) CheckPolling(node string) bool {
 // DeletePollings delete polling
 func (a *App) DeletePollings(ids []string) {
 	datastore.DeletePollings(ids)
+	for _, id := range ids {
+		pe := datastore.GetPolling(id)
+		if pe != nil && pe.Type == "gnmi" && pe.Mode == "subscribe" {
+			polling.GNMIStopSubscription(pe.ID)
+		}
+	}
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "user",
 		Level: "info",

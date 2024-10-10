@@ -262,7 +262,9 @@
     pollingTmp.Level = "low";
     pollingTmp.Params = target;
     pollingTmp.Filter = d[0].Path;
-    pollingTmp.Script = "value == '" + d[0].Value +"'";
+    pollingTmp.Script = `
+var value = JSON.parse(data);
+value == "${d[0].Value}";`;
     showPolling = true;
   };
 </script>
