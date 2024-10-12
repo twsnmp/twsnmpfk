@@ -475,5 +475,5 @@ value == "${d[0].Value}";`;
 
 <Polling bind:show={showPolling} {pollingTmp} />
 
-<Help bind:show={showHelp} page="mibbrowser" />
+<Help bind:show={showHelp} page="gnmitool" />
 
