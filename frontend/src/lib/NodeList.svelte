@@ -17,6 +17,7 @@
   import NodePolling from "./NodePolling.svelte";
   import Ping from "./Ping.svelte";
   import MIBBrowser from "./MIBBrowser.svelte";
+  import GNMITool from "./GNMITool.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
@@ -31,6 +32,7 @@
 
   let showPing: boolean = false;
   let showMibBr: boolean = false;
+  let showGNMITool: boolean = false;
   let actionOpen: boolean = false;
 
   const showTable = () => {
@@ -110,6 +112,15 @@
     }
     selectedNode = selected[0];
     showMibBr = true;
+  };
+
+  const gNMITool = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedNode = selected[0];
+    showGNMITool = true;
   };
 
   const doWakeOnLan = () => {
@@ -234,6 +245,7 @@
       <Dropdown bind:open={actionOpen}>
         <DropdownItem on:click={ping}>PING</DropdownItem>
         <DropdownItem on:click={MIBBr}>{$_('Map.MIBBrowser')}</DropdownItem>
+        <DropdownItem on:click={gNMITool}>{$_('GNMITool.gNMITool')}</DropdownItem>
         <DropdownItem on:click={doWakeOnLan}>Wake On Lan</DropdownItem>
       </Dropdown>
     {/if}
@@ -317,3 +329,5 @@
 <Ping bind:show={showPing} nodeID={selectedNode} />
 
 <MIBBrowser bind:show={showMibBr} nodeID={selectedNode} />
+
+<GNMITool bind:show={showGNMITool} nodeID={selectedNode} />
