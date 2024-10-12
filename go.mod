@@ -17,7 +17,6 @@ require (
 	github.com/gosnmp/gosnmp v1.35.0
 	github.com/labstack/gommon v0.4.0
 	github.com/montanaflynn/stats v0.7.1
-	github.com/openconfig/gnmi v0.11.0
 	github.com/openconfig/gnmic/pkg/api v0.1.8
 	github.com/oschwald/geoip2-golang v1.9.0
 	github.com/robertkrimen/otto v0.2.1
@@ -61,6 +60,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/openconfig/gnmi v0.11.0 // indirect
 	github.com/openconfig/grpctunnel v0.1.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.11.0 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect

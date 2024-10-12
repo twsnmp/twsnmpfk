@@ -20,28 +20,26 @@ type PortEnt struct {
 }
 
 type NetworkEnt struct {
-	ID           string    `json:"ID"`
-	Name         string    `json:"Name"`
-	Descr        string    `json:"Descr"`
-	IP           string    `json:"IP"`
-	SnmpMode     string    `json:"SnmpMode"`
-	Community    string    `json:"Community"`
-	User         string    `json:"User"`
-	Password     string    `json:"Password"`
-	GNMIUser     string    `json:"GNMIUser"`
-	GNMIPassword string    `json:"GNMIPassword"`
-	URL          string    `json:"URL"`
-	ArpWatch     bool      `json:"ArpWatch"`
-	Unmanaged    bool      `json:"Unmanaged"`
-	HPorts       int       `json:"HPorts"`
-	X            int       `json:"X"`
-	Y            int       `json:"Y"`
-	W            int       `json:"W"`
-	H            int       `json:"H"`
-	SystemID     string    `json:"SystemID"`
-	Error        string    `json:"Error"`
-	LLDP         bool      `json:"LLDP"`
-	Ports        []PortEnt `json:"Ports"`
+	ID        string    `json:"ID"`
+	Name      string    `json:"Name"`
+	Descr     string    `json:"Descr"`
+	IP        string    `json:"IP"`
+	SnmpMode  string    `json:"SnmpMode"`
+	Community string    `json:"Community"`
+	User      string    `json:"User"`
+	Password  string    `json:"Password"`
+	URL       string    `json:"URL"`
+	ArpWatch  bool      `json:"ArpWatch"`
+	Unmanaged bool      `json:"Unmanaged"`
+	HPorts    int       `json:"HPorts"`
+	X         int       `json:"X"`
+	Y         int       `json:"Y"`
+	W         int       `json:"W"`
+	H         int       `json:"H"`
+	SystemID  string    `json:"SystemID"`
+	Error     string    `json:"Error"`
+	LLDP      bool      `json:"LLDP"`
+	Ports     []PortEnt `json:"Ports"`
 }
 
 func AddNetwork(n *NetworkEnt) error {

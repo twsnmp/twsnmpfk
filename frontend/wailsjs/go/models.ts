@@ -658,8 +658,6 @@ export namespace datastore {
 	    Community: string;
 	    User: string;
 	    Password: string;
-	    GNMIUser: string;
-	    GNMIPassword: string;
 	    URL: string;
 	    ArpWatch: boolean;
 	    Unmanaged: boolean;
@@ -687,8 +685,6 @@ export namespace datastore {
 	        this.Community = source["Community"];
 	        this.User = source["User"];
 	        this.Password = source["Password"];
-	        this.GNMIUser = source["GNMIUser"];
-	        this.GNMIPassword = source["GNMIPassword"];
 	        this.URL = source["URL"];
 	        this.ArpWatch = source["ArpWatch"];
 	        this.Unmanaged = source["Unmanaged"];
@@ -738,6 +734,8 @@ export namespace datastore {
 	    User: string;
 	    SSHUser: string;
 	    Password: string;
+	    GNMIPort: string;
+	    GNMIEncoding: string;
 	    GNMIUser: string;
 	    GNMIPassword: string;
 	    PublicKey: string;
@@ -768,6 +766,8 @@ export namespace datastore {
 	        this.User = source["User"];
 	        this.SSHUser = source["SSHUser"];
 	        this.Password = source["Password"];
+	        this.GNMIPort = source["GNMIPort"];
+	        this.GNMIEncoding = source["GNMIEncoding"];
 	        this.GNMIUser = source["GNMIUser"];
 	        this.GNMIPassword = source["GNMIPassword"];
 	        this.PublicKey = source["PublicKey"];
@@ -1156,10 +1156,26 @@ export namespace main {
 	        this.Image = source["Image"];
 	    }
 	}
+	export class ModelData {
+	    name?: string;
+	    organization?: string;
+	    version?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ModelData(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.organization = source["organization"];
+	        this.version = source["version"];
+	    }
+	}
 	export class GNMICapEnt {
 	    Version: string;
 	    Encodings: string;
-	    Models: gnmi.ModelData[];
+	    Models: ModelData[];
 	
 	    static createFrom(source: any = {}) {
 	        return new GNMICapEnt(source);
@@ -1169,7 +1185,7 @@ export namespace main {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Version = source["Version"];
 	        this.Encodings = source["Encodings"];
-	        this.Models = this.convertValues(source["Models"], gnmi.ModelData);
+	        this.Models = this.convertValues(source["Models"], ModelData);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

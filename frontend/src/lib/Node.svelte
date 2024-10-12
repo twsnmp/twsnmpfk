@@ -201,7 +201,15 @@
           </Label>
         {/if}
       </div>
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 md:grid-cols-4">
+        <Label class="space-y-2 text-xs">
+          <span>gNMI Port</span>
+          <Input bind:value={node.GNMIPort} size="sm" />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>gNMI Encoding</span>
+          <Input bind:value={node.GNMIEncoding} size="sm" />
+        </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_('Node.GNMIUser')}</span>
           <Input bind:value={node.GNMIUser} size="sm" />

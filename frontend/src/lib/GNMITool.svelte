@@ -13,7 +13,6 @@
     GradientButton,
     Search,
     Select,
-    Progressbar,
     Input,
   } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -40,6 +39,7 @@
 
   let path = "";
   let target = "";
+  let encoding = "";
   let history: any = [];
   let selected = "";
   let wait = false;
@@ -61,7 +61,12 @@
   const onOpen = async () => {
     const node = await GetNode(nodeID);
     if (node) {
-      target = node.IP + ":57400";
+      if (node.GNMIPort) { 
+        target = node.IP + ":" + node.GNMIPort;
+      } else {
+        target = node.IP + ":57400";
+      }
+      encoding = node.GNMIEncoding ? node.GNMIEncoding : "json_ietf"; 
     }
     data = [];
     nekos.push(neko1);
@@ -78,6 +83,7 @@
       data: "Path",
       title: "Path",
       width: "60%",
+      className: "dt-nowrap",
     },
     {
       data: "Index",
@@ -116,7 +122,7 @@
   const get = async () => {
     wait = true;
     waitAnimation();
-    data = await GNMIGet(nodeID,target, path);
+    data = await GNMIGet(nodeID,target, path, encoding);
     if (!data) {
       neko = neko_ng;
     } else {
@@ -283,7 +289,14 @@ value == "${d[0].Value}";`;
         class="mr-2 w-96"
         type="text"
         bind:value={target}
-        placeholder="$_('GNMITool.Target')"
+        placeholder={$_('GNMITool.Target')}
+      />
+      <Input
+        size="sm"
+        class="mr-2 w-96"
+        type="text"
+        bind:value={encoding}
+        placeholder="Encoding"
       />
       <Search
         size="sm"

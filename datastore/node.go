@@ -26,6 +26,8 @@ type NodeEnt struct {
 	User         string `json:"User"`
 	SSHUser      string `json:"SSHUser"`
 	Password     string `json:"Password"`
+	GNMIPort     string `json:"GNMIPort"`
+	GNMIEncoding string `json:"GNMIEncoding"`
 	GNMIUser     string `json:"GNMIUser"`
 	GNMIPassword string `json:"GNMIPassword"`
 	PublicKey    string `json:"PublicKey"`

@@ -7,18 +7,24 @@ import (
 	"log"
 	"reflect"
 	"strings"
+	"time"
 
-	"github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/openconfig/gnmic/pkg/api"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
 )
 
+type ModelData struct {
+	Name         string `json:"name,omitempty"`         // Name of the model.
+	Organization string `json:"organization,omitempty"` // Organization publishing the model.
+	Version      string `json:"version,omitempty"`      // Semantic version of the model.
+}
+
 // GNMICapEnt : gNMI Capabilities responce
 type GNMICapEnt struct {
-	Version   string            `json:"Version"`
-	Encodings string            `json:"Encodings"`
-	Models    []*gnmi.ModelData `json:"Models"`
+	Version   string       `json:"Version"`
+	Encodings string       `json:"Encodings"`
+	Models    []*ModelData `json:"Models"`
 }
 
 // GNMIGetEnt : gNMI get responce
@@ -32,18 +38,8 @@ func (a *App) GNMICapabilities(nodeID, target string) *GNMICapEnt {
 	ret := &GNMICapEnt{}
 	n := datastore.GetNode(nodeID)
 	if n == nil {
-		if !strings.HasPrefix(nodeID, "NET:") {
-			return ret
-		}
-		nt := datastore.GetNetwork(nodeID)
-		if nt == nil {
-			return ret
-		}
-		n = &datastore.NodeEnt{
-			IP:           nt.IP,
-			GNMIUser:     nt.GNMIUser,
-			GNMIPassword: nt.GNMIPassword,
-		}
+		log.Println("node not found")
+		return ret
 	}
 	tg, err := api.NewTarget(
 		api.Name(n.Name),
@@ -58,20 +54,25 @@ func (a *App) GNMICapabilities(nodeID, target string) *GNMICapEnt {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
 	err = tg.CreateGNMIClient(ctx)
 	if err != nil {
 		log.Printf("gnmi cap err=%v", err)
 		return ret
 	}
 	defer tg.Close()
-
 	capResp, err := tg.Capabilities(ctx)
 	if err != nil {
 		log.Printf("gnmi cap err=%v", err)
 		return ret
 	}
-	ret.Models = capResp.GetSupportedModels()
+	models := capResp.GetSupportedModels()
+	for _, m := range models {
+		ret.Models = append(ret.Models, &ModelData{
+			Version:      m.Version,
+			Organization: m.Organization,
+			Name:         m.Name,
+		})
+	}
 	ret.Version = capResp.GetGNMIVersion()
 	es := []string{}
 	for _, e := range capResp.GetSupportedEncodings() {
@@ -81,24 +82,13 @@ func (a *App) GNMICapabilities(nodeID, target string) *GNMICapEnt {
 	return ret
 }
 
-func (a *App) GNMIGet(nodeID, target, path string) []*GNMIGetEnt {
+func (a *App) GNMIGet(nodeID, target, path, enc string) []*GNMIGetEnt {
+	st := time.Now()
 	ret := []*GNMIGetEnt{}
 	n := datastore.GetNode(nodeID)
 	if n == nil {
-		if !strings.HasPrefix(nodeID, "NET:") {
-			log.Println("node not found")
-			return ret
-		}
-		nt := datastore.GetNetwork(nodeID)
-		if nt == nil {
-			log.Println("network not found")
-			return ret
-		}
-		n = &datastore.NodeEnt{
-			IP:           nt.IP,
-			GNMIUser:     nt.GNMIUser,
-			GNMIPassword: nt.GNMIPassword,
-		}
+		log.Println("node not found")
+		return ret
 	}
 	tg, err := api.NewTarget(
 		api.Name(n.Name),
@@ -113,16 +103,18 @@ func (a *App) GNMIGet(nodeID, target, path string) []*GNMIGetEnt {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
 	err = tg.CreateGNMIClient(ctx)
 	if err != nil {
 		log.Printf("gnmi get err=%v", err)
 		return ret
 	}
 	defer tg.Close()
+	if enc == "" {
+		enc = "json_ietf"
+	}
 	getReq, err := api.NewGetRequest(
 		api.Path(path),
-		api.Encoding("json_ietf"))
+		api.Encoding(enc))
 	if err != nil {
 		log.Printf("gnmi get err=%v", err)
 		return ret
@@ -143,6 +135,9 @@ func (a *App) GNMIGet(nodeID, target, path string) []*GNMIGetEnt {
 				pa = append(pa, p.GetName())
 			}
 			j := u.Val.GetJsonIetfVal()
+			if len(j) < 1 {
+				j = u.Val.GetJsonVal()
+			}
 			var d interface{}
 			if err := json.Unmarshal(j, &d); err != nil {
 				log.Println(err)
@@ -155,6 +150,7 @@ func (a *App) GNMIGet(nodeID, target, path string) []*GNMIGetEnt {
 			ret = append(ret, getPathValue(d, path, "", false)...)
 		}
 	}
+	log.Printf("gNMI get path=%s  dur=%v", path, time.Since(st))
 	return ret
 }
 

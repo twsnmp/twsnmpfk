@@ -77,7 +77,7 @@ export function FindNeighborNetworksAndLines(arg1:string):Promise<backend.FindNe
 
 export function GNMICapabilities(arg1:string,arg2:string):Promise<main.GNMICapEnt>;
 
-export function GNMIGet(arg1:string,arg2:string,arg3:string):Promise<Array<main.GNMIGetEnt>>;
+export function GNMIGet(arg1:string,arg2:string,arg3:string,arg4:string):Promise<Array<main.GNMIGetEnt>>;
 
 export function GetAIConf():Promise<datastore.AIConfEnt>;
 
