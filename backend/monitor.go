@@ -3,6 +3,7 @@ package backend
 import (
 	"context"
 	"log"
+	"os"
 	"runtime"
 	"strings"
 	"sync"
@@ -23,16 +24,22 @@ const (
 
 // MonitorDataEnt :
 type MonitorDataEnt struct {
-	Time   int64   `json:"Time"`
-	CPU    float64 `json:"CPU"`
-	Mem    float64 `json:"Mem"`
-	Disk   float64 `json:"Disk"`
-	Load   float64 `json:"Load"`
-	Bytes  float64 `json:"Bytes"`
-	Net    float64 `json:"Net"`
-	Conn   int     `json:"Conn"`
-	Proc   int     `json:"Proc"`
-	DBSize int64   `json:"DBSize"`
+	Time         int64   `json:"Time"`
+	CPU          float64 `json:"CPU"`
+	Mem          float64 `json:"Mem"`
+	MyCPU        float64 `json:"MyCPU"`
+	MyMem        float64 `json:"MyMem"`
+	Swap         float64 `json:"Swap"`
+	Disk         float64 `json:"Disk"`
+	Load         float64 `json:"Load"`
+	Bytes        float64 `json:"Bytes"`
+	Net          float64 `json:"Net"`
+	Conn         int     `json:"Conn"`
+	Proc         int     `json:"Proc"`
+	DBSize       int64   `json:"DBSize"`
+	HeapAlloc    int64   `json:"HeapAlloc"`
+	Sys          int64   `json:"Sys"`
+	NumGoroutine int     `json:"NumGoroutine"`
 }
 
 // MonitorDataes : モニターデータ
@@ -48,9 +55,17 @@ func updateMonData() {
 	if err == nil {
 		m.Load = l.Load1
 	}
+	var ms runtime.MemStats
+	runtime.ReadMemStats(&ms)
+	m.HeapAlloc = int64(ms.HeapAlloc)
+	m.Sys = int64(ms.Sys)
 	v, err := mem.VirtualMemory()
 	if err == nil {
 		m.Mem = v.UsedPercent
+	}
+	s, err := mem.SwapMemory()
+	if err == nil {
+		m.Swap = s.UsedPercent
 	}
 	m.Time = time.Now().UnixNano()
 	d, err := disk.Usage(dspath)
@@ -82,6 +97,18 @@ func updateMonData() {
 	if err == nil {
 		m.Proc = len(pids)
 	}
+	pid := os.Getpid()
+	pr, err := process.NewProcess(int32(pid))
+	if err == nil {
+		if v, err := pr.CPUPercent(); err == nil {
+			m.MyCPU = v
+		}
+		if v, err := pr.MemoryPercent(); err == nil {
+			m.MyMem = float64(v)
+		}
+	}
+	m.NumGoroutine = runtime.NumGoroutine()
+
 	m.DBSize = datastore.GetDBSize()
 	for len(MonitorDataes) > maxMonitorData {
 		MonitorDataes = append(MonitorDataes[:0], MonitorDataes[1:]...)

@@ -182,6 +182,9 @@ export namespace backend {
 	    Time: number;
 	    CPU: number;
 	    Mem: number;
+	    MyCPU: number;
+	    MyMem: number;
+	    Swap: number;
 	    Disk: number;
 	    Load: number;
 	    Bytes: number;
@@ -189,6 +192,9 @@ export namespace backend {
 	    Conn: number;
 	    Proc: number;
 	    DBSize: number;
+	    HeapAlloc: number;
+	    Sys: number;
+	    NumGoroutine: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new MonitorDataEnt(source);
@@ -199,6 +205,9 @@ export namespace backend {
 	        this.Time = source["Time"];
 	        this.CPU = source["CPU"];
 	        this.Mem = source["Mem"];
+	        this.MyCPU = source["MyCPU"];
+	        this.MyMem = source["MyMem"];
+	        this.Swap = source["Swap"];
 	        this.Disk = source["Disk"];
 	        this.Load = source["Load"];
 	        this.Bytes = source["Bytes"];
@@ -206,6 +215,9 @@ export namespace backend {
 	        this.Conn = source["Conn"];
 	        this.Proc = source["Proc"];
 	        this.DBSize = source["DBSize"];
+	        this.HeapAlloc = source["HeapAlloc"];
+	        this.Sys = source["Sys"];
+	        this.NumGoroutine = source["NumGoroutine"];
 	    }
 	}
 	export class VPanelPortEnt {

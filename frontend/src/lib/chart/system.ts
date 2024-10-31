@@ -26,25 +26,11 @@ export const showMonitorResChart = (div:string, monitor:any) => {
     tooltip: {
       trigger: 'axis',
       formatter: (params:any) => {
-        return (
-          params[0].name +
-          '<br>' +
-          params[0].seriesName +
-          ':' +
-          params[0].value[1].toFixed(2) +
-          '<br>' +
-          params[1].seriesName +
-          ':' +
-          params[1].value[1].toFixed(2) +
-          '<br>' +
-          params[2].seriesName +
-          ':' +
-          params[3].value[1].toFixed(2) +
-          '<br>' +
-          params[3].seriesName +
-          ':' +
-          params[3].value[1].toFixed(2)
-        )
+        let r = params[0].name;
+        for (let p of params) {
+          r += "<br>" + p.seriesName + ":" + p.value[1].toFixed(2) + "%";
+        }
+        return r;
       },
       axisPointer: {
         type: 'shadow',
@@ -57,7 +43,7 @@ export const showMonitorResChart = (div:string, monitor:any) => {
       buttom: 0,
     },
     legend: {
-      data: ['CPU', 'Mem', 'Disk','Load'],
+      data: ['CPU', 'Mem','My CPU', 'My Mem','Swap', 'Disk','Load'],
       textStyle: {
         color: '#ccc',
         fontSize: 10,
@@ -143,6 +129,27 @@ export const showMonitorResChart = (div:string, monitor:any) => {
         data: [],
       },
       {
+        name: 'My CPU',
+        type: 'line',
+        large: true,
+        symbol: 'none',
+        data: [],
+      },
+      {
+        name: 'My Mem',
+        type: 'line',
+        large: true,
+        symbol: 'none',
+        data: [],
+      },
+      {
+        name: 'Swap',
+        type: 'line',
+        large: true,
+        symbol: 'none',
+        data: [],
+      },
+      {
         name: 'Disk',
         type: 'line',
         large: true,
@@ -171,9 +178,21 @@ export const showMonitorResChart = (div:string, monitor:any) => {
     })
     option.series[2].data.push({
       name,
-      value: [t, m.Disk],
+      value: [t, m.MyCPU],
     })
     option.series[3].data.push({
+      name,
+      value: [t, m.MyMem],
+    })
+    option.series[4].data.push({
+      name,
+      value: [t, m.Swap],
+    })
+    option.series[5].data.push({
+      name,
+      value: [t, m.Disk],
+    })
+    option.series[6].data.push({
       name,
       value: [t, m.Load],
     })
