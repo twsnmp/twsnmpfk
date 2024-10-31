@@ -5,6 +5,7 @@
   import { tick } from "svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
+  import { createEventDispatcher } from "svelte";
   import {
     getPingChartOption,
     showPing3DChart,
@@ -52,6 +53,8 @@
   let sound_ok :any;
   let sound_ng :any;
   let showHelp = false;
+
+  const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
     const node = await GetNode(nodeID);
@@ -363,6 +366,7 @@
       timer = undefined;
     }
     show = false;
+    dispatch("close", {});
   };
   const resizeChart = () => {
     if(reportChart) {

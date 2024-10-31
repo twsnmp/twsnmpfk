@@ -10,6 +10,7 @@
     horizontal,
     vertical,
     circle,
+    setMapReadOnly,
   } from "./map";
   import { onMount, onDestroy } from "svelte";
   import { Modal, GradientButton, Label, Input, Button } from "flowbite-svelte";
@@ -138,6 +139,7 @@
           selectedLineNode2 = p.Param[1];
           selectedLineID = "";
           showEditLine = true;
+          setMapReadOnly(true);
         }
         break;
       case "nodeDoubleClicked":
@@ -147,10 +149,12 @@
       case "itemDoubleClicked":
         selectedDrawItem = p.Param;
         showEditDrawItem = true;
+        setMapReadOnly(true);
         break;
       case "networkDoubleClicked":
         selectedNetwork = p.Param;
         showEditNetwork = true;
+        setMapReadOnly(true);
         break;
       case "deleteNodes":
         deleteNodes(p.Param);
@@ -294,6 +298,7 @@
           selectedNode = "";
           showEditNode = true;
           showMapMenu = false;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiPlus} size={0.7} />
@@ -308,6 +313,7 @@
           selectedDrawItem = "";
           showEditDrawItem = true;
           showMapMenu = false;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiDrawing} size={0.7} />
@@ -322,6 +328,7 @@
           selectedNetwork = "";
           showEditNetwork = true;
           showMapMenu = false;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiDrawing} size={0.7} />
@@ -457,6 +464,7 @@
         on:click={() => {
           showNodeMenu = false;
           showPing = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiCheckNetwork} size={0.7} />
@@ -468,6 +476,7 @@
         on:click={() => {
           showNodeMenu = false;
           showMibBr = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiEye} size={0.7} />
@@ -481,6 +490,7 @@
         on:click={() => {
           showNodeMenu = false;
           showGNMITool = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiEye} size={0.7} />
@@ -505,6 +515,7 @@
         on:click={() => {
           showNodeMenu = false;
           showEditNode = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiPencil} size={0.7} />
@@ -599,6 +610,7 @@
         on:click={() => {
           showDrawItemMenu = false;
           showEditDrawItem = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiPencil} size={0.7} />
@@ -663,6 +675,7 @@
         on:click={() => {
           showNetworkMenu = false;
           showEditNetwork = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiPencil} size={0.7} />
@@ -676,6 +689,7 @@
         on:click={() => {
           showNetworkMenu = false;
           showNetworkLines = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiPlaylistEdit} size={0.7} />
@@ -690,6 +704,7 @@
           showNetworkMenu = false;
           selectedNode = "NET:" + selectedNetwork;
           showPing = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiCheckNetwork} size={0.7} />
@@ -702,6 +717,7 @@
           showNetworkMenu = false;
           selectedNode = "NET:" + selectedNetwork;
           showMibBr = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiEye} size={0.7} />
@@ -715,6 +731,7 @@
         on:click={() => {
           showNetworkMenu = false;
           showNeighborNetworksAndLines = true;
+          setMapReadOnly(true);
         }}
       >
         <Icon path={icons.mdiLanConnect} size={0.7} />
@@ -794,6 +811,7 @@
 <Discover
   bind:show={showDiscover}
   on:close={() => {
+    setMapReadOnly(false);
     refreshMap();
   }}
 />
@@ -804,6 +822,7 @@
   posX={mapPosX}
   posY={mapPosY}
   on:close={(e) => {
+    setMapReadOnly(false);
     refreshMap();
   }}
 />
@@ -814,6 +833,7 @@
   nodeID2={selectedLineNode2}
   id={selectedLineID}
   on:close={(e) => {
+    setMapReadOnly(false);
     refreshMap();
   }}
 />
@@ -824,6 +844,7 @@
   posX={mapPosX}
   posY={mapPosY}
   on:close={(e) => {
+    setMapReadOnly(false);
     refreshMap();
   }}
 />
@@ -836,6 +857,7 @@
   posY={mapPosY}
   on:close={(e) => {
     networkTemplate = undefined;
+    setMapReadOnly(false);
     refreshMap();
   }}
 />
@@ -844,6 +866,7 @@
   bind:show={showNetworkLines}
   id={selectedNetwork}
   on:close={(e) => {
+    setMapReadOnly(false);
     refreshMap();
   }}
   on:editLine={(e) => {
@@ -851,6 +874,7 @@
     selectedLineNode1= "";
     selectedLineNode2= "";
     showEditLine = true;
+    setMapReadOnly(true);
   }}
 />
 
@@ -858,11 +882,13 @@
   bind:show={showNeighborNetworksAndLines}
   id={selectedNetwork}
   on:close={(e) => {
+    setMapReadOnly(false);
     refreshMap();
   }}
   on:addNetwork={(e) => {
     networkTemplate = e.detail;
     showEditNetwork = true;
+    setMapReadOnly(true);
   }}
 />
 
@@ -872,15 +898,34 @@
   bind:show={showPolling}
   nodeID={selectedNode}
   on:close={(e) => {
+    setMapReadOnly(false);
     refreshMap();
   }}
 />
 
-<Ping bind:show={showPing} nodeID={selectedNode} />
+<Ping 
+  bind:show={showPing} 
+  nodeID={selectedNode}
+  on:close={(e) => {
+    setMapReadOnly(false);
+  }}
+/>
 
-<MIBBrowser bind:show={showMibBr} nodeID={selectedNode} />
+<MIBBrowser 
+  bind:show={showMibBr}
+  nodeID={selectedNode}
+  on:close={(e) => {
+    setMapReadOnly(false);
+  }}
+/>
 
-<GNMITool bind:show={showGNMITool} nodeID={selectedNode} />
+<GNMITool
+  bind:show={showGNMITool}
+  nodeID={selectedNode}
+  on:close={(e) => {
+    setMapReadOnly(false);
+  }}
+/>
 
 <Modal bind:open={showGrid} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">

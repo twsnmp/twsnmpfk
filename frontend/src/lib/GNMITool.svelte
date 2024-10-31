@@ -8,6 +8,7 @@
   import neko5 from "../assets/images/neko_anm5.png";
   import neko6 from "../assets/images/neko_anm6.png";
   import neko7 from "../assets/images/neko_anm7.png";
+  import { createEventDispatcher } from "svelte";
   import {
     Modal,
     GradientButton,
@@ -57,6 +58,8 @@
   let capData : any = [];
   
   let showHelp = false;
+
+  const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
     const node = await GetNode(nodeID);
@@ -211,6 +214,7 @@
 
   const close = () => {
     show = false;
+    dispatch("close", {});
     if (timer) {
       clearTimeout(timer);
       timer = undefined;

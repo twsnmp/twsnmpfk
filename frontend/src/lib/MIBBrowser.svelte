@@ -16,6 +16,7 @@
     Toggle,
     Progressbar,
   } from "flowbite-svelte";
+  import { createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
@@ -70,6 +71,8 @@
   let showMissing = false;
   let missingList: any = [];
   let selectedMissingCount = 0;
+
+  const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
     mibTree.children = await GetMIBTree();
@@ -459,6 +462,7 @@
 
   const close = () => {
     show = false;
+    dispatch("close", {});
     if (timer) {
       clearTimeout(timer);
       timer = undefined;

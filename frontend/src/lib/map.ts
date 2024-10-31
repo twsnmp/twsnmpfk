@@ -24,6 +24,7 @@ let mapSizeX = window.screen.width > 4000 ? 5000 : 2500;
 let mapSizeY = 5000;
 let mapRedraw = true;
 let readOnly = false;
+let settingsLock = false;
 
 let mapCallBack: any = undefined;
 
@@ -80,7 +81,8 @@ export const initMAP = async (div: HTMLElement, cb: any) => {
   beepLow = notifyConf.BeepLow;
 
   mapCallBack = cb;
-  readOnly = settings.Lock != "";
+  settingsLock = settings.Lock != "";
+  readOnly = settingsLock;
   mapRedraw = false;
   if (_mapP5 != undefined) {
     return;
@@ -249,6 +251,10 @@ const _setMapState = () => {
     }
   }
 };
+
+export const setMapReadOnly = (ro:boolean) => {
+  readOnly = ro || settingsLock;
+}
 
 let player: HTMLAudioElement = new Audio();
 
