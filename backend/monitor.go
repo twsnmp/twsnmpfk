@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/montanaflynn/stats"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/load"
@@ -16,6 +17,7 @@ import (
 	gopsnet "github.com/shirou/gopsutil/v3/net"
 	"github.com/shirou/gopsutil/v3/process"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 const (
@@ -128,6 +130,61 @@ func isMonitorIF(n string) bool {
 	return true
 }
 
+func checkResourceAlert() {
+	if len(MonitorDataes) < 1 {
+		return
+	}
+	mem := []float64{}
+	myMem := []float64{}
+	load := []float64{}
+	var disk float64
+	for _, m := range MonitorDataes {
+		mem = append(mem, m.Mem)
+		myMem = append(myMem, m.MyMem)
+		load = append(load, m.Load)
+		disk = m.Disk
+	}
+	myMemMean, _ := stats.Mean(myMem)
+	memMean, _ := stats.Mean(mem)
+	loadMean, _ := stats.Mean(load)
+	log.Printf("checkResourceAlert mem=%.2f myMem=%.2f load=%.2f disk=%.2f", memMean, myMemMean, loadMean, disk)
+	level := ""
+	if myMemMean > 90.0 && memMean > 90.0 {
+		level = "high"
+	} else if myMemMean > 80.0 && memMean > 80.0 {
+		level = "low"
+	} else if myMemMean > 60.0 && memMean > 60.0 {
+		level = "warn"
+	}
+	if level != "" {
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: level,
+			Event: i18n.Trans("Low memory alert"),
+		})
+	}
+	level = ""
+	if disk > 95.0 {
+		level = "high"
+	} else if disk > 90.0 {
+		level = "low"
+	}
+	if level != "" {
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: level,
+			Event: i18n.Trans("Low storage alert"),
+		})
+	}
+	if loadMean > float64(runtime.NumCPU()) {
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "high",
+			Event: i18n.Trans("Over load alert"),
+		})
+	}
+}
+
 // monitor :
 func monitor(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
@@ -135,6 +192,7 @@ func monitor(ctx context.Context, wg *sync.WaitGroup) {
 	timer := time.NewTicker(time.Second * 300)
 	updateMonData()
 	defer timer.Stop()
+	i := 0
 	for {
 		select {
 		case <-ctx.Done():
@@ -143,6 +201,10 @@ func monitor(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		case <-timer.C:
 			updateMonData()
+			i++
+			if i%60 == 2 {
+				checkResourceAlert()
+			}
 		}
 	}
 }

@@ -302,6 +302,15 @@ var transMap = map[string]map[string]string{
 	"Export MAP": {
 		"ja": "マップを保存",
 	},
+	"Low memory alert": {
+		"ja": "メモリー不足",
+	},
+	"Low storage alert": {
+		"ja": "ストレージ容量不足",
+	},
+	"Over load alert": {
+		"ja": "高負荷状態",
+	},
 }
 
 func init() {
