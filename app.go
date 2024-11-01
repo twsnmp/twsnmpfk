@@ -16,6 +16,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/montanaflynn/stats"
 	"github.com/wailsapp/wails/v2/pkg/menu"
 	"github.com/wailsapp/wails/v2/pkg/menu/keys"
 	wails "github.com/wailsapp/wails/v2/pkg/runtime"
@@ -356,16 +357,40 @@ func (a *App) SelectAudioFile(title string) string {
 // SendFeedback send feedback to twsnmp
 func (a *App) SendFeedback(message string) bool {
 	msg := message
-	msg += fmt.Sprintf("\n-----\nTWSNMP FK\nGOOS=%s,GOARCH=%s\n", runtime.GOOS, runtime.GOARCH)
-	if len(backend.MonitorDataes) > 0 {
-		i := len(backend.MonitorDataes) - 1
-		msg += fmt.Sprintf("CPU=%f,Mem=%f,Load=%f,Disk=%f\n",
-			backend.MonitorDataes[i].CPU,
-			backend.MonitorDataes[i].Mem,
-			backend.MonitorDataes[i].Load,
-			backend.MonitorDataes[i].Disk,
-		)
+	msg += fmt.Sprintf("\n-----\nGOOS=%s,GOARCH=%s,NumCPU=%d,NumGoroutine=%d\n",
+		runtime.GOOS, runtime.GOARCH, runtime.NumCPU(), runtime.NumGoroutine())
+	msg += fmt.Sprintf("DBSize=%d\n", datastore.GetDBSize())
+	myCpu := []float64{}
+	myMem := []float64{}
+	load := []float64{}
+	gr := []float64{}
+	for i, m := range backend.MonitorDataes {
+		if i == 0 || i == len(backend.MonitorDataes)-1 {
+			msg += fmt.Sprintf("monitor[%d]-%+v\n", i, m)
+		}
+		myCpu = append(myCpu, m.MyCPU)
+		myMem = append(myMem, m.MyMem)
+		load = append(load, m.Load)
+		gr = append(gr, float64(m.NumGoroutine))
 	}
+
+	min, _ := stats.Min(myCpu)
+	mean, _ := stats.Mean(myCpu)
+	max, _ := stats.Max(myCpu)
+	msg += fmt.Sprintf("MyCPU=%.2f/%.2f/%.2f\n", min, mean, max)
+	min, _ = stats.Min(myMem)
+	mean, _ = stats.Mean(myMem)
+	max, _ = stats.Max(myMem)
+	msg += fmt.Sprintf("MyMem=%.2f/%.2f/%.2f\n", min, mean, max)
+	min, _ = stats.Min(load)
+	mean, _ = stats.Mean(load)
+	max, _ = stats.Max(load)
+	msg += fmt.Sprintf("load=%.2f/%.2f/%.2f\n", min, mean, max)
+	min, _ = stats.Min(gr)
+	mean, _ = stats.Mean(gr)
+	max, _ = stats.Max(gr)
+	msg += fmt.Sprintf("gr=%.2f/%.2f/%.2f\n", min, mean, max)
+
 	values := url.Values{}
 	values.Set("msg", msg)
 	values.Add("hash", calcHash(msg))
