@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"runtime"
 	"sort"
 	"time"
 
@@ -15,10 +16,6 @@ import (
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 )
-
-func sendReport() {
-	sendReportHTML()
-}
 
 func getEventLogSummary() string {
 	high := 0
@@ -51,7 +48,7 @@ func getEventLogSummary() string {
 	return fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, normal, other)
 }
 
-func getMapInfo() []string {
+func getMapInfo() []reportInfoEnt {
 	high := 0
 	low := 0
 	warn := 0
@@ -90,27 +87,44 @@ func getMapInfo() []string {
 		class = "normal"
 		state = i18n.Trans("Normal")
 	}
-	return []string{
-		datastore.MapConf.MapName,
-		state,
-		fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, repair, normal, unknown),
-		class,
+	return []reportInfoEnt{
+		{
+			Name:  i18n.Trans("MAP Name"),
+			Value: datastore.MapConf.MapName,
+			Class: "none",
+		}, {
+			Name:  i18n.Trans("MAP State"),
+			Value: state,
+			Class: class,
+		}, {
+			Name:  i18n.Trans("Node count by state"),
+			Value: fmt.Sprintf(i18n.Trans("High=%d,Low=%d,Warn=%d,Normal=%d,Other=%d"), high, low, warn, repair, normal, unknown),
+			Class: "none",
+		},
 	}
 }
 
-func getResInfo() []string {
+func getResInfo() []reportInfoEnt {
 	if len(backend.MonitorDataes) < 1 {
-		return []string{}
+		return []reportInfoEnt{}
 	}
 	cpu := []float64{}
 	mem := []float64{}
+	myCpu := []float64{}
+	myMem := []float64{}
+	swap := []float64{}
 	disk := []float64{}
 	load := []float64{}
+	gr := []float64{}
 	for _, m := range backend.MonitorDataes {
 		cpu = append(cpu, m.CPU)
 		mem = append(mem, m.Mem)
+		myCpu = append(myCpu, m.MyCPU)
+		myMem = append(myMem, m.MyMem)
+		swap = append(swap, m.Swap)
 		disk = append(disk, m.Disk)
 		load = append(load, m.Load)
+		gr = append(gr, float64(m.NumGoroutine))
 	}
 	cpuMin, _ := stats.Min(cpu)
 	cpuMean, _ := stats.Mean(cpu)
@@ -118,33 +132,117 @@ func getResInfo() []string {
 	memMin, _ := stats.Min(mem)
 	memMean, _ := stats.Mean(mem)
 	memMax, _ := stats.Max(mem)
+	myCpuMin, _ := stats.Min(myCpu)
+	myCpuMean, _ := stats.Mean(myCpu)
+	myCpuMax, _ := stats.Max(myCpu)
+	myMemMin, _ := stats.Min(myMem)
+	myMemMean, _ := stats.Mean(myMem)
+	myMemMax, _ := stats.Max(myMem)
+	swapMin, _ := stats.Min(swap)
+	swapMean, _ := stats.Mean(swap)
+	swapMax, _ := stats.Max(swap)
 	diskMin, _ := stats.Min(disk)
 	diskMean, _ := stats.Mean(disk)
 	diskMax, _ := stats.Max(disk)
 	loadMin, _ := stats.Min(load)
 	loadMean, _ := stats.Mean(load)
 	loadMax, _ := stats.Max(load)
-	return []string{
-		fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
-			humanize.FormatFloat("###.##", cpuMin),
-			humanize.FormatFloat("###.##", cpuMean),
-			humanize.FormatFloat("###.##", cpuMax),
-		),
-		fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
-			humanize.FormatFloat("###.##", memMin),
-			humanize.FormatFloat("###.##", memMean),
-			humanize.FormatFloat("###.##", memMax),
-		),
-		fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
-			humanize.FormatFloat("###.##", diskMin),
-			humanize.FormatFloat("###.##", diskMean),
-			humanize.FormatFloat("###.##", diskMax),
-		),
-		fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
-			humanize.FormatFloat("###.##", loadMin),
-			humanize.FormatFloat("###.##", loadMean),
-			humanize.FormatFloat("###.##", loadMax),
-		),
+	grMin, _ := stats.Min(gr)
+	grMean, _ := stats.Mean(gr)
+	grMax, _ := stats.Max(gr)
+	myMemClass := "none"
+	diskClass := "none"
+	loadClass := "none"
+	if myMemMean > 90.0 && memMean > 90.0 {
+		myMemClass = "high"
+	} else if myMemMean > 80.0 && memMean > 80.0 {
+		myMemClass = "low"
+	} else if myMemMean > 60.0 && memMean > 60.0 {
+		myMemClass = "warn"
+	} else {
+		myMemClass = "none"
+	}
+	if diskMean > 95.0 {
+		diskClass = "high"
+	} else if diskMean > 90.0 {
+		diskClass = "low"
+	} else if diskMean > 80.0 {
+		diskClass = "warn"
+	} else {
+		diskClass = "none"
+	}
+	if loadMean > float64(runtime.NumCPU()) {
+		loadClass = "high"
+	} else {
+		loadClass = "none"
+	}
+
+	return []reportInfoEnt{
+		{
+			Name: i18n.Trans("CPU Usage"),
+			Value: fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
+				humanize.FormatFloat("###.##", cpuMin),
+				humanize.FormatFloat("###.##", cpuMean),
+				humanize.FormatFloat("###.##", cpuMax),
+			),
+			Class: "none",
+		}, {
+			Name: i18n.Trans("Memory Usage"),
+			Value: fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
+				humanize.FormatFloat("###.##", memMin),
+				humanize.FormatFloat("###.##", memMean),
+				humanize.FormatFloat("###.##", memMax),
+			),
+			Class: "none",
+		}, {
+			Name: "My " + i18n.Trans("CPU Usage"),
+			Value: fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
+				humanize.FormatFloat("###.##", myCpuMin),
+				humanize.FormatFloat("###.##", myCpuMean),
+				humanize.FormatFloat("###.##", myCpuMax),
+			),
+			Class: "none",
+		}, {
+			Name: "My " + i18n.Trans("Memory Usage"),
+			Value: fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
+				humanize.FormatFloat("###.##", myMemMin),
+				humanize.FormatFloat("###.##", myMemMean),
+				humanize.FormatFloat("###.##", myMemMax),
+			),
+			Class: myMemClass,
+		}, {
+			Name: "Swap Usage",
+			Value: fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
+				humanize.FormatFloat("###.##", swapMin),
+				humanize.FormatFloat("###.##", swapMean),
+				humanize.FormatFloat("###.##", swapMax),
+			),
+			Class: "none",
+		}, {
+			Name: i18n.Trans("Disk Usage"),
+			Value: fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
+				humanize.FormatFloat("###.##", diskMin),
+				humanize.FormatFloat("###.##", diskMean),
+				humanize.FormatFloat("###.##", diskMax),
+			),
+			Class: diskClass,
+		}, {
+			Name: i18n.Trans("System Load"),
+			Value: fmt.Sprintf(i18n.Trans("Min:%s Avg:%s Max:%s"),
+				humanize.FormatFloat("###.##", loadMin),
+				humanize.FormatFloat("###.##", loadMean),
+				humanize.FormatFloat("###.##", loadMax),
+			),
+			Class: loadClass,
+		}, {
+			Name: "Go Routine",
+			Value: fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
+				humanize.FormatFloat("###.#", grMin),
+				humanize.FormatFloat("###.#", grMean),
+				humanize.FormatFloat("###.#", grMax),
+			),
+			Class: "none",
+		},
 	}
 }
 
@@ -217,50 +315,10 @@ type reportInfoEnt struct {
 	Value string
 }
 
-// HTML版レポートの送信
-func sendReportHTML() {
+func sendReport() {
 	info := []reportInfoEnt{}
-	a := getMapInfo()
-	if len(a) > 3 {
-		info = append(info, reportInfoEnt{
-			Name:  i18n.Trans("MAP Name"),
-			Value: a[0],
-			Class: "none",
-		})
-		info = append(info, reportInfoEnt{
-			Name:  i18n.Trans("MAP State"),
-			Value: a[1],
-			Class: a[3],
-		})
-		info = append(info, reportInfoEnt{
-			Name:  i18n.Trans("Node count by state"),
-			Value: a[2],
-			Class: "none",
-		})
-	}
-	a = getResInfo()
-	if len(a) > 3 {
-		info = append(info, reportInfoEnt{
-			Name:  i18n.Trans("CPU Usage"),
-			Value: a[0],
-			Class: "none",
-		})
-		info = append(info, reportInfoEnt{
-			Name:  i18n.Trans("Memory Usage"),
-			Value: a[1],
-			Class: "none",
-		})
-		info = append(info, reportInfoEnt{
-			Name:  i18n.Trans("Disk Usage"),
-			Value: a[2],
-			Class: "none",
-		})
-		info = append(info, reportInfoEnt{
-			Name:  i18n.Trans("System Load"),
-			Value: a[3],
-			Class: "none",
-		})
-	}
+	info = append(info, getMapInfo()...)
+	info = append(info, getResInfo()...)
 	info = append(info, reportInfoEnt{
 		Name:  i18n.Trans("DB Size"),
 		Value: humanize.Bytes(uint64(datastore.GetDBSize())),
