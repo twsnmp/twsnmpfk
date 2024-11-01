@@ -236,7 +236,7 @@ func getResInfo() []reportInfoEnt {
 			Class: loadClass,
 		}, {
 			Name: "Go Routine",
-			Value: fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
+			Value: fmt.Sprintf(i18n.Trans("Min:%s Avg:%s Max:%s"),
 				humanize.FormatFloat("###.#", grMin),
 				humanize.FormatFloat("###.#", grMean),
 				humanize.FormatFloat("###.#", grMax),
