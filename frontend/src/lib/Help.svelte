@@ -6,7 +6,7 @@
     Alert,
     Spinner,
   } from "flowbite-svelte";
-  import { tick } from "svelte";
+  import { tick,createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
@@ -29,6 +29,8 @@
   let feedbackError = false;
   let sending = false;
 
+  const dispatch = createEventDispatcher();
+
   const onOpen = async () => {
     helpUrl = `help/${lang}/${page}.md`;
     await tick();
@@ -46,6 +48,7 @@
       reveal = undefined;
     }
     show = false;
+    dispatch("close", {});
   };
 </script>
 

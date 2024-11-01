@@ -272,6 +272,8 @@
       class="!p-2 ml-2"
       color="alternative"
       on:click={() => {
+        oldPage = page;
+        page = "";
         showHelp = true;
       }}
     >
@@ -324,4 +326,10 @@
   }}
 />
 
-<Help bind:show={showHelp} {page} />
+<Help 
+  bind:show={showHelp} 
+  page = {oldPage}
+  on:close={()=> {
+    page = oldPage;
+  }}
+/>
