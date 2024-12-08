@@ -495,6 +495,36 @@ export namespace datastore {
 	        this.IconSize = source["IconSize"];
 	    }
 	}
+	export class MIBInfo {
+	    OID: string;
+	    Status: string;
+	    Type: string;
+	    Enum: string;
+	    Defval: string;
+	    Units: string;
+	    Index: string;
+	    Description: string;
+	    EnumMap: {[key: number]: string};
+	    Hint: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new MIBInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.OID = source["OID"];
+	        this.Status = source["Status"];
+	        this.Type = source["Type"];
+	        this.Enum = source["Enum"];
+	        this.Defval = source["Defval"];
+	        this.Units = source["Units"];
+	        this.Index = source["Index"];
+	        this.Description = source["Description"];
+	        this.EnumMap = source["EnumMap"];
+	        this.Hint = source["Hint"];
+	    }
+	}
 	export class MIBModuleEnt {
 	    Type: string;
 	    File: string;
@@ -516,6 +546,7 @@ export namespace datastore {
 	export class MIBTreeEnt {
 	    oid: string;
 	    name: string;
+	    MIBInfo?: MIBInfo;
 	    children: MIBTreeEnt[];
 	
 	    static createFrom(source: any = {}) {
@@ -526,6 +557,7 @@ export namespace datastore {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.oid = source["oid"];
 	        this.name = source["name"];
+	        this.MIBInfo = this.convertValues(source["MIBInfo"], MIBInfo);
 	        this.children = this.convertValues(source["children"], MIBTreeEnt);
 	    }
 	
