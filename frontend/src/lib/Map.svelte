@@ -810,6 +810,8 @@
 
 <Discover
   bind:show={showDiscover}
+  posX={mapPosX}
+  posY={mapPosY}
   on:close={() => {
     setMapReadOnly(false);
     refreshMap();

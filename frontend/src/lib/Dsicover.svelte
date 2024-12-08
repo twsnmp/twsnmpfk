@@ -70,6 +70,8 @@
   };
 
   const start = async () => {
+    conf.Retry *= 1;
+    conf.Timeout *= 1;
     const r = await StartDiscover(conf);
     if (r) {
       showStats = true;
