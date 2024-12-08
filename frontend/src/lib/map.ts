@@ -553,13 +553,13 @@ const mapMain = (p5: P5) => {
       p5.textSize(fontSize);
       p5.fill("#eee");
       p5.text(networks[k].Name, 5, fontSize + 5);
-      if (networks[k].Ports.length < 1) {
+      if (!networks[k].Ports || networks[k].Ports.length < 1) {
         if (networks[k].Error !== "") {
           p5.fill("#cc3300");
           p5.text(networks[k].Error, 15, fontSize * 2 + 15);
         } else {
           p5.fill("#11ee00");
-          p5.text("構成を分析中...", 15, fontSize * 2 + 15);
+          p5.text("Check network node...", 15, fontSize * 2 + 15);
         }
       } else {
         p5.textSize(6);
