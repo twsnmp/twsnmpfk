@@ -145,66 +145,6 @@ func loadConf() error {
 	return err
 }
 
-var imageListCache = []string{}
-
-func SaveImage(path string, img []byte) error {
-	st := time.Now()
-	imageListCache = []string{}
-	return db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("images"))
-		if b == nil {
-			return fmt.Errorf("bucket config is nil")
-		}
-		log.Printf("SaveImage dur=%v", time.Since(st))
-		return b.Put([]byte(path), img)
-	})
-}
-
-func DelteImage(path string) error {
-	st := time.Now()
-	imageListCache = []string{}
-	return db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("images"))
-		if b == nil {
-			return fmt.Errorf("bucket config is nil")
-		}
-		log.Printf("DeleteImage dur=%v", time.Since(st))
-		return b.Delete([]byte(path))
-	})
-}
-
-func GetImageList() []string {
-	if db == nil || len(imageListCache) > 0 {
-		return imageListCache
-	}
-	db.View(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("images"))
-		if b == nil {
-			return fmt.Errorf("bucket iamges is nil")
-		}
-		return b.ForEach(func(k, v []byte) error {
-			imageListCache = append(imageListCache, string(k))
-			return nil
-		})
-	})
-	return imageListCache
-}
-
-func GetImage(path string) ([]byte, error) {
-	var r []byte
-	if db == nil {
-		return r, ErrDBNotOpen
-	}
-	return r, db.View(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("images"))
-		if b == nil {
-			return fmt.Errorf("bucket iamges is nil")
-		}
-		r = b.Get([]byte(path))
-		return nil
-	})
-}
-
 func SaveMapConf() error {
 	st := time.Now()
 	if db == nil {

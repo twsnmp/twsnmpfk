@@ -80,7 +80,7 @@ func DeleteLine(lineID string) error {
 		return b.Delete([]byte(lineID))
 	})
 	lines.Delete(lineID)
-	log.Printf("DelteLine dur=%v", time.Since(st))
+	log.Printf("delte line dur=%v", time.Since(st))
 	return nil
 }
 
