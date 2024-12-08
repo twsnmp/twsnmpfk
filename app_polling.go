@@ -9,6 +9,7 @@ import (
 
 	wails "github.com/wailsapp/wails/v2/pkg/runtime"
 
+	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/polling"
@@ -79,6 +80,7 @@ func (a *App) UpdatePolling(up datastore.PollingEnt) bool {
 func (a *App) CheckPolling(node string) bool {
 	if node == "all" {
 		polling.CheckAllPoll()
+		backend.CheckAllNetworks()
 	} else {
 		polling.PollNowNode(node)
 	}
