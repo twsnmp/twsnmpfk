@@ -323,7 +323,9 @@
     "AutoIPRange": "自動IP範囲",
     "Help": "ヘルプ",
     "Total": "トータル:",
-    "Found": "発見済み:"
+    "Found": "発見済み:",
+    "ReChek": "再チェック",
+    "AddNetwork": "ネットワーク追加"
   },
   "EventLog": {
     "Level": "レベル",

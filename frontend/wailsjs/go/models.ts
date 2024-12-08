@@ -342,6 +342,8 @@ export namespace datastore {
 	    Y: number;
 	    AddPolling: boolean;
 	    PortScan: boolean;
+	    ReCheck: boolean;
+	    AddNetwork: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new DiscoverConfEnt(source);
@@ -357,6 +359,8 @@ export namespace datastore {
 	        this.Y = source["Y"];
 	        this.AddPolling = source["AddPolling"];
 	        this.PortScan = source["PortScan"];
+	        this.ReCheck = source["ReCheck"];
+	        this.AddNetwork = source["AddNetwork"];
 	    }
 	}
 	export class DrawItemEnt {
@@ -1081,6 +1085,7 @@ export namespace discover {
 	    File: number;
 	    RDP: number;
 	    LDAP: number;
+	    Wait: number;
 	    StartTime: number;
 	    Now: number;
 	
@@ -1101,6 +1106,7 @@ export namespace discover {
 	        this.File = source["File"];
 	        this.RDP = source["RDP"];
 	        this.LDAP = source["LDAP"];
+	        this.Wait = source["Wait"];
 	        this.StartTime = source["StartTime"];
 	        this.Now = source["Now"];
 	    }

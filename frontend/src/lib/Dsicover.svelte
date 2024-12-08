@@ -152,12 +152,18 @@
           />
         </Label>
       </div>
-      <div class="grid gap-4 mb-4 grid-cols-2">
+      <div class="grid gap-4 mb-4 grid-cols-4">
         <Checkbox bind:checked={conf.PortScan}
           >{$_("Discover.PortScan")}</Checkbox
         >
         <Checkbox bind:checked={conf.AddPolling}
           >{$_("Discover.AutoAddPolling")}</Checkbox
+        >
+        <Checkbox bind:checked={conf.ReCheck}
+          >{$_('Discover.ReChek')}</Checkbox
+        >
+        <Checkbox bind:checked={conf.AddNetwork}
+          >{$_('Discover.AddNetwork')}</Checkbox
         >
       </div>
       <div class="flex justify-end space-x-2 mr-2">
@@ -212,7 +218,7 @@
 </Modal>
 <Modal bind:open={showStats} size="lg" dismissable={false} class="w-full">
   <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-    {$_("Discover.Stats")}
+    {$_("Discover.Stats")} - {stats.Now - stats.StartTime}Sec
   </h3>
   <div class="flex flex-col space-y-4">
     <Progressbar
@@ -222,8 +228,8 @@
       color="blue"
       size="h-5"
       labelOutside={
-        $_("Discover.Total")
-        + stats.Sent + '/' + stats.Total
+        $_("Discover.Total") + ' '
+        + stats.Sent +'(' + stats.Wait + ')' + '/' + stats.Total 
       }
     />
     <Progressbar

@@ -335,7 +335,9 @@
     "AutoIPRange": "Auto IP range",
     "Help": "Help",
     "Found": "Found:",
-    "Total": "Total"
+    "Total": "Total",
+    "AddNetwork": "Add network",
+    "ReChek": "ReScan"
   },
   "EventLog": {
     "Event": "Event",

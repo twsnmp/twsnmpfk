@@ -132,6 +132,24 @@ func GetPolling(id string) *PollingEnt {
 	return nil
 }
 
+// AddPollingWithDupCheck : 重複しないようにポーリングを追加する
+func AddPollingWithDupCheck(p *PollingEnt) error {
+	found := false
+	pollings.Range(func(_, i interface{}) bool {
+		if pe, ok := i.(*PollingEnt); ok {
+			if pe.NodeID == p.NodeID && pe.Type == p.Type && pe.Mode == p.Mode && pe.Params == p.Params {
+				found = true
+				return false
+			}
+		}
+		return true
+	})
+	if found {
+		return nil
+	}
+	return AddPolling(p)
+}
+
 // ForEachPollings : ポーリング毎の処理
 func ForEachPollings(f func(*PollingEnt) bool) {
 	pollings.Range(func(_, p interface{}) bool {
