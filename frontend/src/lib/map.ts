@@ -958,6 +958,8 @@ const mapMain = (p5: P5) => {
         deleteNodes();
       } else if (selectedDrawItems.length > 0) {
         deleteDrawItems();
+      } else if (selectedNetwork != "") {
+        deleteNetwork();
       }
       return true;
     }
@@ -1226,6 +1228,16 @@ const mapMain = (p5: P5) => {
         Param: selectedDrawItems,
       });
       selectedDrawItems.length = 0;
+    }
+  };
+  // ネットワークを削除する
+  const deleteNetwork = () => {
+    if (mapCallBack) {
+      mapCallBack({
+        Cmd: "deleteNetwork",
+        Param: selectedNetwork,
+      });
+      selectedNetwork = "";
     }
   };
   // Nodeの位置を保存する
