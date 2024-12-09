@@ -228,8 +228,8 @@
       color="blue"
       size="h-5"
       labelOutside={
-        $_("Discover.Total") + ' '
-        + stats.Sent +'(' + stats.Wait + ')' + '/' + stats.Total 
+        $_("Discover.Total") + ' ' +
+        stats.Wait + '/' + stats.Sent + '/' + stats.Total 
       }
     />
     <Progressbar

@@ -2,6 +2,7 @@ package logger
 
 import (
 	"context"
+	"encoding/binary"
 	"fmt"
 	"log"
 	"net"
@@ -24,6 +25,7 @@ var ResetArpWatch = false
 func resetArpTable() {
 	arpTable = make(map[string]string)
 	macToIPTable = make(map[string]string)
+	localCheckAddrs = []string{}
 }
 
 func UpdateArpTable(ip, mac string) {
@@ -41,8 +43,8 @@ func arpWatch(stopCh chan bool) {
 		arpTable[a.IP] = a.MAC
 		return true
 	})
+	lastArpWatchRange := ""
 	checkArpTable()
-	makeLoacalCheckAddrs()
 	timer := time.NewTicker(time.Second * 300)
 	pinger := time.NewTicker(time.Second * 5)
 	for {
@@ -62,103 +64,114 @@ func arpWatch(stopCh chan bool) {
 				checkArpTable()
 				ResetArpWatch = false
 			}
-			if len(localCheckAddrs) > 0 {
+			if lastArpWatchRange != datastore.MapConf.ArpWatchRange {
+				// 変更されたら更新する
+				localCheckAddrs = []string{}
+				lastArpWatchRange = datastore.MapConf.ArpWatchRange
+				makeLoacalCheckAddrs()
+			}
+			i := 0
+			for len(localCheckAddrs) > 0 {
+				i++
 				a := localCheckAddrs[0]
 				ping.DoPing(a, 1, 0, 64, 0)
 				localCheckAddrs[0] = ""
 				localCheckAddrs = localCheckAddrs[1:]
+				if i > 50 {
+					break
+				}
 			}
 		case <-timer.C:
 			checkArpTable()
 			if len(localCheckAddrs) < 1 {
 				makeLoacalCheckAddrs()
+			} else {
+				log.Printf("arp watch wait ip count=%d", len(localCheckAddrs))
 			}
 		}
 	}
 }
 
-var lastAddressUsage = 0.0
+var lastAddressUsage = make(map[string]float64)
 
 func makeLoacalCheckAddrs() {
-	ifs, err := net.Interfaces()
-	if err != nil {
-		log.Printf("make local check addrs err=%v", err)
-		return
-	}
-	localIPCount := 0
-	localHitCount := 0
-	for _, i := range ifs {
-		if (i.Flags&net.FlagLoopback) == net.FlagLoopback ||
-			(i.Flags&net.FlagUp) != net.FlagUp ||
-			(i.Flags&net.FlagPointToPoint) == net.FlagPointToPoint ||
-			len(i.HardwareAddr) != 6 ||
-			i.HardwareAddr[0]&0x02 == 0x02 {
-			continue
-		}
-		addrs, err := i.Addrs()
-		if err != nil {
-			continue
-		}
-		ipMap := make(map[string]bool)
-		for _, a := range addrs {
-			cidr := a.String()
-			ipTmp, ipnet, err := net.ParseCIDR(cidr)
+	ipMap := make(map[string]bool)
+	for _, r := range strings.Split(datastore.MapConf.ArpWatchRange, ",") {
+		a := strings.SplitN(r, "-", 2)
+		var sIP uint32
+		var eIP uint32
+		if len(a) == 1 {
+			// CIDR
+			ip, ipnet, err := net.ParseCIDR(r)
 			if err != nil {
 				continue
 			}
-			ip := ipTmp.To4()
-			if ip == nil {
+			ipv4 := ip.To4()
+			if ipv4 == nil {
 				continue
 			}
-			mask := ipnet.Mask
-			broadcast := net.IP(make([]byte, 4))
-			for i := range ip {
-				broadcast[i] = ip[i] | ^mask[i]
+			sIP = ip2int(ipv4)
+			for eIP = sIP; ipnet.Contains(int2ip(eIP)); eIP++ {
 			}
-			for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); incIP(ip) {
-				if !ip.IsGlobalUnicast() || ip.IsMulticast() ||
-					ip.Equal(ip.Mask(ipnet.Mask)) || ip.Equal(broadcast) {
-					continue
-				}
-				sa := ip.String()
-				if _, ok := ipMap[sa]; ok {
-					// 同じIPアドレスを追加しない。
-					continue
-				}
-				ipMap[sa] = true
-				localIPCount++
-				if _, ok := arpTable[sa]; ok {
-					localHitCount++
-					continue
-				}
-				localCheckAddrs = append(localCheckAddrs, sa)
-			}
+			eIP--
+		} else {
+			sIP = ip2int(net.ParseIP(a[0]))
+			eIP = ip2int(net.ParseIP(a[1]))
 		}
+		if sIP >= eIP {
+			continue
+		}
+		localIPCount := 0
+		localHitCount := 0
+		for nIP := sIP; nIP <= eIP; nIP++ {
+			ip := int2ip(nIP)
+			if !ip.IsGlobalUnicast() || ip.IsMulticast() {
+				continue
+			}
+			sa := ip.String()
+			localIPCount++
+			if e := datastore.GetArpEnt(sa); e != nil {
+				// ARPテーブルに存在する
+				localHitCount++
+				ipMap[sa] = true
+				continue
+			}
+			if _, ok := ipMap[sa]; ok {
+				// 同じIPアドレスを追加しない。
+				continue
+			}
+			ipMap[sa] = true
+			localCheckAddrs = append(localCheckAddrs, sa)
+		}
+		lau := 0.0
+		if localIPCount > 0 {
+			lau = 100.0 * float64(localHitCount) / float64(localIPCount)
+		} else {
+			continue
+		}
+		if au, ok := lastAddressUsage[r]; ok && au == lau {
+			continue
+		}
+		lastAddressUsage[r] = lau
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "arpwatch",
+			Level: "info",
+			Event: fmt.Sprintf(i18n.Trans("ARP Watch range %s usage:%d/%d %.2f%%"), r, localHitCount, localIPCount, lau),
+		})
 	}
-	lau := 0.0
-	if localIPCount > 0 {
-		lau = 100.0 * float64(localHitCount) / float64(localIPCount)
-	} else {
-		return
-	}
-	if lau == lastAddressUsage {
-		return
-	}
-	lastAddressUsage = lau
-	datastore.AddEventLog(&datastore.EventLogEnt{
-		Type:  "arpwatch",
-		Level: "info",
-		Event: fmt.Sprintf(i18n.Trans("ARP Watch local address usage:%d/%d %.2f%%"), localHitCount, localIPCount, lau),
-	})
 }
 
-func incIP(ip net.IP) {
-	for j := len(ip) - 1; j >= 0; j-- {
-		ip[j]++
-		if ip[j] > 0 {
-			break
-		}
+func ip2int(ip net.IP) uint32 {
+	if len(ip) == 16 {
+		return binary.BigEndian.Uint32(ip[12:16])
 	}
+	return binary.BigEndian.Uint32(ip)
+}
+
+func int2ip(nIP uint32) net.IP {
+	ip := make(net.IP, 4)
+	binary.BigEndian.PutUint32(ip, nIP)
+	return ip
 }
 
 func checkArpTable() {
@@ -212,13 +225,11 @@ func updateArpTable(ip, mac string) {
 	if strings.HasPrefix(mac, "FF") || strings.HasPrefix(mac, "01") {
 		return
 	}
+	datastore.UpdateArpEnt(ip, mac)
 	m, ok := arpTable[ip]
 	if !ok {
 		// New
 		arpTable[ip] = mac
-		if err := datastore.UpdateArpEnt(ip, mac); err != nil {
-			log.Printf("update arp db err=%v", err)
-		}
 		logCh <- &datastore.LogEnt{
 			Time: time.Now().UnixNano(),
 			Type: "arplog",
@@ -230,9 +241,6 @@ func updateArpTable(ip, mac string) {
 	if mac != m {
 		// Change
 		arpTable[ip] = mac
-		if err := datastore.UpdateArpEnt(ip, mac); err != nil {
-			log.Printf("update arp db err=%v", err)
-		}
 		logCh <- &datastore.LogEnt{
 			Time: time.Now().UnixNano(),
 			Type: "arplog",

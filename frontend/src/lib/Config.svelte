@@ -542,6 +542,28 @@
             <Checkbox bind:checked={mapConf.EnableSshd}>SSH Sever</Checkbox>
             <Checkbox bind:checked={mapConf.EnableTcpd}>TCP Sever</Checkbox>
           </div>
+          {#if mapConf.EnableArpWatch}
+            <div class="grid gap-4 mb-4 md:grid-cols-4">
+              <Label class="space-y-2 text-xs col-span-3">
+                <span> ARP監視IP範囲 </span>
+                <Input
+                  bind:value={mapConf.ArpWatchRange}
+                  size="sm"
+                />
+              </Label>
+              <Label class="space-y-2 text-xs">
+                <span> ARP監視タイムアウト(時間) </span>
+                <Input
+                  type="number"
+                  min={1}
+                  max={24*7}
+                  step={1}
+                  bind:value={mapConf.ArpTimeout}
+                  size="sm"
+                />
+              </Label>
+            </div>
+          {/if}
           <div class="flex justify-end space-x-2 mr-2">
             <GradientButton
               shadow

@@ -300,6 +300,8 @@ export namespace datastore {
 	    MAC: string;
 	    NodeID: string;
 	    Vendor: string;
+	    FirstTime: number;
+	    LastTime: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new ArpEnt(source);
@@ -311,6 +313,8 @@ export namespace datastore {
 	        this.MAC = source["MAC"];
 	        this.NodeID = source["NodeID"];
 	        this.Vendor = source["Vendor"];
+	        this.FirstTime = source["FirstTime"];
+	        this.LastTime = source["LastTime"];
 	    }
 	}
 	export class BackImageEnt {
@@ -602,6 +606,8 @@ export namespace datastore {
 	    EnableTcpd: boolean;
 	    IconSize: number;
 	    MapSize: number;
+	    ArpWatchRange: string;
+	    ArpTimeout: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new MapConfEnt(source);
@@ -627,6 +633,8 @@ export namespace datastore {
 	        this.EnableTcpd = source["EnableTcpd"];
 	        this.IconSize = source["IconSize"];
 	        this.MapSize = source["MapSize"];
+	        this.ArpWatchRange = source["ArpWatchRange"];
+	        this.ArpTimeout = source["ArpTimeout"];
 	    }
 	}
 	export class NetFlowEnt {

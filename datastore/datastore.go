@@ -157,6 +157,8 @@ func loadDataFromFS() error {
 	loadMailTemplateToMap("test", lang)
 	loadMailTemplateToMap("notify", lang)
 	loadMailTemplateToMap("report", lang)
+	log.Println("loadArpTable")
+	loadArpTable()
 	return nil
 }
 
@@ -239,6 +241,7 @@ func CloseDB() {
 	if err := saveAllPollings(); err != nil {
 		log.Printf("saveAllPollings err=%v", err)
 	}
+	saveArpTable()
 	db.Close()
 	db = nil
 }

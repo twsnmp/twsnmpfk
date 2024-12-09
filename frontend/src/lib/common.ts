@@ -215,6 +215,14 @@ export const renderTime = (t:number,type:string) => {
   return  formatTime(d,"");
 }
 
+export const renderTimeUnix = (t:number,type:string) => {
+  if (t < 1) {
+    return "";
+  }
+  const d = new Date(t * 1000);
+  return  formatTime(d,"");
+}
+
 export const renderTimeMili = (t:number,type:string) => {
   if(type=="sort") {
     return t;

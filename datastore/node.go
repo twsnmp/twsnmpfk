@@ -151,6 +151,12 @@ func DeleteNode(nodeID string) error {
 		return true
 	})
 	DeletePollings(delList)
+	ForEachArp(func(e *ArpEnt) bool {
+		if e.NodeID == nodeID {
+			e.NodeID = ""
+		}
+		return true
+	})
 	log.Printf("DeleteNode dur=%v", time.Since(st))
 	return nil
 }

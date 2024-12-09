@@ -183,7 +183,7 @@ func deleteOldLogs() {
 		log.Printf("deleteOldLog err=%v", err)
 		return
 	}
-	buckets := []string{"logs", "pollingLogs", "syslog", "trap", "netflow", "sflow", "sflowCounter"}
+	buckets := []string{"logs", "pollingLogs", "syslog", "arplog", "trap", "netflow", "sflow", "sflowCounter"}
 	doneMap := make(map[string]bool)
 	doneCount := 0
 	delCount := 0
@@ -273,6 +273,7 @@ func oldLogChecker(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		case <-timer.C:
 			deleteOldLogs()
+			deleteOldArpTable()
 		}
 	}
 }

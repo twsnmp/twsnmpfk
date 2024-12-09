@@ -15,9 +15,9 @@
   import {
     getTableLang,
     renderTime,
+    renderTimeUnix,
     getStateColor,
     getStateIcon,
-    renderState,
   } from "./common";
   import AddressReport from "./AddressReport.svelte";
   import Node from "./Node.svelte";
@@ -80,7 +80,7 @@
   };
 
   const renderNode = (id:any) => {
-    return nodes[id] ? nodes[id].Name : id;
+    return nodes[id] ? nodes[id].Name : "";
   };
 
   const renderArpIP = (ip: string, type: string) => {
@@ -177,19 +177,19 @@
     {
       data: "IP",
       title: $_("Address.IPAddress"),
-      width: "15%",
+      width: "10%",
       render: renderArpIP,
     },
     {
       data: "MAC",
       title: $_("Address.MACAddress"),
-      width: "15%",
+      width: "10%",
       render: renderArpMAC,
     },
     {
       data: "NodeID",
       title: $_("Address.NodeName"),
-      width: "20%",
+      width: "15%",
       render: renderNode,
     },
     {
@@ -200,8 +200,20 @@
     {
       data: "Last",
       title: $_('Address.Last'),
-      width: "25%",
+      width: "10%",
       render: renderTime,
+    },
+    {
+      data: "FirstTime",
+      title: "初回",
+      width: "10%",
+      render: renderTimeUnix,
+    },
+    {
+      data: "LastTime",
+      title: "最終",
+      width: "10%",
+      render: renderTimeUnix,
     },
   ];
 

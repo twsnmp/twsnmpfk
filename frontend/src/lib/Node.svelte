@@ -123,7 +123,7 @@
       <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
         {$_("Node.EditNode")}
       </h3>
-      <div class="grid gap-4 mb-4 md:grid-cols-3">
+      <div class="grid gap-4 mb-4 md:grid-cols-4">
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Name")}</span>
           <Input bind:value={node.Name} size="sm" />
@@ -131,6 +131,10 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.IPAddress")}</span>
           <Input bind:value={node.IP} size="sm" />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>MACアドレス</span>
+          <Input bind:value={node.MAC} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span> {$_("Node.AddressMode")} </span>

@@ -5,99 +5,111 @@ import (
 	"encoding/json"
 	"log"
 	"strings"
+	"sync"
 	"time"
 
 	"go.etcd.io/bbolt"
 )
 
 type ArpEnt struct {
-	IP     string `json:"IP"`
-	MAC    string `json:"MAC"`
-	NodeID string `json:"NodeID"`
-	Vendor string `json:"Vendor"`
+	IP        string `json:"IP"`
+	MAC       string `json:"MAC"`
+	NodeID    string `json:"NodeID"`
+	Vendor    string `json:"Vendor"`
+	FirstTime int64  `json:"FirstTime"`
+	LastTime  int64  `json:"LastTime"`
 }
 
-func UpdateArpEnt(ip, mac string) error {
-	if db == nil {
-		return ErrDBNotOpen
-	}
-	st := time.Now()
-	return db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("arp"))
-		log.Printf("UpdateArpEnt dur=%v", time.Since(st))
-		return b.Put([]byte(ip), []byte(mac))
-	})
-}
+var arpTable = sync.Map{}
 
-func ForEachArp(f func(*ArpEnt) bool) error {
-	if db == nil {
-		return ErrDBNotOpen
-	}
-	return db.View(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("arp"))
-		if b == nil {
-			return nil
+func GetArpEnt(ip string) *ArpEnt {
+	if v, ok := arpTable.Load(ip); ok {
+		if e, ok := v.(*ArpEnt); ok {
+			return e
 		}
-		c := b.Cursor()
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-			ip := string(k)
-			mac := string(v)
-			nodeID := ""
+	}
+	return nil
+}
+
+func UpdateArpEnt(ip, mac string) {
+	if v, ok := arpTable.Load(ip); ok {
+		if e, ok := v.(*ArpEnt); ok {
+			e.MAC = mac
+			e.LastTime = time.Now().Unix()
+			if e.NodeID != "" {
+				if n := GetNode(e.NodeID); n != nil && (e.MAC == mac || e.IP == ip) {
+					return
+				}
+			}
 			if n := FindNodeFromIP(ip); n != nil {
-				nodeID = n.ID
+				e.NodeID = n.ID
 			} else if n := FindNodeFromMAC(mac); n != nil {
-				nodeID = n.ID
-			}
-			var e = ArpEnt{
-				IP:     ip,
-				MAC:    mac,
-				NodeID: nodeID,
-				Vendor: FindVendor(mac),
-			}
-			if !f(&e) {
-				break
+				e.NodeID = n.ID
+			} else {
+				e.NodeID = ""
 			}
 		}
-		return nil
+		return
+	}
+	var e ArpEnt
+	if n := FindNodeFromIP(ip); n != nil {
+		e.NodeID = n.ID
+	} else if n := FindNodeFromMAC(mac); n != nil {
+		e.NodeID = n.ID
+	}
+	e.IP = ip
+	e.MAC = mac
+	e.Vendor = FindVendor(mac)
+	e.FirstTime = time.Now().Unix()
+	e.LastTime = e.FirstTime
+	arpTable.Store(ip, &e)
+}
+
+func ForEachArp(f func(*ArpEnt) bool) {
+	arpTable.Range(func(k, v any) bool {
+		if _, ok := k.(string); ok {
+			if e, ok := v.(*ArpEnt); ok {
+				return f(e)
+			}
+		}
+		return true
 	})
 }
 
 // ResetArpTableは、ARPテーブルとARPログをクリアする
 func ResetArpTable() error {
 	st := time.Now()
-	return db.Batch(func(tx *bbolt.Tx) error {
+	arpTable = sync.Map{}
+	err := db.Batch(func(tx *bbolt.Tx) error {
 		tx.DeleteBucket([]byte("arp"))
 		tx.DeleteBucket([]byte("arplog"))
 		tx.CreateBucketIfNotExists([]byte("arp"))
 		tx.CreateBucketIfNotExists([]byte("arplog"))
-		log.Printf("ResetArpTable  dur=%v", time.Since(st))
 		return nil
 	})
+	log.Printf("ResetArpTable  dur=%v", time.Since(st))
+	return err
 }
 
 // DeleteArpEntは、指定のIPアドレスに関連したARPテーブルとARPログを削除する
 func DeleteArpEnt(ips []string) error {
-	delMap := make(map[string]bool)
-	for _, ip := range ips {
-		delMap[ip] = true
-	}
 	st := time.Now()
-	return db.Batch(func(tx *bbolt.Tx) error {
+	err := db.Batch(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("arp"))
 		if b == nil {
 			return nil
 		}
-		c := b.Cursor()
-		for k, _ := c.First(); k != nil; k, _ = c.Next() {
-			if _, ok := delMap[string(k)]; ok {
-				c.Delete()
-			}
+		delMap := make(map[string]bool)
+		for _, ip := range ips {
+			b.Delete([]byte(ip))
+			arpTable.Delete(ip)
+			delMap[ip] = true
 		}
 		b = tx.Bucket([]byte("arplog"))
 		if b == nil {
 			return nil
 		}
-		c = b.Cursor()
+		c := b.Cursor()
 		for k, v := c.Last(); k != nil; k, v = c.Prev() {
 			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
 				v = deCompressLog(v)
@@ -116,7 +128,112 @@ func DeleteArpEnt(ips []string) error {
 				c.Delete()
 			}
 		}
-		log.Printf("DeleteArpEnt ips=%v dur=%v", ips, time.Since(st))
 		return nil
 	})
+	log.Printf("DeleteArpEnt len=%d dur=%v", len(ips), time.Since(st))
+	return err
+}
+
+func loadArpTable() error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("arp"))
+		if b == nil {
+			return nil
+		}
+		b.ForEach(func(k, v []byte) error {
+			ip := string(k)
+			var e ArpEnt
+			if bytes.HasPrefix(v, []byte("{")) {
+				if err := json.Unmarshal(v, &e); err != nil {
+					return nil
+				}
+				if e.Vendor == "Unknown" {
+					e.Vendor = FindVendor(e.MAC)
+				}
+				if n := GetNode(e.NodeID); n == nil {
+					e.NodeID = ""
+				}
+			} else {
+				// Old Arp Data
+				mac := string(v)
+				if n := FindNodeFromIP(ip); n != nil {
+					e.NodeID = n.ID
+				} else if n := FindNodeFromMAC(mac); n != nil {
+					e.NodeID = n.ID
+				}
+				e.IP = ip
+				e.MAC = mac
+				e.Vendor = FindVendor(mac)
+				e.FirstTime = time.Now().Unix()
+				e.LastTime = e.FirstTime
+			}
+			arpTable.Store(ip, &e)
+			return nil
+		})
+		return nil
+	})
+	return nil
+}
+
+func saveArpTable() error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	st := time.Now()
+	err := db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("arp"))
+		if b == nil {
+			return nil
+		}
+		arpTable.Range(func(k, v any) bool {
+			if ip, ok := k.(string); ok {
+				if e, ok := v.(*ArpEnt); ok {
+					if j, err := json.Marshal(e); err == nil {
+						b.Put([]byte(ip), j)
+					}
+				}
+			}
+			return true
+		})
+		return nil
+	})
+	log.Printf("save arp table dur=%v", time.Since(st))
+	return err
+}
+
+func deleteOldArpTable() {
+	if db == nil {
+		return
+	}
+	st := time.Now()
+	delList := []string{}
+	th := time.Now().Unix() - int64(MapConf.LogDays*24*3600)
+	arpTable.Range(func(k, v any) bool {
+		if ip, ok := k.(string); ok {
+			if e, ok := v.(*ArpEnt); ok {
+				if e.LastTime < th {
+					delList = append(delList, ip)
+				}
+			}
+		}
+		return true
+	})
+	if len(delList) < 1 {
+		return
+	}
+	db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("arp"))
+		if b == nil {
+			return nil
+		}
+		for _, ip := range delList {
+			arpTable.Delete(ip)
+			b.Delete([]byte(ip))
+		}
+		return nil
+	})
+	log.Printf("delete old arp table len=%d dur=%v", len(delList), time.Since(st))
 }
