@@ -464,6 +464,8 @@
     "\n    {$_(\"Discover.Stats\")} - {stats.Now - stats.StartTime}Sec\n  ",
     "\n    {$_(\"Discover.Stats\")} - {stats.Now - stats.StartTime}Sec\n  ",
     "gNMI Port",
-    "gNMI Encoding"
+    "gNMI Encoding",
+    " {\n          showIPAM();\n        }}\n      >\n        ",
+    " {\n          showIPAM();\n        }}\n      >\n        "
   ]
 }

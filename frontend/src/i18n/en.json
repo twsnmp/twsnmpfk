@@ -185,7 +185,11 @@
     "Close": "Close",
     "CountByIP": "Count by IP",
     "IPtoMACCircelGraph": "IP to MAC Graph(circle)",
-    "IPtoMACForceGraph": "IP to MAC graph(Force)"
+    "IPtoMACForceGraph": "IP to MAC graph(Force)",
+    "IPAM": "IP Address Usage",
+    "IPRange": "IP Range",
+    "Usage": "Usage",
+    "Used": "Used"
   },
   "Config": {
     "AI": "AI analysis",
@@ -458,7 +462,8 @@
     "None": "None",
     "SelectImageIcon": "Select image icon",
     "GNMIPassword": "gNMI Password",
-    "GNMIUser": "gNMI User"
+    "GNMIUser": "gNMI User",
+    "MAC": "MAC"
   },
   "NodeList": {
     "CheckAll": "Check all",
@@ -861,5 +866,8 @@
     "Version": "Version",
     "YangInfo": "YANG Info",
     "gNMITool": "gNMI Tool"
+  },
+  "ArpREport": {
+    "Size": "Size"
   }
 }

@@ -173,7 +173,11 @@
     "Chart3DByIP": "IPアドレス別(3D)",
     "IPtoMACForceGraph": "IPとMACの関係(力学モデル)",
     "IPtoMACCircelGraph": "IPとMACの関係(円形)",
-    "Close": "閉じる"
+    "Close": "閉じる",
+    "IPAM": "IPアドレス使用状況",
+    "IPRange": "IP範囲",
+    "Used": "使用数",
+    "Usage": "使用率"
   },
   "Config": {
     "None": "通知しない",
@@ -862,5 +866,8 @@
     "Target": "ターゲット",
     "YangInfo": "YANG情報",
     "gNMITool": "gNMIツール"
+  },
+  "ArpREport": {
+    "Size": "サイズ"
   }
 }

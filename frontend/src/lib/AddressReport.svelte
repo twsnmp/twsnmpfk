@@ -91,15 +91,15 @@
       >
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
-          IPアドレス使用状況
+          {$_('ArpReport.IPAM')}
         </div>
         <div id="ipam" />
         <Table striped={true}>
           <TableHead>
-            <TableHeadCell>IP範囲</TableHeadCell>
-            <TableHeadCell>サイズ</TableHeadCell>
-            <TableHeadCell>使用数</TableHeadCell>
-            <TableHeadCell>使用率</TableHeadCell>
+            <TableHeadCell>{$_('ArpReport.IPRange')}</TableHeadCell>
+            <TableHeadCell>{$_('ArpREport.Size')}</TableHeadCell>
+            <TableHeadCell>{$_('ArpReport.Used')}</TableHeadCell>
+            <TableHeadCell>{$_('ArpReport.Usage')}</TableHeadCell>
           </TableHead>
           <TableBody tableBodyClass="divide-y">
             {#each ipam as i }
