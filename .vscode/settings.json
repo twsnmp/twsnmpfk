@@ -462,6 +462,8 @@
     " {\n          showNodeMenu = false;\n          showMibBr = true;\n          setMapReadOnly(true);\n        }}\n      >\n        ",
     " {\n          showNodeMenu = false;\n          showMibBr = true;\n          setMapReadOnly(true);\n        }}\n      >\n        ",
     "\n    {$_(\"Discover.Stats\")} - {stats.Now - stats.StartTime}Sec\n  ",
-    "\n    {$_(\"Discover.Stats\")} - {stats.Now - stats.StartTime}Sec\n  "
+    "\n    {$_(\"Discover.Stats\")} - {stats.Now - stats.StartTime}Sec\n  ",
+    "gNMI Port",
+    "gNMI Encoding"
   ]
 }

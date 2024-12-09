@@ -71,6 +71,7 @@ func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
 	n.PublicKey = nu.PublicKey
 	n.URL = nu.URL
 	n.AddrMode = nu.AddrMode
+	n.MAC = nu.MAC
 	n.AutoAck = nu.AutoAck
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:     "user",

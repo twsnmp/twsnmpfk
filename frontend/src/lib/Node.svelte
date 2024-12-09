@@ -133,7 +133,7 @@
           <Input bind:value={node.IP} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
-          <span>MACアドレス</span>
+          <span>{$_('Node.MAC')}</span>
           <Input bind:value={node.MAC} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">

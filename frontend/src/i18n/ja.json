@@ -446,7 +446,8 @@
     "Image": "イメージ",
     "SelectImageIcon": "アイコンイメージを選択",
     "GNMIUser": "gNMIユーザー",
-    "GNMIPassword": "gNMIパスワード"
+    "GNMIPassword": "gNMIパスワード",
+    "MAC": "MACアドレス"
   },
   "NodeList": {
     "State": "状態",
