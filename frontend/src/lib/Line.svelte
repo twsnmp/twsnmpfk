@@ -47,19 +47,12 @@
     pollingList2.length = 0;
     wait = true;
     if (id != "") {
-      line = await GetLineByID(id)
-      nodeID1 = line.NodeID1
-      nodeID2 = line.NodeID2
+      line = await GetLineByID(id);
     } else {
-      line = await GetLine(nodeID1,nodeID2)
-      if (nodeID1.startsWith("NET:") || nodeID2.startsWith("NET:")) {
-        // ネットワークに関連したラインは追加のみ
-        line.ID = "";
-        line.PollingID1 = "";
-        line.PollingID2 = "";
-        line.PollingID = "";
-      }
+      line = await GetLine(nodeID1,nodeID2);
     }
+    nodeID1 = line.NodeID1;
+    nodeID2 = line.NodeID2;
     net1 = nodeID1.startsWith("NET:");
     net2 = nodeID2.startsWith("NET:");
     if (net1) {
