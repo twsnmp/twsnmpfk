@@ -1,21 +1,33 @@
 <script lang="ts">
-  import { Modal, GradientButton, Tabs, TabItem } from "flowbite-svelte";
-  import { onMount, createEventDispatcher, tick } from "svelte";
+  import { 
+    Modal, 
+    GradientButton, 
+    Tabs, 
+    TabItem,
+    Table,
+    TableBody,
+    TableBodyCell,
+    TableBodyRow,
+    TableHead,
+    TableHeadCell,
+    Progressbar,
+  } from "flowbite-svelte";
+  import { createEventDispatcher, tick } from "svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import type { datastore} from "wailsjs/go/models";
-  import { showArpGraph } from "./chart/arp";
+  import { showArpGraph,showIPAMHeatmap } from "./chart/arp";
   import { _ } from 'svelte-i18n';
 
   export let show: boolean = false;
   export let arp : any = undefined;
   export let changeMAC:any = undefined;
   export let changeIP:any = undefined;
+  export let ipam:any = undefined;
 
   const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
-    showChart("graphForce");
+    showIPAM();
   };
 
   let chart :any  = undefined;
@@ -32,6 +44,12 @@
     }
   };
 
+  const showIPAM = async () => {
+    await tick();
+    chart = undefined;
+    chart = showIPAMHeatmap("ipam",ipam);
+  }
+
   const close = () => {
     show = false;
     dispatch("close", {});
@@ -41,6 +59,15 @@
     if (chart) {
       chart.resize();
     }
+  }
+
+  const getUsageColor = (u:number) => {
+    if (u < 60.0) {
+      return "blue";
+    } else if (u < 90.0) {
+      return "yellow";
+    }
+    return "red";
   }
 
 </script>
@@ -58,6 +85,37 @@
     <Tabs style="underline">
       <TabItem
         open
+        on:click={() => {
+          showIPAM();
+        }}
+      >
+        <div slot="title" class="flex items-center gap-2">
+          <Icon path={icons.mdiChartPie} size={1} />
+          IPアドレス使用状況
+        </div>
+        <div id="ipam" />
+        <Table striped={true}>
+          <TableHead>
+            <TableHeadCell>IP範囲</TableHeadCell>
+            <TableHeadCell>サイズ</TableHeadCell>
+            <TableHeadCell>使用数</TableHeadCell>
+            <TableHeadCell>使用率</TableHeadCell>
+          </TableHead>
+          <TableBody tableBodyClass="divide-y">
+            {#each ipam as i }
+              <TableBodyRow>
+                <TableBodyCell>{i.Range}</TableBodyCell>
+                <TableBodyCell>{i.Size}</TableBodyCell>
+                <TableBodyCell>{i.Used}</TableBodyCell>
+                <TableBodyCell>
+                  <Progressbar progress={i.Usage.toFixed(2)} size="h-5"  color={getUsageColor(i.Usage)} labelInside />
+                </TableBodyCell>
+              </TableBodyRow>
+            {/each}
+          </TableBody>
+        </Table>
+      </TabItem>
+      <TabItem
         on:click={() => {
           showChart("graphForce");
         }}
@@ -95,5 +153,10 @@
     min-height:  500px;
     width:  98%;
     height: 70vh;
+  }
+  #ipam {
+    min-width: 300px;
+    width: 98%;
+    height: 35vh;
   }
 </style>

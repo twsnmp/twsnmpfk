@@ -214,6 +214,10 @@ export function GetHostResource(arg1) {
   return window['go']['main']['App']['GetHostResource'](arg1);
 }
 
+export function GetIPAM() {
+  return window['go']['main']['App']['GetIPAM']();
+}
+
 export function GetIcons() {
   return window['go']['main']['App']['GetIcons']();
 }

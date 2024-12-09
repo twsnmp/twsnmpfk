@@ -1280,6 +1280,26 @@ export namespace main {
 	        this.Index = source["Index"];
 	    }
 	}
+	export class IPAMRangeEnt {
+	    Range: string;
+	    Size: number;
+	    Used: number;
+	    Usage: number;
+	    UsedIP: number[];
+	
+	    static createFrom(source: any = {}) {
+	        return new IPAMRangeEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Range = source["Range"];
+	        this.Size = source["Size"];
+	        this.Used = source["Used"];
+	        this.Usage = source["Usage"];
+	        this.UsedIP = source["UsedIP"];
+	    }
+	}
 	export class MibEnt {
 	    Name: string;
 	    Value: string;

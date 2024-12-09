@@ -111,6 +111,8 @@ export function GetEventLogs(arg1:main.EventLogFilterEnt):Promise<Array<datastor
 
 export function GetHostResource(arg1:string):Promise<backend.HostResourceEnt>;
 
+export function GetIPAM():Promise<Array<main.IPAMRangeEnt>>;
+
 export function GetIcons():Promise<Array<datastore.IconEnt>>;
 
 export function GetImage(arg1:string):Promise<string>;

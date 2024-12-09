@@ -11,6 +11,7 @@
     GetNodes,
     ResetArpTable,
     DeleteArpEnt,
+    GetIPAM,
   } from "../../wailsjs/go/main/App";
   import {
     getTableLang,
@@ -28,6 +29,7 @@
   import { copyText } from "svelte-copy";
 
   let arp: any = [];
+  let ipam: any = [];
   let nodes :any= undefined;
   let showReport = false;
   let arpTable :any = undefined;
@@ -218,6 +220,7 @@
   ];
 
   const refresh = async () => {
+    ipam = await GetIPAM()
     nodes = await GetNodes();
     const arpLogs = await GetArpLogs();
     arp = await GetArpTable();
@@ -432,6 +435,7 @@
   {arp}
   {changeIP}
   {changeMAC}
+  {ipam}
 />
 
 <Node
