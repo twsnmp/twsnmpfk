@@ -12,6 +12,7 @@ require (
 	github.com/beevik/ntp v1.2.0
 	github.com/codegaudi/go-iforest v0.0.1
 	github.com/dustin/go-humanize v1.0.1
+	github.com/fatih/color v1.18.0
 	github.com/gliderlabs/ssh v0.3.6
 	github.com/google/gopacket v1.1.19
 	github.com/gosnmp/gosnmp v1.35.0

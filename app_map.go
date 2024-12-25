@@ -5,6 +5,8 @@ import (
 	"log"
 	"strings"
 
+	wails "github.com/wailsapp/wails/v2/pkg/runtime"
+
 	"github.com/dustin/go-humanize"
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
@@ -13,6 +15,7 @@ import (
 
 // GetNodes retunrs map nodes
 func (a *App) GetNodes() map[string]datastore.NodeEnt {
+	wails.LogDebug(a.ctx, "GetNodes")
 	ret := make(map[string]datastore.NodeEnt)
 	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
 		ret[n.ID] = *n

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/twsnmp/twsnmpfk/clog"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -104,6 +105,7 @@ func main() {
 				Icon:    icon,
 			},
 		},
+		Logger: clog.New(),
 	})
 
 	if err != nil {
