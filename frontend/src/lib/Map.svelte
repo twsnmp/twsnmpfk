@@ -16,7 +16,7 @@
   import { Modal, GradientButton, Label, Input, Button } from "flowbite-svelte";
   import * as icons from "@mdi/js";
   import { Icon } from "mdi-svelte-ts";
-  import Discover from "./Dsicover.svelte";
+  import Discover from "./Discover.svelte";
   import Node from "./Node.svelte";
   import Network from "./Network.svelte";
   import Line from "./Line.svelte";

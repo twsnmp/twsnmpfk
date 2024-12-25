@@ -545,14 +545,14 @@
           {#if mapConf.EnableArpWatch}
             <div class="grid gap-4 mb-4 md:grid-cols-4">
               <Label class="space-y-2 text-xs col-span-3">
-                <span> ARP監視IP範囲 </span>
+                <span> {$_('Config.ArpIPRange')} </span>
                 <Input
                   bind:value={mapConf.ArpWatchRange}
                   size="sm"
                 />
               </Label>
               <Label class="space-y-2 text-xs">
-                <span> ARP監視タイムアウト(時間) </span>
+                <span> {$_('Config.ArpTimeout')} </span>
                 <Input
                   type="number"
                   min={1}

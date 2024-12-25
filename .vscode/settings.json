@@ -466,6 +466,9 @@
     "gNMI Port",
     "gNMI Encoding",
     " {\n          showIPAM();\n        }}\n      >\n        ",
-    " {\n          showIPAM();\n        }}\n      >\n        "
+    " {\n          showIPAM();\n        }}\n      >\n        ",
+    "TCP Sever",
+    "& logs.length > 0}\n          ",
+    " {\n    page = oldPage;\n  }}\n/>\n"
   ]
 }

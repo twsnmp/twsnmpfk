@@ -207,13 +207,13 @@
     },
     {
       data: "FirstTime",
-      title: "初回",
+      title: $_('Address.FirstTime'),
       width: "10%",
       render: renderTimeUnix,
     },
     {
       data: "LastTime",
-      title: "最終",
+      title: $_('Address.LastTime'),
       width: "10%",
       render: renderTimeUnix,
     },

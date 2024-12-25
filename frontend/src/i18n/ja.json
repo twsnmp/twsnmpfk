@@ -269,7 +269,9 @@
     "MySSHPublicKey": "自分の公開鍵",
     "HostSSHPublicKey": "アクセス許可するホストのSSH公開鍵",
     "MapSize": "マップサイズ",
-    "SelectMapSize": "マップサイズを選択"
+    "SelectMapSize": "マップサイズを選択",
+    "ArpIPRange": "ARP監視IP範囲",
+    "ArpTimeout": "ARP監視タイムアウト(時間)"
   },
   "DrawItem": {
     "Rect": "矩形",
@@ -759,7 +761,9 @@
     "Normal": "正常",
     "State": "状態",
     "Last": "最終変化",
-    "Delete": "削除"
+    "Delete": "削除",
+    "FirstTime": "初回",
+    "LastTime": "最終"
   },
   "Location": {
     "Edit": "編集",

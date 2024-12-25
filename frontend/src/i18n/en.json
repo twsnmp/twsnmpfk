@@ -281,7 +281,9 @@
     "MySSHPublicKey": "My SSH public key",
     "SSHPublicKey": "SSH public key",
     "MapSize": "Map Size",
-    "SelectMapSize": "Select Map size"
+    "SelectMapSize": "Select Map size",
+    "ArpIPRange": "ARP Watch IP Range",
+    "ArpTimeout": "ARP Timeout"
   },
   "DrawItem": {
     "Cancel": "Cancel",
@@ -759,7 +761,9 @@
     "Reload": "Reload",
     "Report": "Report",
     "State": "State",
-    "Vendor": "Vendor"
+    "Vendor": "Vendor",
+    "FirstTime": "First",
+    "LastTime": "Last"
   },
   "Location": {
     "Add": "Add",
