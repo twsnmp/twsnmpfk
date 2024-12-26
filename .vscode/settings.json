@@ -469,6 +469,10 @@
     " {\n          showIPAM();\n        }}\n      >\n        ",
     "TCP Sever",
     "& logs.length > 0}\n          ",
-    " {\n    page = oldPage;\n  }}\n/>\n"
+    " {\n    page = oldPage;\n  }}\n/>\n",
+    " {\n        showMapList = true;\n      }}\n      size=\"xs\"\n    >\n      ",
+    "Unknown",
+    "Text",
+    "Dst"
   ]
 }

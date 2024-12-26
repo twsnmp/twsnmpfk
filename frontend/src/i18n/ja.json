@@ -469,7 +469,8 @@
     "CheckAll": "すべて再確認",
     "Reload": "更新",
     "Vendor": "ベンダー",
-    "Action": "操作"
+    "Action": "操作",
+    "MapItems": "マップ表示項目"
   },
   "NodePolling": {
     "State": "状態",
@@ -873,5 +874,19 @@
   },
   "ArpREport": {
     "Size": "サイズ"
+  },
+  "MapList": {
+    "Name": "名前",
+    "IPAddress": "IPアドレス",
+    "Descr": "説明",
+    "Type": "種別",
+    "Text": "テキスト",
+    "Node1": "ノード1",
+    "Polling1": "ポーリング1",
+    "Node2": "ノード2",
+    "Polling2": "ポーリング2",
+    "Network": "ネットワーク",
+    "DrawItem": "描画アイテム",
+    "Line": "ライン"
   }
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import "../assets/css/jquery.dataTables.css";
-  import { GradientButton,Dropdown,DropdownItem } from "flowbite-svelte";
+  import { GradientButton, Dropdown, DropdownItem } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount } from "svelte";
@@ -18,6 +18,7 @@
   import Ping from "./Ping.svelte";
   import MIBBrowser from "./MIBBrowser.svelte";
   import GNMITool from "./GNMITool.svelte";
+  import MapList from "./MapList.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
@@ -26,6 +27,7 @@
   let showEditNode = false;
   let showNodeReport = false;
   let showPolling = false;
+  let showMapList = false;
   let selectedNode = "";
   let table: any = undefined;
   let selectedCount = 0;
@@ -130,8 +132,8 @@
     }
     selectedNode = selected[0];
     WakeOnLan(selectedNode);
-    actionOpen= false;
-  }
+    actionOpen = false;
+  };
 
   const deleteNodes = async () => {
     const selected = table.rows({ selected: true }).data().pluck("ID");
@@ -241,11 +243,18 @@
         <Icon path={icons.mdiChartBar} size={1} />
         {$_("NodeList.Report")}
       </GradientButton>
-      <GradientButton>{$_('NodeList.Action')}<Icon path={icons.mdiChevronDown} size={1} /></GradientButton>
+      <GradientButton
+        >{$_("NodeList.Action")}<Icon
+          path={icons.mdiChevronDown}
+          size={1}
+        /></GradientButton
+      >
       <Dropdown bind:open={actionOpen}>
         <DropdownItem on:click={ping}>PING</DropdownItem>
-        <DropdownItem on:click={MIBBr}>{$_('Map.MIBBrowser')}</DropdownItem>
-        <DropdownItem on:click={gNMITool}>{$_('GNMITool.gNMITool')}</DropdownItem>
+        <DropdownItem on:click={MIBBr}>{$_("Map.MIBBrowser")}</DropdownItem>
+        <DropdownItem on:click={gNMITool}
+          >{$_("GNMITool.gNMITool")}</DropdownItem
+        >
         <DropdownItem on:click={doWakeOnLan}>Wake On Lan</DropdownItem>
       </Dropdown>
     {/if}
@@ -271,6 +280,18 @@
         {$_("NodeList.ReCheck")}
       </GradientButton>
     {/if}
+    <GradientButton
+      shadow
+      color="green"
+      type="button"
+      on:click={()=> {
+        showMapList = true;
+      }}
+      size="xs"
+    >
+      <Icon path={icons.mdiListBox} size={1} />
+      $_('NodeList.MapItems')
+    </GradientButton>
     <GradientButton
       shadow
       color="teal"
@@ -331,3 +352,6 @@
 <MIBBrowser bind:show={showMibBr} nodeID={selectedNode} />
 
 <GNMITool bind:show={showGNMITool} nodeID={selectedNode} />
+
+<MapList bind:show={showMapList} />
+

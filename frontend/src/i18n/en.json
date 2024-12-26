@@ -481,7 +481,8 @@
     "Report": "Report",
     "State": "Satte",
     "Vendor": "Vendor",
-    "Action": "Action"
+    "Action": "Action",
+    "MapItems": "Map items"
   },
   "NodePolling": {
     "Add": "Add",
@@ -873,5 +874,19 @@
   },
   "ArpREport": {
     "Size": "Size"
+  },
+  "MapList": {
+    "Descr": "Descr",
+    "DrawItem": "Darw item",
+    "IPAddress": "IP Address",
+    "Line": "Line",
+    "Name": "Name",
+    "Network": "Network",
+    "Node1": "Node 1",
+    "Node2": "Node 2",
+    "Polling1": "Polling 1",
+    "Polling2": "Polling 2",
+    "Text": "Text",
+    "Type": "Type"
   }
 }
