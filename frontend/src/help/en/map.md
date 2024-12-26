@@ -4,8 +4,6 @@
 The map screen has three large parts.
 </div>
 
-![Map screen](../../help/en/2023-12-03_10-19-09.png)
-
 >>>
 #### Explanation of the map
 
@@ -32,16 +30,12 @@ Upper right<span class="mdi mdi-moon-waxing-crescent"></span>Switch to dark mode
 >>>
 #### Image of switching
 
-![Dark mode](../../help/en/2023-12-03_10-21-35.png)
-
 ---
 #### Map menu
 
 <div class="text-xl mb-2">
 Right -click the location other than the node and drawing items on the map to display.
 </div>
-
-![Map menu](../../help/en/2024-02-15_04-58-57.png)
 
 >>>
 #### Map menu
@@ -68,8 +62,6 @@ Right -click the location other than the node and drawing items on the map to di
 Right -click the node on the map to display it.
 </div>
 
-![Node menu](../../help/en/2023-12-03_10-25-39.png)
-
 >>>
 #### Node menu
 
@@ -94,8 +86,6 @@ Right -click the node on the map to display it.
 <div class="text-xl mb-2">
 Right -click the drawing item on the map to display it.
 </div>
-
-![Drawing item menu](../../help/en/2023-12-03_10-27-19.png)
 
 >>>
 #### Drawing item menu

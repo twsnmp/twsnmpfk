@@ -4,8 +4,6 @@
 Polling edit can be displayed from the button by selecting a polling list on the polling list.
 </div>
 
-<img src="../../help/en/2023-12-03_09-28-18.png" style="width: 60%;" />
-
 >>>
 
 <div class="text-lg">

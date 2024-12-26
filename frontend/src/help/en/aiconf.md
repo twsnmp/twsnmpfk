@@ -3,8 +3,6 @@
 This is the screen to set AI analysis.
 </div>
 
-![AI analysis setting](../../help/en/2023-12-03_06-10-19.png)
-
 >>>
 
 <div class="text-lg">

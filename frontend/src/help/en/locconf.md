@@ -3,8 +3,6 @@
 This is the screen to set the map.
 </div>
 
-![Location map settings](../../help/en/2023-12-03_10-15-06.png)
-
 >>>
 
 <div class="text-lg">

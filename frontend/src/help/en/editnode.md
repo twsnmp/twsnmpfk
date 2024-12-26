@@ -3,8 +3,6 @@
 You can edit the node from the menu or button by selecting a node on the map screen or node list.
 </div>
 
-![Node editing](../../help/en/2023-12-03_09-24-46.png)
-
 >>>
 
 <div class="text-lg">

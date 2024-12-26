@@ -7,9 +7,6 @@ You can select by clicking the node.You can move by dragging.Multiple choices ca
 </div>
 
 
-![Map screen](../../help/en/2023-12-03_10-10-10.png)
-
-
 >>>
 #### Description of button
 
@@ -34,6 +31,4 @@ You can select by clicking the node.You can move by dragging.Multiple choices ca
 Right -click where you want to place the node on the map and the dialog to add is displayed.
 <br> You can add it by selecting a node.
 </div>
-
-![Adding node](../../help/en/2023-12-03_10-11-46.png)
 

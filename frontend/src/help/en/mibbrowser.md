@@ -6,8 +6,6 @@ It is necessary to set SNMP access information in the node setting.<br>
 If you want to use MIB other than built -in, save the MIB file to the extmibs of the data folder.
 </div>
 
-![MIB browser](../../help/en/2023-12-03_10-33-26.png)
-
 >>>
 #### explanation
 
@@ -35,5 +33,3 @@ This is a screen for selecting the obtained MIB object name.<br>
 Open the tree and click the object name to see the explanation.<br>
 Double click to select.
 </div>
-
-![MIB tree](../../help/en/2023-12-03_10-35-25.png)

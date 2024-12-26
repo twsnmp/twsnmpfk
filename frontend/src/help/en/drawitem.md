@@ -4,8 +4,6 @@ It is an edit screen of drawing item (rectangle, elliptical).
 </div>
 
 
-![Draw item editing](../../help/en/2023-12-03_07-00-20.png)
-
 >>>
 
 #### Item of drawing items (rectangles, ellipse)
@@ -27,8 +25,6 @@ It is an edit screen of drawing item (rectangle, elliptical).
 <div class="text-xl">
 It is the editing screen of the drawing item (label).
 </div>
-
-![Label editing](../../help/en/2023-12-03_08-56-46.png)
 
 >>>
 
@@ -52,8 +48,6 @@ It is the editing screen of the drawing item (label).
 It is the editing screen of drawing item (image).
 </div>
 
-![Image editing](../../help/en/2023-12-03_08-59-07.png)
-
 >>>
 
 #### Item of drawing items (images)
@@ -76,8 +70,6 @@ It is the editing screen of drawing item (image).
 <div class="text-xl">
 It is the editing screen of drawing item (polling result: text).
 </div>
-
-![Polling result](../../help/en/2023-12-03_09-05-08.png)
 
 >>>
 
@@ -103,8 +95,6 @@ It is the editing screen of drawing item (polling result: text).
 It is the editing screen of drawing item (polling result: gauge).It can be used to display % data.
 </div>
 
-![Polling result gauge](../../help/en/2023-12-03_09-08-10.png)
-
 >>>
 
 #### Item of drawing items (polling results: gauge)
@@ -121,5 +111,3 @@ It is the editing screen of drawing item (polling result: gauge).It can be used 
 | Gauge label | This is a character string displayed under the gauge.<br> In the example below, BPS.|
 | Magnification | The display rate of drawing items.|
 </div>
-
-![gauge](../../help/ja/2023-11-29_10-09-39.png)

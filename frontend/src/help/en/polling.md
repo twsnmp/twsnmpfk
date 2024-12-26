@@ -4,8 +4,6 @@
 A list of polling to be managed.
 </div>
 
-![Polling list](../../help/en/2023-12-03_11-29-48.png)
-
 >>>
 #### Polling list item
 
@@ -48,8 +46,6 @@ A list of polling to be managed.
 This is the selection screen of the template displayed when adding polling.
 </div>
 
-![Polling template](../../help/en/2023-12-03_11-32-15.png)
-
 >>>
 
 <div class="text-xl">
@@ -83,7 +79,6 @@ This is the selection screen of the template displayed when adding polling.
 Basic information about polling.
 </div>
 
-![Basic information](../../help/en/2023-12-03_11-34-23.png)
 
 ---
 #### Polling log
@@ -93,7 +88,6 @@ This is a log of the polling result.<br>
 <Span style = "color: red;"> It is displayed only when the log mode is not output.</span>
 </div>
 
-![Polling log](../../help/en/2023-12-03_11-34-33.png)
 
 ---
 #### Time chart
@@ -104,8 +98,6 @@ The displayed items can be selected at the top of the graph.<br>
 <Span style = "color: red;"> It is displayed only when the log mode is not output.</span>
 </div>
 
-![Time chart](../../help/en/2023-12-03_11-34-46.png)
-
 ---
 #### Histogram
 
@@ -115,7 +107,6 @@ The displayed items can be selected at the top of the graph.<br>
 <Span style = "color: red;"> It is displayed only when the log mode is not output.</span>
 </div>
 
-![histogram](../../help/en/2023-12-03_11-34-56.png)
 
 ---
 #### AI analysis
@@ -125,5 +116,4 @@ This is the result of AI analysis of numerical data in the log of the polling re
 <Span style = "color: red;"> It is displayed only when the log mode is set to AI analysis and sufficient data is obtained.</span>
 </div>
 
-![AI analysis](../../help/en/2023-12-03_11-35-06.png)
 

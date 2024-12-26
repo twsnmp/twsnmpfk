@@ -3,7 +3,6 @@
 This is a screen that manages the icon.
 </div>
 
-![Icon management](../../help/en/2023-12-03_10-03-58.png)
 
 >>>
 #### Icon management items
@@ -36,9 +35,6 @@ This is a screen that manages the icon.
 ---
 #### Icon editing screen
 
-![Edit icon](../../help/en/2023-12-03_10-06-04.png)
-
->>>
 <div class="text-lg">
 
 | Items | Contents |

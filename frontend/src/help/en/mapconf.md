@@ -3,8 +3,6 @@
 This is the screen to set the management map.
 </div>
 
-![Map settings](../../help/en/2023-12-03_10-29-27.png)
-
 >>>
 
 <div class="text-xl">

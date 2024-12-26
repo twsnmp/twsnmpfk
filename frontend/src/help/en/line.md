@@ -3,8 +3,6 @@
 To edit the line, press the two nodes while pressing the shift key on the map screen.
 </div>
 
-![Line editing](../../help/en/2023-12-03_10-08-14.png)
-
 >>>
 
 <div class="text-lg">

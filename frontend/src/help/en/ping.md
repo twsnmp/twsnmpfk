@@ -5,7 +5,6 @@ This is the screen to execute ping.<br>
 <Span style = "color: red;"> To get a location information, you need a Geoip database file.</span>
 </div>
 
-![PING](../../help/en/2023-12-03_11-20-46.png)
 
 >>>
 #### Explanation
@@ -34,7 +33,6 @@ Result Graph | Ping's execution result is a graph of the response time, TTL valu
 It is a histogram of response time.
 </div>
 
-![Histogram](../../help/en/2023-12-03_11-22-17.png)
 
 ---
 #### 3D analysis
@@ -42,8 +40,6 @@ It is a histogram of response time.
 <div class="text-xl mb-2 text-left">
 The response time, size, and implementation date and time are displayed in 3D graphs.
 </div>
-
-![PING 3D](../../help/en/2023-12-03_11-22-27.png)
 
 ---
 #### Line prediction
@@ -54,13 +50,9 @@ From the change in response time if the size is changed
 This is a report that predicts the line speed.
 </div>
 
-![Line speed prediction](../../help/en/2023-12-03_11-23-21.png)
-
 ---
 #### Route analysis
 
 <div class="text-xl mb-2 text-left">
 Display location information.It cannot be displayed without a GEOIP database.
 </div>
-
-![Route analysis](../../help/en/2023-12-03_11-24-05.png)

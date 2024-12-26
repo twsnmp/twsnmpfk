@@ -3,8 +3,6 @@
 This is a screen that manages SNMP MIB.
 </div>
 
-![MIB management](../../help/en/2023-12-03_10-37-53.png)
-
 
 >>>
 #### MIB management item
@@ -36,4 +34,3 @@ This is a screen that manages SNMP MIB.
 ---
 #### MIB tree screen
 
-![MIB tree](../../help/en/2023-12-03_10-40-05.png)

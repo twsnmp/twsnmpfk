@@ -6,14 +6,14 @@ To keep maps and event logs, etc. always visible.
 It is designed to be used in Windows kiosk mode.
 Of course, it can also be used as a normal application.
 
-![](doc/images/2023-10-08_06-21-51.png)
+![](doc/images/en/2023-10-08_06-21-51.png)
 
 超軽量なSNMPマネージャーです。
 マップとイベントログなどを常に表示しておくため
 Windowsのキオスクモードでの利用を想定しています。
 もちろん通常のアプリとしても利用可能です。
 
-![](doc/images/2023-10-07_06-47-37.png);
+![](doc/images/ja/2023-10-07_06-47-37.png);
 
 ## Status
 

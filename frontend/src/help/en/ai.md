@@ -5,8 +5,6 @@ The screen of the AI analysis list.<br>
 Only the list is displayed in the polling log settings and the analysis is performed.
 </div>
 
-![AI analysis screen](../../help/en/2023-12-03_05-57-36.png)
-
 >>>
 #### AI analysis list item
 
@@ -42,8 +40,6 @@ This is a report showing an anomaly score on a daily heat map.<br>
 It indicates that the red color is the time when the anomaly has occurred.
 </div>
 
-![AI heat map](../../help/en/2023-12-03_06-01-04.png)
-
 ---
 #### AI anomaly score percentage
 
@@ -51,14 +47,9 @@ It indicates that the red color is the time when the anomaly has occurred.
 The percentage of the anomaly score in the entire period is shown in a circular graph.
 </div>
 
-![AI anomaly ratio](../../help/en/2023-12-03_06-03-43.png)
-
 ---
 #### AI anomaly score time chart
 
 <div class="text-xl mb-2">
 This is a report that displays an anomaly score in chronological order.
 </div>
-
-
-![Time chart](../../help/en/2023-12-03_06-06-11.png)

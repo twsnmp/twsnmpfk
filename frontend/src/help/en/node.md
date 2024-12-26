@@ -4,8 +4,6 @@
 A list of nodes to be managed.
 </div>
 
-![Node list](../../help/en/2023-12-03_11-00-27.png)
-
 >>>
 #### Node list item
 
@@ -48,8 +46,6 @@ A list of nodes to be managed.
 A list of polling related to nodes.
 </div>
 
-![Node polling list](../../help/en/2023-12-03_11-02-38.png)
-
 >>>
 
 <div class="text-xl">
@@ -89,16 +85,12 @@ A list of polling related to nodes.
 Basic information about nodes.
 </div>
 
-![Basic information](../../help/en/2023-12-03_11-04-41.png)
-
 ---
 #### log
 
 <div class="text-xl mb-2">
 This is an event log related to the node.
 </div>
-
-![log](../../help/en/2023-12-03_11-05-12.png)
 
 ---
 #### Panel
@@ -110,8 +102,6 @@ The <physical port> switch can only be displayed on the physical port.<br>
 Rotate the panel display with the <rotation> switch.
 </div>
 
-![panel](../../help/en/2023-12-03_11-05-44.png)
-
 ---
 #### Host information
 
@@ -119,8 +109,6 @@ Rotate the panel display with the <rotation> switch.
 Displays the information of the host resource mib of SNMP.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
 </div>
-
-![Host information](../../help/en/2023-12-03_11-06-14.png)
 
 ---
 #### Storage
@@ -131,8 +119,6 @@ When you select, the addition button of the polling will be displayed.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
 </div>
 
-![storage](../../help/en/2023-12-03_11-06-23.png)
-
 ---
 #### Device
 
@@ -140,8 +126,6 @@ When you select, the addition button of the polling will be displayed.<br>
 Displays the device information of the SNMP host resource MIB.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
 </div>
-
-![Device](../../help/en/2023-12-03_11-06-35.png)
 
 ---
 #### File System
@@ -151,7 +135,6 @@ Displays File System, information on SNMP host sources MIB.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
 </div>
 
-![File System](../../help/en/2023-12-03_11-06-47.png)
 
 ---
 #### Process
@@ -162,4 +145,3 @@ When you select, the addition button of the polling will be displayed.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
 </div>
 
-![Process](../../help/en/2023-12-03_11-07-00.png)

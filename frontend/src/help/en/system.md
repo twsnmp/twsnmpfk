@@ -5,7 +5,6 @@ System information screen.<br>
 At the top, there is a graph showing log resources and communication information in a chronological order.
 </div>
 
-![System](../../help/en/2023-12-03_11-52-41.png)
 
 >>>
 #### System information item
@@ -46,4 +45,3 @@ At the top, there is a graph showing log resources and communication information
 This is a year forecast for the database size and disk usage rate.
 </div>
 
-![Size prediction](../../help/en/2023-12-03_11-52-51.png)

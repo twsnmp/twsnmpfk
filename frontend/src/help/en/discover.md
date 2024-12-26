@@ -3,7 +3,6 @@
 Automatic discovery screen.
 </div>
 
-![Automatic discovery started](../../help/en/2023-12-03_06-49-22.png)
 
 >>>
 
@@ -29,7 +28,6 @@ Automatic discovery screen.
 The number of nodes you have executed or discovered is displayed.
 </div>
 
-![Automatically discovering](../../help/en/2023-12-03_06-52-47.png)
 
 ---
 #### Automatic discovery is being executed (with port scanning)
@@ -38,5 +36,3 @@ The number of nodes you have executed or discovered is displayed.
 The number of nodes you have executed or discovered is displayed.When performing a port scan, the discovered server function is also displayed.
 </div>
 
-
-![Automatic dicover with port scan](../../help/en/2023-12-03_06-52-04.png)

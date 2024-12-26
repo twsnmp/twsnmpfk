@@ -5,8 +5,6 @@ ARP watch log screen.<br>
 At the top, there is a graph showing the number of logs in chronological order.
 </div>
 
-![ARP watch log](../../help/en/2023-12-03_06-15-40.png)
-
 >>>
 #### ARP watch log item
 
@@ -46,7 +44,6 @@ This is a report of the number of logs by IP address.<br>
 The IP address with many changes is obvious at a glance.
 </div>
 
-![By IP address](../../help/en/2023-12-03_06-40-51.png)
 
 ---
 #### By IP address (3D)
@@ -55,5 +52,3 @@ The IP address with many changes is obvious at a glance.
 This is a report of ARP watch logs from both IP addresses and time series.<br>
 The time of new discoveries and changes is obvious at a glance.
 </div>
-
-![3D by IP address](../../help/en/2023-12-03_06-42-37.png)

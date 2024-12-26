@@ -5,8 +5,6 @@ This is the event log screen.<br>
 At the top, there is a graph showing the number of logs in chronological order.
 </div>
 
-![Event Log](../../help/en/2023-12-03_09-32-12.png)
-
 >>>
 #### Event log item
 
@@ -46,7 +44,6 @@ At the top, there is a graph showing the number of logs in chronological order.
 This is a dialog that specifies the search conditions for the event log.
 </div>
 
-![Event log filter](../../help/en/2023-12-03_09-34-18.png)
 
 >>>
 #### Filter item
@@ -72,8 +69,6 @@ This is a dialog that specifies the search conditions for the event log.
 This is a report of the number of event logs by state (level).
 </div>
 
-![By state](../../help/en/2023-12-03_09-36-05.png)
-
 ---
 #### Heat map
 
@@ -81,7 +76,6 @@ This is a report of the number of event logs by state (level).
 This is a report of the number of cases of each event log on the heat map.
 </div>
 
-![Heatmap](../../help/en/2023-12-03_09-37-42.png)
 
 ---
 #### By node
@@ -90,8 +84,6 @@ This is a report of the number of cases of each event log on the heat map.
 This is a report of the number of event logs by node.
 </div>
 
-![By node](../../help/en/2023-12-03_09-39-12.png)
-
 ---
 #### Operating rate
 
@@ -99,13 +91,9 @@ This is a report of the number of event logs by node.
 This is a report that uses a chronological graph of the value of the operating rate (OPRATE) in the event log.
 </div>
 
-![Operating rate](../../help/en/2023-12-03_09-41-25.png)
-
 ---
 #### ARP watch
 
 <div class="text-xl mb-2 text-left">
 This is a report of the value of the address usage rate (ARPWATCH) in the event log as a chronological graph.
 </div>
-
-![ARP Watch](../../help/en/2023-12-03_09-43-24.png)

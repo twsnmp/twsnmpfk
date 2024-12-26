@@ -6,8 +6,6 @@ Only the IP address in the same segment found in the ARP monitoring function is 
 You can detect duplicate and the change in the address.
 </div>
 
-![Address list](../../help/en/2023-12-03_05-44-21.png)
-
 >>>
 #### Address list item
 
@@ -47,7 +45,6 @@ This is a report that shows the relationship between IP address and MAC address 
 The normal address is one -on -one for the IP address and the MAC address.<br>
 You can detect MAC addresses using the same IP address on multiple Macs or having multiple IP addresses.</div>
 
-![Address -related force model](../../help/en/2023-12-03_05-49-52.png)
 
 ---
 #### Relationship between IP and MAC address (circular model)
@@ -57,5 +54,3 @@ This is a report that shows the relationship between IP address and MAC address 
 The normal address is one -on -one for the IP address and the MAC address.<br>
 You can detect MAC addresses with the same IP address on multiple Macs or have multiple IP addresses.
 </div>
-
-![IP address -related circular model](../../help/en/2023-12-03_05-52-16.png)

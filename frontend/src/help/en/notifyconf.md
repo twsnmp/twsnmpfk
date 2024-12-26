@@ -3,8 +3,6 @@
 This is the screen to set the notification.
 </div>
 
-![Notification settings](../../help/en/2024-02-15_05-32-34.png)
-
 >>>
 
 <div class="text-sm">

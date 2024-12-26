@@ -13,8 +13,6 @@
 </span>
 
 
-<img src="../../help/ja/2023-11-24_16-29-59.png" />
-
 ---
 #### テーブル
 <div class="text-xl">
