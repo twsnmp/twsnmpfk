@@ -104,6 +104,9 @@ var transMap = map[string]map[string]string{
 	"Add by dicover": {
 		"ja": "自動発見により追加",
 	},
+	"Update by dicover": {
+		"ja": "自動発見により更新",
+	},
 	"ARP Watch range %s usage:%d/%d %.2f%%": {
 		"ja": "ARP監視 %s アドレス使用量:%d/%d %.2f%%",
 	},

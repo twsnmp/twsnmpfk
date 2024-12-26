@@ -375,7 +375,6 @@ func addFoundNode(dent *discoverInfoEnt) {
 				Password:  n.Password,
 				HPorts:    24,
 				Ports:     []datastore.PortEnt{},
-				Descr:     time.Now().Format("2006/01/02") + "に発見",
 			})
 		}
 	}
@@ -405,7 +404,7 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 		Level:    "info",
 		NodeID:   n.ID,
 		NodeName: n.Name,
-		Event:    "自動発見により更新",
+		Event:    i18n.Trans("Update by dicover"),
 	})
 	if datastore.DiscoverConf.AddNetwork && datastore.FindNetworkByIP(n.IP) == nil {
 		if _, ok := dent.ServerList["lldp"]; ok {
@@ -420,7 +419,6 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 				Password:  n.Password,
 				HPorts:    24,
 				Ports:     []datastore.PortEnt{},
-				Descr:     time.Now().Format("2006/01/02") + "に発見",
 			})
 		}
 	}
