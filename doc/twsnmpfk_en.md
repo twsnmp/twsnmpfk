@@ -705,6 +705,14 @@ This is a list of IP address found by TWSNMP.Only the IP address in the same seg
 | Reload | Update the address list to the latest state.|
 
 ---
+### IP address usage status
+
+This is a report on the status of the set IP address.
+<!-- _class: tinytext -->
+
+![h:400 center](./images/en/2024-12-27_20-25-08.png)
+
+---
 ### Relationship between IP and MAC address (force model)
 
 This is a report that shows the relationship between IP address and MAC address with an force model.The normal address is one -on -one for the IP address and the MAC address.You can detect MAC addresses using the same IP address on multiple Macs or having multiple IP addresses.
