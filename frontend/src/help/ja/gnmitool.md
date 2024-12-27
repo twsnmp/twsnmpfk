@@ -1,6 +1,6 @@
 #### gNMIツール
 
-<div class="text-lg">
+<div class="text-xl">
 
 ノードからgNMIで管理情報を取得する画面です。
 ノードの設定でgNMI設定しておく必要があります。

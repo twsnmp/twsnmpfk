@@ -5,10 +5,6 @@ SNMP Trap log screen.<br>
 At the top, there is a graph showing the number of logs in chronological order.
 </div>
 
-
->>>
-#### SNMP Trap log item
-
 <div class="text-xl">
 
 | Items | Contents |
@@ -21,7 +17,7 @@ At the top, there is a graph showing the number of logs in chronological order.
 </div>
 
 >>>
-#### Description of button
+#### SNMP TRAP(button)
 
 <div class="text-xl">
 
@@ -34,21 +30,17 @@ At the top, there is a graph showing the number of logs in chronological order.
 | CSV | Sport the SNMP Trap to the CSV file.|
 | Excel | Export SNMP Trap to Excel file.|
 | Reload | Update the SNMP Trap list to the latest state.|
+
 </div>
 
 
 ---
-#### Filter
-
-<div class="text-xl mb-2">
+#### SNMP TRAP Filter
+<div class="text-xl mb-4">
 This is a dialog that specifies the search conditions for SNMP Trap.
 </div>
 
-
->>>
-#### Filter item
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -61,31 +53,22 @@ This is a dialog that specifies the search conditions for SNMP Trap.
 
 ---
 #### TRAP type
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 This is a report of the number of SNMP traps by type.
 </div>
 
 
----
-#### Heat map
-
-<div class="text-xl mb-2">
+#### Heatmap
+<div class="text-xl mb-4">
 This is a report of the number of cases of SNMP TRAP on the heat map.
 </div>
 
-
----
 #### By host
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 This is a report of the number of SNMP Trap receiving cases by source host.
 </div>
 
-
----
 #### Send source and type (3D)
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 This is a report displayed in the source host, type, and three -dimensional graph of the SNMP Trap receiving log.
 </div>

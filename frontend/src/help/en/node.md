@@ -4,10 +4,7 @@
 A list of nodes to be managed.
 </div>
 
->>>
-#### Node list item
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -20,7 +17,7 @@ A list of nodes to be managed.
 </div>
 
 >>>
-#### Description of button
+#### Node list(button)
 
 <div class="text-xl">
 
@@ -46,9 +43,7 @@ A list of nodes to be managed.
 A list of polling related to nodes.
 </div>
 
->>>
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -61,7 +56,7 @@ A list of polling related to nodes.
 </div>
 
 >>>
-#### Description of button
+#### Node Polling List(button)
 
 <div class="text-xl">
 
@@ -80,31 +75,25 @@ A list of polling related to nodes.
 
 ---
 #### Basic information report
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 Basic information about nodes.
 </div>
 
----
 #### log
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 This is an event log related to the node.
 </div>
 
----
 #### Panel
-
 <div class="text-xl mb-2">
-Displays the appearance of the node.<br>
-Displays the port from the acquisition of the interface mib by SNMP or the line connection information.<br>
+Displays the appearance of the node.
+Displays the port from the acquisition of the interface mib by SNMP or the line connection information.
 The <physical port> switch can only be displayed on the physical port.<br>
 Rotate the panel display with the <rotation> switch.
 </div>
 
 ---
 #### Host information
-
 <div class="text-xl mb-2">
 Displays the information of the host resource mib of SNMP.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
@@ -112,16 +101,13 @@ Displays the information of the host resource mib of SNMP.<br>
 
 ---
 #### Storage
-
 <div class="text-xl mb-2">
-Displays the storage information of SNMP host resource mib.<br>
+Displays the storage information of SNMP host resource mib.
 When you select, the addition button of the polling will be displayed.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
 </div>
 
----
 #### Device
-
 <div class="text-xl mb-2">
 Displays the device information of the SNMP host resource MIB.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
@@ -135,12 +121,10 @@ Displays File System, information on SNMP host sources MIB.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
 </div>
 
-
----
 #### Process
 
 <div class="text-xl mb-2">
-Displays the process information of SNMP host resource mib.<br>
+Displays the process information of SNMP host resource mib.
 When you select, the addition button of the polling will be displayed.<br>
 <Span style = "color: red;"> If it is not compatible with the host resource MIB, it cannot be displayed.</span>
 </div>

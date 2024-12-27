@@ -1,12 +1,9 @@
 #### ARP監視ログ
 
-<div class="text-xl mb-2 text-left">
-ARP監視ログの画面です。<br>
+<div class="text-xl mb-4">
+ARP監視ログの画面です。
 上部にログの発生件数を時系列で示したグラフがあります。
 </div>
-
->>>
-#### ARP監視ログの項目
 
 <div class="text-xl">
 
@@ -24,7 +21,7 @@ ARP監視ログの画面です。<br>
 </div>
 
 >>>
-#### ボタンの説明
+#### ARP監視ログ(ボタン)
 
 <div class="text-xl">
 
@@ -41,16 +38,15 @@ ARP監視ログの画面です。<br>
 ---
 #### IPアドレス別
 
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 IPアドレス別にログの件数を集計したレポートです。変化が多いIPアドレスが一目瞭然です。
 </div>
 
 
----
 #### IPアドレス別(3D)
 
-<div class="text-xl mb-2 text-left">
-IPアドレスと時系列の両面からARP監視ログを集計したレポートです。<br>
+<div class="text-xl mb-4">
+IPアドレスと時系列の両面からARP監視ログを集計したレポートです。
 新規発見や変化の時期が一目瞭然です。
 </div>
 

@@ -1,13 +1,9 @@
 #### Polling list
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-2">
 A list of polling to be managed.
 </div>
 
->>>
-#### Polling list item
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -22,7 +18,7 @@ A list of polling to be managed.
 </div>
 
 >>>
-#### Description of button
+#### Polling List(button)
 
 <div class="text-xl">
 
@@ -36,17 +32,15 @@ A list of polling to be managed.
 | CSV | Export the polling list to the CSV file.|
 | Excel | Export the polling list to the Excel file.|
 | Reload | Update the polling list to the latest state.|
+
 </div>
 
 
 ---
 #### Polling template selection
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-2">
 This is the selection screen of the template displayed when adding polling.
 </div>
-
->>>
 
 <div class="text-xl">
 
@@ -61,7 +55,7 @@ This is the selection screen of the template displayed when adding polling.
 </div>
 
 >>>
-#### Description of button
+#### Polling template selection(button)
 
 <div class="text-xl">
 
@@ -74,26 +68,19 @@ This is the selection screen of the template displayed when adding polling.
 
 ---
 #### Basic information
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 Basic information about polling.
 </div>
 
-
----
 #### Polling log
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 This is a log of the polling result.<br>
 <Span style = "color: red;"> It is displayed only when the log mode is not output.</span>
 </div>
 
-
----
 #### Time chart
-
-<div class="text-xl mb-2 text-left">
-In the log of the polling result, the numerical data is displayed in a chronological graph.<br>
+<div class="text-xl mb-4">
+In the log of the polling result, the numerical data is displayed in a chronological graph.
 The displayed items can be selected at the top of the graph.<br>
 <Span style = "color: red;"> It is displayed only when the log mode is not output.</span>
 </div>
@@ -101,17 +88,15 @@ The displayed items can be selected at the top of the graph.<br>
 ---
 #### Histogram
 
-<div class="text-xl mb-2 text-left">
-The numerical data in the log of the polling result is displayed on the histogram.<br>
+<div class="text-xl mb-4">
+The numerical data in the log of the polling result is displayed on the histogram.
 The displayed items can be selected at the top of the graph.<br>
 <Span style = "color: red;"> It is displayed only when the log mode is not output.</span>
 </div>
 
 
----
 #### AI analysis
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-2">
 This is the result of AI analysis of numerical data in the log of the polling results.<br>
 <Span style = "color: red;"> It is displayed only when the log mode is set to AI analysis and sufficient data is obtained.</span>
 </div>

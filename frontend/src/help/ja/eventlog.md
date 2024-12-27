@@ -1,12 +1,9 @@
 #### イベントログ
 
-<div class="text-xl mb-2 text-left">
-イベントログの画面です。<br>
+<div class="text-xl mb-4">
+イベントログの画面です。
 上部にログの発生件数を時系列で示したグラフがあります。
 </div>
-
->>>
-#### イベントログの項目
 
 <div class="text-xl">
 
@@ -21,7 +18,7 @@
 </div>
 
 >>>
-#### ボタンの説明
+#### イベントログ(ボタン)
 
 <div class="text-xl">
 
@@ -36,16 +33,12 @@
 
 </div>
 
-
 ---
 #### フィルター
 
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 イベントログの検索条件を指定するダイアログです。
 </div>
-
->>>
-#### フィルターの項目
 
 <div class="text-xl">
 
@@ -63,40 +56,27 @@
 
 ---
 #### 状態別
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 イベントログの件数を状態（レベル）別に集計したレポートです。
 </div>
 
-
----
 #### ヒートマップ
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 イベントログの時間毎の件数をヒートマップで集計したレポートです。
 </div>
 
-
----
 #### ノード別
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 イベントログの件数をノード別に集計したレポートです。
 </div>
 
-
----
 #### 稼働率
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 イベントログの中の稼働率(oprate)の値を時系列グラフにしたレポートです。
 </div>
 
-
----
 #### ARP監視
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 イベントログの中のアドレス使用率(arpwatch)の値を時系列グラフにしたレポートです。
 </div>
 

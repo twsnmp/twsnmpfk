@@ -5,11 +5,7 @@ System情報の画面です。<br>
 上部にログのリソースと通信の情報を時系列で示したグラフがあります。
 </div>
 
-
->>>
-#### System情報の項目
-
-<div class="text-xl">
+<div class="text-lg">
 
 |項目|内容|
 |----|----|
@@ -25,7 +21,7 @@ System情報の画面です。<br>
 </div>
 
 >>>
-#### ボタンの説明
+#### System(ボタン)
 
 <div class="text-xl">
 

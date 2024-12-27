@@ -1,11 +1,7 @@
 #### ポーリングリスト
-
 <div class="text-xl mb-2 text-left">
 管理対象のポーリングの一覧です。
 </div>
-
->>>
-#### ノードリストの項目
 
 <div class="text-xl">
 
@@ -22,9 +18,9 @@
 </div>
 
 >>>
-#### ボタンの説明
-
-<div class="text-xl">
+#### ポーリングリスト(ボタン)
+の説明
+<div class="text-lg">
 
 |項目|内容|
 |----|----|
@@ -43,13 +39,11 @@
 ---
 #### ポーリングのテンプレート選択
 
-<div class="text-xl mb-2 text-left">
+<div class="text-xl">
 ポーリングを追加する時に表示されるテンプレートの選択画面です。
 </div>
 
->>>
-
-<div class="text-xl">
+<div class="text-lg">
 
 |項目|内容|
 |----|----|
@@ -61,10 +55,7 @@
 
 </div>
 
->>>
-#### ボタンの説明
-
-<div class="text-xl">
+<div class="text-lg">
 
 |項目|内容|
 |----|----|
@@ -76,48 +67,36 @@
 
 ---
 #### 基本情報
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 ポーリングに関する基本的な情報です。
 </div>
 
----
 #### ポーリングログ
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 ポーリング結果のログです。<br>
 <span style="color:red;">ログモードを出力しない以外に設定した場合のみ表示されます。</span>
 </div>
 
-
----
 #### 時系列
-
-<div class="text-xl mb-2 text-left">
-ポーリング結果のログの中で数値データを時系列のグラフで表示します。<br>
+<div class="text-xl mb-4">
+ポーリング結果のログの中で数値データを時系列のグラフで表示します。
 表示する項目は、グラフの上部で選択できます。<br>
 <span style="color:red;">ログモードを出力しない以外に設定した場合のみ表示されます。</span>
 
 </div>
-
 
 ---
 #### ヒストグラム
-
-<div class="text-xl mb-2 text-left">
-ポーリング結果のログの中の数値データをヒストグラムで表示します。<br>
+<div class="text-xl mb-4">
+ポーリング結果のログの中の数値データをヒストグラムで表示します。
 表示する項目は、グラフの上部で選択できます。<br>
 <span style="color:red;">ログモードを出力しない以外に設定した場合のみ表示されます。</span>
 
 </div>
 
-
----
 #### AI分析
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 ポーリング結果のログの中で数値データをAI分析した結果です。<br>
 <span style="color:red;">ログモードをAI分析に設定して十分なデータを取得した場合のみ表示されます。</span>
-
 </div>
 

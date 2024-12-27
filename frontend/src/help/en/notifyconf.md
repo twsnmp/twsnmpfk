@@ -3,8 +3,6 @@
 This is the screen to set the notification.
 </div>
 
->>>
-
 <div class="text-sm">
 
 | Items | Contents |
@@ -31,7 +29,7 @@ Subject | Notification email subject.|
 #### Email send test
 
 <div class="text-xl">
-Click the <Test> button to send the test email with the configured content.
-Click the <LINE Test> button to send the test LINE message  with the configured content.
+Click the [Test] button to send the test email with the configured content.
+Click the [LINE Test] button to send the test LINE message  with the configured content.
 </div>
 

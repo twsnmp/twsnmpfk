@@ -1,14 +1,11 @@
 #### AI analysis list
 
 <div class="text-xl mb-2">
-The screen of the AI analysis list.<br>
+The screen of the AI analysis list.
 Only the list is displayed in the polling log settings and the analysis is performed.
 </div>
 
->>>
-#### AI analysis list item
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -20,7 +17,7 @@ Only the list is displayed in the polling log settings and the analysis is perfo
 </div>
 
 >>>
-#### Description of button
+#### AI(button)
 
 <div class="text-xl">
 
@@ -34,22 +31,17 @@ Only the list is displayed in the polling log settings and the analysis is perfo
 
 ---
 #### AI anomaly score heat map
-
-<div class="text-xl mb-2">
-This is a report showing an anomaly score on a daily heat map.<br>
+<div class="text-xl mb-4">
+This is a report showing an anomaly score on a daily heat map.
 It indicates that the red color is the time when the anomaly has occurred.
 </div>
 
----
 #### AI anomaly score percentage
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 The percentage of the anomaly score in the entire period is shown in a circular graph.
 </div>
 
----
 #### AI anomaly score time chart
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 This is a report that displays an anomaly score in chronological order.
 </div>

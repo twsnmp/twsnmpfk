@@ -3,10 +3,6 @@
 This is a screen that manages the icon.
 </div>
 
-
->>>
-#### Icon management items
-
 <div class="text-lg">
 
 | Items | Contents |
@@ -18,10 +14,9 @@ This is a screen that manages the icon.
 </div>
 
 >>>
-#### Description of button
+#### Icon management(button)
 
 <div class="text-lg">
-
 
 | Button | Contents |
 | ---- | ---- |

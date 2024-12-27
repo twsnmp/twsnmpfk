@@ -3,9 +3,6 @@
 Automatic discovery screen.
 </div>
 
-
->>>
-
 <div class="text-lg">
 
 | Items | Contents |
@@ -23,15 +20,12 @@ Automatic discovery screen.
 
 ---
 #### Automatic discovery is being performed
-
 <div class="text-xl">
 The number of nodes you have executed or discovered is displayed.
 </div>
 
 
----
 #### Automatic discovery is being executed (with port scanning)
-
 <div class="text-xl">
 The number of nodes you have executed or discovered is displayed.When performing a port scan, the discovered server function is also displayed.
 </div>

@@ -1,15 +1,10 @@
 #### Syslog
-
 <div class="text-xl mb-2">
-Syslogの画面です。<br>
+Syslogの画面です。
 上部にログの発生件数を時系列で示したグラフがあります。
 </div>
 
-
->>>
-#### Syslogの項目
-
-<div class="text-xl">
+<div class="text-lg">
 
 |項目|内容|
 |----|----|
@@ -23,8 +18,7 @@ Syslogの画面です。<br>
 </div>
 
 >>>
-#### ボタンの説明
-
+#### syslog(ボタン)
 <div class="text-xl">
 
 |項目|内容|
@@ -41,19 +35,14 @@ Syslogの画面です。<br>
 
 </div>
 
-
 ---
-#### フィルター
+#### syslogフィルター
 
 <div class="text-xl mb-2">
 Syslogの検索条件を指定するダイアログです。
 </div>
 
-
->>>
-#### フィルターの項目
-
-<div class="text-xl">
+<div class="text-lg">
 
 |項目|内容|
 |----|----|
@@ -66,42 +55,32 @@ Syslogの検索条件を指定するダイアログです。
 
 </div>
 
-
 ---
 #### 状態別
 
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
  Syslogの件数を状態別に集計したレポートです。
 </div>
 
-
----
 #### ヒートマップ
 
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 Syslogの時間毎の件数をヒートマップで集計したレポートです。
 </div>
 
-
----
 #### ホスト別
 
 <div class="text-xl mb-2">
 Syslogの件数を送信元ホスト別に集計したレポートです。
 </div>
 
-
 ---
 #### ホスト別(3D)
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 Syslogを送信元ホスト、プライオリティー、時刻の３次元グラフで表示したレポートです。
 </div>
 
-
----
 #### FFTによる周期分析
-
 <div class="text-xl mb-2">
 Syslogをホスト毎にFFT分析して受信件数の周期を分析したレポートです。
 </div>

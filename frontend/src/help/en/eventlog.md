@@ -1,12 +1,8 @@
 #### Event Log
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-2">
 This is the event log screen.<br>
 At the top, there is a graph showing the number of logs in chronological order.
 </div>
-
->>>
-#### Event log item
 
 <div class="text-xl">
 
@@ -21,7 +17,7 @@ At the top, there is a graph showing the number of logs in chronological order.
 </div>
 
 >>>
-#### Description of button
+#### Event Log(Button)
 
 <div class="text-xl">
 
@@ -38,17 +34,13 @@ At the top, there is a graph showing the number of logs in chronological order.
 
 
 ---
-#### Filter
+#### Event Log Filter
 
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-2">
 This is a dialog that specifies the search conditions for the event log.
 </div>
 
-
->>>
-#### Filter item
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -64,36 +56,28 @@ This is a dialog that specifies the search conditions for the event log.
 
 ---
 #### By state
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 This is a report of the number of event logs by state (level).
 </div>
 
----
 #### Heat map
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 This is a report of the number of cases of each event log on the heat map.
 </div>
 
-
----
 #### By node
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 This is a report of the number of event logs by node.
 </div>
 
 ---
 #### Operating rate
 
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 This is a report that uses a chronological graph of the value of the operating rate (OPRATE) in the event log.
 </div>
 
----
 #### ARP watch
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 This is a report of the value of the address usage rate (ARPWATCH) in the event log as a chronological graph.
 </div>

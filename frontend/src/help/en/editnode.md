@@ -3,9 +3,7 @@
 You can edit the node from the menu or button by selecting a node on the map screen or node list.
 </div>
 
->>>
-
-<div class="text-lg">
+<div class="text-sm">
 
 | Items | Contents |
 | ---- | ---- |

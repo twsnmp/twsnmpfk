@@ -1,11 +1,9 @@
 #### 自動発見
-<div class="text-xl">
+<div class="text-xl mb-4">
 自動発見の画面です。
 </div>
 
->>>
-
-<div class="text-lg">
+<div class="text-xl">
 
 |項目|内容|
 |----|----|
@@ -28,7 +26,6 @@
 実行や発見したノードの数が表示されます。
 </div>
 
----
 #### 自動発見実行中（ポートスキャンあり）
 
 <div class="text-xl">

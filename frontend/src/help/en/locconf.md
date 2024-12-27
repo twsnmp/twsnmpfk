@@ -3,8 +3,6 @@
 This is the screen to set the map.
 </div>
 
->>>
-
 <div class="text-lg">
 
 | Items | Contents |
@@ -23,14 +21,12 @@ The map is displayed using Maplibre GL JS.The map to be displayed is specified i
   You can specify it with URL or JSON.Search for MAPLIBRE GL JS and find something suitable.
 </div>
 
->>>
 
 #### URL example
 
 ```
 https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json
 ```
-
 
 >>>
 

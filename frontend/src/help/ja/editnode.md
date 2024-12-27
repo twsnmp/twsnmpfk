@@ -1,11 +1,9 @@
 #### ノード編集
-<div class="text-xl">
+<div class="text-xl mb-4">
 ノードの編集はマップ画面やノードリストでノードを選択してメニューかボタンから表示できます。
 </div>
 
->>>
-
-<div class="text-lg">
+<div class="text-xl">
 
 |項目|内容|
 |----|----|

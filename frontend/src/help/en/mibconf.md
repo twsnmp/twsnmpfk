@@ -3,10 +3,6 @@
 This is a screen that manages SNMP MIB.
 </div>
 
-
->>>
-#### MIB management item
-
 <div class="text-lg">
 
 | Items | Contents |
@@ -19,7 +15,7 @@ This is a screen that manages SNMP MIB.
 </div>
 
 >>>
-#### Description of button
+#### MIB management(button)
 
 <div class="text-lg">
 
@@ -30,7 +26,4 @@ This is a screen that manages SNMP MIB.
 | Close | Close the setting screen.|
 
 </div>
-
----
-#### MIB tree screen
 

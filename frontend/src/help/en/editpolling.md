@@ -4,9 +4,7 @@
 Polling edit can be displayed from the button by selecting a polling list on the polling list.
 </div>
 
->>>
-
-<div class="text-lg">
+<div class="text-sm">
 
 | Items | Contents |
 | ---- | ---- |

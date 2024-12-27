@@ -3,7 +3,6 @@
 通知の設定をする画面です。
 </div>
 
->>>
 
 <div class="text-sm">
 

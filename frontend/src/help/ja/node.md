@@ -1,11 +1,8 @@
 #### ノードリスト
 
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 管理対象のノードの一覧です。
 </div>
-
->>>
-#### ノードリストの項目
 
 <div class="text-xl">
 
@@ -21,7 +18,7 @@
 </div>
 
 >>>
-#### ボタンの説明
+#### ノードリスト(ボタン)
 
 <div class="text-xl">
 
@@ -43,13 +40,8 @@
 ---
 #### ノードのポーリングリスト
 
-<div class="text-xl mb-2 text-left">
-ノードに関連したポーリングのリストです。
-</div>
-
->>>
-
 <div class="text-xl">
+ノードに関連したポーリングのリストです。
 
 |項目|内容|
 |----|----|
@@ -63,7 +55,7 @@
 </div>
 
 >>>
-#### ボタンの説明
+#### ノードのポーリングリスト(ボタン)
 
 <div class="text-xl">
 
@@ -83,66 +75,56 @@
 ---
 #### 基本情報レポート
 
-<div class="text-xl mb-2 text-left">
+<div class="text-xl">
 ノードに関する基本的な情報です。
 </div>
 
----
 #### ログ
 
-<div class="text-xl mb-2 text-left">
+<div class="text-xl">
 ノードに関連するイベントログです。
 </div>
 
----
 #### パネル
 
-<div class="text-xl mb-2 text-left">
-ノードの外観を表示します。<br>
-SNMPによるinterface MIBの取得か、ライン接続の情報からポートを表示します。<br>
-＜物理ポート＞スイッチで、物理ポートだけ表示できます。<br>
+<div class="text-xl">
+ノードの外観を表示します。
+SNMPによるinterface MIBの取得か、ライン接続の情報からポートを表示します。
+＜物理ポート＞スイッチで、物理ポートだけ表示できます。
 ＜回転＞スイッチでパネルの表示を回転します。
 </div>
 
 ---
 #### ホスト情報
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl">
 SNMPのホストリソースMIBの情報を表示します。<br>
 <span style="color:red;">ホストリソースMIBに対応していない場合は表示できません。</span>
 </div>
 
----
 #### ストレージ
-
-<div class="text-xl mb-2 text-left">
-SNMPのホストリソースMIBのストレージ情報を表示します。<br>
+<div class="text-xl">
+SNMPのホストリソースMIBのストレージ情報を表示します。
 選択するとポーリングの追加ボタンが表示されます。<br>
 <span style="color:red;">ホストリソースMIBに対応していない場合は表示できません。</span>
 </div>
 
----
-#### デバイス
 
-<div class="text-xl mb-2 text-left">
+#### デバイス
+<div class="text-xl">
 SNMPのホストリソースMIBのデバイス情報を表示します。<br>
 <span style="color:red;">ホストリソースMIBに対応していない場合は表示できません。</span>
 </div>
 
 ---
 #### File System
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl">
 SNMPのホストリソースMIBのFile System,情報を表示します。<br>
 <span style="color:red;">ホストリソースMIBに対応していない場合は表示できません。</span>
 </div>
 
-
----
 #### プロセス
-
-<div class="text-xl mb-2 text-left">
-SNMPのホストリソースMIBのプロセス情報を表示します。<br>
+<div class="text-xl">
+SNMPのホストリソースMIBのプロセス情報を表示します。
 選択するとポーリングの追加ボタンが表示されます。<br>
 <span style="color:red;">ホストリソースMIBに対応していない場合は表示できません。</span>
 </div>

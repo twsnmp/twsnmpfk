@@ -16,10 +16,11 @@
 | Packet | The number of sending packets.|
 | Byte | The number of sending bytes.|
 | Period | Flow communication time.|
+
 </div>
 
 >>>
-#### Description of button
+#### NetFlow(button)
 
 <div class="text-xl">
 
@@ -32,14 +33,15 @@
 | CSV | Export Netflow to CSV file.|
 | Excel | Export Netflow to Excel file.|
 | Update | Update the Netflow list to the latest state.|
+
 </div>
 
 
 ---
 
-#### Filter item
+#### NetFlwo Filter
 
-<div class="text-xl">
+<div class="text-sm">
 
 | Items | Contents |
 | ---- | ---- |
@@ -63,7 +65,7 @@
 
 
 ---
-#### Report
+#### NetFlow Report
 
 <div class="text-xl mb-2">
 

@@ -4,10 +4,7 @@
 The map screen has three large parts.
 </div>
 
->>>
-#### Explanation of the map
-
-<div class="text-xl">
+<div class="text-lg mb-4">
 
 | Screen | Contents |
 | ---- | ---- |
@@ -16,31 +13,21 @@ The map screen has three large parts.
 | Event Log | Displays the latest 100 event logs.|
 </div>
 
-
----
 ####  Light/dark mode switching
-
-<div class="text-2xl">
+<div class="text-lg">
 
 Upper right<span class="mdi mdi-moon-waxing-crescent"></span>Switch to dark mode with an icon<br/>
 <span class="mdi mdi-weather-sunny"></span>Switch light mode with icon
 
 </div>
 
->>>
-#### Image of switching
-
 ---
 #### Map menu
-
 <div class="text-xl mb-2">
 Right -click the location other than the node and drawing items on the map to display.
 </div>
 
->>>
-#### Map menu
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Menu | Operation |
 | ---- | ---- |
@@ -62,10 +49,7 @@ Right -click the location other than the node and drawing items on the map to di
 Right -click the node on the map to display it.
 </div>
 
->>>
-#### Node menu
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Menu | Operation |
 | ---- | ---- |
@@ -82,15 +66,11 @@ Right -click the node on the map to display it.
 
 ---
 #### Drawing item menu
-
 <div class="text-xl mb-2">
 Right -click the drawing item on the map to display it.
 </div>
 
->>>
-#### Drawing item menu
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Menu | Operation |
 | ---- | ---- |
@@ -100,4 +80,24 @@ Right -click the drawing item on the map to display it.
 
 </div>
 
+---
+#### Network menu
+
+<div class="text-xl mb-2">
+Right -click the network on the map to display it.
+</div>
+
+<div class="text-lg">
+
+| Menu | Operation |
+| ---- | ---- |
+| Reconfirm | Reconfirm the condition of the network.|
+| Edit | Displays the screen to edit the network settings.|
+| Line Edit | Edit the line connected to the selected network.|
+| Ping | Execute ping to the selected network.|
+| MIB browser | Get the MIB information of the selected network.|
+| Find a connection destination | Find the selected network connection destination.|
+| <Span style = "color: red;"> Delete </span> | Delete the network.|
+
+</div>
 

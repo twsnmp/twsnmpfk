@@ -20,9 +20,9 @@
 </div>
 
 >>>
-#### Description of button
+#### sFlow(button)
 
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -34,13 +34,14 @@
 | CSV | Export SFLOW to CSV file.|
 | Excel | Export SFLOW to Excel file.|
 | Update | Update the list of SFLOW to the latest state.|
+
 </div>
 
 >>>
 
-#### Flow sample filter item
+#### sFlow sample filter
 
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -64,7 +65,7 @@
 
 
 ---
-##### Counter Sample
+##### sFlow Counter Sample
 <div class="text-xl">
 
 | Items | Contents |
@@ -77,7 +78,7 @@
 
 >>>
 
-#### Counter sample filter item
+#### sFlow Counter sample filter
 
 <div class="text-xl">
 
@@ -92,7 +93,7 @@
 </div>
 
 ---
-#### Flow sample report
+#### sFlow report
 
 <div class="text-xl mb-2">
 
@@ -109,7 +110,7 @@
 </div>
 
 ---
-#### Counter sample report
+#### sFlow Counter sample report
 
 <div class="text-xl mb-2">
 

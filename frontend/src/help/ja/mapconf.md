@@ -3,9 +3,7 @@
 管理マップの設定をする画面です。
 </div>
 
->>>
-
-<div class="text-xl">
+<div class="text-lg">
 
 |項目|内容|
 |----|----|
@@ -30,9 +28,7 @@
 #### Syslog,SNMP TRAPの受信ポートを変えたい時
 
 <div class="text-xl">
-
 ポート番号は、プログラムの起動パラメータで指定します。
-
 </div>
 
 ```

@@ -1,15 +1,9 @@
 #### Address list
 
-<div class="text-lg mb-2">
+<div class="text-lg">
 This is a list of IP address found by TWSNMP.<br>
 Only the IP address in the same segment found in the ARP monitoring function is displayed.<br>
 You can detect duplicate and the change in the address.
-</div>
-
->>>
-#### Address list item
-
-<div class="text-xl">
 
 | Items | Contents |
 | ---- | ---- |
@@ -22,9 +16,9 @@ You can detect duplicate and the change in the address.
 </div>
 
 >>>
-#### Description of button
+#### Address list(button)
 
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -38,19 +32,26 @@ You can detect duplicate and the change in the address.
 </div>
 
 ---
+#### IP address usage status
+
+<div class = "text-lg mb-4">
+The heat map and list shows the usage status of the specified IP address.
+</div>
+
 #### Relationship between IP and MAC address (force model)
 
-<div class="text-lg mb-2">
-This is a report that shows the relationship between IP address and MAC address with an force model.<br>
-The normal address is one -on -one for the IP address and the MAC address.<br>
-You can detect MAC addresses using the same IP address on multiple Macs or having multiple IP addresses.</div>
+<div class="text-lg mb-4">
+This is a report that shows the relationship between IP address and MAC address with an force model.
+The normal address is one -on -one for the IP address and the MAC address.
+You can detect MAC addresses using the same IP address on multiple Macs or having multiple IP addresses.
+</div>
 
 
----
+
 #### Relationship between IP and MAC address (circular model)
 
-<div class="text-lg mb-2">
-This is a report that shows the relationship between IP address and MAC address with a circular model.<br>
-The normal address is one -on -one for the IP address and the MAC address.<br>
+<div class="text-lg mb-4">
+This is a report that shows the relationship between IP address and MAC address with a circular model.
+The normal address is one -on -one for the IP address and the MAC address.
 You can detect MAC addresses with the same IP address on multiple Macs or have multiple IP addresses.
 </div>

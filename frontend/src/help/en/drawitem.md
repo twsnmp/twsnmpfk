@@ -3,11 +3,6 @@
 It is an edit screen of drawing item (rectangle, elliptical).
 </div>
 
-
->>>
-
-#### Item of drawing items (rectangles, ellipse)
-
 <div class="text-lg">
 
 | Items | Contents |
@@ -25,10 +20,6 @@ It is an edit screen of drawing item (rectangle, elliptical).
 <div class="text-xl">
 It is the editing screen of the drawing item (label).
 </div>
-
->>>
-
-#### Item of drawing items (label)
 
 <div class="text-lg">
 
@@ -48,10 +39,6 @@ It is the editing screen of the drawing item (label).
 It is the editing screen of drawing item (image).
 </div>
 
->>>
-
-#### Item of drawing items (images)
-
 <div class="text-lg">
 
 | Items | Contents |
@@ -62,6 +49,7 @@ It is the editing screen of drawing item (image).
 | Display condition | It is a state of the map that displays drawing items.|
 | Image | It is an image to be displayed.Select an image file with the <Select> button.|
 | Magnification | The display rate of drawing items.|
+
 </div>
 
 ---
@@ -70,10 +58,6 @@ It is the editing screen of drawing item (image).
 <div class="text-xl">
 It is the editing screen of drawing item (polling result: text).
 </div>
-
->>>
-
-#### Item of drawing items (polling results)
 
 <div class="text-lg">
 
@@ -86,6 +70,7 @@ It is the editing screen of drawing item (polling result: text).
 | Variable name | The name of the variable displayed from the polling results.|
 | Display format | Format when displaying.|
 | Magnification | The display rate of drawing items.|
+
 </div>
 
 ---
@@ -94,10 +79,6 @@ It is the editing screen of drawing item (polling result: text).
 <div class="text-xl">
 It is the editing screen of drawing item (polling result: gauge).It can be used to display % data.
 </div>
-
->>>
-
-#### Item of drawing items (polling results: gauge)
 
 <div class="text-lg">
 

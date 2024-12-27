@@ -1,13 +1,9 @@
 #### PING
 
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-4">
 This is the screen to execute ping.<br>
 <Span style = "color: red;"> To get a location information, you need a Geoip database file.</span>
 </div>
-
-
->>>
-#### Explanation
 
 <div class="text-lg">
 
@@ -23,36 +19,28 @@ Result Graph | Ping's execution result is a graph of the response time, TTL valu
 | Start | Start ping.|
 | Stop | Ping stops.|
 | Close | Ends ping.|
+
 </div>
 
 
 ---
 #### histogram
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-2">
 It is a histogram of response time.
 </div>
 
-
----
 #### 3D analysis
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-2">
 The response time, size, and implementation date and time are displayed in 3D graphs.
 </div>
 
----
 #### Line prediction
-
-<div class="text-xl mb-2 text-left">
-
+<div class="text-xl mb-2">
 From the change in response time if the size is changed
 This is a report that predicts the line speed.
 </div>
 
----
 #### Route analysis
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl mb-2">
 Display location information.It cannot be displayed without a GEOIP database.
 </div>

@@ -3,9 +3,7 @@
 This is the screen to set the management map.
 </div>
 
->>>
-
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |

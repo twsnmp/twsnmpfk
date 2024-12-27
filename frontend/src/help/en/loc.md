@@ -8,9 +8,9 @@ You can select by clicking the node.You can move by dragging.Multiple choices ca
 
 
 >>>
-#### Description of button
+#### Location Map(button)
 
-<div class="text-xl">
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |

@@ -6,9 +6,6 @@ PINGを実行する画面です。<br>
 
 </div>
 
->>>
-#### 説明
-
 <div class="text-lg">
 
 |項目|内容|
@@ -29,34 +26,24 @@ PINGを実行する画面です。<br>
 
 ---
 #### ヒストグラム
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl">
 応答時間のヒストグラムです。
 </div>
 
 
----
 #### ３D分析
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl">
 応答時間、サイズ、実施日時を３Dのグラフで表示したものです。
 </div>
 
-
----
 #### 回線予測
-
-<div class="text-xl mb-2 text-left">
-
+<div class="text-xl">
 サイズを変化させならが実施した場合に応答時間の変化から
 回線速度を予測するレポートです。
 </div>
 
-
----
 #### 経路分析
-
-<div class="text-xl mb-2 text-left">
+<div class="text-xl">
 位置情報を表示します。GeoIPのデータベースがないと表示できません。
 </div>
 

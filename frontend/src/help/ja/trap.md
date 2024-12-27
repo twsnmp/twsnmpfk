@@ -1,15 +1,10 @@
 #### SNMP TRAP
-
-<div class="text-xl mb-2">
-SNMP TRAPログの画面です。<br>
+<div class="text-xl mb-4">
+SNMP TRAPログの画面です。
 上部にログの発生件数を時系列で示したグラフがあります。
 </div>
 
->>>
-#### SNMP TRAPログの項目
-
-<div class="text-xl">
-
+<div class="text-lg">
 |項目|内容|
 |----|----|
 |日時|SNMP TRAPを受信した日時です。|
@@ -20,9 +15,9 @@ SNMP TRAPログの画面です。<br>
 </div>
 
 >>>
-#### ボタンの説明
+#### SNMP TRAP(ボタン)
 
-<div class="text-xl">
+<div class="text-lg">
 
 |項目|内容|
 |----|----|
@@ -39,17 +34,13 @@ SNMP TRAPログの画面です。<br>
 
 
 ---
-#### フィルター
+#### SNMP TRAP フィルター
 
 <div class="text-xl mb-2">
 SNMP TRAPの検索条件を指定するダイアログです。
 </div>
 
-
->>>
-#### フィルターの項目
-
-<div class="text-xl">
+<div class="text-lg">
 
 |項目|内容|
 |----|----|
@@ -63,32 +54,22 @@ SNMP TRAPの検索条件を指定するダイアログです。
 
 ---
 #### TRAP種類別
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
  SNMP TRAPの件数を種類別に集計したレポートです。
 </div>
 
-
----
 #### ヒートマップ
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 SNMP TRAPの時間毎の件数をヒートマップで集計したレポートです。
 </div>
 
-
----
 #### ホスト別
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 SNMP TRAPの受信件数を送信元ホスト別に集計したレポートです。
 </div>
 
-
----
 #### 送信元と種別(3D)
-
-<div class="text-xl mb-2">
+<div class="text-xl mb-4">
 SNMP TRAPの受信ログを送信元ホスト、種別、時刻の３次元グラフで表示したレポートです。
 </div>
 

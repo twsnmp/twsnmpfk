@@ -1,13 +1,9 @@
 #### System
-
 <div class="text-xl mb-2">
-System information screen.<br>
+System information screen.
 At the top, there is a graph showing log resources and communication information in a chronological order.
 </div>
 
-
->>>
-#### System information item
 
 <div class="text-xl">
 
@@ -26,9 +22,8 @@ At the top, there is a graph showing log resources and communication information
 </div>
 
 >>>
-#### Description of button
-
-<div class="text-xl">
+#### System(button)
+<div class="text-lg">
 
 | Items | Contents |
 | ---- | ---- |
@@ -40,7 +35,6 @@ At the top, there is a graph showing log resources and communication information
 
 ---
 #### Size prediction
-
 <div class="text-xl mb-2">
 This is a year forecast for the database size and disk usage rate.
 </div>
