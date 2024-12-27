@@ -290,7 +290,7 @@
       size="xs"
     >
       <Icon path={icons.mdiListBox} size={1} />
-      $_('NodeList.MapItems')
+      {$_('NodeList.MapItems')}
     </GradientButton>
     <GradientButton
       shadow
