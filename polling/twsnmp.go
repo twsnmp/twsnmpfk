@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -70,20 +71,40 @@ func doPollingTWSNMP(pe *datastore.PollingEnt) {
 func doTWSNMPGet(n *datastore.NodeEnt, pe *datastore.PollingEnt) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(pe.Timeout)*time.Second)
 	defer cancel()
-	url := fmt.Sprintf("http://%s:8080/mobile/api/mapstatus", n.IP)
+	twsnmpURL := fmt.Sprintf("http://%s:8080/mobile/api/mapstatus", n.IP)
 	if n.URL != "" {
 		for _, u := range strings.Split(n.URL, ",") {
 			if strings.HasPrefix(u, "http") {
-				url = u + "/mobile/api/mapstatus"
+				twsnmpURL = u + "/mobile/api/mapstatus"
 				break
 			}
 		}
 	}
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	user := n.User
+	password := n.Password
+	if pe.Params != "" {
+		if strings.HasPrefix(pe.Params, "http") {
+			if u, err := url.Parse(pe.Params); err == nil {
+				twsnmpURL = fmt.Sprintf("%s://%s/mobile/api/mapstatus", u.Scheme, u.Host)
+				if p, ok := u.User.Password(); ok && p != "" {
+					password = p
+				}
+				if us := u.User.Username(); us != "" {
+					user = us
+				}
+			} else {
+				return "", err
+			}
+		} else if a := strings.SplitN(pe.Params, ":", 2); len(a) == 2 {
+			user = a[0]
+			password = a[1]
+		}
+	}
+	req, err := http.NewRequest(http.MethodGet, twsnmpURL, nil)
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth(n.User, n.Password)
+	req.SetBasicAuth(user, password)
 	resp, err := insecureClient.Do(req.WithContext(ctx))
 	if err != nil {
 		return "", err
