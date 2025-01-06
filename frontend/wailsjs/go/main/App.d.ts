@@ -223,8 +223,6 @@ export function StartDiscover(arg1:datastore.DiscoverConfEnt):Promise<boolean>;
 
 export function StopDiscover():Promise<void>;
 
-export function TestLine(arg1:datastore.NotifyConfEnt):Promise<boolean>;
-
 export function TestNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
 
 export function UpdateAIConf(arg1:datastore.AIConfEnt):Promise<boolean>;

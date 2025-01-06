@@ -212,7 +212,7 @@
             size="xs"
           >
             <Icon path={icons.mdiLanDisconnect} size={1} />
-            {$_("LIne.Disconnect")}
+            {$_("Line.Disconnect")}
           </GradientButton>
           <GradientButton
             shadow

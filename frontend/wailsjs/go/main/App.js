@@ -438,10 +438,6 @@ export function StopDiscover() {
   return window['go']['main']['App']['StopDiscover']();
 }
 
-export function TestLine(arg1) {
-  return window['go']['main']['App']['TestLine'](arg1);
-}
-
 export function TestNotifyConf(arg1) {
   return window['go']['main']['App']['TestNotifyConf'](arg1);
 }

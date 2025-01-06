@@ -273,10 +273,6 @@
     "SelectAudioHigh": "Replay file in case of severe failure",
     "SelectAudioLow": "Playback file when a failure is more than mild",
     "Help": "Help",
-    "LineLevel": "LINE Level",
-    "LineTestNG": "LINE test Failed",
-    "LineTestOK": "LINE test OK",
-    "LineToken": "LINE Notify Token",
     "HostSSHPublicKey": "Allowed  host SSH public keys",
     "MySSHPublicKey": "My SSH public key",
     "SSHPublicKey": "SSH public key",
@@ -376,9 +372,6 @@
     "CountByState": "Count by level",
     "Heatmap": "Heatmap"
   },
-  "LIne": {
-    "Disconnect": "Disconnect"
-  },
   "Line": {
     "Cancel": "Cancel",
     "Connect": "Connect",
@@ -394,6 +387,7 @@
     "Polling2": "Polling2",
     "Port": "Port",
     "Update": "Update",
+    "Disconnect": "Disconnect",
     "Help": "Help"
   },
   "Map": {

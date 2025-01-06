@@ -261,10 +261,6 @@
     "AodioLow": "軽度以上の障害時に再生する音",
     "SelectAodio": "選択",
     "Help": "ヘルプ",
-    "LineLevel": "ライン通知のレベル",
-    "LineTestNG": "LINE通知のテストに失敗しました。",
-    "LineTestOK": "LINE通知の送信に成功しました。",
-    "LineToken": "LINE通知のトークン",
     "SSHPublicKey": "SSH公開鍵",
     "MySSHPublicKey": "自分の公開鍵",
     "HostSSHPublicKey": "アクセス許可するホストのSSH公開鍵",
@@ -379,10 +375,8 @@
     "Update": "更新",
     "Connect": "接続",
     "Cancel": "キャンセル",
+    "Disconnect": "切断",
     "Help": "ヘルプ"
-  },
-  "LIne": {
-    "Disconnect": "切断"
   },
   "Map": {
     "AddNode": "新規ノード",

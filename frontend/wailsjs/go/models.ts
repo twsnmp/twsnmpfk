@@ -848,9 +848,6 @@ export namespace datastore {
 	    ExecCmd: string;
 	    BeepHigh: string;
 	    BeepLow: string;
-	    LineNotifyRepair: boolean;
-	    LineLevel: string;
-	    LineToken: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new NotifyConfEnt(source);
@@ -872,9 +869,6 @@ export namespace datastore {
 	        this.ExecCmd = source["ExecCmd"];
 	        this.BeepHigh = source["BeepHigh"];
 	        this.BeepLow = source["BeepLow"];
-	        this.LineNotifyRepair = source["LineNotifyRepair"];
-	        this.LineLevel = source["LineLevel"];
-	        this.LineToken = source["LineToken"];
 	    }
 	}
 	export class PollingEnt {

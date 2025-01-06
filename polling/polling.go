@@ -283,7 +283,6 @@ func setPollingState(pe *datastore.PollingEnt, newState string) {
 			Event:     fmt.Sprintf(i18n.Trans("Change polling state:%s(%s)"), pe.Name, pe.Type),
 		}
 		datastore.AddEventLog(l)
-		notify.SendNotifyLine(l)
 		go doAction(pe)
 	}
 }
@@ -343,21 +342,6 @@ func doOneAction(alin []string) bool {
 			if subject != "" {
 				notify.SendMail(subject, body)
 			}
-		}
-	case "line":
-		{
-			message := al[1]
-			stickerPackageId := 0
-			stickerId := 0
-			if len(al) > 3 {
-				if n, err := strconv.Atoi(al[2]); err == nil {
-					stickerPackageId = n
-					if n, err := strconv.Atoi(al[3]); err == nil {
-						stickerId = n
-					}
-				}
-			}
-			notify.SendLine(&datastore.NotifyConf, message, stickerPackageId, stickerId)
 		}
 	case "wait":
 		{
