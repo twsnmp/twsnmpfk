@@ -178,7 +178,7 @@
           {/if}
         </div>
       </div>
-      <div class="grid gap-4 md:grid-cols-3">
+      <div class="grid gap-4 md:grid-cols-4">
         <Label class="space-y-2 text-xs">
           <span> {$_("Node.SNMPMode")} </span>
           <Select
@@ -193,18 +193,18 @@
             <span>SNMP Community</span>
             <Input bind:value={node.Community} placeholder="public" size="sm" />
           </Label>
-          <div></div>
         {:else}
-          <Label class="space-y-2 text-xs">
-            <span>SNMP{$_("Node.SnmpUser")}</span>
-            <Input bind:value={node.User} size="sm" />
-          </Label>
-          <Label class="space-y-2 text-xs">
-            <span>{$_("Node.SnmpPassword")}</span>
-            <Input type="password" bind:value={node.Password} size="sm" />
-          </Label>
+          <div></div>
         {/if}
-      </div>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Node.User")}</span>
+          <Input bind:value={node.User} size="sm" />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Node.Password")}</span>
+          <Input type="password" bind:value={node.Password} size="sm" />
+        </Label>
+    </div>
       <div class="grid gap-4 md:grid-cols-4">
         <Label class="space-y-2 text-xs">
           <span>gNMI Port</span>
@@ -229,7 +229,7 @@
       </Label>
       <div class="grid gap-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
-          <span>SSH{$_("Node.SnmpUser")}</span>
+          <span>SSH{$_("Node.User")}</span>
           <Input bind:value={node.SSHUser} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
