@@ -58,6 +58,7 @@ let beepHigh: any = undefined;
 let beepLow: any = undefined;
 let scale = 1.0;
 let mapConf: any = undefined;
+let portImage: any = undefined;
 
 export const initMAP = async (div: HTMLElement, cb: any) => {
   const settings = await GetSettings();
@@ -96,9 +97,12 @@ export const initMAP = async (div: HTMLElement, cb: any) => {
 let lastBackImagePath = "";
 
 export const updateMAP = async () => {
+  if (!_mapP5) {
+    return;
+  }
   const dark = isDark();
   if (!mapConf) {
-    mapConf = await GetMapConf()
+    mapConf = await GetMapConf();
   }
   const z = mapConf.IconSize || 3;
   iconSize = 8 + z * 8;
@@ -108,54 +112,42 @@ export const updateMAP = async () => {
   items = (await GetDrawItems()) || {};
   networks = (await GetNetworks()) || {};
   backImage = await GetBackImage();
-  if (_mapP5 != undefined) {
-    if (backImage.Path != lastBackImagePath) {
-      if (backImage.Path) {
-        _mapP5.loadImage(
-          await GetImage(backImage.Path),
-          (img) => {
-            _backImage = img;
-            mapRedraw = true;
-          },
-          () => {}
-        );
-      } else {
-        _backImage = null;
-        mapRedraw = true;
+  if (!portImage) {
+    portImage = _mapP5.loadImage(port);
+  }
+  if (backImage.Path != lastBackImagePath) {
+    if (backImage.Path) {
+      const img = _mapP5.loadImage(await GetImage(backImage.Path));
+      if (img) {
+        _backImage = img;
       }
-      lastBackImagePath = backImage.Path;
+    } else {
+      _backImage = null;
     }
+    lastBackImagePath = backImage.Path;
   }
   _setMapState();
   _checkBeep();
-  const backColor = _mapP5
-    ? dark
-      ? _mapP5.color(23).toString()
-      : _mapP5.color(252).toString()
-    : "#333";
-  if (_mapP5) {
-    for (const k in nodes) {
-      const icon = nodes[k].Image;
-      if (icon && !imageMap.has(icon)) {
-        const img = _mapP5.loadImage(await GetImageIcon(icon));
-        if (img) {
-          imageMap.set(icon, img);
-        }
+  const backColor = dark
+    ? _mapP5.color(23).toString()
+    : _mapP5.color(252).toString();
+  for (const k in nodes) {
+    const icon = nodes[k].Image;
+    if (icon && !imageMap.has(icon)) {
+      const img = _mapP5.loadImage(await GetImageIcon(icon));
+      if (img) {
+        imageMap.set(icon, img);
       }
     }
   }
   for (const k in items) {
     switch (items[k].Type) {
       case 3:
-        if (!imageMap.has(items[k].ID) && _mapP5 != undefined) {
-          _mapP5.loadImage(
-            await GetImage(items[k].Path),
-            (img) => {
-              imageMap.set(items[k].ID, img);
-              mapRedraw = true;
-            },
-            (e) => {}
-          );
+        if (!imageMap.has(items[k].ID)) {
+          const img = _mapP5.loadImage(await GetImage(items[k].Path));
+          if (img) {
+            imageMap.set(items[k].ID, img);
+          }
         }
         break;
       case 2:
@@ -176,52 +168,46 @@ export const updateMAP = async () => {
           items[k].Value = 0.0;
         }
         break;
-      case 6: // New Gauge
+      case 6: { // New Gauge
         items[k].W = items[k].H;
-        if (_mapP5) {
-          _mapP5.loadImage(
-            gauge(items[k].Text || "", items[k].Value || 0, backColor),
-            (img) => {
-              imageMap.set(k, img);
-              mapRedraw = true;
-            }
-          );
+        const img = _mapP5.loadImage(
+          gauge(items[k].Text || "", items[k].Value || 0, backColor)
+        );
+        if (img) {
+          imageMap.set(k, img);
         }
         break;
-      case 7: // Bar
+      }
+      case 7: { // Bar
         items[k].W = items[k].H * 4;
-        if (_mapP5) {
-          _mapP5.loadImage(
-            bar(
-              items[k].Text || "",
-              items[k].Color || "white",
-              items[k].Value || 0,
-              backColor
-            ),
-            (img) => {
-              imageMap.set(k, img);
-              mapRedraw = true;
-            }
-          );
+        const img = _mapP5.loadImage(
+          bar(
+            items[k].Text || "",
+            items[k].Color || "white",
+            items[k].Value || 0,
+            backColor
+          )
+        );
+        if (img) {
+          imageMap.set(k, img);
         }
         break;
-      case 8: // Line
+      }
+      case 8: { // Line
         items[k].W = items[k].H * 4;
-        if (_mapP5) {
-          _mapP5.loadImage(
-            line(
-              items[k].Text || "",
-              items[k].Color || "white",
-              items[k].Values || [],
-              backColor
-            ),
-            (img) => {
-              imageMap.set(k, img);
-              mapRedraw = true;
-            }
-          );
+        const img = _mapP5.loadImage(
+          line(
+            items[k].Text || "",
+            items[k].Color || "white",
+            items[k].Values || [],
+            backColor
+          )
+        );
+        if (img) {
+          imageMap.set(k, img);
         }
         break;
+      }
     }
   }
   mapRedraw = true;
@@ -252,9 +238,9 @@ const _setMapState = () => {
   }
 };
 
-export const setMapReadOnly = (ro:boolean) => {
+export const setMapReadOnly = (ro: boolean) => {
   readOnly = ro || settingsLock;
-}
+};
 
 let player: HTMLAudioElement = new Audio();
 
@@ -495,20 +481,15 @@ const mapMain = (p5: P5) => {
   let lastMouseX = 0;
   let lastMouseY = 0;
   let dragMode = 0; // 0 : None , 1: Select , 2 :Move
-  let oldDark = false;
+  let oldDark = isDark();
   let draggedNetwork = "";
   const draggedNodes: any = [];
   const draggedItems: any = [];
   let clickInCanvas = false;
-  let portImage: any = undefined;
-  p5.preload = () => {
-    portImage = p5.loadImage(port);
-  };
   p5.setup = () => {
     const c = p5.createCanvas(mapSizeX, mapSizeY);
     c.mousePressed(canvasMousePressed);
   };
-
   p5.draw = () => {
     const dark = isDark();
     if (dark != oldDark) {
@@ -561,7 +542,7 @@ const mapMain = (p5: P5) => {
           p5.fill("#11ee00");
           p5.text("Check network node...", 15, fontSize * 2 + 15);
         }
-      } else {
+      } else if (portImage) {
         p5.textSize(6);
         for (const p of networks[k].Ports) {
           const x = p.X * 45 + 10;
@@ -836,25 +817,25 @@ const mapMain = (p5: P5) => {
   let selectedNetwork2 = "";
   const checkLine = () => {
     if (!p5.keyIsDown(p5.SHIFT)) {
-      return false
+      return false;
     }
     if (selectedNetwork != "") {
-      if( setSelectNode(true)) {
-        return true
+      if (setSelectNode(true)) {
+        return true;
       }
       if (setSelectNetwork(true)) {
-        return true
+        return true;
       }
     } else if (selectedNodes.length === 1) {
-      if( setSelectNode(true)) {
-        return true
+      if (setSelectNode(true)) {
+        return true;
       }
       if (setSelectNetwork(false)) {
-        return true
-      }  
+        return true;
+      }
     }
-    return false
-  }
+    return false;
+  };
 
   const canvasMousePressed = () => {
     if (readOnly) {
@@ -1187,7 +1168,7 @@ const mapMain = (p5: P5) => {
     selectedDrawItems.length = 0;
   };
   // Networkを選択する
-  const setSelectNetwork = (second:boolean ) => {
+  const setSelectNetwork = (second: boolean) => {
     const x = p5.mouseX / scale;
     const y = p5.mouseY / scale;
     for (const k in networks) {
@@ -1301,10 +1282,10 @@ const mapMain = (p5: P5) => {
   };
   // lineの編集
   const editLine = () => {
-    if (selectedNetwork != ""){
+    if (selectedNetwork != "") {
       selectedNodes.push("NET:" + selectedNetwork);
     }
-    if (selectedNetwork2 != ""){
+    if (selectedNetwork2 != "") {
       selectedNodes.push("NET:" + selectedNetwork2);
     }
     if (selectedNodes.length !== 2) {

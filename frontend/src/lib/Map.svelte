@@ -85,7 +85,7 @@
   let urls: any = [];
 
   onMount(async () => {
-    initMAP(map, callBack);
+    await initMAP(map, callBack);
     refreshMap();
   });
 
