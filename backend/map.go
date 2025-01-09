@@ -29,7 +29,6 @@ func mapBackend(ctx context.Context, wg *sync.WaitGroup) {
 	timer := time.NewTicker(time.Second * 10)
 	newVersionTimer := time.NewTicker(time.Hour * 24)
 	i := 6
-	checkOR := false
 	for {
 		select {
 		case <-ctx.Done():
@@ -50,19 +49,12 @@ func mapBackend(ctx context.Context, wg *sync.WaitGroup) {
 				datastore.DeleteNodeStateChanged(id)
 				return true
 			})
-			if change > 0 {
-				updateLineState()
-				checkOR = true
-			}
 			i++
-			if i > 5 {
-				if !checkOR {
-					updateLineState()
-				}
-				if checkOR {
-					checkOperationRate()
-					checkOR = false
-				}
+			if change > 0 || i > 5 {
+				updateLineState()
+			}
+			if change > 0 && i > 5 {
+				checkOperationRate()
 				i = 0
 			}
 		}

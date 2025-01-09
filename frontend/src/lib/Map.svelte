@@ -43,7 +43,7 @@
     CheckNetwork,
     ExportMap,
   } from "../../wailsjs/go/main/App";
-  import { BrowserOpenURL } from "../../wailsjs/runtime";
+  import { BrowserOpenURL,WindowReloadApp } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
   import GNMITool from "./GNMITool.svelte";
   import { _ } from "svelte-i18n";
@@ -83,8 +83,10 @@
 
   let timer: any = undefined;
   let urls: any = [];
+  let refreshCount = 0;
 
   onMount(async () => {
+    refreshCount = 0;
     await initMAP(map, callBack);
     refreshMap();
   });
@@ -110,6 +112,7 @@
   let mapPosY = 0;
 
   const callBack = (p: any) => {
+    refreshCount = 0;
     switch (p.Cmd) {
       case "contextMenu":
         posX = p.x;
@@ -182,8 +185,20 @@
       clearTimeout(timer);
       timer = undefined;
     }
+    refreshCount++;
+    if(refreshCount > 6+59) {
+      WindowReloadApp();
+      refreshCount = 0;
+      return;
+    }
+    let t = 10;
+    if (refreshCount > 6) {
+      t = 60;
+    } else if (refreshCount == 1) {
+      t = 2;
+    }
     updateMAP();
-    timer = setTimeout(refreshMap, 1000 * 10);
+    timer = setTimeout(refreshMap, 1000 * t);
   };
 
   const deleteNodes = async (ids: string[]) => {
@@ -1102,5 +1117,6 @@
     showNodeMenu = false;
     showDrawItemMenu = false;
     showFormatNodesMenu = false;
+    refreshCount = 0;
   }}
 />

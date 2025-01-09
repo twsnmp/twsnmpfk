@@ -503,6 +503,8 @@ const mapMain = (p5: P5) => {
       p5.scale(scale);
     }
     mapRedraw = false;
+    p5.clear();
+    p5.removeElements();
     p5.background(dark ? 23 : 252);
     if (_backImage) {
       if (backImage.Width) {
