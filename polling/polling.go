@@ -225,6 +225,8 @@ func doPolling(pe *datastore.PollingEnt) {
 		if pe.Mode == "subscribe" {
 			return
 		}
+	case "twlogeye":
+		doPollingTwLogEye(pe)
 	}
 	datastore.UpdatePolling(pe, false)
 	if pe.LogMode == datastore.LogModeAlways || pe.LogMode == datastore.LogModeAI || (pe.LogMode == datastore.LogModeOnChange && oldState != pe.State) {

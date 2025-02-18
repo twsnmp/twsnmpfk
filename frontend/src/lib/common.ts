@@ -81,6 +81,7 @@ export const typeList = [
   { name: 'SSH', value: 'ssh' },
   { name: 'Report', value: 'report' },
   { name: 'TWSNMP', value: 'twsnmp' },
+  { name: 'TwLogEye', value: 'twlogeye' },
   { name: 'LXI', value: 'lxi' },
 ]
 

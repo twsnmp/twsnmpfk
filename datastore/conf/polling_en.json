@@ -201,6 +201,13 @@
     "Descr": "TWSNMP"
   },
   {
+    "Name": "TwLogEye Notify",
+    "Type": "twlogeye",
+    "Level": "low",
+    "Script": "count < 1",
+    "Descr": "TwLogEye notify"
+  },
+  {
     "Name": "New device",
     "Type": "arplog",
     "Mode": "",

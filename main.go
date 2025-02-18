@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/twsnmp/twsnmpfk/clog"
+	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -36,6 +37,9 @@ var sFlowPort = 6343
 var tcpdPort = 8086
 var maxDispLog = 10000
 var lang = ""
+var clientCert = ""
+var clientKey = ""
+var caCert = ""
 
 func init() {
 	flag.StringVar(&dataStorePath, "datastore", "", "Path to data dtore directory")
@@ -50,6 +54,9 @@ func init() {
 	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "Max log size to diplay")
 	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
 	flag.StringVar(&lang, "lang", "", "Language(en|jp)")
+	flag.StringVar(&clientCert, "clientCert", "", "Client cert path")
+	flag.StringVar(&clientKey, "clientKey", "", "Client key path")
+	flag.StringVar(&caCert, "caCert", "", "CA Cert path")
 	flag.Parse()
 }
 
@@ -61,6 +68,9 @@ func main() {
 	if lang != "" {
 		i18n.SetLang(lang)
 	}
+	datastore.ClientCert = clientCert
+	datastore.ClientKey = clientKey
+	datastore.CACert = caCert
 
 	// Create an instance of the app structure
 	app := NewApp()

@@ -61,6 +61,10 @@ var (
 	compLogSize  int64
 	mailTemplate map[string]string
 	Dark         bool
+	// for TwLogEye gRPC
+	CACert     string
+	ClientCert string
+	ClientKey  string
 )
 
 // Define errors
