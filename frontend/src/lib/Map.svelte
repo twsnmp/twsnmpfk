@@ -952,6 +952,7 @@
     <Label class="space-y-2 text-xs">
       <span>{$_("Map.GridSize")} </span>
       <Input
+        class="h-8 w-24 text-right"
         type="number"
         min={20}
         max={120}
@@ -1016,6 +1017,7 @@
       <Label class="space-y-2 text-xs">
         <span>X</span>
         <Input
+          class="h-8 w-24 text-right"
           type="number"
           min={0}
           max={2000}
@@ -1026,6 +1028,7 @@
       <Label class="space-y-2 text-xs">
         <span>Y</span>
         <Input
+          class="h-8 w-24 text-right"
           type="number"
           min={0}
           max={2000}
@@ -1036,7 +1039,8 @@
       <Label class="space-y-2 text-xs">
         <span>{$_("DrawItem.Width")}</span>
         <Input
-          type="number"
+        class="h-8 w-24 text-right"
+        type="number"
           min={10}
           max={1000}
           bind:value={backImage.Width}
@@ -1046,6 +1050,7 @@
       <Label class="space-y-2 text-xs">
         <span>{$_("DrawItem.Height")}</span>
         <Input
+          class="h-8 w-24 text-right"
           type="number"
           min={10}
           max={1000}

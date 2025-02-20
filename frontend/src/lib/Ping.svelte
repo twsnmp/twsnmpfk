@@ -391,6 +391,7 @@
         </div>
         <div class="flex flex-row mb-2">
           <Input
+            class="h-8 mt-1"
             type="text"
             bind:value={ip}
             placeholder={ $_('Ping.IPOrHost') }

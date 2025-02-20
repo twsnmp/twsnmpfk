@@ -122,7 +122,7 @@
       TWSNMP FK - {mapName}
     </span>
   </NavBrand>
-  <NavUl>
+  <NavUl ulClass="flex flex-col p-3 mt-3 md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium">
     {#if !lock}
       <NavLi
         active={page == "map"}
@@ -256,10 +256,10 @@
       </NavLi>
     {/if}
   </NavUl>
-  {#if !latest}
-    <Badge border color="red">{$_("Top.HasUpdate")}</Badge>
-  {/if}
   <div class="flex justify-right">
+    {#if !latest}
+      <Badge class="mr-2 h-8" border color="red">{$_("Top.HasUpdate")}</Badge>
+    {/if}
     <Button class="!p-2" color="alternative" on:click={toggleDark}>
       {#if dark}
         <Icon path={icons.mdiWeatherSunny} size={1} />

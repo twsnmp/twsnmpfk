@@ -206,7 +206,7 @@
         {/if}
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Name")}</span>
-          <Input bind:value={polling.Name} required size="sm" />
+          <Input class="h-8" bind:value={polling.Name} required size="sm" />
         </Label>
       </div>
       <div class="grid gap-4 mb-4 grid-cols-4">
@@ -231,7 +231,7 @@
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Mode")}</span>
-          <Input bind:value={polling.Mode} size="sm" />
+          <Input class="h-8" bind:value={polling.Mode} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span> {$_("Polling.LogMode")} </span>
@@ -247,6 +247,7 @@
           <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Params")}</span>
           <Input
+            class="h-8"
             bind:value={polling.Params}
             placeholder={$_("Polling.Params")}
             color={paramsColor}
@@ -272,6 +273,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.IntSec")}</span>
           <Input
+            class="h-8 w-24 text-right"
             type="number"
             min="5"
             max="86400"
@@ -282,6 +284,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.TimeoutSec")}</span>
           <Input
+            class="h-8 w-24 text-right"
             type="number"
             min="0"
             max="3600"
@@ -292,6 +295,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Retry")}</span>
           <Input
+            class="h-8 w-24 text-right"
             type="number"
             min="0"
             max="50"

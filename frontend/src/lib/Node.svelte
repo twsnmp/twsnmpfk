@@ -126,15 +126,15 @@
       <div class="grid gap-4 mb-4 md:grid-cols-4">
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Name")}</span>
-          <Input bind:value={node.Name} size="sm" />
+          <Input class="h-8" bind:value={node.Name} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.IPAddress")}</span>
-          <Input bind:value={node.IP} size="sm" />
+          <Input class="h-8" bind:value={node.IP} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_('Node.MAC')}</span>
-          <Input bind:value={node.MAC} size="sm" />
+          <Input class="h-8" bind:value={node.MAC} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span> {$_("Node.AddressMode")} </span>
@@ -191,55 +191,55 @@
         {#if node.SnmpMode == "v1" || node.SnmpMode == "v2c"}
           <Label class="space-y-2 text-xs">
             <span>SNMP Community</span>
-            <Input bind:value={node.Community} placeholder="public" size="sm" />
+            <Input class="h-8" bind:value={node.Community} placeholder="public" size="sm" />
           </Label>
         {:else}
           <div></div>
         {/if}
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.User")}</span>
-          <Input bind:value={node.User} size="sm" />
+          <Input class="h-8" bind:value={node.User} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Password")}</span>
-          <Input type="password" bind:value={node.Password} size="sm" />
+          <Input class="h-8" type="password" bind:value={node.Password} size="sm" />
         </Label>
     </div>
       <div class="grid gap-4 md:grid-cols-4">
         <Label class="space-y-2 text-xs">
           <span>gNMI Port</span>
-          <Input bind:value={node.GNMIPort} size="sm" />
+          <Input class="h-8" bind:value={node.GNMIPort} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>gNMI Encoding</span>
-          <Input bind:value={node.GNMIEncoding} size="sm" />
+          <Input class="h-8" bind:value={node.GNMIEncoding} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_('Node.GNMIUser')}</span>
-          <Input bind:value={node.GNMIUser} size="sm" />
+          <Input class="h-8" bind:value={node.GNMIUser} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_('Node.GNMIPassword')}</span>
-          <Input type="password" bind:value={node.GNMIPassword} size="sm" />
+          <Input class="h-8" type="password" bind:value={node.GNMIPassword} size="sm" />
         </Label>
       </div>
       <Label class="space-y-2 text-xs">
         <span>URL</span>
-        <Input bind:value={node.URL} placeholder="URL" size="sm" />
+        <Input class="h-8" bind:value={node.URL} placeholder="URL" size="sm" />
       </Label>
       <div class="grid gap-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>SSH{$_("Node.User")}</span>
-          <Input bind:value={node.SSHUser} size="sm" />
+          <Input class="h-8" bind:value={node.SSHUser} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.PublicKey")}</span>
-          <Input bind:value={node.PublicKey} size="sm" />
+          <Input class="h-8" bind:value={node.PublicKey} size="sm" />
         </Label>
       </div>
       <Label class="space-y-2">
         <span>{$_("Node.Descr")}</span>
-        <Input bind:value={node.Descr} size="sm" />
+        <Input class="h-8" bind:value={node.Descr} size="sm" />
       </Label>
       <div class="flex justify-end space-x-2 mr-2">
         <GradientButton

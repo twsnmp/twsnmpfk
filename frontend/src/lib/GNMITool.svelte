@@ -290,14 +290,14 @@ value == "${d[0].Value}";`;
     <div class="flex flex-row mb-2">
       <Input
         size="sm"
-        class="mr-2 w-96"
+        class="mr-2 w-96 h-8"
         type="text"
         bind:value={target}
         placeholder={$_('GNMITool.Target')}
       />
       <Input
         size="sm"
-        class="mr-2 w-96"
+        class="mr-2 w-96 h-8"
         type="text"
         bind:value={encoding}
         placeholder="Encoding"

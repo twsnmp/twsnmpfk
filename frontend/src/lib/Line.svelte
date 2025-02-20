@@ -140,11 +140,11 @@
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_("Line.Node1")}</span>
-          <Input bind:value={node1.Name} readonly size="sm" />
+          <Input class="h-8" bind:value={node1.Name} readonly size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Line.Node2")}</span>
-          <Input bind:value={node2.Name} readonly size="sm" />
+          <Input class="h-8" bind:value={node2.Name} readonly size="sm" />
         </Label>
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
@@ -180,7 +180,7 @@
           </Label>
           <Label class="space-y-2 text-xs">
             <span>{$_("Line.Info")}</span>
-            <Input bind:value={line.Info} size="sm" />
+            <Input class="h-8" bind:value={line.Info} size="sm" />
           </Label>
         </div>
       {/if}
@@ -188,6 +188,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Line.LineWidth")}</span>
           <Input
+            class="h-8 w-24 text-right"
             bind:value={line.Width}
             type="number"
             min="1"
@@ -198,7 +199,7 @@
         {#if !net1 || !net2}
           <Label class="space-y-2 text-xs">
             <span>{$_("Line.Port")}</span>
-            <Input bind:value={line.Port} size="sm" />
+            <Input class="h-8" bind:value={line.Port} size="sm" />
           </Label>
         {/if}
       </div>

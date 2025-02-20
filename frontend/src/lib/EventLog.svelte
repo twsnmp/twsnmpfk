@@ -247,11 +247,11 @@
     <div class="grid gap-2 grid-cols-3">
       <Label class="space-y-2 text-xs">
         <span>{$_('EventLog.Start')}</span>
-        <Input type="datetime-local" bind:value={filter.Start} size="sm" />
+        <Input class="h-8" type="datetime-local" bind:value={filter.Start} size="sm" />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_('EventLog.End')}</span>
-        <Input type="datetime-local" bind:value={filter.End} size="sm" />
+        <Input class="h-8" type="datetime-local" bind:value={filter.End} size="sm" />
       </Label>
       <div class="flex">
         <Button

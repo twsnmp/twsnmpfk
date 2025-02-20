@@ -416,11 +416,11 @@
     <div class="grid gap-2 grid-cols-3">
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.Start")}</span>
-        <Input type="datetime-local" bind:value={filter.Start} size="sm" />
+        <Input class="h-8" type="datetime-local" bind:value={filter.Start} size="sm" />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.End")}</span>
-        <Input type="datetime-local" bind:value={filter.End} size="sm" />
+        <Input class="h-8" type="datetime-local" bind:value={filter.End} size="sm" />
       </Label>
       <div class="flex">
         <Button
@@ -450,6 +450,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("NetFlow.Port")}</span>
           <Input
+            class="h-8 w-24 text-right"
             type="number"
             min="0"
             max="65554"
@@ -492,6 +493,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("NetFlow.Port")}</span>
           <Input
+            class="h-8 w-24 text-right"
             type="number"
             min="0"
             max="65554"
@@ -533,6 +535,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("NetFlow.Port")}</span>
           <Input
+            class="h-8 w-24 text-right"
             type="number"
             min="0"
             max="65554"
@@ -626,6 +629,7 @@
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.Start")}</span>
         <Input
+          class="h-8"
           type="datetime-local"
           bind:value={filterCounter.Start}
           size="sm"
@@ -633,7 +637,7 @@
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.End")}</span>
-        <Input type="datetime-local" bind:value={filterCounter.End} size="sm" />
+        <Input class="h-8" type="datetime-local" bind:value={filterCounter.End} size="sm" />
       </Label>
       <div class="flex">
         <Button

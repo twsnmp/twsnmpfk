@@ -416,6 +416,7 @@
             <Label class="col-span-3 space-y-2 text-xs">
               <span>{$_("Config.MapName")}</span>
               <Input
+                class="h-8"
                 bind:value={mapConf.MapName}
                 placeholder={$_("Config.MapName")}
                 required
@@ -440,6 +441,7 @@
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.PollingIntSec")} </span>
               <Input
+                class="h-8 w-24 text-right"
                 type="number"
                 min={5}
                 max={3600 * 24}
@@ -451,6 +453,7 @@
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.TimeoutSec")} </span>
               <Input
+                class="h-8 w-24 text-right"
                 type="number"
                 min={1}
                 max={120}
@@ -462,6 +465,7 @@
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.Retry")} </span>
               <Input
+                class="h-8 w-24 text-right"
                 type="number"
                 min={0}
                 max={100}
@@ -473,6 +477,7 @@
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.LogDays")} </span>
               <Input
+                class="h-8 w-24 text-right"
                 type="number"
                 min={1}
                 max={365 * 5}
@@ -496,6 +501,7 @@
               <Label class="space-y-2 text-xs">
                 <span>SNMP Community</span>
                 <Input
+                  class="h-8"
                   bind:value={mapConf.Community}
                   placeholder="public"
                   size="sm"
@@ -505,6 +511,7 @@
               <Label class="space-y-2 text-xs">
                 <span>{$_("Config.SnmpUser")}</span>
                 <Input
+                  class="h-8"
                   bind:value={mapConf.SnmpUser}
                   placeholder="snmp user"
                   size="sm"
@@ -513,6 +520,7 @@
               <Label class="space-y-2 text-xs">
                 <span>{$_("Config.SnmpPassword")}</span>
                 <Input
+                  class="h-8"
                   type="password"
                   bind:value={mapConf.SnmpPassword}
                   placeholder="•••••"
@@ -535,6 +543,7 @@
               <Label class="space-y-2 text-xs col-span-3">
                 <span> {$_('Config.ArpIPRange')} </span>
                 <Input
+                  class="h-8"
                   bind:value={mapConf.ArpWatchRange}
                   size="sm"
                 />
@@ -542,6 +551,7 @@
               <Label class="space-y-2 text-xs">
                 <span> {$_('Config.ArpTimeout')} </span>
                 <Input
+                  class="h-8 w-24 text-right"
                   type="number"
                   min={1}
                   max={24*7}
@@ -636,6 +646,7 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.MailServer")}</span>
               <Input
+                class="h-8"
                 bind:value={notifyConf.MailServer}
                 placeholder="host|ip:port"
                 required
@@ -648,6 +659,7 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.SmtpUser")}</span>
               <Input
+                class="h-8"
                 bind:value={notifyConf.User}
                 placeholder="smtp user"
                 size="sm"
@@ -656,6 +668,7 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.SmtpPassword")}</span>
               <Input
+                class="h-8"
                 type="password"
                 bind:value={notifyConf.Password}
                 placeholder="•••••"
@@ -666,11 +679,12 @@
           <div class="grid gap-4 grid-cols-4">
             <Label class="space-y-2 text-xs col-span-2">
               <span> {$_("Config.Subject")} </span>
-              <Input bind:value={notifyConf.Subject} size="sm" />
+              <Input class="h-8" bind:value={notifyConf.Subject} size="sm" />
             </Label>
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.MailFrom")}</span>
               <Input
+                class="h-8"
                 bind:value={notifyConf.MailFrom}
                 placeholder={$_("Config.MailFromAddress")}
                 size="sm"
@@ -679,6 +693,7 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.MailTo")}</span>
               <Input
+                class="h-8"
                 bind:value={notifyConf.MailTo}
                 placeholder={$_("Config.MailToAddress")}
                 size="sm"
@@ -698,6 +713,7 @@
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.NotifyIntSec")} </span>
               <Input
+                class="h-8 w-24 text-right"
                 type="number"
                 min={60}
                 max={3600 * 24}
@@ -715,7 +731,7 @@
           </div>
           <Label class="space-y-2 text-xs">
             <span> {$_("Config.ExecCommand")} </span>
-            <Input class="w-full" bind:value={notifyConf.ExecCmd} size="sm" />
+            <Input class="w-full h-8" bind:value={notifyConf.ExecCmd} size="sm" />
           </Label>
           <div class="grid gap-4 grid-cols-4">
             <Label class="space-y-2 text-xs">
@@ -934,6 +950,7 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.LocZoom")}</span>
               <Input
+                class="h-8 w-24 text-right"
                 type="number"
                 min="2"
                 max="12"
@@ -944,6 +961,7 @@
             <Label class="space-y-2 text-xs">
               {$_("Config.IconSize")}
               <Range
+                class="h-8"
                 size="sm"
                 min="16"
                 max="64"
@@ -1166,6 +1184,7 @@
     <Label class="space-y-2 text-xs">
       <span>{$_("Config.Name")}</span>
       <Input
+        class="h-8"
         bind:value={icon.Name}
         required
         size="sm"

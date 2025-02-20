@@ -307,11 +307,11 @@
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Name")}</span>
-          <Input bind:value={network.Name} size="sm" />
+          <Input class="h-8" bind:value={network.Name} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.IPAddress")}</span>
-          <Input bind:value={network.IP} size="sm" />
+          <Input class="h-8" bind:value={network.IP} size="sm" />
         </Label>
       </div>
       {#if !id}
@@ -324,6 +324,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_('Network.AllPort')}</span>
             <Input
+              class="h-8 w-24 text-right"
               type="number"
               min="5"
               max="100"
@@ -334,6 +335,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("Network.HPorts")}</span>
             <Input
+              class="h-8 w-24 text-right"
               type="number"
               min="5"
               max="100"
@@ -347,6 +349,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("Network.HPorts")}</span>
             <Input
+              class="h-8 w-24 text-right"
               type="number"
               min="5"
               max="100"
@@ -379,6 +382,7 @@
             <Label class="space-y-2 text-xs">
               <span>SNMP Community</span>
               <Input
+                class="h-8"
                 bind:value={network.Community}
                 placeholder="public"
                 size="sm"
@@ -387,23 +391,23 @@
             <div></div>
           {:else}
             <Label class="space-y-2 text-xs">
-              <span>SNMP{$_("Node.SnmpUser")}</span>
-              <Input bind:value={network.User} size="sm" />
+              <span>SNMP{$_("Node.User")}</span>
+              <Input class="h-8" bind:value={network.User} size="sm" />
             </Label>
             <Label class="space-y-2 text-xs">
-              <span>{$_("Node.SnmpPassword")}</span>
-              <Input type="password" bind:value={network.Password} size="sm" />
+              <span>SNMP{$_("Node.Password")}</span>
+              <Input class="h-8" type="password" bind:value={network.Password} size="sm" />
             </Label>
           {/if}
         </div>
       {/if}
       <Label class="space-y-2 text-xs">
         <span>URL</span>
-        <Input bind:value={network.URL} placeholder="URL" size="sm" />
+        <Input class="h-8" bind:value={network.URL} placeholder="URL" size="sm" />
       </Label>
       <Label class="space-y-2">
         <span>{$_("Node.Descr")}</span>
-        <Input bind:value={network.Descr} size="sm" />
+        <Input class="h-8" bind:value={network.Descr} size="sm" />
       </Label>
       <div class="m-5 grow">
         <table id="portTable" class="display compact" style="width:99%" />
@@ -583,17 +587,18 @@
     </h3>
     <Label class="space-y-2 text-xs">
       <span>{$_("Node.Name")}</span>
-      <Input bind:value={editPort.Name} size="sm" />
+      <Input class="h-8" bind:value={editPort.Name} size="sm" />
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("NodeList.Polling")}</span>
-      <Input bind:value={editPort.Polling} size="sm" />
+      <Input class="h-8" bind:value={editPort.Polling} size="sm" />
     </Label>
 
     <div class="grid gap-2 grid-cols-2">
       <Label class="space-y-2 text-xs">
         <span>X</span>
         <Input
+          class="h-8 w-24 text-right"
           type="number"
           min="0"
           max="100"
@@ -604,6 +609,7 @@
       <Label class="space-y-2 text-xs">
         <span>Y</span>
         <Input
+          class="h-8 w-24 text-right"
           type="number"
           min="0"
           max="100"

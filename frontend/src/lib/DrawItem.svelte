@@ -153,6 +153,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.Width")}</span>
             <Input
+              class="h-8 w-24 text-right"
               type="number"
               min={0}
               max={1000}
@@ -164,6 +165,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.Height")}</span>
             <Input
+              class="h-8 w-24 text-right"
               type="number"
               min={0}
               max={1000}
@@ -192,6 +194,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.FontSize")}</span>
             <Input
+              class="h-8 w-24 text-right"
               type="number"
               min={8}
               max={128}
@@ -218,6 +221,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.Text")}</span>
           <Input
+            class="h-8"
             bind:value={drawItem.Text}
             placeholder={$_("DrawItem.TextToDisplay")}
             size="sm"
@@ -229,6 +233,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.Width")}</span>
             <Input
+              class="h-8 w-24 text-right"
               type="number"
               min={0}
               max={1000}
@@ -239,6 +244,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.Height")}</span>
             <Input
+              class="h-8 w-24 text-right"
               type="number"
               min={0}
               max={1000}
@@ -282,6 +288,7 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("DrawItem.Size")}</span>
               <Input
+                class="h-8 w-24 text-right"
                 type="number"
                 min={8}
                 max={128}
@@ -293,6 +300,7 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("DrawItem.Height")}</span>
               <Input
+                class="h-8 w-24 text-right"
                 type="number"
                 min={0}
                 max={1000}
@@ -329,6 +337,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.ValName")}</span>
           <Input
+            class="h-8"
             bind:value={drawItem.VarName}
             placeholder={$_("DrawItem.ValNamePH")}
             size="sm"
@@ -339,6 +348,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.TextFormat")}</span>
           <Input
+            class="h-8"
             bind:value={drawItem.Format}
             placeholder={$_("DrawItem.TextFormatPH")}
             size="sm"
@@ -348,12 +358,13 @@
       {#if drawItem.Type >= 5}
         <Label class="space-y-2 text-xs">
           <span>{$_("DrawItem.GaugeLabel")}</span>
-          <Input bind:value={drawItem.Text} size="sm" />
+          <Input class="h-8" bind:value={drawItem.Text} size="sm" />
         </Label>
       {/if}
       <Label class="space-y-2 text-xs">
         <span>{$_("DrawItem.Zoom")}</span>
         <Input
+          class="h-8 w-24 text-right"
           type="number"
           min={0.1}
           max={5.0}

@@ -121,17 +121,18 @@
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_("Discover.StartIP")}</span>
-          <Input bind:value={conf.StartIP} size="sm" />
+          <Input class="h-8" bind:value={conf.StartIP} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Discover.EndIP")}</span>
-          <Input bind:value={conf.EndIP} size="sm" />
+          <Input class="h-8" bind:value={conf.EndIP} size="sm" />
         </Label>
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span> {$_("Discover.Timeout")} </span>
           <Input
+            class="h-8 w-24 text-right"
             type="number"
             min={1}
             max={120}
@@ -143,6 +144,7 @@
         <Label class="space-y-2 text-xs">
           <span> {$_("Discover.Retry")} </span>
           <Input
+            class="h-8 w-24 text-right"
             type="number"
             min={0}
             max={100}
