@@ -284,17 +284,20 @@ func (a *App) GetLine(node1, node2 string) datastore.LineEnt {
 		NodeID2: node2,
 		Width:   2,
 	}
-	datastore.ForEachLines(func(l *datastore.LineEnt) bool {
-		if l.NodeID1 == node1 && l.NodeID2 == node2 {
-			ret = *l
-			return false
-		}
-		if l.NodeID2 == node1 && l.NodeID1 == node2 {
-			ret = *l
-			return false
-		}
-		return true
-	})
+	// 片側ネットワークの場合は追加のみにする
+	if !strings.HasPrefix(node1, "NET:") && !strings.HasPrefix(node2, "NET:") {
+		datastore.ForEachLines(func(l *datastore.LineEnt) bool {
+			if l.NodeID1 == node1 && l.NodeID2 == node2 {
+				ret = *l
+				return false
+			}
+			if l.NodeID2 == node1 && l.NodeID1 == node2 {
+				ret = *l
+				return false
+			}
+			return true
+		})
+	}
 	return ret
 }
 
