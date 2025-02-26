@@ -1,10 +1,6 @@
 <script lang="ts">
   import {
-    Select,
     Modal,
-    Label,
-    Input,
-    Checkbox,
     GradientButton,
     Spinner,
   } from "flowbite-svelte";
@@ -12,11 +8,11 @@
   import { GetLinesByNode, DeleteLine,GetNode,GetNetwork, GetPolling } from "../../wailsjs/go/main/App";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import { snmpModeList, getTableLang, renderNodeState } from "./common";
+  import { getTableLang } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
-  import Polling from "./Polling.svelte";
+  import type { datastore } from "wailsjs/go/models";
 
   export let show: boolean = false;
   export let id: string = ""; // Network ID
@@ -42,11 +38,23 @@
         if (p) {
           p1 = p.Name;
         }
+      } else {
+        const n = n1 as datastore.NetworkEnt
+        const port = n.Ports.find((e) => e.ID == p1);
+        if (port) {
+          p1 = port.Name
+        }
       }
       if (!l.NodeID2.startsWith("NET:")) {
         const p = await GetPolling(p2)
         if (p) {
           p2 = p.Name;
+        }
+      } else {
+        const n = n2 as datastore.NetworkEnt
+        const port = n.Ports.find((e) => e.ID == p2);
+        if (port) {
+          p2 = port.Name
         }
       }
       data.push({
