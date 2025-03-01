@@ -117,6 +117,10 @@
       case "contextMenu":
         posX = p.x;
         posY = p.y - 96;
+        const bcr = map.getBoundingClientRect()
+        if ((posY + 200) >  bcr.height) {
+          posY -= 200
+        }
         if (p.Node) {
           showNodeMenuFunc(p.Node);
         } else if (p.DrawItem) {
