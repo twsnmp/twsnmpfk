@@ -211,6 +211,10 @@ func openDB(path string) error {
 		db.Close()
 		return err
 	}
+	log.Println("loadPKI")
+	if err = loadPKIConf(); err != nil {
+		log.Printf("load PKI err=%v", err)
+	}
 	log.Println("end openDB")
 	return nil
 }
@@ -220,7 +224,7 @@ func initDB() error {
 		"config", "nodes", "items", "lines", "networks", "pollings", "logs", "pollingLogs",
 		"syslog", "trap", "arplog", "arp", "ai", "grok", "images",
 		"ipfix", "netflow",
-		"sflow", "sflowCounter",
+		"sflow", "sflowCounter", "certs",
 	}
 	initConf()
 	return db.Update(func(tx *bbolt.Tx) error {
@@ -236,6 +240,7 @@ func initDB() error {
 
 // CloseDB : DBをクローズする
 func CloseDB() {
+	closeGeoIP()
 	if db == nil {
 		return
 	}
@@ -273,6 +278,7 @@ func SaveMapData() {
 	if err := saveAllPollings(); err != nil {
 		log.Printf("saveAllPollings err=%v", err)
 	}
+	savePKIConf()
 }
 
 // bboltに保存する場合のキーを時刻から生成する。

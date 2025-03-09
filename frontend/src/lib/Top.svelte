@@ -36,6 +36,7 @@
   import AIList from "./AIList.svelte";
   import Config from "./Config.svelte";
   import System from "./System.svelte";
+  import PKI from "./PKI.svelte";
   import Help from "./Help.svelte";
   import { _ } from "svelte-i18n";
   import Location from "./Location.svelte";
@@ -170,6 +171,15 @@
       >
         <Icon path={icons.mdiListStatus} size={1.8} />
         {$_("Top.Address")}
+      </NavLi>
+      <NavLi
+        active={page == "pki"}
+        on:click={() => {
+          page = "pki";
+        }}
+      >
+        <Icon path={icons.mdiCertificate} size={1.8} />
+        PKI
       </NavLi>
       <NavLi
         active={page == "eventlog"}
@@ -316,6 +326,8 @@
   <System />
 {:else if page == "loc"}
   <Location />
+{:else if page == "pki"}
+  <PKI />
 {/if}
 
 <Config

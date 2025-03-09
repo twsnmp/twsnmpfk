@@ -26,6 +26,18 @@ export function CopyNode(arg1) {
   return window['go']['main']['App']['CopyNode'](arg1);
 }
 
+export function CreateCA(arg1) {
+  return window['go']['main']['App']['CreateCA'](arg1);
+}
+
+export function CreateCertificate() {
+  return window['go']['main']['App']['CreateCertificate']();
+}
+
+export function CreateCertificateRequest(arg1) {
+  return window['go']['main']['App']['CreateCertificateRequest'](arg1);
+}
+
 export function DeleteAIResult(arg1) {
   return window['go']['main']['App']['DeleteAIResult'](arg1);
 }
@@ -86,6 +98,10 @@ export function DeletePollings(arg1) {
   return window['go']['main']['App']['DeletePollings'](arg1);
 }
 
+export function DestroyCA() {
+  return window['go']['main']['App']['DestroyCA']();
+}
+
 export function ExportAny(arg1, arg2) {
   return window['go']['main']['App']['ExportAny'](arg1, arg2);
 }
@@ -96,6 +112,10 @@ export function ExportArpLogs(arg1, arg2) {
 
 export function ExportArpTable(arg1) {
   return window['go']['main']['App']['ExportArpTable'](arg1);
+}
+
+export function ExportCert(arg1) {
+  return window['go']['main']['App']['ExportCert'](arg1);
 }
 
 export function ExportEventLogs(arg1, arg2, arg3) {
@@ -180,6 +200,14 @@ export function GetAutoPollings(arg1, arg2) {
 
 export function GetBackImage() {
   return window['go']['main']['App']['GetBackImage']();
+}
+
+export function GetCerts() {
+  return window['go']['main']['App']['GetCerts']();
+}
+
+export function GetDefaultCreateCAReq() {
+  return window['go']['main']['App']['GetDefaultCreateCAReq']();
 }
 
 export function GetDefaultPolling(arg1) {
@@ -310,6 +338,10 @@ export function GetNotifyConf() {
   return window['go']['main']['App']['GetNotifyConf']();
 }
 
+export function GetPKIControl() {
+  return window['go']['main']['App']['GetPKIControl']();
+}
+
 export function GetPolling(arg1) {
   return window['go']['main']['App']['GetPolling'](arg1);
 }
@@ -382,6 +414,10 @@ export function InitMySSHKey() {
   return window['go']['main']['App']['InitMySSHKey']();
 }
 
+export function IsCAValid() {
+  return window['go']['main']['App']['IsCAValid']();
+}
+
 export function IsDark() {
   return window['go']['main']['App']['IsDark']();
 }
@@ -396,6 +432,10 @@ export function Ping(arg1) {
 
 export function ResetArpTable() {
   return window['go']['main']['App']['ResetArpTable']();
+}
+
+export function RevokeCert(arg1) {
+  return window['go']['main']['App']['RevokeCert'](arg1);
 }
 
 export function SaveSshdPublicKeys(arg1) {
@@ -424,6 +464,10 @@ export function SetBackImage(arg1) {
 
 export function SetDark(arg1) {
   return window['go']['main']['App']['SetDark'](arg1);
+}
+
+export function SetPKIControl(arg1) {
+  return window['go']['main']['App']['SetPKIControl'](arg1);
 }
 
 export function SnmpWalk(arg1, arg2, arg3) {

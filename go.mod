@@ -14,8 +14,10 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/fatih/color v1.18.0
 	github.com/gliderlabs/ssh v0.3.8
+	github.com/go-jose/go-jose/v4 v4.0.5
 	github.com/google/gopacket v1.1.19
 	github.com/gosnmp/gosnmp v1.38.0
+	github.com/labstack/echo/v4 v4.13.3
 	github.com/labstack/gommon v0.4.2
 	github.com/montanaflynn/stats v0.7.1
 	github.com/openconfig/gnmic/pkg/api v0.1.9
@@ -24,6 +26,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/signalsciences/ipv4 v1.4.0
 	github.com/sleepinggenius2/gosmi v0.4.4
+	github.com/smallstep/scep v0.0.0-20250221100424-171a5fa4fb1b
 	github.com/tehmaze/netflow v0.0.0-20170921210347-852af103667f
 	github.com/twsnmp/go-mibdb v0.0.0-20210104220414-91387072cee7
 	github.com/twsnmp/lxi v0.3.2
@@ -54,7 +57,6 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/jhump/protoreflect v1.17.0 // indirect
-	github.com/labstack/echo/v4 v4.13.3 // indirect
 	github.com/leaanthony/go-ansi-parser v1.6.1 // indirect
 	github.com/leaanthony/gosod v1.0.4 // indirect
 	github.com/leaanthony/slicer v1.6.0 // indirect
@@ -74,6 +76,7 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/samber/lo v1.49.1 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
+	github.com/smallstep/pkcs7 v0.2.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.14 // indirect
 	github.com/tklauser/numcpus v0.9.0 // indirect
 	github.com/tkrajina/go-reflector v0.5.8 // indirect
@@ -86,6 +89,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/oauth2 v0.26.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/time v0.8.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250212204824-5a70512c5d8b // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect

@@ -337,6 +337,34 @@ export namespace datastore {
 	        this.Path = source["Path"];
 	    }
 	}
+	export class CreateCAReq {
+	    RootCAKeyType: string;
+	    Name: string;
+	    SANs: string;
+	    AcmePort: number;
+	    HttpBaseURL: string;
+	    AcmeBaseURL: string;
+	    HttpPort: number;
+	    RootCATerm: number;
+	    CrlInterval: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CreateCAReq(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.RootCAKeyType = source["RootCAKeyType"];
+	        this.Name = source["Name"];
+	        this.SANs = source["SANs"];
+	        this.AcmePort = source["AcmePort"];
+	        this.HttpBaseURL = source["HttpBaseURL"];
+	        this.AcmeBaseURL = source["AcmeBaseURL"];
+	        this.HttpPort = source["HttpPort"];
+	        this.RootCATerm = source["RootCATerm"];
+	        this.CrlInterval = source["CrlInterval"];
+	    }
+	}
 	export class DiscoverConfEnt {
 	    StartIP: string;
 	    EndIP: string;
@@ -871,6 +899,26 @@ export namespace datastore {
 	        this.BeepLow = source["BeepLow"];
 	    }
 	}
+	export class PKIControlEnt {
+	    AcmeBaseURL: string;
+	    EnableAcme: boolean;
+	    EnableHttp: boolean;
+	    AcmeStatus: string;
+	    HttpStatus: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PKIControlEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.AcmeBaseURL = source["AcmeBaseURL"];
+	        this.EnableAcme = source["EnableAcme"];
+	        this.EnableHttp = source["EnableHttp"];
+	        this.AcmeStatus = source["AcmeStatus"];
+	        this.HttpStatus = source["HttpStatus"];
+	    }
+	}
 	export class PollingEnt {
 	    ID: string;
 	    Name: string;
@@ -1164,6 +1212,32 @@ export namespace main {
 	        this.NewVendor = source["NewVendor"];
 	        this.OldMAC = source["OldMAC"];
 	        this.OldVendor = source["OldVendor"];
+	    }
+	}
+	export class CertEnt {
+	    Status: string;
+	    ID: string;
+	    Subject: string;
+	    Node: string;
+	    Created: number;
+	    Revoked: number;
+	    Expire: number;
+	    Type: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CertEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Status = source["Status"];
+	        this.ID = source["ID"];
+	        this.Subject = source["Subject"];
+	        this.Node = source["Node"];
+	        this.Created = source["Created"];
+	        this.Revoked = source["Revoked"];
+	        this.Expire = source["Expire"];
+	        this.Type = source["Type"];
 	    }
 	}
 	export class EventLogFilterEnt {
@@ -1510,6 +1584,39 @@ export namespace main {
 	        this.ID = source["ID"];
 	        this.X = source["X"];
 	        this.Y = source["Y"];
+	    }
+	}
+
+}
+
+export namespace pki {
+	
+	export class CSRReqEnt {
+	    KeyType: string;
+	    CommonName: string;
+	    OrganizationalUnit: string;
+	    Organization: string;
+	    Locality: string;
+	    Province: string;
+	    Country: string;
+	    Sans: string;
+	    ChallengePassword: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CSRReqEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.KeyType = source["KeyType"];
+	        this.CommonName = source["CommonName"];
+	        this.OrganizationalUnit = source["OrganizationalUnit"];
+	        this.Organization = source["Organization"];
+	        this.Locality = source["Locality"];
+	        this.Province = source["Province"];
+	        this.Country = source["Country"];
+	        this.Sans = source["Sans"];
+	        this.ChallengePassword = source["ChallengePassword"];
 	    }
 	}
 

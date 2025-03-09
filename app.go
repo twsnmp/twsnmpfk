@@ -27,6 +27,7 @@ import (
 	"github.com/twsnmp/twsnmpfk/logger"
 	"github.com/twsnmp/twsnmpfk/notify"
 	"github.com/twsnmp/twsnmpfk/ping"
+	"github.com/twsnmp/twsnmpfk/pki"
 	"github.com/twsnmp/twsnmpfk/polling"
 )
 
@@ -319,6 +320,10 @@ func (a *App) startTWSNMP() {
 	log.Println("call notify.Start")
 	if err := notify.Start(a.ctx, a.wg); err != nil {
 		log.Fatalf("start notify err=%v", err)
+	}
+	log.Println("call pki.Start")
+	if err := pki.Start(a.ctx, a.wg); err != nil {
+		log.Fatalf("start pki err=%v", err)
 	}
 }
 

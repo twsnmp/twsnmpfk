@@ -399,3 +399,13 @@ export const renderHrSystemName = (k:string) => {
   }
   return k
 }
+
+export const keyTypeList = [
+  { name: "RSA 2048bits", value: 'rsa-2048' },
+  { name: "RSA 4096bits", value: 'rsa-4096' },
+  { name: "RSA 8192bits", value: 'rsa-8192' },
+  { name: "ECDSA P224", value: 'ecdsa-224' },
+  { name: "ECDSA P256", value: 'ecdsa-256' },
+  { name: "ECDSA P384", value: 'ecdsa-384' },
+  { name: "ECDSA P512", value: 'ecdsa-512' },
+]

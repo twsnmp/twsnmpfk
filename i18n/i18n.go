@@ -314,6 +314,69 @@ var transMap = map[string]map[string]string{
 	"Over load alert": {
 		"ja": "高負荷状態",
 	},
+	"Start PKI": {
+		"ja": "PKIを開始しました",
+	},
+	"Create CA Certificate subject=%s serial=%x": {
+		"ja": "CA証明書を作成しました subject=%s serial=%x",
+	},
+	"Reject CSR subject=%s info=%+v err=%v": {
+		"ja": "証明書の発行を却下しました subject=%s info=%+v err=%v",
+	},
+	"Create Certificate subject=%s serial=%s info=%+v": {
+		"ja": "証明書を発行しました subject=%s serial=%s info=%+v",
+	},
+	"CA is already valid": {
+		"ja": "CAはすでに構築済みです",
+	},
+	"Can not create CA err=%v": {
+		"ja": "CAを構築できません err=%v",
+	},
+	"Create CA": {
+		"ja": "CAを構築しました",
+	},
+	"Confirm destroy CA": {
+		"ja": "CAの破棄",
+	},
+	"Do you want to destroy CA?": {
+		"ja": "CAを破棄しますか？",
+	},
+	"Destroy CA": {
+		"ja": "CAを破棄しました",
+	},
+	"Can not create CSR err=%v": {
+		"ja": "証明書要求を作成できません err=%v",
+	},
+	"Can not create Certificate err=%v": {
+		"ja": "証明書を発行できません err=%v",
+	},
+	"Confirm revoke cert": {
+		"ja": "証明書の失効",
+	},
+	"Do you want to revoke selected Cert?": {
+		"ja": "選択した証明書を失効しますか?",
+	},
+	"Revoke Cert subject=%s serial=%s": {
+		"ja": "証明書を失効しました subject=%s serial=%s",
+	},
+	"Create SCEP CA Certificate subject=%s serial=%x": {
+		"ja": "SCEP用のCA証明証を作成しました subject=%s serial=%x",
+	},
+	"Start CRL/OCSP/SCEP Server port=%d": {
+		"ja": "CRL/OCSP/SCEPサーバーを起動しました port=%d",
+	},
+	"Stop CRL/OCSP/SCEP Server": {
+		"ja": "CRL/OCSP/SCEPサーバーを停止しました",
+	},
+	"Create ACME Server Certificate subject=%s serial=%x": {
+		"ja": "ACMEサーバー用の証明証を発行しました subject=%s serial=%x",
+	},
+	"Start ACME Server port=%d": {
+		"ja": "ACMEサーバーを起動しました port=%d",
+	},
+	"Stop ACME Server": {
+		"ja": "ACMEサーバーを停止しました",
+	},
 }
 
 func init() {

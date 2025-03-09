@@ -473,6 +473,24 @@
     " {\n        showMapList = true;\n      }}\n      size=\"xs\"\n    >\n      ",
     "Unknown",
     "Text",
-    "Dst"
-  ]
+    "Dst",
+    " {\n    showMapMenu = false;\n    showNetworkMenu = false;\n    showNodeMenu = false;\n    showDrawItemMenu = false;\n    showFormatNodesMenu = false;\n    refreshCount = 0;\n  }}\n/>\n",
+    " {\n          page = \"pki\";\n        }}\n      >\n        ",
+    "<span class=\"mdi mdi-clock-remove text-xs\" style=\"color: #dfdf22;\"></span><span class=\"ml-2\">expired</span>",
+    "<span class=\"mdi mdi-book-remove text-xs\" style=\"color: #e31a1c;\"></span><span class=\"ml-2\">valid</span>",
+    "<span class=\"mdi mdi-certificate text-xs\" style=\"color: #1f78b4;\"></span><span class=\"ml-2\">valid</span>",
+    "Subject",
+    "Created",
+    "Revoked",
+    " (showCreateCSRDialog = true)}\n      size=\"xs\"\n    >\n      ",
+    " (showDestroyCADialog = true)}\n        size=\"xs\"\n      >\n        ",
+    "<span class=\"mdi mdi-clock-remove text-xs\" style=\"color: #dfdf22;\"></span><span class=\"ml-2\">Expired</span>",
+    "<span class=\"mdi mdi-book-remove text-xs\" style=\"color: #e31a1c;\"></span><span class=\"ml-2\">Revoked</span>",
+    "<span class=\"mdi mdi-certificate text-xs\" style=\"color: #1f78b4;\"></span><span class=\"ml-2\">Valid</span>"
+  ],
+  "i18n-ally.extract.ignoredByFiles": {
+    "frontend/src/lib/PKI.svelte": [
+      "Expire"
+    ]
+  }
 }
