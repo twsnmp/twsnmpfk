@@ -128,7 +128,6 @@ type CSRReqEnt struct {
 	Province           string `json:"Province"`
 	Country            string `json:"Country"`
 	Sans               string `json:"Sans"`
-	ChallengePassword  string `json:"ChallengePassword"`
 }
 
 var oidChallengePassword = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 7}
@@ -156,14 +155,6 @@ func CreateCertificateRequest(req *CSRReqEnt, file string) error {
 	}
 	if req.OrganizationalUnit != "" {
 		tmp.Subject.OrganizationalUnit = append(tmp.Subject.OrganizationalUnit, req.OrganizationalUnit)
-	}
-	if req.ChallengePassword != "" {
-		tmp.Extensions = append(tmp.Extensions,
-			pkix.Extension{
-				Id:    oidChallengePassword,
-				Value: []byte(req.ChallengePassword),
-			},
-		)
 	}
 	for _, san := range strings.Split(req.Sans, ",") {
 		san = strings.TrimSpace(san)
@@ -412,12 +403,16 @@ func createCertificateFromCSR(csrBytes []byte, certType string, info map[string]
 	if err != nil {
 		return nil, "", err
 	}
+	term := datastore.PKIConf.CertTerm
+	if term < 1 {
+		term = 24 * 30
+	}
 	sn := getSerial()
 	tmp := &x509.Certificate{
 		SerialNumber:          big.NewInt(sn),
 		Subject:               csr.Subject,
 		NotBefore:             time.Now().UTC(),
-		NotAfter:              time.Now().AddDate(1, 0, 0).UTC(),
+		NotAfter:              time.Now().Add(time.Hour * time.Duration(term)).UTC(),
 		KeyUsage:              x509.KeyUsageDigitalSignature,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
 		DNSNames:              csr.DNSNames,

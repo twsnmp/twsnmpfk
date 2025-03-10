@@ -24,6 +24,7 @@ type CreateCAReq struct {
 	HttpPort      int    `json:"HttpPort"`
 	RootCATerm    int    `json:"RootCATerm"`
 	CrlInterval   int    `json:"CrlInterval"`
+	CertTerm      int    `json:"CertTerm"`
 }
 
 type PKIControlEnt struct {
@@ -32,6 +33,8 @@ type PKIControlEnt struct {
 	EnableHttp  bool   `json:"EnableHttp"`
 	AcmeStatus  string `json:"AcmeStatus"`
 	HttpStatus  string `json:"HttpStatus"`
+	CrlInterval int    `json:"CrlInterval"`
+	CertTerm    int    `json:"CertTerm"`
 }
 
 // PKIConfEnt: DBに保存するCAの設定データ
@@ -42,6 +45,7 @@ type PKIConfEnt struct {
 	RootCAKey      string `json:"RootCAKey"`
 	RootCACert     string `json:"RootCACert"`
 	RootCATerm     int    `json:"RootCATerm"`
+	CertTerm       int    `json:"CertTerm"`
 	Serial         int64  `json:"Serial"`
 	AcmeServerKey  string `json:"AcmeServerKey"`
 	AcmeServerCert string `json:"AcmeServerCert"`
@@ -114,12 +118,16 @@ func InitCAConf(req CreateCAReq) error {
 		PKIConf.AcmeBaseURL = req.AcmeBaseURL
 	}
 	PKIConf.RootCATerm = req.RootCATerm
+	PKIConf.CertTerm = req.CertTerm
 	PKIConf.CrlInterval = req.CrlInterval
 	if PKIConf.AcmePort < 1 || PKIConf.AcmePort > 0xfffe {
-		PKIConf.AcmePort = 8081
+		PKIConf.AcmePort = 8082
 	}
 	if PKIConf.HttpPort < 1 || PKIConf.HttpPort > 0xfffe {
-		PKIConf.AcmePort = 8081
+		PKIConf.HttpPort = 8081
+	}
+	if PKIConf.CertTerm < 1 {
+		PKIConf.CertTerm = 24 * 365
 	}
 	savePKIConf()
 	return nil
@@ -130,6 +138,7 @@ func ClearCAData() {
 		CrlInterval:   24,
 		RootCAKeyType: "ecdsa-256",
 		RootCATerm:    10,
+		CertTerm:      365 * 24,
 		HttpPort:      8081,
 		AcmePort:      8082,
 		Serial:        time.Now().UnixNano(),

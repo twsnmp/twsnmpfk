@@ -267,7 +267,9 @@
     "MapSize": "マップサイズ",
     "SelectMapSize": "マップサイズを選択",
     "ArpIPRange": "ARP監視IP範囲",
-    "ArpTimeout": "ARP監視タイムアウト(時間)"
+    "ArpTimeout": "ARP監視タイムアウト(時間)",
+    "Password": "パスワード",
+    "User": "ユーザー"
   },
   "DrawItem": {
     "Rect": "矩形",
@@ -447,7 +449,9 @@
     "SelectImageIcon": "アイコンイメージを選択",
     "GNMIUser": "gNMIユーザー",
     "GNMIPassword": "gNMIパスワード",
-    "MAC": "MACアドレス"
+    "MAC": "MACアドレス",
+    "SnmpPassword": "パスワード",
+    "SnmpUser": "ユーザー"
   },
   "NodeList": {
     "State": "状態",
@@ -882,5 +886,47 @@
     "Network": "ネットワーク",
     "DrawItem": "描画アイテム",
     "Line": "ライン"
+  },
+  "PKI": {
+    "Expired": "期限切れ",
+    "Revoked": "失効",
+    "Valid": "有効",
+    "Status": "状態",
+    "Node": "関連ノード",
+    "Created": "開始",
+    "Expire": "終了",
+    "BuildCA": "CAを構築しています...",
+    "Name": "名前",
+    "DNSName": "DNS名",
+    "ACMEURL": "ACMEサーバーの基本URL",
+    "HTTPURL": "OCSP/SCEP/CRLの基本URL",
+    "CAKeyType": "CAの鍵タイプ",
+    "CATerm": "CA証明書の有効期間(年)",
+    "CRLInterval": "CRLの更新間隔(時間)",
+    "HTTPPort": "OCSP/SCEPサーバーのポート番号",
+    "ACMEPort": "ACMEサーバーのポート番号",
+    "CreateCA": "CAの構築",
+    "CreateCSR": "CSR作成",
+    "CreateCABtn": "CA構築",
+    "ExportBtn": "エクスポート",
+    "CreateCert": "証明書作成",
+    "DestroyCA": "CA初期化",
+    "ServerCtrl": "サーバー制御",
+    "HTTPServer": "CRL/OCSP/SCEPサーバー",
+    "ACMEServer": "ACMEサーバー",
+    "Set": "設定",
+    "Cancel": "キャンセル",
+    "CreateCSRTitle": "証明書要求(CSR)の作成",
+    "KeyType": "鍵タイプ",
+    "Create": "作成",
+    "CN": "名前(Common Name)",
+    "SANs": "DNS名(Subject Alt Names)",
+    "O": "組織名(Organization)",
+    "OU": "組織単位(Organizational Unit)",
+    "C": "国コード(Country)",
+    "ST": "州/都道府県名(Province)",
+    "L": "市町村名(Locality)",
+    "CertTerm": "証明書の期間(時間)",
+    "Password": "パスワード"
   }
 }

@@ -486,7 +486,14 @@
     " (showDestroyCADialog = true)}\n        size=\"xs\"\n      >\n        ",
     "<span class=\"mdi mdi-clock-remove text-xs\" style=\"color: #dfdf22;\"></span><span class=\"ml-2\">Expired</span>",
     "<span class=\"mdi mdi-book-remove text-xs\" style=\"color: #e31a1c;\"></span><span class=\"ml-2\">Revoked</span>",
-    "<span class=\"mdi mdi-certificate text-xs\" style=\"color: #1f78b4;\"></span><span class=\"ml-2\">Valid</span>"
+    "<span class=\"mdi mdi-certificate text-xs\" style=\"color: #1f78b4;\"></span><span class=\"ml-2\">Valid</span>",
+    "<span class=\"mdi mdi-clock-remove text-xs\" style=\"color: #dfdf22;\"></span><span class=\"ml-2\">",
+    "<span class=\"mdi mdi-book-remove text-xs\" style=\"color: #e31a1c;\"></span><span class=\"ml-2\">",
+    "<span class=\"mdi mdi-certificate text-xs\" style=\"color: #1f78b4;\"></span><span class=\"ml-2\">",
+    "SANs",
+    " (showPKIControlDialog = true)}\n        size=\"xs\"\n      >\n        ",
+    " {\n        showPKIControlDialog = false;\n      }}\n      size=\"xs\"\n    >\n      ",
+    " {\n        showCreateCSRDialog = false;\n      }}\n      size=\"xs\"\n    >\n      "
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

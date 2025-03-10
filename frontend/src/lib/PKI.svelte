@@ -64,19 +64,19 @@
       case "expired":
         return (
           `<span class="mdi mdi-clock-remove text-xs" style="color: #dfdf22;"></span><span class="ml-2">` +
-          "期限切れ" +
+          $_("PKI.Expired") +
           `</span>`
         );
       case "revoked":
         return (
           `<span class="mdi mdi-book-remove text-xs" style="color: #e31a1c;"></span><span class="ml-2">` +
-          "失効" +
+          $_("PKI.Revoked") +
           `</span>`
         );
       default:
         return (
           `<span class="mdi mdi-certificate text-xs" style="color: #1f78b4;"></span><span class="ml-2">` +
-          "有効" +
+          $_("PKI.Valid") +
           `</span>`
         );
     }
@@ -100,6 +100,10 @@
     wait = true;
     caReq.AcmePort *= 1;
     caReq.HttpPort *= 1;
+    caReq.CertTerm *= 1;
+    caReq.RootCATerm *= 1;
+    caReq.CrlInterval *= 1;
+    caReq.CertTerm *= 1;
     createCAErr = await CreateCA(caReq);
     wait = false;
     if (createCAErr == "") {
@@ -128,6 +132,7 @@
   };
 
   const doPKIControl = async () => {
+    pkiControl.CertTerm *= 1;
     await SetPKIControl(pkiControl);
     showPKIControlDialog = false;
     setTimeout(refresh, 1200);
@@ -136,7 +141,7 @@
   const columns = [
     {
       data: "Status",
-      title: "状態",
+      title: $_("PKI.Status"),
       width: "10%",
       render: renderStatus,
     },
@@ -157,24 +162,24 @@
     },
     {
       data: "Node",
-      title: "関連ノード",
+      title: $_("PKI.Node"),
       width: "15%",
     },
     {
       data: "Created",
-      title: "開始",
+      title: $_("PKI.Created"),
       width: "10%",
       render: (data: any, type: any) => renderTime(data, type),
     },
     {
       data: "Expire",
-      title: "終了",
+      title: $_("PKI.Expire"),
       width: "10%",
       render: (data: any, type: any) => renderTime(data, type),
     },
     {
       data: "Revoked",
-      title: "失効",
+      title: $_("PKI.Revoked"),
       width: "10%",
       render: (data: any, type: any) => renderTime(data, type),
     },
@@ -251,23 +256,25 @@
         </Alert>
       {/if}
       <form class="flex flex-col space-y-4" action="#">
-        <h3 class="mb-1 font-medium text-gray-900 dark:text-white">CAの構築</h3>
+        <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+          {$_("PKI.CreateCA")}
+        </h3>
         {#if wait}
           <Alert color="blue">
             <div class="flex">
               <Spinner size={6}></Spinner>
               <span class="ml-2">
-                CAを構築しています...
+                {$_("PKI.BuildCA")}
               </span>
             </div>
           </Alert>
         {/if}
         <Label class="space-y-2 text-xs">
-          <span>名前</span>
+          <span>{$_("PKI.Name")}</span>
           <Input class="h-8" bind:value={caReq.Name} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
-          <span>DNS名</span>
+          <span>{$_("PKI.DNSName")}</span>
           <Input
             class="h-8"
             bind:value={caReq.SANs}
@@ -276,7 +283,7 @@
           />
         </Label>
         <Label class="space-y-2 text-xs">
-          <span>ACMEサーバーの基本URL</span>
+          <span>{$_("PKI.ACMEURL")}</span>
           <Input
             class="h-8"
             bind:value={caReq.AcmeBaseURL}
@@ -285,7 +292,7 @@
           />
         </Label>
         <Label class="space-y-2 text-xs">
-          <span>OCSP/SCEP/CRLの基本URL</span>
+          <span>{$_("PKI.HTTPURL")}</span>
           <Input
             class="h-8"
             bind:value={caReq.HttpBaseURL}
@@ -293,9 +300,9 @@
             size="sm"
           />
         </Label>
-        <div class="grid gap-4 grid-cols-5">
+        <div class="grid gap-4 grid-cols-6">
           <Label class="space-y-2 text-xs">
-            <span>CAの鍵タイプ</span>
+            <span>{$_("PKI.CAKeyType")}</span>
             <Select
               items={keyTypeList}
               bind:value={caReq.RootCAKeyType}
@@ -304,7 +311,7 @@
             />
           </Label>
           <Label class="space-y-2 text-xs">
-            <span>CA証明証の有効期間(年)</span>
+            <span>{$_("PKI.CATerm")}</span>
             <Input
               class="h-8 w-24 text-right"
               type="number"
@@ -315,7 +322,7 @@
             />
           </Label>
           <Label class="space-y-2 text-xs">
-            <span>CRLの更新間隔(時間)</span>
+            <span>{$_("PKI.CRLInterval")}</span>
             <Input
               class="h-8 w-24 text-right"
               type="number"
@@ -326,7 +333,18 @@
             />
           </Label>
           <Label class="space-y-2 text-xs">
-            <span>OCSP/SCEPサーバーのポート番号</span>
+            <span>{$_("PKI.CertTerm")}</span>
+            <Input
+              class="h-8 w-24 text-right"
+              type="number"
+              min="1"
+              max="87600"
+              bind:value={caReq.CertTerm}
+              size="sm"
+            />
+          </Label>
+          <Label class="space-y-2 text-xs">
+            <span>{$_("PKI.HTTPPort")}</span>
             <Input
               class="h-8 w-24 text-right"
               type="number"
@@ -337,7 +355,7 @@
             />
           </Label>
           <Label class="space-y-2 text-xs">
-            <span>ACMEサーバーのポート番号</span>
+            <span>{$_("PKI.ACMEPort")}</span>
             <Input
               class="h-8 w-24 text-right"
               type="number"
@@ -370,7 +388,7 @@
       size="xs"
     >
       <Icon path={icons.mdiKey} size={1} />
-      CSR作成
+      {$_("PKI.CreateCSR")}
     </GradientButton>
     {#if showCreateCA}
       <GradientButton
@@ -382,7 +400,7 @@
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
-        CA構築
+        {$_("PKI.CreateCABtn")}
       </GradientButton>
     {:else}
       {#if selectedCount > 0}
@@ -394,7 +412,7 @@
           size="xs"
         >
           <Icon path={icons.mdiContentSave} size={1} />
-          エクスポート
+          {$_("PKI.ExportBtn")}
         </GradientButton>
         {#if selectedForRevoke != ""}
           <GradientButton
@@ -405,7 +423,7 @@
             size="xs"
           >
             <Icon path={icons.mdiBookRemove} size={1} />
-            失効
+            {$_("PKI.Revoked")}
           </GradientButton>
         {/if}
       {/if}
@@ -417,7 +435,7 @@
         size="xs"
       >
         <Icon path={icons.mdiCertificate} size={1} />
-        証明書作成
+        {$_("PKI.CreateCert")}
       </GradientButton>
       <GradientButton
         shadow
@@ -427,7 +445,7 @@
         size="xs"
       >
         <Icon path={icons.mdiTrashCan} size={1} />
-        CA初期化
+        {$_("PKI.DestroyCA")}
       </GradientButton>
       <GradientButton
         shadow
@@ -437,7 +455,7 @@
         size="xs"
       >
         <Icon path={icons.mdiCog} size={1} />
-        サーバー制御
+        {$_("PKI.ServerCtrl")}
       </GradientButton>
       <GradientButton
         shadow
@@ -461,25 +479,8 @@
 >
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-      サーバーの制御
+      {$_("PKI.ServerCtrl")}
     </h3>
-    <Alert
-      color={pkiControl.HttpStatus.indexOf("error") != -1 ? "red" : "blue"}
-      class="m-1 text-xs p-0"
-    >
-      <div class="flex">
-        <Icon
-          path={pkiControl.HttpStatus.indexOf("error") != -1
-            ? icons.mdiExclamation
-            : icons.mdiInformation}
-          size={1}
-        />
-        <span class="ml-2">
-          CRL/OCSP/SCEPサーバー:
-        </span>
-        {pkiControl.HttpStatus}
-      </div>
-    </Alert>
     <Alert
       color={pkiControl.AcmeStatus.indexOf("error") != -1 ? "red" : "blue"}
       class="m-1 text-xs p-0"
@@ -492,18 +493,38 @@
           size={1}
         />
         <span class="ml-2">
-          ACMEサーバー:
+          {$_("PKI.ACMEServer")}:
         </span>
         {pkiControl.AcmeStatus}
       </div>
     </Alert>
+    <Alert
+      color={pkiControl.HttpStatus.indexOf("error") != -1 ? "red" : "blue"}
+      class="m-1 text-xs p-0"
+    >
+      <div class="flex">
+        <Icon
+          path={pkiControl.HttpStatus.indexOf("error") != -1
+            ? icons.mdiExclamation
+            : icons.mdiInformation}
+          size={1}
+        />
+        <span class="ml-2">
+          {$_("PKI.HTTPServer")}:
+        </span>
+        {pkiControl.HttpStatus}
+      </div>
+    </Alert>
     <div class="grid gap-4 mb-4 grid-cols-2">
-      <Checkbox bind:checked={pkiControl.EnableAcme}>ACMEサーバー</Checkbox>
-      <Checkbox bind:checked={pkiControl.EnableHttp}>OCSP/SCEPサーバー</Checkbox
+      <Checkbox bind:checked={pkiControl.EnableAcme}
+        >{$_("PKI.ACMEServer")}</Checkbox
+      >
+      <Checkbox bind:checked={pkiControl.EnableHttp}
+        >{$_("PKI.HTTPServer")}</Checkbox
       >
     </div>
     <Label class="space-y-2 text-xs">
-      <span>ACMEサーバーの基本URL</span>
+      <span>{$_("PKI.ACMEURL")}</span>
       <Input
         class="h-8"
         bind:value={pkiControl.AcmeBaseURL}
@@ -511,6 +532,30 @@
         size="sm"
       />
     </Label>
+    <div class="grid gap-4 mb-4 grid-cols-2">
+      <Label class="space-y-2 text-xs">
+        <span>{$_("PKI.CRLInterval")}</span>
+        <Input
+          class="h-8 w-24 text-right"
+          type="number"
+          min="1"
+          max="96"
+          bind:value={caReq.CrlInterval}
+          size="sm"
+        />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_("PKI.CertTerm")}</span>
+        <Input
+          class="h-8 w-24 text-right"
+          type="number"
+          min="1"
+          max="87600"
+          bind:value={pkiControl.CertTerm}
+          size="sm"
+        />
+      </Label>
+    </div>
   </form>
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
@@ -521,7 +566,7 @@
       size="xs"
     >
       <Icon path={icons.mdiController} size={1} />
-      設定
+      {$_("PKI.Set")}
     </GradientButton>
     <GradientButton
       shadow
@@ -533,7 +578,7 @@
       size="xs"
     >
       <Icon path={icons.mdiCancel} size={1} />
-      キャンセル
+      {$_("PKI.Cancel")}
     </GradientButton>
   </div>
 </Modal>
@@ -546,10 +591,10 @@
 >
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-      証明書要求(CSR)の作成
+      {$_("PKI.CreateCSRTitle")}
     </h3>
     <Label class="space-y-2 text-xs">
-      <span>鍵タイプ</span>
+      <span>{$_("PKI.KeyType")}</span>
       <Select
         items={keyTypeList}
         bind:value={csrReq.KeyType}
@@ -558,34 +603,34 @@
       />
     </Label>
     <Label class="space-y-2 text-xs">
-      <span>名前(Common Name)</span>
+      <span>{$_("PKI.CN")}</span>
       <Input class="h-8" bind:value={csrReq.CommonName} size="sm" />
     </Label>
     <Label class="space-y-2 text-xs">
-      <span>DNS名(Subject Alt Names)</span>
+      <span>{$_("PKI.SANs")}</span>
       <Input class="h-8" bind:value={csrReq.SANs} size="sm" />
     </Label>
     <div class="grid gap-4 mb-4 grid-cols-2">
       <Label class="space-y-2 text-xs">
-        <span>組織名(Organization)</span>
+        <span>{$_("PKI.O")}</span>
         <Input class="h-8" bind:value={csrReq.Organization} size="sm" />
       </Label>
       <Label class="space-y-2 text-xs">
-        <span>組織単位(Organizational Unit)</span>
+        <span>{$_("PKI.OU")}</span>
         <Input class="h-8" bind:value={csrReq.OrganizationalUnit} size="sm" />
       </Label>
     </div>
     <div class="grid gap-4 mb-4 grid-cols-3">
       <Label class="space-y-2 text-xs">
-        <span>国コード(Country)</span>
+        <span>{$_("PKI.C")}</span>
         <Input class="h-8" bind:value={csrReq.Country} size="sm" />
       </Label>
       <Label class="space-y-2 text-xs">
-        <span>州/都道府県名(Province)</span>
+        <span>{$_("PKI.ST")}</span>
         <Input class="h-8" bind:value={csrReq.Province} size="sm" />
       </Label>
       <Label class="space-y-2 text-xs">
-        <span>市町村名(Locality)</span>
+        <span>{$_("PKI.L")}</span>
         <Input class="h-8" bind:value={csrReq.Locality} size="sm" />
       </Label>
     </div>
@@ -599,7 +644,7 @@
       size="xs"
     >
       <Icon path={icons.mdiContentSave} size={1} />
-      作成
+      {$_("PKI.Create")}
     </GradientButton>
     <GradientButton
       shadow
@@ -611,7 +656,7 @@
       size="xs"
     >
       <Icon path={icons.mdiCancel} size={1} />
-      キャンセル
+      {$_("PKI.Cancel")}
     </GradientButton>
   </div>
 </Modal>

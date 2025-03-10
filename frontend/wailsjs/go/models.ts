@@ -347,6 +347,7 @@ export namespace datastore {
 	    HttpPort: number;
 	    RootCATerm: number;
 	    CrlInterval: number;
+	    CertTerm: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new CreateCAReq(source);
@@ -363,6 +364,7 @@ export namespace datastore {
 	        this.HttpPort = source["HttpPort"];
 	        this.RootCATerm = source["RootCATerm"];
 	        this.CrlInterval = source["CrlInterval"];
+	        this.CertTerm = source["CertTerm"];
 	    }
 	}
 	export class DiscoverConfEnt {
@@ -905,6 +907,8 @@ export namespace datastore {
 	    EnableHttp: boolean;
 	    AcmeStatus: string;
 	    HttpStatus: string;
+	    CrlInterval: number;
+	    CertTerm: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new PKIControlEnt(source);
@@ -917,6 +921,8 @@ export namespace datastore {
 	        this.EnableHttp = source["EnableHttp"];
 	        this.AcmeStatus = source["AcmeStatus"];
 	        this.HttpStatus = source["HttpStatus"];
+	        this.CrlInterval = source["CrlInterval"];
+	        this.CertTerm = source["CertTerm"];
 	    }
 	}
 	export class PollingEnt {
@@ -1600,7 +1606,6 @@ export namespace pki {
 	    Province: string;
 	    Country: string;
 	    Sans: string;
-	    ChallengePassword: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new CSRReqEnt(source);
@@ -1616,7 +1621,6 @@ export namespace pki {
 	        this.Province = source["Province"];
 	        this.Country = source["Country"];
 	        this.Sans = source["Sans"];
-	        this.ChallengePassword = source["ChallengePassword"];
 	    }
 	}
 

@@ -728,6 +728,104 @@ This is a report that shows the relationship between IP address and MAC address 
 ![h:400 center](./images/en/2023-12-03_05-52-16.png)
 
 ---
+## PKI CA construction
+<!-- _class: tinytext -->
+
+This is the screen before building a CA for the PKI function.
+
+![h:400 center](./images/en/2025-03-10_16-32-40.png)
+
+---
+<!-- _class: tinytext -->
+
+|Item|Content|
+|----|---|
+|Name|This is the name of the CA.I'll try to use the Subject of the CA certificate.|
+|DNS name|Specify the CDP of the certificate to be issued, the OCSP address, the host name and IP address to be used for SANs for the certificate of the ACME server, separated by commas.|
+|ACME URL|This is the basic URL for the ACME server.Blanks will be automatically set from the host name.|
+|OCSP/SCEP Server URL|This is the basic URL for the CRL/OCSP/SCEP Server.Blanks will be automatically set from the host name.|
+|CA key type|Specify the CA key type.|
+
+---
+|Item|Content|
+|----|---|
+|CA certificate duration|Specify the number of years the certificate is valid.|
+|CRL Update Interval|Specify the CRL update interval in hours.|
+|Certificate Period|Specify the period of the certificate to be issued in hours.|
+|CRL/OCSP/SCEP server port number|Specify the HTTP server port number.Cannot be changed later.|
+|ACME Server Port Number|Specify the ACME Server Port Number.Cannot be changed later.|
+
+---
+### Certificate list
+After the CA is built, the certificate list screen will be displayed.You can check the issued certificate.
+
+<!-- _class: tinytext -->
+![h:400 center](./images/en/2025-03-10_16-33-42.png)
+
+---
+<!-- _class: tinytext -->
+
+|Item|Content|
+|----|---|
+|Status|Certificate status.|
+|Type|Certificate type.|
+|ID|Certificate serial number.|
+|Subject|A Subject for the certificate.|
+|Node|The node where the certificate was obtained.|
+|Created|The start date and time of the certificate period.|
+|Expire|The end date and time of the certificate period.|
+|Revoked|The date and time the certificate was revoked.|
+---
+<!-- _class: tinytext -->
+
+|Item|Content|
+|----|---|
+|Create CSR|Displays the screen for creating a certificate request (CSR).|
+|Certificate creation|Read the CSR and issue the certificate.|
+|CA Initialization|Destroy CA.|
+|Server Control|Displays the server control screen.|
+|Renew|Update the certificate list.|
+|Revokes|Revokes the selected certificate.|
+|Export|Saves the selected certificate to a file.|
+---
+
+#### Create CSR
+<!-- _class: tinytext -->
+This is the screen for creating a certificate request (CSR).
+
+![h:400 center](./images/en/2025-03-10_16-34-09.png)
+
+---
+
+|Item|Content|
+|----|---|
+|Key type|Specifies the key type for CSR.|
+|Name|Specifies the value for CN.|
+|SANs|Subject Alt Names are specified, separated by commas.|
+|Organization name|Specify the organization name.It's OK to leave blank.|
+|Organization Unit|Specify an organizational unit.It's OK to leave blank.|
+|Country code|Specify the country code.It's OK to leave blank.|
+|State/Province name|Specify the state or prefecture name.It's OK to leave blank.|
+|City name|Specify the city name.It's OK to leave blank.|
+---
+
+### Server Control
+<!-- _class: tinytext -->
+This is a screen that controls the operation of the PKI server.
+
+![h:400 center](./images/en/2025-03-10_16-34-35.png)
+
+---
+
+|Item|Content|
+|----|---|
+|ACME Server|Start the ACME server.|
+|CRL/OCSP/SCEP Server|Start the CRL/OCSP/SCEP server.|
+|ACME Server Basic URL|Specifies the basic URL that the ACME server responds to.|
+|CRL Update Interval|Specify the CRL update interval in hours.|
+|Certificate Period|Specify the period of the certificate to be issued in hours.|
+
+---
 ## Event Log
 This is the event log screen.At the top, there is a graph showing the number of logs in chronological order.
 

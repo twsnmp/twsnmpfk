@@ -30,6 +30,7 @@ func (a *App) GetDefaultCreateCAReq() datastore.CreateCAReq {
 		HttpPort:      datastore.PKIConf.HttpPort,
 		RootCATerm:    datastore.PKIConf.RootCATerm,
 		CrlInterval:   datastore.PKIConf.CrlInterval,
+		CertTerm:      datastore.PKIConf.CertTerm,
 	}
 	return ret
 }
@@ -197,6 +198,8 @@ func (a *App) GetPKIControl() datastore.PKIControlEnt {
 		EnableAcme:  datastore.PKIConf.EnableAcme,
 		EnableHttp:  datastore.PKIConf.EnableHttp,
 		AcmeBaseURL: datastore.PKIConf.AcmeBaseURL,
+		CertTerm:    datastore.PKIConf.CertTerm,
+		CrlInterval: datastore.PKIConf.CrlInterval,
 		AcmeStatus:  pki.GetAcmeServerStatus(),
 		HttpStatus:  pki.GetAcmeServerStatus(),
 	}
@@ -206,4 +209,6 @@ func (a *App) SetPKIControl(req datastore.PKIControlEnt) {
 	datastore.PKIConf.EnableAcme = req.EnableAcme
 	datastore.PKIConf.EnableHttp = req.EnableHttp
 	datastore.PKIConf.AcmeBaseURL = req.AcmeBaseURL
+	datastore.PKIConf.CertTerm = req.CertTerm
+	datastore.PKIConf.CrlInterval = req.CrlInterval
 }

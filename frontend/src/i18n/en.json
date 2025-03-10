@@ -279,7 +279,9 @@
     "MapSize": "Map Size",
     "SelectMapSize": "Select Map size",
     "ArpIPRange": "ARP Watch IP Range",
-    "ArpTimeout": "ARP Timeout"
+    "ArpTimeout": "ARP Timeout",
+    "SnmpPassword": "Password",
+    "SnmpUser": "User"
   },
   "DrawItem": {
     "Cancel": "Cancel",
@@ -459,7 +461,9 @@
     "SelectImageIcon": "Select image icon",
     "GNMIPassword": "gNMI Password",
     "GNMIUser": "gNMI User",
-    "MAC": "MAC"
+    "MAC": "MAC",
+    "Password": "Password",
+    "User": "User"
   },
   "NodeList": {
     "CheckAll": "Check all",
@@ -882,5 +886,47 @@
     "Polling2": "Polling 2",
     "Text": "Text",
     "Type": "Type"
+  },
+  "PKI": {
+    "ACMEPort": "ACME Port",
+    "ACMEServer": "ACME Server",
+    "ACMEURL": "ACME Base URL",
+    "BuildCA": "Create CA",
+    "C": "Country",
+    "CAKeyType": "CA Key Type",
+    "CATerm": "CA Term(year)",
+    "CN": "Common Name",
+    "CRLInterval": "CRL Interval(H)",
+    "Cancel": "Cancel",
+    "Create": "Create",
+    "CreateCA": "Create CA",
+    "CreateCABtn": "Create CA",
+    "CreateCSR": "Create CSR",
+    "CreateCSRTitle": "Create CSR",
+    "CreateCert": "Create Cert",
+    "Created": "Created",
+    "DNSName": "DNS Name",
+    "DestroyCA": "Destory CA",
+    "Expire": "Expire",
+    "Expired": "Expired",
+    "ExportBtn": "Export",
+    "HTTPPort": "CRL/OCSP/ Server Port",
+    "HTTPServer": "CRL/OCSP/SCEP Server",
+    "HTTPURL": "CRL/OCSP/SCEP Server Base URL",
+    "KeyType": "Key Type",
+    "L": "Locality",
+    "Name": "Name",
+    "Node": "Node",
+    "O": "Organization",
+    "OU": "Organaizational Unit",
+    "Revoked": "Revoked",
+    "SANs": "SANs",
+    "ST": "State",
+    "ServerCtrl": "Server Control",
+    "Set": "Set",
+    "Status": "Status",
+    "Valid": "Valid",
+    "CertTerm": "Cert Term",
+    "Password": "Password"
   }
 }
