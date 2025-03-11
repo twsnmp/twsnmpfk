@@ -42,7 +42,7 @@ var clientKey = ""
 var caCert = ""
 
 func init() {
-	flag.StringVar(&dataStorePath, "datastore", "", "Path to data dtore directory")
+	flag.StringVar(&dataStorePath, "datastore", "", "Path to data store directory")
 	flag.BoolVar(&kiosk, "kiosk", false, "Kisok mode(frameless and full screen)")
 	flag.StringVar(&lock, "lock", "", "Disable edit map and lock page(map or loc)")
 	flag.IntVar(&trapPort, "trapPort", 162, "SNMP TRAP port")

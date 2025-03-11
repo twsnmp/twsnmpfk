@@ -1637,12 +1637,19 @@ You can customize it by saving the following files in the data folder.
 | Mail_repot.html | Template of report mail (optional) |
 | EXTMIBS/*| Additional reading extended MIB (optional) |
 
+---
 ## Usage
 
 ```
 Usage of twsnmpfk:
+  -caCert string
+    	CA Cert path
+  -clientCert string
+    	Client cert path
+  -clientKey string
+    	Client key path
   -datastore string
-    	Path to data dtore directory
+    	Path to data store directory
   -kiosk
     	Kisok mode(frameless and full screen)
   -lang string
@@ -1651,18 +1658,26 @@ Usage of twsnmpfk:
     	Disable edit map and lock page(map or loc)
   -maxDispLog int
     	Max log size to diplay (default 10000)
+```
+---
+```
+  -netflowPort int
+    	Netflow port (default 2055)
   -ping string
     	ping mode icmp or udp
+  -sFlowPort int
+    	sFlow port (default 6343)
+  -sshdPort int
+    	SSH server port (default 2022)
   -syslogPort int
     	Syslog port (default 514)
+  -tcpdPort int
+    	tcp server port (default 8086)
   -trapPort int
-      SNMP TRAP port (default 162)
-  -sshdPort int
-      SSH Server port (default 2022)
+    	SNMP TRAP port (default 162)
 ```
 
 ---
-
 | Parameters | Description |
 | --- | --- |
 | dataStore | Datstore Pass |
@@ -1673,5 +1688,11 @@ Usage of twsnmpfk:
 | syslogPort <PORT> | Syslog receiving port (default 514) |
 | trapPort <Port> | SNMP TRAP Reception port (Default 162) |
 | sshdPort <Port> | SSH server port (Default 162) |
-
+---
+| Parameters | Description |
+| --- | --- |
+|sshdPort <port>| SSH Server Receive Port (Default 2022)|
+|netflowPort <port>| NetFlow/IPFIX receive port (default 2055)|
+|sFlowPort <port>| sFlow receiving port (default 6343)|
+|tcpdPort <port>| TCP log receiving port (default 8086)|
 

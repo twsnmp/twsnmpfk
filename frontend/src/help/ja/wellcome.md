@@ -42,10 +42,16 @@
 起動時に以下のパラメータを指定できます。
 </span>
 
-<pre class="text-sm font-mono">
+```
 Usage of twsnmpfk:
+  -caCert string
+    	CA Cert path
+  -clientCert string
+    	Client cert path
+  -clientKey string
+    	Client key path
   -datastore string
-    	Path to data dtore directory
+    	Path to data store directory
   -kiosk
     	Kisok mode(frameless and full screen)
   -lang string
@@ -54,13 +60,24 @@ Usage of twsnmpfk:
     	Disable edit map and lock page(map or loc)
   -maxDispLog int
     	Max log size to diplay (default 10000)
+```
+>>>
+```
+  -netflowPort int
+    	Netflow port (default 2055)
   -ping string
     	ping mode icmp or udp
+  -sFlowPort int
+    	sFlow port (default 6343)
+  -sshdPort int
+    	SSH server port (default 2022)
   -syslogPort int
     	Syslog port (default 514)
+  -tcpdPort int
+    	tcp server port (default 8086)
   -trapPort int
-      SNMP TRAP port (default 162)
-</pre>
+    	SNMP TRAP port (default 162)
+```
 
 >>>
 #### 起動パラメータの説明
@@ -76,6 +93,16 @@ Usage of twsnmpfk:
 |ping <mode>|pingの動作モード(icmp又はudp)|
 |syslogPort <port>|syslogの受信ポート(デフォルト514)|
 |trapPort <port>| SNMP TRAP受信ポート(デフォルト162)|
+>>>
+|パラメータ|説明|
+|---|---|
+|sshdPort <port>| SSH Server受信ポート(デフォルト2022)|
+|netflowPort <port>| NetFlow/IPFIX受信ポート(デフォルト2055)|
+|sFlowPort <port>| sFlow受信ポート(デフォルト6343)|
+|tcpdPort <port>| TCPログ受信ポート(デフォルト8086)|
+|caCert <file>| TWLogEyeとTLS通信するためのCA証明書|
+|clientCert <file>| TWLogEyeとmTLS通信するためのクライアント証明書|
+|clientKey <file>| TWLogEyeとmTLS通信するためのクライアント鍵|
 
 </div>
 
