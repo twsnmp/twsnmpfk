@@ -138,7 +138,9 @@ Usage of twsnmpfk:
   -trapPort int
     	SNMP TRAP port (default 162)
 ```
+
 ---
+
 | Parameters | Description |
 | --- | --- |
 | dataStore | Datstore Pass |
