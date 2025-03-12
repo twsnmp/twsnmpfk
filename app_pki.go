@@ -201,7 +201,7 @@ func (a *App) GetPKIControl() datastore.PKIControlEnt {
 		CertTerm:    datastore.PKIConf.CertTerm,
 		CrlInterval: datastore.PKIConf.CrlInterval,
 		AcmeStatus:  pki.GetAcmeServerStatus(),
-		HttpStatus:  pki.GetAcmeServerStatus(),
+		HttpStatus:  pki.GetHttpServerStatus(),
 	}
 }
 
@@ -211,4 +211,5 @@ func (a *App) SetPKIControl(req datastore.PKIControlEnt) {
 	datastore.PKIConf.AcmeBaseURL = req.AcmeBaseURL
 	datastore.PKIConf.CertTerm = req.CertTerm
 	datastore.PKIConf.CrlInterval = req.CrlInterval
+	datastore.SavePKIConf()
 }

@@ -278,7 +278,6 @@ func SaveMapData() {
 	if err := saveAllPollings(); err != nil {
 		log.Printf("saveAllPollings err=%v", err)
 	}
-	savePKIConf()
 }
 
 // bboltに保存する場合のキーを時刻から生成する。

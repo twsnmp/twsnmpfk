@@ -406,7 +406,7 @@ func acmeServerFunc(e *echo.Echo) {
 				chTypes = append(chTypes, "tls-alpn-01")
 			case "dns":
 				chTypes = append(chTypes, "dns-01")
-				if strings.HasPrefix(identifier.Value, "*") {
+				if !strings.HasPrefix(identifier.Value, "*.") {
 					chTypes = append(chTypes, "http-01")
 					chTypes = append(chTypes, "tls-alpn-01")
 				}
@@ -486,6 +486,10 @@ func acmeServerFunc(e *echo.Echo) {
 			log.Printf("authz not owner %s!=%s", az.AccountID, acc.ID)
 			return c.JSON(http.StatusBadRequest, fmt.Errorf("account id %s!=%s", az.AccountID, acc.ID))
 		}
+		log.Printf("az=%+v", az)
+		for _, c := range az.Challenges {
+			log.Printf("challenge=%+v", c)
+		}
 		c.Response().Header().Add("Location", baseURL+"/authz/"+az.ID)
 		return c.JSON(http.StatusOK, az)
 	})
@@ -533,10 +537,12 @@ func acmeServerFunc(e *echo.Echo) {
 			}
 		case "tls-alpn-01":
 			if err := tlsalpn01Validate(acc, ch); err != nil {
+				log.Printf("challenge tlsalpn01Validate err=%v", err)
 				return c.JSON(http.StatusBadRequest, err)
 			}
 		case "dns-01":
 			if err := dns01Validate(acc, ch); err != nil {
+				log.Printf("challenge dns01Validate err=%v", err)
 				return c.JSON(http.StatusBadRequest, err)
 			}
 		default:

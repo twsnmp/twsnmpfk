@@ -128,6 +128,9 @@
 
   const destroyCA = async () => {
     await DestroyCA();
+    if (table) {
+      table.destroy();
+    }
     setTimeout(refresh, 1200);
   };
 

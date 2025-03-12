@@ -755,19 +755,3 @@ func getRemoteAddr(a []string) string {
 	}
 	return ""
 }
-
-func getSysUptime(agent *gosnmp.GoSNMP) int64 {
-	oids := []string{datastore.MIBDB.NameToOID("sysUpTime.0")}
-	result, err := agent.Get(oids)
-	if err != nil {
-		return 0
-	}
-	var uptime int64
-	for _, variable := range result.Variables {
-		if variable.Name == datastore.MIBDB.NameToOID("sysUpTime.0") {
-			uptime = int64(gosnmp.ToBigInt(variable.Value).Uint64())
-			break
-		}
-	}
-	return uptime
-}

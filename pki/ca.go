@@ -29,25 +29,14 @@ var rootCAPublicKey any
 var rootCACertificate []byte
 var crl []byte
 
-func Init() error {
-	if err := loadRootCA(); err != nil {
-		return err
-	}
-	if datastore.PKIConf.AcmeServerKey != "" && datastore.PKIConf.AcmeServerCert != "" {
-		acmeServerPrivateKey = []byte(datastore.PKIConf.AcmeServerKey)
-		acmeServerCertificate = []byte(datastore.PKIConf.AcmeServerCert)
-	}
-	loadScepCA()
-	return nil
-}
-
 func CreateCA(req datastore.CreateCAReq) error {
 	datastore.InitCAConf(req)
 	if err := createRootCACertificate(); err != nil {
 		return err
 	}
 	createScepCACertificate()
-	return createAcmeServerCertificate()
+	createAcmeServerCertificate()
+	return datastore.SavePKIConf()
 }
 
 var stopCA = false
@@ -59,6 +48,13 @@ func DestroyCA() {
 }
 
 func Start(ctx context.Context, wg *sync.WaitGroup) error {
+	if err := loadRootCA(); err == nil {
+		if datastore.PKIConf.AcmeServerKey != "" && datastore.PKIConf.AcmeServerCert != "" {
+			acmeServerPrivateKey = []byte(datastore.PKIConf.AcmeServerKey)
+			acmeServerCertificate = []byte(datastore.PKIConf.AcmeServerCert)
+		}
+		loadScepCA()
+	}
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Time:  time.Now().UnixNano(),
 		Type:  "pki",
@@ -208,7 +204,7 @@ func CreateCertificateRequest(req *CSRReqEnt, file string) error {
 	}
 	csr, err := x509.CreateCertificateRequest(rand.Reader, tmp, key)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	if err := outPem(csr, file, "CERTIFICATE REQUEST"); err != nil {
 		return err

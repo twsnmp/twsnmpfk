@@ -79,7 +79,7 @@ func loadPKIConf() error {
 	if db == nil {
 		return ErrDBNotOpen
 	}
-	ClearCAData()
+	setDefaultPKIConf()
 	return db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("config"))
 		v := b.Get([]byte("pkiConf"))
@@ -88,6 +88,20 @@ func loadPKIConf() error {
 		}
 		return json.Unmarshal(v, &PKIConf)
 	})
+}
+
+func setDefaultPKIConf() {
+	PKIConf = PKIConfEnt{
+		CrlInterval:   24,
+		RootCAKeyType: "ecdsa-256",
+		RootCATerm:    10,
+		CertTerm:      365 * 24,
+		HttpPort:      8082,
+		AcmePort:      8083,
+		Serial:        time.Now().UnixNano(),
+		CrlNumber:     1,
+		SANs:          getDefaultSANs(),
+	}
 }
 
 func InitCAConf(req CreateCAReq) error {
@@ -121,31 +135,21 @@ func InitCAConf(req CreateCAReq) error {
 	PKIConf.CertTerm = req.CertTerm
 	PKIConf.CrlInterval = req.CrlInterval
 	if PKIConf.AcmePort < 1 || PKIConf.AcmePort > 0xfffe {
-		PKIConf.AcmePort = 8082
+		PKIConf.AcmePort = 8083
 	}
 	if PKIConf.HttpPort < 1 || PKIConf.HttpPort > 0xfffe {
-		PKIConf.HttpPort = 8081
+		PKIConf.HttpPort = 8082
 	}
 	if PKIConf.CertTerm < 1 {
 		PKIConf.CertTerm = 24 * 365
 	}
-	savePKIConf()
+	SavePKIConf()
 	return nil
 }
 
 func ClearCAData() {
-	PKIConf = PKIConfEnt{
-		CrlInterval:   24,
-		RootCAKeyType: "ecdsa-256",
-		RootCATerm:    10,
-		CertTerm:      365 * 24,
-		HttpPort:      8081,
-		AcmePort:      8082,
-		Serial:        time.Now().UnixNano(),
-		CrlNumber:     1,
-		SANs:          getDefaultSANs(),
-	}
-	savePKIConf()
+	setDefaultPKIConf()
+	SavePKIConf()
 	db.Batch(func(tx *bbolt.Tx) error {
 		tx.DeleteBucket([]byte("certs"))
 		_, err := tx.CreateBucket([]byte("certs"))
@@ -222,10 +226,11 @@ func FindCert(id string) *CertEnt {
 	return &cert
 }
 
-func savePKIConf() error {
+func SavePKIConf() error {
 	if db == nil {
 		return ErrDBNotOpen
 	}
+	log.Println("savePKIConf")
 	return db.Batch(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("config"))
 		if j, err := json.Marshal(&PKIConf); err == nil {
