@@ -198,6 +198,7 @@ func RevokeCert(cert *CertEnt) error {
 	AddEventLog(&EventLogEnt{
 		Time:  cert.Revoked,
 		Type:  "ca",
+		Level: "low",
 		Event: fmt.Sprintf(i18n.Trans("Revoke Cert subject=%s serial=%s"), cert.Subject, cert.ID),
 	})
 	return UpdateCert(cert)

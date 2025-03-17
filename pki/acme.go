@@ -153,6 +153,7 @@ func createAcmeServerCertificate() error {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Time:  time.Now().UnixNano(),
 		Type:  "ca",
+		Level: "info",
 		Event: fmt.Sprintf(i18n.Trans("Create ACME Server Certificate subject=%s serial=%x"), tmp.Subject.String(), sn),
 	})
 	return nil

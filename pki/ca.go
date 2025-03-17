@@ -126,8 +126,6 @@ type CSRReqEnt struct {
 	Sans               string `json:"Sans"`
 }
 
-var oidChallengePassword = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 7}
-
 func CreateCertificateRequest(req *CSRReqEnt, file string) error {
 	var key any
 	var keyBytes []byte
@@ -350,6 +348,7 @@ func createRootCACertificate() error {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Time:  time.Now().UnixNano(),
 		Type:  "ca",
+		Level: "info",
 		Event: fmt.Sprintf(i18n.Trans("Create CA Certificate subject=%s serial=%x"), subject.String(), sn),
 	})
 	return nil
@@ -391,6 +390,7 @@ func createCertificateFromCSR(csrBytes []byte, certType string, info map[string]
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Time:  time.Now().UnixNano(),
 			Type:  "ca",
+			Level: "low",
 			Event: fmt.Sprintf(i18n.Trans("Reject CSR subject=%s info=%+v err=%v"), csr.Subject.String(), info, err),
 		})
 		return nil, "", err
@@ -453,6 +453,7 @@ func createCertificateFromCSR(csrBytes []byte, certType string, info map[string]
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Time:     time.Now().UnixNano(),
 		Type:     "ca",
+		Level:    "info",
 		NodeID:   nodeID,
 		NodeName: nodeName,
 		Event:    fmt.Sprintf(i18n.Trans("Create Certificate subject=%s serial=%s info=%+v"), tmp.Subject.String(), certID, info),
