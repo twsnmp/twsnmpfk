@@ -1,8 +1,5 @@
 ---
-theme: graph_paper
-header: はじめてのTWSNMP FK
-footer: Copyright (c) 2023 Masayuki Yamai
-title: はじめてのTWSMMP
+title: はじめてのTWSMMP FK
 layout: default
 ---
 
@@ -81,8 +78,7 @@ Windowsの場合はスタートメニューからMac OSの場合はランチャ�
 
 新規のフォルダを選択して起動すると何もノードのないマップが表示されます。しばらくするとログが表示されます。
 
-![h:400 center](./images/ja/2023-11-24_16-37-04.png)
-
+![](./images/ja/2023-11-24_16-37-04.png)
 
 ## はじめてのマップ作成の流れ
 

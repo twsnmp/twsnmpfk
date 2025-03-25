@@ -1,7 +1,5 @@
 ---
-header: First TWSNMP FK
-footer: Copyright (c) 2023 Masayuki Yamai
-title: TWSMMP FK
+title: TWSNMP FK
 layout: default
 ---
 
@@ -9,14 +7,14 @@ layout: default
 [日本語の説明](./index_ja.html)
 [日本語のPDF](./twsnmpfk_ja.pdf)
 
-# First TWSNMP FK
+# TWSNMP FK
 Most popular SNMP manager in Japan
 
 ![](./images/appicon.png){: width="256" }
 
 
 
-## At the beginning
+## About
 
 TWSNMP is an SNMP manager that supports the most popular SNMPv3 in Japan for over 20 years.
 It is TWSNMP FK that has been reprinted with the latest machine technology in 2023.
@@ -395,7 +393,7 @@ This is a screen for selecting the obtained MIB object name.
 Open the tree and click the object name to see the explanation.
 Double click to select.
 
-![h:400 center](./images/en/2023-12-03_10-35-25.png)
+![](./images/en/2023-12-03_10-35-25.png)
 
 
 ### GNMI tool
