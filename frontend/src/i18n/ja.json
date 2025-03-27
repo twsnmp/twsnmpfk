@@ -138,7 +138,8 @@
     "Mode": "モード",
     "Descr": "説明",
     "Add": "追加",
-    "Cancel": "キャンセル"
+    "Cancel": "キャンセル",
+    "AddFromTmpFile": "テンプレートファイルから追加"
   },
   "AIList": {
     "AnomaryScore": "異常スコア",

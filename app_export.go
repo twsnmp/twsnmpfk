@@ -778,3 +778,71 @@ func (a *App) ImportPortDef() string {
 	}
 	return string(d)
 }
+
+func (a *App) ExportPollingAsTemplate(id string) error {
+	p := datastore.GetPolling(id)
+	if p == nil {
+		return fmt.Errorf("polling not found")
+	}
+	d := time.Now().Format("20060102150405")
+	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
+		DefaultFilename:      "TWSNMP_Polling_Template_" + d + ".json",
+		CanCreateDirectories: true,
+		Filters: []wails.FileFilter{{
+			DisplayName: "TWSNMP Polling Template file(*.json)",
+			Pattern:     "*.json",
+		}},
+	})
+	if err != nil {
+		return err
+	}
+	if file == "" {
+		return nil
+	}
+	pt := datastore.PollingTemplateEnt{
+		Name:      p.Name,
+		Type:      p.Type,
+		Mode:      p.Mode,
+		Filter:    p.Filter,
+		Extractor: p.Extractor,
+		Script:    p.Script,
+		Descr:     p.Name,
+		Params:    p.Params,
+		Level:     "off",
+	}
+	j, err := json.MarshalIndent(pt, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(file, j, 0666)
+}
+
+// ImportPollingTemplate : ポーリングテンプレートファイルを読み込む
+func (a *App) ImportPollingTemplate() datastore.PollingTemplateEnt {
+	var r datastore.PollingTemplateEnt
+	r.ID = -1
+	file, err := wails.OpenFileDialog(a.ctx, wails.OpenDialogOptions{
+		Title: "TWSNMP Polling Template",
+		Filters: []wails.FileFilter{{
+			DisplayName: "TWSNMP Polling Template file(*.json)",
+			Pattern:     "*.json;",
+		}},
+	})
+	if err != nil {
+		log.Printf("err=%v", err)
+		return r
+	}
+	if file == "" {
+		return r
+	}
+	d, err := os.ReadFile(file)
+	if err != nil {
+		log.Printf("err=%v", err)
+		return r
+	}
+	if err = json.Unmarshal(d, &r); err != nil {
+		r.ID = -1
+		log.Printf("err=%v", err)
+	}
+	return r
+}

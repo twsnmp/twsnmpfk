@@ -147,7 +147,8 @@
     "Cancel": "Cancel",
     "Descr": "Description",
     "Mode": "Mode",
-    "Type": "Type"
+    "Type": "Type",
+    "AddFromTmpFile": "Template file"
   },
   "AppPolling": {
     "Name": "Name"

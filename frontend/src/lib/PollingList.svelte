@@ -11,6 +11,7 @@
     DeletePollingLogs,
     ExportPollings,
     GetDefaultPolling,
+    ExportPollingAsTemplate,
   } from "../../wailsjs/go/main/App";
   import {
     renderState,
@@ -92,6 +93,14 @@
     pollingTmp = selected[0];
     pollingTmp.ID = "";
     showCopyPolling = true;
+  };
+
+  const exportTemp = async () => {
+    const selected = table.rows({ selected: true }).data();
+    if (selected.length != 1) {
+      return;
+    }
+    await ExportPollingAsTemplate(selected[0].ID)
   };
 
   const report = () => {
@@ -221,6 +230,16 @@
       >
         <Icon path={icons.mdiContentCopy} size={1} />
         {$_("PollingList.Copy")}
+      </GradientButton>
+      <GradientButton
+        shadow
+        color="lime"
+        type="button"
+        on:click={exportTemp}
+        size="xs"
+      >
+        <Icon path={icons.mdiContentSave} size={1} />
+        Export Tmp.
       </GradientButton>
       <GradientButton
         shadow

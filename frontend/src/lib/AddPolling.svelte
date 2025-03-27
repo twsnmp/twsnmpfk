@@ -4,13 +4,13 @@
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { tick, createEventDispatcher } from "svelte";
-  import { GetPollingTemplates } from "../../wailsjs/go/main/App";
+  import { GetPollingTemplates,ImportPollingTemplate } from "../../wailsjs/go/main/App";
   import { getTableLang,renderPollingType } from "./common";
   import Polling from "./Polling.svelte";
 
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import { _ } from 'svelte-i18n';
+  import { _, t } from 'svelte-i18n';
 
   export let nodeID = "";
   export let show = false;
@@ -20,6 +20,7 @@
   let selectedCount = 0;
   let showEditPolling = false;
   let selectedTemplateID = 0;
+  let pollingTmp : any  = undefined;
 
   const showTable = async () => {
     await tick();
@@ -51,6 +52,23 @@
     show = false;
     showEditPolling = true;
   };
+
+  const addFromFile = async () => {
+    selectedTemplateID = 0;
+    const pt = await ImportPollingTemplate();
+    pollingTmp = {
+      Level: pt.Level,
+      Type: pt.Type,
+      Name: pt.Name,
+      Mode: pt.Mode,
+      Params: pt.Params,
+      Filer: pt.Filter,
+      Script: pt.Script,
+      Extractor: pt.Extractor,
+    }
+    show = false;
+    showEditPolling = true;
+  }
 
   const columns = [
     {
@@ -105,6 +123,11 @@
           <Icon path={icons.mdiPlus} size={1} />
           { $_('AddPolling.Add') }
         </GradientButton>
+      {:else}
+        <GradientButton shadow color="blue" type="button" on:click={addFromFile} size="xs">
+          <Icon path={icons.mdiFile} size={1} />
+          {$_('AddPolling.AddFromTmpFile')}
+        </GradientButton>
       {/if}
       <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
@@ -119,5 +142,6 @@
   {nodeID}
   pollingID={""}
   pollingTmpID={selectedTemplateID}
+  pollingTmp={pollingTmp}
   on:close={close}
 />

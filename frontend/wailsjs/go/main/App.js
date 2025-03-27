@@ -134,6 +134,10 @@ export function ExportNodes(arg1) {
   return window['go']['main']['App']['ExportNodes'](arg1);
 }
 
+export function ExportPollingAsTemplate(arg1) {
+  return window['go']['main']['App']['ExportPollingAsTemplate'](arg1);
+}
+
 export function ExportPollings(arg1) {
   return window['go']['main']['App']['ExportPollings'](arg1);
 }
@@ -400,6 +404,10 @@ export function GetVersion() {
 
 export function HasDatastore() {
   return window['go']['main']['App']['HasDatastore']();
+}
+
+export function ImportPollingTemplate() {
+  return window['go']['main']['App']['ImportPollingTemplate']();
 }
 
 export function ImportPortDef() {
