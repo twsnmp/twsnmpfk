@@ -5,7 +5,7 @@
   import * as icons from "@mdi/js";
   import { tick, createEventDispatcher } from "svelte";
   import { GetPollingTemplates } from "../../wailsjs/go/main/App";
-  import { getTableLang } from "./common";
+  import { getTableLang,renderPollingType } from "./common";
   import Polling from "./Polling.svelte";
 
   import DataTable from "datatables.net-dt";
@@ -57,6 +57,7 @@
       data: "ID",
       title: "ID",
       width: "5%",
+      searchable: false,
     },
     {
       data: "Name",
@@ -67,11 +68,13 @@
       data: "Type",
       title: $_('AddPolling.Type'),
       width: "15%",
+      render: renderPollingType,
     },
     {
       data: "Mode",
       title: $_('AddPolling.Mode'),
       width: "15%",
+      searchable: false,
     },
     {
       data: "Descr",

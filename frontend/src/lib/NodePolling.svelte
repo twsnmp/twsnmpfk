@@ -9,6 +9,7 @@
     renderTime,
     getLogModeName,
     getTableLang,
+    renderPollingType,
   } from "./common";
   import Polling from "./Polling.svelte";
   import AddPolling from "./AddPolling.svelte";
@@ -125,30 +126,35 @@
       data: "Type",
       title: $_("NodePolling.Type"),
       width: "10%",
+      render: renderPollingType,
     },
     {
       data: "LogMode",
       title: $_("NodePolling.LogMode"),
       width: "10%",
       render: getLogModeName,
+      searchable: false,
     },
     {
       data: "FailAction",
       title: $_('NodePolling.FailAction'),
       width: "5%",
       render: (a:any)=> a != "" ? "Action" : "",
+      searchable: false,
     },
     {
       data: "RepairAction",
       title: $_('NodePolling.RepairAction'),
       width: "5%",
       render: (a:any)=> a != "" ? "Action" : "",
+      searchable: false,
     },
     {
       data: "LastTime",
       title: $_("NodePolling.LastTime"),
       width: "15%",
       render: renderTime,
+      searchable: false,
     },
   ];
 

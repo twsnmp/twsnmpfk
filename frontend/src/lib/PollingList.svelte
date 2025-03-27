@@ -17,6 +17,7 @@
     renderTime,
     getLogModeName,
     getTableLang,
+    renderPollingType,
   } from "./common";
   import Polling from "./Polling.svelte";
   import AddPolling from "./AddPolling.svelte";
@@ -147,6 +148,7 @@
       data: "Type",
       title: $_("PollingList.Type"),
       width: "8%",
+      render: renderPollingType,
     },
     {
       data: "LogMode",
@@ -159,18 +161,21 @@
       title: $_('PollingList.FailAction'),
       width: "5%",
       render: (a:any)=> a != "" ? "Action" : "",
+      searchable: false,
     },
     {
       data: "RepairAction",
       title: $_('PollingList.RepairAction'),
       width: "5%",
       render: (a:any)=> a != "" ? "Action" : "",
+      searchable: false,
     },
     {
       data: "LastTime",
       title: $_("PollingList.LastTime"),
       width: "12%",
       render: renderTime,
+      searchable: false,
     },
   ];
 

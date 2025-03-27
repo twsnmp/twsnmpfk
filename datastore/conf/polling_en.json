@@ -243,5 +243,13 @@
     "Level": "off",
     "Descr": "NetFlow traffic",
     "AutoMode": "disable"
+  },
+  {
+    "Name": "Pi-hole percent blocked",
+    "Type": "pihole",
+    "Mode": "stats/summary",
+    "Script": "var pb = jsonpath('$.queries.percent_blocked');\nsetResult('percent_blocked',pb);\npb < 10",
+    "Level": "off",
+    "Descr": "Pi-hole percent blocked"
   }
 ]

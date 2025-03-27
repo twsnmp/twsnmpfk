@@ -367,5 +367,13 @@
     "Level": "off",
     "Descr": "NetFlowの情報から通信量を集計",
     "AutoMode": "disable"
+  },
+  {
+    "Name": "Pi-holeブロック率",
+    "Type": "pihole",
+    "Mode": "stats/summary",
+    "Script": "var pb = jsonpath('$.queries.percent_blocked');\nsetResult('percent_blocked',pb);\npb < 10",
+    "Level": "off",
+    "Descr": "Pi-holeのブロック率の監視"
   }
 ]

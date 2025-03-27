@@ -86,6 +86,17 @@ export const typeList = [
   { name: 'LXI', value: 'lxi' },
 ]
 
+const pollingTypeMap = new Map();
+
+typeList.forEach((e) => {
+  pollingTypeMap.set(e.value, e.name);
+})
+
+export const renderPollingType = (type:string) : string => {
+  return pollingTypeMap.get(type) || 'Unknown';
+}
+
+
 export const logModeList = [
   { name: $_("Ts.NoLog"), value: 0 },
   { name: $_("Ts.LogAll"), value: 1 },
