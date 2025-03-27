@@ -82,6 +82,7 @@ export const typeList = [
   { name: 'Report', value: 'report' },
   { name: 'TWSNMP', value: 'twsnmp' },
   { name: 'TwLogEye', value: 'twlogeye' },
+  { name: 'Pi-Hole', value: 'pihole' },
   { name: 'LXI', value: 'lxi' },
 ]
 
