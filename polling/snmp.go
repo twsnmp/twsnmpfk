@@ -200,8 +200,8 @@ func doPollingSnmpGet(pe *datastore.PollingEnt, agent *gosnmp.GoSNMP) {
 		return
 	}
 	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
 	lr := make(map[string]interface{})
-	addJavaScriptFunctions(pe, vm)
 	for _, variable := range result.Variables {
 		if variable.Name == datastore.MIBDB.NameToOID("sysUpTime.0") {
 			sut := gosnmp.ToBigInt(variable.Value).Uint64()
@@ -324,7 +324,7 @@ func doPollingSnmpCount(pe *datastore.PollingEnt, agent *gosnmp.GoSNMP) {
 		return
 	}
 	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
+	setVMFuncAndValues(pe, vm)
 	vm.Set("count", count)
 	pe.Result["count"] = float64(count)
 	value, err := vm.Run(script)
@@ -387,7 +387,7 @@ func doPollingSnmpProcess(pe *datastore.PollingEnt, agent *gosnmp.GoSNMP) {
 		changed = 1
 	}
 	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
+	setVMFuncAndValues(pe, vm)
 	vm.Set("count", count)
 	vm.Set("changed", changed)
 	pe.Result["count"] = float64(count)
@@ -431,7 +431,7 @@ func doPollingSnmpStats(pe *datastore.PollingEnt, agent *gosnmp.GoSNMP) {
 	}
 	avg := float64(sum) / float64(count)
 	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
+	setVMFuncAndValues(pe, vm)
 	vm.Set("count", count)
 	vm.Set("sum", sum)
 	vm.Set("avg", avg)
@@ -725,7 +725,7 @@ func doPollingSnmpTraffic(pe *datastore.PollingEnt, agent *gosnmp.GoSNMP) {
 		return
 	}
 	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
+	setVMFuncAndValues(pe, vm)
 	vm.Set("bps", bps)
 	vm.Set("pps", pps)
 	vm.Set("obps", obps)
@@ -767,8 +767,8 @@ func doPollingSnmpSystemDate(pe *datastore.PollingEnt, agent *gosnmp.GoSNMP) {
 		return
 	}
 	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
 	pe.Result = make(map[string]interface{})
-	addJavaScriptFunctions(pe, vm)
 	for _, variable := range result.Variables {
 		if variable.Name == datastore.MIBDB.NameToOID("hrSystemDate.0") {
 			if v, ok := variable.Value.([]uint8); ok {
@@ -809,8 +809,8 @@ func doPollingSnmpScript(pe *datastore.PollingEnt, agent *gosnmp.GoSNMP) {
 		return
 	}
 	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
 	pe.Result = make(map[string]interface{})
-	addJavaScriptFunctions(pe, vm)
 	vm.Set("snmpGet", func(call otto.FunctionCall) otto.Value {
 		if call.Argument(0).IsString() {
 			name := call.Argument(0).String()

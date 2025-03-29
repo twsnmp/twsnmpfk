@@ -76,6 +76,8 @@ func doPollingTwLogEye(pe *datastore.PollingEnt) {
 		}
 		count++
 	}
+	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
 	pe.Result["lastTime"] = et
 	pe.Result["count"] = float64(count)
 	if count > 0 {
@@ -85,8 +87,6 @@ func doPollingTwLogEye(pe *datastore.PollingEnt) {
 		setPollingState(pe, "normal")
 		return
 	}
-	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
 	vm.Set("count", count)
 	vm.Set("interval", pe.PollInt)
 	value, err := vm.Run(pe.Script)

@@ -99,7 +99,7 @@ func doPollingSyslogCount(pe *datastore.PollingEnt) {
 		}
 	}
 	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
+	setVMFuncAndValues(pe, vm)
 	count := 0
 	failed := false
 	datastore.ForEachLastSyslog(func(l *datastore.SyslogEnt) bool {
@@ -182,7 +182,7 @@ func doPollingArpLog(pe *datastore.PollingEnt) {
 		}
 	}
 	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
+	setVMFuncAndValues(pe, vm)
 	count := 0
 	datastore.ForEachLastArpLogs(func(l *datastore.ArpLogEnt) bool {
 		if l.Time < st {
@@ -234,7 +234,7 @@ func doPollingTrap(pe *datastore.PollingEnt) {
 	}
 	et := time.Now().UnixNano()
 	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
+	setVMFuncAndValues(pe, vm)
 	count := 0
 	datastore.ForEachLastTraps(func(l *datastore.TrapEnt) bool {
 		if l.Time < st {

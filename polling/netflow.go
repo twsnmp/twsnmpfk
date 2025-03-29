@@ -96,6 +96,8 @@ func doPollingNetFlowTraffic(pe *datastore.PollingEnt) {
 		totalDur += float64(l.Dur)
 		return true
 	})
+	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
 	pe.Result["lastTime"] = float64(et)
 	pe.Result["bytes"] = totalBytes
 	pe.Result["packets"] = totalPackets
@@ -111,8 +113,6 @@ func doPollingNetFlowTraffic(pe *datastore.PollingEnt) {
 		setPollingState(pe, "normal")
 		return
 	}
-	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
 	for k, v := range pe.Result {
 		vm.Set(k, v)
 	}
@@ -248,6 +248,8 @@ func doPollingNetFlowStats(pe *datastore.PollingEnt) {
 		totalDur += float64(l.Dur)
 		return true
 	})
+	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
 	pe.Result["lastTime"] = float64(et)
 	pe.Result["bytes"] = totalBytes
 	pe.Result["count"] = count
@@ -291,13 +293,10 @@ func doPollingNetFlowStats(pe *datastore.PollingEnt) {
 	pe.Result["ntpBytes"] = ntpBytes
 	pe.Result["snmpPackets"] = snmpPackets
 	pe.Result["snmpBytes"] = snmpBytes
-
 	if pe.Script == "" {
 		setPollingState(pe, "normal")
 		return
 	}
-	vm := otto.New()
-	addJavaScriptFunctions(pe, vm)
 	for k, v := range pe.Result {
 		vm.Set(k, v)
 	}
