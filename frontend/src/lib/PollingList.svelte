@@ -239,7 +239,7 @@
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
-        Export Tmp.
+        {$_('PollingLis.Export')}
       </GradientButton>
       <GradientButton
         shadow

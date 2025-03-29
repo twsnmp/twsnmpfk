@@ -929,5 +929,8 @@
     "Valid": "Valid",
     "CertTerm": "Cert Term",
     "Password": "Password"
+  },
+  "PollingLis": {
+    "Export": "Export"
   }
 }

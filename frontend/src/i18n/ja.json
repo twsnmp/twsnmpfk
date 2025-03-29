@@ -929,5 +929,8 @@
     "L": "市町村名(Locality)",
     "CertTerm": "証明書の期間(時間)",
     "Password": "パスワード"
+  },
+  "PollingLis": {
+    "Export": "エクスポート"
   }
 }
