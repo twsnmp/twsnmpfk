@@ -18,6 +18,7 @@ A list of polling to be managed.
 </div>
 
 >>>
+
 #### Polling List(button)
 
 <div class="text-xl">
@@ -27,7 +28,9 @@ A list of polling to be managed.
 | Added | Add polling.|
 | Edit | Edit the selected polling.|
 | Copy | Copy the selected polling.|
+| Export | Export selected polling setting.|
 | Report | Displays the selected polling analysis report.|
+| <Span style = "color: red;"> Delete Logs </span> | Delete the selected polling logs.|
 | <Span style = "color: red;"> Delete </span> | Delete the selected polling.|
 | CSV | Export the polling list to the CSV file.|
 | Excel | Export the polling list to the Excel file.|
@@ -61,6 +64,7 @@ This is the selection screen of the template displayed when adding polling.
 
 | Items | Contents |
 | ---- | ---- |
+| Template file | Import polling from template file.|
 | Add | Select polling.|
 | Cancel | Polling Closes.|
 </div>

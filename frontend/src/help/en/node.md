@@ -79,6 +79,11 @@ A list of polling related to nodes.
 Basic information about nodes.
 </div>
 
+#### Memo
+<div class="text-xl mb-4">
+Memo about the node.
+</div>
+
 #### log
 <div class="text-xl mb-4">
 This is an event log related to the node.

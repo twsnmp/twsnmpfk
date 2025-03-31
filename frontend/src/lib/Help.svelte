@@ -86,7 +86,7 @@
       size="xs"
       on:click={() => {
         BrowserOpenURL(
-          `https://lhx98.linkclub.jp/twise.co.jp/download/twsnmpfk_${lang}.pdf`
+          `https://twsnmp.github.io/twsnmpfk/`
         );
       }}
     >

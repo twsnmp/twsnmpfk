@@ -517,6 +517,13 @@ Basic information about nodes.
 ![h:400 center](./images/en/2023-12-03_11-04-41.png)
 
 ---
+### Memo
+
+Memo about the node.
+
+![h:400 center](./images/en/2025-03-31_16-43-30.png)
+
+---
 ### node event log
 This is an event log related to the node.
 
@@ -589,7 +596,9 @@ A list of polling to be managed.
 | Add | Add polling.|
 | Edit | Edit the selected polling.|
 | Copy | Copy the selected polling.|
+| Export | Export the selected polling settings.|
 | Report | Displays the selected polling analysis report.|
+| Delete log| Delete the selected polling logs.|
 | Delete| Delete the selected polling.|
 | CSV | Export the polling list to the CSV file.|
 | Excel | Export the polling list to the Excel file.|
@@ -611,6 +620,7 @@ This is the selection screen of the template displayed when adding polling.
 | Type | Polling type.<br> Ping, SNMP, TCP, etc. |
 | Mode | Polling mode.|
 | Description | Polling explanation.|
+| Template file | Import polling from template file.|
 | Add | Select polling.|
 | Cancel | Polling Closes.|
 
