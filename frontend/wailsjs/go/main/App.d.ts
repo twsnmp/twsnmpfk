@@ -172,6 +172,8 @@ export function GetNetworks():Promise<{[key: string]: datastore.NetworkEnt}>;
 
 export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
 
+export function GetNodeMemo(arg1:string):Promise<string>;
+
 export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
@@ -227,6 +229,8 @@ export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 export function ResetArpTable():Promise<boolean>;
 
 export function RevokeCert(arg1:string):Promise<void>;
+
+export function SaveNodeMemo(arg1:string,arg2:string):Promise<boolean>;
 
 export function SaveSshdPublicKeys(arg1:string):Promise<boolean>;
 

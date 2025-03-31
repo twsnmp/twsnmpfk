@@ -551,7 +551,10 @@
     "PhysicalPort": "物理ポート",
     "VM": "仮想メモリ",
     "RotateVPanel": "回転",
-    "FileSystem": "ファイル・システム"
+    "FileSystem": "ファイル・システム",
+    "Memo": "メモ",
+    "MemoPlaceHolder": "ノードに関するメモを記入",
+    "Save": "保存"
   },
   "Ping": {
     "Cont": "連続",

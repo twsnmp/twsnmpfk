@@ -563,7 +563,10 @@
     "PhysicalPort": "Physical Port",
     "VM": "VM",
     "RotateVPanel": "Rotate",
-    "FileSystem": "File System"
+    "FileSystem": "File System",
+    "Memo": "Memo",
+    "MemoPlaceHolder": "Enter memo about this node",
+    "Save": "Save"
   },
   "Ping": {
     "Chart3D": "3D Chart",

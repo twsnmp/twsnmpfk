@@ -225,6 +225,7 @@ func initDB() error {
 		"syslog", "trap", "arplog", "arp", "ai", "grok", "images",
 		"ipfix", "netflow",
 		"sflow", "sflowCounter", "certs",
+		"memo",
 	}
 	initConf()
 	return db.Update(func(tx *bbolt.Tx) error {

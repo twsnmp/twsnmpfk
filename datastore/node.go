@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -139,7 +140,9 @@ func DeleteNode(nodeID string) error {
 		return ErrInvalidID
 	}
 	db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("nodes"))
+		b := tx.Bucket([]byte("memo"))
+		b.Delete([]byte(nodeID))
+		b = tx.Bucket([]byte("nodes"))
 		return b.Delete([]byte(nodeID))
 	})
 	nodes.Delete(nodeID)
@@ -270,4 +273,31 @@ func ForEachStateChangedNodes(f func(string) bool) {
 	stateChangedNodes.Range(func(id, _ interface{}) bool {
 		return f(id.(string))
 	})
+}
+
+// SaveNodeMemo:ノードに関するメモを保存する
+func SaveNodeMemo(nodeID, memo string) error {
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("memo"))
+		if b == nil {
+			return fmt.Errorf("memo bucket not found")
+		}
+		return b.Put([]byte(nodeID), []byte(memo))
+	})
+}
+
+// GetNodeMemo:ノードに関するメモを取得する
+func GetNodeMemo(nodeID string) string {
+	memo := ""
+	db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("memo"))
+		if b == nil {
+			return fmt.Errorf("memo bucket not found")
+		}
+		if v := b.Get([]byte(nodeID)); v != nil {
+			memo = strings.Clone(string(v))
+		}
+		return nil
+	})
+	return memo
 }

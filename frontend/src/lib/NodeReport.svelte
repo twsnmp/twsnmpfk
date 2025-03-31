@@ -13,6 +13,7 @@
     Spinner,
     Toggle,
     Button,
+    Textarea,
   } from "flowbite-svelte";
   import { tick } from "svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -24,6 +25,8 @@
     GetEventLogs,
     GetHostResource,
     GetDefaultPolling,
+    GetNodeMemo,
+    SaveNodeMemo,
   } from "../../wailsjs/go/main/App";
   import {
     getIcon,
@@ -775,6 +778,7 @@
 
   const onOpen = async () => {
     node = await GetNode(id);
+    memo = await GetNodeMemo(id)
   };
 
   const resizeChart = () => {
@@ -788,6 +792,21 @@
 
   let copiedIP = false;
   let copiedMAC = false;
+
+  let memo = "";
+  let savedMemo = false;
+  let showSaveMemoBtn = false
+  const showMemo = () => {
+    clearSelectedCount();
+    showSaveMemoBtn = true;
+  }
+  const saveMemo = async () => {
+    savedMemo = true
+    await SaveNodeMemo(id,memo)
+    setTimeout(()=> {
+      savedMemo = false
+    },1000)
+  }
 
 </script>
 
@@ -890,6 +909,13 @@
               </TableBodyRow>
             </TableBody>
           </Table>
+        </TabItem>
+        <TabItem on:click={showMemo}>
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiNote} size={1} />
+            {$_('NodeReport.Memo')}
+          </div>
+          <Textarea placeholder={$_('NodeReport.MemoPlaceHolder')} rows="16" bind:value={memo} />
         </TabItem>
         <TabItem on:click={showLog}>
           <div slot="title" class="flex items-center gap-2">
@@ -1056,6 +1082,24 @@
           <Toggle bind:checked={rotateVPanel} on:change={showVPanel}>
             {$_("NodeReport.RotateVPanel")}
           </Toggle>
+        {/if}
+        {#if showSaveMemoBtn}
+          <GradientButton
+          shadow
+          color="blue"
+          type="button"
+          on:click={saveMemo}
+          size="xs"
+        >
+          {#if savedMemo}
+            <Icon path={icons.mdiCheck} size={1} />
+          {:else}
+            <Icon path={icons.mdiContentSave} size={1} />
+          {/if}
+          <span>
+            {$_('NodeReport.Save')}
+          </span>
+        </GradientButton>
         {/if}
         <GradientButton
           shadow

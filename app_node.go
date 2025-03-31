@@ -177,3 +177,17 @@ func (a *App) GetHostResource(id string) *backend.HostResourceEnt {
 	}
 	return backend.GetHostResource(n)
 }
+
+// SaveNodeMemoは、ノードに関するメモを保存します。
+func (a *App) SaveNodeMemo(nodeID, memo string) bool {
+	if err := datastore.SaveNodeMemo(nodeID, memo); err != nil {
+		log.Printf("save node memo err=%v", err)
+		return false
+	}
+	return true
+}
+
+// GetNodeMemoは、ノードに関するメモを取得します。
+func (a *App) GetNodeMemo(nodeID string) string {
+	return datastore.GetNodeMemo(nodeID)
+}
