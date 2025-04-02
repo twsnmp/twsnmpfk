@@ -41,6 +41,15 @@
   const pollingList1: any = [];
   const pollingList2: any = [];
 
+  const polingSortFunc = (a:any,b:any) => {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
   const onOpen = async () => {
     pollingList.length = 0;
     pollingList1.length = 0;
@@ -99,6 +108,9 @@
         });
       }
     }
+    pollingList.sort(polingSortFunc);
+    pollingList1.sort(polingSortFunc);
+    pollingList2.sort(polingSortFunc);
     wait = false;
   };
 
