@@ -111,7 +111,7 @@
 
 <Modal
   bind:open={show}
-  size="lg"
+  size="xl"
   dismissable={false}
   class="w-full"
   on:open={onOpen}

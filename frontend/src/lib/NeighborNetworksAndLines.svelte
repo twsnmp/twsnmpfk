@@ -12,6 +12,8 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import Network from "./Network.svelte";
+  import type { datastore } from "wailsjs/go/models";
 
   export let show: boolean = false;
   export let id: string = "";
@@ -57,11 +59,25 @@
         if (p) {
           p1 = p.Name;
         }
+      } else if (n1) {
+        for (const p of (n1 as datastore.NetworkEnt).Ports) {
+          if (p.ID == p1) {
+            p1 = p.Name;
+            break
+          }
+        }
       }
       if (!l.NodeID2.startsWith("NET:")) {
         const p = await GetPolling(p2)
         if (p) {
           p2 = p.Name;
+        }
+      } else if (n2) {
+        for (const p of (n2 as datastore.NetworkEnt).Ports) {
+          if (p.ID == p2) {
+            p2 = p.Name;
+            break
+          }
         }
       }
       lineData.push({

@@ -284,7 +284,7 @@
 
 <Modal
   bind:open={show}
-  size="lg"
+  size="xl"
   dismissable={false}
   class="w-full"
   on:open={onOpen}
@@ -401,14 +401,16 @@
           {/if}
         </div>
       {/if}
-      <Label class="space-y-2 text-xs">
-        <span>URL</span>
-        <Input class="h-8" bind:value={network.URL} placeholder="URL" size="sm" />
-      </Label>
-      <Label class="space-y-2">
-        <span>{$_("Node.Descr")}</span>
-        <Input class="h-8" bind:value={network.Descr} size="sm" />
-      </Label>
+      <div class="grid gap-2 md:grid-cols-2">
+        <Label class="space-y-2 text-xs">
+          <span>URL</span>
+          <Input class="h-8" bind:value={network.URL} placeholder="URL" size="sm" />
+       </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Node.Descr")}</span>
+          <Input class="h-8" bind:value={network.Descr} size="sm" />
+        </Label>
+      </div>
       <div class="m-5 grow">
         <table id="portTable" class="display compact" style="width:99%" />
       </div>
