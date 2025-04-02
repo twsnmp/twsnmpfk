@@ -478,8 +478,61 @@ func getAutoSnmpPollings(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt)
 	return ret
 }
 
-func getSnmpIndex(n *datastore.NodeEnt, name string) []string {
-	ret := []string{}
+func getAutoSnmpIFPollings(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) []*datastore.PollingEnt {
+	var ret []*datastore.PollingEnt
+	ifMap := make(map[string]string)
+	agent := getSnmpAgent(n)
+	err := agent.Connect()
+	if err != nil {
+		log.Printf("getAutoSnmpIFPollings err=%v", err)
+		return ret
+	}
+	defer agent.Conn.Close()
+	agent.Walk(datastore.MIBDB.NameToOID("ifType"), func(variable gosnmp.SnmpPDU) error {
+		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
+		if len(a) == 2 &&
+			a[0] == "ifType" &&
+			gosnmp.ToBigInt(variable.Value).Int64() == 6 {
+			log.Printf("%+v=%+v", a, variable.Value)
+			ifMap[a[1]] = fmt.Sprintf("#%s", a[1])
+		}
+		return nil
+	})
+	agent.Walk(datastore.MIBDB.NameToOID("ifName"), func(variable gosnmp.SnmpPDU) error {
+		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
+		if len(a) == 2 {
+			if _, ok := ifMap[a[1]]; ok {
+				ifMap[a[1]] = fmt.Sprintf("%s(%s)", datastore.GetMIBValueString(a[0], &variable, false), a[1])
+			}
+		}
+		return nil
+	})
+	for index, name := range ifMap {
+		p := new(datastore.PollingEnt)
+		p.Name = fmt.Sprintf("%s : %s", pt.Name, name)
+		if hasSameNamePolling(n.ID, p.Name) {
+			continue
+		}
+		p.NodeID = n.ID
+		p.Type = pt.Type
+		p.Params = strings.ReplaceAll(pt.Params, "$i", index)
+		p.Mode = pt.Mode
+		p.Script = pt.Script
+		p.Extractor = pt.Extractor
+		p.Filter = pt.Filter
+		p.Level = pt.Level
+		p.PollInt = datastore.MapConf.PollInt
+		p.Timeout = datastore.MapConf.Timeout
+		p.Retry = datastore.MapConf.Timeout
+		p.LogMode = 0
+		p.NextTime = 0
+		p.State = "unknown"
+		ret = append(ret, p)
+	}
+	return ret
+}
+
+func getSnmpAgent(n *datastore.NodeEnt) *gosnmp.GoSNMP {
 	agent := &gosnmp.GoSNMP{
 		Target:    n.IP,
 		Port:      161,
@@ -523,6 +576,12 @@ func getSnmpIndex(n *datastore.NodeEnt, name string) []string {
 			PrivacyPassphrase:        n.Password,
 		}
 	}
+	return agent
+}
+
+func getSnmpIndex(n *datastore.NodeEnt, name string) []string {
+	ret := []string{}
+	agent := getSnmpAgent(n)
 	err := agent.Connect()
 	if err != nil {
 		log.Printf("polling snmp err=%v", err)

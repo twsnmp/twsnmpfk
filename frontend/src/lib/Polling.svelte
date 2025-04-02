@@ -74,6 +74,10 @@
       polling = pollingTmp;
     } else if (pollingTmpID) {
       list = await GetAutoPollings(nodeID, pollingTmpID);
+      if (!list) {
+        close();
+        return;
+      }
       if (list.length == 1) {
         polling = list[0];
       } else {
@@ -97,9 +101,9 @@
       stateSave: true,
       data: list,
       language: getTableLang(),
-      order: [[1, "desc"]],
+      order: [[0, "desc"]],
       select: {
-        style: "multi",
+        style: "single",
       },
       columns: [
         {
@@ -148,6 +152,7 @@
   };
 
   const close = () => {
+    showList = false;
     show = false;
     dispatch("close", {});
   };

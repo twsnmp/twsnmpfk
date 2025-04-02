@@ -57,6 +57,9 @@ func Start(ctx context.Context, wg *sync.WaitGroup) error {
 func GetAutoPollings(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) []*datastore.PollingEnt {
 	switch pt.Type {
 	case "snmp":
+		if pt.AutoParam == "ifIndex" {
+			return getAutoSnmpIFPollings(n, pt)
+		}
 		return getAutoSnmpPollings(n, pt)
 	default:
 		log.Printf("polling not supported type=%s", pt.Type)

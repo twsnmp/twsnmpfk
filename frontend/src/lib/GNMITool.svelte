@@ -156,7 +156,6 @@
 
 
   const showCapabilities = async () => {
-    console.log(capData.Models);
     capTable = new DataTable("#gnmiCapTable", {
       destroy: true,
       columns: capColumns,

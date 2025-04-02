@@ -191,7 +191,6 @@
   const refresh = async () => {
     if (!caReq) {
       caReq = await GetDefaultCreateCAReq();
-      console.log(caReq);
     }
     showCreateCA = !(await IsCAValid());
     if (showCreateCA) {
