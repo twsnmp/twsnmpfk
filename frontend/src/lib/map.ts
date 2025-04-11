@@ -795,6 +795,9 @@ const mapMain = (p5: P5) => {
     if (readOnly && !clickInCanvas) {
       return true;
     }
+    if (p5.mouseButton === p5.RIGHT ) {
+      return true
+    }
     if (dragMode === 0) {
       if (
         selectedNodes.length > 0 ||
