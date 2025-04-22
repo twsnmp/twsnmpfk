@@ -135,7 +135,7 @@
       searching: false,
       ordering: false,
       info: false,
-      scrollY: "100px",
+      scrollY: "30vh",
       language: getTableLang(),
       select: {
         style: "single",
@@ -232,7 +232,7 @@
 
 <Modal
   bind:open={show}
-  size="lg"
+  size="xl"
   dismissable={false}
   class="w-full"
   on:open={onOpen}
