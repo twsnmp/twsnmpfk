@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"log"
-	"strings"
 	"sync"
 	"time"
 
@@ -91,7 +90,7 @@ func ResetArpTable() error {
 	return err
 }
 
-// DeleteArpEntは、指定のIPアドレスに関連したARPテーブルとARPログを削除する
+// DeleteArpEntは、指定のIPアドレスに関連したARPテーブルを削除する
 func DeleteArpEnt(ips []string) error {
 	st := time.Now()
 	err := db.Batch(func(tx *bbolt.Tx) error {
@@ -99,34 +98,9 @@ func DeleteArpEnt(ips []string) error {
 		if b == nil {
 			return nil
 		}
-		delMap := make(map[string]bool)
 		for _, ip := range ips {
 			b.Delete([]byte(ip))
 			arpTable.Delete(ip)
-			delMap[ip] = true
-		}
-		b = tx.Bucket([]byte("arplog"))
-		if b == nil {
-			return nil
-		}
-		c := b.Cursor()
-		for k, v := c.Last(); k != nil; k, v = c.Prev() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
-			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
-			a := strings.Split(l.Log, ",")
-			if len(a) < 3 {
-				continue
-			}
-			if _, ok := delMap[a[1]]; ok {
-				c.Delete()
-			}
 		}
 		return nil
 	})
