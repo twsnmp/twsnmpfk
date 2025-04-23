@@ -112,58 +112,64 @@ func ForEachLastEventLog(f func(*EventLogEnt) bool) error {
 	})
 }
 
-func deleteOldLog(tx *bbolt.Tx, bucket string) (bool, int) {
+func deleteOldLog(bucket string) (bool, int) {
 	s := time.Now()
 	done := true
 	delCount := 0
 	st := fmt.Sprintf("%016x", time.Now().AddDate(0, 0, -MapConf.LogDays).UnixNano())
-	b := tx.Bucket([]byte(bucket))
-	if b == nil {
-		log.Printf("bucket %s not found", bucket)
-		return done, delCount
-	}
-	c := b.Cursor()
-	for k, _ := c.First(); k != nil; k, _ = c.Next() {
-		if st < string(k) {
-			break
+	db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte(bucket))
+		if b == nil {
+			log.Printf("bucket %s not found", bucket)
+			return nil
 		}
-		if delCount%1000 == 0 {
-			if time.Now().UnixMilli()-s.UnixMilli() > 500 {
+		c := b.Cursor()
+		delList := [][]byte{}
+		for k, _ := c.First(); k != nil && st > string(k); k, _ = c.Next() {
+			delList = append(delList, k)
+			if len(delList) > 20000 {
 				done = false
 				break
 			}
 		}
-		_ = c.Delete()
-		delCount++
-	}
+		for _, dk := range delList {
+			b.Delete(dk)
+		}
+		delCount += len(delList)
+		return nil
+	})
 	if delCount > 0 {
 		log.Printf("delete old logs bucket=%s count=%d done=%v dur=%s", bucket, delCount, done, time.Since(s))
 	}
 	return done, delCount
 }
 
-func deleteOldPollingLog(tx *bbolt.Tx) int {
+func deleteOldPollingLog() int {
 	s := time.Now()
 	delCount := 0
 	st := fmt.Sprintf("%016x", time.Now().AddDate(0, 0, -MapConf.LogDays).UnixNano())
-	b := tx.Bucket([]byte("pollingLogs"))
-	if b == nil {
-		log.Println("bucket pollingLogs not found")
-		return delCount
-	}
-	b.ForEachBucket(func(k []byte) error {
-		b2 := b.Bucket(k)
-		if b2 == nil {
+	db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("pollingLogs"))
+		if b == nil {
+			log.Println("bucket pollingLogs not found")
 			return nil
 		}
-		c := b2.Cursor()
-		for k, _ := c.First(); k != nil; k, _ = c.Next() {
-			if st < string(k) {
-				break
+		b.ForEachBucket(func(k []byte) error {
+			b2 := b.Bucket(k)
+			if b2 == nil {
+				return nil
 			}
-			_ = c.Delete()
-			delCount++
-		}
+			c := b2.Cursor()
+			delList := [][]byte{}
+			for k2, _ := c.First(); k2 != nil && st > string(k2); k2, _ = c.Next() {
+				delList = append(delList, k2)
+			}
+			for _, dk := range delList {
+				b2.Delete(dk)
+			}
+			delCount += len(delList)
+			return nil
+		})
 		return nil
 	})
 	if delCount > 0 {
@@ -178,25 +184,20 @@ func deleteOldLogs() {
 		log.Println("mapConf.LogDays < 1 ")
 		return
 	}
-	tx, err := db.Begin(true)
-	if err != nil {
-		log.Printf("deleteOldLog err=%v", err)
-		return
-	}
 	buckets := []string{"logs", "pollingLogs", "syslog", "arplog", "trap", "netflow", "sflow", "sflowCounter"}
 	doneMap := make(map[string]bool)
 	doneCount := 0
 	delCount := 0
-	lt := time.Now().Unix() + 50
+	lt := time.Now().Unix() + 55
 	for doneCount < len(buckets) && lt > time.Now().Unix() {
 		for _, b := range buckets {
 			if _, ok := doneMap[b]; !ok {
 				if b == "pollingLogs" {
-					delCount += deleteOldPollingLog(tx)
+					delCount += deleteOldPollingLog()
 					doneMap[b] = true
 					doneCount++
 				} else {
-					done, c := deleteOldLog(tx, b)
+					done, c := deleteOldLog(b)
 					delCount += c
 					if done {
 						doneMap[b] = true
@@ -204,15 +205,8 @@ func deleteOldLogs() {
 					}
 				}
 			}
-			tx.Commit()
-			tx, err = db.Begin(true)
-			if err != nil {
-				log.Printf("deleteOldLog err=%v", err)
-				return
-			}
 		}
 	}
-	tx.Commit()
 	log.Printf("deleteOldLogs done=%d delCount=%d dur=%s", doneCount, delCount, time.Since(s))
 }
 
