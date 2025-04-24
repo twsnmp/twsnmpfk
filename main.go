@@ -61,6 +61,16 @@ func init() {
 }
 
 func main() {
+	args := flag.Args()
+	if len(args) == 3 && args[0] == "compact" {
+		log.Println("start compact DB")
+		if err := datastore.CompactDB(args[1], args[2]); err != nil {
+			log.Fatalf("compact DB err=%v", err)
+		}
+		log.Println("end compact DB")
+		return
+	}
+
 	flag.VisitAll(func(f *flag.Flag) {
 		log.Printf("args %s=%s", f.Name, f.Value)
 	})

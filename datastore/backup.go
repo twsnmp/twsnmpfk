@@ -3,6 +3,7 @@ package datastore
 
 import (
 	"log"
+	"os"
 
 	"go.etcd.io/bbolt"
 )
@@ -112,4 +113,22 @@ func walkFunc(keys [][]byte, k, v []byte, seq uint64) error {
 	}
 	// Otherwise treat it as a key/value pair.
 	return b.Put(k, v)
+}
+
+func CompactDB(srcPath, dstPath string) error {
+	fi, err := os.Stat(srcPath)
+	if err != nil {
+		return err
+	}
+	src, err := bbolt.Open(srcPath, 0444, &bbolt.Options{ReadOnly: true})
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+	dst, err := bbolt.Open(dstPath, fi.Mode(), nil)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+	return bbolt.Compact(dst, src, 1024*1024*64)
 }
