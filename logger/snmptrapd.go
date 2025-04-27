@@ -111,23 +111,3 @@ func snmptrapd(stopCh chan bool, port int) {
 		Event: i18n.Trans("Stop snmptrapd"),
 	})
 }
-
-func getSnmpString(i interface{}) string {
-	switch v := i.(type) {
-	case string:
-		return v
-	case []uint8:
-		return string(v)
-	}
-	return fmt.Sprintf("%v", i)
-}
-
-func getTimeTickStr(t int64) string {
-	ft := float64(t) / 100
-	if ft > 3600*24 {
-		return fmt.Sprintf(i18n.Trans("%.2fDays(%d)"), ft/(3600*24), t)
-	} else if ft > 3600 {
-		return fmt.Sprintf(i18n.Trans("%.2fHours(%d)"), ft/(3600), t)
-	}
-	return fmt.Sprintf(i18n.Trans("%.2fSec(%d)"), ft, t)
-}
