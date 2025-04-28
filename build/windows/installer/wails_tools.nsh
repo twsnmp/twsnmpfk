@@ -14,10 +14,10 @@
     !define INFO_PRODUCTNAME "twsnmpfk"
 !endif
 !ifndef INFO_PRODUCTVERSION
-    !define INFO_PRODUCTVERSION "1.19.0"
+    !define INFO_PRODUCTVERSION "1.20.0"
 !endif
 !ifndef INFO_COPYRIGHT
-    !define INFO_COPYRIGHT "Copyright 2023 Masayuki Yamai"
+    !define INFO_COPYRIGHT "Copyright 2023 - 2025 Masayuki Yamai"
 !endif
 !ifndef PRODUCT_EXECUTABLE
     !define PRODUCT_EXECUTABLE "${INFO_PROJECTNAME}.exe"
