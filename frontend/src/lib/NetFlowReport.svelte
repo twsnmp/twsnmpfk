@@ -45,8 +45,10 @@
   let selectedCountTop = 0;
   let tableFlow: any = undefined;
   let selectedCountFlow = 0;
+  let locConf :any = undefined;
 
-  const onOpen = () => {
+  const onOpen = async () => {
+    locConf = await GetLocConf();
     showHeatmap();
   };
 
@@ -343,7 +345,7 @@
 
   const showMap = async () => {
     await tick();
-    const locConf = await GetLocConf();
+    tab = "map";
     const s = locConf.Style.startsWith("{") ? JSON.parse(locConf.Style) : locConf.Style;
     const map = new MapGl({
       container: "map",
@@ -541,17 +543,19 @@
         </div>
         <div id="fft3d" />
       </TabItem>
-      <TabItem
-        on:click={() => {
-          showMap();
-        }}
-      >
-        <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiMapMarker} size={1} />
-          {$_('NetFlowReport.Map')}
-        </div>
-        <div id="map" />
-      </TabItem>
+      {#if locConf && locConf.Style}
+        <TabItem
+          on:click={() => {
+            showMap();
+          }}
+        >
+          <div slot="title" class="flex items-center gap-2">
+            <Icon path={icons.mdiMapMarker} size={1} />
+            {$_('NetFlowReport.Map')}
+          </div>
+          <div id="map" />
+        </TabItem>
+      {/if}
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
       {#if tab == "histogram"}

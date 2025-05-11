@@ -184,6 +184,13 @@ export const showLogHeatmap = (div:string, logs:any) => {
       }
       sum++
     })
+    if (option.series[0].data.length < 1) {
+      option.series[0].data.push([x, nH, sum])
+      option.visualMap.min = 0
+      option.visualMap.max = sum
+    } else {
+      option.series[0].data.push([x, nH, sum])
+    }
   }
   chart.setOption(option);
   chart.resize();

@@ -42,6 +42,7 @@
   import Location from "./Location.svelte";
   import type { datastore } from "wailsjs/go/models";
   import { setIconToList } from "./common";
+  import { Style } from "maplibre-gl";
 
   let dark: boolean = false;
   let mainHeight = 0;
@@ -332,9 +333,13 @@
 
 <Config
   bind:show={showConfig}
-  on:close={() => {
+  on:close={async () => {
     page = oldPage;
     updateMapName();
+    locConf = await GetLocConf();
+    if (page == "loc" && !locConf.Style) {
+      page = "map";
+    }
   }}
 />
 
