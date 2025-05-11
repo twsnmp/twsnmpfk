@@ -377,6 +377,39 @@ var transMap = map[string]map[string]string{
 	"Stop ACME Server": {
 		"ja": "ACMEサーバーを停止しました",
 	},
+	"MAC Address": {
+		"ja": "MACアドレス",
+	},
+	"Node": {
+		"ja": "ノード名",
+	},
+	"IP Address": {
+		"ja": "IPアドレス",
+	},
+	"Descr": {
+		"ja": "説明",
+	},
+	"Managed Node": {
+		"ja": "管理対象ノード",
+	},
+	"No": {
+		"ja": "いいえ",
+	},
+	"Vendor": {
+		"ja": "ベンダー",
+	},
+	"ARP Watch": {
+		"ja": "ARP監視",
+	},
+	"Not fond": {
+		"ja": "不明",
+	},
+	"DNS Host": {
+		"ja": "DNSホスト名",
+	},
+	"Location": {
+		"ja": "位置",
+	},
 }
 
 func init() {

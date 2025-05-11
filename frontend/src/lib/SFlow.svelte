@@ -10,6 +10,8 @@
     Checkbox,
     Toggle,
     Select,
+    Dropdown,
+    DropdownItem,
   } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -25,6 +27,7 @@
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
   import SFlowReport from "./SFlowReport.svelte";
   import SFlowCounterReport from "./SFlowCounterReport.svelte";
+  import AddressInfo from "./AddressInfo.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import type { main } from "wailsjs/go/models";
@@ -43,6 +46,10 @@
   let selectedCount = 0;
   let showFilter = false;
   let showFilterCounter = false;
+  let addrInfoOpen = false;
+  let showAddrInfo = false;
+  let address = "";
+  let addrList: any = [];
   const filter: main.SFlowFilterEnt = {
     Start: "",
     End: "",
@@ -93,10 +100,34 @@
     });
     table.on("select", () => {
       selectedCount = table.rows({ selected: true }).count();
+      updateAddrList();
     });
     table.on("deselect", () => {
       selectedCount = table.rows({ selected: true }).count();
+      updateAddrList();
     });
+  };
+
+  const updateAddrList = () => {
+    const selected = table.rows({ selected: true }).data();
+    addrList = [];
+    const m = new Map();
+    for (let i = 0; i < selected.length; i++) {
+      for (const k of ["SrcAddr", "SrcMAC", "DstAddr", "DstMAC"]) {
+        const a = selected[i][k];
+        if (a && !m.has(a)) {
+          m.set(a, true);
+          addrList.push(a);
+        }
+      }
+      if (addrList.length > 10) {
+        break;
+      }
+    }
+  };
+  const showAddrInfoFunc = (a: string) => {
+    address = a;
+    showAddrInfo = true;
   };
 
   const refresh = async () => {
@@ -118,7 +149,7 @@
     showChart();
     showLoading = false;
   };
-  let chart :any = undefined;
+  let chart: any = undefined;
   const showChart = async () => {
     await tick();
     chart = showLogCountChart("chart", data, zoomCallBack);
@@ -249,18 +280,22 @@
   });
 
   const saveCSV = () => {
-    if(counter) {
-      ExportSFlowCounter("csv",filterCounter,"");
+    if (counter) {
+      ExportSFlowCounter("csv", filterCounter, "");
     } else {
-      ExportSFlow("csv", filter,"");
+      ExportSFlow("csv", filter, "");
     }
   };
 
   const saveExcel = () => {
-    if(counter) {
-      ExportSFlowCounter("excel",filterCounter,chart ? chart.getDataURL() : "");
+    if (counter) {
+      ExportSFlowCounter(
+        "excel",
+        filterCounter,
+        chart ? chart.getDataURL() : ""
+      );
     } else {
-      ExportSFlow("excel", filter,chart ? chart.getDataURL() : "");
+      ExportSFlow("excel", filter, chart ? chart.getDataURL() : "");
     }
   };
 
@@ -310,7 +345,7 @@
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     <Toggle bind:checked={counter} on:change={refresh}>
-       {$_('SFlow.Counter')}
+      {$_("SFlow.Counter")}
     </Toggle>
     <GradientButton
       shadow
@@ -344,8 +379,8 @@
         type="button"
         color="green"
         on:click={() => {
-          if(counter) {
-            showCounterReport = true
+          if (counter) {
+            showCounterReport = true;
           } else {
             showReport = true;
           }
@@ -370,6 +405,16 @@
           {/if}
           Copy
         </GradientButton>
+        <GradientButton>
+          {$_('Address.AddressInfo')}
+          <Icon path={icons.mdiChevronDown} size={1} />
+        </GradientButton>
+        <Dropdown bind:open={addrInfoOpen}>
+          {#each addrList as a}
+            <DropdownItem on:click={() => showAddrInfoFunc(a)}>{a}</DropdownItem
+            >
+          {/each}
+        </Dropdown>
       {/if}
     {/if}
     <GradientButton
@@ -416,11 +461,21 @@
     <div class="grid gap-2 grid-cols-3">
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.Start")}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.Start} size="sm" />
+        <Input
+          class="h-8"
+          type="datetime-local"
+          bind:value={filter.Start}
+          size="sm"
+        />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.End")}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.End} size="sm" />
+        <Input
+          class="h-8"
+          type="datetime-local"
+          bind:value={filter.End}
+          size="sm"
+        />
       </Label>
       <div class="flex">
         <Button
@@ -637,7 +692,12 @@
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.End")}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filterCounter.End} size="sm" />
+        <Input
+          class="h-8"
+          type="datetime-local"
+          bind:value={filterCounter.End}
+          size="sm"
+        />
       </Label>
       <div class="flex">
         <Button
@@ -666,7 +726,7 @@
       <Select
         items={counterTypeList}
         bind:value={filterCounter.Type}
-        placeholder={$_('SFlow.SelectType')}
+        placeholder={$_("SFlow.SelectType")}
         size="sm"
       />
     </Label>
@@ -706,6 +766,8 @@
     <span class="ml-2"> {$_("Syslog.Loading")} </span>
   </div>
 </Modal>
+
+<AddressInfo bind:show={showAddrInfo} {address} />
 
 <style>
   #chart {

@@ -8,10 +8,12 @@
     Select,
     Spinner,
     Button,
+    Dropdown,
+    DropdownItem,
   } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import { onMount, tick} from "svelte";
+  import { onMount, tick } from "svelte";
   import {
     GetSyslogs,
     ExportSyslogs,
@@ -22,7 +24,7 @@
   } from "../../wailsjs/go/main/App";
   import { renderState, renderTime, getTableLang } from "./common";
   import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
-  import { 
+  import {
     showLogCountChart,
     resizeLogCountChart,
     showMagicTimeChart,
@@ -32,6 +34,7 @@
   } from "./chart/logcount";
   import SyslogReport from "./SyslogReport.svelte";
   import Polling from "./Polling.svelte";
+  import AddressInfo from "./AddressInfo.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import type { datastore, main } from "wailsjs/go/models";
@@ -49,7 +52,10 @@
   let showPolling = false;
   let showFilter = false;
   let showLoading = false;
-
+  let addrInfoOpen = false;
+  let showAddrInfo = false;
+  let address = "";
+  let addrList: any = [];
   const filter: main.SyslogFilterEnt = {
     Start: "",
     End: "",
@@ -75,7 +81,7 @@
       data: data,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       stateSave: true,
-      order:[[1,"desc"]],
+      order: [[1, "desc"]],
       language: getTableLang(),
       select: {
         style: "multi",
@@ -83,10 +89,48 @@
     });
     table.on("select", () => {
       selectedCount = table.rows({ selected: true }).count();
+      updateAddrList();
     });
     table.on("deselect", () => {
       selectedCount = table.rows({ selected: true }).count();
+      updateAddrList();
     });
+  };
+
+  const updateAddrList = () => {
+    const selected = table.rows({ selected: true }).data();
+    addrList = [];
+    const ipReg = /^\d{1,3}(\.\d{1,3}){3}$/g;
+    const macReg = /^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$/gi;
+    const m = new Map();
+    for (let i = 0; i < selected.length; i++) {
+      const l = selected[i].Message;
+      const ips = l.match(ipReg);
+      if (ips) {
+        for (const ip of ips) {
+          if (ip && !m.has(ip)) {
+            m.set(ip, true);
+            addrList.push(ip);
+          }
+        }
+      }
+      const macs = l.match(macReg);
+      if (macs) {
+        for (const mac of macs) {
+          if (mac && !m.has(mac)) {
+            m.set(mac, true);
+            addrList.push(mac);
+          }
+        }
+      }
+      if (addrList.length > 10) {
+        break;
+      }
+    }
+  };
+  const showAddrInfoFunc = (a: string) => {
+    address = a;
+    showAddrInfo = true;
   };
 
   const refresh = async () => {
@@ -103,10 +147,10 @@
     showLoading = false;
   };
 
-  let chart : any = undefined;
+  let chart: any = undefined;
   const showChart = async () => {
     await tick();
-   chart = showLogLevelChart("chart", logs, zoomCallBack);
+    chart = showLogLevelChart("chart", logs, zoomCallBack);
   };
 
   const zoomCallBack = (st: number, et: number) => {
@@ -159,33 +203,33 @@
   });
 
   const saveCSV = () => {
-    ExportSyslogs("csv", filter,"");
+    ExportSyslogs("csv", filter, "");
   };
 
   const saveExcel = () => {
-    ExportSyslogs("excel", filter,chart ? chart.getDataURL() : "");
+    ExportSyslogs("excel", filter, chart ? chart.getDataURL() : "");
   };
 
   let copied = false;
   const copy = () => {
     const selected = table.rows({ selected: true }).data();
-    let s :string[] = [];
-    const h = columns.map((e:any)=> e.title);
-    s.push(h.join("\t"))
-    for(let i = 0 ;i < selected.length;i++ ) {
-      const row :any = [];
+    let s: string[] = [];
+    const h = columns.map((e: any) => e.title);
+    s.push(h.join("\t"));
+    for (let i = 0; i < selected.length; i++) {
+      const row: any = [];
       for (const c of columns) {
         if (c.data == "Time") {
-          row.push(renderTime(selected[i][c.data] || "",""));
+          row.push(renderTime(selected[i][c.data] || "", ""));
         } else {
           row.push(selected[i][c.data] || "");
         }
       }
-      s.push(row.join("\t"))
+      s.push(row.join("\t"));
     }
-    copyText(s.join("\n"))
+    copyText(s.join("\n"));
     copied = true;
-    setTimeout(()=> copied = false,2000);
+    setTimeout(() => (copied = false), 2000);
   };
 
   let polling: datastore.PollingEnt | undefined = undefined;
@@ -248,7 +292,7 @@
     },
   ];
 
-  let magicColumns :any = [];
+  let magicColumns: any = [];
 
   const regCut = /[\{\}"'[;,\]\[]+?/g;
   const regSplunk = /^([a-zA-Z0-9-+]+)=(\S+)$/;
@@ -299,31 +343,31 @@
   ];
 
   const getFilter = (m: string): any => {
-    const j = m.match(regJson)
-    if(j) {
+    const j = m.match(regJson);
+    if (j) {
       try {
         const o = JSON.parse(m);
-        if( typeof o == "object") {
+        if (typeof o == "object") {
           const keys = Object.keys(o);
-          if(keys.length > 0){
-            keys.forEach((k:string)=> {
+          if (keys.length > 0) {
+            keys.forEach((k: string) => {
               const v = o[k];
               if (typeof v == "number" || v.match(/^-?[0-9]+[0-9.]*$/)) {
                 magicChartNumEntList.push({
                   name: k,
                   value: k,
-                })
+                });
               } else {
                 magicChartCatEntList.push({
                   name: k,
                   value: k,
-                })
+                });
               }
-            })
+            });
             return {
               headers: keys,
               json: true,
-            }
+            };
           }
         }
       } catch (e) {
@@ -339,7 +383,7 @@
     magicChartCatEntList = [];
     regs.forEach((p) => {
       if (!p.regex) {
-        p.regex = new RegExp("^"+p.pattern +"$");
+        p.regex = new RegExp("^" + p.pattern + "$");
       }
       p.count = 1;
     });
@@ -356,12 +400,12 @@
           magicChartNumEntList.push({
             name: n,
             value: n,
-          })
+          });
         } else {
           magicChartCatEntList.push({
             name: n,
             value: n,
-          })
+          });
         }
         return;
       }
@@ -369,7 +413,7 @@
         if (e.match(p.regex)) {
           const n = p.type + "_" + p.count;
           h.push(n);
-          if( p.type == "number" ) {
+          if (p.type == "number") {
             magicChartNumEntList.push({
               name: n,
               value: n,
@@ -390,7 +434,7 @@
     return {
       headers: h,
       paterns: r,
-      json:false,
+      json: false,
     };
   };
 
@@ -401,7 +445,7 @@
       magicTable.destroy(true);
       magicTable = undefined;
       const e = document.getElementById("magicTableBase");
-      if(e) {
+      if (e) {
         e.innerHTML = `<table id="magicTable" class="display compact" style="width:99%" />`;
       }
     }
@@ -429,42 +473,41 @@
   let magicCatEnt = "";
   let magicCatEnt2 = "";
 
-  let magicChartTypes :any = [];
-  
+  let magicChartTypes: any = [];
+
   const showMagicChart = async () => {
     await tick();
-    switch(magicChartType) {
-    case "count":
+    switch (magicChartType) {
+      case "count":
         showLogCountChart("magicChart", magicData, magicZoomCallBack);
         break;
-    case "time":
+      case "time":
         if (!magicNumEnt) {
           return;
         }
         showMagicTimeChart("magicChart", magicData, magicNumEnt);
         break;
-    case "hour":
+      case "hour":
         showMagicHourChart("magicChart", magicData, magicNumEnt);
         break;
-    case "sum":
+      case "sum":
         showMagicSumChart("magicChart", magicData, magicCatEnt);
         break;
-    case "graph":
-        showMagicGraphChart("magicChart", magicData, magicCatEnt,magicCatEnt2);
+      case "graph":
+        showMagicGraphChart("magicChart", magicData, magicCatEnt, magicCatEnt2);
         break;
     }
   };
 
   const magicZoomCallBack = (st: number, et: number) => {
     magicData = [];
-    magicDataOrg.forEach((l:any) => {
+    magicDataOrg.forEach((l: any) => {
       if (l.Time >= st && l.Time <= et) {
         magicData.push(l);
       }
     });
     showMagicTable();
   };
-  
 
   const magic = async () => {
     const d = table.rows({ selected: true }).data();
@@ -473,13 +516,13 @@
     }
     const f = getFilter(d[0].Message);
     magicColumns = [];
-    magicColumnsDefault.forEach((c)=> {
+    magicColumnsDefault.forEach((c) => {
       magicColumns.push(c);
     });
-    f.headers.forEach((h:string)=> {
+    f.headers.forEach((h: string) => {
       magicColumns.push({
-        data:h,
-        title:h,
+        data: h,
+        title: h,
       });
     });
     magicDataOrg = [];
@@ -491,29 +534,29 @@
         try {
           const o = JSON.parse(log.Message);
           let hit = true;
-          for(const k of f.headers) {
-            if (!Object.hasOwn(o,k)) {
+          for (const k of f.headers) {
+            if (!Object.hasOwn(o, k)) {
               hit = false;
-              break
+              break;
             }
           }
           if (!hit) {
             continue;
           }
-          const r:any = {
+          const r: any = {
             Time: log.Time,
             Host: log.Host,
             Type: log.Type,
-            Tag:  log.Tag,
+            Tag: log.Tag,
           };
-          f.headers.forEach((k:string)=> {
+          f.headers.forEach((k: string) => {
             r[k] = o[k];
           });
-          st = Math.min(st,log.Time);
-          et = Math.max(et,log.Time);
+          st = Math.min(st, log.Time);
+          et = Math.max(et, log.Time);
           magicDataOrg.push(r);
         } catch {
-         continue; 
+          continue;
         }
       }
     } else {
@@ -524,39 +567,37 @@
         if (!m || m.length < f.headers.length + 1) {
           continue;
         }
-        const r:any = {
-            Time: log.Time,
-            Host: log.Host,
-            Type: log.Type,
-            Tag:  log.Tag,
+        const r: any = {
+          Time: log.Time,
+          Host: log.Host,
+          Type: log.Type,
+          Tag: log.Tag,
         };
-        f.headers.forEach((e:string,i:number)=> {
-          r[e] = m[i+1];
+        f.headers.forEach((e: string, i: number) => {
+          r[e] = m[i + 1];
         });
-        st = Math.min(st,log.Time);
-        et = Math.max(et,log.Time);
+        st = Math.min(st, log.Time);
+        et = Math.max(et, log.Time);
         magicDataOrg.push(r);
       }
     }
     magicData = [];
-    magicDataOrg.forEach((l:any)=>{
+    magicDataOrg.forEach((l: any) => {
       magicData.push(l);
     });
     showMagic = true;
     magicChartType = "count";
-    magicChartTypes =  [
-      { name: $_('Syslog.Count'), value: "count" }
-    ];
-    if (magicChartNumEntList.length > 0 ) {
-      magicChartTypes.push({ name: $_('Syslog.TimeChart'), value: "time" });
-      if( et-st > 3600 * 1000 * 1000 * 1000) {
-        magicChartTypes.push({ name: $_('Syslog.PerHourSum'), value: "hour" });
-      } 
+    magicChartTypes = [{ name: $_("Syslog.Count"), value: "count" }];
+    if (magicChartNumEntList.length > 0) {
+      magicChartTypes.push({ name: $_("Syslog.TimeChart"), value: "time" });
+      if (et - st > 3600 * 1000 * 1000 * 1000) {
+        magicChartTypes.push({ name: $_("Syslog.PerHourSum"), value: "hour" });
+      }
     }
     if (magicChartCatEntList.length > 0) {
-      magicChartTypes.push({ name: $_('Syslog.MagicBarChart'), value: "sum" });
-      if(magicChartCatEntList.length> 1) {
-        magicChartTypes.push({ name: $_('SyslogMagicGraph'), value: "graph" });
+      magicChartTypes.push({ name: $_("Syslog.MagicBarChart"), value: "sum" });
+      if (magicChartCatEntList.length > 1) {
+        magicChartTypes.push({ name: $_("SyslogMagicGraph"), value: "graph" });
       }
     }
     showMagicTable();
@@ -564,17 +605,17 @@
   };
 
   const exportMagic = (t: string) => {
-    const ed :any = {
+    const ed: any = {
       Title: "TWSNMP_Syslog_Magic",
-      Header: magicColumns.map((e:any) => e.title),
+      Header: magicColumns.map((e: any) => e.title),
       Data: [],
       Image: "",
     };
     for (const d of magicData) {
-      const row :any = [];
+      const row: any = [];
       for (const c of magicColumns) {
         if (c.data == "Time") {
-          row.push(renderTime(d[c.data] || "",""));
+          row.push(renderTime(d[c.data] || "", ""));
         } else {
           row.push(d[c.data] || "");
         }
@@ -586,31 +627,32 @@
 
   const copyMagic = () => {
     const selected = magicTable.rows({ selected: true }).data();
-    let s :string[] = [];
-    const h = magicColumns.map((e:any)=> e.title);
-    s.push(h.join("\t"))
-    for(let i = 0 ;i < selected.length;i++ ) {
-      const row :any = [];
+    let s: string[] = [];
+    const h = magicColumns.map((e: any) => e.title);
+    s.push(h.join("\t"));
+    for (let i = 0; i < selected.length; i++) {
+      const row: any = [];
       for (const c of magicColumns) {
         if (c.data == "Time") {
-          row.push(renderTime(selected[i][c.data] || "",""));
+          row.push(renderTime(selected[i][c.data] || "", ""));
         } else {
           row.push(selected[i][c.data] || "");
         }
       }
-      s.push(row.join("\t"))
+      s.push(row.join("\t"));
     }
-    copyText(s.join("\n"))
+    copyText(s.join("\n"));
     magicCopied = true;
-    setTimeout(()=> magicCopied = false,2000);
+    setTimeout(() => (magicCopied = false), 2000);
   };
-
 </script>
 
-<svelte:window on:resize={()=> {
+<svelte:window
+  on:resize={() => {
     resizeLogLevelChart();
     resizeLogCountChart();
-}} />
+  }}
+/>
 
 <div class="flex flex-col">
   <div id="chart" />
@@ -637,24 +679,33 @@
         size="xs"
       >
         <Icon path={icons.mdiMagicStaff} size={1} />
-        {$_('Syslog.MagicBtn')}
+        {$_("Syslog.MagicBtn")}
       </GradientButton>
     {/if}
     {#if selectedCount > 0}
       <GradientButton
-      shadow
-      color="cyan"
-      type="button"
-      on:click={copy}
-      size="xs"
-    >
-      {#if copied}
-        <Icon path={icons.mdiCheck} size={1} />
-      {:else}
-        <Icon path={icons.mdiContentCopy} size={1} />
-      {/if}
-      Copy
-    </GradientButton>
+        shadow
+        color="cyan"
+        type="button"
+        on:click={copy}
+        size="xs"
+      >
+        {#if copied}
+          <Icon path={icons.mdiCheck} size={1} />
+        {:else}
+          <Icon path={icons.mdiContentCopy} size={1} />
+        {/if}
+        Copy
+      </GradientButton>
+      <GradientButton>
+        {$_('Address.AddressInfo')}
+        <Icon path={icons.mdiChevronDown} size={1} />
+      </GradientButton>
+      <Dropdown bind:open={addrInfoOpen}>
+        {#each addrList as a}
+          <DropdownItem on:click={() => showAddrInfoFunc(a)}>{a}</DropdownItem>
+        {/each}
+      </Dropdown>
     {/if}
     <GradientButton
       shadow
@@ -735,11 +786,21 @@
     <div class="grid gap-2 grid-cols-3">
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.Start")}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.Start} size="sm" />
+        <Input
+          class="h-8"
+          type="datetime-local"
+          bind:value={filter.Start}
+          size="sm"
+        />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.End")}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.End} size="sm" />
+        <Input
+          class="h-8"
+          type="datetime-local"
+          bind:value={filter.End}
+          size="sm"
+        />
       </Label>
       <div class="flex">
         <Button
@@ -766,16 +827,31 @@
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("Syslog.Host")}</span>
-        <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Host} />
+        <CodeJar
+          style="padding: 6px;"
+          syntax="regex"
+          {highlight}
+          bind:value={filter.Host}
+        />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("Syslog.Tag")}</span>
-        <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Tag} />
+        <CodeJar
+          style="padding: 6px;"
+          syntax="regex"
+          {highlight}
+          bind:value={filter.Tag}
+        />
       </Label>
     </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("Syslog.Message")}</span>
-      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Message} />
+      <CodeJar
+        style="padding: 6px;"
+        syntax="regex"
+        {highlight}
+        bind:value={filter.Message}
+      />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
@@ -826,7 +902,7 @@
           size="sm"
           items={magicChartTypes}
           bind:value={magicChartType}
-          placeholder={$_('Syslog.ChartType')}
+          placeholder={$_("Syslog.ChartType")}
           class="w-96"
           on:change={showMagicChart}
         />
@@ -835,7 +911,7 @@
             size="sm"
             items={magicChartNumEntList}
             bind:value={magicNumEnt}
-            placeholder={$_('Syslog.NumData')}
+            placeholder={$_("Syslog.NumData")}
             class="w-96"
             on:change={showMagicChart}
           />
@@ -844,7 +920,7 @@
             size="sm"
             items={magicChartCatEntList}
             bind:value={magicCatEnt}
-            placeholder={$_('Syslog.CatData')}
+            placeholder={$_("Syslog.CatData")}
             class="w-96"
             on:change={showMagicChart}
           />
@@ -853,7 +929,7 @@
               size="sm"
               items={magicChartCatEntList}
               bind:value={magicCatEnt2}
-              placeholder={$_('Syslog.CatData')}
+              placeholder={$_("Syslog.CatData")}
               class="w-96"
               on:change={showMagicChart}
             />
@@ -914,8 +990,10 @@
   </div>
 </Modal>
 
+<AddressInfo bind:show={showAddrInfo} {address} />
+
 <style>
-  #chart{
+  #chart {
     min-height: 200px;
     height: 20vh;
     width: 95vw;

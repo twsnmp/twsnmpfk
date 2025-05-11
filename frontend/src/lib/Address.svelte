@@ -21,6 +21,7 @@
     getStateIcon,
   } from "./common";
   import AddressReport from "./AddressReport.svelte";
+  import AddressInfo from "./AddressInfo.svelte";
   import Node from "./Node.svelte";
   import NodeReport from "./NodeReport.svelte";
   import DataTable from "datatables.net-dt";
@@ -43,6 +44,7 @@
   let showEditNode = false;
   let showAddNode = false;
   let showNodeReport = false;
+  let showAddressInfo = false;
 
   const showArpTable = () => {
     selectedIP = selectedNodeID = "";
@@ -392,7 +394,18 @@
         <Icon path={icons.mdiChartPie} size={1} />
         {$_("Address.Report")}
       </GradientButton>
-    {/if}
+      {/if}
+      <GradientButton
+        type="button"
+        color="green"
+        on:click={() => {
+          showAddressInfo = true;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiInbox} size={1} />
+        アドレス分析
+      </GradientButton>
     <GradientButton shadow color="red" type="button" on:click={reset} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
       {$_("Address.Clear")}
@@ -436,6 +449,10 @@
   {changeIP}
   {changeMAC}
   {ipam}
+/>
+
+<AddressInfo
+  bind:show = {showAddressInfo}
 />
 
 <Node

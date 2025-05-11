@@ -186,6 +186,10 @@ export function GetAIResult(arg1) {
   return window['go']['main']['App']['GetAIResult'](arg1);
 }
 
+export function GetAddressInfo(arg1) {
+  return window['go']['main']['App']['GetAddressInfo'](arg1);
+}
+
 export function GetArpLogs() {
   return window['go']['main']['App']['GetArpLogs']();
 }

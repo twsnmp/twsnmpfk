@@ -766,7 +766,13 @@
     "State": "State",
     "Vendor": "Vendor",
     "FirstTime": "First",
-    "LastTime": "Last"
+    "LastTime": "Last",
+    "Address": "Address",
+    "AddressInfo": "Address Info",
+    "Location": "Location",
+    "Name": "Name",
+    "Search": "Search",
+    "Value": "Value"
   },
   "Location": {
     "Add": "Add",

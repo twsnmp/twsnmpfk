@@ -766,7 +766,13 @@
     "Last": "最終変化",
     "Delete": "削除",
     "FirstTime": "初回",
-    "LastTime": "最終"
+    "LastTime": "最終",
+    "AddressInfo": "アドレス分析",
+    "Location": "位置",
+    "Address": "アドレス",
+    "Name": "項目",
+    "Value": "値",
+    "Search": "調査"
   },
   "Location": {
     "Edit": "編集",

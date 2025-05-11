@@ -35,6 +35,7 @@ func sflowd(stopCh chan bool) {
 			log.Printf("stop sflowd")
 			return
 		default:
+			sv.SetDeadline(time.Now().Add(time.Second))
 			l, ra, err := sv.ReadFrom(data)
 			if err != nil {
 				continue

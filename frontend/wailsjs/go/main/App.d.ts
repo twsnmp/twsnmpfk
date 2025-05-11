@@ -98,6 +98,8 @@ export function GetAIList():Promise<Array<main.AIList>>;
 
 export function GetAIResult(arg1:string):Promise<datastore.AIResult>;
 
+export function GetAddressInfo(arg1:string):Promise<Array<main.AddrInfoEnt>>;
+
 export function GetArpLogs():Promise<Array<main.ArpLogEnt>>;
 
 export function GetArpTable():Promise<Array<datastore.ArpEnt>>;

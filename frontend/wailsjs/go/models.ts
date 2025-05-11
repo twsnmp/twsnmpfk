@@ -1194,6 +1194,20 @@ export namespace main {
 	        this.LastTime = source["LastTime"];
 	    }
 	}
+	export class AddrInfoEnt {
+	    Title: string;
+	    Value: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AddrInfoEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Title = source["Title"];
+	        this.Value = source["Value"];
+	    }
+	}
 	export class ArpLogEnt {
 	    Time: number;
 	    State: string;

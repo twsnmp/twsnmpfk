@@ -8,6 +8,8 @@
     Spinner,
     Button,
     Checkbox,
+    Dropdown,
+    DropdownItem,
   } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -20,6 +22,7 @@
   import { renderTime, getTableLang, renderTimeMili } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
   import NetFlowReport from "./NetFlowReport.svelte";
+  import AddressInfo from "./AddressInfo.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import type { main } from "wailsjs/go/models";
@@ -52,6 +55,10 @@
   };
 
   let showLoading = false;
+  let addrInfoOpen = false;
+  let showAddrInfo = false;
+  let address = "";
+  let addrList :any = [];
 
   const showTable = () => {
     selectedCount = 0;
@@ -61,7 +68,7 @@
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       stateSave: true,
       data: data,
-      order:[[0,"desc"]],
+      order: [[0, "desc"]],
       language: getTableLang(),
       select: {
         style: "multi",
@@ -69,11 +76,36 @@
     });
     table.on("select", () => {
       selectedCount = table.rows({ selected: true }).count();
+      updateAddrList();
     });
     table.on("deselect", () => {
       selectedCount = table.rows({ selected: true }).count();
+      updateAddrList();
     });
   };
+
+  const updateAddrList = () => {
+    const selected = table.rows({ selected: true }).data();
+    addrList = [];
+    const m = new Map();
+    for (let i = 0; i < selected.length; i++) {
+      for(const k of ["SrcAddr","SrcMAC","DstAddr","DstMAC"]) {
+        const a = selected[i][k]
+        if (a && !m.has(a)) {
+          m.set(a,true)
+          addrList.push(a);
+        }
+      }
+      if (addrList.length > 10) {
+        break;
+      }
+    }
+  }
+
+  const showAddrInfoFunc = (a:string) => {
+    address = a;
+    showAddrInfo = true;
+  }
 
   const refresh = async () => {
     showLoading = true;
@@ -90,7 +122,7 @@
     showLoading = false;
   };
 
-  let chart : any = undefined;
+  let chart: any = undefined;
   const showChart = async () => {
     await tick();
     chart = showLogCountChart("chart", data, zoomCallBack);
@@ -115,17 +147,17 @@
     },
     {
       data: "SrcAddr",
-      title: $_('NetFlow.SrcAddr'),
+      title: $_("NetFlow.SrcAddr"),
       width: "8%",
     },
     {
       data: "SrcPort",
-      title: $_('NetFlow.Port'),
+      title: $_("NetFlow.Port"),
       width: "4%",
     },
     {
       data: "SrcLoc",
-      title: $_('NetFlow.Loc'),
+      title: $_("NetFlow.Loc"),
       width: "8%",
     },
     {
@@ -135,17 +167,17 @@
     },
     {
       data: "DstAddr",
-      title: $_('NetFlow.DstAddr'),
+      title: $_("NetFlow.DstAddr"),
       width: "8%",
     },
     {
       data: "DstPort",
-      title: $_('NetFlow.Port'),
+      title: $_("NetFlow.Port"),
       width: "4%",
     },
     {
       data: "DstLoc",
-      title: $_('NetFlow.Loc'),
+      title: $_("NetFlow.Loc"),
       width: "8%",
     },
     {
@@ -155,27 +187,27 @@
     },
     {
       data: "Protocol",
-      title: $_('NetFlow.Protocol'),
+      title: $_("NetFlow.Protocol"),
       width: "7%",
     },
     {
       data: "TCPFlags",
-      title: $_('NetFlow.TCPFlags'),
+      title: $_("NetFlow.TCPFlags"),
       width: "8%",
     },
     {
       data: "Packets",
-      title: $_('NetFlow.Packets'),
+      title: $_("NetFlow.Packets"),
       width: "5%",
     },
     {
       data: "Bytes",
-      title: $_('NetFlow.Bytes'),
+      title: $_("NetFlow.Bytes"),
       width: "5%",
     },
     {
       data: "Dur",
-      title: $_('NetFlow.Dur'),
+      title: $_("NetFlow.Dur"),
       width: "5%",
     },
   ];
@@ -185,11 +217,11 @@
   });
 
   const saveCSV = () => {
-    ExportNetFlow("csv", filter,"");
+    ExportNetFlow("csv", filter, "");
   };
 
   const saveExcel = () => {
-    ExportNetFlow("excel", filter,chart ? chart.getDataURL() : "");
+    ExportNetFlow("excel", filter, chart ? chart.getDataURL() : "");
   };
 
   let copied = false;
@@ -204,8 +236,8 @@
         if (c.data == "Time") {
           row.push(renderTime(selected[i][c.data] || "", ""));
         } else {
-          const d = (selected[i][c.data] || "") + ""; 
-          row.push(d.replaceAll("\n"," "));
+          const d = (selected[i][c.data] || "") + "";
+          row.push(d.replaceAll("\n", " "));
         }
       }
       s.push(row.join("\t"));
@@ -285,6 +317,15 @@
           {/if}
           Copy
         </GradientButton>
+        <GradientButton>
+          {$_('Address.AddressInfo')}
+          <Icon path={icons.mdiChevronDown} size={1} />
+        </GradientButton>
+        <Dropdown bind:open={addrInfoOpen}>
+          {#each addrList as a}
+            <DropdownItem on:click={() => showAddrInfoFunc(a)}>{a}</DropdownItem>
+          {/each}
+        </Dropdown>
       {/if}
     {/if}
     <GradientButton
@@ -330,11 +371,21 @@
     <div class="grid gap-2 grid-cols-3">
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.Start")}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.Start} size="sm" />
+        <Input
+          class="h-8"
+          type="datetime-local"
+          bind:value={filter.Start}
+          size="sm"
+        />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("EventLog.End")}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.End} size="sm" />
+        <Input
+          class="h-8"
+          type="datetime-local"
+          bind:value={filter.End}
+          size="sm"
+        />
       </Label>
       <div class="flex">
         <Button
@@ -349,85 +400,155 @@
         </Button>
       </div>
     </div>
-    <Checkbox bind:checked={filter.Single}>{$_('NetFlow.Single')}</Checkbox>
+    <Checkbox bind:checked={filter.Single}>{$_("NetFlow.Single")}</Checkbox>
     {#if filter.Single}
       <div class="grid gap-2 grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>IP</span>
-          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcAddr} />
+          <CodeJar
+            style="padding: 6px;"
+            syntax="regex"
+            {highlight}
+            bind:value={filter.SrcAddr}
+          />
         </Label>
         <Label class="space-y-2 text-xs">
-          <span>{$_('NetFlow.Port')}</span>
+          <span>{$_("NetFlow.Port")}</span>
           <Input
             class="h-8 w-24 text-right"
-            type="number" min=0 max=65554 bind:value={filter.SrcPort} size="sm" />
+            type="number"
+            min="0"
+            max="65554"
+            bind:value={filter.SrcPort}
+            size="sm"
+          />
         </Label>
       </div>
       <div class="grid gap-2 grid-cols-2">
         <Label class="space-y-2 text-xs">
-          <span>{$_('NetFlow.Loc')}</span>
-          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcLoc} />
+          <span>{$_("NetFlow.Loc")}</span>
+          <CodeJar
+            style="padding: 6px;"
+            syntax="regex"
+            {highlight}
+            bind:value={filter.SrcLoc}
+          />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>MAC</span>
-          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcMAC} />
+          <CodeJar
+            style="padding: 6px;"
+            syntax="regex"
+            {highlight}
+            bind:value={filter.SrcMAC}
+          />
         </Label>
       </div>
     {:else}
       <div class="grid gap-2 grid-cols-2">
-          <Label class="space-y-2 text-xs">
-            <span>{$_('NetFlow.SrcAddr')}</span>
-            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcAddr} />
-          </Label>
-          <Label class="space-y-2 text-xs">
-            <span>{$_('NetFlow.Port')}</span>
-            <Input
-              class="h-8 w-24 text-right"
-              type="number" min=0 max=65554 bind:value={filter.SrcPort} size="sm" />
-          </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("NetFlow.SrcAddr")}</span>
+          <CodeJar
+            style="padding: 6px;"
+            syntax="regex"
+            {highlight}
+            bind:value={filter.SrcAddr}
+          />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("NetFlow.Port")}</span>
+          <Input
+            class="h-8 w-24 text-right"
+            type="number"
+            min="0"
+            max="65554"
+            bind:value={filter.SrcPort}
+            size="sm"
+          />
+        </Label>
       </div>
       <div class="grid gap-2 grid-cols-2">
-          <Label class="space-y-2 text-xs">
-            <span>{$_('NetFlow.Loc')}</span>
-            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcLoc} />
-          </Label>
-          <Label class="space-y-2 text-xs">
-            <span>MAC</span>
-            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.SrcMAC} />
-          </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("NetFlow.Loc")}</span>
+          <CodeJar
+            style="padding: 6px;"
+            syntax="regex"
+            {highlight}
+            bind:value={filter.SrcLoc}
+          />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>MAC</span>
+          <CodeJar
+            style="padding: 6px;"
+            syntax="regex"
+            {highlight}
+            bind:value={filter.SrcMAC}
+          />
+        </Label>
       </div>
       <div class="grid gap-2 grid-cols-2">
-          <Label class="space-y-2 text-xs">
-            <span>{$_('NetFlow.DstAddr')}</span>
-            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.DstAddr} />
-          </Label>
-          <Label class="space-y-2 text-xs">
-            <span>{$_('NetFlow.Port')}</span>
-            <Input
-              class="h-8 w-24 text-right"
-              type="number" min=0 max=65554 bind:value={filter.DstPort} size="sm" />
-          </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("NetFlow.DstAddr")}</span>
+          <CodeJar
+            style="padding: 6px;"
+            syntax="regex"
+            {highlight}
+            bind:value={filter.DstAddr}
+          />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("NetFlow.Port")}</span>
+          <Input
+            class="h-8 w-24 text-right"
+            type="number"
+            min="0"
+            max="65554"
+            bind:value={filter.DstPort}
+            size="sm"
+          />
+        </Label>
       </div>
       <div class="grid gap-2 grid-cols-2">
-          <Label class="space-y-2 text-xs">
-            <span>{$_('NetFlow.Loc')}</span>
-            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.DstLoc} />
-          </Label>
-          <Label class="space-y-2 text-xs">
-            <span>MAC</span>
-            <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.DstMAC} />
-          </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("NetFlow.Loc")}</span>
+          <CodeJar
+            style="padding: 6px;"
+            syntax="regex"
+            {highlight}
+            bind:value={filter.DstLoc}
+          />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>MAC</span>
+          <CodeJar
+            style="padding: 6px;"
+            syntax="regex"
+            {highlight}
+            bind:value={filter.DstMAC}
+          />
+        </Label>
       </div>
     {/if}
     <div class="grid gap-2 grid-cols-2">
-        <Label class="space-y-2 text-xs">
-          <span>{$_('NetFlow.Protocol')}</span>
-          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Protocol} />
-        </Label>
-        <Label class="space-y-2 text-xs">
-          <span>{$_('NetFlow.TCPFlags')}</span>
-          <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.TCPFlags} />
-        </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_("NetFlow.Protocol")}</span>
+        <CodeJar
+          style="padding: 6px;"
+          syntax="regex"
+          {highlight}
+          bind:value={filter.Protocol}
+        />
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_("NetFlow.TCPFlags")}</span>
+        <CodeJar
+          style="padding: 6px;"
+          syntax="regex"
+          {highlight}
+          bind:value={filter.TCPFlags}
+        />
+      </Label>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
@@ -465,6 +586,11 @@
     <span class="ml-2"> {$_("Syslog.Loading")} </span>
   </div>
 </Modal>
+
+<AddressInfo
+  bind:show = {showAddrInfo}
+  {address}
+/>
 
 <style>
   #chart {
