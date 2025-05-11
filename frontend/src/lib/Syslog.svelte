@@ -100,8 +100,8 @@
   const updateAddrList = () => {
     const selected = table.rows({ selected: true }).data();
     addrList = [];
-    const ipReg = /^\d{1,3}(\.\d{1,3}){3}$/g;
-    const macReg = /^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$/gi;
+    const ipReg = /\d{1,3}(\.\d{1,3}){3}/g;
+    const macReg = /[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}/gi;
     const m = new Map();
     for (let i = 0; i < selected.length; i++) {
       const l = selected[i].Message;
