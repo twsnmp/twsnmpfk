@@ -54,7 +54,7 @@ var (
 	protMap    map[int]string
 	serviceMap map[string]string
 	geoip      *geoip2.Reader
-	geoipMap   map[string]string
+	geoipMap   sync.Map
 	ouiMap     map[string]string
 
 	logSize      int64
@@ -89,7 +89,6 @@ func Init(ctx context.Context, path string, wg *sync.WaitGroup) error {
 		112: "vrrp",
 	}
 	serviceMap = make(map[string]string)
-	geoipMap = make(map[string]string)
 	ouiMap = make(map[string]string)
 	if err := loadDataFromFS(); err != nil {
 		return err

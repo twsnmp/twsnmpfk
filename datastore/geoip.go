@@ -29,8 +29,10 @@ func closeGeoIP() {
 }
 
 func GetLoc(sip string) string {
-	if l, ok := geoipMap[sip]; ok {
-		return l
+	if l, ok := geoipMap.Load(sip); ok {
+		if loc, ok := l.(string); ok {
+			return loc
+		}
 	}
 	loc := ""
 	ip := net.ParseIP(sip)
@@ -47,7 +49,7 @@ func GetLoc(sip string) string {
 			loc = "LOCAL,0,0,"
 		}
 	}
-	geoipMap[sip] = loc
+	geoipMap.Store(sip, loc)
 	return loc
 }
 
