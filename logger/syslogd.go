@@ -16,7 +16,7 @@ import (
 	syslog "gopkg.in/mcuadros/go-syslog.v2"
 )
 
-func syslogd(stopCh chan bool, port int) {
+func syslogd(stopCh chan bool) {
 	log.Printf("start syslogd")
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
@@ -27,8 +27,8 @@ func syslogd(stopCh chan bool, port int) {
 	server := syslog.NewServer()
 	server.SetFormat(syslog.Automatic)
 	server.SetHandler(syslog.NewChannelHandler(syslogCh))
-	_ = server.ListenUDP(fmt.Sprintf("0.0.0.0:%d", port))
-	_ = server.ListenTCP(fmt.Sprintf("0.0.0.0:%d", port))
+	_ = server.ListenUDP(fmt.Sprintf("0.0.0.0:%d", datastore.SyslogPort))
+	_ = server.ListenTCP(fmt.Sprintf("0.0.0.0:%d", datastore.SyslogPort))
 	_ = server.Boot()
 	for {
 		select {

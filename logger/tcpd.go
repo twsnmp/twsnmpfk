@@ -13,7 +13,7 @@ import (
 
 func tcpd(stopCh chan bool) {
 	log.Printf("start tcpd")
-	sv, err := net.Listen("tcp", fmt.Sprintf(":%d", tcpdPort))
+	sv, err := net.Listen("tcp", fmt.Sprintf(":%d", datastore.TCPPort))
 	if err != nil {
 		log.Printf("tcpd err=%v", err)
 		<-stopCh

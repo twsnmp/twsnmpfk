@@ -21,7 +21,7 @@ import (
 
 func sflowd(stopCh chan bool) {
 	log.Printf("start sflowd")
-	sv, err := net.ListenPacket("udp", fmt.Sprintf(":%d", sFlowPort))
+	sv, err := net.ListenPacket("udp", fmt.Sprintf(":%d", datastore.SFlowPort))
 	if err != nil {
 		log.Printf("sflowd err=%v", err)
 		<-stopCh

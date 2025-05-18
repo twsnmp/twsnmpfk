@@ -11,17 +11,9 @@ import (
 	"github.com/twsnmp/twsnmpfk/ping"
 )
 
-func getTmpDBFile() (string, error) {
-	f, err := os.CreateTemp("", "twsnmpfc_test")
-	if err != nil {
-		return "", err
-	}
-	return f.Name(), err
-}
-
 func TestDiscover(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
-	ping.Start(ctx, &sync.WaitGroup{}, "")
+	ping.Start(ctx, &sync.WaitGroup{})
 	defer cancel()
 	time.Sleep(time.Second * 1)
 	td, err := os.MkdirTemp("", "twsnmpfc_test")

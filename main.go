@@ -26,7 +26,7 @@ var version = "vx.x.x"
 var commit = ""
 
 var dataStorePath = ""
-var pingMode string
+var pingMode = ""
 var kiosk = false
 var lock = ""
 var trapPort = 162
@@ -81,6 +81,13 @@ func main() {
 	datastore.ClientCert = clientCert
 	datastore.ClientKey = clientKey
 	datastore.CACert = caCert
+	datastore.PingMode = pingMode
+	datastore.TCPPort = tcpdPort
+	datastore.SyslogPort = syslogPort
+	datastore.NetFlowPort = netflowPort
+	datastore.SFlowPort = sFlowPort
+	datastore.SSHdPort = sshdPort
+	datastore.TrapPort = trapPort
 
 	// Create an instance of the app structure
 	app := NewApp()

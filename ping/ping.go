@@ -16,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/twsnmp/twsnmpfk/datastore"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
 )
@@ -69,7 +70,8 @@ type packet struct {
 	ttl    int
 }
 
-func Start(ctx context.Context, wg *sync.WaitGroup, mode string) error {
+func Start(ctx context.Context, wg *sync.WaitGroup) error {
+	mode := datastore.PingMode
 	if mode == "" {
 		if runtime.GOOS == "darwin" {
 			mode = "udp"

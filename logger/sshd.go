@@ -32,7 +32,7 @@ func sshd(stopCh chan bool) {
 		return
 	}
 	sv := ssh.Server{
-		Addr:             fmt.Sprintf(":%d", sshdPort),
+		Addr:             fmt.Sprintf(":%d", datastore.SSHdPort),
 		Version:          "TWSNNMP FK v1.21.0",
 		HostSigners:      []ssh.Signer{signer},
 		IdleTimeout:      time.Second * 30,

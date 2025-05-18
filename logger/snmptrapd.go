@@ -19,7 +19,7 @@ import (
 	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
-func snmptrapd(stopCh chan bool, port int) {
+func snmptrapd(stopCh chan bool) {
 	log.Printf("start snmp trapd")
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
@@ -28,7 +28,7 @@ func snmptrapd(stopCh chan bool, port int) {
 	})
 	tl := gosnmp.NewTrapListener()
 	tl.Params = &gosnmp.GoSNMP{}
-	tl.Params.Port = uint16(port)
+	tl.Params.Port = uint16(datastore.TrapPort)
 	switch datastore.MapConf.SnmpMode {
 	case "v3auth":
 		tl.Params.Version = gosnmp.Version3
@@ -98,7 +98,7 @@ func snmptrapd(stopCh chan bool, port int) {
 	}
 	defer tl.Close()
 	go func() {
-		if err := tl.Listen(fmt.Sprintf("0.0.0.0:%d", port)); err != nil {
+		if err := tl.Listen(fmt.Sprintf("0.0.0.0:%d", datastore.TrapPort)); err != nil {
 			log.Printf("snmp trap listen err=%v", err)
 		}
 		log.Printf("close snmp trapd")

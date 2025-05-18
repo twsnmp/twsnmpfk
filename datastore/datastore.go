@@ -65,6 +65,14 @@ var (
 	CACert     string
 	ClientCert string
 	ClientKey  string
+	// from Command Line
+	PingMode    string
+	SyslogPort  int
+	TrapPort    int
+	NetFlowPort int
+	SFlowPort   int
+	TCPPort     int
+	SSHdPort    int
 )
 
 // Define errors
