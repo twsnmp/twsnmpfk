@@ -59,6 +59,7 @@ type OTelTraceEnt struct {
 	Start    int64   `json:"Start"`
 	End      int64   `json:"End"`
 	Dur      float64 `json:"Dur"`
+	NumSpan  int     `json:"NumSpan"`
 }
 
 func (a *App) GetOTelTraceBucketList() []string {
@@ -66,41 +67,44 @@ func (a *App) GetOTelTraceBucketList() []string {
 }
 
 // GetOTelTraces retunrs  OpenTelmentry trace summary list
-func (a *App) GetOTelTraces(b string) []*OTelTraceEnt {
+func (a *App) GetOTelTraces(bks []string) []*OTelTraceEnt {
 	ret := []*OTelTraceEnt{}
-	datastore.ForEachOTelTrace(b, func(t *datastore.OTelTraceEnt) bool {
-		hosts := []string{}
-		services := []string{}
-		scopes := []string{}
-		hostMap := make(map[string]bool)
-		serviceMap := make(map[string]bool)
-		scopeMap := make(map[string]bool)
-		for _, span := range t.Spans {
-			if _, ok := hostMap[span.Host]; !ok {
-				hostMap[span.Host] = true
-				hosts = append(hosts, span.Host)
+	for _, b := range bks {
+		datastore.ForEachOTelTrace(b, func(t *datastore.OTelTraceEnt) bool {
+			hosts := []string{}
+			services := []string{}
+			scopes := []string{}
+			hostMap := make(map[string]bool)
+			serviceMap := make(map[string]bool)
+			scopeMap := make(map[string]bool)
+			for _, span := range t.Spans {
+				if _, ok := hostMap[span.Host]; !ok {
+					hostMap[span.Host] = true
+					hosts = append(hosts, span.Host)
+				}
+				if _, ok := serviceMap[span.Service]; !ok {
+					serviceMap[span.Service] = true
+					services = append(services, span.Service)
+				}
+				if _, ok := scopeMap[span.Scope]; !ok {
+					scopeMap[span.Scope] = true
+					scopes = append(scopes, span.Scope)
+				}
 			}
-			if _, ok := serviceMap[span.Service]; !ok {
-				serviceMap[span.Service] = true
-				services = append(services, span.Service)
-			}
-			if _, ok := scopeMap[span.Scope]; !ok {
-				scopeMap[span.Scope] = true
-				scopes = append(scopes, span.Scope)
-			}
-		}
-		ret = append(ret, &OTelTraceEnt{
-			Bucket:   b,
-			TraceID:  t.TraceID,
-			Hosts:    strings.Join(hosts, " "),
-			Services: strings.Join(services, " "),
-			Scopes:   strings.Join(scopes, " "),
-			Start:    t.Start,
-			End:      t.End,
-			Dur:      t.Dur,
+			ret = append(ret, &OTelTraceEnt{
+				Bucket:   b,
+				TraceID:  t.TraceID,
+				Hosts:    strings.Join(hosts, " "),
+				Services: strings.Join(services, " "),
+				Scopes:   strings.Join(scopes, " "),
+				Start:    t.Start,
+				End:      t.End,
+				Dur:      t.Dur,
+				NumSpan:  len(t.Spans),
+			})
+			return len(ret) < 100000
 		})
-		return len(ret) < 100000
-	})
+	}
 	return ret
 }
 

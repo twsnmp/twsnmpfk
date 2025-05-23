@@ -204,7 +204,7 @@ func chekOldOTelData() {
 	delMetrics := []*OTelMetricEnt{}
 	t := time.Now().Add(time.Hour * time.Duration(MapConf.OTelRetention) * -1)
 	tn := t.UnixNano()
-	tbk := t.Format("2006-01-02T15")
+	tbk := t.Format("2006-01-02T15:04")
 	ForEachOTelMetric(func(m *OTelMetricEnt) bool {
 		if m.Last < tn {
 			delMetrics = append(delMetrics, m)

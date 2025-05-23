@@ -1,9 +1,9 @@
 <script lang="ts">
   import "../assets/css/jquery.dataTables.css";
-  import { GradientButton, Modal, Spinner, Tabs, TabItem,Select } from "flowbite-svelte";
+  import { GradientButton, Modal, Spinner, Tabs, TabItem,MultiSelect } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import {
     GetOTelMetrics,
     GetOTelTraceBucketList,
@@ -17,13 +17,15 @@
   import { _ } from "svelte-i18n";
   import OTelMetric from "./OTelMetric.svelte";
   import OTelTrace from "./OTelTrace.svelte";
+  import { showOTelTrace } from "./chart/otel";
+  import { showLogLevelChart } from "./chart/loglevel";
 
   let metrics: any = [];
   let traces: any = [];
   let logs: any = [];
   let tab = "metric";
   let traceBuckets: any = [];
-  let traceBucket = "";
+  let selectedTraceBuckets = [];
   let showMetricReport = false;
   let showTraceReport = false;
   let table: any = undefined;
@@ -62,30 +64,48 @@
         break;
       case "trace":
         const bks = await GetOTelTraceBucketList();
-        if (!bks.includes(traceBucket)) {
-          traceBucket = "";
-        }
+        const sel :any = [];
+        selectedTrace.forEach((t:any)=> {
+          if (bks.includes(t)) {
+            sel.push(t);
+          }
+        })
+        selectedTrace = sel;
         traceBuckets = [];
         bks.forEach((b: string) => {
           traceBuckets.push({ name: b, value: b });
         });
-        if (!traceBucket && bks.length > 0) {
-          traceBucket = bks[bks.length - 1];
+        if (selectedTrace.length < 1 && bks.length > 0) {
+          selectedTrace.push(bks[bks.length - 1]);
         }
-        if (traceBucket) {
-          traces = await GetOTelTraces(traceBucket);
+        if (selectedTrace.length > 0) {
+          traces = await GetOTelTraces(selectedTrace);
         } else {
           traces = [];
         }
         showTable("#otelTraceTable",columnsTrace,traces,0);
+        showTraceChart();
         break;
       case "log":
         logs = await GetLastOTelLogs();
         showTable("#otelLogTable",columnsLog,logs,1);
+        showSyslogChart();
         break;
     }
     showLoading = false;
   };
+
+  let chart :any = undefined;
+  
+  const showTraceChart = async() =>{
+    await tick();
+    chart = showOTelTrace("otelTraceChart",traces);
+  }
+  
+  const showSyslogChart = async() =>{
+    await tick();
+    chart = showLogLevelChart("otelSyslogChart",logs,undefined);
+  }
 
   const columnsMetric = [
     {
@@ -147,9 +167,9 @@
     },
     {
       data: "Dur",
-      title: $_('OTel.Dur'),
+      title: $_('OTel.Dur') +"(mSec)",
       width: "10%",
-      render: (v: number) => (v * 1000).toFixed(3) + " mSec",
+      render: (v: number) => (v * 1000).toFixed(3),
     },
     {
       data: "TraceID",
@@ -165,6 +185,11 @@
       data: "Services",
       title: $_('OTel.Service'),
       width: "15%",
+    },
+    {
+      data: "NumSpan",
+      title: "Span",
+      width: "5%",
     },
     {
       data: "Scopes",
@@ -238,7 +263,16 @@
         break;
     }
   };
+
+  const resizeChart = () => {
+    if (chart) {
+      chart.resize();
+    }
+  };
+
 </script>
+
+<svelte:window on:resize={resizeChart} />
 
 <div class="flex flex-col">
     <Tabs style="underline">
@@ -254,14 +288,20 @@
           <Icon path={icons.mdiChartBox} size={1} />
           {$_('OTel.Trace')}
         </div>
-        <table id="otelTraceTable" class="display compact" style="width:99%" />
+        <div id="otelTraceChart" />
+        <div class="m-5 grow">
+          <table id="otelTraceTable" class="display compact" style="width:99%" />
+        </div>
       </TabItem>
       <TabItem on:click={()=>{tab="log";refresh();}}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
           {$_('OTel.Log')}
         </div>
-        <table id="otelLogTable" class="display compact" style="width:99%" />
+        <div id="otelSyslogChart" />
+        <div class="m-5 grow">
+          <table id="otelLogTable" class="display compact" style="width:99%" />
+        </div>
       </TabItem>
     </Tabs>
 
@@ -279,12 +319,11 @@
       </GradientButton>
     {/if}
     {#if tab =="trace"}
-      <Select
+      <MultiSelect
         items={traceBuckets}
-        bind:value={traceBucket}
-        on:change={refresh}
-        placeholder=""
-        class="h-10 mb-2 w-64"
+        bind:value={selectedTrace}
+        placeholder="Date and Time"
+        class="h-10 mb-2 w-96"
         size="sm"
       />
     {/if}
@@ -321,3 +360,13 @@
 
 <OTelMetric bind:show={showMetricReport} metric={selectedMetric} />
 <OTelTrace bind:show={showTraceReport} trace={selectedTrace} />
+
+<style>
+  #otelTraceChart,
+  #otelSyslogChart {
+    min-height: 200px;
+    height: 20vh;
+    width: 98%;
+    margin: 0 auto;
+  }
+</style>

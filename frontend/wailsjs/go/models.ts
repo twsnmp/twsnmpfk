@@ -1642,6 +1642,7 @@ export namespace main {
 	    Start: number;
 	    End: number;
 	    Dur: number;
+	    NumSpan: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new OTelTraceEnt(source);
@@ -1657,6 +1658,7 @@ export namespace main {
 	        this.Start = source["Start"];
 	        this.End = source["End"];
 	        this.Dur = source["Dur"];
+	        this.NumSpan = source["NumSpan"];
 	    }
 	}
 	export class PingReq {

@@ -144,6 +144,7 @@
       chart.resize();
     }
   };
+
 </script>
 
 <svelte:window on:resize={resizeChart} />

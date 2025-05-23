@@ -119,7 +119,7 @@ func oteld(stopCh chan bool) {
 			{
 				delList := []string{}
 				saveList := []*datastore.OTelTraceEnt{}
-				et := time.Now().Add(time.Minute * -5).UnixNano()
+				et := time.Now().Add(time.Duration(-datastore.MapConf.OTelRetention-1) * time.Hour).UnixNano()
 				maxLast := int64(0)
 				traceMap.Range(func(key any, value any) bool {
 					if t, ok := value.(*datastore.OTelTraceEnt); ok {
@@ -225,7 +225,7 @@ func handleTraces(ctx context.Context, td ptrace.Traces) error {
 				if trace == nil {
 					trace = &datastore.OTelTraceEnt{
 						TraceID: tid,
-						Bucket:  time.Now().Format("2006-01-02T15"),
+						Bucket:  time.Now().Format("2006-01-02T15:04"),
 						Spans:   []datastore.OTelTraceSpanEnt{},
 					}
 					traceMap.Store(tid, trace)
