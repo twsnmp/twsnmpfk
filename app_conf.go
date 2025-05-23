@@ -22,6 +22,9 @@ func (a *App) UpdateMapConf(m datastore.MapConfEnt) bool {
 	if m.MapName != datastore.MapConf.MapName {
 		a.setMenu()
 	}
+	if m.OTelRetention < 1 {
+		m.OTelRetention = 24
+	}
 	datastore.MapConf = m
 
 	return datastore.SaveMapConf() == nil

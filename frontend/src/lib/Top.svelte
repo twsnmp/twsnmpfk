@@ -37,12 +37,12 @@
   import Config from "./Config.svelte";
   import System from "./System.svelte";
   import PKI from "./PKI.svelte";
+  import OTel from "./OTel.svelte";
   import Help from "./Help.svelte";
   import { _ } from "svelte-i18n";
   import Location from "./Location.svelte";
   import type { datastore } from "wailsjs/go/models";
   import { setIconToList } from "./common";
-  import { Style } from "maplibre-gl";
 
   let dark: boolean = false;
   let mainHeight = 0;
@@ -237,6 +237,15 @@
         ARP
       </NavLi>
       <NavLi
+        active={page == "otel"}
+        on:click={() => {
+          page = "otel";
+        }}
+      >
+        <Icon path={icons.mdiTelescope} size={1.8} />
+        OTel
+      </NavLi>
+      <NavLi
         active={page == "ai"}
         on:click={() => {
           page = "ai";
@@ -329,6 +338,8 @@
   <Location />
 {:else if page == "pki"}
   <PKI />
+{:else if page == "otel"}
+  <OTel />
 {/if}
 
 <Config

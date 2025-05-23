@@ -18,7 +18,6 @@
   } from "../../wailsjs/go/main/App";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import type { datastore } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
 

@@ -941,5 +941,34 @@
   },
   "PollingLis": {
     "Export": "Export"
+  },
+  "OTel": {
+    "Attributes": "Attributes",
+    "Count": "Count",
+    "Dur": "Time",
+    "End": "End",
+    "EndTime": "End",
+    "First": "First",
+    "Host": "Host",
+    "Last": "Last",
+    "Log": "Log",
+    "Max": "Max",
+    "Metric": "Metric",
+    "Min": "Min",
+    "Name": "Name",
+    "PSpanID": "ParentSpanID",
+    "Scope": "Scope",
+    "Service": "Service",
+    "Start": "Start",
+    "StartMetric": "Start",
+    "StartTime": "Start",
+    "Sum": "Sum",
+    "Time": "Time",
+    "Trace": "Trace",
+    "TraceID": "TraceID",
+    "Type": "Type"
+  },
+  "OTerl": {
+    "Report": "Report"
   }
 }

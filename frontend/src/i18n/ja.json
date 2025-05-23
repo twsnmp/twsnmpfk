@@ -941,5 +941,34 @@
   },
   "PollingLis": {
     "Export": "エクスポート"
+  },
+  "OTel": {
+    "Host": "送信元ホスト",
+    "Service": "サービス",
+    "Scope": "スコープ",
+    "Name": "名前",
+    "Type": "種別",
+    "Count": "回数",
+    "First": "初回",
+    "Last": "最終",
+    "Start": "開始日時",
+    "End": "終了日時",
+    "Dur": "時間",
+    "TraceID": "トレースID",
+    "Metric": "メトリック",
+    "Trace": "トレース",
+    "Log": "ログ",
+    "Time": "タイムスタンプ",
+    "StartMetric": "集計開始",
+    "Attributes": "属性",
+    "Sum": "集計",
+    "Min": "最小",
+    "Max": "最大",
+    "StartTime": "開始",
+    "EndTime": "終了",
+    "PSpanID": "親Span ID"
+  },
+  "OTerl": {
+    "Report": "レポート"
   }
 }

@@ -30,6 +30,8 @@ export function DeleteAllEventLogs():Promise<boolean>;
 
 export function DeleteAllNetFlow():Promise<boolean>;
 
+export function DeleteAllOTelData():Promise<boolean>;
+
 export function DeleteAllPollingLogs():Promise<boolean>;
 
 export function DeleteAllSFlow():Promise<boolean>;
@@ -49,6 +51,8 @@ export function DeleteLine(arg1:string):Promise<boolean>;
 export function DeleteNetwork(arg1:string):Promise<void>;
 
 export function DeleteNodes(arg1:Array<string>):Promise<void>;
+
+export function DeleteOTelMetric(arg1:main.OTelMetricEnt):Promise<void>;
 
 export function DeletePollingLogs(arg1:Array<string>):Promise<void>;
 
@@ -142,6 +146,8 @@ export function GetImageIconList():Promise<Array<string>>;
 
 export function GetLang():Promise<string>;
 
+export function GetLastOTelLogs():Promise<Array<datastore.SyslogEnt>>;
+
 export function GetLine(arg1:string,arg2:string):Promise<datastore.LineEnt>;
 
 export function GetLineByID(arg1:string):Promise<datastore.LineEnt>;
@@ -179,6 +185,16 @@ export function GetNodeMemo(arg1:string):Promise<string>;
 export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
+
+export function GetOTelMetric(arg1:main.OTelMetricEnt):Promise<datastore.OTelMetricEnt>;
+
+export function GetOTelMetrics():Promise<Array<main.OTelMetricEnt>>;
+
+export function GetOTelTrace(arg1:string,arg2:string):Promise<datastore.OTelTraceEnt>;
+
+export function GetOTelTraceBucketList():Promise<Array<string>>;
+
+export function GetOTelTraces(arg1:string):Promise<Array<main.OTelTraceEnt>>;
 
 export function GetPKIControl():Promise<datastore.PKIControlEnt>;
 

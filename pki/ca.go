@@ -180,6 +180,7 @@ func CreateCertificateRequest(req *CSRReqEnt, file string) error {
 		tmp.SignatureAlgorithm = x509.SHA256WithRSA
 		tmp.PublicKey = &k.PublicKey
 		key = k
+		keyBytes = x509.MarshalPKCS1PrivateKey(k)
 	} else {
 		var curve = elliptic.P256()
 		switch req.KeyType {
@@ -199,6 +200,10 @@ func CreateCertificateRequest(req *CSRReqEnt, file string) error {
 		tmp.PublicKey = &k.PublicKey
 		key = k
 		pemKeyType = "EC PRIVATE KEY"
+		keyBytes, err = x509.MarshalECPrivateKey(k)
+		if err != nil {
+			log.Printf("err=%v", err)
+		}
 	}
 	csr, err := x509.CreateCertificateRequest(rand.Reader, tmp, key)
 	if err != nil {

@@ -501,7 +501,22 @@
     " {\n                BrowserOpenURL(\n                  `https://www.google.com/maps/search/?api=1",
     "\n              Google MAP\n            ",
     " {\n              BrowserOpenURL(\n                `https://www.virustotal.com/gui/ip-address/` + address\n              );\n            }}\n          >\n            ",
-    "&query=` + latLong\n                );\n              }}\n            >\n              "
+    "&query=` + latLong\n                );\n              }}\n            >\n              ",
+    "Service",
+    "Scope",
+    "First",
+    "Start",
+    "End",
+    "Hosts",
+    "Services",
+    "Scopes",
+    "\n    {#if selectedCount == 1 ",
+    "& tab != \"log\"}\n      ",
+    "Attributes",
+    "Sum",
+    "Min",
+    "Max",
+    "Span ID"
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

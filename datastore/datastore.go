@@ -73,6 +73,12 @@ var (
 	SFlowPort   int
 	TCPPort     int
 	SSHdPort    int
+	// OpenTelemetry
+	OTelHTTPPort int
+	OTelgRPCPort int
+	OTelCert     string
+	OTelKey      string
+	OTelCA       string
 )
 
 // Define errors
@@ -232,7 +238,7 @@ func initDB() error {
 		"syslog", "trap", "arplog", "arp", "ai", "grok", "images",
 		"ipfix", "netflow",
 		"sflow", "sflowCounter", "certs",
-		"memo",
+		"memo", "otelTrace",
 	}
 	initConf()
 	return db.Update(func(tx *bbolt.Tx) error {

@@ -100,6 +100,7 @@
     mapConf.Timeout *= 1;
     mapConf.Retry *= 1;
     mapConf.LogDays *= 1;
+    mapConf.OTelRetention *= 1;
     mapConf.IconSize *= 1;
     mapConf.MapSize *= 1;
     const r = await UpdateMapConf(mapConf);
@@ -437,7 +438,7 @@
               <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} />
             </Label>
           </div>
-          <div class="grid gap-4 mb-4 md:grid-cols-4">
+          <div class="grid gap-3 mb-4 md:grid-cols-5">
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.PollingIntSec")} </span>
               <Input
@@ -486,6 +487,18 @@
                 size="sm"
               />
             </Label>
+            <Label class="space-y-2 text-xs">
+              <span> OpenTelemetry保存時間 </span>
+              <Input
+                class="h-8 w-24 text-right"
+                type="number"
+                min={1}
+                max={24*30}
+                step={1}
+                bind:value={mapConf.OTelRetention}
+                size="sm"
+              />
+            </Label>
           </div>
           <div class="grid gap-4 md:grid-cols-3">
             <Label class="space-y-2 text-xs">
@@ -529,7 +542,7 @@
               </Label>
             {/if}
           </div>
-          <div class="grid gap-4 mb-4 md:grid-cols-7">
+          <div class="grid gap-3 mb-4 md:grid-cols-8">
             <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox>
             <Checkbox bind:checked={mapConf.EnableNetflowd}>NetFlow</Checkbox>
             <Checkbox bind:checked={mapConf.EnableSFlowd}>sFlow</Checkbox>
@@ -537,6 +550,7 @@
             <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
             <Checkbox bind:checked={mapConf.EnableSshd}>SSH Sever</Checkbox>
             <Checkbox bind:checked={mapConf.EnableTcpd}>TCP Sever</Checkbox>
+            <Checkbox bind:checked={mapConf.EnableOTel}>OpenTelemetry</Checkbox>
           </div>
           {#if mapConf.EnableArpWatch}
             <div class="grid gap-4 mb-4 md:grid-cols-4">

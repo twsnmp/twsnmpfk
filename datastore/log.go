@@ -268,6 +268,7 @@ func oldLogChecker(ctx context.Context, wg *sync.WaitGroup) {
 		case <-timer.C:
 			deleteOldLogs()
 			deleteOldArpTable()
+			chekOldOTelData()
 		}
 	}
 }

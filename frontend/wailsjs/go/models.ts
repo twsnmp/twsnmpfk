@@ -634,10 +634,12 @@ export namespace datastore {
 	    EnableSshd: boolean;
 	    EnableSFlowd: boolean;
 	    EnableTcpd: boolean;
+	    EnableOTel: boolean;
 	    IconSize: number;
 	    MapSize: number;
 	    ArpWatchRange: string;
 	    ArpTimeout: number;
+	    OTelRetention: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new MapConfEnt(source);
@@ -661,10 +663,12 @@ export namespace datastore {
 	        this.EnableSshd = source["EnableSshd"];
 	        this.EnableSFlowd = source["EnableSFlowd"];
 	        this.EnableTcpd = source["EnableTcpd"];
+	        this.EnableOTel = source["EnableOTel"];
 	        this.IconSize = source["IconSize"];
 	        this.MapSize = source["MapSize"];
 	        this.ArpWatchRange = source["ArpWatchRange"];
 	        this.ArpTimeout = source["ArpTimeout"];
+	        this.OTelRetention = source["OTelRetention"];
 	    }
 	}
 	export class NetFlowEnt {
@@ -901,6 +905,171 @@ export namespace datastore {
 	        this.BeepLow = source["BeepLow"];
 	    }
 	}
+	export class OTelMetricDataPointEnt {
+	    Start: number;
+	    Time: number;
+	    Attributes: string[];
+	    Count: number;
+	    BucketCounts: number[];
+	    ExplicitBounds: number[];
+	    Sum: number;
+	    Min: number;
+	    Max: number;
+	    Gauge: number;
+	    Positive: number[];
+	    Negative: number[];
+	    Scale: number;
+	    ZeroCount: number;
+	    ZeroThreshold: number;
+	    Index: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new OTelMetricDataPointEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Start = source["Start"];
+	        this.Time = source["Time"];
+	        this.Attributes = source["Attributes"];
+	        this.Count = source["Count"];
+	        this.BucketCounts = source["BucketCounts"];
+	        this.ExplicitBounds = source["ExplicitBounds"];
+	        this.Sum = source["Sum"];
+	        this.Min = source["Min"];
+	        this.Max = source["Max"];
+	        this.Gauge = source["Gauge"];
+	        this.Positive = source["Positive"];
+	        this.Negative = source["Negative"];
+	        this.Scale = source["Scale"];
+	        this.ZeroCount = source["ZeroCount"];
+	        this.ZeroThreshold = source["ZeroThreshold"];
+	        this.Index = source["Index"];
+	    }
+	}
+	export class OTelMetricEnt {
+	    Host: string;
+	    Service: string;
+	    Scope: string;
+	    Name: string;
+	    Type: string;
+	    Description: string;
+	    Unit: string;
+	    DataPoints: OTelMetricDataPointEnt[];
+	    Count: number;
+	    First: number;
+	    Last: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new OTelMetricEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Host = source["Host"];
+	        this.Service = source["Service"];
+	        this.Scope = source["Scope"];
+	        this.Name = source["Name"];
+	        this.Type = source["Type"];
+	        this.Description = source["Description"];
+	        this.Unit = source["Unit"];
+	        this.DataPoints = this.convertValues(source["DataPoints"], OTelMetricDataPointEnt);
+	        this.Count = source["Count"];
+	        this.First = source["First"];
+	        this.Last = source["Last"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class OTelTraceSpanEnt {
+	    SpanID: string;
+	    ParentSpanID: string;
+	    Host: string;
+	    Service: string;
+	    Scope: string;
+	    Name: string;
+	    Start: number;
+	    End: number;
+	    Dur: number;
+	    Attributes: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new OTelTraceSpanEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.SpanID = source["SpanID"];
+	        this.ParentSpanID = source["ParentSpanID"];
+	        this.Host = source["Host"];
+	        this.Service = source["Service"];
+	        this.Scope = source["Scope"];
+	        this.Name = source["Name"];
+	        this.Start = source["Start"];
+	        this.End = source["End"];
+	        this.Dur = source["Dur"];
+	        this.Attributes = source["Attributes"];
+	    }
+	}
+	export class OTelTraceEnt {
+	    Bucket: string;
+	    TraceID: string;
+	    Start: number;
+	    End: number;
+	    Dur: number;
+	    Spans: OTelTraceSpanEnt[];
+	    Last: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new OTelTraceEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Bucket = source["Bucket"];
+	        this.TraceID = source["TraceID"];
+	        this.Start = source["Start"];
+	        this.End = source["End"];
+	        this.Dur = source["Dur"];
+	        this.Spans = this.convertValues(source["Spans"], OTelTraceSpanEnt);
+	        this.Last = source["Last"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
 	export class PKIControlEnt {
 	    AcmeBaseURL: string;
 	    EnableAcme: boolean;
@@ -1436,6 +1605,58 @@ export namespace main {
 	        this.DstMAC = source["DstMAC"];
 	        this.Protocol = source["Protocol"];
 	        this.TCPFlags = source["TCPFlags"];
+	    }
+	}
+	export class OTelMetricEnt {
+	    Host: string;
+	    Service: string;
+	    Scope: string;
+	    Name: string;
+	    Type: string;
+	    Count: number;
+	    First: number;
+	    Last: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new OTelMetricEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Host = source["Host"];
+	        this.Service = source["Service"];
+	        this.Scope = source["Scope"];
+	        this.Name = source["Name"];
+	        this.Type = source["Type"];
+	        this.Count = source["Count"];
+	        this.First = source["First"];
+	        this.Last = source["Last"];
+	    }
+	}
+	export class OTelTraceEnt {
+	    Bucket: string;
+	    TraceID: string;
+	    Hosts: string;
+	    Services: string;
+	    Scopes: string;
+	    Start: number;
+	    End: number;
+	    Dur: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new OTelTraceEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Bucket = source["Bucket"];
+	        this.TraceID = source["TraceID"];
+	        this.Hosts = source["Hosts"];
+	        this.Services = source["Services"];
+	        this.Scopes = source["Scopes"];
+	        this.Start = source["Start"];
+	        this.End = source["End"];
+	        this.Dur = source["Dur"];
 	    }
 	}
 	export class PingReq {

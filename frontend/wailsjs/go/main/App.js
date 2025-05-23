@@ -50,6 +50,10 @@ export function DeleteAllNetFlow() {
   return window['go']['main']['App']['DeleteAllNetFlow']();
 }
 
+export function DeleteAllOTelData() {
+  return window['go']['main']['App']['DeleteAllOTelData']();
+}
+
 export function DeleteAllPollingLogs() {
   return window['go']['main']['App']['DeleteAllPollingLogs']();
 }
@@ -88,6 +92,10 @@ export function DeleteNetwork(arg1) {
 
 export function DeleteNodes(arg1) {
   return window['go']['main']['App']['DeleteNodes'](arg1);
+}
+
+export function DeleteOTelMetric(arg1) {
+  return window['go']['main']['App']['DeleteOTelMetric'](arg1);
 }
 
 export function DeletePollingLogs(arg1) {
@@ -274,6 +282,10 @@ export function GetLang() {
   return window['go']['main']['App']['GetLang']();
 }
 
+export function GetLastOTelLogs() {
+  return window['go']['main']['App']['GetLastOTelLogs']();
+}
+
 export function GetLine(arg1, arg2) {
   return window['go']['main']['App']['GetLine'](arg1, arg2);
 }
@@ -348,6 +360,26 @@ export function GetNodes() {
 
 export function GetNotifyConf() {
   return window['go']['main']['App']['GetNotifyConf']();
+}
+
+export function GetOTelMetric(arg1) {
+  return window['go']['main']['App']['GetOTelMetric'](arg1);
+}
+
+export function GetOTelMetrics() {
+  return window['go']['main']['App']['GetOTelMetrics']();
+}
+
+export function GetOTelTrace(arg1, arg2) {
+  return window['go']['main']['App']['GetOTelTrace'](arg1, arg2);
+}
+
+export function GetOTelTraceBucketList() {
+  return window['go']['main']['App']['GetOTelTraceBucketList']();
+}
+
+export function GetOTelTraces(arg1) {
+  return window['go']['main']['App']['GetOTelTraces'](arg1);
 }
 
 export function GetPKIControl() {

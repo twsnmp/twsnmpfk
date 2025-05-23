@@ -45,10 +45,12 @@ type MapConfEnt struct {
 	EnableSshd     bool   `json:"EnableSshd"`
 	EnableSFlowd   bool   `json:"EnableSFlowd"`
 	EnableTcpd     bool   `json:"EnableTcpd"`
+	EnableOTel     bool   `json:"EnableOTel"`
 	IconSize       int    `json:"IconSize"`
 	MapSize        int    `json:"MapSize"`
 	ArpWatchRange  string `json:"ArpWatchRange"`
 	ArpTimeout     int    `json:"ArpTimeout"`
+	OTelRetention  int    `json:"OTelRetention"`
 }
 
 // LocConfEnt : 地図設定
@@ -64,6 +66,7 @@ func initConf() {
 	MapConf.Retry = 1
 	MapConf.Timeout = 1
 	MapConf.LogDays = 14
+	MapConf.OTelRetention = 3
 	MapConf.Community = "public"
 	MapConf.SnmpMode = "v2c"
 	MapConf.EnableArpWatch = true

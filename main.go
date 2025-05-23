@@ -26,37 +26,32 @@ var version = "vx.x.x"
 var commit = ""
 
 var dataStorePath = ""
-var pingMode = ""
 var kiosk = false
 var lock = ""
-var trapPort = 162
-var syslogPort = 514
-var sshdPort = 2022
-var netflowPort = 2055
-var sFlowPort = 6343
-var tcpdPort = 8086
 var maxDispLog = 10000
 var lang = ""
-var clientCert = ""
-var clientKey = ""
-var caCert = ""
 
 func init() {
 	flag.StringVar(&dataStorePath, "datastore", "", "Path to data store directory")
 	flag.BoolVar(&kiosk, "kiosk", false, "Kisok mode(frameless and full screen)")
 	flag.StringVar(&lock, "lock", "", "Disable edit map and lock page(map or loc)")
-	flag.IntVar(&trapPort, "trapPort", 162, "SNMP TRAP port")
-	flag.IntVar(&syslogPort, "syslogPort", 514, "Syslog port")
-	flag.IntVar(&sshdPort, "sshdPort", 2022, "SSH server port")
-	flag.IntVar(&netflowPort, "netflowPort", 2055, "Netflow port")
-	flag.IntVar(&sFlowPort, "sFlowPort", 6343, "sFlow port")
-	flag.IntVar(&tcpdPort, "tcpdPort", 8086, "tcp server port")
+	flag.IntVar(&datastore.TrapPort, "trapPort", 162, "SNMP TRAP port")
+	flag.IntVar(&datastore.SyslogPort, "syslogPort", 514, "Syslog port")
+	flag.IntVar(&datastore.SSHdPort, "sshdPort", 2022, "SSH server port")
+	flag.IntVar(&datastore.NetFlowPort, "netflowPort", 2055, "Netflow port")
+	flag.IntVar(&datastore.SFlowPort, "sFlowPort", 6343, "sFlow port")
+	flag.IntVar(&datastore.TCPPort, "tcpdPort", 8086, "tcp server port")
+	flag.IntVar(&datastore.OTelgRPCPort, "otelGRPCPort", 4317, "OpenTelemetry server gRPC port")
+	flag.IntVar(&datastore.OTelHTTPPort, "otelHTTPPort", 4318, "OpenTelemetry server HTTP port")
 	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "Max log size to diplay")
-	flag.StringVar(&pingMode, "ping", "", "ping mode icmp or udp")
+	flag.StringVar(&datastore.PingMode, "ping", "", "ping mode icmp or udp")
 	flag.StringVar(&lang, "lang", "", "Language(en|jp)")
-	flag.StringVar(&clientCert, "clientCert", "", "Client cert path")
-	flag.StringVar(&clientKey, "clientKey", "", "Client key path")
-	flag.StringVar(&caCert, "caCert", "", "CA Cert path")
+	flag.StringVar(&datastore.ClientCert, "clientCert", "", "Client cert path")
+	flag.StringVar(&datastore.ClientKey, "clientKey", "", "Client key path")
+	flag.StringVar(&datastore.CACert, "caCert", "", "CA Cert path")
+	flag.StringVar(&datastore.OTelCert, "otelCert", "", "OpenTelemetry server cert path")
+	flag.StringVar(&datastore.OTelKey, "otelKey", "", "OpenTelemetry server key path")
+	flag.StringVar(&datastore.OTelCA, "otelCA", "", "OpenTelementry CA cert path")
 	flag.Parse()
 }
 
@@ -78,16 +73,6 @@ func main() {
 	if lang != "" {
 		i18n.SetLang(lang)
 	}
-	datastore.ClientCert = clientCert
-	datastore.ClientKey = clientKey
-	datastore.CACert = caCert
-	datastore.PingMode = pingMode
-	datastore.TCPPort = tcpdPort
-	datastore.SyslogPort = syslogPort
-	datastore.NetFlowPort = netflowPort
-	datastore.SFlowPort = sFlowPort
-	datastore.SSHdPort = sshdPort
-	datastore.TrapPort = trapPort
 
 	// Create an instance of the app structure
 	app := NewApp()
