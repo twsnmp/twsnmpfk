@@ -1,15 +1,12 @@
 import * as echarts from "echarts";
 import "echarts-gl";
+import { options } from "numeral";
 import { _, unwrapFunctionStore } from "svelte-i18n";
+import { zoom } from "../map";
 const $_ = unwrapFunctionStore(_);
 
-let chart: any;
-
 export const showOTelTimeline = (div: string, data: any) => {
-  if (chart) {
-    chart.dispose();
-  }
-  chart = echarts.init(document.getElementById(div), "dark");
+  const chart = echarts.init(document.getElementById(div), "dark");
   const option: any = {
     title: {
       show: false,
@@ -124,10 +121,7 @@ export const showOTelTimeline = (div: string, data: any) => {
 };
 
 export const showOTelTrace = (div: string, traces: any) => {
-  if (chart) {
-    chart.dispose();
-  }
-  chart = echarts.init(document.getElementById(div), "dark");
+  const chart = echarts.init(document.getElementById(div), "dark");
   const option :any = {
     title: {
       show: false,
@@ -259,24 +253,111 @@ export const showOTelTrace = (div: string, traces: any) => {
 };
 
 export const showOTelDAG = (div: string, data: any) => {
-  if (chart) {
-    chart.dispose();
-  }
-  chart = echarts.init(document.getElementById(div), "dark");
-  chart.setOption({
+  const chart = echarts.init(document.getElementById(div), "dark");
+  const zoom = data && data.Nodes.length > 0 ? 100 / data.Nodes.length : 1;
+  const option :any = {
     title: {
       show: false,
     },
-  });
+    grid: {
+      left: "7%",
+      right: "4%",
+      bottom: "3%",
+      containLabel: true,
+    },
+    tooltip: {
+      trigger: "item",
+      textStyle: {
+        fontSize: 8,
+      },
+      position: "bottom",
+    },
+    animationDurationUpdate: 1500,
+    animationEasingUpdate: "quinticInOut",
+    series: [
+      {
+        zoom: zoom,
+        name: "OTel DAG",
+        type: "graph",
+        layout: "force",
+        edgeSymbol: ['none', 'arrow'],
+        edgeSymbolSize: [4, 12],
+        data: [],
+        links: [],
+        roam: true,
+        label: {
+          position: "right",
+          formatter: "{b}",
+          fontSize: 10,
+          fontStyle: "normal",
+          color: "#ccc",
+        },
+        lineStyle: {
+          color: "#5152e9",
+        },
+      },
+    ],
+  };
+  const colorMap = [
+          '#4575b4',
+          '#74add1',
+          '#abd9e9',
+          '#e0f3f8',
+          '#ffffbf',
+          '#fee090',
+          '#fdae61',
+          '#f46d43',
+          '#d73027',
+          '#a50026',
+    ];
+
+  if (data && data.Nodes) {
+    let nodeMax = 1;
+    data.Nodes.forEach((n:any)=> {
+      option.series[0].data.push({
+        name: n.Name,
+        draggable: true,
+        symbolSize: n.Count,
+        label: { show: true },
+        itemStyle: {
+          color: "blue",
+        }
+      });
+      if (nodeMax < n.Count) {
+        nodeMax = n.Count;
+      }
+    });
+    for(let i = 0; i < option.series[0].data.length;i++){
+      const r = option.series[0].data[i].symbolSize/nodeMax;
+      option.series[0].data[i].symbolSize = 4 + (20 * r);
+      option.series[0].data[i].itemStyle.color = colorMap[Math.floor(r*(colorMap.length-1))];
+    }
+    let linkMax = 1;
+    data.Links.forEach((l:any)=>{
+      option.series[0].links.push({
+        source: l.Src,
+        target: l.Dst,
+        lineStyle: {
+          width: l.Count,
+        },
+      });
+      if (linkMax < l.Count) {
+        linkMax = l.Count;
+      }
+    });
+    for(let i = 0; i < option.series[0].links.length;i++){
+      const r = option.series[0].links[i].lineStyle.width/linkMax;
+      option.series[0].links[i].lineStyle.width = 1 + (8  * r);
+      option.series[0].links[i].lineStyle.color = colorMap[Math.floor(r*(colorMap.length-1))]; 
+    }
+  }
+  chart.setOption(option);
   chart.resize();
   return chart;
 };
 
 export const showOTelHistogram = (div: string, data: any) => {
-  if (chart) {
-    chart.dispose();
-  }
-  chart = echarts.init(document.getElementById(div), "dark");
+  const chart = echarts.init(document.getElementById(div), "dark");
   chart.setOption({
     title: {
       show: false,
@@ -306,10 +387,7 @@ export const showOTelTimeChart = (
   key: string,
   type: string
 ) => {
-  if (chart) {
-    chart.dispose();
-  }
-  chart = echarts.init(document.getElementById(div), "dark");
+  const chart = echarts.init(document.getElementById(div), "dark");
   const option: any = {
     title: {
       show: false,

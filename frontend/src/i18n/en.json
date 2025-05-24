@@ -966,7 +966,8 @@
     "Time": "Time",
     "Trace": "Trace",
     "TraceID": "TraceID",
-    "Type": "Type"
+    "Type": "Type",
+    "Close": "Close"
   },
   "OTerl": {
     "Report": "Report"

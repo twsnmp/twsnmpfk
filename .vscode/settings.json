@@ -516,7 +516,10 @@
     "Sum",
     "Min",
     "Max",
-    "Span ID"
+    "Span ID",
+    "Span",
+    "Date and Time",
+    " {showDAG = false}}\n        size=\"xs\"\n      >\n        "
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

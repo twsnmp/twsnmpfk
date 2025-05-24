@@ -378,6 +378,10 @@ export function GetOTelTraceBucketList() {
   return window['go']['main']['App']['GetOTelTraceBucketList']();
 }
 
+export function GetOTelTraceDAG(arg1) {
+  return window['go']['main']['App']['GetOTelTraceDAG'](arg1);
+}
+
 export function GetOTelTraces(arg1) {
   return window['go']['main']['App']['GetOTelTraces'](arg1);
 }

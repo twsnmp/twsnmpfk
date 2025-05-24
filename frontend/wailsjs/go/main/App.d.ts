@@ -194,6 +194,8 @@ export function GetOTelTrace(arg1:string,arg2:string):Promise<datastore.OTelTrac
 
 export function GetOTelTraceBucketList():Promise<Array<string>>;
 
+export function GetOTelTraceDAG(arg1:Array<string>):Promise<main.OTelTraceDAGEnt>;
+
 export function GetOTelTraces(arg1:Array<string>):Promise<Array<main.OTelTraceEnt>>;
 
 export function GetPKIControl():Promise<datastore.PKIControlEnt>;

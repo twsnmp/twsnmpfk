@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -147,5 +148,77 @@ func (a *App) GetLastOTelLogs() []*datastore.SyslogEnt {
 		ret = append(ret, l)
 		return len(ret) < maxDispLog
 	})
+	return ret
+}
+
+type OTelTraceDAGNodeEnt struct {
+	Name  string `json:"Name"`
+	Count int    `json:"Count"`
+}
+
+type OTelTraceDAGLinkEnt struct {
+	Src   string `json:"Src"`
+	Dst   string `json:"Dst"`
+	Count int    `json:"Count"`
+}
+
+type OTelTraceDAGEnt struct {
+	Nodes []OTelTraceDAGNodeEnt `json:"Nodes"`
+	Links []OTelTraceDAGLinkEnt `json:"Links"`
+}
+
+func (a *App) GetOTelTraceDAG(bks []string) OTelTraceDAGEnt {
+	ret := OTelTraceDAGEnt{
+		Nodes: []OTelTraceDAGNodeEnt{},
+		Links: []OTelTraceDAGLinkEnt{},
+	}
+	spanMap := make(map[string]string)
+	nodeMap := make(map[string]int)
+	spanLinkMap := make(map[string]int)
+
+	for _, b := range bks {
+		datastore.ForEachOTelTrace(b, func(t *datastore.OTelTraceEnt) bool {
+			for _, span := range t.Spans {
+				sk := fmt.Sprintf("%s:%s", t.TraceID, span.SpanID)
+				spanMap[sk] = span.Service
+				nodeMap[span.Service]++
+				if span.ParentSpanID != "" {
+					lk := fmt.Sprintf("%s:%s\t%s:%s", t.TraceID, span.ParentSpanID, t.TraceID, span.SpanID)
+					spanLinkMap[lk]++
+				}
+			}
+			return true
+		})
+	}
+	linkMap := make(map[string]int)
+	for k, c := range spanLinkMap {
+		a := strings.SplitN(k, "\t", 2)
+		if len(a) != 2 {
+			continue
+		}
+		if src, ok := spanMap[a[0]]; ok {
+			if dst, ok := spanMap[a[1]]; ok {
+				if src != dst {
+					linkMap[fmt.Sprintf("%s\t%s", src, dst)] += c
+				}
+			}
+		}
+	}
+	for n, c := range nodeMap {
+		ret.Nodes = append(ret.Nodes, OTelTraceDAGNodeEnt{
+			Name:  n,
+			Count: c,
+		})
+	}
+
+	for l, c := range linkMap {
+		if a := strings.SplitN(l, "\t", 2); len(a) == 2 {
+			ret.Links = append(ret.Links, OTelTraceDAGLinkEnt{
+				Src:   a[0],
+				Dst:   a[1],
+				Count: c,
+			})
+		}
+	}
 	return ret
 }

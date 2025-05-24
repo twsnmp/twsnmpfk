@@ -1633,6 +1633,70 @@ export namespace main {
 	        this.Last = source["Last"];
 	    }
 	}
+	export class OTelTraceDAGLinkEnt {
+	    Src: string;
+	    Dst: string;
+	    Count: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new OTelTraceDAGLinkEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Src = source["Src"];
+	        this.Dst = source["Dst"];
+	        this.Count = source["Count"];
+	    }
+	}
+	export class OTelTraceDAGNodeEnt {
+	    Name: string;
+	    Count: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new OTelTraceDAGNodeEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Name = source["Name"];
+	        this.Count = source["Count"];
+	    }
+	}
+	export class OTelTraceDAGEnt {
+	    Nodes: OTelTraceDAGNodeEnt[];
+	    Links: OTelTraceDAGLinkEnt[];
+	
+	    static createFrom(source: any = {}) {
+	        return new OTelTraceDAGEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Nodes = this.convertValues(source["Nodes"], OTelTraceDAGNodeEnt);
+	        this.Links = this.convertValues(source["Links"], OTelTraceDAGLinkEnt);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	
 	export class OTelTraceEnt {
 	    Bucket: string;
 	    TraceID: string;

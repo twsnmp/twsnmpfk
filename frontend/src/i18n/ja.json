@@ -966,7 +966,8 @@
     "Max": "最大",
     "StartTime": "開始",
     "EndTime": "終了",
-    "PSpanID": "親Span ID"
+    "PSpanID": "親Span ID",
+    "Close": "閉じる"
   },
   "OTerl": {
     "Report": "レポート"

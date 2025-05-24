@@ -10,6 +10,7 @@
     GetLastOTelLogs,
     GetOTelTraces,
     DeleteAllOTelData,
+    GetOTelTraceDAG,
   } from "../../wailsjs/go/main/App";
   import { renderTime, getTableLang, renderTimeMili,renderState } from "./common";
   import DataTable from "datatables.net-dt";
@@ -17,7 +18,7 @@
   import { _ } from "svelte-i18n";
   import OTelMetric from "./OTelMetric.svelte";
   import OTelTrace from "./OTelTrace.svelte";
-  import { showOTelTrace } from "./chart/otel";
+  import { showOTelTrace,showOTelDAG } from "./chart/otel";
   import { showLogLevelChart } from "./chart/loglevel";
 
   let metrics: any = [];
@@ -25,7 +26,7 @@
   let logs: any = [];
   let tab = "metric";
   let traceBuckets: any = [];
-  let selectedTraceBuckets = [];
+  let selectedTraceBuckets: any = [];
   let showMetricReport = false;
   let showTraceReport = false;
   let table: any = undefined;
@@ -65,21 +66,21 @@
       case "trace":
         const bks = await GetOTelTraceBucketList();
         const sel :any = [];
-        selectedTrace.forEach((t:any)=> {
+        selectedTraceBuckets.forEach((t:any)=> {
           if (bks.includes(t)) {
             sel.push(t);
           }
         })
-        selectedTrace = sel;
+        selectedTraceBuckets = sel;
         traceBuckets = [];
         bks.forEach((b: string) => {
           traceBuckets.push({ name: b, value: b });
         });
-        if (selectedTrace.length < 1 && bks.length > 0) {
-          selectedTrace.push(bks[bks.length - 1]);
+        if (selectedTraceBuckets.length < 1 && bks.length > 0) {
+          selectedTraceBuckets.push(bks[bks.length - 1]);
         }
-        if (selectedTrace.length > 0) {
-          traces = await GetOTelTraces(selectedTrace);
+        if (selectedTraceBuckets.length > 0) {
+          traces = await GetOTelTraces(selectedTraceBuckets);
         } else {
           traces = [];
         }
@@ -105,6 +106,19 @@
   const showSyslogChart = async() =>{
     await tick();
     chart = showLogLevelChart("otelSyslogChart",logs,undefined);
+  }
+
+  let showDAG = false;
+  let dagChart :any = undefined;
+
+  const showDAGFunc = async () => {
+    if (selectedTraceBuckets.length < 1) {
+      return;
+    }
+    const dag = await GetOTelTraceDAG(selectedTraceBuckets);
+    showDAG = dag && dag.Nodes;
+    await tick();
+    dagChart = showOTelDAG("dagChart",dag)
   }
 
   const columnsMetric = [
@@ -278,14 +292,14 @@
     <Tabs style="underline">
       <TabItem open on:click={()=>{tab="metric";refresh();}}>
         <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiChartPie} size={1} />
+          <Icon path={icons.mdiChartHistogram} size={1} />
           {$_('OTel.Metric')}
         </div>
         <table id="otelMetricTable" class="display compact" style="width:99%" />
       </TabItem>
       <TabItem on:click={()=>{tab="trace";refresh();}}>
         <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiChartBox} size={1} />
+          <Icon path={icons.mdiEye} size={1} />
           {$_('OTel.Trace')}
         </div>
         <div id="otelTraceChart" />
@@ -295,7 +309,7 @@
       </TabItem>
       <TabItem on:click={()=>{tab="log";refresh();}}>
         <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiChartBarStacked} size={1} />
+          <Icon path={icons.mdiTextBox} size={1} />
           {$_('OTel.Log')}
         </div>
         <div id="otelSyslogChart" />
@@ -319,9 +333,19 @@
       </GradientButton>
     {/if}
     {#if tab =="trace"}
+      <GradientButton
+        shadow
+        color="green"
+        type="button"
+        on:click={showDAGFunc}
+        size="xs"
+      >
+        <Icon path={icons.mdiGraph} size={1} />
+        DAG
+      </GradientButton>
       <MultiSelect
         items={traceBuckets}
-        bind:value={selectedTrace}
+        bind:value={selectedTraceBuckets}
         placeholder="Date and Time"
         class="h-10 mb-2 w-96"
         size="sm"
@@ -358,6 +382,26 @@
   </div>
 </Modal>
 
+
+<Modal bind:open={showDAG} size="xl" dismissable={false} class="w-full">
+  <div class="flex flex-col space-y-4">
+    <div id="dagChart"></div>
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={()=> {showDAG = false}}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        $_('OTel.Close')
+      </GradientButton>
+    </div>
+  </div>
+</Modal>
+
+
 <OTelMetric bind:show={showMetricReport} metric={selectedMetric} />
 <OTelTrace bind:show={showTraceReport} trace={selectedTrace} />
 
@@ -366,6 +410,12 @@
   #otelSyslogChart {
     min-height: 200px;
     height: 20vh;
+    width: 98%;
+    margin: 0 auto;
+  }
+  #dagChart{
+    min-height: 300px;
+    height: 70vh;
     width: 98%;
     margin: 0 auto;
   }
