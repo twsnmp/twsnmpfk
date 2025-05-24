@@ -42,22 +42,29 @@
       }
     }
     showTable();
+    await tick();
     showTimeChart();
   };
 
   let chart: any = undefined;
 
-  const showTimeChart = async () => {
-    await tick();
+  const showTimeChart = () => {
+    if(chart) {
+      chart.dispose();
+      chart = undefined;
+    }
     chart = showOTelTimeChart("metricChart", data, metricIndex, metricType);
   };
 
-  const showHistogram = async () => {
+  const showHistogram = () => {
+    if(chart) {
+      chart.dispose();
+      chart = undefined;
+    }
     const d = table.rows({ selected: true }).data();
     if (!d || d.length != 1 || !d[0].BucketCounts) {
       return;
     }
-    await tick();
     chart = showOTelHistogram("metricChart", d[0]);
   };
 
