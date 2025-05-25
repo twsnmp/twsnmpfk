@@ -17,9 +17,9 @@ Windowsのキオスクモードでの利用を想定しています。
 
 ## Document
 
-[Manual](doc/twsnmpfk_en.pdf)
+[English Manual](https://twsnmp.github.io/twsnmpfk/index.html)
 
-[日本語マニュアル](doc/twsnmpfk_ja.pdf)
+[日本語マニュアル](https://twsnmp.github.io/twsnmpfk/index_ja.html)
 
 ## Status
 
@@ -42,9 +42,10 @@ The following functions will work
 - NetFlow/IPFIX
 - sFlow
 - gNMI
-- PKI (CA and CRL/OCSPACME/SCEP server)
+- PKI (CA and CRL/OCSP/ACME/SCEP server)
 - SSH Server
 - TCP Log server
+- OpenTelemetry collector
 
 以下の機能が動作します。
 
@@ -65,9 +66,10 @@ The following functions will work
 - NetFlow/IPFIX
 - sFlow
 - gNMI
-- PKI (CA機能とCRL/OCSPACME/SCEPサーバー)
+- PKI (CA機能とCRL/OCSP/ACME/SCEPサーバー)
 - SSH Server
 - TCP Log server
+- OpenTelemetry コレクター
 
 ## Build 
 

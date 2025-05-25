@@ -57,13 +57,13 @@
   };
 
   const showHistogram = () => {
-    if(chart) {
-      chart.dispose();
-      chart = undefined;
-    }
     const d = table.rows({ selected: true }).data();
     if (!d || d.length != 1 || !d[0].BucketCounts) {
       return;
+    }
+    if(chart) {
+      chart.dispose();
+      chart = undefined;
     }
     chart = showOTelHistogram("metricChart", d[0]);
   };
