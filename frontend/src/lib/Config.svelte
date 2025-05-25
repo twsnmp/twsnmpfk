@@ -438,7 +438,7 @@
               <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} />
             </Label>
           </div>
-          <div class="grid gap-3 mb-4 md:grid-cols-5">
+          <div class="grid gap-3 mb-4 md:grid-cols-6">
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.PollingIntSec")} </span>
               <Input
@@ -488,7 +488,7 @@
               />
             </Label>
             <Label class="space-y-2 text-xs">
-              <span> OpenTelemetry保存時間 </span>
+              <span> {$_('Config.OTelRetention')} </span>
               <Input
                 class="h-8 w-24 text-right"
                 type="number"
@@ -499,6 +499,14 @@
                 size="sm"
               />
             </Label>
+              <Label class="space-y-2 text-xs">
+                <span> {$_('Config.OTelFrom')} </span>
+                <Input
+                  class="h-8"
+                  bind:value={mapConf.OTelFrom}
+                  size="sm"
+                />
+              </Label>
           </div>
           <div class="grid gap-4 md:grid-cols-3">
             <Label class="space-y-2 text-xs">

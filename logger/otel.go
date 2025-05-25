@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"slices"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -26,9 +27,12 @@ import (
 )
 
 var traceMap sync.Map
+var otelFromMap sync.Map
+var limitFrom bool
 
 func oteld(stopCh chan bool) {
 	log.Printf("start oteld")
+	setOTelFrom()
 	f := otlpreceiver.NewFactory()
 	config := f.CreateDefaultConfig()
 	if c, ok := config.(*otlpreceiver.Config); ok {
@@ -117,6 +121,7 @@ func oteld(stopCh chan bool) {
 			return
 		case <-timer.C:
 			{
+				setOTelFrom()
 				delList := []string{}
 				saveList := []*datastore.OTelTraceEnt{}
 				et := time.Now().Add(time.Duration(-datastore.MapConf.OTelRetention-1) * time.Hour).UnixNano()
@@ -150,6 +155,21 @@ func oteld(stopCh chan bool) {
 	}
 }
 
+var lastOTelFrom = ""
+
+func setOTelFrom() {
+	if datastore.MapConf.OTelFrom == lastOTelFrom {
+		return
+	}
+	lastOTelFrom = datastore.MapConf.OTelFrom
+	a := strings.Split(datastore.MapConf.OTelFrom, ",")
+	limitFrom = len(a) > 0
+	otelFromMap.Clear()
+	for _, f := range a {
+		otelFromMap.Store(f, true)
+	}
+}
+
 func handleMetrics(ctx context.Context, md pmetric.Metrics) error {
 	defer func() {
 		if err := recover(); err != nil {
@@ -166,6 +186,11 @@ func handleMetrics(ctx context.Context, md pmetric.Metrics) error {
 	f := client.FromContext(ctx)
 	service := "unknown"
 	host := f.Addr.String()
+	if limitFrom {
+		if _, ok := otelFromMap.Load(host); !ok {
+			return nil
+		}
+	}
 	for _, rm := range md.ResourceMetrics().All() {
 		if v, ok := rm.Resource().Attributes().Get("host.name"); ok {
 			host = v.AsString()
@@ -204,6 +229,11 @@ func handleMetrics(ctx context.Context, md pmetric.Metrics) error {
 func handleTraces(ctx context.Context, td ptrace.Traces) error {
 	f := client.FromContext(ctx)
 	host := f.Addr.String()
+	if limitFrom {
+		if _, ok := otelFromMap.Load(host); !ok {
+			return nil
+		}
+	}
 	service := "unknown"
 	for _, rs := range td.ResourceSpans().All() {
 		if v, ok := rs.Resource().Attributes().Get("service.name"); ok {
@@ -264,6 +294,11 @@ func handleTraces(ctx context.Context, td ptrace.Traces) error {
 func handleLogs(ctx context.Context, ld plog.Logs) error {
 	f := client.FromContext(ctx)
 	host := f.Addr.String()
+	if limitFrom {
+		if _, ok := otelFromMap.Load(host); !ok {
+			return nil
+		}
+	}
 	service := "unknown"
 	for _, rl := range ld.ResourceLogs().All() {
 		if v, ok := rl.Resource().Attributes().Get("host.name"); ok {

@@ -115,10 +115,12 @@
     if (selectedTraceBuckets.length < 1) {
       return;
     }
+    showLoading = true;
     const dag = await GetOTelTraceDAG(selectedTraceBuckets);
-    showDAG = dag && dag.Nodes;
+    showDAG = (dag && dag.Nodes.length > 0);
     await tick();
-    dagChart = showOTelDAG("dagChart",dag)
+    dagChart = showOTelDAG("dagChart",dag);
+    showLoading = false;
   }
 
   const columnsMetric = [
@@ -395,7 +397,7 @@
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        $_('OTel.Close')
+        {$_('OTel.Close')}
       </GradientButton>
     </div>
   </div>

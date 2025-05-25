@@ -282,7 +282,9 @@
     "ArpIPRange": "ARP Watch IP Range",
     "ArpTimeout": "ARP Timeout",
     "SnmpPassword": "Password",
-    "SnmpUser": "User"
+    "SnmpUser": "User",
+    "OTelFrom": "OTel From",
+    "OTelRetention": "OTel Retention"
   },
   "DrawItem": {
     "Cancel": "Cancel",

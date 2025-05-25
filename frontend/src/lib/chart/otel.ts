@@ -254,7 +254,7 @@ export const showOTelTrace = (div: string, traces: any) => {
 
 export const showOTelDAG = (div: string, data: any) => {
   const chart = echarts.init(document.getElementById(div), "dark");
-  const zoom = data && data.Nodes.length > 0 ? 100 / data.Nodes.length : 1;
+  const zoom = data && data.Nodes.length > 0 ? 70 / data.Nodes.length : 1;
   const option :any = {
     title: {
       show: false,

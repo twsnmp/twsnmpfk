@@ -640,6 +640,7 @@ export namespace datastore {
 	    ArpWatchRange: string;
 	    ArpTimeout: number;
 	    OTelRetention: number;
+	    OTelFrom: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new MapConfEnt(source);
@@ -669,6 +670,7 @@ export namespace datastore {
 	        this.ArpWatchRange = source["ArpWatchRange"];
 	        this.ArpTimeout = source["ArpTimeout"];
 	        this.OTelRetention = source["OTelRetention"];
+	        this.OTelFrom = source["OTelFrom"];
 	    }
 	}
 	export class NetFlowEnt {

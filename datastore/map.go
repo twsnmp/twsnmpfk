@@ -51,6 +51,7 @@ type MapConfEnt struct {
 	ArpWatchRange  string `json:"ArpWatchRange"`
 	ArpTimeout     int    `json:"ArpTimeout"`
 	OTelRetention  int    `json:"OTelRetention"`
+	OTelFrom       string `json:"OTelFrom"`
 }
 
 // LocConfEnt : 地図設定

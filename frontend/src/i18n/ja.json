@@ -270,7 +270,9 @@
     "ArpIPRange": "ARP監視IP範囲",
     "ArpTimeout": "ARP監視タイムアウト(時間)",
     "Password": "パスワード",
-    "User": "ユーザー"
+    "User": "ユーザー",
+    "OTelRetention": "OpenTelemetry保存時間",
+    "OTelFrom": "OpenTelemetry送信元"
   },
   "DrawItem": {
     "Rect": "矩形",
