@@ -1196,6 +1196,142 @@ This is a report of ARP watch logs from both IP addresses and time series.The ti
 ![](./images/en/2023-12-03_06-42-37.png)
 
 
+## OpenTelemetry
+
+This is the OpenTelemetry Collector screen.
+Toggle in the Metrics, Traces, and Logs tabs.
+
+### metric
+
+A list of received metrics.
+
+![](./images/en/2025-05-25_16-37-34.png)
+
+|Item|Content|
+|----|---|
+|Source Host|The source host for the metric.|
+|Service|Name of the service associated with the metric.|
+|Scope|Name of the scope associated with the metric.|
+|Name|Name of the metric.|
+|Type|Metric type.|
+|Number of times|The number of times the metric is received.|
+|First time|The date and time when the metric was first received.|
+|Last|The date and time when the metric was last received.|
+
+#### Metric (button)
+
+|Item|Content|
+|----|---|
+|Report|View a graph for the selected metric.|
+|<span style="color: red;">Delete all logs</span>|Delete all data from OpenTelemetry.|
+|Update|Update information.|
+
+#### Time Chart
+
+Select a metric and click the Report button to display the time chart.
+
+![](./images/en/2025-05-25_16-37-46.png)
+
+#### histogram
+
+If the metric is a histogram, selecting a row in the table displays the histogram for that time.
+![](./images/ja/2025-05-25_16-50-01.png)
+
+
+### trace
+
+This is the screen for the received trace.At the top there is a graph showing the start time, processing time, and number of spans of traces.
+
+![](./images/en/2025-05-25_16-38-00.png)
+
+|Item|Content|
+|----|---|
+|Start date and time|The start date and time for the trace.|
+|End Date and Time|The end date and time of the trace.|
+|Time|Tracing processing time.|
+|Trace ID|The ID that identifies the trace.|
+|Source Host|The source host for the trace.|
+|Service|The service name associated with the trace.|
+|Span|The number of Spans in the trace.|
+|Scope|Related scope for traces.|
+
+#### Trace (button)
+
+|Item|Content|
+|----|---|
+|Report|View the graph for the selected trace.|
+|DAG|Views relationships between services from traces for the selected time range.|
+|Time Range|Specifies the time range for the trace.|
+|<span style="color: red;">Delete all logs</span>|Delete all data from OpenTelemetry.|
+|Update|Update information.|
+
+#### DAG
+
+Graphically displays relationships between services from traces in the selected time range.
+
+![](./images/ja/2025-05-25_16-51-04.png)
+
+#### Timeline
+
+Displays a graphical view of the selected Torres timeline.
+
+![](./images/ja/2025-05-25_16-51-25.png)
+
+
+### log
+
+This is a screen to search for the received OpenTelemetry logs from syslog.
+At the top, you will see a graph by log level.
+
+![](./images/ja/2025-05-25_16-51-45.png)
+
+|Item|Content|
+|----|---|
+|Level|Syslog level.<br>Severe, mild, warnings and information.|
+|Date and Time|The date and time when Syslog was received.|
+|Host|The source host for Syslog.|
+|Type|Stand for syslog facility and priority.|
+|Tag|Syslog tag.Process and process ID etc.|
+|Message|Syslog message.|
+
+#### Log (button)
+
+|Item|Content|
+|----|---|
+|<span style="color: red;">Delete all logs</span>|Delete all data from OpenTelemetry.I won't delete syslog.|
+|Update|Update information.|
+
+### OpenTelemetry Settings
+
+The OpenTelemetry-related settings in the map settings are in the yellow box.
+
+![](./images/ja/2025-05-25_17-09-31.png)
+
+|Item|Content|
+|----|---|
+|Retention Time|Specifies the time to save metrics and traces.|
+|Source|Limits the source IP.There are no limits to blank spaces.|
+|Switch|Turns ON/OFF reception.|
+
+### Startup parameters
+
+```
+ -otelCA string
+			OpenTelementry CA cert path
+	-otelCert string
+			OpenTelemetry server cert path
+	-otelGRPCPort int
+			OpenTelemetry server gRPC port (default 4317)
+	-otelHTTPPort int
+			OpenTelemetry server HTTP port (default 4318)
+	-otelKey string
+			OpenTelemetry server key path
+```
+
+You can change the port number.
+Specify the certificate and private key for otelCert and otelKey and enter TLS mode.
+If you specify the certificate of the CA that issued the client certificate to otelCA, it will enter mTLS mode.
+
 ## AI analysis
 
 The screen of the AI analysis list.Only the list is displayed in the polling log settings and the analysis is performed.
@@ -1474,7 +1610,7 @@ You can customize it by saving the following files in the data folder.
 
 ```
 Usage of twsnmpfk:
-  -caCert string
+ -caCert string
     	CA Cert path
   -clientCert string
     	Client cert path
@@ -1492,6 +1628,16 @@ Usage of twsnmpfk:
     	Max log size to diplay (default 10000)
   -netflowPort int
     	Netflow port (default 2055)
+  -otelCA string
+    	OpenTelementry CA cert path
+  -otelCert string
+    	OpenTelemetry server cert path
+  -otelGRPCPort int
+    	OpenTelemetry server gRPC port (default 4317)
+  -otelHTTPPort int
+    	OpenTelemetry server HTTP port (default 4318)
+  -otelKey string
+    	OpenTelemetry server key path
   -ping string
     	ping mode icmp or udp
   -sFlowPort int
@@ -1504,6 +1650,7 @@ Usage of twsnmpfk:
     	tcp server port (default 8086)
   -trapPort int
     	SNMP TRAP port (default 162)
+
 ```
 
 | Parameters | Description |
@@ -1520,4 +1667,7 @@ Usage of twsnmpfk:
 |netflowPort <port>| NetFlow/IPFIX receive port (default 2055)|
 |sFlowPort <port>| sFlow receiving port (default 6343)|
 |tcpdPort <port>| TCP log receiving port (default 8086)|
-
+|otelCert <file>|OpenTelemetry server certificate|
+|otelKey <file>|OpenTelemetry server private key|
+|otelGRPCPPort <number>|GRPC port number for OpenTelemetry |
+|otelHTTPPort <file>|OpenTelemetry HTTP port number|

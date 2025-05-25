@@ -15,7 +15,7 @@ layout: default
 
 ## はじめに
 
-TWSNMPは日本で20年以上定番のSNMPv3に対応したSNMPマネージャです。
+TWSNMPは日本で25年以上定番のSNMPv3に対応したSNMPマネージャです。
 これを2023年の最新機技術で復刻したのがTWSNMP FKです。
 コンテナで動作するTWSNMP FCはWebブラウザーからアクセスして操作しますが、FKは、デスクトップアプリであるためブラウザー不要です。
 
@@ -623,7 +623,148 @@ SNMPのホストリソースMIBのプロセス情報を表示します。選択�
 ![](./images/ja/2023-12-02_06-29-02.png)
 
 
-### AI分析
+## OpenTelemetry
+
+OpenTelemetryコレクターの画面です。
+メトリック、トレース、ログのタブで切り替えます。
+
+### メトリック
+
+受信したメトリックの一覧です。
+
+![](./images/ja/2025-05-25_16-47-58.png)
+
+|項目|内容|
+|----|----|
+|送信元ホスト|メトリックの送信元ホストです。|
+|サービス|メトリックに関連したサービスの名前です。|
+|スコープ|メトリックに関連したスコープの名前です。|
+|名前|メトリックの名前です。|
+|種別|メトリックの種類です。|
+|回数|メトリックの受信回数です。|
+|初回|メトリックを最初に受信した日時です。|
+|最終|メトリックを最後に受信した日時です。|
+
+#### メトリック(ボタン)
+
+|項目|内容|
+|----|----|
+|レポート|選択したメトリックのグラフを表示します。|
+|<span style="color: red;">全ログ削除</span>|OpenTelemetryの全データを削除します。|
+|更新|情報を更新します。|
+
+#### タイムチャート
+
+メトリックを選択して＜レポート＞ボタンをクリックするとタイムチャートが表示されます。
+
+![](./images/ja/2025-05-25_16-49-50.png)
+
+#### ヒストグラム
+
+メトリックの種別がヒストグラムの場合はテーブルの行を選択すると、その時刻のヒストグラムを表示します。
+
+![](./images/ja/2025-05-25_16-50-01.png)
+
+
+### トレース
+
+受信したトレースの画面です。上部にトレースの開始時刻、処理時間、スパン数を示すグラフがあります。
+
+![](./images/ja/2025-05-25_16-50-40.png)
+
+|項目|内容|
+|----|----|
+|開始日時|トレースの開始日時です。|
+|終了日時|トレースの終了日時です。|
+|時間|トレースの処理時間です。|
+|トレースID|トレースを識別するIDです。|
+|送信元ホスト|トレースの送信元ホストです。|
+|サービス|トレースに関連したサービス名です。|
+|Span|トレースに含まれるSpanの数です。|
+|スコープ|トレースの関連したスコープです。|
+
+
+#### トレース(ボタン)
+
+|項目|内容|
+|----|----|
+|レポート|選択したトレースのグラフを表示します。|
+|DAG|選択した時間範囲のトレースからサービス間の関係を表示します。|
+|時間範囲|トレースの時間範囲を指定指定します。|
+|<span style="color: red;">全ログ削除</span>|OpenTelemetryの全データを削除します。|
+|更新|情報を更新します。|
+
+
+#### DAG
+
+選択した時間範囲のトレースからサービス間の関係をグラフで表示します。
+
+![](./images/ja/2025-05-25_16-51-04.png)
+
+#### タイムライン
+
+選択したトーレスのタイムラインをグラフ表示します。
+
+![](./images/ja/2025-05-25_16-51-25.png)
+
+
+### ログ
+
+受信したOpenTelemetryのログをsyslogから検索する画面です。
+上部にログレベル別のグラフを表示します。
+
+![](./images/ja/2025-05-25_16-51-45.png)
+
+|項目|内容|
+|----|----|
+|レベル|Syslogのレベルです。<br>重度、軽度、注意、情報があります。|
+|日時|Syslogを受信した日時です。|
+|ホスト|Syslogの送信元ホストです。|
+|タイプ|syslogのファシリティーと優先度の文字列です。|
+|タグ|Syslogのタグです。プロセスとプロセスIDなどです。|
+|メッセージ|Syslogのメッセージです。|
+
+
+#### ログ(ボタン)
+
+|項目|内容|
+|----|----|
+|<span style="color: red;">全ログ削除</span>|OpenTelemetryの全データを削除します。syslogは削除しません。|
+|更新|情報を更新します。|
+
+### OpenTelemetryの設定
+
+マップ設定のOpenTelemetry関連の設定は、黄色の枠の部分です。
+
+![](./images/ja/2025-05-25_17-09-31.png)
+
+|項目|内容|
+|----|----|
+|保存時間|メトリック、トレースを保存する時間を指定します。|
+|送信元|送信元IPを制限します。空欄は無制限です。|
+|スイッチ|受信のON/OFFを切り替えます。|
+
+### 起動パラメータ
+
+```
+ -otelCA string
+    	OpenTelementry CA cert path
+  -otelCert string
+    	OpenTelemetry server cert path
+  -otelGRPCPort int
+    	OpenTelemetry server gRPC port (default 4317)
+  -otelHTTPPort int
+    	OpenTelemetry server HTTP port (default 4318)
+  -otelKey string
+    	OpenTelemetry server key path
+```
+
+ポート番号を変更できます。
+otelCertとotelKeyに証明書と秘密鍵を指定すれば、TLSモードになります。
+otelCAにクライアント証明書を発行したCAの証明書を指定すれば、mTLSモードになります。
+
+
+## AI分析
 
 ポーリング結果のログの中で数値データをAI分析した結果です。ログモードをAI分析に設定して十分なデータを取得した場合のみ表示されます。
 
@@ -1199,6 +1340,9 @@ IPアドレスと時系列の両面からARP監視ログを集計したレポー
 
 ![](./images/ja/2023-11-28_06-12-29.png)
 
+
+
+
 ## AI分析リスト
 
 AI分析リストの画面です。
@@ -1474,7 +1618,7 @@ SNMPのMIBを管理する画面です。
 
 ```
 Usage of twsnmpfk:
-  -caCert string
+ -caCert string
     	CA Cert path
   -clientCert string
     	Client cert path
@@ -1492,6 +1636,16 @@ Usage of twsnmpfk:
     	Max log size to diplay (default 10000)
   -netflowPort int
     	Netflow port (default 2055)
+  -otelCA string
+    	OpenTelementry CA cert path
+  -otelCert string
+    	OpenTelemetry server cert path
+  -otelGRPCPort int
+    	OpenTelemetry server gRPC port (default 4317)
+  -otelHTTPPort int
+    	OpenTelemetry server HTTP port (default 4318)
+  -otelKey string
+    	OpenTelemetry server key path
   -ping string
     	ping mode icmp or udp
   -sFlowPort int
@@ -1522,4 +1676,8 @@ Usage of twsnmpfk:
 |caCert <file>| TWLogEyeとTLS通信するためのCA証明書|
 |clientCert <file>| TWLogEyeとmTLS通信するためのクライアント証明書|
 |clientKey <file>| TWLogEyeとmTLS通信するためのクライアント鍵|
+|otelCert <file>|OpenTelemetryのサーバー証明書|
+|otelKey <file>|OpenTelemetryのサーバーの秘密鍵|
+|otelGRPCPort <number>|OpenTelemetryのgRPCのポート番号|
+|otelHTTPPort <file>|OpenTelemetryのHTTPのポート番号|
 
