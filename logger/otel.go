@@ -32,6 +32,7 @@ var limitFrom bool
 
 func oteld(stopCh chan bool) {
 	log.Printf("start oteld")
+	datastore.LoadOTelMetric()
 	setOTelFrom()
 	f := otlpreceiver.NewFactory()
 	config := f.CreateDefaultConfig()
@@ -116,6 +117,7 @@ func oteld(stopCh chan bool) {
 			if logReceiver != nil {
 				logReceiver.Shutdown(ctx)
 			}
+			datastore.SaveOTelMetric()
 			traceMap.Clear()
 			log.Printf("stop oteld")
 			return

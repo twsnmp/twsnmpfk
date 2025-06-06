@@ -103,9 +103,57 @@ func DeleteOTelMetric(m *OTelMetricEnt) {
 	metricMap.Delete(k)
 }
 
+// LoadOTelMetricは、メトリックをDBから読み込みます。
+func LoadOTelMetric() {
+	if db == nil {
+		return
+	}
+	st := time.Now()
+	db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("otelMetric"))
+		if b == nil {
+			return nil
+		}
+		return b.ForEach(func(k []byte, v []byte) error {
+			var m OTelMetricEnt
+			if err := json.Unmarshal(v, &m); err == nil {
+				metricMap.Store(string(k), &m)
+			}
+			return nil
+		})
+	})
+	log.Printf("load otel metric dur=%v", time.Since(st))
+}
+
+// SaveOTelMetricはメトリックをDBに保存します。
+func SaveOTelMetric() {
+	if db == nil {
+		return
+	}
+	st := time.Now()
+	db.Batch(func(tx *bbolt.Tx) error {
+		tx.DeleteBucket([]byte("otelMetric"))
+		b, err := tx.CreateBucket([]byte("otelMetric"))
+		if b == nil || err != nil {
+			return nil
+		}
+		metricMap.Range(func(key any, value any) bool {
+			if k, ok := key.(string); ok {
+				if m, ok := value.(*OTelMetricEnt); ok {
+					if j, err := json.Marshal(m); err == nil {
+						b.Put([]byte(k), j)
+					}
+				}
+			}
+			return true
+		})
+		return nil
+	})
+	log.Printf("save otel metric dur=%v", time.Since(st))
+}
+
 func getOTelMetricKey(host, service, scope, name string) string {
-	h := sha1.New()
-	return fmt.Sprintf("%x", h.Sum([]byte(fmt.Sprintf("%s\t%s\t%s\t%s", host, service, scope, name))))
+	return fmt.Sprintf("%x", sha1.Sum([]byte(fmt.Sprintf("%s\t%s\t%s\t%s", host, service, scope, name))))
 }
 
 func UpdateOTelTrace(list []*OTelTraceEnt) error {
