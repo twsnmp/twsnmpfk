@@ -519,7 +519,14 @@
     "Span ID",
     "Span",
     "Date and Time",
-    " {showDAG = false}}\n        size=\"xs\"\n      >\n        "
+    " {showDAG = false}}\n        size=\"xs\"\n      >\n        ",
+    " {\n        tab = \"metric\";\n        refresh();\n      }}\n    >\n      ",
+    " {\n        tab = \"trace\";\n        refresh();\n      }}\n    >\n      ",
+    " {\n        tab = \"log\";\n        refresh();\n      }}\n    >\n      ",
+    "& tab != \"log\"}\n      {#if tab == \"metric\"}\n        ",
+    "& tab != \"log\"}\n      {#if tab == \"metric\"}\n        ",
+    " {\n          showDAG = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n          showMetricInfoDialog = false;\n        }}\n        size=\"xs\"\n      >\n        "
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

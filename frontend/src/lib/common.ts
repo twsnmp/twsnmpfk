@@ -221,6 +221,9 @@ export const formatTime = (date:any, format:string) => {
 }
 
 export const renderTime = (t:number,type:string) => {
+  if(type=="sort") {
+    return t;
+  }
   if (t < 1) {
     return "";
   }
@@ -229,6 +232,9 @@ export const renderTime = (t:number,type:string) => {
 }
 
 export const renderTimeUnix = (t:number,type:string) => {
+  if(type=="sort") {
+    return t;
+  }
   if (t < 1) {
     return "";
   }

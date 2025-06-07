@@ -1,24 +1,43 @@
 <script lang="ts">
   import "../assets/css/jquery.dataTables.css";
-  import { GradientButton, Modal, Spinner, Tabs, TabItem,MultiSelect } from "flowbite-svelte";
+  import {
+    GradientButton,
+    Modal,
+    Spinner,
+    Tabs,
+    TabItem,
+    MultiSelect,
+    Table,
+    TableBody,
+    TableHead,
+    TableHeadCell,
+    TableBodyCell,
+    TableBodyRow,
+  } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import {
     GetOTelMetrics,
+    GetOTelMetric,
     GetOTelTraceBucketList,
     GetLastOTelLogs,
     GetOTelTraces,
     DeleteAllOTelData,
     GetOTelTraceDAG,
   } from "../../wailsjs/go/main/App";
-  import { renderTime, getTableLang, renderTimeMili,renderState } from "./common";
+  import {
+    renderTime,
+    getTableLang,
+    renderTimeMili,
+    renderState,
+  } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
   import OTelMetric from "./OTelMetric.svelte";
   import OTelTrace from "./OTelTrace.svelte";
-  import { showOTelTrace,showOTelDAG } from "./chart/otel";
+  import { showOTelTrace, showOTelDAG } from "./chart/otel";
   import { showLogLevelChart } from "./chart/loglevel";
 
   let metrics: any = [];
@@ -33,11 +52,11 @@
   let selectedCount = 0;
   let showLoading = false;
 
-  const showTable = (div:string,columns:any,data:any,scol:number) => {
+  const showTable = (div: string, columns: any, data: any, scol: number) => {
     selectedCount = 0;
     table = new DataTable(div, {
       destroy: true,
-      columns:columns,
+      columns: columns,
       pageLength: 10,
       stateSave: true,
       scrollX: true,
@@ -61,16 +80,16 @@
     switch (tab) {
       case "metric":
         metrics = await GetOTelMetrics();
-        showTable("#otelMetricTable",columnsMetric,metrics,0);
+        showTable("#otelMetricTable", columnsMetric, metrics, 0);
         break;
       case "trace":
         const bks = await GetOTelTraceBucketList();
-        const sel :any = [];
-        selectedTraceBuckets.forEach((t:any)=> {
+        const sel: any = [];
+        selectedTraceBuckets.forEach((t: any) => {
           if (bks.includes(t)) {
             sel.push(t);
           }
-        })
+        });
         selectedTraceBuckets = sel;
         traceBuckets = [];
         bks.forEach((b: string) => {
@@ -84,32 +103,32 @@
         } else {
           traces = [];
         }
-        showTable("#otelTraceTable",columnsTrace,traces,0);
+        showTable("#otelTraceTable", columnsTrace, traces, 0);
         showTraceChart();
         break;
       case "log":
         logs = await GetLastOTelLogs();
-        showTable("#otelLogTable",columnsLog,logs,1);
+        showTable("#otelLogTable", columnsLog, logs, 1);
         showSyslogChart();
         break;
     }
     showLoading = false;
   };
 
-  let chart :any = undefined;
-  
-  const showTraceChart = async() =>{
+  let chart: any = undefined;
+
+  const showTraceChart = async () => {
     await tick();
-    chart = showOTelTrace("otelTraceChart",traces);
-  }
-  
-  const showSyslogChart = async() =>{
+    chart = showOTelTrace("otelTraceChart", traces);
+  };
+
+  const showSyslogChart = async () => {
     await tick();
-    chart = showLogLevelChart("otelSyslogChart",logs,undefined);
-  }
+    chart = showLogLevelChart("otelSyslogChart", logs, undefined);
+  };
 
   let showDAG = false;
-  let dagChart :any = undefined;
+  let dagChart: any = undefined;
 
   const showDAGFunc = async () => {
     if (selectedTraceBuckets.length < 1) {
@@ -117,52 +136,52 @@
     }
     showLoading = true;
     const dag = await GetOTelTraceDAG(selectedTraceBuckets);
-    showDAG = (dag && dag.Nodes.length > 0);
+    showDAG = dag && dag.Nodes.length > 0;
     await tick();
-    dagChart = showOTelDAG("dagChart",dag);
+    dagChart = showOTelDAG("dagChart", dag);
     showLoading = false;
-  }
+  };
 
   const columnsMetric = [
     {
       data: "Host",
-      title: $_('OTel.Host'),
+      title: $_("OTel.Host"),
       width: "10%",
     },
     {
       data: "Service",
-      title: $_('OTel.Service'),
+      title: $_("OTel.Service"),
       width: "15%",
     },
     {
       data: "Scope",
-      title: $_('OTel.Scope'),
+      title: $_("OTel.Scope"),
       width: "25%",
     },
     {
       data: "Name",
-      title: $_('OTel.Name'),
+      title: $_("OTel.Name"),
       width: "15%",
     },
     {
       data: "Type",
-      title: $_('OTel.Type'),
+      title: $_("OTel.Type"),
       width: "10%",
     },
     {
       data: "Count",
-      title: $_('OTel.Count'),
+      title: $_("OTel.Count"),
       width: "5%",
     },
     {
       data: "First",
-      title: $_('OTel.First'),
+      title: $_("OTel.First"),
       width: "10%",
       render: renderTime,
     },
     {
       data: "Last",
-      title: $_('OTel.Last'),
+      title: $_("OTel.Last"),
       width: "10%",
       render: renderTime,
     },
@@ -171,35 +190,35 @@
   const columnsTrace = [
     {
       data: "Start",
-      title: $_('OTel.Start'),
+      title: $_("OTel.Start"),
       width: "15%",
       render: renderTimeMili,
     },
     {
       data: "End",
-      title: $_('OTel.End'),
+      title: $_("OTel.End"),
       width: "15%",
       render: renderTimeMili,
     },
     {
       data: "Dur",
-      title: $_('OTel.Dur') +"(mSec)",
+      title: $_("OTel.Dur") + "(mSec)",
       width: "10%",
       render: (v: number) => (v * 1000).toFixed(3),
     },
     {
       data: "TraceID",
-      title: $_('OTel.TraceID'),
+      title: $_("OTel.TraceID"),
       width: "15%",
     },
     {
       data: "Hosts",
-      title: $_('OTel.Host'),
+      title: $_("OTel.Host"),
       width: "10%",
     },
     {
       data: "Services",
-      title: $_('OTel.Service'),
+      title: $_("OTel.Service"),
       width: "15%",
     },
     {
@@ -209,7 +228,7 @@
     },
     {
       data: "Scopes",
-      title: $_('OTel.Scope'),
+      title: $_("OTel.Scope"),
       width: "20%",
     },
   ];
@@ -266,7 +285,7 @@
     if (!d || d.length != 1) {
       return;
     }
-    switch(tab) {
+    switch (tab) {
       case "metric":
         selectedMetric = d[0];
         showMetricReport = true;
@@ -286,43 +305,85 @@
     }
   };
 
+  let showMetricInfoDialog = false;
+  let metric: any = undefined;
+
+  const showMetricInfo = async () => {
+    const d = table.rows({ selected: true }).data();
+    if (!d || d.length != 1) {
+      return;
+    }
+    metric = await GetOTelMetric(d[0]);
+    if (!metric) {
+      return;
+    }
+    showMetricInfoDialog = true;
+  };
 </script>
 
 <svelte:window on:resize={resizeChart} />
 
 <div class="flex flex-col">
-    <Tabs style="underline">
-      <TabItem open on:click={()=>{tab="metric";refresh();}}>
-        <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiChartHistogram} size={1} />
-          {$_('OTel.Metric')}
-        </div>
-        <table id="otelMetricTable" class="display compact" style="width:99%" />
-      </TabItem>
-      <TabItem on:click={()=>{tab="trace";refresh();}}>
-        <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiEye} size={1} />
-          {$_('OTel.Trace')}
-        </div>
-        <div id="otelTraceChart" />
-        <div class="m-5 grow">
-          <table id="otelTraceTable" class="display compact" style="width:99%" />
-        </div>
-      </TabItem>
-      <TabItem on:click={()=>{tab="log";refresh();}}>
-        <div slot="title" class="flex items-center gap-2">
-          <Icon path={icons.mdiTextBox} size={1} />
-          {$_('OTel.Log')}
-        </div>
-        <div id="otelSyslogChart" />
-        <div class="m-5 grow">
-          <table id="otelLogTable" class="display compact" style="width:99%" />
-        </div>
-      </TabItem>
-    </Tabs>
+  <Tabs style="underline">
+    <TabItem
+      open
+      on:click={() => {
+        tab = "metric";
+        refresh();
+      }}
+    >
+      <div slot="title" class="flex items-center gap-2">
+        <Icon path={icons.mdiChartHistogram} size={1} />
+        {$_("OTel.Metric")}
+      </div>
+      <table id="otelMetricTable" class="display compact" style="width:99%" />
+    </TabItem>
+    <TabItem
+      on:click={() => {
+        tab = "trace";
+        refresh();
+      }}
+    >
+      <div slot="title" class="flex items-center gap-2">
+        <Icon path={icons.mdiEye} size={1} />
+        {$_("OTel.Trace")}
+      </div>
+      <div id="otelTraceChart" />
+      <div class="m-5 grow">
+        <table id="otelTraceTable" class="display compact" style="width:99%" />
+      </div>
+    </TabItem>
+    <TabItem
+      on:click={() => {
+        tab = "log";
+        refresh();
+      }}
+    >
+      <div slot="title" class="flex items-center gap-2">
+        <Icon path={icons.mdiTextBox} size={1} />
+        {$_("OTel.Log")}
+      </div>
+      <div id="otelSyslogChart" />
+      <div class="m-5 grow">
+        <table id="otelLogTable" class="display compact" style="width:99%" />
+      </div>
+    </TabItem>
+  </Tabs>
 
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1 && tab != "log"}
+      {#if tab == "metric"}
+        <GradientButton
+          shadow
+          color="green"
+          type="button"
+          on:click={showMetricInfo}
+          size="xs"
+        >
+          <Icon path={icons.mdiInformation} size={1} />
+          {$_('OTel.MetricInfo')}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         color="green"
@@ -331,10 +392,10 @@
         size="xs"
       >
         <Icon path={icons.mdiEye} size={1} />
-        {$_('OTerl.Report')}
+        {$_("OTerl.Report")}
       </GradientButton>
     {/if}
-    {#if tab =="trace"}
+    {#if tab == "trace"}
       <GradientButton
         shadow
         color="green"
@@ -384,7 +445,6 @@
   </div>
 </Modal>
 
-
 <Modal bind:open={showDAG} size="xl" dismissable={false} class="w-full">
   <div class="flex flex-col space-y-4">
     <div id="dagChart"></div>
@@ -393,16 +453,89 @@
         shadow
         type="button"
         color="teal"
-        on:click={()=> {showDAG = false}}
+        on:click={() => {
+          showDAG = false;
+        }}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        {$_('OTel.Close')}
+        {$_("OTel.Close")}
       </GradientButton>
     </div>
   </div>
 </Modal>
 
+<Modal
+  bind:open={showMetricInfoDialog}
+  size="xl"
+  dismissable={false}
+  class="w-full"
+>
+  <div class="flex flex-col space-y-4">
+    <Table>
+      <TableHead>
+        <TableHeadCell>{$_('OTel.Item')}</TableHeadCell>
+        <TableHeadCell>{$_('OTel.Content')}</TableHeadCell>
+      </TableHead>
+      <TableBody>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.Host')}</TableBodyCell>
+          <TableBodyCell>{metric.Host}</TableBodyCell>
+        </TableBodyRow>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.Service')}</TableBodyCell>
+          <TableBodyCell>{metric.Service}</TableBodyCell>
+        </TableBodyRow>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.Scope')}</TableBodyCell>
+          <TableBodyCell>{metric.Scope}</TableBodyCell>
+        </TableBodyRow>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.Name')}</TableBodyCell>
+          <TableBodyCell>{metric.Name}</TableBodyCell>
+        </TableBodyRow>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.Type')}</TableBodyCell>
+          <TableBodyCell>{metric.Type}</TableBodyCell>
+        </TableBodyRow>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.Unit')}</TableBodyCell>
+          <TableBodyCell>{metric.Unit}</TableBodyCell>
+        </TableBodyRow>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.Descr')}</TableBodyCell>
+          <TableBodyCell>{metric.Description}</TableBodyCell>
+        </TableBodyRow>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.Count')}</TableBodyCell>
+          <TableBodyCell>{metric.Count}</TableBodyCell>
+        </TableBodyRow>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.First')}</TableBodyCell>
+          <TableBodyCell>{renderTime(metric.First,"")}</TableBodyCell>
+        </TableBodyRow>
+        <TableBodyRow>
+          <TableBodyCell>{$_('OTel.Last')}</TableBodyCell>
+          <TableBodyCell>{renderTime(metric.Last,"")}</TableBodyCell>
+        </TableBodyRow>
+      </TableBody>
+    </Table>
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={() => {
+          showMetricInfoDialog = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_("OTel.Close")}
+      </GradientButton>
+    </div>
+  </div>
+</Modal>
 
 <OTelMetric bind:show={showMetricReport} metric={selectedMetric} />
 <OTelTrace bind:show={showTraceReport} trace={selectedTrace} />
@@ -415,7 +548,7 @@
     width: 98%;
     margin: 0 auto;
   }
-  #dagChart{
+  #dagChart {
     min-height: 300px;
     height: 70vh;
     width: 98%;

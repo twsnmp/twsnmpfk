@@ -969,7 +969,12 @@
     "StartTime": "開始",
     "EndTime": "終了",
     "PSpanID": "親Span ID",
-    "Close": "閉じる"
+    "Close": "閉じる",
+    "MetricInfo": "メトリック情報",
+    "Item": "項目",
+    "Content": "内容",
+    "Unit": "単位",
+    "Descr": "説明"
   },
   "OTerl": {
     "Report": "レポート"

@@ -969,7 +969,12 @@
     "Trace": "Trace",
     "TraceID": "TraceID",
     "Type": "Type",
-    "Close": "Close"
+    "Close": "Close",
+    "Content": "Content",
+    "Descr": "Description",
+    "Item": "Item",
+    "MetricInfo": "Metric Info",
+    "Unit": "Unit"
   },
   "OTerl": {
     "Report": "Report"
