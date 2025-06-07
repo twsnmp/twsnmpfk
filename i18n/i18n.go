@@ -363,19 +363,19 @@ var transMap = map[string]map[string]string{
 		"ja": "SCEP用のCA証明証を作成しました subject=%s serial=%x",
 	},
 	"Start CRL/OCSP/SCEP Server port=%d": {
-		"ja": "CRL/OCSP/SCEPサーバーを起動しました port=%d",
+		"ja": "CRL/OCSP/SCEPサーバー起動 port=%d",
 	},
 	"Stop CRL/OCSP/SCEP Server": {
-		"ja": "CRL/OCSP/SCEPサーバーを停止しました",
+		"ja": "CRL/OCSP/SCEPサーバー停止",
 	},
 	"Create ACME Server Certificate subject=%s serial=%x": {
 		"ja": "ACMEサーバー用の証明証を発行しました subject=%s serial=%x",
 	},
 	"Start ACME Server port=%d": {
-		"ja": "ACMEサーバーを起動しました port=%d",
+		"ja": "ACMEサーバー起動 port=%d",
 	},
 	"Stop ACME Server": {
-		"ja": "ACMEサーバーを停止しました",
+		"ja": "ACMEサーバー停止",
 	},
 	"MAC Address": {
 		"ja": "MACアドレス",
@@ -409,6 +409,12 @@ var transMap = map[string]map[string]string{
 	},
 	"Location": {
 		"ja": "位置",
+	},
+	"Start OpenTelemetry server": {
+		"ja": "OpenTelemetryサーバー受信開始",
+	},
+	"Stop OpenTelemetry server": {
+		"ja": "OpenTelemetryサーバー受信停止",
 	},
 }
 

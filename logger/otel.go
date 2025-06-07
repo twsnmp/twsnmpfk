@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"runtime"
 	"slices"
 	"sort"
 	"strings"
@@ -24,6 +23,7 @@ import (
 	"go.opentelemetry.io/collector/receiver/otlpreceiver"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 var traceMap sync.Map
@@ -64,6 +64,11 @@ func oteld(stopCh chan bool) {
 			log.Println("otlp not TLS")
 		}
 	}
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "system",
+		Level: "info",
+		Event: i18n.Trans("Start OpenTelemetry server"),
+	})
 	componentID := component.MustNewID("otlp")
 	ctx := context.Background()
 	mr, err := consumer.NewMetrics(handleMetrics)
@@ -120,6 +125,11 @@ func oteld(stopCh chan bool) {
 			datastore.SaveOTelMetric()
 			traceMap.Clear()
 			log.Printf("stop oteld")
+			datastore.AddEventLog(&datastore.EventLogEnt{
+				Type:  "system",
+				Level: "info",
+				Event: i18n.Trans("Stop OpenTelemetry server"),
+			})
 			return
 		case <-timer.C:
 			{
@@ -165,26 +175,17 @@ func setOTelFrom() {
 	}
 	lastOTelFrom = datastore.MapConf.OTelFrom
 	a := strings.Split(datastore.MapConf.OTelFrom, ",")
-	limitFrom = len(a) > 0
 	otelFromMap.Clear()
+	limitFrom = false
 	for _, f := range a {
-		otelFromMap.Store(f, true)
+		if f != "" {
+			otelFromMap.Store(f, true)
+			limitFrom = true
+		}
 	}
 }
 
 func handleMetrics(ctx context.Context, md pmetric.Metrics) error {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Printf("[ERROR] %s\n", err)
-			for depth := 0; ; depth++ {
-				_, file, line, ok := runtime.Caller(depth)
-				if !ok {
-					break
-				}
-				log.Printf("======> %d: %v:%d", depth, file, line)
-			}
-		}
-	}()
 	f := client.FromContext(ctx)
 	service := "unknown"
 	host := f.Addr.String()
