@@ -284,7 +284,9 @@
     "SnmpPassword": "Password",
     "SnmpUser": "User",
     "OTelFrom": "OTel From",
-    "OTelRetention": "OTel Retention"
+    "OTelRetention": "OTel Retention",
+    "MCPEndpoint": "MCP Server Endpoint",
+    "MCPTransport": "MCP Server Transport"
   },
   "DrawItem": {
     "Cancel": "Cancel",

@@ -526,7 +526,8 @@
     "& tab != \"log\"}\n      {#if tab == \"metric\"}\n        ",
     "& tab != \"log\"}\n      {#if tab == \"metric\"}\n        ",
     " {\n          showDAG = false;\n        }}\n        size=\"xs\"\n      >\n        ",
-    " {\n          showMetricInfoDialog = false;\n        }}\n        size=\"xs\"\n      >\n        "
+    " {\n          showMetricInfoDialog = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    "Streamable HTTP"
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

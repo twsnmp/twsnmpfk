@@ -272,7 +272,9 @@
     "Password": "パスワード",
     "User": "ユーザー",
     "OTelRetention": "OpenTelemetry保存時間",
-    "OTelFrom": "OpenTelemetry送信元"
+    "OTelFrom": "OpenTelemetry送信元",
+    "MCPTransport": "MCPサーバートランスポート",
+    "MCPEndpoint": "MCPサーバーエンドポイント"
   },
   "DrawItem": {
     "Rect": "矩形",

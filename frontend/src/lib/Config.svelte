@@ -516,16 +516,15 @@
             </Label>
 
             <Label class="space-y-2 text-xs">
-              <span> MCPサーバートランスポート </span>
+              <span> {$_('Config.MCPTransport')} </span>
               <Select
                 items={mcpTransportList}
                 bind:value={mapConf.MCPTransport}
-                placeholder="MCPサーバーのトランスポートを設定"
                 size="sm"
               />
             </Label>
             <Label class="space-y-2 text-xs">
-              <span>MCPサーバーエンドポイント</span>
+              <span>{$_('Config.MCPEndpoint')}</span>
               <Input
                 class="h-8 w-48"
                 bind:value={mapConf.MCPEndpoint}

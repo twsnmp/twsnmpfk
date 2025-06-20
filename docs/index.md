@@ -1332,6 +1332,37 @@ You can change the port number.
 Specify the certificate and private key for otelCert and otelKey and enter TLS mode.
 If you specify the certificate of the CA that issued the client certificate to otelCA, it will enter mTLS mode.
 
+
+## MCP Server
+
+It has an MCP server function for AI to use TWSNMP FK.
+
+### MCP Server Settings
+
+The settings related to MCP server in the map settings are in the yellow box.
+
+![](./images/en/2025-06-21_06-39-43.png)
+
+|Item|Content|
+|----|---|
+|MCP Server Transport|Select OFF/SSE/StreamableHTTP.|
+|MCP Server Endpoint|Specify the IP address and port to receive.<br>Local only, 127.0.0.0:8089<br>If you receive at all addresses:8089 |
+
+### MCP Server Features
+
+The TWSNMP FK MCP (Management Control Protocol) server provides tools for network monitoring, SNMP management, and device control. Here's an overview of its key tools:
+
+1. **`get_MIB_tree`**: Retrieves the MIB (Management Information Base) tree structure from the SNMP agent, enabling detailed inspection of device management objects.
+2. **`snmpwalk`**: Executes SNMP walks to collect all values under a specific MIB object, useful for comprehensive device configuration and status checks.
+3. **`get_node_list`**: Lists all managed nodes (devices) with filters for IP/name/state, aiding in real-time monitoring and troubleshooting.
+4. **`get_network_list`**: Displays network segments with IP/name filters, helping to organize and analyze network topology.
+5. **`get_polling_list`**: Manages polling configurations (e.g., ping, SNMP, HTTP) for nodes, ensuring continuous health checks and data collection.
+6. **`do_ping`**: Tests network connectivity to nodes or hosts, verifying reachability and latency.
+7. **`add_node` / `update_node`**: Adds or modifies node details (IP, name, position, icons), centralizing device management in the MCP interface.
+
+These tools collectively enable centralized monitoring, configuration, and troubleshooting of network devices via SNMP and custom polling protocols.
+
+
 ## AI analysis
 
 The screen of the AI analysis list.Only the list is displayed in the polling log settings and the analysis is performed.
