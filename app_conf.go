@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/labstack/gommon/log"
+	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/notify"
@@ -24,6 +25,9 @@ func (a *App) UpdateMapConf(m datastore.MapConfEnt) bool {
 	}
 	if m.OTelRetention < 1 {
 		m.OTelRetention = 24
+	}
+	if m.MCPEndpoint != datastore.MapConf.MCPEndpoint || m.MCPTransport != datastore.MapConf.MCPEndpoint {
+		backend.NotifyMCPConfigChanged()
 	}
 	datastore.MapConf = m
 
@@ -73,7 +77,7 @@ func (a *App) UpdateLocConf(loc datastore.LocConfEnt) bool {
 	return datastore.SaveLocConf() == nil
 }
 
-// Backupは、データベースのバックアップを作成します。
+// Backup makes a backup file.
 func (a *App) Backup() bool {
 	f, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
 		Title:           i18n.Trans("Backup file"),
@@ -104,12 +108,12 @@ func (a *App) GetMIBModules() []*datastore.MIBModuleEnt {
 	return datastore.MIBModules
 }
 
-// GetIconsは、カスタムアイコンのリストを返します。
+// GetIcons returns a list of custom icons.
 func (a *App) GetIcons() []*datastore.IconEnt {
 	return datastore.GetIcons()
 }
 
-// UpdateIconは、カスタムアイコンを追加または更新します。
+// UpdateIcon adds or updates a custom icon.
 func (a *App) UpdateIcon(icon datastore.IconEnt) bool {
 	if err := datastore.AddOrUpdateIcon(&icon); err != nil {
 		log.Printf("UpdateIcon err=%v", err)
@@ -118,7 +122,7 @@ func (a *App) UpdateIcon(icon datastore.IconEnt) bool {
 	return true
 }
 
-// DeleteIconは、カスタムアイコンを削除します。
+// DeleteIcon deletes a custom icon.
 func (a *App) DeleteIcon(icon string) bool {
 	if err := datastore.DeleteIcon(icon); err != nil {
 		log.Printf("UpdateIcon err=%v", err)
@@ -127,12 +131,12 @@ func (a *App) DeleteIcon(icon string) bool {
 	return true
 }
 
-// GetSshdPublicKeysは、SSHサーバーにアクセスを許可するホストの公開鍵を取得
+// GetSshdPublicKeys returns the public keys of hosts allowed to access the SSH server.
 func (a *App) GetSshdPublicKeys() string {
 	return datastore.GetSshdPublicKeys()
 }
 
-// SaveSshdPublicKeysは、SSHサーバーにアクセスを許可するホストの公開鍵を保存
+// SaveSshdPublicKeys saves the public keys of hosts allowed to access the SSH server.
 func (a *App) SaveSshdPublicKeys(pk string) bool {
 	if err := datastore.SaveSshdPublicKeys(pk); err != nil {
 		log.Printf("SaveSshdPublicKeys err=%v", err)
@@ -140,7 +144,7 @@ func (a *App) SaveSshdPublicKeys(pk string) bool {
 	return true
 }
 
-// GetMySSHPublicKeyは、自分のSSH公開鍵を取得
+// GetMySSHPublicKey returns the SSH public key of this application.
 func (a *App) GetMySSHPublicKey() string {
 	r, err := datastore.GetSSHPublicKey()
 	if err != nil {
@@ -149,7 +153,7 @@ func (a *App) GetMySSHPublicKey() string {
 	return r
 }
 
-// InitMySSHKeyは、自分のSSH秘密鍵を再作成
+// InitMySSHKey recreates the SSH private key for this application.
 func (a *App) InitMySSHKey() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,

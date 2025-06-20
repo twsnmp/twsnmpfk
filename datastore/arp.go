@@ -75,7 +75,7 @@ func ForEachArp(f func(*ArpEnt) bool) {
 	})
 }
 
-// ResetArpTableは、ARPテーブルとARPログをクリアする
+// ResetArpTable clears the ARP table and ARP log.
 func ResetArpTable() error {
 	st := time.Now()
 	arpTable = sync.Map{}
@@ -90,7 +90,7 @@ func ResetArpTable() error {
 	return err
 }
 
-// DeleteArpEntは、指定のIPアドレスに関連したARPテーブルを削除する
+// DeleteArpEnt deletes ARP table entries associated with the specified IP addresses.
 func DeleteArpEnt(ips []string) error {
 	st := time.Now()
 	err := db.Batch(func(tx *bbolt.Tx) error {

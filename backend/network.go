@@ -547,7 +547,7 @@ func CheckNetwork(id string) {
 	checkNetworkCh <- id
 }
 
-// 全ネットワークノードの再チェック
+// CheckAllNetworks performs a re-check of all network nodes.
 func CheckAllNetworks() {
 	datastore.ForEachNetworks(func(n *datastore.NetworkEnt) bool {
 		if n.Error != "" {

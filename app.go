@@ -166,7 +166,7 @@ func (a *App) setMenu() {
 	}
 }
 
-// GetVersin returns version
+// GetVersion returns version
 func (a *App) GetVersion() string {
 	return fmt.Sprintf("%s(%s)", version, commit)
 }
@@ -233,34 +233,34 @@ func (a *App) GetImageIcon(icon string) string {
 	return a.GetImage(filepath.Join(dataStorePath, "icons", icon))
 }
 
-// GetLangは言語を返します。
+// GetLang returns the current language.
 func (a *App) GetLang() string {
 	return i18n.GetLang()
 }
 
-// IsDarkは,Darkモードの状態を返します。
+// IsDark returns the state of Dark mode.
 func (a *App) IsDark() bool {
 	return datastore.Dark
 }
 
-// IsLatestは,TWSNMPが最新版であることを返します。
+// IsLatest returns true if TWSNMP is the latest version.
 func (a *App) IsLatest() bool {
 	return backend.IsLatest()
 }
 
-// SetDarkは,Darkモードの状態を設定します。
+// SetDark sets the state of Dark mode.
 func (a *App) SetDark(d bool) {
 	if err := datastore.SetDark(d); err != nil {
 		log.Println(err)
 	}
 }
 
-// HasDatastoreは,データストアの選択状態を返します。
+// HasDatastore returns true if a datastore has been selected.
 func (a *App) HasDatastore() bool {
 	return dataStorePath != ""
 }
 
-// GetMonitorDatasは、システムリソースのモニター情報を返します。
+// GetMonitorDatas returns system resource monitor information.
 func (a *App) GetMonitorDatas() []*backend.MonitorDataEnt {
 	return backend.MonitorDataes
 }
@@ -365,7 +365,7 @@ func (a *App) SendFeedback(message string) bool {
 	msg += fmt.Sprintf("\n-----\nGOOS=%s,GOARCH=%s,NumCPU=%d,NumGoroutine=%d\n",
 		runtime.GOOS, runtime.GOARCH, runtime.NumCPU(), runtime.NumGoroutine())
 	msg += fmt.Sprintf("DBSize=%d\n", datastore.GetDBSize())
-	myCpu := []float64{}
+	myCPU := []float64{}
 	myMem := []float64{}
 	load := []float64{}
 	gr := []float64{}
@@ -373,15 +373,15 @@ func (a *App) SendFeedback(message string) bool {
 		if i == 0 || i == len(backend.MonitorDataes)-1 {
 			msg += fmt.Sprintf("monitor[%d]-%+v\n", i, m)
 		}
-		myCpu = append(myCpu, m.MyCPU)
+		myCPU = append(myCPU, m.MyCPU)
 		myMem = append(myMem, m.MyMem)
 		load = append(load, m.Load)
 		gr = append(gr, float64(m.NumGoroutine))
 	}
 
-	min, _ := stats.Min(myCpu)
-	mean, _ := stats.Mean(myCpu)
-	max, _ := stats.Max(myCpu)
+	min, _ := stats.Min(myCPU)
+	mean, _ := stats.Mean(myCPU)
+	max, _ := stats.Max(myCPU)
 	msg += fmt.Sprintf("MyCPU=%.2f/%.2f/%.2f\n", min, mean, max)
 	min, _ = stats.Min(myMem)
 	mean, _ = stats.Mean(myMem)

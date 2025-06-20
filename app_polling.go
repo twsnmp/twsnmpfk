@@ -123,7 +123,7 @@ func (a *App) DeletePollingLogs(ids []string) {
 	})
 }
 
-// GetPollingLog returns polling log
+// GetPollingLogs returns polling logs for a given polling ID.
 func (a *App) GetPollingLogs(id string) []datastore.PollingLogEnt {
 	ret := []datastore.PollingLogEnt{}
 	polling := datastore.GetPolling(id)
@@ -153,7 +153,7 @@ func (a *App) GetPollingTemplate(id int) datastore.PollingTemplateEnt {
 	return *pt
 }
 
-// GetAutoPollingsは、ポーリングのテンプレートから自動でポーリングを作成してリストを返します。
+// GetAutoPollings creates and returns a list of pollings automatically from a polling template.
 func (a *App) GetAutoPollings(node string, id int) []*datastore.PollingEnt {
 	pt := datastore.GetPollingTemplate(id)
 	if pt == nil {
@@ -186,7 +186,7 @@ func (a *App) GetAutoPollings(node string, id int) []*datastore.PollingEnt {
 	return []*datastore.PollingEnt{p}
 }
 
-// GetDefaultPollingは、デフォルトのポーリングを作成します。
+// GetDefaultPolling creates a default polling entry.
 func (a *App) GetDefaultPolling(node string) *datastore.PollingEnt {
 	n := datastore.GetNode(node)
 	if n == nil {

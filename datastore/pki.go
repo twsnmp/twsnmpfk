@@ -13,15 +13,15 @@ import (
 	"go.etcd.io/bbolt"
 )
 
-// CreateCAReq: フロントエンドからのリクエスト
+// CreateCAReq represents a request from the frontend.
 type CreateCAReq struct {
 	RootCAKeyType string `json:"RootCAKeyType"`
 	Name          string `json:"Name"`
 	SANs          string `json:"SANs"`
 	AcmePort      int    `json:"AcmePort"`
-	HttpBaseURL   string `json:"HttpBaseURL"`
+	HTTPBaseURL   string `json:"HttpBaseURL"`
 	AcmeBaseURL   string `json:"AcmeBaseURL"`
-	HttpPort      int    `json:"HttpPort"`
+	HTTPPort      int    `json:"HttpPort"`
 	RootCATerm    int    `json:"RootCATerm"`
 	CrlInterval   int    `json:"CrlInterval"`
 	CertTerm      int    `json:"CertTerm"`
@@ -30,14 +30,14 @@ type CreateCAReq struct {
 type PKIControlEnt struct {
 	AcmeBaseURL string `json:"AcmeBaseURL"`
 	EnableAcme  bool   `json:"EnableAcme"`
-	EnableHttp  bool   `json:"EnableHttp"`
+	EnableHTTP  bool   `json:"EnableHttp"`
 	AcmeStatus  string `json:"AcmeStatus"`
-	HttpStatus  string `json:"HttpStatus"`
+	HTTPStatus  string `json:"HttpStatus"`
 	CrlInterval int    `json:"CrlInterval"`
 	CertTerm    int    `json:"CertTerm"`
 }
 
-// PKIConfEnt: DBに保存するCAの設定データ
+// PKIConfEnt is the configuration data for a CA stored in the DB.
 type PKIConfEnt struct {
 	Name           string `json:"Name"`
 	SANs           string `json:"AcmeSANs"`
@@ -51,14 +51,14 @@ type PKIConfEnt struct {
 	AcmeServerCert string `json:"AcmeServerCert"`
 	AcmeBaseURL    string `json:"AcmeBaseURL"`
 	AcmePort       int    `json:"AcmePort"`
-	HttpBaseURL    string `json:"HttpBaseURL"`
-	HttpPort       int    `json:"HttpPort"`
+	HTTPBaseURL    string `json:"HttpBaseURL"`
+	HTTPPort       int    `json:"HttpPort"`
 	ScepCAKey      string `json:"ScepCAKey"`
 	ScepCACert     string `json:"ScepCACert"`
 	CrlNumber      int64  `json:"CrlNumber"`
 	CrlInterval    int    `json:"CrlInterval"`
 	EnableAcme     bool   `json:"EnableAcme"`
-	EnableHttp     bool   `json:"EnableHttp"`
+	EnableHTTP     bool   `json:"EnableHttp"`
 }
 
 type CertEnt struct {
@@ -96,7 +96,7 @@ func setDefaultPKIConf() {
 		RootCAKeyType: "ecdsa-256",
 		RootCATerm:    10,
 		CertTerm:      365 * 24,
-		HttpPort:      8082,
+		HTTPPort:      8082,
 		AcmePort:      8083,
 		Serial:        time.Now().UnixNano(),
 		CrlNumber:     1,
@@ -107,8 +107,8 @@ func setDefaultPKIConf() {
 func InitCAConf(req CreateCAReq) error {
 	PKIConf.RootCAKeyType = req.RootCAKeyType
 	PKIConf.AcmePort = req.AcmePort
-	PKIConf.HttpPort = req.HttpPort
-	PKIConf.HttpBaseURL = req.HttpBaseURL
+	PKIConf.HTTPPort = req.HTTPPort
+	PKIConf.HTTPBaseURL = req.HTTPBaseURL
 	PKIConf.Name = req.Name
 	if req.SANs == "" {
 		PKIConf.SANs = getDefaultSANs()
@@ -137,8 +137,8 @@ func InitCAConf(req CreateCAReq) error {
 	if PKIConf.AcmePort < 1 || PKIConf.AcmePort > 0xfffe {
 		PKIConf.AcmePort = 8083
 	}
-	if PKIConf.HttpPort < 1 || PKIConf.HttpPort > 0xfffe {
-		PKIConf.HttpPort = 8082
+	if PKIConf.HTTPPort < 1 || PKIConf.HTTPPort > 0xfffe {
+		PKIConf.HTTPPort = 8082
 	}
 	if PKIConf.CertTerm < 1 {
 		PKIConf.CertTerm = 24 * 365

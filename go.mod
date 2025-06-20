@@ -21,6 +21,7 @@ require (
 	github.com/gosnmp/gosnmp v1.38.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/labstack/gommon v0.4.2
+	github.com/mark3labs/mcp-go v0.31.0
 	github.com/montanaflynn/stats v0.7.1
 	github.com/openconfig/gnmic/pkg/api v0.1.9
 	github.com/oschwald/geoip2-golang v1.11.0
@@ -115,6 +116,7 @@ require (
 	github.com/samber/lo v1.49.1 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/smallstep/pkcs7 v0.2.1 // indirect
+	github.com/spf13/cast v1.7.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.14 // indirect
 	github.com/tklauser/numcpus v0.9.0 // indirect
 	github.com/tkrajina/go-reflector v0.5.8 // indirect
@@ -124,6 +126,7 @@ require (
 	github.com/wailsapp/mimetype v1.4.1 // indirect
 	github.com/xuri/efp v0.0.0-20241211021726-c4e992084aa6 // indirect
 	github.com/xuri/nfp v0.0.0-20250111060730-82a408b9aa71 // indirect
+	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/collector v0.126.0 // indirect

@@ -14,7 +14,7 @@ import (
 	"github.com/twsnmp/twsnmpfk/pki"
 )
 
-// IsCAValid: CAが構築済みかを返す
+// IsCAValid returns true if the CA has already been set up.
 func (a *App) IsCAValid() bool {
 	return pki.IsCAValid()
 }
@@ -26,8 +26,8 @@ func (a *App) GetDefaultCreateCAReq() datastore.CreateCAReq {
 		SANs:          datastore.PKIConf.SANs,
 		AcmeBaseURL:   datastore.PKIConf.AcmeBaseURL,
 		AcmePort:      datastore.PKIConf.AcmePort,
-		HttpBaseURL:   datastore.PKIConf.HttpBaseURL,
-		HttpPort:      datastore.PKIConf.HttpPort,
+		HTTPBaseURL:   datastore.PKIConf.HTTPBaseURL,
+		HTTPPort:      datastore.PKIConf.HTTPPort,
 		RootCATerm:    datastore.PKIConf.RootCATerm,
 		CrlInterval:   datastore.PKIConf.CrlInterval,
 		CertTerm:      datastore.PKIConf.CertTerm,
@@ -82,7 +82,7 @@ type CertEnt struct {
 	Type    string `json:"Type"`
 }
 
-// GetCerts: 証明書のリストを返す
+// GetCerts returns a list of certificates.
 func (a *App) GetCerts() []*CertEnt {
 	ret := []*CertEnt{}
 	now := time.Now().UnixNano()
@@ -157,7 +157,7 @@ func (a *App) CreateCertificate() string {
 	return ""
 }
 
-// RevokeCert: 証明書の失効
+// RevokeCert revokes a certificate by its ID.
 func (a *App) RevokeCert(id string) {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,
@@ -172,7 +172,7 @@ func (a *App) RevokeCert(id string) {
 	datastore.RevokeCertByID(id)
 }
 
-// ExportCert: 証明書をエクスポート
+// ExportCert exports a certificate by its ID.
 func (a *App) ExportCert(id string) {
 	cert := datastore.FindCert(id)
 	if cert == nil {
@@ -196,18 +196,18 @@ func (a *App) ExportCert(id string) {
 func (a *App) GetPKIControl() datastore.PKIControlEnt {
 	return datastore.PKIControlEnt{
 		EnableAcme:  datastore.PKIConf.EnableAcme,
-		EnableHttp:  datastore.PKIConf.EnableHttp,
+		EnableHTTP:  datastore.PKIConf.EnableHTTP,
 		AcmeBaseURL: datastore.PKIConf.AcmeBaseURL,
 		CertTerm:    datastore.PKIConf.CertTerm,
 		CrlInterval: datastore.PKIConf.CrlInterval,
 		AcmeStatus:  pki.GetAcmeServerStatus(),
-		HttpStatus:  pki.GetHttpServerStatus(),
+		HTTPStatus:  pki.GetHTTPServerStatus(),
 	}
 }
 
 func (a *App) SetPKIControl(req datastore.PKIControlEnt) {
 	datastore.PKIConf.EnableAcme = req.EnableAcme
-	datastore.PKIConf.EnableHttp = req.EnableHttp
+	datastore.PKIConf.EnableHTTP = req.EnableHTTP
 	datastore.PKIConf.AcmeBaseURL = req.AcmeBaseURL
 	datastore.PKIConf.CertTerm = req.CertTerm
 	datastore.PKIConf.CrlInterval = req.CrlInterval

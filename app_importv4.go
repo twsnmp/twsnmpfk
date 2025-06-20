@@ -36,7 +36,7 @@ func (a *App) ImportV4Map() bool {
 	return doImportV4Map(file)
 }
 
-// Data for import form v4
+// V4NodeEnt is the data structure for importing nodes from TWSNMP v4.
 type V4NodeEnt struct {
 	ID         string
 	Name       string

@@ -405,7 +405,7 @@ func deCompressLog(s []byte) []byte {
 	return d
 }
 
-// for syslog
+// SyslogEnt represents a syslog entry.
 type SyslogEnt struct {
 	Time     int64  `json:"Time"`
 	Level    string `json:"Level"`
@@ -846,7 +846,7 @@ func ForEachLastArpLogs(f func(*ArpLogEnt) bool) error {
 	})
 }
 
-// ForEachLogsは指定した条件のログを返します。
+// ForEachLogs returns logs that match the specified conditions.
 func ForEachLogs(st, et int64, lt string, f func(*LogEnt) bool) error {
 	sk := fmt.Sprintf("%016x", st)
 	return db.View(func(tx *bbolt.Tx) error {
@@ -1006,7 +1006,7 @@ type SFlowCounterEnt struct {
 	Data   string `json:"Data"`
 }
 
-// ForEachsFlow  get sFlow log
+// ForEachSFlowCounter gets sFlow counter logs.
 func ForEachSFlowCounter(st, et int64, f func(*SFlowCounterEnt) bool) error {
 	if db == nil {
 		return ErrDBNotOpen

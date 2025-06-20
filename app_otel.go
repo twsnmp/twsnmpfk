@@ -114,7 +114,7 @@ func (a *App) GetOTelTrace(bucket, traceid string) *datastore.OTelTraceEnt {
 	return datastore.GetOTelTrace(bucket, traceid)
 }
 
-// DeleteAllOTelDataは、OpenTelemetryのデータを全て削除します。
+// DeleteAllOTelData deletes all OpenTelemetry data.
 func (a *App) DeleteAllOTelData() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,

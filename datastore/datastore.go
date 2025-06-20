@@ -281,7 +281,7 @@ func GetDBSize() int64 {
 	return dbSize
 }
 
-// SaveMapData:  24時間毎にマップのデータをDBへ保存する
+// SaveMapData saves the map data to the DB every 24 hours.
 func SaveMapData() {
 	if db == nil {
 		return
@@ -299,7 +299,7 @@ func makeKey() string {
 	return fmt.Sprintf("%016x", time.Now().UnixNano())
 }
 
-// Data Storeのパスを返す、何かと必要なので
+// GetDataStorePath returns the path to the data store.
 func GetDataStorePath() string {
 	return dspath
 }

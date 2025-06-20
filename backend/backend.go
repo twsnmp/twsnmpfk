@@ -23,6 +23,8 @@ func Start(ctx context.Context, dsp, vn string, wg *sync.WaitGroup) error {
 	go aiBackend(ctx, wg)
 	wg.Add(1)
 	go networkBackend(ctx, wg)
+	wg.Add(1)
+	go mcpServer(ctx, wg)
 	return nil
 }
 

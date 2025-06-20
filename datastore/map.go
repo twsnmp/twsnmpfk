@@ -46,6 +46,8 @@ type MapConfEnt struct {
 	EnableSFlowd   bool   `json:"EnableSFlowd"`
 	EnableTcpd     bool   `json:"EnableTcpd"`
 	EnableOTel     bool   `json:"EnableOTel"`
+	MCPTransport   string `json:"MCPTransport"`
+	MCPEndpoint    string `json:"MCPEndpoint"`
 	IconSize       int    `json:"IconSize"`
 	MapSize        int    `json:"MapSize"`
 	ArpWatchRange  string `json:"ArpWatchRange"`
@@ -72,6 +74,8 @@ func initConf() {
 	MapConf.SnmpMode = "v2c"
 	MapConf.EnableArpWatch = true
 	MapConf.IconSize = 2
+	MapConf.MCPEndpoint = "127.0.0.1:8089"
+	MapConf.MCPTransport = "off"
 	DiscoverConf.AddPolling = true
 	DiscoverConf.Retry = 1
 	DiscoverConf.Timeout = 1

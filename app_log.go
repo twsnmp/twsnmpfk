@@ -160,7 +160,7 @@ type NetFlowFilterEnt struct {
 	TCPFlags string `json:"TCPFlags"`
 }
 
-// GetNetFlowはNetFlowログを返します。
+// GetNetFlow returns NetFlow logs.
 func (a *App) GetNetFlow(filter NetFlowFilterEnt) []*datastore.NetFlowEnt {
 	ret := []*datastore.NetFlowEnt{}
 	srcFilter := makeIPFilter(filter.SrcAddr)
@@ -336,7 +336,7 @@ func (a *App) GetSFlowCounter(filter SFlowCounterFilterEnt) []*datastore.SFlowCo
 	return ret
 }
 
-// GetArpTableは、ARP Tableを返します。
+// GetArpTable returns the ARP Table.
 func (a *App) GetArpTable() []*datastore.ArpEnt {
 	ret := []*datastore.ArpEnt{}
 	datastore.ForEachArp(func(l *datastore.ArpEnt) bool {
@@ -354,7 +354,7 @@ type IPAMRangeEnt struct {
 	UsedIP []int   `json:"UsedIP"`
 }
 
-// GetIPAMはIPAMレポートを作成します。
+// GetIPAM creates an IPAM report.
 func (a *App) GetIPAM() []*IPAMRangeEnt {
 	ret := []*IPAMRangeEnt{}
 	for _, r := range strings.Split(datastore.MapConf.ArpWatchRange, ",") {
@@ -423,7 +423,7 @@ func int2ip(nIP uint32) net.IP {
 	return ip
 }
 
-// ResetArpTableは、ARP Tableをクリアします。
+// ResetArpTable clears the ARP Table.
 func (a *App) ResetArpTable() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,
@@ -482,7 +482,7 @@ type ArpLogEnt struct {
 	OldVendor string `json:"OldVendor"`
 }
 
-// GetArpLogsは、最新のARP Logを返します。
+// GetArpLogs returns the latest ARP logs.
 func (a *App) GetArpLogs() []*ArpLogEnt {
 	ret := []*ArpLogEnt{}
 	nodeMap := make(map[string]string)
@@ -512,7 +512,7 @@ func (a *App) GetArpLogs() []*ArpLogEnt {
 	return ret
 }
 
-// DeleteAllEventLogsは、Event logを全て削除します。
+// DeleteAllEventLogs deletes all event logs.
 func (a *App) DeleteAllEventLogs() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,
@@ -535,7 +535,7 @@ func (a *App) DeleteAllEventLogs() bool {
 	return true
 }
 
-// DeleteAllSyslogは、Syslogを全て削除します。
+// DeleteAllSyslog deletes all Syslog entries.
 func (a *App) DeleteAllSyslog() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,
@@ -559,7 +559,7 @@ func (a *App) DeleteAllSyslog() bool {
 	return true
 }
 
-// DeleteAllTrapsは、TRAP logを全て削除します。
+// DeleteAllTraps deletes all TRAP logs.
 func (a *App) DeleteAllTraps() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,
@@ -583,7 +583,7 @@ func (a *App) DeleteAllTraps() bool {
 	return true
 }
 
-// DeleteAllNetFlowは、NetFlow logを全て削除します。
+// DeleteAllNetFlow deletes all NetFlow logs.
 func (a *App) DeleteAllNetFlow() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,
@@ -607,7 +607,7 @@ func (a *App) DeleteAllNetFlow() bool {
 	return true
 }
 
-// DeleteAllSFlowは、sFlow logを全て削除します。
+// DeleteAllSFlow deletes all sFlow logs.
 func (a *App) DeleteAllSFlow() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,
@@ -635,7 +635,7 @@ func (a *App) DeleteAllSFlow() bool {
 	return true
 }
 
-// DeleteAllPollingLogsは、ポーリングログを全て削除します。
+// DeleteAllPollingLogs deletes all polling logs.
 func (a *App) DeleteAllPollingLogs() bool {
 	result, err := wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
 		Type:          wails.QuestionDialog,

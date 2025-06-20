@@ -178,7 +178,7 @@ func (a *App) GetHostResource(id string) *backend.HostResourceEnt {
 	return backend.GetHostResource(n)
 }
 
-// SaveNodeMemoは、ノードに関するメモを保存します。
+// SaveNodeMemo saves a memo related to the node.
 func (a *App) SaveNodeMemo(nodeID, memo string) bool {
 	if err := datastore.SaveNodeMemo(nodeID, memo); err != nil {
 		log.Printf("save node memo err=%v", err)
@@ -187,7 +187,7 @@ func (a *App) SaveNodeMemo(nodeID, memo string) bool {
 	return true
 }
 
-// GetNodeMemoは、ノードに関するメモを取得します。
+// GetNodeMemo returns a memo related to the node.
 func (a *App) GetNodeMemo(nodeID string) string {
 	return datastore.GetNodeMemo(nodeID)
 }

@@ -635,6 +635,8 @@ export namespace datastore {
 	    EnableSFlowd: boolean;
 	    EnableTcpd: boolean;
 	    EnableOTel: boolean;
+	    MCPTransport: string;
+	    MCPEndpoint: string;
 	    IconSize: number;
 	    MapSize: number;
 	    ArpWatchRange: string;
@@ -665,6 +667,8 @@ export namespace datastore {
 	        this.EnableSFlowd = source["EnableSFlowd"];
 	        this.EnableTcpd = source["EnableTcpd"];
 	        this.EnableOTel = source["EnableOTel"];
+	        this.MCPTransport = source["MCPTransport"];
+	        this.MCPEndpoint = source["MCPEndpoint"];
 	        this.IconSize = source["IconSize"];
 	        this.MapSize = source["MapSize"];
 	        this.ArpWatchRange = source["ArpWatchRange"];

@@ -70,6 +70,23 @@ type packet struct {
 	ttl    int
 }
 
+func (s PingStat) String() string {
+	switch s {
+	case PingStart:
+		return "strat"
+	case PingOK:
+		return "ok"
+	case PingOtherError:
+		return "error"
+	case PingTimeout:
+		return "timeout"
+	case PingTimeExceeded:
+		return "timeExceeded"
+	default:
+		return "uknown"
+	}
+}
+
 func Start(ctx context.Context, wg *sync.WaitGroup) error {
 	mode := datastore.PingMode
 	if mode == "" {

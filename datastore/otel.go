@@ -103,7 +103,7 @@ func DeleteOTelMetric(m *OTelMetricEnt) {
 	metricMap.Delete(k)
 }
 
-// LoadOTelMetricは、メトリックをDBから読み込みます。
+// LoadOTelMetric loads metrics from the DB.
 func LoadOTelMetric() {
 	if db == nil {
 		return
@@ -125,7 +125,7 @@ func LoadOTelMetric() {
 	log.Printf("load otel metric dur=%v", time.Since(st))
 }
 
-// SaveOTelMetricはメトリックをDBに保存します。
+// SaveOTelMetric saves metrics to the DB.
 func SaveOTelMetric() {
 	if db == nil {
 		return

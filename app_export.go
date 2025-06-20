@@ -195,7 +195,7 @@ func (a *App) ExportSyslogs(t string, filter SyslogFilterEnt, image string) stri
 	return ""
 }
 
-// ExportTrap  export traps
+// ExportTraps exports traps
 func (a *App) ExportTraps(t string, filter TrapFilterEnt, image string) string {
 	fromFilter := makeStringFilter(filter.From)
 	typeFilter := makeStringFilter(filter.Type)
@@ -660,7 +660,7 @@ func (a *App) exportCSV(data *ExportData) error {
 	return w.Error()
 }
 
-// ExportMapは、マップのイメージを画像またはExcelに保存します。
+// ExportMap saves the map image as a PNG or Excel file.
 func (a *App) ExportMap(data string) error {
 	d := time.Now().Format("20060102150405")
 	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{

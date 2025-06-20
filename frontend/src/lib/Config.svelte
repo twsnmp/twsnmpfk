@@ -83,6 +83,7 @@
 
   const onOpen = async () => {
     mapConf = await GetMapConf();
+    console.log(mapConf)
     notifyConf = await GetNotifyConf();
     aiConf = await GetAIConf();
     locConf = await GetLocConf();
@@ -107,9 +108,9 @@
     close();
   };
   const mapSizeList = [
-    { name: 'Auto'         , value: 0 },
-    { name: '2894x4093 A4P', value: 1 },
-    { name: '4093x2894 A4L', value: 2 },
+    { name: "Auto", value: 0 },
+    { name: "2894x4093 A4P", value: 1 },
+    { name: "4093x2894 A4L", value: 2 },
   ];
   const notifyLevelList = [
     { name: $_("Config.None"), value: "none" },
@@ -376,6 +377,7 @@
       }
     }
   };
+
   const saveSSHPublicKey = async () => {
     await SaveSshdPublicKeys(sshHostPublicKey);
     showSSHPublicKey = false;
@@ -390,10 +392,17 @@
       copied = false;
     }, 2000);
   };
+
   const refreshMySSHPublicKey = async () => {
     await InitMySSHKey();
     sshMyPublicKey = await GetMySSHPublicKey();
-  }
+  };
+
+  const mcpTransportList = [
+    { name: "OFF", value: "off" },
+    { name: "SSE", value: "sse" },
+    { name: "Streamable HTTP", value: "stream" },
+  ];
 </script>
 
 <Modal
@@ -425,11 +434,11 @@
               />
             </Label>
             <Label>
-              {$_('Config.MapSize')}
+              {$_("Config.MapSize")}
               <Select
                 items={mapSizeList}
                 bind:value={mapConf.MapSize}
-                placeholder={$_('Config.SelectMapSize')}
+                placeholder={$_("Config.SelectMapSize")}
                 size="sm"
               />
             </Label>
@@ -438,7 +447,7 @@
               <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} />
             </Label>
           </div>
-          <div class="grid gap-3 mb-4 md:grid-cols-6">
+          <div class="grid gap-3 mb-4 md:grid-cols-4">
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.PollingIntSec")} </span>
               <Input
@@ -487,26 +496,43 @@
                 size="sm"
               />
             </Label>
+          </div>
+          <div class="grid gap-4 md:grid-cols-4">
             <Label class="space-y-2 text-xs">
-              <span> {$_('Config.OTelRetention')} </span>
+              <span> {$_("Config.OTelRetention")} </span>
               <Input
                 class="h-8 w-24 text-right"
                 type="number"
                 min={1}
-                max={24*30}
+                max={24 * 30}
                 step={1}
                 bind:value={mapConf.OTelRetention}
                 size="sm"
               />
             </Label>
-              <Label class="space-y-2 text-xs">
-                <span> {$_('Config.OTelFrom')} </span>
-                <Input
-                  class="h-8"
-                  bind:value={mapConf.OTelFrom}
-                  size="sm"
-                />
-              </Label>
+            <Label class="space-y-2 text-xs">
+              <span> {$_("Config.OTelFrom")} </span>
+              <Input class="h-8" bind:value={mapConf.OTelFrom} size="sm" />
+            </Label>
+
+            <Label class="space-y-2 text-xs">
+              <span> MCPサーバートランスポート </span>
+              <Select
+                items={mcpTransportList}
+                bind:value={mapConf.MCPTransport}
+                placeholder="MCPサーバーのトランスポートを設定"
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>MCPサーバーエンドポイント</span>
+              <Input
+                class="h-8 w-48"
+                bind:value={mapConf.MCPEndpoint}
+                placeholder="127.0.0.1:8089"
+                size="sm"
+              />
+            </Label>
           </div>
           <div class="grid gap-4 md:grid-cols-3">
             <Label class="space-y-2 text-xs">
@@ -561,9 +587,9 @@
             <Checkbox bind:checked={mapConf.EnableOTel}>OpenTelemetry</Checkbox>
           </div>
           {#if mapConf.EnableArpWatch}
-            <div class="grid gap-4 mb-4 md:grid-cols-4">
-              <Label class="space-y-2 text-xs col-span-3">
-                <span> {$_('Config.ArpIPRange')} </span>
+            <div class="grid gap-4 mb-4 md:grid-cols-3">
+              <Label class="space-y-2 text-xs col-span-2">
+                <span> {$_("Config.ArpIPRange")} </span>
                 <Input
                   class="h-8"
                   bind:value={mapConf.ArpWatchRange}
@@ -571,12 +597,12 @@
                 />
               </Label>
               <Label class="space-y-2 text-xs">
-                <span> {$_('Config.ArpTimeout')} </span>
+                <span> {$_("Config.ArpTimeout")} </span>
                 <Input
                   class="h-8 w-24 text-right"
                   type="number"
                   min={1}
-                  max={24*7}
+                  max={24 * 7}
                   step={1}
                   bind:value={mapConf.ArpTimeout}
                   size="sm"
@@ -753,7 +779,11 @@
           </div>
           <Label class="space-y-2 text-xs">
             <span> {$_("Config.ExecCommand")} </span>
-            <Input class="w-full h-8" bind:value={notifyConf.ExecCmd} size="sm" />
+            <Input
+              class="w-full h-8"
+              bind:value={notifyConf.ExecCmd}
+              size="sm"
+            />
           </Label>
           <div class="grid gap-4 grid-cols-4">
             <Label class="space-y-2 text-xs">

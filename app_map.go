@@ -207,7 +207,7 @@ func autoGetPollingSetting(di *datastore.DrawItemEnt, p *datastore.PollingEnt) (
 	return
 }
 
-// GetBackIMage retunrs map backgrand image
+// GetBackImage returns the map background image.
 func (a *App) GetBackImage() datastore.BackImageEnt {
 	return datastore.BackImage
 }
@@ -553,7 +553,7 @@ func (a *App) UpdateNetwork(n datastore.NetworkEnt) bool {
 	return true
 }
 
-// DeleteDrawItems delete draw items
+// DeleteNetwork deletes a network.
 func (a *App) DeleteNetwork(id string) {
 	n := datastore.GetNetwork(id)
 	if n == nil {

@@ -42,7 +42,7 @@ type MIBTreeEnt struct {
 	Children []*MIBTreeEnt `json:"children"`
 }
 
-// 読み込んだMIBのリスト
+// MIBModuleEnt represents an entry in the list of loaded MIB modules.
 type MIBModuleEnt struct {
 	Type  string `json:"Type"`
 	File  string `json:"File"`
@@ -808,7 +808,7 @@ func printLLDPID(i interface{}) string {
 	return r
 }
 
-// DISPLAY-HINT "2d-1d-1d,1d:1d:1d.1d,1a1d:1d"
+// PrintDateAndTime formats a value according to the SNMP DateAndTime display hint.
 func PrintDateAndTime(i interface{}) string {
 	switch v := i.(type) {
 	case string:
