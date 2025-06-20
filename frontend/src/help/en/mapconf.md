@@ -23,6 +23,23 @@ This is the screen to set the management map.
 | ARP Watch | Enable ARP monitoring function.|
 </div>
 
+>>>
+
+#### Map Settings (continued)
+
+<div class="text-lg">
+
+|Item|Content|
+|----|---|
+|TCP Server|Received on the TCP server.|
+|OpenTelemetry|Start the OpenTelemetry server.|
+|OpenTelemetry Retention Time|Specify the retention time for OpenTelemetry data.|
+|OpenTelemetry Source|Limits the source of data to the OpenTelemetry server.|
+|MCP Server Transport|Specify the transport of the MCP server (OFF/SSE/Steamable).|
+|MCP Server Endpoint|Specify the incoming IP and port of the MCP server.|
+
+</div>
+
 ---
 #### When you want to change the receiving port of syslog, SNMP Trap
 
@@ -30,16 +47,26 @@ This is the screen to set the management map.
 
 The port number is specified by the startup parameter of the program.
 
-</div>
-
 ```
+  -netflowPort int
+    	Netflow port (default 2055)
+  -otelGRPCPort int
+    	OpenTelemetry server gRPC port (default 4317)
+  -otelHTTPPort int
+    	OpenTelemetry server HTTP port (default 4318)
+  -sFlowPort int
+    	sFlow port (default 6343)
+  -sshdPort int
+    	SSH server port (default 2022)
   -syslogPort int
     	Syslog port (default 514)
+  -tcpdPort int
+    	tcp server port (default 8086)
   -trapPort int
-      SNMP TRAP port (default 162)
-  -sshdPort int
-      SSH Server port (default 2022)
+    	SNMP TRAP port (default 162)
 ```
+
+</div>
 
 <p style="color:red;font-size: 16px;">
 * If SYSLOG or SNMP Trap cannot be received, check the OS and security software firewall settings.
