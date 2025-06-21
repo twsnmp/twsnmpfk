@@ -46,6 +46,7 @@ The following functions will work
 - SSH Server
 - TCP Log server
 - OpenTelemetry collector
+- MCP Server
 
 以下の機能が動作します。
 
@@ -70,6 +71,7 @@ The following functions will work
 - SSH Server
 - TCP Log server
 - OpenTelemetry コレクター
+- MCP サーバー
 
 ## Build 
 
@@ -127,6 +129,16 @@ Usage of twsnmpfk:
     	Max log size to diplay (default 10000)
   -netflowPort int
     	Netflow port (default 2055)
+  -otelCA string
+    	OpenTelementry CA cert path
+  -otelCert string
+    	OpenTelemetry server cert path
+  -otelGRPCPort int
+    	OpenTelemetry server gRPC port (default 4317)
+  -otelHTTPPort int
+    	OpenTelemetry server HTTP port (default 4318)
+  -otelKey string
+    	OpenTelemetry server key path
   -ping string
     	ping mode icmp or udp
   -sFlowPort int
@@ -153,23 +165,33 @@ Usage of twsnmpfk:
 | syslogPort <PORT> | Syslog receiving port (default 514) |
 | trapPort <Port> | SNMP TRAP Reception port (Default 162) |
 | sshdPort <Port> | SSH server port (Default 162) |
-|sshdPort <port>| SSH Server Receive Port (Default 2022)|
-|netflowPort <port>| NetFlow/IPFIX receive port (default 2055)|
-|sFlowPort <port>| sFlow receiving port (default 6343)|
-|tcpdPort <port>| TCP log receiving port (default 8086)|
+| sshdPort <port> | SSH Server Receive Port (Default 2022)|
+| netflowPort <port> | NetFlow/IPFIX receive port (default 2055)|
+| sFlowPort <port> | sFlow receiving port (default 6343)|
+| tcpdPort <port> | TCP log receiving port (default 8086)|
+| otelCA |OpenTelementry CA cert path|
+| otelCert |OpenTelemetry server cert path|
+| otelGRPCPort |OpenTelemetry server gRPC port (default 4317)|
+| otelHTTPPort |OpenTelemetry server HTTP port (default 4318)|
+| otelKey |OpenTelemetry server key path|
 
 ---
 
 |パラメータ|説明|
 |---|---|
-|datastore|データストアのパス|
-|kiosk|キオスクモード（フレームレス、フルスクリーン）|
-|lock <page>| マップの編集を禁止して表示するページを固定|
-|maxDispLog <number>|ログの最大表示数(デフォルト 10000)| 
-|ping <mode>|pingの動作モード(icmp又はudp)|
-|syslogPort <port>|syslogの受信ポート(デフォルト514)|
-|trapPort <port>| SNMP TRAP受信ポート(デフォルト162)|
-|sshdPort <port>| SSH Server受信ポート(デフォルト2022)|
-|netflowPort <port>| NetFlow/IPFIX受信ポート(デフォルト2055)|
-|sFlowPort <port>| sFlow受信ポート(デフォルト6343)|
-|tcpdPort <port>| TCPログ受信ポート(デフォルト8086)|
+| datastore |データストアのパス|
+| kiosk |キオスクモード（フレームレス、フルスクリーン）|
+| lock <page> | マップの編集を禁止して表示するページを固定|
+| maxDispLog <number> |ログの最大表示数(デフォルト 10000)| 
+| ping <mode> |pingの動作モード(icmp又はudp)|
+| syslogPort <port> |syslogの受信ポート(デフォルト514)|
+| trapPort <port> | SNMP TRAP受信ポート(デフォルト162)|
+| sshdPort <port> | SSH Server受信ポート(デフォルト2022)|
+| netflowPort <port> | NetFlow/IPFIX受信ポート(デフォルト2055)|
+| sFlowPort <port> | sFlow受信ポート(デフォルト6343)|
+| tcpdPort <port> | TCPログ受信ポート(デフォルト8086)|
+| otelCA |OpenTelementry CA証明書のパス|
+| otelCert |OpenTelemetryサーバー証明書のパス|
+| otelGRPCPort |OpenTelemetryサーバーのgRPCポート番号 (default 4317)|
+| otelHTTPPort |OpenTelemetryサーバーのHTTPポート番号 (default 4318)|
+| otelKey |OpenTelemetryサーバーの秘密鍵のパス|
