@@ -21,7 +21,7 @@ require (
 	github.com/gosnmp/gosnmp v1.38.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/labstack/gommon v0.4.2
-	github.com/mark3labs/mcp-go v0.31.0
+	github.com/mark3labs/mcp-go v0.32.0
 	github.com/montanaflynn/stats v0.7.1
 	github.com/openconfig/gnmic/pkg/api v0.1.9
 	github.com/oschwald/geoip2-golang v1.11.0
