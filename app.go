@@ -395,6 +395,7 @@ func (a *App) SendFeedback(message string) bool {
 	mean, _ = stats.Mean(gr)
 	max, _ = stats.Max(gr)
 	msg += fmt.Sprintf("gr=%.2f/%.2f/%.2f\n", min, mean, max)
+	msg += fmt.Sprintf("TWSNMP FK %s\n", version)
 
 	values := url.Values{}
 	values.Set("msg", msg)
