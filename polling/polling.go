@@ -142,7 +142,7 @@ func pollingBackend(ctx context.Context, wg *sync.WaitGroup) {
 			if !checkingPolling {
 				go checkPolling()
 			} else {
-				log.Panicln("skip polling check")
+				log.Println("skip polling check")
 			}
 		case id := <-doPollingCh:
 			pe := datastore.GetPolling(id)
