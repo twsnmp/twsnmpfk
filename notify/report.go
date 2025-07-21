@@ -110,7 +110,7 @@ func getResInfo() []reportInfoEnt {
 	}
 	cpu := []float64{}
 	mem := []float64{}
-	myCpu := []float64{}
+	myCPU := []float64{}
 	myMem := []float64{}
 	swap := []float64{}
 	disk := []float64{}
@@ -119,7 +119,7 @@ func getResInfo() []reportInfoEnt {
 	for _, m := range backend.MonitorDataes {
 		cpu = append(cpu, m.CPU)
 		mem = append(mem, m.Mem)
-		myCpu = append(myCpu, m.MyCPU)
+		myCPU = append(myCPU, m.MyCPU)
 		myMem = append(myMem, m.MyMem)
 		swap = append(swap, m.Swap)
 		disk = append(disk, m.Disk)
@@ -132,9 +132,9 @@ func getResInfo() []reportInfoEnt {
 	memMin, _ := stats.Min(mem)
 	memMean, _ := stats.Mean(mem)
 	memMax, _ := stats.Max(mem)
-	myCpuMin, _ := stats.Min(myCpu)
-	myCpuMean, _ := stats.Mean(myCpu)
-	myCpuMax, _ := stats.Max(myCpu)
+	myCPUMin, _ := stats.Min(myCPU)
+	myCPUMean, _ := stats.Mean(myCPU)
+	myCPUMax, _ := stats.Max(myCPU)
 	myMemMin, _ := stats.Min(myMem)
 	myMemMean, _ := stats.Mean(myMem)
 	myMemMax, _ := stats.Max(myMem)
@@ -197,9 +197,9 @@ func getResInfo() []reportInfoEnt {
 		}, {
 			Name: "My " + i18n.Trans("CPU Usage"),
 			Value: fmt.Sprintf(i18n.Trans("Min:%s%% Avg:%s%% Max:%s%%"),
-				humanize.FormatFloat("###.##", myCpuMin),
-				humanize.FormatFloat("###.##", myCpuMean),
-				humanize.FormatFloat("###.##", myCpuMax),
+				humanize.FormatFloat("###.##", myCPUMin),
+				humanize.FormatFloat("###.##", myCPUMean),
+				humanize.FormatFloat("###.##", myCPUMax),
 			),
 			Class: "none",
 		}, {
@@ -244,32 +244,6 @@ func getResInfo() []reportInfoEnt {
 			Class: "none",
 		},
 	}
-}
-
-func getAIInfo() []string {
-	ret := []string{"Score,Node,Polling,Count"}
-	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
-		if p.LogMode != datastore.LogModeAI {
-			return true
-		}
-		n := datastore.GetNode(p.NodeID)
-		if n == nil {
-			return true
-		}
-		air, err := datastore.GetAIReesult(p.ID)
-		if err != nil || len(air.ScoreData) < 1 {
-			return true
-		}
-		ret = append(ret,
-			fmt.Sprintf("%.2f,%s,%s,%d",
-				air.ScoreData[len(air.ScoreData)-1][1],
-				n.Name,
-				p.Name,
-				len(air.ScoreData),
-			))
-		return true
-	})
-	return ret
 }
 
 type aiResultEnt struct {

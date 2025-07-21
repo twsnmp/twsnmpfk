@@ -233,22 +233,10 @@ func makeMailMessage(from, to, subject, body string) string {
 	header.WriteString(encodeSubject(subject))
 	header.WriteString("MIME-Version: 1.0\r\n")
 	header.WriteString("Content-Type: text/html; charset=\"utf-8\"\r\n")
-	var message bytes.Buffer = header
+	message := header
 	message.WriteString("\r\n")
 	message.WriteString(body)
 	return message.String()
-}
-
-// 76バイト毎にCRLFを挿入する
-func add76crlf(msg string) string {
-	var buffer bytes.Buffer
-	for k, c := range strings.Split(msg, "") {
-		buffer.WriteString(c)
-		if k%76 == 75 {
-			buffer.WriteString("\r\n")
-		}
-	}
-	return buffer.String()
 }
 
 // UTF8文字列を指定文字数で分割
