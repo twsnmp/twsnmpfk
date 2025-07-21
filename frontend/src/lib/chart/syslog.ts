@@ -548,3 +548,110 @@ export const showSyslogLevelChart = (div:string, logs:any) => {
   return chart;
 }
 
+export const getSyslogSummary = (logs :any) => {
+  const m = new Map()
+  logs.forEach((l:any) => {
+    const p = normalizeLog(
+      l.Host + ' ' + l.Type + ' ' + l.Tag + ' ' + l.Message
+    )
+    if (!m.has(p)) {
+      const d = new Date(l.Time /(1000*1000));
+      const format = '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}';
+      const sampleLog =
+        echarts.time.format(d,format,false) + ' ' + l.Host + ' ' + l.Type + ' ' + l.Tag + ' ' + l.Message
+      m.set(p, { Sample: sampleLog, Count: 1 })
+    } else {
+      m.get(p).Count++
+    }
+  })
+  const list = []
+  for (const [p, e] of m.entries()) {
+    list.push({ Pattern: p, Sample: e.Sample, Count: e.Count })
+  }
+  return list
+}
+
+const regNum = /\b-?\d+(\.\d+)?\b/g
+const regUUID = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi
+const regEmail = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g
+const regIP = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/g
+const regMAC = /\b(?:[0-9a-fA-F]{2}[:-]){5}(?:[0-9a-fA-F]{2})\b/g
+
+function normalizeLog(log:string) {
+  log = log.replace(regUUID, '#UUID#')
+  log = log.replace(regEmail, '#EMAIL#')
+  log = log.replace(regIP, '#IP#')
+  log = log.replace(regMAC, '#MAC#')
+  log = log.replace(regNum, '#NUM#')
+  return log
+}
+
+export const showSyslogSummary = (div:string, list:any) => {
+  const count = []
+  const category = []
+  list.sort((a:any, b:any) => b.Count - a.Count)
+  for (let i = list.length > 20 ? 19 : list.length - 1; i >= 0; i--) {
+    count.push(list[i].Count)
+    category.push(truncateString(list[i].Pattern, 100))
+  }
+  if (chart) {
+    chart.dispose()
+  }
+  chart = echarts.init(document.getElementById(div), 'dark')
+  chart.setOption({
+    title: {
+      show: false,
+    },
+    toolbox: {
+      feature: {
+        saveAsImage: { name: 'twsnmp_' + div },
+      },
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+    },
+    grid: {
+      left: '20%',
+      right: '10%',
+      top: '10%',
+      bottom: '10%',
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'value',
+      name: 'Count',
+    },
+    yAxis: {
+      type: 'category',
+      data: category,
+      nameTextStyle: {
+        color: '#fff',
+        fontSize: 10,
+        margin: 2,
+      },
+      axisLabel: {
+        fontSize: 8,
+        margin: 2,
+      },
+    },
+    series: [
+      {
+        name: 'Count',
+        type: 'bar',
+        data: count,
+      },
+    ],
+  })
+  chart.resize();
+  return chart;
+}
+
+const truncateString = (str:string, maxLength:number) => {
+  if (str.length > maxLength) {
+    return str.slice(0, maxLength) + '...'
+  }
+  return str
+}
