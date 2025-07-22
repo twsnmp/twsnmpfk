@@ -7,12 +7,15 @@ import (
 	"log"
 	"net"
 	"regexp"
+	"sort"
 	"sync"
 	"time"
 
+	"github.com/araddon/dateparse"
 	"github.com/gosnmp/gosnmp"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
+	"github.com/xhit/go-str2duration/v2"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/ping"
@@ -77,6 +80,12 @@ func startMCPServer() any {
 	addSNMPWalkTool(s)
 	addAddNodeTool(s)
 	addUpdateNodeTool(s)
+	addGetIPAddressListTool(s)
+	addGetResourceMonitorListTool(s)
+	addSearchEventLogTool(s)
+	addSearchSyslogTool(s)
+	addGetSyslogSummaryTool(s)
+	addSearchSNMPTrapLogTool(s)
 	if datastore.MapConf.MCPTransport == "sse" {
 		sseServer := server.NewSSEServer(s)
 		log.Printf("sse mcp server listening on %s", datastore.MapConf.MCPEndpoint)
@@ -116,34 +125,40 @@ type mcpNodeEnt struct {
 
 func addGetNodeListTool(s *server.MCPServer) {
 	tool := mcp.NewTool("get_node_list",
-		mcp.WithDescription("get node list from TWSNMP FK"),
+		mcp.WithDescription("get node list from TWSNMP"),
 		mcp.WithString("name_filter",
-			mcp.Description("node name filter. Empty is no filter"),
+			mcp.Description(
+				`name_filter specifies the search criteria for node names using regular expressions.
+If blank, all nodes are searched.
+`),
 		),
 		mcp.WithString("ip_filter",
-			mcp.Description("node ip filter. Empty is no filter"),
+			mcp.Description(
+				`ip_filter specifies the search criteria for node IP address using regular expressions.
+If blank, all nodes are searched.
+`),
 		),
 		mcp.WithString("state_filter",
-			mcp.Enum("", "normal", "warn", "low", "high", "repair"),
 			mcp.Description(
-				`node state filter. Empty is no filter
- select state name.(normal,warn,low,high,repair)
+				`state_filter uses a regular expression to specify search criteria for node state names.
+If blank, all nodes are searched.
+State names can be "normal","warn","low","high","repair","unknown"
 `),
 		),
 	)
 	s.AddTool(tool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		name := request.GetString("name_filter", "")
-		ip := request.GetString("ip_filter", "")
-		state := request.GetString("state_filter", "")
+		name := makeRegexFilter(request.GetString("name_filter", ""))
+		ip := makeRegexFilter(request.GetString("ip_filter", ""))
+		state := makeRegexFilter(request.GetString("state_filter", ""))
 		list := []mcpNodeEnt{}
 		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
-			if name != "" && name != n.Name {
+			if name != nil && !name.MatchString(n.Name) {
 				return true
 			}
-			if ip != "" && ip != n.IP {
+			if ip != nil && !ip.MatchString(n.IP) {
 				return true
 			}
-			if state != "" && state != n.State {
+			if state != nil && !state.MatchString(n.State) {
 				return true
 			}
 			list = append(list, mcpNodeEnt{
@@ -180,23 +195,29 @@ type mcpNetworkEnt struct {
 
 func addGetNetworkListTool(s *server.MCPServer) {
 	tool := mcp.NewTool("get_network_list",
-		mcp.WithDescription("get network list from TWSNMP FK"),
+		mcp.WithDescription("get network list from TWSNMP"),
 		mcp.WithString("name_filter",
-			mcp.Description("network name filter. Empty is no filter"),
+			mcp.Description(
+				`name_filter specifies the search criteria for network names using regular expressions.
+If blank, all networks are searched.
+`),
 		),
 		mcp.WithString("ip_filter",
-			mcp.Description("network ip filter. Empty is no filter"),
+			mcp.Description(
+				`ip_filter specifies the search criteria for network IP address using regular expressions.
+If blank, all networks are searched.
+`),
 		),
 	)
 	s.AddTool(tool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		name := request.GetString("name_filter", "")
-		ip := request.GetString("ip_filter", "")
+		name := makeRegexFilter(request.GetString("name_filter", ""))
+		ip := makeRegexFilter(request.GetString("ip_filter", ""))
 		list := []mcpNetworkEnt{}
 		datastore.ForEachNetworks(func(n *datastore.NetworkEnt) bool {
-			if name != "" && name != n.Name {
+			if name != nil && name.MatchString(n.Name) {
 				return true
 			}
-			if ip != "" && ip != n.IP {
+			if ip != nil && ip.MatchString(n.IP) {
 				return true
 			}
 			ports := []string{}
@@ -237,46 +258,55 @@ type mcpPollingEnt struct {
 
 func addGetPollingListTool(s *server.MCPServer) {
 	searchTool := mcp.NewTool("get_polling_list",
-		mcp.WithDescription("get polling list from TWSNMP FK"),
+		mcp.WithDescription("get polling list from TWSNMP"),
 		mcp.WithString("type_filter",
-			mcp.Enum("", "ping", "snmp", "tcp", "http", "dns"),
-			mcp.Description("polling type filter. Empty is no filter"),
+			mcp.Description(
+				`type_filter uses a regular expression to specify search criteria for polling type names.
+If blank, all pollings are searched.
+Type names can be "ping","tcp","http","dns","twsnmp","syslog"
+`),
 		),
 		mcp.WithString("state_filter",
-			mcp.Enum("", "normal", "warn", "low", "high", "repair"),
 			mcp.Description(
-				`node state filter. Empty is no filter
- select state name.(normal,warn,low,high,repair)
+				`state_filter uses a regular expression to specify search criteria for polling state names.
+If blank, all pollings are searched.
+State names can be "normal","warn","low","high","repair","unknown"
 `),
 		),
 		mcp.WithString("name_filter",
-			mcp.Description("polling name filter. Empty is no filter"),
+			mcp.Description(
+				`name_filter specifies the search criteria for polling names using regular expressions.
+If blank, all pollings are searched.
+`),
 		),
 		mcp.WithString("node_name_filter",
-			mcp.Description("node name filter. Empty is no filter"),
+			mcp.Description(
+				`node_name_filter specifies the search criteria for node names of polling using regular expressions.
+If blank, all pollings are searched.
+`),
 		),
 	)
 	s.AddTool(searchTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		name := request.GetString("name_filter", "")
-		nodeName := request.GetString("node_name_filter", "")
-		typeFilter := request.GetString("type_filter", "")
-		state := request.GetString("state_filter", "")
+		name := makeRegexFilter(request.GetString("name_filter", ""))
+		nodeName := makeRegexFilter(request.GetString("node_name_filter", ""))
+		typeFilter := makeRegexFilter(request.GetString("type_filter", ""))
+		state := makeRegexFilter(request.GetString("state_filter", ""))
 		list := []mcpPollingEnt{}
 		datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
-			if name != "" && name != p.Name {
+			if name != nil && name.MatchString(p.Name) {
 				return true
 			}
-			if typeFilter != "" && typeFilter != p.Type {
+			if typeFilter != nil && typeFilter.MatchString(p.Type) {
 				return true
 			}
 			n := datastore.GetNode(p.NodeID)
 			if n == nil {
 				return true
 			}
-			if nodeName != "" && nodeName != n.Name {
+			if nodeName != nil && nodeName.MatchString(n.Name) {
 				return true
 			}
-			if state != "" && state != p.State {
+			if state != nil && state.MatchString(p.State) {
 				return true
 			}
 			list = append(list, mcpPollingEnt{
@@ -393,7 +423,7 @@ func getTragetIP(target string) string {
 
 func addGetMIBTreeTool(s *server.MCPServer) {
 	searchTool := mcp.NewTool("get_MIB_tree",
-		mcp.WithDescription("get MIB tree from TWSNMP FK"),
+		mcp.WithDescription("get MIB tree from TWSNMP"),
 	)
 	s.AddTool(searchTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		j, err := json.Marshal(&datastore.MIBTree)
@@ -542,23 +572,10 @@ v3authprivex: SNMP v3 authentication protocol is SHA1,privacy protocol is AES256
 	})
 }
 
-func nameToOID(name string) string {
-	oid := datastore.MIBDB.NameToOID(name)
-	if oid == ".1" {
-		oid = ".1.3"
-	}
-	if oid == ".0.0" {
-		if matched, _ := regexp.MatchString(`\.[0-9.]+`, name); matched {
-			return name
-		}
-	}
-	return oid
-}
-
 // add_node tool
 func addAddNodeTool(s *server.MCPServer) {
 	searchTool := mcp.NewTool("add_node",
-		mcp.WithDescription("add node to TWSNMP FK"),
+		mcp.WithDescription("add node to TWSNMP"),
 		mcp.WithString("name",
 			mcp.Required(),
 			mcp.Description("node name"),
@@ -701,4 +718,606 @@ func addUpdateNodeTool(s *server.MCPServer) {
 		}
 		return mcp.NewToolResultText(string(j)), nil
 	})
+}
+
+// get_ip_address_list
+type mcpIPEnt struct {
+	IP        string
+	MAC       string
+	Node      string
+	Vendor    string
+	FirstTime string
+	LastTime  string
+}
+
+func addGetIPAddressListTool(s *server.MCPServer) {
+	tool := mcp.NewTool("get_ip_address_list",
+		mcp.WithDescription("get IP address list from TWSNMP"),
+	)
+	s.AddTool(tool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		list := []mcpIPEnt{}
+		datastore.ForEachArp(func(l *datastore.ArpEnt) bool {
+			node := ""
+			if l.NodeID != "" {
+				if n := datastore.GetNode(l.NodeID); n != nil {
+					node = n.Name
+				}
+			}
+			list = append(list, mcpIPEnt{
+				IP:        l.IP,
+				MAC:       l.MAC,
+				Node:      node,
+				Vendor:    l.Vendor,
+				FirstTime: time.Unix(0, l.FirstTime).Format(time.RFC3339Nano),
+				LastTime:  time.Unix(0, l.LastTime).Format(time.RFC3339Nano),
+			})
+			return true
+		})
+		j, err := json.Marshal(&list)
+		if err != nil {
+			j = []byte(err.Error())
+		}
+		return mcp.NewToolResultText(string(j)), nil
+	})
+}
+
+type mcpResourceMonitorEnt struct {
+	Time        string
+	CPUUsage    string
+	MemoryUsage string
+	SwapUsage   string
+	DiskUsage   string
+	Load        string
+}
+
+func addGetResourceMonitorListTool(s *server.MCPServer) {
+	tool := mcp.NewTool("get_resource_monitor_list",
+		mcp.WithDescription("get resource monitor list from TWSNMP"),
+	)
+	s.AddTool(tool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		list := []mcpResourceMonitorEnt{}
+		skip := 30
+		if len(MonitorDataes) < 120 {
+			skip = 5
+		}
+		for i, m := range MonitorDataes {
+			if i%skip != 0 {
+				continue
+			}
+			list = append(list, mcpResourceMonitorEnt{
+				Time:        time.Unix(m.Time, 0).Format(time.RFC3339),
+				CPUUsage:    fmt.Sprintf("%.02f%%", m.CPU),
+				MemoryUsage: fmt.Sprintf("%.02f%%", m.Mem),
+				SwapUsage:   fmt.Sprintf("%.02f%%", m.Swap),
+				DiskUsage:   fmt.Sprintf("%.02f%%", m.Disk),
+				Load:        fmt.Sprintf("%.02f", m.Load),
+			})
+		}
+		j, err := json.Marshal(&list)
+		if err != nil {
+			j = []byte(err.Error())
+		}
+		return mcp.NewToolResultText(string(j)), nil
+	})
+}
+
+// search_event_log tool
+type mcpEventLogEnt struct {
+	Time  string
+	Type  string
+	Level string
+	Node  string
+	Event string
+}
+
+func addSearchEventLogTool(s *server.MCPServer) {
+	tool := mcp.NewTool("search_event_log",
+		mcp.WithDescription("search event log from TWSNMP"),
+		mcp.WithString("node_filter",
+			mcp.Description(
+				`node_filter specifies the search criteria for node names using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithString("type_filter",
+			mcp.Description(
+				`type_filter specifies the search criteria for type names using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithString("level_filter",
+			mcp.Description(
+				`level_filter specifies the search criteria for level names using regular expressions.
+If blank, no filter.
+Level names can be "warn","low","high","debug","info" 
+`),
+		),
+		mcp.WithString("event_filter",
+			mcp.Description(
+				`event_filter specifies the search criteria for events using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithNumber("limit_log_count",
+			mcp.DefaultNumber(100),
+			mcp.Max(10000),
+			mcp.Min(1),
+			mcp.Description("Limit on number of logs retrieved. min 100,max 10000"),
+		),
+		mcp.WithString("start_time",
+			mcp.DefaultString("-1h"),
+			mcp.Description(
+				`start date and time of logs to search
+or duration from now
+
+A duration string is a possibly signed sequence of
+decimal numbers, each with optional fraction and a unit suffix,
+such as "-300ms", "-1.5h" or "-2h45m".
+Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w".
+
+Example:
+ 2025/05/07 05:59:00
+ -1h
+`),
+		),
+		mcp.WithString("end_time",
+			mcp.DefaultString(""),
+			mcp.Description(
+				`end date and time of logs to search.
+empty or "now" is current time.
+
+Example:
+ 2025/05/07 06:59:00
+ now
+`),
+		),
+	)
+	s.AddTool(tool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		node := makeRegexFilter(request.GetString("node_filter", ""))
+		typeFilter := makeRegexFilter(request.GetString("type_filter", ""))
+		level := makeRegexFilter(request.GetString("level_filter", ""))
+		event := makeRegexFilter(request.GetString("event_filter", ""))
+		start := request.GetString("start_time", "-1h")
+		end := request.GetString("end_time", "")
+		st, et, err := getTimeRange(start, end)
+		if err != nil {
+			return mcp.NewToolResultText(err.Error()), nil
+		}
+		limit := request.GetInt("limit_log_count", 100)
+		log.Printf("mcp search_event_log limit=%d st=%v et=%v", limit, time.Unix(0, st), time.Unix(0, et))
+		list := []mcpEventLogEnt{}
+		datastore.ForEachEventLog(st, et, func(l *datastore.EventLogEnt) bool {
+			if event != nil && !event.MatchString(l.Event) {
+				return true
+			}
+			if level != nil && !level.MatchString(l.Level) {
+				return true
+			}
+			if typeFilter != nil && !typeFilter.MatchString(l.Type) {
+				return true
+			}
+			if node != nil && !node.MatchString(l.NodeName) {
+				return true
+			}
+			list = append(list, mcpEventLogEnt{
+				Time:  time.Unix(0, l.Time).Format(time.RFC3339Nano),
+				Type:  l.Type,
+				Level: l.Level,
+				Node:  l.NodeName,
+				Event: l.Event,
+			})
+			return len(list) < limit
+		})
+		j, err := json.Marshal(&list)
+		if err != nil {
+			j = []byte(err.Error())
+		}
+		return mcp.NewToolResultText(string(j)), nil
+	})
+}
+
+// search_syslog tool
+type mcpSyslogEnt struct {
+	Time     string
+	Level    string
+	Host     string
+	Type     string
+	Tag      string
+	Message  string
+	Severity int
+	Facility int
+}
+
+func addSearchSyslogTool(s *server.MCPServer) {
+	tool := mcp.NewTool("search_syslog",
+		mcp.WithDescription("search syslog from TWSNMP"),
+		mcp.WithString("host_filter",
+			mcp.Description(
+				`host_filter specifies the search criteria for host names using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithString("tag_filter",
+			mcp.Description(
+				`tag_filter specifies the search criteria for tag names using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithString("level_filter",
+			mcp.Description(
+				`level_filter specifies the search criteria for level names using regular expressions.
+If blank, no filter.
+Level names can be "warn","low","high","debug","info" 
+`),
+		),
+		mcp.WithString("message_filter",
+			mcp.Description(
+				`message_filter specifies the search criteria for messages using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithNumber("limit_log_count",
+			mcp.DefaultNumber(100),
+			mcp.Max(10000),
+			mcp.Min(1),
+			mcp.Description("Limit on number of logs retrieved. min 100,max 10000"),
+		),
+		mcp.WithString("start_time",
+			mcp.DefaultString("-1h"),
+			mcp.Description(
+				`start date and time of logs to search
+or duration from now
+
+A duration string is a possibly signed sequence of
+decimal numbers, each with optional fraction and a unit suffix,
+such as "300ms", "-1.5h" or "2h45m".
+Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w".
+
+Example:
+ 2025/05/07 05:59:00
+ -1h
+`),
+		),
+		mcp.WithString("end_time",
+			mcp.DefaultString(""),
+			mcp.Description(
+				`end date and time of logs to search.
+empty or "now" is current time.
+
+Example:
+ 2025/05/07 06:59:00
+ now
+`),
+		),
+	)
+	s.AddTool(tool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		host := makeRegexFilter(request.GetString("host_filter", ""))
+		tag := makeRegexFilter(request.GetString("tag_filter", ""))
+		level := makeRegexFilter(request.GetString("level_filter", ""))
+		message := makeRegexFilter(request.GetString("message_filter", ""))
+		start := request.GetString("start_time", "-1h")
+		end := request.GetString("end_time", "")
+		st, et, err := getTimeRange(start, end)
+		if err != nil {
+			return mcp.NewToolResultText(err.Error()), nil
+		}
+		limit := request.GetInt("limit_log_count", 100)
+		log.Printf("mcp search_syslog limit=%d st=%v et=%v", limit, time.Unix(0, st), time.Unix(0, et))
+		list := []mcpSyslogEnt{}
+		datastore.ForEachSyslog(st, et, func(l *datastore.SyslogEnt) bool {
+			e := mcpSyslogEnt{
+				Time:     time.Unix(0, l.Time).Format(time.RFC3339Nano),
+				Host:     l.Host,
+				Level:    l.Level,
+				Type:     l.Type,
+				Tag:      l.Tag,
+				Facility: l.Facility,
+				Severity: l.Severity,
+				Message:  l.Message,
+			}
+			if message != nil && !message.MatchString(e.Message) {
+				return true
+			}
+			if tag != nil && !tag.MatchString(e.Tag) {
+				return true
+			}
+			if level != nil && !level.MatchString(e.Level) {
+				return true
+			}
+			if host != nil && !host.MatchString(e.Host) {
+				return true
+			}
+			list = append(list, e)
+			return len(list) < limit
+		})
+		j, err := json.Marshal(&list)
+		if err != nil {
+			j = []byte(err.Error())
+		}
+		return mcp.NewToolResultText(string(j)), nil
+	})
+}
+
+// get_syslog_summary tool
+type mcpSyslogSummaryEnt struct {
+	Pattern string
+	Count   int
+}
+
+func addGetSyslogSummaryTool(s *server.MCPServer) {
+	tool := mcp.NewTool("get_syslog_summary",
+		mcp.WithDescription("get syslog summary from TWSNMP"),
+		mcp.WithString("host_filter",
+			mcp.Description(
+				`host_filter specifies the search criteria for host names using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithString("tag_filter",
+			mcp.Description(
+				`tag_filter specifies the search criteria for tag names using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithString("level_filter",
+			mcp.Description(
+				`level_filter specifies the search criteria for level names using regular expressions.
+If blank, no filter.
+Level names can be "warn","low","high","debug","info" 
+`),
+		),
+		mcp.WithString("message_filter",
+			mcp.Description(
+				`message_filter specifies the search criteria for messages using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithNumber("top_n",
+			mcp.DefaultNumber(10),
+			mcp.Max(100),
+			mcp.Min(5),
+			mcp.Description("Top n syslog pattern. min 5,max 100"),
+		),
+		mcp.WithString("start_time",
+			mcp.DefaultString("-1h"),
+			mcp.Description(
+				`start date and time of logs to search
+or duration from now
+
+A duration string is a possibly signed sequence of
+decimal numbers, each with optional fraction and a unit suffix,
+such as "300ms", "-1.5h" or "2h45m".
+Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w".
+
+Example:
+ 2025/05/07 05:59:00
+ -1h
+`),
+		),
+		mcp.WithString("end_time",
+			mcp.DefaultString(""),
+			mcp.Description(
+				`end date and time of logs to search.
+empty or "now" is current time.
+
+Example:
+ 2025/05/07 06:59:00
+ now
+`),
+		),
+	)
+	s.AddTool(tool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		host := makeRegexFilter(request.GetString("host_filter", ""))
+		tag := makeRegexFilter(request.GetString("tag_filter", ""))
+		level := makeRegexFilter(request.GetString("level_filter", ""))
+		message := makeRegexFilter(request.GetString("message_filter", ""))
+		start := request.GetString("start_time", "-1h")
+		end := request.GetString("end_time", "")
+		st, et, err := getTimeRange(start, end)
+		if err != nil {
+			return mcp.NewToolResultText(err.Error()), nil
+		}
+		topN := request.GetInt("top_n", 10)
+		log.Printf("mcp get_syslog_summary topn=%d st=%v et=%v", topN, time.Unix(0, st), time.Unix(0, et))
+		patternMap := make(map[string]int)
+		datastore.ForEachSyslog(st, et, func(l *datastore.SyslogEnt) bool {
+			if message != nil && !message.MatchString(l.Message) {
+				return true
+			}
+			if tag != nil && !tag.MatchString(l.Tag) {
+				return true
+			}
+			if level != nil && !level.MatchString(l.Level) {
+				return true
+			}
+			if host != nil && !host.MatchString(l.Host) {
+				return true
+			}
+			patternMap[normalizeLog(fmt.Sprintf("%s %s %s %s", l.Host, l.Type, l.Tag, l.Message))]++
+			return true
+		})
+		list := []mcpSyslogSummaryEnt{}
+		for p, c := range patternMap {
+			list = append(list, mcpSyslogSummaryEnt{
+				Pattern: p,
+				Count:   c,
+			})
+		}
+		sort.Slice(list, func(i, j int) bool {
+			return list[i].Count > list[j].Count
+		})
+		if len(list) > topN {
+			list = list[:topN]
+		}
+		j, err := json.Marshal(&list)
+		if err != nil {
+			j = []byte(err.Error())
+		}
+		return mcp.NewToolResultText(string(j)), nil
+	})
+}
+
+var regNum = regexp.MustCompile(`\b-?\d+(\.\d+)?\b`)
+var regUUDI = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
+var regEmail = regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b`)
+var regIP = regexp.MustCompile(`\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b`)
+var regMAC = regexp.MustCompile(`\b(?:[0-9a-fA-F]{2}[:-]){5}(?:[0-9a-fA-F]{2})\b`)
+
+func normalizeLog(s string) string {
+	s = regUUDI.ReplaceAllString(s, "#UUID#")
+	s = regEmail.ReplaceAllString(s, "#EMAIL#")
+	s = regIP.ReplaceAllString(s, "#IP#")
+	s = regMAC.ReplaceAllString(s, "#MAC#")
+	s = regNum.ReplaceAllString(s, "#NUM#")
+	return s
+}
+
+// search_snmp_trap_log tool
+type mcpSNMPTrapLogEnt struct {
+	Time        string
+	FromAddress string
+	TrapType    string
+	Variables   string
+}
+
+func addSearchSNMPTrapLogTool(s *server.MCPServer) {
+	tool := mcp.NewTool("search_snmp_trap_log",
+		mcp.WithDescription("search SNMP trap log from TWSNMP"),
+		mcp.WithString("from_filter",
+			mcp.Description(
+				`from_filter specifies the search criteria for trap sender address using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithString("trap_type_filter",
+			mcp.Description(
+				`trap_type_filter specifies the search criteria for SNMP trap types using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithString("variable_filter",
+			mcp.Description(
+				`variable_filter specifies the search criteria for SNMP trap variables using regular expressions.
+If blank, no filter.
+`),
+		),
+		mcp.WithNumber("limit_log_count",
+			mcp.DefaultNumber(100),
+			mcp.Max(10000),
+			mcp.Min(1),
+			mcp.Description("Limit on number of logs retrieved. min 100,max 10000"),
+		),
+		mcp.WithString("start_time",
+			mcp.DefaultString("-1h"),
+			mcp.Description(
+				`start date and time of logs to search
+or duration from now
+
+A duration string is a possibly signed sequence of
+decimal numbers, each with optional fraction and a unit suffix,
+such as "300ms", "-1.5h" or "2h45m".
+Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w".
+
+Example:
+ 2025/05/07 05:59:00
+ -1h
+`),
+		),
+		mcp.WithString("end_time",
+			mcp.DefaultString(""),
+			mcp.Description(
+				`end date and time of logs to search.
+empty or "now" is current time.
+
+Example:
+ 2025/05/07 06:59:00
+ now
+`),
+		),
+	)
+	s.AddTool(tool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		from := makeRegexFilter(request.GetString("host_filter", ""))
+		trapType := makeRegexFilter(request.GetString("trap_type_filter", ""))
+		variable := makeRegexFilter(request.GetString("variable_filter", ""))
+		start := request.GetString("start_time", "-1h")
+		end := request.GetString("end_time", "")
+		st, et, err := getTimeRange(start, end)
+		if err != nil {
+			return mcp.NewToolResultText(err.Error()), nil
+		}
+		limit := request.GetInt("limit_log_count", 100)
+		log.Printf("mcp search_snmp_trap_log limit=%d st=%v et=%v", limit, time.Unix(0, st), time.Unix(0, et))
+		list := []mcpSNMPTrapLogEnt{}
+		datastore.ForEachTraps(st, et, func(l *datastore.TrapEnt) bool {
+			e := mcpSNMPTrapLogEnt{
+				Time:        time.Unix(0, l.Time).Format(time.RFC3339Nano),
+				FromAddress: l.FromAddress,
+				TrapType:    l.TrapType,
+				Variables:   l.Variables,
+			}
+			if from != nil && !from.MatchString(e.FromAddress) {
+				return true
+			}
+			if variable != nil && !variable.MatchString(e.Variables) {
+				return true
+			}
+			if trapType != nil && !trapType.MatchString(e.TrapType) {
+				return true
+			}
+			list = append(list, e)
+			return len(list) < limit
+		})
+		j, err := json.Marshal(&list)
+		if err != nil {
+			j = []byte(err.Error())
+		}
+		return mcp.NewToolResultText(string(j)), nil
+	})
+}
+
+// getTimeRange
+func getTimeRange(start, end string) (int64, int64, error) {
+	var st time.Time
+	var err error
+	et := time.Now()
+	if start == "" {
+		return 0, 0, fmt.Errorf("start_time must not empty")
+	}
+	if d, err := str2duration.ParseDuration(start); err == nil {
+		st = et.Add(d)
+	} else if st, err = dateparse.ParseLocal(start); err != nil {
+		return 0, 0, err
+	}
+	if end != "" && end != "now" {
+		if et, err = dateparse.ParseLocal(end); err != nil {
+			return 0, 0, err
+		}
+	}
+	if st.UnixNano() > et.UnixNano() {
+		return 0, 0, fmt.Errorf("start_time must before end_time")
+	}
+	return st.UnixNano(), et.UnixNano(), nil
+}
+
+func nameToOID(name string) string {
+	oid := datastore.MIBDB.NameToOID(name)
+	if oid == ".1" {
+		oid = ".1.3"
+	}
+	if oid == ".0.0" {
+		if matched, _ := regexp.MatchString(`\.[0-9.]+`, name); matched {
+			return name
+		}
+	}
+	return oid
+}
+
+// makeRegexFilter
+func makeRegexFilter(s string) *regexp.Regexp {
+	if s != "" {
+		if f, err := regexp.Compile(s); err == nil && f != nil {
+			return f
+		}
+	}
+	return nil
 }

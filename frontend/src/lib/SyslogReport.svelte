@@ -66,12 +66,12 @@
         },
         {
           data: "Pattern",
-          title: "パターン",
+          title: $_('SyslogReport.Pattern'),
           width: "80%",
         },
         {
           data: "Count",
-          title: "回数",
+          title: $_('SyslogReport.Count'),
           width: "15%",
           render: renderCount,
           className: "dt-body-right",
@@ -138,7 +138,7 @@
       <TabItem on:click={showSummary}>
         <div slot="title" class="flex items-center gap-2">
           <Icon path={icons.mdiFilterCheck} size={1} />
-          正規化分析
+          {$_('SyslogReport.Summary')}
         </div>
         <div id="syslogSummary"></div>
         <table

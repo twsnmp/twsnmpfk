@@ -527,7 +527,9 @@
     "& tab != \"log\"}\n      {#if tab == \"metric\"}\n        ",
     " {\n          showDAG = false;\n        }}\n        size=\"xs\"\n      >\n        ",
     " {\n          showMetricInfoDialog = false;\n        }}\n        size=\"xs\"\n      >\n        ",
-    "Streamable HTTP"
+    "Streamable HTTP",
+    "Pattern",
+    "tbody td.dt-control"
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

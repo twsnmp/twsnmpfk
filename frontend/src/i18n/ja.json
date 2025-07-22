@@ -274,7 +274,8 @@
     "OTelRetention": "OpenTelemetry保存時間",
     "OTelFrom": "OpenTelemetry送信元",
     "MCPTransport": "MCPサーバートランスポート",
-    "MCPEndpoint": "MCPサーバーエンドポイント"
+    "MCPEndpoint": "MCPサーバーエンドポイント",
+    "MCPToken": "MCPサーバートークン"
   },
   "DrawItem": {
     "Rect": "矩形",
@@ -692,7 +693,10 @@
     "CountByHost": "ホスト別",
     "Chart3D": "ホスト別(3D)",
     "FFT": "FFTによる周期分析",
-    "Close": "閉じる"
+    "Close": "閉じる",
+    "Pattern": "パターン",
+    "Count": "回数",
+    "Summary": "正規化分析"
   },
   "Trap": {
     "Time": "日時",

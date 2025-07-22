@@ -562,7 +562,7 @@
             </Label>
             {#if mapConf.MCPTransport == "stream"}
               <Label class="space-y-2 text-xs">
-                <span>MCPサーバートークン</span>
+                <span>{$_('Config.MCPToken')}</span>
                 <Input
                   class="h-8"
                   bind:value={mapConf.MCPToken}

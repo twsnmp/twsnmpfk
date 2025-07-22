@@ -10,6 +10,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.2
 	github.com/Songmu/timeout v0.4.0
 	github.com/Xuanwo/go-locale v1.1.3
+	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/beevik/ntp v1.4.3
 	github.com/codegaudi/go-iforest v0.0.1
 	github.com/davidebianchi/go-jsonclient v1.5.0
@@ -37,6 +38,7 @@ require (
 	github.com/twsnmp/twlogeye/api v0.1.1
 	github.com/vjeantet/grok v1.0.1
 	github.com/wailsapp/wails/v2 v2.9.3
+	github.com/xhit/go-str2duration/v2 v2.1.0
 	github.com/xuri/excelize/v2 v2.9.0
 	go.etcd.io/bbolt v1.3.7
 	go.opentelemetry.io/collector/client v1.32.0

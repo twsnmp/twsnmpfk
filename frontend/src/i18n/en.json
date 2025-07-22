@@ -286,7 +286,8 @@
     "OTelFrom": "OTel From",
     "OTelRetention": "OTel Retention",
     "MCPEndpoint": "MCP Server Endpoint",
-    "MCPTransport": "MCP Server Transport"
+    "MCPTransport": "MCP Server Transport",
+    "MCPToken": "MCP Server Token"
   },
   "DrawItem": {
     "Cancel": "Cancel",
@@ -704,7 +705,10 @@
     "CountByHost": "Count by host",
     "CountByLevel": "Count by Level",
     "FFT": "FFT",
-    "Heatmap": "Heatmap"
+    "Heatmap": "Heatmap",
+    "Count": "Count",
+    "Pattern": "Pattern",
+    "Summary": "Normalize"
   },
   "Trap": {
     "FromAddress": "From address",
