@@ -26,7 +26,9 @@ func (a *App) UpdateMapConf(m datastore.MapConfEnt) bool {
 	if m.OTelRetention < 1 {
 		m.OTelRetention = 24
 	}
-	if m.MCPEndpoint != datastore.MapConf.MCPEndpoint || m.MCPTransport != datastore.MapConf.MCPEndpoint {
+	if m.MCPEndpoint != datastore.MapConf.MCPEndpoint ||
+		m.MCPTransport != datastore.MapConf.MCPEndpoint ||
+		m.MCPToken != datastore.MapConf.MCPToken {
 		backend.NotifyMCPConfigChanged()
 	}
 	datastore.MapConf = m

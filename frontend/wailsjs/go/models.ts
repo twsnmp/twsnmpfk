@@ -637,6 +637,7 @@ export namespace datastore {
 	    EnableOTel: boolean;
 	    MCPTransport: string;
 	    MCPEndpoint: string;
+	    MCPToken: string;
 	    IconSize: number;
 	    MapSize: number;
 	    ArpWatchRange: string;
@@ -669,6 +670,7 @@ export namespace datastore {
 	        this.EnableOTel = source["EnableOTel"];
 	        this.MCPTransport = source["MCPTransport"];
 	        this.MCPEndpoint = source["MCPEndpoint"];
+	        this.MCPToken = source["MCPToken"];
 	        this.IconSize = source["IconSize"];
 	        this.MapSize = source["MapSize"];
 	        this.ArpWatchRange = source["ArpWatchRange"];

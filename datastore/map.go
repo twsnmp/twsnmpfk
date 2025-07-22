@@ -48,6 +48,7 @@ type MapConfEnt struct {
 	EnableOTel     bool   `json:"EnableOTel"`
 	MCPTransport   string `json:"MCPTransport"`
 	MCPEndpoint    string `json:"MCPEndpoint"`
+	MCPToken       string `json:"MCPToken"`
 	IconSize       int    `json:"IconSize"`
 	MapSize        int    `json:"MapSize"`
 	ArpWatchRange  string `json:"ArpWatchRange"`

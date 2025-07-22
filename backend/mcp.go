@@ -87,7 +87,11 @@ func startMCPServer() any {
 		}()
 		return sseServer
 	}
-	streamServer := server.NewStreamableHTTPServer(s)
+	endpointPath := "/mcp"
+	if datastore.MapConf.MCPToken != "" {
+		endpointPath = "/" + datastore.MapConf.MCPToken + "/mcp"
+	}
+	streamServer := server.NewStreamableHTTPServer(s, server.WithEndpointPath(endpointPath))
 	log.Printf("streamable HTTP server listening on %s", datastore.MapConf.MCPEndpoint)
 	go func() {
 		if err := streamServer.Start(datastore.MapConf.MCPEndpoint); err != nil {

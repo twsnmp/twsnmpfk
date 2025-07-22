@@ -83,7 +83,6 @@
 
   const onOpen = async () => {
     mapConf = await GetMapConf();
-    console.log(mapConf)
     notifyConf = await GetNotifyConf();
     aiConf = await GetAIConf();
     locConf = await GetLocConf();
@@ -403,6 +402,34 @@
     { name: "SSE", value: "sse" },
     { name: "Streamable HTTP", value: "stream" },
   ];
+  const copyMCPToken = async () => {
+    const host = mapConf.MCPEndpoint.startsWith(":") ? "localhost" : "";
+    let url = "http://" + host +  mapConf.MCPEndpoint;
+    if (mapConf.MCPToken) {
+      url += "/" + mapConf.MCPToken +"/mcp";
+    } else {
+      url += "/mcp";
+    }
+    await copyText(url);
+    copied = true;
+    setTimeout(() => {
+      copied = false;
+    }, 2000);
+  };
+  const  generateMCPToken = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < 25; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  };
+
+  const refreshMCPToken =  () => {
+    mapConf.MCPToken = generateMCPToken();
+  };
+
 </script>
 
 <Modal
@@ -514,9 +541,10 @@
               <span> {$_("Config.OTelFrom")} </span>
               <Input class="h-8" bind:value={mapConf.OTelFrom} size="sm" />
             </Label>
-
+          </div>
+          <div class="grid gap-4 md:grid-cols-4">
             <Label class="space-y-2 text-xs">
-              <span> {$_('Config.MCPTransport')} </span>
+              <span> {$_("Config.MCPTransport")} </span>
               <Select
                 items={mcpTransportList}
                 bind:value={mapConf.MCPTransport}
@@ -524,7 +552,7 @@
               />
             </Label>
             <Label class="space-y-2 text-xs">
-              <span>{$_('Config.MCPEndpoint')}</span>
+              <span>{$_("Config.MCPEndpoint")}</span>
               <Input
                 class="h-8 w-48"
                 bind:value={mapConf.MCPEndpoint}
@@ -532,6 +560,40 @@
                 size="sm"
               />
             </Label>
+            {#if mapConf.MCPTransport == "stream"}
+              <Label class="space-y-2 text-xs">
+                <span>MCPサーバートークン</span>
+                <Input
+                  class="h-8"
+                  bind:value={mapConf.MCPToken}
+                  size="sm"
+                />
+              </Label>
+              <div class="mt-5">
+                <Button
+                  color="alternative"
+                  type="button"
+                  class="ml-2 !p-2"
+                  on:click={copyMCPToken}
+                  size="xs"
+                >
+                  {#if copied}
+                    <Icon path={icons.mdiCheck} size={1} />
+                  {:else}
+                    <Icon path={icons.mdiContentCopy} size={1} />
+                  {/if}
+                </Button>
+                <Button
+                  color="red"
+                  type="button"
+                  class="ml-2 !p-2"
+                  on:click={refreshMCPToken}
+                  size="xs"
+                >
+                  <Icon path={icons.mdiRefresh} size={1} />
+                </Button>
+              </div>
+            {/if}
           </div>
           <div class="grid gap-4 md:grid-cols-3">
             <Label class="space-y-2 text-xs">
