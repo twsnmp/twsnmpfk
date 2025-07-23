@@ -18,6 +18,7 @@ import (
 	"github.com/xhit/go-str2duration/v2"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/ping"
 )
 
@@ -32,6 +33,11 @@ func mcpServer(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		}
 		log.Println("stop mcp server")
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "info",
+			Event: i18n.Trans("Stop MCP server"),
+		})
 		switch m := mcpsv.(type) {
 		case *server.SSEServer:
 			m.Shutdown(ctx)
@@ -52,6 +58,11 @@ func mcpServer(ctx context.Context, wg *sync.WaitGroup) {
 			if datastore.MapConf.MCPTransport != "off" && mcpsv == nil {
 				log.Println("start mcp server")
 				mcpsv = startMCPServer()
+				datastore.AddEventLog(&datastore.EventLogEnt{
+					Type:  "system",
+					Level: "info",
+					Event: fmt.Sprintf(i18n.Trans("Start MCP server: transport=%s endpoint=%s"), datastore.MapConf.MCPTransport, datastore.MapConf.MCPEndpoint),
+				})
 			} else if datastore.MapConf.MCPTransport == "off" && mcpsv != nil {
 				stopMCPServer()
 			}

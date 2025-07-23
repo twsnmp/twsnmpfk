@@ -412,10 +412,16 @@ var transMap = map[string]map[string]string{
 		"ja": "位置",
 	},
 	"Start OpenTelemetry server": {
-		"ja": "OpenTelemetryサーバー受信開始",
+		"ja": "OpenTelemetryサーバー開始",
 	},
 	"Stop OpenTelemetry server": {
-		"ja": "OpenTelemetryサーバー受信停止",
+		"ja": "OpenTelemetryサーバー停止",
+	},
+	"Start MCP server: transport=%s endpoint=%s": {
+		"ja": "MCPサーバー開始: モード=%s エンドポイント=%s",
+	},
+	"Stop MCP server": {
+		"ja": "MCPサーバー停止",
 	},
 	"Server certificate check: target=%s:%d subject=%s notAfter=%s error=%s": {
 		"ja": "サーバー証明書の確認: 対象=%s:%d subject=%s 有効期限=%s エラー=%s",
