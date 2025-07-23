@@ -337,6 +337,42 @@ export namespace datastore {
 	        this.Path = source["Path"];
 	    }
 	}
+	export class CertMonitorEnt {
+	    ID: string;
+	    State: string;
+	    Target: string;
+	    Port: number;
+	    Subject: string;
+	    Issuer: string;
+	    SerialNumber: string;
+	    Verify: boolean;
+	    NotAfter: number;
+	    NotBefore: number;
+	    Error: string;
+	    FirstTime: number;
+	    LastTime: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CertMonitorEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.State = source["State"];
+	        this.Target = source["Target"];
+	        this.Port = source["Port"];
+	        this.Subject = source["Subject"];
+	        this.Issuer = source["Issuer"];
+	        this.SerialNumber = source["SerialNumber"];
+	        this.Verify = source["Verify"];
+	        this.NotAfter = source["NotAfter"];
+	        this.NotBefore = source["NotBefore"];
+	        this.Error = source["Error"];
+	        this.FirstTime = source["FirstTime"];
+	        this.LastTime = source["LastTime"];
+	    }
+	}
 	export class CreateCAReq {
 	    RootCAKeyType: string;
 	    Name: string;
@@ -1435,6 +1471,22 @@ export namespace main {
 	        this.Revoked = source["Revoked"];
 	        this.Expire = source["Expire"];
 	        this.Type = source["Type"];
+	    }
+	}
+	export class EditCertMonitorEnt {
+	    ID: string;
+	    Target: string;
+	    Port: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new EditCertMonitorEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Target = source["Target"];
+	        this.Port = source["Port"];
 	    }
 	}
 	export class EventLogFilterEnt {

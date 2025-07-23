@@ -228,6 +228,10 @@ func openDB(path string) error {
 	if err = loadPKIConf(); err != nil {
 		log.Printf("load PKI err=%v", err)
 	}
+	log.Println("load cert monitor")
+	if err = loadCertMonitor(); err != nil {
+		log.Printf("load cert monitor err=%v", err)
+	}
 	log.Println("end openDB")
 	return nil
 }
@@ -238,7 +242,7 @@ func initDB() error {
 		"syslog", "trap", "arplog", "arp", "ai", "grok", "images",
 		"ipfix", "netflow",
 		"sflow", "sflowCounter", "certs",
-		"memo", "otelTrace",
+		"memo", "otelTrace", "certMonitor",
 	}
 	initConf()
 	return db.Update(func(tx *bbolt.Tx) error {

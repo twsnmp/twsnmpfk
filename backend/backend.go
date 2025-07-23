@@ -25,6 +25,8 @@ func Start(ctx context.Context, dsp, vn string, wg *sync.WaitGroup) error {
 	go networkBackend(ctx, wg)
 	wg.Add(1)
 	go mcpServer(ctx, wg)
+	wg.Add(1)
+	go certMonitor(ctx, wg)
 	return nil
 }
 

@@ -735,7 +735,8 @@
     "HasUpdate": "更新版あり",
     "Loc": "地図",
     "Address": "アドレス",
-    "System": "システム"
+    "System": "システム",
+    "Cert": "証明書"
   },
   "Traps": {
     "DeleteAllLogs": "全ログ削除"
@@ -984,5 +985,19 @@
   },
   "OTerl": {
     "Report": "レポート"
+  },
+  "CertMonitor": {
+    "State": "状態",
+    "Target": "対象",
+    "Port": "ポート",
+    "NotBefore": "開始",
+    "NotAfter": "終了",
+    "Add": "追加",
+    "Edit": "編集",
+    "Del": "削除",
+    "EditTitle": "サーバー証明書モニター対象",
+    "TargetIPOrHost": "対象IPまたはホスト名",
+    "PortNumber": "ポート番号",
+    "Save": "保存"
   }
 }

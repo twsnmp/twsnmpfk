@@ -74,6 +74,10 @@ export function DeleteArpEnt(arg1) {
   return window['go']['main']['App']['DeleteArpEnt'](arg1);
 }
 
+export function DeleteCertMonitor(arg1) {
+  return window['go']['main']['App']['DeleteCertMonitor'](arg1);
+}
+
 export function DeleteDrawItems(arg1) {
   return window['go']['main']['App']['DeleteDrawItems'](arg1);
 }
@@ -216,6 +220,10 @@ export function GetAutoPollings(arg1, arg2) {
 
 export function GetBackImage() {
   return window['go']['main']['App']['GetBackImage']();
+}
+
+export function GetCertMonitorList() {
+  return window['go']['main']['App']['GetCertMonitorList']();
 }
 
 export function GetCerts() {
@@ -540,6 +548,10 @@ export function StopDiscover() {
 
 export function TestNotifyConf(arg1) {
   return window['go']['main']['App']['TestNotifyConf'](arg1);
+}
+
+export function UpateCertMonitor(arg1) {
+  return window['go']['main']['App']['UpateCertMonitor'](arg1);
 }
 
 export function UpdateAIConf(arg1) {

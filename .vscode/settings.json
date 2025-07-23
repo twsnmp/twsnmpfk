@@ -529,7 +529,16 @@
     " {\n          showMetricInfoDialog = false;\n        }}\n        size=\"xs\"\n      >\n        ",
     "Streamable HTTP",
     "Pattern",
-    "tbody td.dt-control"
+    "tbody td.dt-control",
+    "Port",
+    "Issuer",
+    "<dt>Serial Number:</dt>",
+    " {\n        showEditDialog = false;\n      }}\n      size=\"xs\"\n    >\n      ",
+    " {\n          page = \"cert\";\n        }}\n      >\n        ",
+    " {\n          page = \"otel\";\n        }}\n      >\n        ",
+    "\n        OTel\n      ",
+    " {\n    page = oldPage;\n    updateMapName();\n    locConf = await GetLocConf();\n    if (page == \"loc\" ",
+    "& !locConf.Style) {\n      page = \"map\";\n    }\n  }}\n/>\n\n"
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

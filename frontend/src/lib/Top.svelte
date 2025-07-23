@@ -36,6 +36,7 @@
   import AIList from "./AIList.svelte";
   import Config from "./Config.svelte";
   import System from "./System.svelte";
+  import CertMonitor from "./CertMonitor.svelte";
   import PKI from "./PKI.svelte";
   import OTel from "./OTel.svelte";
   import Help from "./Help.svelte";
@@ -172,6 +173,15 @@
       >
         <Icon path={icons.mdiListStatus} size={1.8} />
         {$_("Top.Address")}
+      </NavLi>
+      <NavLi
+        active={page == "cert"}
+        on:click={() => {
+          page = "cert";
+        }}
+      >
+        <Icon path={icons.mdiInvoiceList} size={1.8} />
+        {$_('Top.Cert')}
       </NavLi>
       <NavLi
         active={page == "pki"}
@@ -340,6 +350,8 @@
   <PKI />
 {:else if page == "otel"}
   <OTel />
+{:else if page == "cert"}
+  <CertMonitor />
 {/if}
 
 <Config

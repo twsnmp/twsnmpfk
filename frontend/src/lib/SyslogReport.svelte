@@ -87,7 +87,7 @@
         const d = row.data()
         row.child(d.Sample).show();
       }
-  });    
+    });
     chart = showSyslogSummary("syslogSummary",list)
   }
 
@@ -179,6 +179,12 @@
   #fft{
     min-height: 500px;
     height: 70vh;
+    width: 98%;
+    margin: 0 auto;
+  }
+  #syslogSummary {
+    min-height: 300px;
+    height: 30vh;
     width: 98%;
     margin: 0 auto;
   }

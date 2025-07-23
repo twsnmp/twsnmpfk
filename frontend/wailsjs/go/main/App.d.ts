@@ -42,6 +42,8 @@ export function DeleteAllTraps():Promise<boolean>;
 
 export function DeleteArpEnt(arg1:Array<string>):Promise<boolean>;
 
+export function DeleteCertMonitor(arg1:string):Promise<void>;
+
 export function DeleteDrawItems(arg1:Array<string>):Promise<void>;
 
 export function DeleteIcon(arg1:string):Promise<boolean>;
@@ -113,6 +115,8 @@ export function GetAudio(arg1:string):Promise<string>;
 export function GetAutoPollings(arg1:string,arg2:number):Promise<Array<datastore.PollingEnt>>;
 
 export function GetBackImage():Promise<datastore.BackImageEnt>;
+
+export function GetCertMonitorList():Promise<Array<datastore.CertMonitorEnt>>;
 
 export function GetCerts():Promise<Array<main.CertEnt>>;
 
@@ -275,6 +279,8 @@ export function StartDiscover(arg1:datastore.DiscoverConfEnt):Promise<boolean>;
 export function StopDiscover():Promise<void>;
 
 export function TestNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
+
+export function UpateCertMonitor(arg1:main.EditCertMonitorEnt):Promise<boolean>;
 
 export function UpdateAIConf(arg1:datastore.AIConfEnt):Promise<boolean>;
 

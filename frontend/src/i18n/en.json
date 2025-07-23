@@ -133,7 +133,8 @@
     "HasUpdate": "Update",
     "Address": "Address",
     "Loc": "Location",
-    "System": "System"
+    "System": "System",
+    "Cert": "certificate"
   },
   "Log": {
     "Event": "Event",
@@ -984,5 +985,19 @@
   },
   "OTerl": {
     "Report": "Report"
+  },
+  "CertMonitor": {
+    "Add": "Add",
+    "Del": "delete",
+    "Edit": "edit",
+    "EditTitle": "Server certificate monitored",
+    "NotAfter": "end",
+    "NotBefore": "start",
+    "Port": "port",
+    "PortNumber": "Port number",
+    "Save": "keep",
+    "State": "situation",
+    "Target": "subject",
+    "TargetIPOrHost": "Target IP or host name"
   }
 }
