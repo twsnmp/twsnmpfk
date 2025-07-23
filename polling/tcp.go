@@ -83,13 +83,12 @@ func doPollingTLS(pe *datastore.PollingEnt) {
 	ok := false
 	var rTime int64
 	var cs tls.ConnectionState
-	lr := make(map[string]string)
 	for i := 0; !ok && i <= pe.Retry; i++ {
 		startTime := time.Now().UnixNano()
 		conn, err := tls.DialWithDialer(d, "tcp", target, conf)
 		endTime := time.Now().UnixNano()
 		if err != nil {
-			lr["error"] = fmt.Sprintf("%v", err)
+			pe.Result["error"] = fmt.Sprintf("%v", err)
 			continue
 		}
 		defer conn.Close()
@@ -99,12 +98,15 @@ func doPollingTLS(pe *datastore.PollingEnt) {
 	}
 	pe.Result["rtt"] = float64(rTime)
 	if ok {
-		getTLSConnectioStateInfo(pe, n.Name, &cs)
+		host := n.Name
+		if a := strings.SplitN(target, ":", 2); len(a) > 1 {
+			host = a[0]
+		}
+		getTLSConnectioStateInfo(pe, host, &cs)
 		if mode == "expire" {
 			var d int
 			if _, err := fmt.Sscanf(script, "%d", &d); err == nil && d > 0 {
-				a := strings.SplitN(target, ":", 2)
-				cert := getServerCert(a[0], &cs)
+				cert := getServerCert(host, &cs)
 				if cert != nil {
 					na := cert.NotAfter.Unix()
 					pe.Result["notafter"] = cert.NotAfter.Format("2006/01/02")
@@ -121,6 +123,7 @@ func doPollingTLS(pe *datastore.PollingEnt) {
 		}
 	}
 	if (ok && !strings.Contains(script, "!")) || (!ok && strings.Contains(script, "!")) {
+		delete(pe.Result, "error")
 		setPollingState(pe, "normal")
 	} else {
 		setPollingState(pe, pe.Level)
@@ -135,10 +138,16 @@ func getServerCert(host string, cs *tls.ConnectionState) *x509.Certificate {
 			}
 		}
 	}
+	if ip := net.ParseIP(host); ip != nil {
+		host = "[" + host + "]"
+	}
 	for _, c := range cs.PeerCertificates {
 		if c.VerifyHostname(host) == nil {
 			return c
 		}
+	}
+	if len(cs.PeerCertificates) > 0 {
+		return cs.PeerCertificates[0]
 	}
 	return nil
 }
@@ -160,15 +169,14 @@ func getTLSConnectioStateInfo(pe *datastore.PollingEnt, host string, cs *tls.Con
 	}
 	id := fmt.Sprintf("%04x", cs.CipherSuite)
 	pe.Result["cipherSuite"] = id
-	if len(cs.VerifiedChains) > 0 {
-		pe.Result["valid"] = "true"
-	} else {
-		pe.Result["valid"] = "false"
-	}
+	pe.Result["valid"] = "false"
 	if cert := getServerCert(host, cs); cert != nil {
 		pe.Result["issuer"] = cert.Issuer.String()
 		pe.Result["subject"] = cert.Subject.String()
 		pe.Result["notAfter"] = cert.NotAfter.Format("2006/01/02")
 		pe.Result["subjectKeyID"] = fmt.Sprintf("%x", cert.SubjectKeyId)
+		if cert.NotAfter.Unix() > time.Now().Unix() {
+			pe.Result["valid"] = "true"
+		}
 	}
 }
