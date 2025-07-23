@@ -1,3 +1,4 @@
+// Package i18n provides internationalization support for TWSNMP.
 package i18n
 
 import (
@@ -416,6 +417,9 @@ var transMap = map[string]map[string]string{
 	"Stop OpenTelemetry server": {
 		"ja": "OpenTelemetryサーバー受信停止",
 	},
+	"Server certificate check: target=%s:%d subject=%s notAfter=%s error=%s": {
+		"ja": "サーバー証明書の確認: 対象=%s:%d subject=%s 有効期限=%s エラー=%s",
+	},
 }
 
 func init() {
@@ -431,17 +435,17 @@ func init() {
 	log.Printf("i18n init lang=%s", lang)
 }
 
-// SetLangは言語を設定します。
+// SetLang sets the language.
 func SetLang(l string) {
 	lang = l
 }
 
-// GetLangは言語の設定を返します。
+// GetLang returns the current language setting.
 func GetLang() string {
 	return lang
 }
 
-// Transは翻訳した文字列を返します。
+// Trans returns the translated string for the given input.
 func Trans(s string) string {
 	if m, ok := transMap[s]; ok {
 		if t, ok := m[lang]; ok {

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 var checkCertCh = make(chan bool)
@@ -95,6 +96,13 @@ func getCert(c *datastore.CertMonitorEnt) {
 	}
 	setCertMonitorState(c)
 	datastore.SaveCertMonitor(c)
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:  "cert",
+		Level: c.State,
+		Event: fmt.Sprintf(i18n.Trans("Server certificate check: target=%s:%d subject=%s notAfter=%s error=%s"),
+			c.Target, c.Port, c.Subject,
+			time.Unix(0, c.NotAfter).Format(time.RFC3339), c.Error),
+	})
 }
 
 func setCertMonitorState(c *datastore.CertMonitorEnt) {
