@@ -134,7 +134,7 @@
     "Address": "Address",
     "Loc": "Location",
     "System": "System",
-    "Cert": "certificate"
+    "Cert": "Cert"
   },
   "Log": {
     "Event": "Event",
@@ -988,16 +988,16 @@
   },
   "CertMonitor": {
     "Add": "Add",
-    "Del": "delete",
-    "Edit": "edit",
+    "Del": "Delete",
+    "Edit": "Edit",
     "EditTitle": "Server certificate monitored",
-    "NotAfter": "end",
-    "NotBefore": "start",
-    "Port": "port",
+    "NotAfter": "End",
+    "NotBefore": "Start",
+    "Port": "Port",
     "PortNumber": "Port number",
-    "Save": "keep",
-    "State": "situation",
-    "Target": "subject",
+    "Save": "Save",
+    "State": "State",
+    "Target": "Subject",
     "TargetIPOrHost": "Target IP or host name"
   }
 }

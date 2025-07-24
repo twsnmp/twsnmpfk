@@ -699,6 +699,40 @@ This is a report that shows the relationship between IP address and MAC address 
 
 ![](./images/en/2023-12-03_05-52-16.png)
 
+## Server certificate list
+
+A list of server certificates to monitor from TWSNMP.
+
+![](./images/en/2025-07-25_05-47-29.png)
+
+|Item|Content|
+|----|---|
+|>|Expand the server certificate details.|
+|Status|Status certificate state.|
+|Target|The IP address or host name of the server.|
+|Port number|The port number to monitor.|
+|Subject|This is the certificate content of the server certificate.Host name, etc. |
+|Issuer|Issuer of the server certificate.|
+|Start|The start date and time for the server certificate expiration date.|
+|End|The end date and time of the server certificate expiration date.|
+|Last Confirmation|The end date and time of the server certificate expiration date.|
+
+|Button|Content|
+|----|---|
+|Add|Add monitored targets.|
+|Edit|Edit the selected monitored object.|
+|Delete|Deletes the selected monitored object.|
+|Update|Refresh the list to the latest state.|
+
+### Edit to monitor
+
+This is the editing screen to be monitored.
+
+![](./images/en/2025-07-25_05-54-08.png)
+
+Specify an IP address or host name or IP address for the target.
+For port, specify the number of the port you monitored.
+
 ## PKI CA construction
 
 This is the screen before building a CA for the PKI function.
@@ -896,6 +930,13 @@ This is a report of the number of cases of syslog on the heat map.
 
 ![](./images/en/2023-12-03_11-47-15.png)
 
+
+### Normalization Analysis
+
+This is a report that normalizes syslog and aggregates it.
+It counts numbers, IP addresses, email addresses, etc. with common characters.
+
+![](./images/en/2025-07-25_05-55-30.png)
 
 ### Syslog count by host
 
@@ -1341,7 +1382,7 @@ It has an MCP server function for AI to use TWSNMP FK.
 
 The settings related to MCP server in the map settings are in the yellow box.
 
-![](./images/en/2025-06-21_06-39-43.png)
+![](./images/en/2025-07-25_05-56-03.png)
 
 |Item|Content|
 |----|---|
@@ -1350,18 +1391,9 @@ The settings related to MCP server in the map settings are in the yellow box.
 
 ### MCP Server Features
 
-The TWSNMP FK MCP (Management Control Protocol) server provides tools for network monitoring, SNMP management, and device control. Here's an overview of its key tools:
+The TWSNMP FK MCP (Management Control Protocol) server provides tools for network monitoring, SNMP management, and device control. 
 
-1. **`get_MIB_tree`**: Retrieves the MIB (Management Information Base) tree structure from the SNMP agent, enabling detailed inspection of device management objects.
-2. **`snmpwalk`**: Executes SNMP walks to collect all values under a specific MIB object, useful for comprehensive device configuration and status checks.
-3. **`get_node_list`**: Lists all managed nodes (devices) with filters for IP/name/state, aiding in real-time monitoring and troubleshooting.
-4. **`get_network_list`**: Displays network segments with IP/name filters, helping to organize and analyze network topology.
-5. **`get_polling_list`**: Manages polling configurations (e.g., ping, SNMP, HTTP) for nodes, ensuring continuous health checks and data collection.
-6. **`do_ping`**: Tests network connectivity to nodes or hosts, verifying reachability and latency.
-7. **`add_node` / `update_node`**: Adds or modifies node details (IP, name, position, icons), centralizing device management in the MCP interface.
-
-These tools collectively enable centralized monitoring, configuration, and troubleshooting of network devices via SNMP and custom polling protocols.
-
+[MCP server specifications](./mcp.html)
 
 ## AI analysis
 
@@ -1628,14 +1660,16 @@ You can customize it by saving the following files in the data folder.
 
 | File | Contents |
 | --- | --- |
-| TWSNMPFK.db | Database file.If it does not exist, it will be created automatically.|
-| Services.txt | This is a file to use the service name conversion.(Optional) |
-| Mac-vendors-export.csv | Mac A database that indicates the relationship between the MAC address and the vendor name.(Optional) |
-| Polling.json | Polling settings (optional) |
+| twsnmpfk.db | Database file.If it does not exist, it will be created automatically.|
+| services.txt | This is a file to use the service name conversion.(Optional) |
+| mac-vendors-export.csv | Mac A database that indicates the relationship between the MAC address and the vendor name.(Optional) |
+| polling.json | Polling settings (optional) |
 | mail_test.html | Notification test mail template (optional) |
 | mail_notify.html | Notification mail template (optional) |
 | Mail_repot.html | Template of report mail (optional) |
-| EXTMIBS/*| Additional reading extended MIB (optional) |
+| geoip.mmdb | Geo IP database (optional) |
+| extmibs/*| Additional reading extended MIB (optional) |
+| icons/*| icon images file png or jpeg (optional) |
 
 ## Usage
 
