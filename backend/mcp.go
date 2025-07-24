@@ -97,6 +97,7 @@ func startMCPServer() any {
 	addSearchSyslogTool(s)
 	addGetSyslogSummaryTool(s)
 	addSearchSNMPTrapLogTool(s)
+	addGetServerCertificateListTool(s)
 	if datastore.MapConf.MCPTransport == "sse" {
 		sseServer := server.NewSSEServer(s)
 		log.Printf("sse mcp server listening on %s", datastore.MapConf.MCPEndpoint)
@@ -1277,6 +1278,53 @@ Example:
 			}
 			list = append(list, e)
 			return len(list) < limit
+		})
+		j, err := json.Marshal(&list)
+		if err != nil {
+			j = []byte(err.Error())
+		}
+		return mcp.NewToolResultText(string(j)), nil
+	})
+}
+
+// get_server_certificate_list
+type mcpServerCertificateEnt struct {
+	State        string
+	Server       string
+	Port         uint16
+	Subject      string
+	Issuer       string
+	SerialNumber string
+	Verify       bool
+	NotAfter     string
+	NotBefore    string
+	Error        string
+	FirstTime    string
+	LastTime     string
+}
+
+func addGetServerCertificateListTool(s *server.MCPServer) {
+	tool := mcp.NewTool("get_server_certificate_list",
+		mcp.WithDescription("get server certificate list from TWSNMP"),
+	)
+	s.AddTool(tool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		list := []mcpServerCertificateEnt{}
+		datastore.ForEachCertMonitors(func(c *datastore.CertMonitorEnt) bool {
+			list = append(list, mcpServerCertificateEnt{
+				State:        c.State,
+				Server:       c.Target,
+				Port:         c.Port,
+				Subject:      c.Subject,
+				Issuer:       c.Issuer,
+				SerialNumber: c.SerialNumber,
+				Verify:       c.Verify,
+				NotBefore:    time.Unix(c.NotBefore, 0).Format(time.RFC3339),
+				NotAfter:     time.Unix(c.NotAfter, 0).Format(time.RFC3339),
+				Error:        c.Error,
+				FirstTime:    time.Unix(0, c.FirstTime).Format(time.RFC3339Nano),
+				LastTime:     time.Unix(0, c.LastTime).Format(time.RFC3339Nano),
+			})
+			return true
 		})
 		j, err := json.Marshal(&list)
 		if err != nil {
