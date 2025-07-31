@@ -134,6 +134,10 @@ export function ExportEventLogs(arg1, arg2, arg3) {
   return window['go']['main']['App']['ExportEventLogs'](arg1, arg2, arg3);
 }
 
+export function ExportIcons() {
+  return window['go']['main']['App']['ExportIcons']();
+}
+
 export function ExportMap(arg1) {
   return window['go']['main']['App']['ExportMap'](arg1);
 }
@@ -456,6 +460,10 @@ export function GetVersion() {
 
 export function HasDatastore() {
   return window['go']['main']['App']['HasDatastore']();
+}
+
+export function ImportIcon(arg1) {
+  return window['go']['main']['App']['ImportIcon'](arg1);
 }
 
 export function ImportPollingTemplate() {

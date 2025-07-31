@@ -392,7 +392,7 @@
         size="xs"
       >
         <Icon path={icons.mdiEye} size={1} />
-        {$_("OTerl.Report")}
+        {$_("OTel.Report")}
       </GradientButton>
     {/if}
     {#if tab == "trace"}

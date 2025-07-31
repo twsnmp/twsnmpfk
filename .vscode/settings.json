@@ -538,7 +538,9 @@
     " {\n          page = \"otel\";\n        }}\n      >\n        ",
     "\n        OTel\n      ",
     " {\n    page = oldPage;\n    updateMapName();\n    locConf = await GetLocConf();\n    if (page == \"loc\" ",
-    "& !locConf.Style) {\n      page = \"map\";\n    }\n  }}\n/>\n\n"
+    "& !locConf.Style) {\n      page = \"map\";\n    }\n  }}\n/>\n\n",
+    " {\n          showAddressInfo = true;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n          showAddressInfo = true;\n        }}\n        size=\"xs\"\n      >\n        "
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

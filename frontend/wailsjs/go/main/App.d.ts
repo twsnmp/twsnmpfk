@@ -72,6 +72,8 @@ export function ExportCert(arg1:string):Promise<void>;
 
 export function ExportEventLogs(arg1:string,arg2:main.EventLogFilterEnt,arg3:string):Promise<string>;
 
+export function ExportIcons():Promise<boolean>;
+
 export function ExportMap(arg1:string):Promise<void>;
 
 export function ExportNetFlow(arg1:string,arg2:main.NetFlowFilterEnt,arg3:string):Promise<string>;
@@ -233,6 +235,8 @@ export function GetVPanelPowerInfo(arg1:string):Promise<boolean>;
 export function GetVersion():Promise<string>;
 
 export function HasDatastore():Promise<boolean>;
+
+export function ImportIcon(arg1:Array<datastore.IconEnt>):Promise<main.ImportIconEnt>;
 
 export function ImportPollingTemplate():Promise<datastore.PollingTemplateEnt>;
 

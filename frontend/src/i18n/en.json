@@ -288,7 +288,11 @@
     "OTelRetention": "OTel Retention",
     "MCPEndpoint": "MCP Server Endpoint",
     "MCPTransport": "MCP Server Transport",
-    "MCPToken": "MCP Server Token"
+    "MCPToken": "MCP Server Token",
+    "Export": "Export",
+    "IconFilter": "Filter",
+    "IconNotFound": "Icons that cannot be imported:",
+    "Import": "Import"
   },
   "DrawItem": {
     "Cancel": "Cancel",
@@ -981,9 +985,7 @@
     "Descr": "Description",
     "Item": "Item",
     "MetricInfo": "Metric Info",
-    "Unit": "Unit"
-  },
-  "OTerl": {
+    "Unit": "Unit",
     "Report": "Report"
   },
   "CertMonitor": {

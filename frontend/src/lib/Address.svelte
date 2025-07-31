@@ -404,7 +404,7 @@
         size="xs"
       >
         <Icon path={icons.mdiInbox} size={1} />
-        アドレス分析
+        {$_('Address.AddressInfo')}
       </GradientButton>
     <GradientButton shadow color="red" type="button" on:click={reset} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />

@@ -47,6 +47,8 @@
     SaveSshdPublicKeys,
     InitMySSHKey,
     GetMySSHPublicKey,
+    ImportIcon,
+    ExportIcons,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
@@ -260,12 +262,14 @@
   let showEditIcon = false;
   let selectedIcon = 0;
   let iconList: any = [];
+  let iconListOrg: any = [];
   let disableIconSelect = false;
   const iconCodeMap = new Map();
 
   const showIconList = async () => {
-    if (iconList.length < 1) {
+    if (iconListOrg.length < 1) {
       makeIconList();
+      filterIconList();
     }
     selectedIcon = 0;
     iconTable = new DataTable("#iconTable", {
@@ -286,7 +290,7 @@
       data: await GetIcons(),
       language: getTableLang(),
       select: {
-        style: "single",
+        style: "multi",
       },
     });
     iconTable.on("select", () => {
@@ -318,11 +322,13 @@
 
   const delIcon = async () => {
     const selected = iconTable.rows({ selected: true }).data();
-    if (selected.length != 1) {
+    if (selected.length < 1) {
       return;
     }
-    await DeleteIcon(selected[0].Icon);
-    deleteIconFromList(selected[0].Icon);
+    for(const e of selected.toArray()) {
+      await DeleteIcon(e.Icon);
+      deleteIconFromList(e.Icon);
+    }
     showIconList();
   };
 
@@ -342,7 +348,7 @@
   };
 
   const makeIconList = () => {
-    iconList = [];
+    iconListOrg = [];
     iconCodeMap.clear();
     const re = /mdi-[^:]+/;
     for (const ss of document.styleSheets) {
@@ -365,7 +371,7 @@
                 ? e.style.content.codePointAt(1)
                 : 0;
             if (code !== 0) {
-              iconList.push({
+              iconListOrg.push({
                 name: m[0],
                 value: m[0],
               });
@@ -429,6 +435,47 @@
   const refreshMCPToken =  () => {
     mapConf.MCPToken = generateMCPToken();
   };
+
+  let iconImportError : string = "";
+
+  const importIcons = async () => {
+    const codeList : datastore.IconEnt[] = [];
+    iconCodeMap.forEach((v,k)=>{
+      codeList.push({
+        Name: "",
+        Code: v,
+        Icon: k,
+      })
+    });
+    const r = await ImportIcon(codeList);
+    if (!r) {
+      iconImportError = "Import error!";
+      return
+    }
+    if (r.Errors && r.Errors.length > 0) {
+      iconImportError = $_('Config.IconNotFound') + r.Errors.join(",");
+      return
+    }
+    for(const icon of r.Icons) {
+      setIconToList(icon);
+    }
+    await showIconList();
+  };
+
+  const exportIcons = async () => {
+    await ExportIcons();
+  }
+
+  let filterIcon : string = "";
+
+  const filterIconList = () => {
+    iconList = [];
+    for(const icon of iconListOrg) {
+      if(!filterIcon || icon.value.includes(filterIcon)) {
+        iconList.push(icon);
+      }
+    }
+  }
 
 </script>
 
@@ -1127,6 +1174,14 @@
           <Icon path={icons.mdiDotsGrid} size={1} />
           {$_("Config.IconMan")}
         </div>
+        {#if iconImportError}
+          <Alert color="red" dismissable>
+            <div class="flex">
+              <Icon path={icons.mdiExclamation} size={1} />
+              {iconImportError}
+            </div>
+          </Alert>
+        {/if}
         <table id="iconTable" class="display compact mt-2" style="width:99%" />
         <div class="flex justify-end space-x-2 mr-2 mt-3">
           <GradientButton
@@ -1139,7 +1194,7 @@
             <Icon path={icons.mdiPlus} size={1} />
             {$_("Config.Add")}
           </GradientButton>
-          {#if selectedIcon}
+          {#if selectedIcon == 1}
             <GradientButton
               shadow
               color="blue"
@@ -1150,6 +1205,8 @@
               <Icon path={icons.mdiPencil} size={1} />
               {$_("Config.Edit")}
             </GradientButton>
+          {/if}
+          {#if selectedIcon}
             <GradientButton
               shadow
               color="red"
@@ -1161,6 +1218,26 @@
               {$_("Config.Delete")}
             </GradientButton>
           {/if}
+          <GradientButton
+            shadow
+            color="lime"
+            type="button"
+            on:click={importIcons}
+            size="xs"
+          >
+            <Icon path={icons.mdiUpload} size={1} />
+            {$_('Config.Import')}
+          </GradientButton>
+          <GradientButton
+            shadow
+            color="blue"
+            type="button"
+            on:click={exportIcons}
+            size="xs"
+          >
+            <Icon path={icons.mdiContentSave} size={1} />
+            {$_('Config.Export')}
+          </GradientButton>
           <GradientButton
             shadow
             type="button"
@@ -1280,6 +1357,13 @@
       {$_("Config.EditIcon")}
     </h3>
     <div class="grid gap-4 mb-4 md:grid-cols-2">
+      <Label class="space-y-2 text-xs">
+        <span>{$_('Config.IconFilter')}</span>
+        <Input
+          bind:value={filterIcon}
+          on:keydown={filterIconList}
+        />
+      </Label>
       <Label class="space-y-2 text-xs">
         <span> {$_("Node.Icon")} </span>
         <Select

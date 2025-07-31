@@ -275,7 +275,11 @@
     "OTelFrom": "OpenTelemetry送信元",
     "MCPTransport": "MCPサーバートランスポート",
     "MCPEndpoint": "MCPサーバーエンドポイント",
-    "MCPToken": "MCPサーバートークン"
+    "MCPToken": "MCPサーバートークン",
+    "IconNotFound": "インポートできないアイコン:",
+    "Import": "インポート",
+    "Export": "エクスポート",
+    "IconFilter": "フィルター"
   },
   "DrawItem": {
     "Rect": "矩形",
@@ -981,9 +985,7 @@
     "Item": "項目",
     "Content": "内容",
     "Unit": "単位",
-    "Descr": "説明"
-  },
-  "OTerl": {
+    "Descr": "説明",
     "Report": "レポート"
   },
   "CertMonitor": {

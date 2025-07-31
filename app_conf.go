@@ -1,6 +1,12 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
+	"os"
+	"regexp"
+	"strings"
+
 	"github.com/labstack/gommon/log"
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
@@ -173,4 +179,111 @@ func (a *App) InitMySSHKey() bool {
 		Event: i18n.Trans("Init ssh private key"),
 	})
 	return len(datastore.GenSSHPrivateKey()) > 0
+}
+
+var regIconCamelCase = regexp.MustCompile("([A-Z])")
+
+type ImportIconEnt struct {
+	Icons  []datastore.IconEnt `json:"Icons"`
+	Errors []string            `json:"Errors"`
+}
+
+func (a *App) ImportIcon(codeList []datastore.IconEnt) ImportIconEnt {
+	filter := []wails.FileFilter{}
+	ret := ImportIconEnt{}
+	filter = append(filter, wails.FileFilter{
+		DisplayName: "TWSNMP ICON File",
+		Pattern:     "*.csv;*.txt",
+	})
+	file, err := wails.OpenFileDialog(a.ctx, wails.OpenDialogOptions{
+		Title:   "TWSNMP ICON file",
+		Filters: filter,
+	})
+	if err != nil {
+		log.Printf("err=%v", err)
+		return ret
+	}
+	if file == "" {
+		return ret
+	}
+	f, err := os.Open(file)
+	if err != nil {
+		log.Printf("err=%v", err)
+		return ret
+	}
+	defer f.Close()
+	iconToCodeMap := make(map[string]int64)
+	for _, e := range codeList {
+		iconToCodeMap[e.Icon] = e.Code
+	}
+	addIconList := []*datastore.IconEnt{}
+	scanner := bufio.NewScanner(f)
+	sep := " "
+	if strings.HasSuffix(strings.ToLower(file), ".csv") {
+		sep = ","
+	}
+	for scanner.Scan() {
+		l := scanner.Text()
+		a := strings.SplitN(l, sep, 2)
+		if len(a) != 2 {
+			continue
+		}
+		i := regIconCamelCase.ReplaceAllStringFunc(strings.TrimSpace(a[0]), func(s string) string {
+			return "-" + strings.ToLower(s)
+		})
+		if !strings.HasPrefix(i, "mdi-") {
+			ret.Errors = append(ret.Errors, a[0])
+			continue
+		}
+		code, ok := iconToCodeMap[i]
+		if !ok {
+			ret.Errors = append(ret.Errors, a[0])
+			continue
+		}
+		addIconList = append(addIconList, &datastore.IconEnt{
+			Icon: i,
+			Code: code,
+			Name: strings.TrimSpace(a[1]),
+		})
+	}
+	if len(ret.Errors) > 0 {
+		return ret
+	}
+	for _, i := range addIconList {
+		ret.Icons = append(ret.Icons, *i)
+		datastore.AddOrUpdateIcon(i)
+	}
+	return ret
+}
+
+func (a *App) ExportIcons() bool {
+	icons := datastore.GetIcons()
+	if len(icons) < 1 {
+		return false
+	}
+	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
+		DefaultFilename:      "TWSNMP_ICON.csv",
+		CanCreateDirectories: true,
+		Filters: []wails.FileFilter{{
+			DisplayName: "CSV",
+			Pattern:     "*.csv",
+		}},
+	})
+	if err != nil {
+		wails.LogErrorf(a.ctx, "exportIcon err=%v", err)
+		return false
+	}
+	if file == "" {
+		return false
+	}
+	f, err := os.Create(file)
+	if err != nil {
+		wails.LogErrorf(a.ctx, "exportIcon err=%v", err)
+		return false
+	}
+	defer f.Close()
+	for _, e := range icons {
+		f.WriteString(fmt.Sprintf("%s,%s\n", e.Icon, e.Name))
+	}
+	return true
 }
