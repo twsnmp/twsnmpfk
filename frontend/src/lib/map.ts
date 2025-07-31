@@ -76,7 +76,7 @@ export const initMAP = async (div: HTMLElement, cb: any) => {
     default:
       // Auto
       mapSizeX = window.screen.width > 4000 ? 5000 : 2500;
-      mapSizeX = 5000;
+      mapSizeY = 5000;
   }
   beepHigh = notifyConf.BeepHigh;
   beepLow = notifyConf.BeepLow;
