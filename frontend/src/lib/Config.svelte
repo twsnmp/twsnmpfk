@@ -1356,12 +1356,13 @@
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Config.EditIcon")}
     </h3>
-    <div class="grid gap-4 mb-4 md:grid-cols-2">
+    <div class="grid gap-4 mb-4 md:grid-cols-3">
       <Label class="space-y-2 text-xs">
         <span>{$_('Config.IconFilter')}</span>
         <Input
           bind:value={filterIcon}
-          on:keydown={filterIconList}
+          on:change={filterIconList}
+          size="sm"
         />
       </Label>
       <Label class="space-y-2 text-xs">

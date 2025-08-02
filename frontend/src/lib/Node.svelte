@@ -35,6 +35,7 @@
   const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
+    filterIconList();
     if (nodeID) {
       node = await GetNode(nodeID);
     } else {
@@ -107,6 +108,18 @@
     }
   }
 
+  let filterIcon : string = "";
+  let filteredIconList :any = [];
+
+  const filterIconList = () => {
+    filteredIconList = [];
+    for(const icon of iconList) {
+      if(!filterIcon || icon.name.includes(filterIcon)) {
+        filteredIconList.push(icon);
+      }
+    }
+  }
+
 </script>
 
 <Modal
@@ -146,11 +159,19 @@
           />
         </Label>
       </div>
-      <div class="grid gap-4 mb-4 md:grid-cols-3">
+      <div class="grid gap-4 mb-4 md:grid-cols-4">
+        <Label class="space-y-2 text-xs">
+          <span>{$_('Config.IconFilter')}</span>
+          <Input
+            bind:value={filterIcon}
+            on:change={filterIconList}
+            size="sm"
+          />
+        </Label>
         <Label class="space-y-2 text-xs">
           <span> {$_("Node.Icon")} </span>
           <Select
-            items={iconList}
+            items={filteredIconList}
             bind:value={node.Icon}
             placeholder={$_("Node.SelectIcon")}
             size="sm"
