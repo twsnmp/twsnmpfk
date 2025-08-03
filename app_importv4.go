@@ -31,7 +31,7 @@ func (a *App) ImportV4Map() bool {
 		return false
 	}
 	if file == "" {
-		return true
+		return false
 	}
 	return doImportV4Map(file)
 }

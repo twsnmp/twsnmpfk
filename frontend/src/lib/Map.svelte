@@ -387,8 +387,9 @@
         class="flex space-x-2 space-x-2 hover:bg-sky-500/[0.8]"
         on:click={async () => {
           showMapMenu = false;
-          ImportV4Map();
-          refreshMap();
+          if (await ImportV4Map()) {
+            refreshMap();
+          }
         }}
       >
         <Icon path={icons.mdiImport} size={0.7} />

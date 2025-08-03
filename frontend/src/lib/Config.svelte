@@ -49,6 +49,7 @@
     GetMySSHPublicKey,
     ImportIcon,
     ExportIcons,
+    ImportV4Map,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
@@ -477,6 +478,13 @@
     }
   }
 
+  const importMap = async () => {
+    const r = await ImportV4Map();
+    if (r) {
+      close();
+    }
+  }
+
 </script>
 
 <Modal
@@ -719,6 +727,16 @@
             </div>
           {/if}
           <div class="flex justify-end space-x-2 mr-2">
+            <GradientButton
+              shadow
+              color="lime"
+              type="button"
+              on:click={importMap}
+              size="xs"
+            >
+              <Icon path={icons.mdiKeyChain} size={1} />
+              {$_("Config.Import")}
+            </GradientButton>
             <GradientButton
               shadow
               color="blue"
