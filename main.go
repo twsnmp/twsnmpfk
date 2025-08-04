@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"path/filepath"
 
 	"github.com/twsnmp/twsnmpfk/clog"
 	"github.com/twsnmp/twsnmpfk/datastore"
@@ -14,6 +15,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
+	"gopkg.in/ini.v1"
 )
 
 //go:embed all:frontend/dist
@@ -52,6 +54,8 @@ func init() {
 	flag.StringVar(&datastore.OTelCert, "otelCert", "", "OpenTelemetry server cert path")
 	flag.StringVar(&datastore.OTelKey, "otelKey", "", "OpenTelemetry server key path")
 	flag.StringVar(&datastore.OTelCA, "otelCA", "", "OpenTelementry CA cert path")
+	flag.StringVar(&datastore.MCPCert, "mcpCert", "", "MCP server cert path")
+	flag.StringVar(&datastore.MCPKey, "mcpKey", "", "MCP server key path")
 	flag.Parse()
 }
 
@@ -69,6 +73,7 @@ func main() {
 	flag.VisitAll(func(f *flag.Flag) {
 		log.Printf("args %s=%s", f.Name, f.Value)
 	})
+	loadIni()
 
 	if lang != "" {
 		i18n.SetLang(lang)
@@ -122,5 +127,78 @@ func main() {
 
 	if err != nil {
 		println("Error:", err.Error())
+	}
+}
+
+func loadIni() {
+	cfg, err := ini.Load(filepath.Join(dataStorePath, ".twsnmpfk.ini"))
+	if err != nil {
+		log.Printf("Fail to read ini file: %v", err)
+		return
+	}
+	// main
+	if v := cfg.Section("").Key("lang").MustString(""); v != "" {
+		lang = v
+	}
+	if v := cfg.Section("").Key("lock").MustString(""); v != "" {
+		lock = v
+	}
+	if v := cfg.Section("").Key("maxDispLog").MustInt(0); v > 0 {
+		maxDispLog = v
+	}
+	if v := cfg.Section("").Key("kiosk").MustBool(false); v {
+		kiosk = v
+	}
+	// logger
+	if v := cfg.Section("logger").Key("trapPort").MustInt(0); v > 0 {
+		datastore.TrapPort = v
+	}
+	if v := cfg.Section("logger").Key("syslogPort").MustInt(0); v > 0 {
+		datastore.SyslogPort = v
+	}
+	if v := cfg.Section("logger").Key("sshdPort").MustInt(0); v > 0 {
+		datastore.SSHdPort = v
+	}
+	if v := cfg.Section("logger").Key("netflowPort").MustInt(0); v > 0 {
+		datastore.NetFlowPort = v
+	}
+	if v := cfg.Section("logger").Key("sFlowPort").MustInt(0); v > 0 {
+		datastore.SFlowPort = v
+	}
+	if v := cfg.Section("logger").Key("tcpdPort").MustInt(0); v > 0 {
+		datastore.TCPPort = v
+	}
+	// Open Telemetry
+	if v := cfg.Section("OTel").Key("otelGRPCPort").MustInt(0); v > 0 {
+		datastore.OTelgRPCPort = v
+	}
+	if v := cfg.Section("OTel").Key("otelHTTPPort").MustInt(0); v > 0 {
+		datastore.OTelHTTPPort = v
+	}
+	if v := cfg.Section("OTel").Key("otelCert").MustString(""); v != "" {
+		datastore.OTelCert = v
+	}
+	if v := cfg.Section("OTel").Key("otelKey").MustString(""); v != "" {
+		datastore.OTelKey = v
+	}
+	if v := cfg.Section("OTel").Key("otelCA").MustString(""); v != "" {
+		datastore.OTelCA = v
+	}
+	// TLS | gRPC Client
+	if v := cfg.Section("client").Key("clientCert").MustString(""); v != "" {
+		datastore.ClientCert = v
+	}
+	if v := cfg.Section("client").Key("clientKey").MustString(""); v != "" {
+		datastore.ClientKey = v
+	}
+	if v := cfg.Section("client").Key("caCert").MustString(""); v != "" {
+		datastore.CACert = v
+	}
+	// MCP
+	if v := cfg.Section("MCP").Key("mcpCert").MustString(""); v != "" {
+		datastore.MCPCert = v
+	}
+	if v := cfg.Section("MCP").Key("mcpKey").MustString(""); v != "" {
+		datastore.MCPKey = v
 	}
 }

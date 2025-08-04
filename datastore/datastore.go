@@ -44,7 +44,6 @@ var (
 	pollings sync.Map
 	// MAP Changed check
 	stateChangedNodes sync.Map
-	lastLogAdded      time.Time
 	lastNodeChanged   time.Time
 	//
 	MIBDB        *gomibdb.MIBDB
@@ -79,6 +78,9 @@ var (
 	OTelCert     string
 	OTelKey      string
 	OTelCA       string
+	// MCP Server
+	MCPCert string
+	MCPKey  string
 )
 
 // Define errors

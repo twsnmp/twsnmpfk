@@ -53,6 +53,7 @@ require (
 	golang.org/x/net v0.40.0
 	golang.org/x/text v0.25.0
 	google.golang.org/grpc v1.72.0
+	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/mcuadros/go-syslog.v2 v2.3.0
 )
 
