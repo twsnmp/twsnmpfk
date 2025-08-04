@@ -58,6 +58,8 @@ func startAcmeServer() {
 	lastAcmeServerErr = nil
 	acmeServerRunnning = true
 	acmeServer = echo.New()
+	acmeServer.HideBanner = true
+	acmeServer.HidePort = true
 	go acmeServerFunc(acmeServer)
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Time:  time.Now().UnixNano(),

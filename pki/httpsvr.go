@@ -22,9 +22,9 @@ var lastHTTPServerErr error
 var httpServerRunning = false
 
 func GetHTTPServerStatus() string {
-	if lastAcmeServerErr != nil {
+	if lastHTTPServerErr != nil {
 		return fmt.Sprintf("error %v", lastHTTPServerErr)
-	} else if acmeServerRunnning {
+	} else if httpServerRunning {
 		return fmt.Sprintf("running port=%d", datastore.PKIConf.HTTPPort)
 	}
 	return "stopped"
@@ -43,6 +43,8 @@ func startHTTPServer() {
 	lastHTTPServerErr = nil
 	httpServerRunning = true
 	httpServer = echo.New()
+	httpServer.HideBanner = true
+	httpServer.HidePort = true
 	go httpServerFunc(httpServer)
 }
 
