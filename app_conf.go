@@ -34,6 +34,7 @@ func (a *App) UpdateMapConf(m datastore.MapConfEnt) bool {
 	}
 	if m.MCPEndpoint != datastore.MapConf.MCPEndpoint ||
 		m.MCPTransport != datastore.MapConf.MCPEndpoint ||
+		m.MCPFrom != datastore.MapConf.MCPFrom ||
 		m.MCPToken != datastore.MapConf.MCPToken {
 		backend.NotifyMCPConfigChanged()
 	}

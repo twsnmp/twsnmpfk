@@ -2,17 +2,22 @@ package backend
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net"
+	"net/http"
+	"os"
 	"regexp"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/araddon/dateparse"
 	"github.com/gosnmp/gosnmp"
+	"github.com/labstack/echo/v4"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/xhit/go-str2duration/v2"
@@ -23,11 +28,13 @@ import (
 )
 
 var stopMCPCh = make(chan bool)
+var mcpAllow sync.Map
 
 func mcpServer(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	timer := time.NewTicker(time.Second * 5)
 	var mcpsv any = nil
+	var e *echo.Echo
 	stopMCPServer := func() {
 		if mcpsv == nil {
 			return
@@ -45,6 +52,10 @@ func mcpServer(ctx context.Context, wg *sync.WaitGroup) {
 			m.Shutdown(ctx)
 		}
 		mcpsv = nil
+		if e != nil {
+			e.Shutdown(ctx)
+			e = nil
+		}
 	}
 	for {
 		select {
@@ -57,7 +68,8 @@ func mcpServer(ctx context.Context, wg *sync.WaitGroup) {
 		case <-timer.C:
 			if datastore.MapConf.MCPTransport != "off" && mcpsv == nil {
 				log.Println("start mcp server")
-				mcpsv = startMCPServer()
+				setMCPAllow()
+				mcpsv, e = startMCPServer()
 				datastore.AddEventLog(&datastore.EventLogEnt{
 					Type:  "system",
 					Level: "info",
@@ -74,7 +86,7 @@ func NotifyMCPConfigChanged() {
 	stopMCPCh <- true
 }
 
-func startMCPServer() any {
+func startMCPServer() (any, *echo.Echo) {
 	// Create MCP Server
 	s := server.NewMCPServer(
 		"TWSNMP FK MCP Server",
@@ -98,28 +110,113 @@ func startMCPServer() any {
 	addGetSyslogSummaryTool(s)
 	addSearchSNMPTrapLogTool(s)
 	addGetServerCertificateListTool(s)
+	sv := &http.Server{}
+	sv.Addr = datastore.MapConf.MCPEndpoint
+	if cert, err := getMCPServerCert(); err == nil {
+		if cert != nil {
+			sv.TLSConfig = &tls.Config{
+				Certificates: []tls.Certificate{*cert},
+				CipherSuites: []uint16{
+					tls.TLS_AES_128_GCM_SHA256,
+					tls.TLS_AES_256_GCM_SHA384,
+				},
+				MinVersion: tls.VersionTLS13,
+			}
+		}
+	} else {
+		log.Printf("getMCPServerCert err=%v", err)
+	}
+
+	e := echo.New()
+	e.HideBanner = true
+	e.HidePort = true
+	var mcpsv any = nil
+
 	if datastore.MapConf.MCPTransport == "sse" {
 		sseServer := server.NewSSEServer(s)
-		log.Printf("sse mcp server listening on %s", datastore.MapConf.MCPEndpoint)
-		go func() {
-			if err := sseServer.Start(datastore.MapConf.MCPEndpoint); err != nil {
-				log.Printf("sse mcp server error: %v", err)
+		e.Any("/sse", func(c echo.Context) error {
+			if !checkMCPACL(c) {
+				return echo.ErrUnauthorized
 			}
-		}()
-		return sseServer
+			sseServer.ServeHTTP(c.Response().Writer, c.Request())
+			return nil
+		})
+		e.Any("/message", func(c echo.Context) error {
+			if !checkMCPACL(c) {
+				return echo.ErrUnauthorized
+			}
+			sseServer.ServeHTTP(c.Response().Writer, c.Request())
+			return nil
+		})
+
+		log.Printf("sse mcp server listening on %s", datastore.MapConf.MCPEndpoint)
+		mcpsv = sseServer
+	} else {
+		streamServer := server.NewStreamableHTTPServer(s)
+		e.Any("/mcp", func(c echo.Context) error {
+			if !checkMCPACL(c) {
+				return echo.ErrUnauthorized
+			}
+			streamServer.ServeHTTP(c.Response().Writer, c.Request())
+			return nil
+		})
+		log.Printf("streamable HTTP server listening on %s", datastore.MapConf.MCPEndpoint)
+		mcpsv = streamServer
 	}
-	endpointPath := "/mcp"
-	if datastore.MapConf.MCPToken != "" {
-		endpointPath = "/" + datastore.MapConf.MCPToken + "/mcp"
-	}
-	streamServer := server.NewStreamableHTTPServer(s, server.WithEndpointPath(endpointPath))
-	log.Printf("streamable HTTP server listening on %s", datastore.MapConf.MCPEndpoint)
 	go func() {
-		if err := streamServer.Start(datastore.MapConf.MCPEndpoint); err != nil {
-			log.Printf("streamable server error: %v", err)
+		if err := e.StartServer(sv); err != nil {
+			log.Printf("start mcp server err=%v", err)
 		}
 	}()
-	return streamServer
+	return mcpsv, e
+}
+
+func getMCPServerCert() (*tls.Certificate, error) {
+	if datastore.MCPCert == "" || datastore.MCPKey == "" {
+		return nil, nil
+	}
+	keyPem, err := os.ReadFile(datastore.MCPKey)
+	if err == nil {
+		certPem, err := os.ReadFile(datastore.MCPCert)
+		if err == nil {
+			cert, err := tls.X509KeyPair(certPem, keyPem)
+			if err == nil {
+				return &cert, nil
+			}
+		}
+	}
+	return nil, err
+}
+
+func setMCPAllow() {
+	for _, ip := range strings.Split(datastore.MapConf.MCPFrom, ",") {
+		ip = strings.TrimSpace(ip)
+		if ip != "" {
+			mcpAllow.Store(ip, true)
+		}
+	}
+}
+
+func checkMCPACL(c echo.Context) bool {
+	if datastore.MapConf.MCPToken != "" {
+		t := c.Request().Header.Get("Authorization")
+		log.Printf("checkMCPACL token=%+v", t)
+		if !strings.Contains(t, datastore.MapConf.MCPToken) {
+			return false
+		}
+	}
+	if datastore.MapConf.MCPFrom == "" {
+		return true
+	}
+	if ip, _, err := net.SplitHostPort(c.Request().RemoteAddr); err == nil {
+		if _, ok := mcpAllow.Load(ip); ok {
+			return true
+		}
+	}
+	if _, ok := mcpAllow.Load(c.RealIP()); ok {
+		return true
+	}
+	return false
 }
 
 // get_node_list tool

@@ -674,6 +674,7 @@ export namespace datastore {
 	    MCPTransport: string;
 	    MCPEndpoint: string;
 	    MCPToken: string;
+	    MCPFrom: string;
 	    IconSize: number;
 	    MapSize: number;
 	    ArpWatchRange: string;
@@ -707,6 +708,7 @@ export namespace datastore {
 	        this.MCPTransport = source["MCPTransport"];
 	        this.MCPEndpoint = source["MCPEndpoint"];
 	        this.MCPToken = source["MCPToken"];
+	        this.MCPFrom = source["MCPFrom"];
 	        this.IconSize = source["IconSize"];
 	        this.MapSize = source["MapSize"];
 	        this.ArpWatchRange = source["ArpWatchRange"];

@@ -49,6 +49,7 @@ type MapConfEnt struct {
 	MCPTransport   string `json:"MCPTransport"`
 	MCPEndpoint    string `json:"MCPEndpoint"`
 	MCPToken       string `json:"MCPToken"`
+	MCPFrom        string `json:"MCPFrom"`
 	IconSize       int    `json:"IconSize"`
 	MapSize        int    `json:"MapSize"`
 	ArpWatchRange  string `json:"ArpWatchRange"`
