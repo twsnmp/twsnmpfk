@@ -292,7 +292,14 @@
     "Export": "Export",
     "IconFilter": "Filter",
     "IconNotFound": "Icons that cannot be imported:",
-    "Import": "Import"
+    "Import": "Import",
+    "IconImportError": "Failed to import icon.",
+    "MCPFrom": "Accessed IP",
+    "WebhookNotify": "Notify Webhook",
+    "WebhookREport": "Report Webhook",
+    "WebhookTest": "Test Webhook",
+    "WebhookTestFail": "Webhook test failed",
+    "WebhookTestOK": "Webhook test was successful"
   },
   "DrawItem": {
     "Cancel": "Cancel",

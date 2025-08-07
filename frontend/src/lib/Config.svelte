@@ -32,6 +32,7 @@
     GetNotifyConf,
     UpdateNotifyConf,
     TestNotifyConf,
+    TestWebhook,
     GetAIConf,
     UpdateAIConf,
     GetMIBModules,
@@ -74,7 +75,9 @@
 
   let notifyConf: any = undefined;
   let showTestError: boolean = false;
+  let showWebhookTestError: boolean = false;
   let showTestOk: boolean = false;
+  let showWebhookTestOk: boolean = false;
   let locConf: any = undefined;
   let showLocStyleError = false;
 
@@ -133,6 +136,14 @@
     const ok = await TestNotifyConf(notifyConf);
     showTestError = !ok;
     showTestOk = ok;
+  };
+
+  const testWebhook = async () => {
+    showWebhookTestError = false;
+    notifyConf.Interval *= 1;
+    const ok = await TestWebhook(notifyConf);
+    showWebhookTestError = !ok;
+    showWebhookTestOk = ok;
   };
 
   let showAudioError = false;
@@ -446,7 +457,7 @@
     });
     const r = await ImportIcon(codeList);
     if (!r) {
-      iconImportError = "Import error!";
+      iconImportError = $_('Config.IconImportError');
       return
     }
     if (r.Errors && r.Errors.length > 0) {
@@ -612,7 +623,7 @@
               />
             </Label>
             <Label class="space-y-2 text-xs">
-              <span>アクセス元IP</span>
+              <span>{$_('Config.MCPFrom')}</span>
               <Input
                 class="h-8"
                 bind:value={mapConf.MCPFrom}
@@ -803,6 +814,14 @@
               </div>
             </Alert>
           {/if}
+          {#if showWebhookTestError}
+            <Alert color="red" dismissable>
+              <div class="flex">
+                <Icon path={icons.mdiExclamation} size={1} />
+                {$_('Config.WebhookTestFail')}
+              </div>
+            </Alert>
+          {/if}
           {#if showAudioError}
             <Alert color="red" dismissable>
               <div class="flex">
@@ -816,6 +835,14 @@
               <div class="flex">
                 <Icon path={icons.mdiCheck} size={1} />
                 {$_("Config.SentTestMail")}
+              </div>
+            </Alert>
+          {/if}
+          {#if showWebhookTestOk}
+            <Alert class="flex" color="blue" dismissable>
+              <div class="flex">
+                <Icon path={icons.mdiCheck} size={1} />
+                {$_('Config.WebhookTestOK')}
               </div>
             </Alert>
           {/if}
@@ -905,6 +932,24 @@
             <Checkbox bind:checked={notifyConf.NotifyRepair}
               >{$_("Config.NotifyRepair")}</Checkbox
             >
+          </div>
+          <div class="grid gap-4 grid-cols-2">
+            <Label class="space-y-2 text-xs">
+              <span> {$_('Config.WebhookNotify')} </span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.WebHookNotify}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span> $_('Config.WebhookREport') </span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.WebHookReport}
+                size="sm"
+              />
+            </Label>
           </div>
           <Label class="space-y-2 text-xs">
             <span> {$_("Config.ExecCommand")} </span>
@@ -998,6 +1043,16 @@
             >
               <Icon path={icons.mdiEmail} size={1} />
               {$_("Config.Test")}
+            </GradientButton>
+            <GradientButton
+              shadow
+              type="button"
+              color="red"
+              on:click={testWebhook}
+              size="xs"
+            >
+              <Icon path={icons.mdiPost} size={1} />
+              {$_('Config.WebhookTest')}
             </GradientButton>
             <GradientButton
               shadow

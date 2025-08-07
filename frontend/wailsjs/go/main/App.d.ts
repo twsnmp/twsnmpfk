@@ -284,6 +284,8 @@ export function StopDiscover():Promise<void>;
 
 export function TestNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
 
+export function TestWebhook(arg1:datastore.NotifyConfEnt):Promise<boolean>;
+
 export function UpateCertMonitor(arg1:main.EditCertMonitorEnt):Promise<boolean>;
 
 export function UpdateAIConf(arg1:datastore.AIConfEnt):Promise<boolean>;

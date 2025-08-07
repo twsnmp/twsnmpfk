@@ -928,6 +928,8 @@ export namespace datastore {
 	    ExecCmd: string;
 	    BeepHigh: string;
 	    BeepLow: string;
+	    WebHookNotify: string;
+	    WebHookReport: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new NotifyConfEnt(source);
@@ -949,6 +951,8 @@ export namespace datastore {
 	        this.ExecCmd = source["ExecCmd"];
 	        this.BeepHigh = source["BeepHigh"];
 	        this.BeepLow = source["BeepLow"];
+	        this.WebHookNotify = source["WebHookNotify"];
+	        this.WebHookReport = source["WebHookReport"];
 	    }
 	}
 	export class OTelMetricDataPointEnt {

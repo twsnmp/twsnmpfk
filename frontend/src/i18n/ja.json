@@ -279,7 +279,14 @@
     "IconNotFound": "インポートできないアイコン:",
     "Import": "インポート",
     "Export": "エクスポート",
-    "IconFilter": "フィルター"
+    "IconFilter": "フィルター",
+    "IconImportError": "アイコンのインポートに失敗しました。",
+    "MCPFrom": "アクセス元IP",
+    "WebhookTestFail": "Webhookのテストに失敗しました",
+    "WebhookTestOK": "Webhookのテストに成功しました",
+    "WebhookNotify": "通知Webhook",
+    "WebhookREport": "レポートWebhook",
+    "WebhookTest": "Webhookテスト"
   },
   "DrawItem": {
     "Rect": "矩形",

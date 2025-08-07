@@ -558,6 +558,10 @@ export function TestNotifyConf(arg1) {
   return window['go']['main']['App']['TestNotifyConf'](arg1);
 }
 
+export function TestWebhook(arg1) {
+  return window['go']['main']['App']['TestWebhook'](arg1);
+}
+
 export function UpateCertMonitor(arg1) {
   return window['go']['main']['App']['UpateCertMonitor'](arg1);
 }

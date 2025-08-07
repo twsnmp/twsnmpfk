@@ -305,6 +305,8 @@ func sendReport() {
 		Class: "none",
 	})
 	title := fmt.Sprintf(i18n.Trans("%s(report) at %s"), datastore.NotifyConf.Subject, time.Now().Format("2006/01/02 15:04:05"))
+	aiList := getAIList()
+	webhookReport(title, info, aiList)
 	f := template.FuncMap{
 		"levelName":     levelName,
 		"formatLogTime": formatLogTime,
@@ -323,7 +325,7 @@ func sendReport() {
 	if err = t.Execute(body, map[string]interface{}{
 		"Title":  title,
 		"Info":   info,
-		"AIList": getAIList(),
+		"AIList": aiList,
 	}); err != nil {
 		log.Printf("send report mail err=%v", err)
 		datastore.AddEventLog(&datastore.EventLogEnt{

@@ -19,6 +19,7 @@ polling.go :ポーリング処理を行う
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os/exec"
@@ -308,14 +309,22 @@ func doAction(pe *datastore.PollingEnt) {
 	for _, a := range strings.Split(action, "\n") {
 		a = strings.TrimSpace(a)
 		al := strings.Split(a, " ")
-		if !doOneAction(al) {
+		if !doOneAction(al, pe) {
 			// アクションをwaitの条件で途中で終了できる
 			break
 		}
 	}
 }
 
-func doOneAction(alin []string) bool {
+type webhookEnt struct {
+	Time    string         `json:"Time"`
+	Node    string         `json:"Node"`
+	Polling string         `json:"Polling"`
+	State   string         `json:"State"`
+	Results map[string]any `json:"Results"`
+}
+
+func doOneAction(alin []string, pe *datastore.PollingEnt) bool {
 	al := []string{}
 	for _, a := range alin {
 		if a != "" {
@@ -366,6 +375,25 @@ func doOneAction(alin []string) bool {
 		}
 	case "cmd":
 		doActionCmd(al[1:])
+	case "webhook":
+		{
+			if n := datastore.GetNode(pe.NodeID); n != nil {
+				payload := webhookEnt{
+					Time:    time.Unix(0, pe.LastTime).Format(time.RFC3339),
+					State:   pe.State,
+					Polling: pe.Name,
+					Node:    n.Name,
+					Results: pe.Result,
+				}
+				if j, err := json.Marshal(&payload); err == nil {
+					notify.PostWebhook(al[1], j)
+				} else {
+					log.Printf("polling wbhook json err=%v", err)
+				}
+			} else {
+				log.Printf("polling webhook node not found id=%s", pe.NodeID)
+			}
+		}
 	}
 	return true
 }

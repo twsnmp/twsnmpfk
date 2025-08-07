@@ -33,9 +33,10 @@
 
   Prism.languages.twaction = {
     regex: /[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}/,
-    keyword: /(wol|mail|line|wait|cmd)/,
+    keyword: /(wol|mail|webhook|wait|cmd)/,
     number: /-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/i,
     string: /\b(?:false|true|up|down)\b/,
+    url: /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/,
   };
 
   const highlight = (code: string, syntax: string | undefined) => {
@@ -309,16 +310,14 @@
           />
         </Label>
       </div>
-      <div class="grid gap-4 mb-4 grid-cols-2">
-        <Label class="space-y-2 text-xs">
-          <span>{$_('Polling.FailAction')}</span>
-          <CodeJar syntax="twaction" {highlight} bind:value={polling.FailAction}/>
-        </Label>
-        <Label class="space-y-2 text-xs">
-          <span>{$_('Polling.RepairAction')}</span>
-          <CodeJar syntax="twaction" {highlight} bind:value={polling.RepairAction}/>
-        </Label>
-      </div>
+      <Label class="space-y-2 text-xs">
+        <span>{$_('Polling.FailAction')}</span>
+        <CodeJar syntax="twaction" {highlight} bind:value={polling.FailAction}/>
+      </Label>
+      <Label class="space-y-2 text-xs">
+        <span>{$_('Polling.RepairAction')}</span>
+        <CodeJar syntax="twaction" {highlight} bind:value={polling.RepairAction}/>
+      </Label>
       <div class="flex justify-end space-x-2 mr-2">
         <GradientButton
           shadow

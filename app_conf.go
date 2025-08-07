@@ -64,6 +64,11 @@ func (a *App) TestNotifyConf(n datastore.NotifyConfEnt) bool {
 	return notify.SendTestMail(&n) == nil
 }
 
+// TestWebhook test webhook of notify conf
+func (a *App) TestWebhook(n datastore.NotifyConfEnt) bool {
+	return notify.WebHookTest(&n) == nil
+}
+
 // GetAIConf returns AI config
 func (a *App) GetAIConf() datastore.AIConfEnt {
 	return datastore.AIConf

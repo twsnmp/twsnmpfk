@@ -76,7 +76,6 @@ func getLevelNum(l string) int {
 func checkNotify(last int64) int64 {
 	list := []*datastore.EventLogEnt{}
 	lastLogTime := int64(0)
-	skip := 0
 	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
 		if lastLogTime < l.Time {
 			lastLogTime = l.Time
@@ -87,9 +86,10 @@ func checkNotify(last int64) int64 {
 		list = append(list, l)
 		return true
 	})
-	log.Printf("check notify last=%v next=%v len=%d skip=%d", time.Unix(0, last), time.Unix(0, lastLogTime), len(list), skip)
+	log.Printf("check notify last=%v next=%v len=%d", time.Unix(0, last), time.Unix(0, lastLogTime), len(list))
 	if len(list) > 0 {
 		sendNotifyMail(list)
+		webhookNotify(list)
 	}
 	if lastLogTime > 0 {
 		return lastLogTime
