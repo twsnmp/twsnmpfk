@@ -98,6 +98,7 @@ func startMCPServer() (any, *echo.Echo) {
 	addGetNodeListTool(s)
 	addGetNetworkListTool(s)
 	addGetPollingListTool(s)
+	addGetPollingLogTool(s)
 	addDoPingtTool(s)
 	addGetMIBTreeTool(s)
 	addSNMPWalkTool(s)
@@ -110,6 +111,7 @@ func startMCPServer() (any, *echo.Echo) {
 	addGetSyslogSummaryTool(s)
 	addSearchSNMPTrapLogTool(s)
 	addGetServerCertificateListTool(s)
+	addAddEventLogTool(s)
 	sv := &http.Server{}
 	sv.Addr = datastore.MapConf.MCPEndpoint
 	if cert, err := getMCPServerCert(); err == nil {
@@ -361,6 +363,7 @@ type mcpPollingEnt struct {
 	Type     string
 	Level    string
 	State    string
+	Logging  bool
 	LastTime string
 	Result   map[string]any
 }
@@ -421,12 +424,63 @@ If blank, all pollings are searched.
 			list = append(list, mcpPollingEnt{
 				ID:       p.ID,
 				Name:     p.Name,
+				Type:     p.Type,
+				Logging:  p.LogMode > 0,
 				NodeName: n.Name,
 				LastTime: time.Unix(0, p.LastTime).Format(time.RFC3339Nano),
+				Level:    p.Level,
 				State:    n.State,
 				Result:   p.Result,
 			})
 			return true
+		})
+		j, err := json.Marshal(&list)
+		if err != nil {
+			j = []byte(err.Error())
+		}
+		return mcp.NewToolResultText(string(j)), nil
+	})
+}
+
+// get_polling_log tool
+type mcpPollingLogEnt struct {
+	Time   string
+	State  string
+	Result map[string]any
+}
+
+func addGetPollingLogTool(s *server.MCPServer) {
+	searchTool := mcp.NewTool("get_polling_log",
+		mcp.WithDescription("get polling log from TWSNMP"),
+		mcp.WithString("id",
+			mcp.Required(),
+			mcp.Description(`The ID of the polling to retrieve the polling log`),
+		),
+		mcp.WithNumber("limit",
+			mcp.DefaultNumber(100),
+			mcp.Max(2000),
+			mcp.Min(1),
+			mcp.Description("Limit on number of logs retrieved. min 1,max 2000"),
+		),
+	)
+	s.AddTool(searchTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		id, err := request.RequireString("id")
+		if err != nil {
+			return mcp.NewToolResultText(err.Error()), nil
+		}
+		polling := datastore.GetPolling(id)
+		if polling == nil {
+			return mcp.NewToolResultText("polling not found"), nil
+		}
+		limit := request.GetInt("limit", 100)
+		list := []mcpPollingLogEnt{}
+		datastore.ForEachLastPollingLog(id, func(l *datastore.PollingLogEnt) bool {
+			list = append(list, mcpPollingLogEnt{
+				Time:   time.Unix(0, l.Time).Format(time.RFC3339),
+				State:  l.State,
+				Result: l.Result,
+			})
+			return len(list) <= limit
 		})
 		j, err := json.Marshal(&list)
 		if err != nil {
@@ -1428,6 +1482,43 @@ func addGetServerCertificateListTool(s *server.MCPServer) {
 			j = []byte(err.Error())
 		}
 		return mcp.NewToolResultText(string(j)), nil
+	})
+}
+
+// add_event_log tool
+func addAddEventLogTool(s *server.MCPServer) {
+	searchTool := mcp.NewTool("add_event_log",
+		mcp.WithDescription("add event log to TWSNMP"),
+		mcp.WithString("level",
+			mcp.Enum("info", "normal", "warn", "low", "high"),
+			mcp.Description("Level of event (info,normal,warn,low,high)"),
+		),
+		mcp.WithString("node",
+			mcp.Description("Node name associated with the event"),
+		),
+		mcp.WithString("event",
+			mcp.Description("Event log contents"),
+		),
+	)
+	s.AddTool(searchTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		level := request.GetString("level", "info")
+		event := request.GetString("event", "")
+		node := request.GetString("node", "")
+		nodeID := ""
+		if node != "" {
+			if n := datastore.FindNodeFromName(node); n != nil {
+				nodeID = n.ID
+			}
+		}
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Time:     time.Now().UnixNano(),
+			Level:    level,
+			Type:     "mcp",
+			Event:    event,
+			NodeName: node,
+			NodeID:   nodeID,
+		})
+		return mcp.NewToolResultText("ok"), nil
 	})
 }
 
