@@ -20,6 +20,8 @@ Polling edit can be displayed from the button by selecting a polling list on the
 | Polling interval | Polling interval.|
 | Timeout | Timeout at the time of polling.|
 | Retry | This is the number of retry times when polling.|
+|Failure Action|Sets the action when a failure occurs.|
+|Return action|Sets the action when returning from an error.|
 
 </div>
 

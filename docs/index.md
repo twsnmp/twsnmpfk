@@ -655,7 +655,8 @@ Polling edit can be displayed from the button by selecting a polling list on the
 | Polling interval | Polling interval.|
 | Timeout | Timeout at the time of polling.|
 | Retry | This is the number of retry times when polling.|
-
+|Failure Action|Sets the action when a failure occurs.|
+|Return action|Sets the action when returning from an error.|
 
 ## Address list
 
@@ -1521,6 +1522,8 @@ This is the screen to set the notification.
 | Notification interval | Specify the interval to check the notification.|
 | Regular report | Send a daily report.|
 | Repair notification | We will also send an email when you repair.|
+|Notification Webhook|Specify the URL of the webhook to be POSTed in the event of a failure.|
+|Report Webhook|Specify the URL of the webhook to be POSTed during periodic reports.|
 | Command execution | Run the command specified in the state parameter when the map changes.<br> $ Level is in the map.0: Severe, 1: Mild, 2: Note, 3: Normal, -1: Unknown |
 | Sounds played during severe disorders | Specify the audio file to play when the state of the map is severe.|
 | Sounds played during mild disability | Specify the audio file to be played when the state of the map is mild.|
@@ -1736,3 +1739,38 @@ Usage of twsnmpfk:
 |otelKey <file>|OpenTelemetry server private key|
 |otelGRPCPPort <number>|GRPC port number for OpenTelemetry |
 |otelHTTPPort <file>|OpenTelemetry HTTP port number|
+
+## Configuration File
+
+Place .twsnmpfk.ini in a folder in the datastore and loads the boot parameters from the configuration file.The format is
+
+```ini:.twsnmpfk.ini
+#lang=ja
+#maxDispLog=10000
+#lock=map
+
+[logger]
+syslogPort=8514
+trapPort=8162
+netflowPort=2056
+sshdPort=2023
+#tcpdPort=8086
+#sFlowPort=6343
+
+[OTel]
+#otelGRPCPort=4317
+#otelHTTPPort=4318
+#otelCert=
+#otelKey=
+#otelCA=
+
+[client]
+#clientCert=
+#clientKey=
+#caCert=
+
+[MCP]
+#mcpCert=
+#mcpKey=
+
+```

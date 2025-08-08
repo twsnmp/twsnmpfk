@@ -814,6 +814,8 @@ MCPサーバーのの仕様は、以下のドキュメントに記載しまし�
 |ポーリング間隔|ポーリングの実施間隔です。|
 |タイムアウト|ポーリング実施時のタイムアウトです。|
 |リトライ|ポーリング実施時のリトライ回数です。|
+|障害時アクション|障害が発生した時のアクションを設定します。|
+|復帰時アクション|障害から復帰した時のアクションを設定します。|
 
 ## アドレスリスト
 
@@ -1533,6 +1535,8 @@ System情報の画面です。上部にログのリソースと通信の情報�
 |通知間隔|通知のチェックを行う間隔を指定します。|
 |定期レポート|日報の送信を行います。|
 |復帰通知|復帰した時もメールを送信します。|
+|通知Webhook|障害時にPOSTするWebhookのURLを指定します。|
+|レポートWebhook|定期レポート時にPOSTするWebhookのURLを指定します。|
 |コマンド実行|マップの状態変化時に実行するコマンドです。<br> $levelがマップの状態です。0:重度,1:軽度,2:注意,3:正常,-1:不明|
 |重度障害の再生音|マップの状態が重度の時に再生する音声ファイルを指定します。|
 |軽度障害の再生音|マップの状態が軽度の時に再生する音声ファイルを指定します。|
@@ -1749,3 +1753,37 @@ Usage of twsnmpfk:
 |otelGRPCPort <number>|OpenTelemetryのgRPCのポート番号|
 |otelHTTPPort <file>|OpenTelemetryのHTTPのポート番号|
 
+## 設定ファイル
+
+データストアのフォルダーに.twsnmpfk.iniを配置すると、起動パラメータを設定ファイルから読み込みます。フォーマットは
+
+```ini:.twsnmpfk.ini
+#lang=ja
+#maxDispLog=10000
+#lock=map
+
+[logger]
+syslogPort=8514
+trapPort=8162
+netflowPort=2056
+sshdPort=2023
+#tcpdPort=8086
+#sFlowPort=6343
+
+[OTel]
+#otelGRPCPort=4317
+#otelHTTPPort=4318
+#otelCert=
+#otelKey=
+#otelCA=
+
+[client]
+#clientCert=
+#clientKey=
+#caCert=
+
+[MCP]
+#mcpCert=
+#mcpKey=
+
+```
