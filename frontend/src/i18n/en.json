@@ -296,7 +296,7 @@
     "IconImportError": "Failed to import icon.",
     "MCPFrom": "Accessed IP",
     "WebhookNotify": "Notify Webhook",
-    "WebhookREport": "Report Webhook",
+    "WebhookReport": "Report Webhook",
     "WebhookTest": "Test Webhook",
     "WebhookTestFail": "Webhook test failed",
     "WebhookTestOK": "Webhook test was successful"

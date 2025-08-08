@@ -943,7 +943,7 @@
               />
             </Label>
             <Label class="space-y-2 text-xs">
-              <span> $_('Config.WebhookREport') </span>
+              <span> {$_('Config.WebhookReport')} </span>
               <Input
                 class="h-8"
                 bind:value={notifyConf.WebHookReport}

@@ -285,7 +285,7 @@
     "WebhookTestFail": "Webhookのテストに失敗しました",
     "WebhookTestOK": "Webhookのテストに成功しました",
     "WebhookNotify": "通知Webhook",
-    "WebhookREport": "レポートWebhook",
+    "WebhookReport": "レポートWebhook",
     "WebhookTest": "Webhookテスト"
   },
   "DrawItem": {
