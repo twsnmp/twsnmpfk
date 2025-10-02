@@ -84,6 +84,7 @@ export const typeList = [
   { name: 'TwLogEye', value: 'twlogeye' },
   { name: 'Pi-Hole', value: 'pihole' },
   { name: 'LXI', value: 'lxi' },
+  { name: 'Monitor', value: 'monitor' },
 ]
 
 const pollingTypeMap = new Map();

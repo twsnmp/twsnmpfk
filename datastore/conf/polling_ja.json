@@ -301,7 +301,17 @@
     "Descr": "フィルター条件に一致するsyslogの件数をモニタ"
   },
   {
-    "Name": "TRAP受信",
+    "Name": "Syslog統計",
+    "Type": "syslog",
+    "Mode": "stats",
+    "Params": "",
+    "Filter": "",
+    "Script": "",
+    "Level": "off",
+    "Descr": "syslogの統計情報"
+  },
+  {
+    "Name": "SNMP TRAP受信",
     "Type": "trap",
     "Mode": "count",
     "Params": "TODO:送信元",
@@ -309,6 +319,16 @@
     "Script": "count < 1",
     "Level": "low",
     "Descr": "フィルター条件に一致するSNMP TARPの件数をモニタ"
+  },
+  {
+    "Name": "SNMP TRAP統計情報",
+    "Type": "trap",
+    "Mode": "stats",
+    "Params": "",
+    "Filter": "",
+    "Script": "",
+    "Level": "off",
+    "Descr": "SNMP TARPの受信統計情報"
   },
   {
     "Name": "SYSLOG PRI監視",
@@ -350,12 +370,30 @@
     "Descr": "ARPログからMACアドレスの変化を検知"
   },
   {
+    "Name": "ARPログ統計情報",
+    "Type": "arplog",
+    "Mode": "stats",
+    "Filter": "",
+    "Script": "",
+    "Level": "off",
+    "Descr": "ARPログの統計情報"
+  },
+  {
     "Name": "NetFlow統計",
     "Type": "netflow",
     "Mode": "stats",
     "Params": "",
     "Level": "off",
     "Descr": "NetFlowの統計",
+    "AutoMode": "disable"
+  },
+  {
+    "Name": "NetFlow集計",
+    "Type": "netflow",
+    "Mode": "count",
+    "Params": "",
+    "Level": "off",
+    "Descr": "NetFlowの集計",
     "AutoMode": "disable"
   },
   {
@@ -375,5 +413,13 @@
     "Script": "var pb = jsonpath('$.queries.percent_blocked');\nsetResult('percent_blocked',pb);\npb < 10",
     "Level": "off",
     "Descr": "Pi-holeのブロック率の監視"
+  },
+  {
+    "Name": "リソースモニター",
+    "Type": "monitor",
+    "Mode": "",
+    "Script": "",
+    "Level": "off",
+    "Descr": "リソース(CPU,Memory,Dsikなど)の監視"
   }
 ]

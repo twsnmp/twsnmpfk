@@ -225,14 +225,17 @@ func doPolling(pe *datastore.PollingEnt) {
 	case "lxi":
 		doPollingLxi(pe)
 	case "gnmi":
-		doPollingGNMI(pe)
-		if pe.Mode == "subscribe" {
+		if !doPollingGNMI(pe) {
 			return
 		}
 	case "twlogeye":
 		doPollingTwLogEye(pe)
 	case "pihole":
 		docPollingPiHole(pe)
+	case "monitor":
+		if !doPollingMonitor(pe) {
+			return
+		}
 	}
 	datastore.UpdatePolling(pe, false)
 	if pe.LogMode == datastore.LogModeAlways || pe.LogMode == datastore.LogModeAI || (pe.LogMode == datastore.LogModeOnChange && oldState != pe.State) {

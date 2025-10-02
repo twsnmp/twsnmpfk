@@ -1,12 +1,9 @@
 package polling
 
-// LOG監視ポーリング処理
-
 import (
 	"fmt"
 	"log"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/robertkrimen/otto"
@@ -16,6 +13,8 @@ import (
 
 func doPollingSyslog(pe *datastore.PollingEnt) {
 	switch pe.Mode {
+	case "stats":
+		doPollingSyslogStats(pe)
 	case "pri":
 		doPollingSyslogPri(pe)
 	default:
@@ -171,61 +170,8 @@ func doPollingSyslogCount(pe *datastore.PollingEnt) {
 	}
 }
 
-func doPollingArpLog(pe *datastore.PollingEnt) {
-	var err error
-	filter := pe.Filter
+func doPollingSyslogStats(pe *datastore.PollingEnt) {
 	script := pe.Script
-	st := time.Now().Add(-time.Second * time.Duration(pe.PollInt)).UnixNano()
-	if v, ok := pe.Result["lastTime"]; ok {
-		if vf, ok := v.(float64); ok {
-			st = int64(vf)
-		}
-	}
-	vm := otto.New()
-	setVMFuncAndValues(pe, vm)
-	count := 0
-	datastore.ForEachLastArpLogs(func(l *datastore.ArpLogEnt) bool {
-		if l.Time < st {
-			return false
-		}
-		if filter != "" && l.State != filter {
-			return true
-		}
-		count++
-		return true
-	})
-	pe.Result["lastTime"] = time.Now().UnixNano()
-	pe.Result["count"] = float64(count)
-	if script == "" {
-		setPollingState(pe, "normal")
-		return
-	}
-	vm.Set("count", count)
-	vm.Set("interval", pe.PollInt)
-	value, err := vm.Run(script)
-	if err != nil {
-		setPollingError("log", pe, fmt.Errorf("invalid script err=%v", err))
-		return
-	}
-	if ok, _ := value.ToBoolean(); ok {
-		setPollingState(pe, "normal")
-	} else {
-		setPollingState(pe, pe.Level)
-	}
-}
-
-func doPollingTrap(pe *datastore.PollingEnt) {
-	var err error
-	var regexFilter *regexp.Regexp
-	host := pe.Params
-	filter := pe.Filter
-	script := pe.Script
-	if filter != "" {
-		if regexFilter, err = regexp.Compile(filter); err != nil {
-			setPollingError("log", pe, fmt.Errorf("invalid log watch format"))
-			return
-		}
-	}
 	st := time.Now().Add(-time.Second * time.Duration(pe.PollInt)).UnixNano()
 	if v, ok := pe.Result["lastTime"]; ok {
 		if vf, ok := v.(float64); ok {
@@ -233,36 +179,55 @@ func doPollingTrap(pe *datastore.PollingEnt) {
 		}
 	}
 	et := time.Now().UnixNano()
-	vm := otto.New()
-	setVMFuncAndValues(pe, vm)
 	count := 0
-	datastore.ForEachLastTraps(func(l *datastore.TrapEnt) bool {
+	normal := 0
+	warns := 0
+	errors := 0
+	patternMap := make(map[string]int)
+	errorPatternMap := make(map[string]int)
+	datastore.ForEachLastSyslog(func(l *datastore.SyslogEnt) bool {
 		if l.Time < st {
 			return false
 		}
-		if host != "" && l.FromAddress != host {
-			return true
-		} else if host == "" && pe.NodeID != getNodeIDFromTrapFromAddr(l.FromAddress) {
-			return true
-		}
-		msg := l.TrapType + " " + l.Variables
-		if regexFilter != nil && !regexFilter.Match([]byte(msg)) {
-			return true
+		host := l.Host
+		tag := l.Tag
+		message := l.Message
+		sv := l.Severity
+		msg := host + " " + tag + " " + message
+		nl := normalizeSyslog(msg)
+		patternMap[nl]++
+		switch {
+		case sv < 4:
+			errorPatternMap[nl]++
+			errors++
+		case sv == 4:
+			warns++
+		default:
+			normal++
 		}
 		count++
 		return true
 	})
 	pe.Result["lastTime"] = et
 	pe.Result["count"] = float64(count)
+	pe.Result["error"] = float64(errors)
+	pe.Result["warn"] = float64(warns)
+	pe.Result["normal"] = float64(normal)
+	pe.Result["patterns"] = float64(len(patternMap))
+	pe.Result["errorPatterns"] = float64(len(errorPatternMap))
 	if script == "" {
 		setPollingState(pe, "normal")
 		return
 	}
-	vm.Set("count", count)
+	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
+	for k, v := range pe.Result {
+		vm.Set(k, v)
+	}
 	vm.Set("interval", pe.PollInt)
 	value, err := vm.Run(script)
 	if err != nil {
-		setPollingError("log", pe, fmt.Errorf("invalid script err=%v", err))
+		setPollingError("syslog", pe, err)
 		return
 	}
 	if ok, _ := value.ToBoolean(); ok {
@@ -272,14 +237,18 @@ func doPollingTrap(pe *datastore.PollingEnt) {
 	}
 }
 
-func getNodeIDFromTrapFromAddr(fa string) string {
-	a := strings.Split(fa, "(")
-	if len(a) < 1 {
-		return ""
-	}
-	n := datastore.FindNodeFromIP(a[0])
-	if n != nil {
-		return n.ID
-	}
-	return ""
+var regNum = regexp.MustCompile(`\b-?\d+(\.\d+)?\b`)
+var regUUDI = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
+var regEmail = regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b`)
+var regIP = regexp.MustCompile(`\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b`)
+var regMAC = regexp.MustCompile(`\b(?:[0-9a-fA-F]{2}[:-]){5}(?:[0-9a-fA-F]{2})\b`)
+
+func normalizeSyslog(msg string) string {
+	normalized := msg
+	normalized = regUUDI.ReplaceAllString(normalized, "#UUID#")
+	normalized = regEmail.ReplaceAllString(normalized, "#EMAIL#")
+	normalized = regIP.ReplaceAllString(normalized, "#IP#")
+	normalized = regMAC.ReplaceAllString(normalized, "#MAC#")
+	normalized = regNum.ReplaceAllString(normalized, "#NUM#")
+	return normalized
 }

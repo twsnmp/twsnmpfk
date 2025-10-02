@@ -185,7 +185,17 @@
     "Descr": "syslog count"
   },
   {
-    "Name": "TRAP",
+    "Name": "Syslog stats",
+    "Type": "syslog",
+    "Mode": "stats",
+    "Params": "",
+    "Filter": "",
+    "Script": "",
+    "Level": "off",
+    "Descr": "syslog stats"
+  },
+  {
+    "Name": "SNMP TRAP count",
     "Type": "trap",
     "Mode": "count",
     "Params": "TODO:from",
@@ -193,6 +203,16 @@
     "Script": "count < 1",
     "Level": "low",
     "Descr": "TRAP count"
+  },
+  {
+    "Name": "SNMP TRAP stats",
+    "Type": "trap",
+    "Mode": "stats",
+    "Params": "",
+    "Filter": "",
+    "Script": "",
+    "Level": "off",
+    "Descr": "SNMP TRAP stats"
   },
   {
     "Name": "TWSNMP",
@@ -226,12 +246,30 @@
     "Descr": "change MAC by arp watch"
   },
   {
+    "Name": "ARP log stats",
+    "Type": "arplog",
+    "Mode": "stats",
+    "Filter": "",
+    "Script": "",
+    "Level": "off",
+    "Descr": "arp log stats"
+  },
+  {
     "Name": "NetFlow stats",
     "Type": "netflow",
     "Mode": "stats",
     "Params": "",
     "Level": "off",
     "Descr": "NetFlow stats",
+    "AutoMode": "disable"
+  },
+  {
+    "Name": "NetFlow count",
+    "Type": "netflow",
+    "Mode": "count",
+    "Params": "",
+    "Level": "off",
+    "Descr": "NetFlow count",
     "AutoMode": "disable"
   },
   {
@@ -251,5 +289,13 @@
     "Script": "var pb = jsonpath('$.queries.percent_blocked');\nsetResult('percent_blocked',pb);\npb < 10",
     "Level": "off",
     "Descr": "Pi-hole percent blocked"
+  },
+  {
+    "Name": "Resource monitor",
+    "Type": "monitor",
+    "Mode": "",
+    "Script": "",
+    "Level": "off",
+    "Descr": "Resource(CPU,Memory,Disk...) monitor "
   }
 ]

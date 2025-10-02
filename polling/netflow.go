@@ -16,14 +16,16 @@ import (
 
 func doPollingNetFlow(pe *datastore.PollingEnt) {
 	switch pe.Mode {
+	case "stats":
+		doPollingNetflowStats(pe)
 	case "traffic":
-		doPollingNetFlowTraffic(pe)
+		doPollingNetflowTraffic(pe)
 	default:
-		doPollingNetFlowStats(pe)
+		doPollingNetflowCount(pe)
 	}
 }
 
-func doPollingNetFlowTraffic(pe *datastore.PollingEnt) {
+func doPollingNetflowTraffic(pe *datastore.PollingEnt) {
 	var err error
 	var filterSrc *regexp.Regexp
 	var filterIP *regexp.Regexp
@@ -128,7 +130,7 @@ func doPollingNetFlowTraffic(pe *datastore.PollingEnt) {
 	}
 }
 
-func doPollingNetFlowStats(pe *datastore.PollingEnt) {
+func doPollingNetflowCount(pe *datastore.PollingEnt) {
 	var err error
 	st := time.Now().Add(-time.Second * time.Duration(pe.PollInt)).UnixNano()
 	if v, ok := pe.Result["lastTime"]; ok {
@@ -333,6 +335,106 @@ func makeRegexpIPFilter(f string) *regexp.Regexp {
 		return nil
 	}
 	return reg
+}
+
+func doPollingNetflowStats(pe *datastore.PollingEnt) {
+	st := time.Now().Add(-time.Second * time.Duration(pe.PollInt)).UnixNano()
+	if v, ok := pe.Result["lastTime"]; ok {
+		if vf, ok := v.(float64); ok {
+			st = int64(vf)
+		}
+	}
+	et := time.Now().UnixNano()
+	count := 0
+	totalPacktes := float64(0)
+	totalBytes := float64(0)
+	fumbles := float64(0)
+	ipMap := make(map[string]int)
+	macMap := make(map[string]int)
+	flowMap := make(map[string]int)
+	protMap := make(map[string]int)
+	fumbleSrcMap := make(map[string]int)
+	fumbleFlowMap := make(map[string]int)
+	datastore.ForEachNetFlow(st, et, func(l *datastore.NetFlowEnt) bool {
+		sa := l.SrcAddr
+		da := l.DstAddr
+		sp := l.SrcPort
+		dp := l.DstPort
+		pi := 0
+		switch l.Protocol {
+		case "tcp":
+			pi = 6
+		case "udp":
+			pi = 17
+		case "icmp", "icmpv6":
+			pi = 1
+		default:
+			return true
+		}
+		var flowKey string
+		var prot string
+		var ok bool
+		if sa > da {
+			flowKey = da + ":" + sa
+		} else {
+			flowKey = sa + ":" + da
+		}
+		if prot, ok = datastore.GetServiceName(pi, int(sp)); !ok {
+			prot, _ = datastore.GetServiceName(pi, int(dp))
+		}
+		protMap[prot]++
+		ipMap[sa]++
+		flowMap[flowKey]++
+		// TCP short
+		if pi == 6 && l.Packets < 4 {
+			fumbleFlowMap[flowKey]++
+			fumbleSrcMap[sa]++
+			fumbles++
+		}
+		// ICMP error
+		if pi == 1 {
+			switch sp {
+			case 3, 4, 5, 11, 12:
+				fumbleFlowMap[flowKey]++
+				fumbleSrcMap[da]++
+				fumbles++
+			}
+		}
+		count++
+		totalBytes += float64(l.Bytes)
+		totalPacktes += float64(l.Packets)
+		return true
+	})
+	pe.Result["lastTime"] = et
+	pe.Result["count"] = float64(count)
+	pe.Result["bytes"] = totalBytes
+	pe.Result["packets"] = totalPacktes
+	pe.Result["IPs"] = len(ipMap)
+	pe.Result["MACs"] = len(macMap)
+	pe.Result["flows"] = len(flowMap)
+	pe.Result["fumbleFlows"] = len(fumbleFlowMap)
+	pe.Result["fumbleSrc"] = len(fumbleSrcMap)
+	pe.Result["fumbles"] = fumbles
+	if pe.Script == "" {
+		setPollingState(pe, "normal")
+		return
+	}
+	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
+	vm.Set("interval", pe.PollInt)
+	for k, v := range pe.Result {
+		vm.Set(k, v)
+	}
+	value, err := vm.Run(pe.Script)
+	if err != nil {
+		setPollingError("netflow", pe, err)
+		return
+	}
+	if ok, _ := value.ToBoolean(); ok {
+		setPollingState(pe, "normal")
+	} else {
+		setPollingState(pe, pe.Level)
+	}
 }
 
 func makeRegexpFilter(f string) *regexp.Regexp {
