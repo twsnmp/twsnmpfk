@@ -545,6 +545,66 @@ export const getNetFlowFlowList = (logs:any,mac:boolean) => {
   return r
 }
 
+export const getNetFlowFumbleList = (logs:any,flow: boolean) => {
+  const m = new Map()
+  logs.forEach((l:any) => {
+    let k = flow ? l.SrcAddr + "<->" + l.DstAddr : l.SrcAddr;
+    switch (l.Protocol) {
+    case "icmp":
+      switch (l.DstPort/256) {
+      case 3:
+      case 4:
+      case 5:
+      case 11:
+      case 12:
+        k = flow ? l.DstAddr + "<->" + l.SrcAddr : l.DstAddr;
+        flow = false
+        break
+      default:
+        return
+      }
+      break
+    case "tcp":
+      if (l.Packets > 3){
+        return
+      }
+      break
+    default:
+      return
+    }
+    let e = m.get(k)
+    if (!e && flow) {
+      k = l.DstAddr + '<->' + l.SrcAddr
+      e = m.get(k)
+    }
+    if (!e) {
+      m.set(k, {
+        Name: k,
+        Bytes: l.Bytes,
+        Packets: l.Packets,
+        Dur: l.Dur,
+      })
+    } else {
+      e.Bytes += l.Bytes
+      e.Packets += l.Packets
+      e.Dur += l.Dur
+    }
+  })
+  const r = Array.from(m.values())
+  r.forEach((e) => {
+    if (e.Dur > 0) {
+      e.bps = (e.Bytes / e.Dur).toFixed(3)
+      e.pps = (e.Packets / e.Dur).toFixed(3)
+      e.Dur = e.Dur.toFixed(3)
+    } else {
+      e.bps = 0
+      e.pps = 0
+    }
+  })
+  return r
+}
+
+
 export const showNetFlowGraph = (div:string, logs:any,mode :number, type:string) => {
   const nodeMap = new Map()
   const edgeMap = new Map()
@@ -986,11 +1046,36 @@ export const showNetFlowService3D = (div:string, logs:any, type:string) => {
   return chart;
 }
 
-export const showNetFlowSender3D = (div:string, logs:any, type:string, mac:boolean) => {
+export const showNetFlowSender3D = (div:string, logs:any, type:string, mac:boolean, fumble:boolean) => {
   const m = new Map()
   logs.forEach((l:any) => {
-    const k = mac ? l.SrcMAC : l.SrcAddr;
-    const ipt = getNodeCategory(l.SrcAddr)
+    let sa = l.SrcAddr
+    if(fumble){
+      switch (l.Protocol) {
+      case "icmp":
+        switch (l.DstPort/256) {
+        case 3:
+        case 4:
+        case 5:
+        case 11:
+        case 12:
+          sa = l.DstAddr;
+          break
+        default:
+          return
+        }
+        break
+      case "tcp":
+        if (l.Packets > 3){
+          return
+        }
+        break
+      default:
+        return
+      }
+    }
+    const k = mac ? l.SrcMAC : sa;
+    const ipt = getNodeCategory(sa)
     const t = new Date(l.Time / (1000 * 1000))
     const e = m.get(k)
     if (!e) {
@@ -1182,13 +1267,42 @@ export const showNetFlowSender3D = (div:string, logs:any, type:string, mac:boole
   return chart;
 }
 
-export const showNetFlowFlow3D = (div:string, logs:any, type:string,mac:boolean) => {
+export const showNetFlowFlow3D = (div:string, logs:any, type:string,mac:boolean, fumble:boolean) => {
   const m = new Map()
   logs.forEach((l:any) => {
-    let k = mac ? l.SrcMAC + '<->' + l.DstMAC : l.SrcAddr + '<->' + l.DstAddr
+    let sa = l.SrcAddr
+    let da = l.DstAddr
+    let r = true
+    if(fumble){
+      switch (l.Protocol) {
+      case "icmp":
+        switch (l.DstPort/256) {
+        case 3:
+        case 4:
+        case 5:
+        case 11:
+        case 12:
+          sa = l.DstAddr;
+          da = l.SrcAddr;
+          r = false
+          break
+        default:
+          return
+        }
+        break
+      case "tcp":
+        if (l.Packets > 3){
+          return
+        }
+        break
+      default:
+        return
+      }
+    }
+    let k = mac ? l.SrcMAC + '<->' + l.DstMAC : sa + '<->' + da
     let e = m.get(k)
-    if (!e) {
-      k = mac ? l.DstMAC + '<->' + l.SrcMAC : l.DstAddr + '<->' + l.SrcAddr;
+    if (!e && r) {
+      k = mac ? l.DstMAC + '<->' + l.SrcMAC : da + '<->' + sa
       e = m.get(k)
     }
     const ipt = getNodeCategory(l.SrcAddr)

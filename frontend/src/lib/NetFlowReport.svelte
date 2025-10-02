@@ -16,6 +16,7 @@
     getNetFlowFlowList,
     getNetFlowSenderList,
     getNetFlowServiceList,
+    getNetFlowFumbleList,
     showNetFlowHistogram,
     showNetFlowTop,
     showNetFlowTraffic,
@@ -102,6 +103,8 @@
     { value: "service", name: $_('NetFlowReport.Service') },
     { value: "flow", name: $_('NetFlowReport.Flow') },
     { value: "flow_mac", name: $_('NetFlowReport.MACFlow') },
+    { value: "fumble_src", name: "Fumble送信元別"},
+    { value: "fumble_flow", name: "Fumbleペアー別"},
   ];
 
   let topListDataType: string = "bytes";
@@ -181,6 +184,12 @@
       case "flow_mac":
         topList = getNetFlowFlowList(logs,true);
         break;
+      case "fumble_src":
+        topList = getNetFlowFumbleList(logs,false);
+        break;
+      case "fumble_flow":
+        topList = getNetFlowFumbleList(logs,true);
+        break;
     }
     await tick();
     showTopTable();
@@ -203,19 +212,25 @@
     await tick();
     switch (topListType) {
       case "sender":
-        chart = showNetFlowSender3D("topList3D", logs, topListDataType,false);
+        chart = showNetFlowSender3D("topList3D", logs, topListDataType,false,false);
         break;
       case "sender_mac":
-        chart = showNetFlowSender3D("topList3D", logs, topListDataType,true);
+        chart = showNetFlowSender3D("topList3D", logs, topListDataType,true,false);
+        break;
+      case "fumble_src":
+        chart = showNetFlowSender3D("topList3D", logs, topListDataType,false,true);
         break;
       case "service":
         chart = showNetFlowService3D("topList3D", logs, topListDataType);
         break;
       case "flow":
-        chart = showNetFlowFlow3D("topList3D", logs, topListDataType,false);
+        chart = showNetFlowFlow3D("topList3D", logs, topListDataType,false,false);
         break;
       case "flow_mac":
-        chart = showNetFlowFlow3D("topList3D", logs, topListDataType,true);
+        chart = showNetFlowFlow3D("topList3D", logs, topListDataType,true,false);
+        break;
+      case "fumble_flow":
+        chart = showNetFlowFlow3D("topList3D", logs, topListDataType,false,true);
         break;
     }
   };
