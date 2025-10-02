@@ -1,22 +1,6 @@
 // Package polling : ポーリング処理
 package polling
 
-/*
-polling.go :ポーリング処理を行う
-ポーリングの種類は
-(1)能動的なポーリング
- ping
- snmp - sysUptime,ifOperStatus,
- http
- https
- tls
- dns
-（２）受動的なポーリング
- syslog
- snmp trap
-
-*/
-
 import (
 	"context"
 	"encoding/json"
@@ -229,7 +213,9 @@ func doPolling(pe *datastore.PollingEnt) {
 			return
 		}
 	case "twlogeye":
-		doPollingTwLogEye(pe)
+		if !doPollingTwLogEye(pe) {
+			return
+		}
 	case "pihole":
 		docPollingPiHole(pe)
 	case "monitor":

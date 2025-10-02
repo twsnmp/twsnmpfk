@@ -345,11 +345,46 @@
     "Descr": "TWSNMP連携"
   },
   {
-    "Name": "TwLogEye連携",
+    "Name": "TwLogEye通知",
     "Type": "twlogeye",
     "Level": "low",
     "Script": "count < 1",
-    "Descr": "TwLogEye連携"
+    "Descr": "TwLogEye通知監視"
+  },
+  {
+    "Name": "TwLogEye Syslogレポート",
+    "Type": "twlogeye",
+    "Mode": "report.syslog",
+    "Level": "off",
+    "Descr": "TwLogEye Syslogレポート監視"
+  },
+  {
+    "Name": "TwLogEye SNMP TRAPレポート",
+    "Type": "twlogeye",
+    "Mode": "report.snmptrap",
+    "Level": "off",
+    "Descr": "TwLogEye SNMP TRAPレポート監視"
+  },
+  {
+    "Name": "TwLogEye Netflowレポート",
+    "Type": "twlogeye",
+    "Mode": "report.netflow",
+    "Level": "off",
+    "Descr": "TwLogEye Netflowレポート監視"
+  },
+  {
+    "Name": "TwLogEye Windows event logレポート",
+    "Type": "twlogeye",
+    "Mode": "report.winevent",
+    "Level": "off",
+    "Descr": "TwLogEye Windows event logレポート監視"
+  },
+  {
+    "Name": "TwLogEye 異常検知レポート",
+    "Type": "twlogeye",
+    "Mode": "report.anomaly",
+    "Level": "off",
+    "Descr": "TwLogEye 異常検知レポート監視"
   },
   {
     "Name": "新規デバイス検知",

@@ -228,6 +228,41 @@
     "Descr": "TwLogEye notify"
   },
   {
+    "Name": "TwLogEye Syslog Report",
+    "Type": "twlogeye",
+    "Mode": "report.syslog",
+    "Level": "off",
+    "Descr": "TwLogEye Syslog Report"
+  },
+  {
+    "Name": "TwLogEye SNMP TRAP Report",
+    "Type": "twlogeye",
+    "Mode": "report.snmptrap",
+    "Level": "off",
+    "Descr": "TwLogEye SNMP TRAP Report"
+  },
+  {
+    "Name": "TwLogEye Netflow Report",
+    "Type": "twlogeye",
+    "Mode": "report.netflow",
+    "Level": "off",
+    "Descr": "TwLogEye Netflow Report"
+  },
+  {
+    "Name": "TwLogEye Windows Event Log Report",
+    "Type": "twlogeye",
+    "Mode": "report.winevent",
+    "Level": "off",
+    "Descr": "TwLogEye Windows Event Log Report"
+  },
+  {
+    "Name": "TwLogEye Anomaly Report",
+    "Type": "twlogeye",
+    "Mode": "report.anomaly",
+    "Level": "off",
+    "Descr": "TwLogEye Anomaly Report"
+  },
+  {
     "Name": "New device",
     "Type": "arplog",
     "Mode": "",
