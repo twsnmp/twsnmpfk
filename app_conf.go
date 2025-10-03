@@ -55,6 +55,12 @@ func (a *App) GetNotifyConf() datastore.NotifyConfEnt {
 
 // UpdateNotifyConf save notify config
 func (a *App) UpdateNotifyConf(n datastore.NotifyConfEnt) bool {
+	if n.Provider != datastore.NotifyConf.Provider ||
+		n.ClientID != datastore.NotifyConf.ClientID ||
+		n.ClientSecret != datastore.NotifyConf.ClientSecret ||
+		n.MSTenant != datastore.NotifyConf.MSTenant {
+		datastore.DeleteNotifyOAuth2Token()
+	}
 	datastore.NotifyConf = n
 	return datastore.SaveNotifyConf() == nil
 }
@@ -67,6 +73,23 @@ func (a *App) TestNotifyConf(n datastore.NotifyConfEnt) bool {
 // TestWebhook test webhook of notify conf
 func (a *App) TestWebhook(n datastore.NotifyConfEnt) bool {
 	return notify.WebHookTest(&n) == nil
+}
+
+func (a *App) GetNotifyOAuth2Token() string {
+	url, err := notify.GetNotifyOAuth2TokenStep1()
+	if err != nil {
+		return err.Error()
+	}
+	wails.BrowserOpenURL(a.ctx, url)
+	err = notify.GetNotifyOAuth2TokenStep2()
+	if err != nil {
+		return err.Error()
+	}
+	return ""
+}
+
+func (a *App) HasValidNotifyOAuth2Token(n datastore.NotifyConfEnt) bool {
+	return datastore.HasValidNotifyOAuth2Token(n)
 }
 
 // GetAIConf returns AI config

@@ -914,6 +914,7 @@ export namespace datastore {
 	    }
 	}
 	export class NotifyConfEnt {
+	    Provider: string;
 	    MailServer: string;
 	    InsecureSkipVerify: boolean;
 	    User: string;
@@ -930,6 +931,9 @@ export namespace datastore {
 	    BeepLow: string;
 	    WebHookNotify: string;
 	    WebHookReport: string;
+	    ClientID: string;
+	    ClientSecret: string;
+	    MSTenant: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new NotifyConfEnt(source);
@@ -937,6 +941,7 @@ export namespace datastore {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Provider = source["Provider"];
 	        this.MailServer = source["MailServer"];
 	        this.InsecureSkipVerify = source["InsecureSkipVerify"];
 	        this.User = source["User"];
@@ -953,6 +958,9 @@ export namespace datastore {
 	        this.BeepLow = source["BeepLow"];
 	        this.WebHookNotify = source["WebHookNotify"];
 	        this.WebHookReport = source["WebHookReport"];
+	        this.ClientID = source["ClientID"];
+	        this.ClientSecret = source["ClientSecret"];
+	        this.MSTenant = source["MSTenant"];
 	    }
 	}
 	export class OTelMetricDataPointEnt {

@@ -374,6 +374,10 @@ export function GetNotifyConf() {
   return window['go']['main']['App']['GetNotifyConf']();
 }
 
+export function GetNotifyOAuth2Token() {
+  return window['go']['main']['App']['GetNotifyOAuth2Token']();
+}
+
 export function GetOTelMetric(arg1) {
   return window['go']['main']['App']['GetOTelMetric'](arg1);
 }
@@ -460,6 +464,10 @@ export function GetVersion() {
 
 export function HasDatastore() {
   return window['go']['main']['App']['HasDatastore']();
+}
+
+export function HasValidNotifyOAuth2Token(arg1) {
+  return window['go']['main']['App']['HasValidNotifyOAuth2Token'](arg1);
 }
 
 export function ImportIcon(arg1) {

@@ -85,6 +85,7 @@ func initConf() {
 	NotifyConf.Interval = 60
 	NotifyConf.Subject = i18n.Trans("Notify from TWSNMP")
 	NotifyConf.Level = "none"
+	NotifyConf.Provider = "smtp"
 	LocConf.Zoom = 2
 	LocConf.Center = "139.75,35.68"
 	LocConf.IconSize = 24
@@ -118,6 +119,7 @@ func loadConf() error {
 		if v != nil {
 			json.Unmarshal(v, &NotifyConf)
 		}
+		loadNotifyOAuth2Token(b)
 		v = b.Get([]byte("aiConf"))
 		if v != nil {
 			json.Unmarshal(v, &AIConf)

@@ -286,7 +286,14 @@
     "WebhookTestOK": "Webhookのテストに成功しました",
     "WebhookNotify": "通知Webhook",
     "WebhookReport": "レポートWebhook",
-    "WebhookTest": "Webhookテスト"
+    "WebhookTest": "Webhookテスト",
+    "WaitMsg": "お待ちください...",
+    "Provider": "プロバイダー",
+    "SelectProvider": "プロバイダーを選択",
+    "ClientID": "クライアントID",
+    "ClientSecret": "クライアントシークレット",
+    "MSTenant": "テナント名",
+    "GetTokenBtn": "トークンの取得"
   },
   "DrawItem": {
     "Rect": "矩形",
@@ -863,7 +870,9 @@
     "DstMacIP": "宛先MACとIP",
     "FlowMode": "集計方法",
     "SenderMAC": "送信元MAC別",
-    "MACFlow": "MACペアー別"
+    "MACFlow": "MACペアー別",
+    "FumbleFlow": "Fumbleペアー別",
+    "FumbleSrc": "Fumble送信元別"
   },
   "SFlow": {
     "Reason": "破棄理由",

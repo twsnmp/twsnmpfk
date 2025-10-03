@@ -299,7 +299,14 @@
     "WebhookReport": "Report Webhook",
     "WebhookTest": "Test Webhook",
     "WebhookTestFail": "Webhook test failed",
-    "WebhookTestOK": "Webhook test was successful"
+    "WebhookTestOK": "Webhook test was successful",
+    "ClientID": "Client ID",
+    "ClientSecret": "Client Secret",
+    "GetTokenBtn": "Get Token",
+    "MSTenant": "Tenant name",
+    "Provider": "Provider",
+    "SelectProvider": "Choose a provider",
+    "WaitMsg": "Please wait..."
   },
   "DrawItem": {
     "Cancel": "Cancel",
@@ -863,7 +870,9 @@
     "SrcDstMac": "Src MAC to Dst MAC",
     "SrcMacIP": "Src MAC to IP",
     "MACFlow": "MAC to MAC",
-    "SenderMAC": "MAC"
+    "SenderMAC": "MAC",
+    "FumbleFlow": "Fumble flow",
+    "FumbleSrc": "Fumble Src"
   },
   "SFlow": {
     "Reason": "Discard reason",

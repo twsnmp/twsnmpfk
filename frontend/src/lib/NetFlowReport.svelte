@@ -103,8 +103,8 @@
     { value: "service", name: $_('NetFlowReport.Service') },
     { value: "flow", name: $_('NetFlowReport.Flow') },
     { value: "flow_mac", name: $_('NetFlowReport.MACFlow') },
-    { value: "fumble_src", name: "Fumble送信元別"},
-    { value: "fumble_flow", name: "Fumbleペアー別"},
+    { value: "fumble_src", name: $_('NetflowReport.FumbleSrc')},
+    { value: "fumble_flow", name: $_('NetFlowReport.FumbleFlow')},
   ];
 
   let topListDataType: string = "bytes";

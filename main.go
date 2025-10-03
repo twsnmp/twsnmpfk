@@ -45,6 +45,7 @@ func init() {
 	flag.IntVar(&datastore.TCPPort, "tcpdPort", 8086, "tcp server port")
 	flag.IntVar(&datastore.OTelgRPCPort, "otelGRPCPort", 4317, "OpenTelemetry server gRPC port")
 	flag.IntVar(&datastore.OTelHTTPPort, "otelHTTPPort", 4318, "OpenTelemetry server HTTP port")
+	flag.IntVar(&datastore.NotifyOAuth2RedirectPort, "notifyOAuth2Port", 8180, "OAuth2 redirect port")
 	flag.IntVar(&maxDispLog, "maxDispLog", 10000, "Max log size to diplay")
 	flag.StringVar(&datastore.PingMode, "ping", "", "ping mode icmp or udp")
 	flag.StringVar(&lang, "lang", "", "Language(en|jp)")
@@ -148,6 +149,9 @@ func loadIni() {
 	}
 	if v := cfg.Section("").Key("kiosk").MustBool(false); v {
 		kiosk = v
+	}
+	if v := cfg.Section("").Key("notifyOAuth2Port").MustInt(0); v > 0 {
+		datastore.NotifyOAuth2RedirectPort = v
 	}
 	// logger
 	if v := cfg.Section("logger").Key("trapPort").MustInt(0); v > 0 {

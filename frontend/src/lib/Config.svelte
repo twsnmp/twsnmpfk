@@ -51,6 +51,8 @@
     ImportIcon,
     ExportIcons,
     ImportV4Map,
+    HasValidNotifyOAuth2Token,
+    GetNotifyOAuth2Token,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
@@ -74,10 +76,14 @@
   let mapConf: any = undefined;
 
   let notifyConf: any = undefined;
+  let notifyHasValidToken = false;
+  let savedProvider = "";
   let showTestError: boolean = false;
   let showWebhookTestError: boolean = false;
   let showTestOk: boolean = false;
   let showWebhookTestOk: boolean = false;
+  let notifyError = "";
+
   let locConf: any = undefined;
   let showLocStyleError = false;
 
@@ -90,6 +96,8 @@
   const onOpen = async () => {
     mapConf = await GetMapConf();
     notifyConf = await GetNotifyConf();
+    savedProvider = notifyConf.Provider;
+    notifyHasValidToken = await HasValidNotifyOAuth2Token(notifyConf);
     aiConf = await GetAIConf();
     locConf = await GetLocConf();
     sshHostPublicKey = await GetSshdPublicKeys();
@@ -124,27 +132,58 @@
     { name: $_("Config.High"), value: "high" },
   ];
 
+  const smtpProviderList = [
+    { name: "", value: "smtp" },
+    { name: "Google", value: "google" },
+    { name: "Microsoft", value: "microsoft" },
+  ];
+
   const saveNotifyConf = async () => {
+    notifyError = "";
     notifyConf.Interval *= 1;
     await UpdateNotifyConf(notifyConf);
+    savedProvider = notifyConf.Provider;
     close();
   };
-
+  let notifyBusy = false;
   const testMail = async () => {
+    notifyError = "";
     showTestError = false;
+    showTestOk = false;
+    notifyBusy = true;
     notifyConf.Interval *= 1;
     const ok = await TestNotifyConf(notifyConf);
     showTestError = !ok;
     showTestOk = ok;
+    notifyBusy = false;
   };
 
   const testWebhook = async () => {
+    notifyBusy = true;
     showWebhookTestError = false;
+    showWebhookTestOk = false;
     notifyConf.Interval *= 1;
     const ok = await TestWebhook(notifyConf);
     showWebhookTestError = !ok;
     showWebhookTestOk = ok;
+    notifyBusy = false;
   };
+
+  const changeProvider = async () => {
+    notifyHasValidToken = await HasValidNotifyOAuth2Token(notifyConf);
+  }
+ 
+  const getOAuth2Token = async () => {
+    showTestError = false;
+    showTestOk = false;
+    showWebhookTestError = false;
+    showWebhookTestOk = false;
+    notifyError = "";
+    notifyBusy = true;
+    notifyError = await GetNotifyOAuth2Token()
+    notifyHasValidToken = await HasValidNotifyOAuth2Token(notifyConf);
+    notifyBusy = false;
+  }
 
   let showAudioError = false;
   const selectBeep = async (h: any) => {
@@ -830,6 +869,14 @@
               </div>
             </Alert>
           {/if}
+          {#if notifyError}
+            <Alert color="red" dismissable>
+              <div class="flex">
+                <Icon path={icons.mdiExclamation} size={1} />
+                {notifyError}
+              </div>
+            </Alert>
+          {/if}
           {#if showTestOk}
             <Alert class="flex" color="blue" dismissable>
               <div class="flex">
@@ -846,7 +893,94 @@
               </div>
             </Alert>
           {/if}
-          <div class="grid gap-4 grid-cols-4">
+          {#if notifyBusy }
+            <Alert class="flex" color="indigo">
+                <Spinner size={4} />
+                <div class="mr-4">
+                  {$_('Config.WaitMsg')}
+                </div>
+            </Alert>
+          {/if}
+          <div class="grid gap-2 grid-cols-5">
+            <Label class="space-y-2 text-xs">
+              <span> {$_('Config.Provider')} </span>
+              <Select
+                items={smtpProviderList}
+                bind:value={notifyConf.Provider}
+                placeholder={$_('Config.SelectProvider')}
+                size="sm"
+                on:change={changeProvider}
+              />
+            </Label>
+            {#if notifyConf.Provider == "google"}
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.ClientID')}</span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.ClientID}
+                placeholder={$_('Config.ClientID')}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.ClientSecret')}</span>
+              <Input
+                class="h-8"
+                type="password"
+                bind:value={notifyConf.ClientSecret}
+                placeholder="•••••"
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_("Config.SmtpUser")}</span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.User}
+                placeholder="smtp user"
+                size="sm"
+              />
+            </Label>
+            <div></div>
+          {:else if notifyConf.Provider == "microsoft"}
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.MSTenant')}</span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.MSTenant}
+                placeholder={$_('Config.MSTenant')}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.ClientID')}</span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.ClientID}
+                placeholder={$_('Config.ClientID')}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.ClientSecret')}</span>
+              <Input
+                class="h-8"
+                type="password"
+                bind:value={notifyConf.ClientSecret}
+                placeholder="•••••"
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_("Config.SmtpUser")}</span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.User}
+                placeholder="smtp user"
+                size="sm"
+              />
+            </Label>
+          {:else}
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.MailServer")}</span>
               <Input
@@ -879,6 +1013,7 @@
                 size="sm"
               />
             </Label>
+          {/if}
           </div>
           <div class="grid gap-4 grid-cols-4">
             <Label class="space-y-2 text-xs col-span-2">
@@ -1034,6 +1169,7 @@
               <Icon path={icons.mdiContentSave} size={1} />
               {$_("Config.Save")}
             </GradientButton>
+            {#if notifyHasValidToken}
             <GradientButton
               shadow
               type="button"
@@ -1044,6 +1180,18 @@
               <Icon path={icons.mdiEmail} size={1} />
               {$_("Config.Test")}
             </GradientButton>
+            {:else if savedProvider == "google" || savedProvider == "microsoft" }
+            <GradientButton
+              shadow
+              type="button"
+              color="red"
+              on:click={getOAuth2Token}
+              size="xs"
+            >
+              <Icon path={icons.mdiKey} size={1} />
+              {$_('Config.GetTokenBtn')}
+            </GradientButton>
+            {/if}
             <GradientButton
               shadow
               type="button"

@@ -192,6 +192,8 @@ export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
 
+export function GetNotifyOAuth2Token():Promise<string>;
+
 export function GetOTelMetric(arg1:main.OTelMetricEnt):Promise<datastore.OTelMetricEnt>;
 
 export function GetOTelMetrics():Promise<Array<main.OTelMetricEnt>>;
@@ -235,6 +237,8 @@ export function GetVPanelPowerInfo(arg1:string):Promise<boolean>;
 export function GetVersion():Promise<string>;
 
 export function HasDatastore():Promise<boolean>;
+
+export function HasValidNotifyOAuth2Token(arg1:datastore.NotifyConfEnt):Promise<boolean>;
 
 export function ImportIcon(arg1:Array<datastore.IconEnt>):Promise<main.ImportIconEnt>;
 
