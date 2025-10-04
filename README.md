@@ -127,8 +127,14 @@ Usage of twsnmpfk:
     	Disable edit map and lock page(map or loc)
   -maxDispLog int
     	Max log size to diplay (default 10000)
+  -mcpCert string
+    	MCP server cert path
+  -mcpKey string
+    	MCP server key path
   -netflowPort int
     	Netflow port (default 2055)
+  -notifyOAuth2Port int
+    	OAuth2 redirect port (default 8180)
   -otelCA string
     	OpenTelementry CA cert path
   -otelCert string
@@ -174,6 +180,9 @@ Usage of twsnmpfk:
 | otelGRPCPort |OpenTelemetry server gRPC port (default 4317)|
 | otelHTTPPort |OpenTelemetry server HTTP port (default 4318)|
 | otelKey |OpenTelemetry server key path|
+| mcpCert |MCP server cert path|
+| mcpKey |MCP server key path|
+| notifyOAuth2Port |OAuth2 redirect port (default 8180)|
 
 ---
 
@@ -195,3 +204,6 @@ Usage of twsnmpfk:
 | otelGRPCPort |OpenTelemetryサーバーのgRPCポート番号 (default 4317)|
 | otelHTTPPort |OpenTelemetryサーバーのHTTPポート番号 (default 4318)|
 | otelKey |OpenTelemetryサーバーの秘密鍵のパス|
+| mcpCert |MCPサーバーの証明書のパス|
+| mcpKey |MCPサーバーの秘密鍵のパス|
+| notifyOAuth2Port |OAuth2リダイレクトサーバーのポート番号(default 8180)|

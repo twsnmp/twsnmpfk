@@ -1520,10 +1520,14 @@ System情報の画面です。上部にログのリソースと通信の情報�
 
 通知の設定をする画面です。
 
-![](./images/ja/2024-02-15_05-05-50.png)
+![](./images/ja/2025-10-04_05-57-32.png)
 
 |項目|内容|
 |----|----|
+|プロバイダー|smtp/Google/Microsoftから選択します。|
+|クライアントID|OAuth2(Google/Microsoft)のクライアントIDです。|
+|クライアントシークレット|OAuth2(Google/Microsoft)のクライアントシークレットです。|
+|テナント名|OAuth2(Microsoft)のテナント名です。|
 |メールサーバー|通知メールを送信するためのメールサーバーを指定します。ホスト名又はIPアドレス：ポート番号|
 |サーバー証明書をチェックしない|指定のメールサーバーがオレオレ証明書の場合にチェックします。|
 |ユーザー|メール送信認証のユーザーIDを設定します。|
@@ -1706,8 +1710,14 @@ Usage of twsnmpfk:
     	Disable edit map and lock page(map or loc)
   -maxDispLog int
     	Max log size to diplay (default 10000)
+  -mcpCert string
+    	MCP server cert path
+  -mcpKey string
+    	MCP server key path
   -netflowPort int
     	Netflow port (default 2055)
+  -notifyOAuth2Port int
+    	OAuth2 redirect port (default 8180)
   -otelCA string
     	OpenTelementry CA cert path
   -otelCert string
@@ -1752,6 +1762,9 @@ Usage of twsnmpfk:
 |otelKey <file>|OpenTelemetryのサーバーの秘密鍵|
 |otelGRPCPort <number>|OpenTelemetryのgRPCのポート番号|
 |otelHTTPPort <file>|OpenTelemetryのHTTPのポート番号|
+| mcpCert |MCPサーバーの証明書のパス|
+| mcpKey |MCPサーバーの秘密鍵のパス|
+| notifyOAuth2Port |OAuth2リダイレクトサーバーのポート番号(default 8180)|
 
 ## 設定ファイル
 

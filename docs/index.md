@@ -1506,11 +1506,14 @@ The port number is specified by the startup parameter of the program.
 
 This is the screen to set the notification.
 
-![](./images/en/2024-02-15_05-32-34.png)
-
+![](./images/en/2025-10-04_15-38-07.png)
 
 | Items | Contents |
 | ---- | ---- |
+|Provider|Select from smtp/Google/Microsoft.|
+|Client ID|The OAuth2 (Google/Microsoft) client ID.|
+|Client Secret|The OAuth2 (Google/Microsoft) client secret.|
+|Tenant Name|The OAuth2 (Microsoft) tenant name.|
 | Mail server | Specify a mail server to send notification emails.<br> Host name or IP address: port number |
 | Do not check the server certificate | Check when the specified mail server is self certificate.|
 | User | Set a user ID for authentication.|
@@ -1678,7 +1681,7 @@ You can customize it by saving the following files in the data folder.
 
 ```
 Usage of twsnmpfk:
- -caCert string
+  -caCert string
     	CA Cert path
   -clientCert string
     	Client cert path
@@ -1694,8 +1697,14 @@ Usage of twsnmpfk:
     	Disable edit map and lock page(map or loc)
   -maxDispLog int
     	Max log size to diplay (default 10000)
+  -mcpCert string
+    	MCP server cert path
+  -mcpKey string
+    	MCP server key path
   -netflowPort int
     	Netflow port (default 2055)
+  -notifyOAuth2Port int
+    	OAuth2 redirect port (default 8180)
   -otelCA string
     	OpenTelementry CA cert path
   -otelCert string
@@ -1718,7 +1727,6 @@ Usage of twsnmpfk:
     	tcp server port (default 8086)
   -trapPort int
     	SNMP TRAP port (default 162)
-
 ```
 
 | Parameters | Description |
@@ -1739,6 +1747,9 @@ Usage of twsnmpfk:
 |otelKey <file>|OpenTelemetry server private key|
 |otelGRPCPPort <number>|GRPC port number for OpenTelemetry |
 |otelHTTPPort <file>|OpenTelemetry HTTP port number|
+| mcpCert |MCP server cert path|
+| mcpKey |MCP server key path|
+| notifyOAuth2Port |OAuth2 redirect port (default 8180)|
 
 ## Configuration File
 

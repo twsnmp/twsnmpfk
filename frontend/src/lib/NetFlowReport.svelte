@@ -103,7 +103,7 @@
     { value: "service", name: $_('NetFlowReport.Service') },
     { value: "flow", name: $_('NetFlowReport.Flow') },
     { value: "flow_mac", name: $_('NetFlowReport.MACFlow') },
-    { value: "fumble_src", name: $_('NetflowReport.FumbleSrc')},
+    { value: "fumble_src", name: $_('NetFlowReport.FumbleSrc')},
     { value: "fumble_flow", name: $_('NetFlowReport.FumbleFlow')},
   ];
 
