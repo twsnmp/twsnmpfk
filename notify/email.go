@@ -313,9 +313,15 @@ func sendMailOAuth2(server, subject, body string) error {
 	if err := message.From(datastore.NotifyConf.MailFrom); err != nil {
 		return err
 	}
-	if err := message.To(datastore.NotifyConf.MailTo); err != nil {
-		return err
+	for _, rcpt := range strings.Split(datastore.NotifyConf.MailTo, ",") {
+		if !strings.Contains(rcpt, "@") {
+			continue
+		}
+		if err := message.To(rcpt); err != nil {
+			return err
+		}
 	}
+
 	message.Subject(subject)
 	message.SetBodyString(mail.TypeTextHTML, body)
 	return client.DialAndSend(message)
@@ -338,8 +344,13 @@ func sendTestMailOAuth2(server string, testConf *datastore.NotifyConfEnt) error 
 	if err := message.From(testConf.MailFrom); err != nil {
 		return err
 	}
-	if err := message.To(testConf.MailTo); err != nil {
-		return err
+	for _, rcpt := range strings.Split(testConf.MailTo, ",") {
+		if !strings.Contains(rcpt, "@") {
+			continue
+		}
+		if err := message.To(rcpt); err != nil {
+			return err
+		}
 	}
 	t, err := template.New("test").Parse(datastore.LoadMailTemplate("test"))
 	if err != nil {
