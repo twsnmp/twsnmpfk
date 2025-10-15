@@ -85,6 +85,7 @@ export const typeList = [
   { name: 'Pi-Hole', value: 'pihole' },
   { name: 'LXI', value: 'lxi' },
   { name: 'Monitor', value: 'monitor' },
+  { name: 'MQTT', value: 'mqtt' },
 ]
 
 const pollingTypeMap = new Map();

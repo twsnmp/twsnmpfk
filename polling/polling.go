@@ -120,6 +120,7 @@ func pollingBackend(ctx context.Context, wg *sync.WaitGroup) {
 		select {
 		case <-ctx.Done():
 			gNMIStopAllSubscription()
+			mqttStopAllSubscription()
 			stopPolling = true
 			log.Println("stop polling")
 			return
@@ -220,6 +221,10 @@ func doPolling(pe *datastore.PollingEnt) {
 		docPollingPiHole(pe)
 	case "monitor":
 		if !doPollingMonitor(pe) {
+			return
+		}
+	case "mqtt":
+		if !doPollingMqtt(pe) {
 			return
 		}
 	}
@@ -481,4 +486,13 @@ func setVMFuncAndValues(pe *datastore.PollingEnt, vm *otto.Otto) {
 		}
 	}
 	vm.Set("iterval", pe.PollInt)
+}
+
+func updatePolling(pe *datastore.PollingEnt, oldState string) {
+	datastore.UpdatePolling(pe, false)
+	if pe.LogMode == datastore.LogModeAlways || pe.LogMode == datastore.LogModeAI || (pe.LogMode == datastore.LogModeOnChange && oldState != pe.State) {
+		if err := datastore.AddPollingLog(pe); err != nil {
+			log.Printf("add polling log err=%v %#v", err, pe)
+		}
+	}
 }

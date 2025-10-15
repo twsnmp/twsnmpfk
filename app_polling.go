@@ -55,6 +55,10 @@ func (a *App) UpdatePolling(up datastore.PollingEnt) bool {
 		polling.GNMIStopSubscription(p.ID)
 		time.Sleep(time.Millisecond * 20)
 	}
+	if p.Type == "mqtt" {
+		polling.MqttStopSubscription(p.ID)
+		time.Sleep(time.Millisecond * 20)
+	}
 	p.Name = up.Name
 	p.Type = up.Type
 	p.Mode = up.Mode

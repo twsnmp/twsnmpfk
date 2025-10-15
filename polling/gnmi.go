@@ -179,14 +179,14 @@ func doPollingGNMISubscribe(pe *datastore.PollingEnt, n *datastore.NodeEnt, targ
 			if rsp.Response.GetUpdate() != nil {
 				oldState := pe.State
 				gNMISetSubscribeResp(pe, rsp)
-				gNMIUpdatePolling(pe, oldState)
+				updatePolling(pe, oldState)
 			}
 		case tgErr := <-subErrChan:
 			if _, ok := gNMISubscribeMap.Load(pe.ID); ok {
 				log.Printf("polling %s subscription %q stopped: %v", pe.Name, tgErr.SubscriptionName, tgErr.Err)
 				oldState := pe.State
 				setPollingError("gnmi", pe, tgErr.Err)
-				gNMIUpdatePolling(pe, oldState)
+				updatePolling(pe, oldState)
 				gNMISubscribeMap.Delete(pe.ID)
 			}
 			return
@@ -239,15 +239,6 @@ func gNMISetSubscribeResp(pe *datastore.PollingEnt, rsp *target.SubscribeRespons
 		return
 	}
 	setPollingState(pe, "normal")
-}
-
-func gNMIUpdatePolling(pe *datastore.PollingEnt, oldState string) {
-	datastore.UpdatePolling(pe, false)
-	if pe.LogMode == datastore.LogModeAlways || pe.LogMode == datastore.LogModeAI || (pe.LogMode == datastore.LogModeOnChange && oldState != pe.State) {
-		if err := datastore.AddPollingLog(pe); err != nil {
-			log.Printf("add polling log err=%v %#v", err, pe)
-		}
-	}
 }
 
 func gNMIStopAllSubscription() {
