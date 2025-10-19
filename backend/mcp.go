@@ -18,6 +18,7 @@ import (
 	"github.com/araddon/dateparse"
 	"github.com/gosnmp/gosnmp"
 	"github.com/labstack/echo/v4"
+	"github.com/twsnmp/rdap"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -105,7 +106,9 @@ func startMCPServer() *echo.Echo {
 	mcp.AddTool(s, &mcp.Tool{Name: "get_syslog_summary", Description: "get syslog summary from TWSNMP"}, getSyslogSummary)
 	mcp.AddTool(s, &mcp.Tool{Name: "search_snmp_trap_log", Description: "search SNMP trap log from TWSNMP"}, searchSnmpTrapLog)
 	mcp.AddTool(s, &mcp.Tool{Name: "get_server_certificate_list", Description: "get server certificate list from TWSNMP"}, getServerCertificateList)
-	mcp.AddTool(s, &mcp.Tool{Name: "add_event_log", Description: "gadd event log to TWSNMP"}, addEventLog)
+	mcp.AddTool(s, &mcp.Tool{Name: "add_event_log", Description: "add event log to TWSNMP"}, addEventLog)
+	mcp.AddTool(s, &mcp.Tool{Name: "get_ip_address_info", Description: "get ip address info.(DNS host,Managed node,Geo location,RDAP)"}, getIPInfo)
+	mcp.AddTool(s, &mcp.Tool{Name: "get_mac_address_info", Description: "get mac address info.(IP,Managed node,Vendor)"}, getMACInfo)
 	sv := &http.Server{}
 	sv.Addr = datastore.MapConf.MCPEndpoint
 	if cert, err := getMCPServerCert(); err == nil {
@@ -1267,6 +1270,124 @@ func addEventLog(ctx context.Context, req *mcp.CallToolRequest, args addEventLog
 		},
 	}, nil, nil
 
+}
+
+// get_ip_address_info
+type getIPInfoParams struct {
+	IP string `json:"ip" jsonschema:"IP adddress"`
+}
+
+type mcpIPInfoEnt struct {
+	IP              string
+	Node            string
+	DNSNames        []string
+	Location        string
+	RDAPIPVersion   string
+	RDAPType        string
+	RDAPHandle      string
+	RDAPName        string
+	RDAPCountry     string
+	RDAPWhoisServer string
+}
+
+func getIPInfo(ctx context.Context, req *mcp.CallToolRequest, args getIPInfoParams) (*mcp.CallToolResult, any, error) {
+	ip := args.IP
+	info := new(mcpIPInfoEnt)
+	info.IP = ip
+	if n := datastore.FindNodeFromIP(ip); n != nil {
+		info.Node = n.Name
+	}
+	r := &net.Resolver{}
+	ctx, cancel := context.WithTimeout(context.TODO(), time.Millisecond*50)
+	defer cancel()
+	if names, err := r.LookupAddr(ctx, ip); err == nil && len(names) > 0 {
+		info.DNSNames = names
+	}
+	info.Location = datastore.GetLoc(ip)
+	client := &rdap.Client{}
+	if ri, err := client.QueryIP(ip); err == nil {
+		info.RDAPIPVersion = ri.IPVersion
+		info.RDAPName = ri.Name
+		info.RDAPCountry = ri.Country
+		info.RDAPWhoisServer = ri.Port43
+		info.RDAPHandle = ri.Handle
+		info.RDAPType = ri.Type
+	}
+	j, err := json.Marshal(info)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{Text: string(j)},
+		},
+	}, nil, nil
+}
+
+// get_mac_address_info
+type getMACInfoParams struct {
+	MAC string `json:"mac" jsonschema:"MAC adddress"`
+}
+
+type mcpMACInfoEnt struct {
+	MAC    string
+	Node   string
+	IP     string
+	Vendor string
+}
+
+func getMACInfo(ctx context.Context, req *mcp.CallToolRequest, args getMACInfoParams) (*mcp.CallToolResult, any, error) {
+	mac := normMACAddr(args.MAC)
+	info := new(mcpMACInfoEnt)
+	info.MAC = mac
+	if n := datastore.FindNodeFromMAC(mac); n != nil {
+		info.Node = n.Name
+		info.IP = n.IP
+	} else {
+		info.IP = findIPFromArp(mac)
+	}
+	info.Vendor = datastore.FindVendor(mac)
+	j, err := json.Marshal(info)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{Text: string(j)},
+		},
+	}, nil, nil
+}
+
+func normMACAddr(m string) string {
+	if hw, err := net.ParseMAC(m); err == nil {
+		m = strings.ToUpper(hw.String())
+		return m
+	}
+	m = strings.Replace(m, "-", ":", -1)
+	a := strings.Split(m, ":")
+	r := ""
+	for _, e := range a {
+		if r != "" {
+			r += ":"
+		}
+		if len(e) == 1 {
+			r += "0"
+		}
+		r += e
+	}
+	return strings.ToUpper(r)
+}
+
+func findIPFromArp(mac string) string {
+	ip := ""
+	datastore.ForEachArp(func(a *datastore.ArpEnt) bool {
+		if a.MAC == mac {
+			ip = a.IP
+			return false
+		}
+		return true
+	})
+	return ip
 }
 
 // getTimeRange
