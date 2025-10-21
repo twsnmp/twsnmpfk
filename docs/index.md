@@ -3,9 +3,8 @@ title: TWSNMP FK
 layout: default
 ---
 
-[PDF](./twsnmpfk_en.pdf)
+[PDF(old version) ](./twsnmpfk_en.pdf)
 [日本語の説明](./index_ja.html)
-[日本語のPDF](./twsnmpfk_ja.pdf)
 
 # TWSNMP FK
 Most popular SNMP manager in Japan
@@ -1395,6 +1394,10 @@ The settings related to MCP server in the map settings are in the yellow box.
 The TWSNMP FK MCP (Management Control Protocol) server provides tools for network monitoring, SNMP management, and device control. 
 
 [MCP server specifications](./mcp.html)
+
+[MCP server prompt specifications](./mcp_prompt.html)
+
+[MCP server system prompt](./prompt.md)
 
 ## AI analysis
 

@@ -1,300 +1,231 @@
-# MCP Server Tools
+# TWSNMP FK MCP Server Specification
 
-This document outlines the specifications of the tools available on the TWSNMP FK MCP Server.
+This document outlines the specifications for the TWSNMP FK MCP (Model Context Protocol) Server, based on the source code in `backend/mcp.go`, `backend/mcp_tools.go`, and `backend/mcp_prompts.go`.
 
-## Tools
+## 1. Overview
 
-### 1. `get_node_list`
+The MCP server provides an interface for AI agents to interact with the TWSNMP FK monitoring system. It allows agents to retrieve monitoring data, perform actions, and access system information through a set of defined tools and prompts.
 
-**Description:** Retrieves a list of nodes from TWSNMP.
+## 2. Transport and Endpoints
 
-**Parameters:**
+The server starts based on the configuration `datastore.MapConf.MCPTransport`. It supports two transport mechanisms:
 
-- `name_filter` (string, optional): A regular expression to filter nodes by name. If omitted, all nodes are returned.
-- `ip_filter` (string, optional): A regular expression to filter nodes by IP address. If omitted, all nodes are returned.
-- `state_filter` (string, optional): A regular expression to filter nodes by state. If omitted, all nodes are returned. Valid states are "normal", "warn", "low", "high", "repair", and "unknown".
+- **Server-Sent Events (SSE)**:
+  - Enabled when `MCPTransport` is set to `"sse"`.
+  - Endpoints: `/sse` and `/message`.
+- **Streamable HTTP**:
+  - Enabled for other transport settings (e.g., `"http"`).
+  - Endpoint: `/mcp`.
 
-**Output:** A JSON array of node objects with the following properties:
-- `ID` (string): The node ID.
-- `Name` (string): The node name.
-- `IP` (string): The node's IP address.
-- `MAC` (string): The node's MAC address.
-- `State` (string): The node's state.
-- `X` (int): The X coordinate of the node on the map.
-- `Y` (int): The Y coordinate of the node on the map.
-- `Icon` (string): The node's icon.
-- `Descrption` (string): The node's description.
+The server listens on the address specified in `datastore.MapConf.MCPEndpoint`.
 
-### 2. `get_network_list`
+### TLS Security
 
-**Description:** Retrieves a list of networks from TWSNMP.
+TLS is automatically enabled if a server certificate (`datastore.MCPCert`) and private key (`datastore.MCPKey`) are provided. It uses TLS 1.3 with a restricted set of secure cipher suites.
 
-**Parameters:**
+## 3. Authentication
 
-- `name_filter` (string, optional): A regular expression to filter networks by name. If omitted, all networks are returned.
-- `ip_filter` (string, optional): A regular expression to filter networks by IP address. If omitted, all networks are returned.
+Access to the MCP server is controlled by two mechanisms, both of which must be satisfied if configured:
 
-**Output:** A JSON array of network objects with the following properties:
-- `ID` (string): The network ID.
-- `Name` (string): The network name.
-- `IP` (string): The network's IP address.
-- `Ports` (array of strings): A list of the network's ports and their states.
-- `X` (int): The X coordinate of the network on the map.
-- `Y` (int): The Y coordinate of the network on the map.
-- `Descrption` (string): The network's description.
+- **Token Authentication**: If `datastore.MapConf.MCPToken` is set, the `Authorization` header of the incoming request must contain this token.
+- **IP Address ACL**: If `datastore.MapConf.MCPFrom` is set (as a comma-separated list of IP addresses), the request's source IP address must be in the allow list.
+
+## 4. Tools (Functions)
+
+The server exposes the following tools for agents.
 
-### 3. `get_polling_list`
+---
+
+### `get_node_list`
+- **Description**: Get a list of nodes from TWSNMP.
+- **Parameters**:
+  - `name_filter` (string, optional): Regex to filter by node name.
+  - `ip_filter` (string, optional): Regex to filter by node IP address.
+  - `state_filter` (string, optional): Regex to filter by node state (`normal`, `warn`, `low`, `high`, `repair`, `unknown`).
+- **Returns**: A JSON array of node objects.
+
+---
 
-**Description:** Retrieves a list of pollings from TWSNMP.
+### `get_network_list`
+- **Description**: Get a list of networks from TWSNMP.
+- **Parameters**:
+  - `name_filter` (string, optional): Regex to filter by network name.
+  - `ip_filter` (string, optional): Regex to filter by network IP address.
+- **Returns**: A JSON array of network objects.
+
+---
+
+### `get_polling_list`
+- **Description**: Get a list of pollings from TWSNMP.
+- **Parameters**:
+  - `type_filter` (string, optional): Regex to filter by polling type (`ping`, `tcp`, `http`, `dns`, `twsnmp`, `syslog`, etc.).
+  - `name_filter` (string, optional): Regex to filter by polling name.
+  - `node_name_filter` (string, optional): Regex to filter by the node name associated with the polling.
+  - `state_filter` (string, optional): Regex to filter by polling state (`normal`, `warn`, `low`, `high`, `repair`, `unknown`).
+- **Returns**: A JSON array of polling objects.
+
+---
+
+### `get_polling_log`
+- **Description**: Get the polling log for a specific polling ID.
+- **Parameters**:
+  - `id` (string, required): The ID of the polling.
+  - `limit` (int, optional): The maximum number of log entries to retrieve (1-2000, default 100).
+- **Returns**: A JSON array of polling log entries.
+
+---
+
+### `do_ping`
+- **Description**: Perform a ping to a target.
+- **Parameters**:
+  - `target` (string, required): The target IP address or hostname.
+  - `size` (int, optional): Packet size (1-1500, default 64).
+  - `ttl` (int, optional): IP packet TTL (1-255, default 254).
+  - `timeout` (int, optional): Timeout in seconds (1-10, default 3).
+- **Returns**: A JSON object with the ping result.
+
+---
+
+### `get_mib_tree`
+- **Description**: Get the MIB tree from TWSNMP.
+- **Parameters**: None.
+- **Returns**: A JSON object representing the MIB tree structure.
+
+---
+
+### `snmpwalk`
+- **Description**: Perform an SNMP walk.
+- **Parameters**:
+  - `target` (string, required): The target IP address or node name.
+  - `mib_object_name` (string, required): The MIB object name or OID to start the walk from.
+  - `community` (string, optional): Community string for SNMPv2c. If not provided, the node's configured community is used.
+  - `user` (string, optional): Username for SNMPv3.
+  - `password` (string, optional): Password for SNMPv3.
+  - `snmp_mode` (string, optional): SNMP mode (`v2c`, `v3auth`, `v3authpriv`, `v3authprivex`).
+- **Returns**: A JSON array of MIB objects with their names and values.
+
+---
+
+### `add_node`
+- **Description**: Add a new node to TWSNMP.
+- **Parameters**:
+  - `name` (string, required): Node name.
+  - `ip` (string, required): Node IP address.
+  - `icon` (string, optional): Icon for the node (default: `desktop`).
+  - `description` (string, optional): Description of the node.
+  - `x` (int, optional): X position on the map (1-1000, default 64).
+  - `y` (int, optional): Y position on the map (1-1000, default 64).
+- **Returns**: A JSON object of the newly created node. A `PING` polling is automatically added.
+
+---
+
+### `update_node`
+- **Description**: Update a node's properties (name, IP, position, description, or icon).
+- **Parameters**:
+  - `id` (string, required): The node ID, current name, or current IP address.
+  - `name` (string, optional): New node name.
+  - `ip` (string, optional): New IP address.
+  - `icon` (string, optional): New icon.
+  - `description` (string, optional): New description.
+  - `x` (int, optional): New X position.
+  - `y` (int, optional): New Y position.
+- **Returns**: A JSON object of the updated node.
+
+---
+
+### `get_ip_address_list`
+- **Description**: Get a list of IP addresses discovered via ARP.
+- **Parameters**: None.
+- **Returns**: A JSON array of objects, each containing IP, MAC, associated node, vendor, and timestamps.
+
+---
+
+### `get_resource_monitor_list`
+- **Description**: Get a list of TWSNMP's own resource monitoring data (CPU, memory, etc.).
+- **Parameters**: None.
+- **Returns**: A JSON array of resource usage snapshots.
+
+---
+
+### `search_event_log`
+- **Description**: Search the event log.
+- **Parameters**:
+  - `node_filter` (string, optional): Regex to filter by node name.
+  - `type_filter` (string, optional): Regex to filter by event type.
+  - `level_filter` (string, optional): Regex to filter by event level (`info`, `warn`, `low`, `high`, `debug`).
+  - `event_filter` (string, optional): Regex to filter by event message content.
+  - `start_time` (string, optional): Start time for the search (e.g., "2023-10-27 00:00:00" or "-1h"). Default is "-1h".
+  - `end_time` (string, optional): End time for the search (e.g., "2023-10-27 23:59:59" or "now"). Default is "now".
+  - `limit_log_count` (int, optional): Max number of logs to return (100-10000, default 100).
+- **Returns**: A JSON array of event log entries.
+
+---
+
+### `search_syslog`
+- **Description**: Search the syslog.
+- **Parameters**:
+  - `level_filter` (string, optional): Regex to filter by level (`info`, `warn`, `low`, `high`, `debug`).
+  - `host_filter` (string, optional): Regex to filter by hostname.
+  - `tag_filter` (string, optional): Regex to filter by syslog tag.
+  - `message_filter` (string, optional): Regex to filter by message content.
+  - `start_time` (string, optional): Start time (default: "-1h").
+  - `end_time` (string, optional): End time (default: "now").
+  - `limit_log_count` (int, optional): Max number of logs to return (100-10000, default 100).
+- **Returns**: A JSON array of syslog entries.
+
+---
+
+### `get_syslog_summary`
+- **Description**: Get a summary of syslog patterns.
+- **Parameters**:
+  - `level_filter`, `host_filter`, `tag_filter`, `message_filter`, `start_time`, `end_time`: Same as `search_syslog`.
+  - `top_n` (int, optional): The number of top patterns to return (5-500, default 5).
+- **Returns**: A JSON array of syslog patterns and their counts.
+
+---
+
+### `search_snmp_trap_log`
+- **Description**: Search the SNMP trap log.
+- **Parameters**:
+  - `from_filter` (string, optional): Regex to filter by sender address.
+  - `trap_type_filter` (string, optional): Regex to filter by trap type.
+  - `variable_filter` (string, optional): Regex to filter by trap variable content.
+  - `start_time` (string, optional): Start time (default: "-1h").
+  - `end_time` (string, optional): End time (default: "now").
+  - `limit` (int, optional): Max number of logs to return (100-10000, default 100).
+- **Returns**: A JSON array of SNMP trap log entries.
+
+---
+
+### `get_server_certificate_list`
+- **Description**: Get a list of monitored server certificates.
+- **Parameters**: None.
+- **Returns**: A JSON array of certificate monitoring entries.
+
+---
+
+### `add_event_log`
+- **Description**: Add an event log to TWSNMP.
+- **Parameters**:
+  - `level` (string, optional): Event level (`info`, `normal`, `warn`, `low`, `high`). Default is `info`.
+  - `node` (string, optional): The name of the node associated with the event.
+  - `event` (string, required): The content of the event log.
+- **Returns**: A string "ok" on success.
+
+---
+
+### `get_ip_address_info`
+- **Description**: Get information about an IP address (DNS, managed node, Geo location, RDAP).
+- **Parameters**:
+  - `ip` (string, required): The IP address to query.
+- **Returns**: A JSON object containing aggregated information about the IP address.
+
+---
+
+### `get_mac_address_info`
+- **Description**: Get information about a MAC address (IP, managed node, vendor).
+- **Parameters**:
+  - `mac` (string, required): The MAC address to query.
+- **Returns**: A JSON object containing aggregated information about the MAC address.
 
-**Parameters:**
 
-- `type_filter` (string, optional): A regular expression to filter pollings by type. Valid types are "ping", "tcp", "http", "dns", "twsnmp", and "syslog".
-- `state_filter` (string, optional): A regular expression to filter pollings by state. Valid states are "normal", "warn", "low", "high", "repair", and "unknown".
-- `name_filter` (string, optional): A regular expression to filter pollings by name.
-- `node_name_filter` (string, optional): A regular expression to filter pollings by node name.
-
-**Output:** A JSON array of polling objects with the following properties:
-- `ID` (string): The polling ID.
-- `Name` (string): The polling name.
-- `NodeID` (string): The ID of the node being polled.
-- `NodeName` (string): The name of the node being polled.
-- `Type` (string): The polling type.
-- `Level` (string): The polling level.
-- `State` (string): The polling state.
-- `Logging` (boolean): Whether logging is enabled for the polling.
-- `LastTime` (string): The last time the polling was executed.
-- `Result` (object): The result of the last polling.
-
-### 4. `get_polling_log`
-
-**Description:** Retrieves the polling log for a specific polling.
-
-**Parameters:**
-
-- `id` (string, required): The ID of the polling.
-- `limit` (number, optional, default: 100): The maximum number of log entries to retrieve (1-2000).
-
-**Output:** A JSON array of polling log objects with the following properties:
-- `Time` (string): The timestamp of the log entry.
-- `State` (string): The state at the time of the log entry.
-- `Result` (object): The result of the polling at the time of the log entry.
-
-### 5. `do_ping`
-
-**Description:** Executes a ping to a target.
-
-**Parameters:**
-
-- `target` (string, required): The IP address or hostname to ping.
-- `size` (number, optional, default: 64): The packet size (64-1500).
-- `ttl` (number, optional, default: 254): The TTL of the IP packet (1-254).
-- `timeout` (number, optional, default: 2): The ping timeout in seconds (1-10).
-
-**Output:** A JSON object with the following properties:
-- `Result` (string): The ping result.
-- `Time` (string): The timestamp of the ping.
-- `RTT` (string): The round-trip time.
-- `RTTNano` (int64): The round-trip time in nanoseconds.
-- `Size` (int): The packet size.
-- `TTL` (int): The TTL of the response packet.
-- `ResponceFrom` (string): The IP address of the responder.
-- `Location` (string): The location of the responder.
-
-### 6. `get_MIB_tree`
-
-**Description:** Retrieves the MIB tree from TWSNMP.
-
-**Parameters:** None.
-
-**Output:** A JSON object representing the MIB tree.
-
-### 7. `snmpwalk`
-
-**Description:** Performs an SNMP walk.
-
-**Parameters:**
-
-- `target` (string, required): The IP address, hostname, or node name to walk.
-- `mib_object_name` (string, required): The MIB object name to walk.
-- `community` (string, optional): The SNMPv2c community string.
-- `user` (string, optional): The SNMPv3 username.
-- `password` (string, optional): The SNMPv3 password.
-- `snmpmode` (string, optional): The SNMP mode. Valid values are "v2c", "v3auth", "v3authpriv", and "v3authprivex".
-
-**Output:** A JSON array of MIB objects with the following properties:
-- `Name` (string): The MIB object name.
-- `Value` (string): The MIB object value.
-
-### 8. `add_node`
-
-**Description:** Adds a new node to TWSNMP.
-
-**Parameters:**
-
-- `name` (string, required): The node name.
-- `ip` (string, required): The node's IP address.
-- `icon` (string, optional): The node's icon.
-- `description` (string, optional): The node's description.
-- `x` (number, optional): The X coordinate of the node on the map (64-1000).
-- `y` (number, optional): The Y coordinate of the node on the map (64-1000).
-
-**Output:** A JSON object representing the newly added node.
-
-### 9. `update_node`
-
-**Description:** Updates an existing node in TWSNMP.
-
-**Parameters:**
-
-- `id` (string, required): The ID of the node to update.
-- `name` (string, optional): The new node name.
-- `ip` (string, optional): The new IP address.
-- `icon` (string, optional): The new icon.
-- `description` (string, optional): The new description.
-- `x` (number, optional): The new X coordinate.
-- `y` (number, optional): The new Y coordinate.
-
-**Output:** A JSON object representing the updated node.
-
-### 10. `get_ip_address_list`
-
-**Description:** Retrieves a list of IP addresses from TWSNMP.
-
-**Parameters:** None.
-
-**Output:** A JSON array of IP address objects with the following properties:
-- `IP` (string): The IP address.
-- `MAC` (string): The MAC address.
-- `Node` (string): The associated node name.
-- `Vendor` (string): The vendor of the network interface.
-- `FirstTime` (string): The first time the IP address was seen.
-- `LastTime` (string): The last time the IP address was seen.
-
-### 11. `get_resource_monitor_list`
-
-**Description:** Retrieves a list of resource monitor data from TWSNMP.
-
-**Parameters:** None.
-
-**Output:** A JSON array of resource monitor objects with the following properties:
-- `Time` (string): The timestamp of the data.
-- `CPUUsage` (string): The CPU usage.
-- `MemoryUsage` (string): The memory usage.
-- `SwapUsage` (string): The swap usage.
-- `DiskUsage` (string): The disk usage.
-- `Load` (string): The system load.
-
-### 12. `search_event_log`
-
-**Description:** Searches the event log in TWSNMP.
-
-**Parameters:**
-
-- `node_filter` (string, optional): A regular expression to filter by node name.
-- `type_filter` (string, optional): A regular expression to filter by type.
-- `level_filter` (string, optional): A regular expression to filter by level. Valid levels are "warn", "low", "high", "debug", and "info".
-- `event_filter` (string, optional): A regular expression to filter by event.
-- `limit_log_count` (number, optional, default: 100): The maximum number of log entries to retrieve (1-10000).
-- `start_time` (string, optional, default: "-1h"): The start time of the search.
-- `end_time` (string, optional, default: "now"): The end time of the search.
-
-**Output:** A JSON array of event log objects with the following properties:
-- `Time` (string): The timestamp of the event.
-- `Type` (string): The event type.
-- `Level` (string): The event level.
-- `Node` (string): The associated node name.
-- `Event` (string): The event description.
-
-### 13. `search_syslog`
-
-**Description:** Searches the syslog in TWSNMP.
-
-**Parameters:**
-
-- `host_filter` (string, optional): A regular expression to filter by hostname.
-- `tag_filter` (string, optional): A regular expression to filter by tag.
-- `level_filter` (string, optional): A regular expression to filter by level. Valid levels are "warn", "low", "high", "debug", and "info".
-- `message_filter` (string, optional): A regular expression to filter by message.
-- `limit_log_count` (number, optional, default: 100): The maximum number of log entries to retrieve (1-10000).
-- `start_time` (string, optional, default: "-1h"): The start time of the search.
-- `end_time` (string, optional, default: "now"): The end time of the search.
-
-**Output:** A JSON array of syslog objects with the following properties:
-- `Time` (string): The timestamp of the log entry.
-- `Level` (string): The log level.
-- `Host` (string): The hostname.
-- `Type` (string): The log type.
-- `Tag` (string): The log tag.
-- `Message` (string): The log message.
-- `Severity` (int): The severity level.
-- `Facility` (int): The facility code.
-
-### 14. `get_syslog_summary`
-
-**Description:** Retrieves a summary of the syslog from TWSNMP.
-
-**Parameters:**
-
-- `host_filter` (string, optional): A regular expression to filter by hostname.
-- `tag_filter` (string, optional): A regular expression to filter by tag.
-- `level_filter` (string, optional): A regular expression to filter by level.
-- `message_filter` (string, optional): A regular expression to filter by message.
-- `top_n` (number, optional, default: 10): The number of top syslog patterns to retrieve (5-100).
-- `start_time` (string, optional, default: "-1h"): The start time of the search.
-- `end_time` (string, optional, default: "now"): The end time of the search.
-
-**Output:** A JSON array of syslog summary objects with the following properties:
-- `Pattern` (string): The log pattern.
-- `Count` (int): The number of occurrences of the pattern.
-
-### 15. `search_snmp_trap_log`
-
-**Description:** Searches the SNMP trap log in TWSNMP.
-
-**Parameters:**
-
-- `from_filter` (string, optional): A regular expression to filter by sender address.
-- `trap_type_filter` (string, optional): A regular expression to filter by trap type.
-- `variable_filter` (string, optional): A regular expression to filter by trap variables.
-- `limit_log_count` (number, optional, default: 100): The maximum number of log entries to retrieve (1-10000).
-- `start_time` (string, optional, default: "-1h"): The start time of the search.
-- `end_time` (string, optional, default: "now"): The end time of the search.
-
-**Output:** A JSON array of SNMP trap log objects with the following properties:
-- `Time` (string): The timestamp of the trap.
-- `FromAddress` (string): The sender's address.
-- `TrapType` (string): The trap type.
-- `Variables` (string): The trap variables.
-
-### 16. `get_server_certificate_list`
-
-**Description:** Retrieves a list of server certificates from TWSNMP.
-
-**Parameters:** None.
-
-**Output:** A JSON array of server certificate objects with the following properties:
-- `State` (string): The certificate state.
-- `Server` (string): The server address.
-- `Port` (uint16): The server port.
-- `Subject` (string): The certificate subject.
-- `Issuer` (string): The certificate issuer.
-- `SerialNumber` (string): The certificate serial number.
-- `Verify` (boolean): Whether the certificate is verified.
-- `NotAfter` (string): The certificate's expiration date.
-- `NotBefore` (string): The certificate's issuance date.
-- `Error` (string): Any error associated with the certificate.
-- `FirstTime` (string): The first time the certificate was seen.
-- `LastTime` (string): The last time the certificate was seen.
-
-### 17. `add_event_log`
-
-**Description:** Adds an event log to TWSNMP.
-
-**Parameters:**
-
-- `level` (string, optional, default: "info"): The event level ("info", "normal", "warn", "low", "high").
-- `node` (string, optional): The name of the node associated with the event.
-- `event` (string, optional): The event log content.
-
-**Output:** A string indicating the result of the operation ("ok").

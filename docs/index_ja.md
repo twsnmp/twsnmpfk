@@ -4,7 +4,7 @@ layout: default
 ---
 
 [English](./)
-[PDF](./twsnmpfk_ja.pdf)
+[PDF(更新していません)](./twsnmpfk_ja.pdf)
 
 # はじめてのTWSNMP FK
 日本で定番のSNMPマネージャー
@@ -17,7 +17,7 @@ layout: default
 
 TWSNMPは日本で25年以上定番のSNMPv3に対応したSNMPマネージャです。
 これを2023年の最新機技術で復刻したのがTWSNMP FKです。
-コンテナで動作するTWSNMP FCはWebブラウザーからアクセスして操作しますが、FKは、デスクトップアプリであるためブラウザー不要です。
+コンテナで動作するTWSNMP FCはWebブラウザーからアクセスして操作しますが、FKは、デスクトップアプリであるためブラウザーは不要です。
 
 ## Windows版Microsoft Store
 
@@ -785,6 +785,10 @@ TWSNMP FKのMCPサーバーは、ネットワークデバイスの監視・管�
 MCPサーバーのの仕様は、以下のドキュメントに記載しました。
 
 [MCPサーバー仕様](./mcp_ja.html)
+
+[MCPサーバープロンプト仕様](./mcp_prompt_ja.html)
+
+[MCPサーバーシステムプロンプト](./prompt_ja.md)
 
 
 ## AI分析
