@@ -773,6 +773,7 @@ AIがTWSNMP FKを利用するためのMCPサーバー機能があります。
 マップ設定のMCPサーバー関連の設定は、黄色い枠の部分です。
 
 ![](./images/ja/2025-07-25_04-43-13.png)
+
 |項目|内容|
 |----|----|
 |MCPサーバートランスポート|OFF/SSE/StreamableHTTPを選択します。|
@@ -788,7 +789,7 @@ MCPサーバーのの仕様は、以下のドキュメントに記載しまし�
 
 [MCPサーバープロンプト仕様](./mcp_prompt_ja.html)
 
-[MCPサーバーシステムプロンプト](./prompt_ja.md)
+[MCPサーバーシステムプロンプト](https://github.com/twsnmp/twsnmpfk/blob/main/docs/prompt_ja.md)
 
 
 ## AI分析

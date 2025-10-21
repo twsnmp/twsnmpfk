@@ -1397,7 +1397,7 @@ The TWSNMP FK MCP (Management Control Protocol) server provides tools for networ
 
 [MCP server prompt specifications](./mcp_prompt.html)
 
-[MCP server system prompt](./prompt.md)
+[MCP server system prompt](https://github.com/twsnmp/twsnmpfk/blob/main/docs/prompt.md)
 
 ## AI analysis
 
