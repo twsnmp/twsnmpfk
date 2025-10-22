@@ -8,13 +8,13 @@ import (
 
 var (
 	versionCheckState int
-	versionNum        string
+	version           string
 	dspath            string
 )
 
-func Start(ctx context.Context, dsp, vn string, wg *sync.WaitGroup) error {
+func Start(ctx context.Context, dsp, v string, wg *sync.WaitGroup) error {
 	dspath = dsp
-	versionNum = vn
+	version = v
 	wg.Add(1)
 	go monitor(ctx, wg)
 	wg.Add(1)

@@ -20,7 +20,6 @@ import (
 	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
-var Version string
 var stopMCPCh = make(chan bool)
 var mcpAllow sync.Map
 
@@ -77,7 +76,7 @@ func startMCPServer() *echo.Echo {
 	s := mcp.NewServer(
 		&mcp.Implementation{
 			Name:    "TWSNMP FK MCP Server",
-			Version: Version,
+			Version: version,
 		},
 		nil)
 	// Add tools to MCP server

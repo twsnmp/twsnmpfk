@@ -15,9 +15,11 @@ import (
 	"github.com/twsnmp/twsnmpfk/datastore"
 )
 
+var version string
 var logCh = make(chan *datastore.LogEnt, 5000)
 
-func Start(ctx context.Context, wg *sync.WaitGroup) error {
+func Start(ctx context.Context, v string, wg *sync.WaitGroup) error {
+	version = v
 	wg.Add(1)
 	go logger(ctx, wg)
 	return nil

@@ -222,7 +222,7 @@ func checkNewVersion() {
 	if versionCheckState > 1 {
 		return
 	}
-	url := "https://lhx98.linkclub.jp/twise.co.jp/cgi-bin/twsnmpfk.cgi?ver=" + versionNum
+	url := "https://lhx98.linkclub.jp/twise.co.jp/cgi-bin/twsnmpfk.cgi?ver=" + version
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Printf("check new version err=%v", err)
@@ -236,7 +236,7 @@ func checkNewVersion() {
 	}
 	l := "warn"
 	sv := strings.TrimSpace(string(ba))
-	if cmpVersion(versionNum, sv) >= 0 {
+	if cmpVersion(version, sv) >= 0 {
 		versionCheckState = 1
 		l = "info"
 	} else {
@@ -245,7 +245,7 @@ func checkNewVersion() {
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: l,
-		Event: fmt.Sprintf(i18n.Trans("TWSNMP verison this=%s latest=%s"), versionNum, sv),
+		Event: fmt.Sprintf(i18n.Trans("TWSNMP verison this=%s latest=%s"), version, sv),
 	})
 }
 
