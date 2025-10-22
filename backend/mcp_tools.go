@@ -1187,14 +1187,16 @@ func getIPInfo(ctx context.Context, req *mcp.CallToolRequest, args getIPInfoPara
 		info.DNSNames = names
 	}
 	info.Location = datastore.GetLoc(ip)
-	client := &rdap.Client{}
-	if ri, err := client.QueryIP(ip); err == nil {
-		info.RDAPIPVersion = ri.IPVersion
-		info.RDAPName = ri.Name
-		info.RDAPCountry = ri.Country
-		info.RDAPWhoisServer = ri.Port43
-		info.RDAPHandle = ri.Handle
-		info.RDAPType = ri.Type
+	if !strings.HasPrefix(info.Location, "LOCAL") {
+		client := &rdap.Client{}
+		if ri, err := client.QueryIP(ip); err == nil {
+			info.RDAPIPVersion = ri.IPVersion
+			info.RDAPName = ri.Name
+			info.RDAPCountry = ri.Country
+			info.RDAPWhoisServer = ri.Port43
+			info.RDAPHandle = ri.Handle
+			info.RDAPType = ri.Type
+		}
 	}
 	j, err := json.Marshal(info)
 	if err != nil {

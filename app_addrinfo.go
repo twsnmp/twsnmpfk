@@ -10,7 +10,6 @@ import (
 	"github.com/twsnmp/rdap"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
-	wails "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type AddrInfoEnt struct {
@@ -20,7 +19,6 @@ type AddrInfoEnt struct {
 
 // GetAddressInfo retunrs address info
 func (a *App) GetAddressInfo(addr string) []AddrInfoEnt {
-	wails.LogDebug(a.ctx, "GetAddressInfo")
 	if addr == "" {
 		return []AddrInfoEnt{}
 	}
@@ -110,7 +108,6 @@ func (a *App) getIPInfo(ip string) []AddrInfoEnt {
 	client := &rdap.Client{}
 	ri, err := client.QueryIP(ip)
 	if err != nil {
-		wails.LogErrorf(a.ctx, "RDAP err=%v", err)
 		ret = append(ret, AddrInfoEnt{Title: "RDAP:error", Value: fmt.Sprintf("%v", err)})
 	} else {
 		ret = append(ret, AddrInfoEnt{Title: "RDAP:IP Version", Value: ri.IPVersion}) //IPバージョン
