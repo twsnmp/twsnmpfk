@@ -163,14 +163,6 @@
     showTable();
   };
 
-  const maxLength = 300;
-  const renderMsg = (msg:string,type:string) => {
-    if (msg.length > maxLength) {
-        return msg.substring(0, maxLength) + '...';
-      }
-      return msg;
-  }
-
   const columns = [
     {
       data: "Level",
@@ -198,12 +190,29 @@
       data: "Tag",
       title: $_("Syslog.Tag"),
       width: "15%",
+      render: (data:any, type:any, row:any) => {
+                if (type === 'display') {
+                    var maxLen = 30;
+                    if (data.length > maxLen) {
+                        return data.substr(0, maxLen) + '...';
+                    }
+                }
+                return data;
+            }      
     },
     {
       data: "Message",
       title: $_("Syslog.Message"),
       width: "40%",
-      render: renderMsg,
+      render: (data:any, type:any, row:any) => {
+                if (type === 'display') {
+                    var maxLen = 200;
+                    if (data.length > maxLen) {
+                        return data.substr(0, maxLen) + '...';
+                    }
+                }
+                return data;
+            }      
     },
   ];
 

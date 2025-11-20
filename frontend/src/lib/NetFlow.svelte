@@ -19,7 +19,7 @@
     ExportNetFlow,
     DeleteAllNetFlow,
   } from "../../wailsjs/go/main/App";
-  import { renderTime, getTableLang, renderTimeMili } from "./common";
+  import { renderTime, getTableLang, renderTimeMili,renderBytes,renderCount } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
   import NetFlowReport from "./NetFlowReport.svelte";
   import AddressInfo from "./AddressInfo.svelte";
@@ -199,16 +199,21 @@
       data: "Packets",
       title: $_("NetFlow.Packets"),
       width: "5%",
+      render: renderCount,
+      "className": "dt-right",
     },
     {
       data: "Bytes",
       title: $_("NetFlow.Bytes"),
       width: "5%",
+      render: renderBytes,
+      "className": "dt-right",
     },
     {
       data: "Dur",
       title: $_("NetFlow.Dur"),
       width: "5%",
+      "className": "dt-right",
     },
   ];
 

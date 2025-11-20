@@ -63,7 +63,8 @@
       data: "Dur",
       title: $_('OTel.Dur'),
       width: "8%",
-      render: (v:number) => (v * 1000).toFixed(3) + " mSec"
+      render: (v:number) => (v * 1000).toFixed(3) + " mSec",
+      "className": "dt-right",
     },
     {
       data: "SpanID",
@@ -109,8 +110,6 @@
       selectedCount = table.rows({ selected: true }).count();
     });
   };
-
-
 
   const close = () => {
     show = false;

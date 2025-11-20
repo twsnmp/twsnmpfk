@@ -31,6 +31,7 @@
     getTableLang,
     renderTimeMili,
     renderState,
+    renderCount,
   } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -172,6 +173,8 @@
       data: "Count",
       title: $_("OTel.Count"),
       width: "5%",
+      render: renderCount,
+      "className": "dt-right",
     },
     {
       data: "First",

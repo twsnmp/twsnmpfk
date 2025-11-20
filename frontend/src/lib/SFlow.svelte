@@ -23,7 +23,7 @@
     GetSFlowCounter,
     ExportSFlowCounter,
   } from "../../wailsjs/go/main/App";
-  import { renderTime, getTableLang, renderTimeMili } from "./common";
+  import { renderTime, getTableLang, renderTimeMili,renderBytes } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
   import SFlowReport from "./SFlowReport.svelte";
   import SFlowCounterReport from "./SFlowCounterReport.svelte";
@@ -226,6 +226,8 @@
       data: "Bytes",
       title: $_("NetFlow.Bytes"),
       width: "5%",
+      render: renderBytes,
+      "className": "dt-right",
     },
     {
       data: "Reason",

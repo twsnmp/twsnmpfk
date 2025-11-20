@@ -13,6 +13,8 @@
     renderState,
     renderTime,
     getTableLang,
+    renderCount,
+    renderBytes,
   } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -94,12 +96,16 @@
       data: "Count",
       title: $_('Mqtt.Count'),
       width: "8%",
+      render: renderCount,
+      "className": "dt-right",
       searchable: false,
      },
     {
       data: "Bytes",
       title: $_('Mqtt.Bytes'),
       width: "8%",
+      render: renderBytes,
+      "className": "dt-right",
       searchable: false,
      },
     {

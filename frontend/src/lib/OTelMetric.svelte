@@ -8,7 +8,7 @@
   import { showOTelTimeChart, showOTelHistogram } from "./chart/otel";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import { getTableLang, renderTime } from "./common";
+  import { getTableLang, renderTime,renderCount } from "./common";
 
   export let show: boolean = false;
   export let metric: any = undefined;
@@ -91,21 +91,26 @@
       data: "Count",
       title: $_('OTel.Count'),
       width: "10%",
+      render: renderCount,
+      "className": "dt-right",
     },
     {
       data: "Sum",
       title: $_('OTel.Sum'),
       width: "10%",
+      "className": "dt-right",
     },
     {
       data: "Min",
       title: $_('OTel.Min'),
       width: "10%",
+      "className": "dt-right",
     },
     {
       data: "Max",
       title: $_('OTel.Max'),
       width: "10%",
+      "className": "dt-right",
     },
   ];
 

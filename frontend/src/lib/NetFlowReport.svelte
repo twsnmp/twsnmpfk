@@ -31,7 +31,7 @@
   import { showLogHeatmap } from "./chart/eventlog";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import { getTableLang } from "./common";
+  import { getTableLang,renderBytes,renderCount,renderSpeed } from "./common";
   import { _ } from "svelte-i18n";
   import { copyText } from "svelte-copy";
 
@@ -125,22 +125,31 @@
     {
       data: "Bytes",
       title: $_('NetFlowReport.Bytes'),
+      render: renderBytes,
+      "className": "dt-right",
     },
     {
       data: "Packets",
       title: $_('NetFlowReport.Packets'),
+      render: renderCount,
+      "className": "dt-right",
     },
     {
       data: "Dur",
       title: $_('NetFlowReport.Dur'),
+      "className": "dt-right",
     },
     {
       data: "bps",
       title: $_('NetFlowReport.BPS'),
+      render: renderSpeed,
+      "className": "dt-right",
     },
     {
       data: "pps",
       title: $_('NetFlowReport.PPS'),
+      render: renderCount,
+      "className": "dt-right",
     },
   ];
 
@@ -276,6 +285,8 @@
       data: "value",
       title: $_('NetFlowReport.Bytes'),
       width: "20%",
+      render: renderBytes,
+      "className": "dt-right",
     },
   ];
  
