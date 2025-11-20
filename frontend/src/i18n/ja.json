@@ -638,7 +638,12 @@
     "Select": "選択",
     "Help": "ヘルプ",
     "FailAction": "障害時のアクション",
-    "RepairAction": "復帰時のアクション"
+    "RepairAction": "復帰時のアクション",
+    "Default": "デフォルト",
+    "AIMode": "AIモード",
+    "SelectAIMode": "AIモードを選択",
+    "VectorCols": "ベクトル化する変数名",
+    "VectorColsHelp": "ベクトル化する変数名をカンマ区切りで指定"
   },
   "PollingList": {
     "State": "状態",

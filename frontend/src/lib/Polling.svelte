@@ -182,6 +182,12 @@
       }
     }
   };
+  
+  const aiModeList = [
+    { name: $_('Polling.Default'), value: "default" },
+    { name: "Isolation Forest", value: "iforest" },
+  ];
+
 </script>
 
 <Modal
@@ -249,6 +255,29 @@
           />
         </Label>
       </div>
+      {#if polling.LogMode == 3}
+      <div class="grid gap-4 mb-4 grid-cols-2">
+        <Label class="space-y-2 text-xs">
+          <span>{$_('Polling.AIMode')}</span>
+          <Select
+            items={aiModeList}
+            bind:value={polling.AIMode}
+            placeholder={$_('Polling.SelectAIMode')}
+            size="sm"
+          />
+        </Label>
+
+        <Label class="space-y-2 text-xs">
+          <span>{$_('Polling.VectorCols')}</span>
+          <Input
+            class="h-8"
+            bind:value={polling.VectorCols}
+            placeholder={$_('Polling.VectorColsHelp')}
+            size="sm"
+          />
+        </Label>
+      </div>
+      {/if}
       <div class="grid gap-4 mb-4 grid-cols-2">
           <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Params")}</span>

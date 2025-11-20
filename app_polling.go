@@ -73,6 +73,8 @@ func (a *App) UpdatePolling(up datastore.PollingEnt) bool {
 	p.LogMode = up.LogMode
 	p.FailAction = up.FailAction
 	p.RepairAction = up.RepairAction
+	p.AIMode = up.AIMode
+	p.VectorCols = up.VectorCols
 	// Re check now
 	p.State = "unknown"
 	p.NextTime = 0

@@ -651,7 +651,12 @@
     "Type": "Type",
     "Help": "Help",
     "FailAction": "Fail Action",
-    "RepairAction": "Repair Action"
+    "RepairAction": "Repair Action",
+    "AIMode": "AI mode",
+    "Default": "Default",
+    "SelectAIMode": "Select AI mode",
+    "VectorCols": "Variable name to vectorize",
+    "VectorColsHelp": "Specify variable names to be vectorized separated by commas."
   },
   "PollingList": {
     "Add": "Add",

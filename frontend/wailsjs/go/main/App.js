@@ -122,6 +122,10 @@ export function DestroyCA() {
   return window['go']['main']['App']['DestroyCA']();
 }
 
+export function ExportAIData(arg1) {
+  return window['go']['main']['App']['ExportAIData'](arg1);
+}
+
 export function ExportAny(arg1, arg2) {
   return window['go']['main']['App']['ExportAny'](arg1, arg2);
 }

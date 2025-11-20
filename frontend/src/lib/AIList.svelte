@@ -7,6 +7,7 @@
   import {
     GetAIList,
     DeleteAIResult,
+    ExportAIData,
   } from "../../wailsjs/go/main/App";
   import AIReport from "./AIReport.svelte";
   import { renderTime, getScoreIcon, getScoreColor,getTableLang } from "./common";
@@ -44,6 +45,14 @@
         await DeleteAIResult(id);
       }
       table.rows({ selected: true }).remove().draw();
+    }
+  };
+
+  const exportAIData = async () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected && selected.length == 1) {
+      const id = selected[0];
+      ExportAIData(id);
     }
   };
 
@@ -124,6 +133,16 @@
     <GradientButton shadow color="green" type="button" on:click={show} size="xs">
       <Icon path={icons.mdiChartBarStacked} size={1} />
       {$_('AIList.Report')}
+    </GradientButton>
+    <GradientButton
+      shadow
+      color="lime"
+      type="button"
+      on:click={exportAIData}
+      size="xs"
+    >
+      <Icon path={icons.mdiFileDelimited} size={1} />
+      CSV(Data)
     </GradientButton>
   {/if}
   {#if selectedCount > 0}

@@ -66,6 +66,8 @@ export function DeletePollings(arg1:Array<string>):Promise<void>;
 
 export function DestroyCA():Promise<void>;
 
+export function ExportAIData(arg1:string):Promise<void>;
+
 export function ExportAny(arg1:string,arg2:main.ExportData):Promise<string>;
 
 export function ExportArpLogs(arg1:string,arg2:string):Promise<string>;

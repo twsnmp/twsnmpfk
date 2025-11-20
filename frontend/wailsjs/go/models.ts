@@ -1205,6 +1205,8 @@ export namespace datastore {
 	    State: string;
 	    FailAction: string;
 	    RepairAction: string;
+	    AIMode: string;
+	    VectorCols: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new PollingEnt(source);
@@ -1232,6 +1234,8 @@ export namespace datastore {
 	        this.State = source["State"];
 	        this.FailAction = source["FailAction"];
 	        this.RepairAction = source["RepairAction"];
+	        this.AIMode = source["AIMode"];
+	        this.VectorCols = source["VectorCols"];
 	    }
 	}
 	export class PollingLogEnt {

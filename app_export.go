@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/csv"
 	"encoding/json"
@@ -13,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	wails "github.com/wailsapp/wails/v2/pkg/runtime"
@@ -845,4 +847,31 @@ func (a *App) ImportPollingTemplate() datastore.PollingTemplateEnt {
 		log.Printf("err=%v", err)
 	}
 	return r
+}
+
+func (a *App) ExportAIData(id string) error {
+	req := &backend.AIReq{PollingID: id}
+	if err := backend.MakeAIData(req); err != nil {
+		return err
+	}
+	ts := time.Now().Format("20060102150405")
+	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
+		DefaultFilename:      "twsnmpfk_ai_data_" + id + "_" + ts + ".csv",
+		CanCreateDirectories: true,
+		Filters: []wails.FileFilter{{
+			DisplayName: "CSV",
+			Pattern:     "*.csv",
+		}},
+	})
+	if err != nil {
+		return err
+	}
+	if file == "" {
+		return nil
+	}
+	var b bytes.Buffer
+	if err := req.Df.ToCSV(&b); err != nil {
+		return err
+	}
+	return os.WriteFile(file, b.Bytes(), 0644)
 }

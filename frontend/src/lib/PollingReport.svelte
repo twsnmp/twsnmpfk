@@ -41,6 +41,7 @@
   import "datatables.net-select-dt";
   import { showAIHeatMap } from "./chart/ai";
   import { _ } from "svelte-i18n";
+  import { EdgeInsets } from "maplibre-gl";
 
   export let show: boolean = false;
   export let id = "";
@@ -245,6 +246,42 @@
     }
     ExportAny(t, ed);
   };
+  const exportLogData = () => {
+    if (!logs || logs.length < 1) {
+      return
+    }
+    const ed: any = {
+      Title: "TWSNMP_Polling_Log_Data",
+      Header: [],
+      Data: [],
+      Image: "",
+    };
+    ed.Header.push("time");
+    ed.Header.push("state");
+    for (const k of  Object.keys(logs[0].Result)) {
+        if (k != "error" && typeof logs[0].Result[k] === "number" ) {
+          ed.Header.push(k);
+        }
+      }
+    for (const l of logs) {
+      const row: any = [];
+      for (const k of ed.Header ) {
+        switch (k) {
+          case "time":
+            row.push(renderTime(l.Time, ""));
+            break;
+            case "state":
+            row.push(l.State || "");
+            break;
+          default:
+            row.push(l.Result[k] || "");
+            break;
+        }
+      }
+      ed.Data.push(row);
+    }
+    ExportAny("csv", ed);
+  };
 </script>
 
 <svelte:window on:resize={resizeChart} />
@@ -380,6 +417,16 @@
           >
             <Icon path={icons.mdiFileDelimited} size={1} />
             CSV
+          </GradientButton>
+          <GradientButton
+            shadow
+            color="lime"
+            type="button"
+            on:click={() => exportLogData()}
+            size="xs"
+          >
+            <Icon path={icons.mdiFileDelimited} size={1} />
+            CSV(Data)
           </GradientButton>
           <GradientButton
             shadow

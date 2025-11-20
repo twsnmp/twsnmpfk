@@ -30,6 +30,8 @@ type PollingEnt struct {
 	State        string                 `json:"State"`
 	FailAction   string                 `json:"FailAction"`
 	RepairAction string                 `json:"RepairAction"`
+	AIMode       string                 `json:"AIMode"`
+	VectorCols   string                 `json:"VectorCols"`
 }
 
 type PollingLogEnt struct {
