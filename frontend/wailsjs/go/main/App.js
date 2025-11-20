@@ -46,6 +46,10 @@ export function DeleteAllEventLogs() {
   return window['go']['main']['App']['DeleteAllEventLogs']();
 }
 
+export function DeleteAllMqttStat() {
+  return window['go']['main']['App']['DeleteAllMqttStat']();
+}
+
 export function DeleteAllNetFlow() {
   return window['go']['main']['App']['DeleteAllNetFlow']();
 }
@@ -88,6 +92,10 @@ export function DeleteIcon(arg1) {
 
 export function DeleteLine(arg1) {
   return window['go']['main']['App']['DeleteLine'](arg1);
+}
+
+export function DeleteMqttStats(arg1) {
+  return window['go']['main']['App']['DeleteMqttStats'](arg1);
 }
 
 export function DeleteNetwork(arg1) {
@@ -340,6 +348,10 @@ export function GetMapName() {
 
 export function GetMonitorDatas() {
   return window['go']['main']['App']['GetMonitorDatas']();
+}
+
+export function GetMqttStatList() {
+  return window['go']['main']['App']['GetMqttStatList']();
 }
 
 export function GetMySSHPublicKey() {

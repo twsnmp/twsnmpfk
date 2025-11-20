@@ -81,6 +81,13 @@ var (
 	// MCP Server
 	MCPCert string
 	MCPKey  string
+	// MQTT Server
+	MqttTCPPort int
+	MqttWSPort  int
+	MqttCert    string
+	MqttKey     string
+	MqttFrom    string
+	MqttUsers   string
 )
 
 // Define errors

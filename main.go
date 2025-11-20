@@ -57,6 +57,12 @@ func init() {
 	flag.StringVar(&datastore.OTelCA, "otelCA", "", "OpenTelementry CA cert path")
 	flag.StringVar(&datastore.MCPCert, "mcpCert", "", "MCP server cert path")
 	flag.StringVar(&datastore.MCPKey, "mcpKey", "", "MCP server key path")
+	flag.IntVar(&datastore.MqttTCPPort, "mqttTCPPort", 1883, "MQTT server TCP port")
+	flag.IntVar(&datastore.MqttWSPort, "mqttWSPort", 1884, "MQTT server WebSock port")
+	flag.StringVar(&datastore.MqttCert, "mqttCert", "", "MQTT server cert path")
+	flag.StringVar(&datastore.MqttKey, "mqttKey", "", "MQTT server key path")
+	flag.StringVar(&datastore.MqttFrom, "mqttFrom", "", "MQTT client IP")
+	flag.StringVar(&datastore.MqttUsers, "mqttUsers", "", "MQTT user and password")
 	flag.Parse()
 }
 
@@ -204,5 +210,24 @@ func loadIni() {
 	}
 	if v := cfg.Section("MCP").Key("mcpKey").MustString(""); v != "" {
 		datastore.MCPKey = v
+	}
+	// MQTT
+	if v := cfg.Section("MQTT").Key("mqttTCPPort").MustInt(0); v > 0 {
+		datastore.MqttTCPPort = v
+	}
+	if v := cfg.Section("MQTT").Key("mqttWSPort").MustInt(0); v > 0 {
+		datastore.MqttWSPort = v
+	}
+	if v := cfg.Section("MQTT").Key("mqttCert").MustString(""); v != "" {
+		datastore.MqttCert = v
+	}
+	if v := cfg.Section("MQTT").Key("MqttKey").MustString(""); v != "" {
+		datastore.MqttKey = v
+	}
+	if v := cfg.Section("MQTT").Key("mqttFrom").MustString(""); v != "" {
+		datastore.MqttFrom = v
+	}
+	if v := cfg.Section("MQTT").Key("MqttUsers").MustString(""); v != "" {
+		datastore.MqttUsers = v
 	}
 }

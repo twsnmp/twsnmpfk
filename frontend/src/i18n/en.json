@@ -1017,5 +1017,14 @@
     "State": "State",
     "Target": "Subject",
     "TargetIPOrHost": "Target IP or host name"
+  },
+  "Mqtt": {
+    "Bytes": "Bytes",
+    "ClientID": "Client ID",
+    "Count": "Count",
+    "DeleteAll": "Delete All",
+    "First": "First Time",
+    "Remote": "Remote",
+    "Topic": "Topic"
   }
 }

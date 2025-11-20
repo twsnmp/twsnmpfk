@@ -22,7 +22,7 @@
     DeleteAllSyslog,
     ExportAny,
   } from "../../wailsjs/go/main/App";
-  import { renderState, renderTime, getTableLang } from "./common";
+  import { renderState, renderTime, getTableLang, renderTimeMili } from "./common";
   import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
   import {
     showLogCountChart,
@@ -163,6 +163,14 @@
     showTable();
   };
 
+  const maxLength = 300;
+  const renderMsg = (msg:string,type:string) => {
+    if (msg.length > maxLength) {
+        return msg.substring(0, maxLength) + '...';
+      }
+      return msg;
+  }
+
   const columns = [
     {
       data: "Level",
@@ -173,13 +181,13 @@
     {
       data: "Time",
       title: $_("Syslog.Time"),
-      width: "15%",
-      render: renderTime,
+      width: "13%",
+      render: renderTimeMili,
     },
     {
       data: "Host",
       title: $_("Syslog.Host"),
-      width: "15%",
+      width: "12%",
     },
     {
       data: "Type",
@@ -189,14 +197,16 @@
     {
       data: "Tag",
       title: $_("Syslog.Tag"),
-      width: "10%",
+      width: "15%",
     },
     {
       data: "Message",
       title: $_("Syslog.Message"),
       width: "40%",
+      render: renderMsg,
     },
   ];
+
 
   onMount(() => {
     refresh();

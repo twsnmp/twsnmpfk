@@ -671,6 +671,8 @@ export namespace datastore {
 	    EnableSFlowd: boolean;
 	    EnableTcpd: boolean;
 	    EnableOTel: boolean;
+	    EnableMqtt: boolean;
+	    Mqtt2Syslog: boolean;
 	    MCPTransport: string;
 	    MCPEndpoint: string;
 	    MCPToken: string;
@@ -705,6 +707,8 @@ export namespace datastore {
 	        this.EnableSFlowd = source["EnableSFlowd"];
 	        this.EnableTcpd = source["EnableTcpd"];
 	        this.EnableOTel = source["EnableOTel"];
+	        this.EnableMqtt = source["EnableMqtt"];
+	        this.Mqtt2Syslog = source["Mqtt2Syslog"];
 	        this.MCPTransport = source["MCPTransport"];
 	        this.MCPEndpoint = source["MCPEndpoint"];
 	        this.MCPToken = source["MCPToken"];
@@ -715,6 +719,34 @@ export namespace datastore {
 	        this.ArpTimeout = source["ArpTimeout"];
 	        this.OTelRetention = source["OTelRetention"];
 	        this.OTelFrom = source["OTelFrom"];
+	    }
+	}
+	export class MqttStatEnt {
+	    ID: string;
+	    State: string;
+	    ClientID: string;
+	    Topic: string;
+	    Remote: string;
+	    Count: number;
+	    Bytes: number;
+	    First: number;
+	    Last: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new MqttStatEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.State = source["State"];
+	        this.ClientID = source["ClientID"];
+	        this.Topic = source["Topic"];
+	        this.Remote = source["Remote"];
+	        this.Count = source["Count"];
+	        this.Bytes = source["Bytes"];
+	        this.First = source["First"];
+	        this.Last = source["Last"];
 	    }
 	}
 	export class NetFlowEnt {

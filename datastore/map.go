@@ -46,6 +46,8 @@ type MapConfEnt struct {
 	EnableSFlowd   bool   `json:"EnableSFlowd"`
 	EnableTcpd     bool   `json:"EnableTcpd"`
 	EnableOTel     bool   `json:"EnableOTel"`
+	EnableMqtt     bool   `json:"EnableMqtt"`
+	MqttToSyslog   bool   `json:"Mqtt2Syslog"`
 	MCPTransport   string `json:"MCPTransport"`
 	MCPEndpoint    string `json:"MCPEndpoint"`
 	MCPToken       string `json:"MCPToken"`

@@ -16,7 +16,7 @@ func TestDiscover(t *testing.T) {
 	ping.Start(ctx, &sync.WaitGroup{})
 	defer cancel()
 	time.Sleep(time.Second * 1)
-	td, err := os.MkdirTemp("", "twsnmpfc_test")
+	td, err := os.MkdirTemp("", "twsnmpfk_test")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,0 +1,205 @@
+package logger
+
+import (
+	"bytes"
+	"crypto/tls"
+	"encoding/json"
+	"fmt"
+	"log"
+	"strings"
+	"time"
+
+	mqtt "github.com/mochi-mqtt/server/v2"
+	"github.com/mochi-mqtt/server/v2/hooks/auth"
+	"github.com/mochi-mqtt/server/v2/listeners"
+	"github.com/mochi-mqtt/server/v2/packets"
+	"github.com/twsnmp/twsnmpfk/datastore"
+)
+
+func mqttd(stopCh chan bool) {
+	log.Printf("start mqttd")
+	datastore.LoadMqttStat()
+	s := startMqttServer()
+	<-stopCh
+	s.Close()
+	datastore.SaveMqttStat()
+	log.Printf("stop mqttd")
+}
+
+func startMqttServer() *mqtt.Server {
+	// Create the new MQTT Server.
+	server := mqtt.New(nil)
+	err := server.AddHook(new(mqttHook), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if datastore.MqttFrom == "" && datastore.MqttUsers == "" {
+		// Allow all connections.
+		if err := server.AddHook(new(auth.AllowHook), nil); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		authRules := &auth.Ledger{}
+		for _, e := range strings.Split(datastore.MqttUsers, ",") {
+			a := strings.SplitN(e, ":", 2)
+			if len(a) == 2 {
+				authRules.Auth = append(authRules.Auth, auth.AuthRule{
+					Username: auth.RString(a[0]),
+					Password: auth.RString(a[1]),
+					Allow:    true,
+				})
+			}
+		}
+		for _, e := range strings.Split(datastore.MqttFrom, ",") {
+			authRules.Auth = append(authRules.Auth, auth.AuthRule{
+				Remote: auth.RString(e),
+				Allow:  true,
+			})
+		}
+		if err := server.AddHook(new(auth.Hook), &auth.Options{
+			Ledger: authRules,
+		}); err != nil {
+			log.Fatal(err)
+		}
+	}
+	var tlsConfig *tls.Config
+	if datastore.MqttCert != "" && datastore.MqttKey != "" {
+		cert, err := tls.LoadX509KeyPair(datastore.MqttCert, datastore.MqttKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+		tlsConfig = &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		}
+	}
+	if datastore.MqttTCPPort > 0 {
+		tcp := listeners.NewTCP(listeners.Config{
+			ID:        "tcp1",
+			Address:   fmt.Sprintf(":%d", datastore.MqttTCPPort),
+			TLSConfig: tlsConfig,
+		})
+		if err := server.AddListener(tcp); err != nil {
+			log.Fatal(err)
+		}
+	}
+	if datastore.MqttWSPort > 0 {
+		ws := listeners.NewWebsocket(listeners.Config{
+			ID:        "ws1",
+			Address:   fmt.Sprintf(":%d", datastore.MqttWSPort),
+			TLSConfig: tlsConfig,
+		})
+		if err := server.AddListener(ws); err != nil {
+			log.Fatal(err)
+		}
+	}
+	go func() {
+		err := server.Serve()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+	return server
+}
+
+type mqttHook struct {
+	mqtt.HookBase
+}
+
+func (h *mqttHook) ID() string {
+	return "twsnmpfk-mqttd"
+}
+
+func (h *mqttHook) Provides(b byte) bool {
+	return bytes.Contains([]byte{
+		mqtt.OnConnect,
+		mqtt.OnDisconnect,
+		mqtt.OnSubscribed,
+		mqtt.OnUnsubscribed,
+		mqtt.OnPublished,
+	}, []byte{b})
+}
+
+func (h *mqttHook) Init(config any) error {
+	log.Println("mqtt hook initialised")
+	return nil
+}
+
+func (h *mqttHook) OnConnect(cl *mqtt.Client, pk packets.Packet) error {
+	log.Printf("mqtt client connected client=%s", cl.ID)
+	if datastore.MapConf.MqttToSyslog && datastore.MapConf.EnableSyslogd {
+		logMap := make(map[string]any)
+		logMap["content"] = fmt.Sprintf("mqtt clinet connected client=%s remote=%s", cl.ID, cl.Net.Remote)
+		logMap["tag"] = "mqtt:connect"
+		logMap["severity"] = 6
+		logMap["facility"] = float64(17)
+		logMap["hostname"] = cl.ID
+		if j, err := json.Marshal(&logMap); err == nil {
+			logCh <- &datastore.LogEnt{
+				Time: time.Now().UnixNano(),
+				Type: "syslog",
+				Log:  string(j),
+			}
+		}
+	}
+	return nil
+}
+
+func (h *mqttHook) OnDisconnect(cl *mqtt.Client, err error, expire bool) {
+	log.Printf("mqtt client disconnected client=%s,expire=%v,err=%v", cl.ID, expire, err)
+	if datastore.MapConf.MqttToSyslog && datastore.MapConf.EnableSyslogd {
+		logMap := make(map[string]any)
+		logMap["content"] = fmt.Sprintf("mqtt clinet disconnected client=%s remote=%s exire=%v err=%v",
+			cl.ID, cl.Net.Remote, expire, err)
+		logMap["tag"] = "mqtt:disconnect"
+		logMap["severity"] = 6
+		if err != nil {
+			logMap["severity"] = 4
+		}
+		logMap["facility"] = float64(17)
+		logMap["hostname"] = cl.ID
+		if j, err := json.Marshal(&logMap); err == nil {
+			logCh <- &datastore.LogEnt{
+				Time: time.Now().UnixNano(),
+				Type: "syslog",
+				Log:  string(j),
+			}
+		}
+	}
+}
+
+func (h *mqttHook) OnSubscribed(cl *mqtt.Client, pk packets.Packet, reasonCodes []byte) {
+	log.Printf("mqtt subscribed client=%s qos=%v", cl.ID, reasonCodes)
+}
+
+func (h *mqttHook) OnUnsubscribed(cl *mqtt.Client, pk packets.Packet) {
+	log.Printf("mqtt unsubscribed client=%s", cl.ID)
+}
+
+func (h *mqttHook) OnPublished(cl *mqtt.Client, pk packets.Packet) {
+	datastore.UpdateMqttStat(cl.ID, getMqttRemoteIP(cl.Net.Remote), pk.TopicName, len(pk.Payload))
+	if datastore.MapConf.MqttToSyslog && datastore.MapConf.EnableSyslogd {
+		logMap := make(map[string]any)
+		logMap["content"] = string(pk.Payload)
+		logMap["tag"] = fmt.Sprintf("mqtt:%s", pk.TopicName)
+		logMap["severity"] = 6
+		logMap["facility"] = float64(17)
+		logMap["hostname"] = cl.ID
+		if j, err := json.Marshal(&logMap); err == nil {
+			logCh <- &datastore.LogEnt{
+				Time: time.Now().UnixNano(),
+				Type: "syslog",
+				Log:  string(j),
+			}
+		}
+	}
+}
+
+func getMqttRemoteIP(remote string) string {
+	a := strings.Split(remote, ":")
+	if len(a) > 2 {
+		remote = strings.Join(a[:len(a)-1], ":")
+	} else if len(a) == 2 {
+		remote = a[0]
+	}
+	return remote
+}

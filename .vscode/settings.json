@@ -545,7 +545,12 @@
     "Microsoft",
     "\n      {#if locConf ",
     " {\n            showMap();\n          }}\n        >\n          ",
-    "& locConf.Style}\n        "
+    "& locConf.Style}\n        ",
+    "\n      TWSNMP FK - {mapConfig.MapName}\n    ",
+    " {\n          page = \"mqtt\";\n        }}\n      >\n        ",
+    " {\n    page = oldPage;\n    mapConfig = await GetMapConf()\n    locConf = await GetLocConf();\n    if (page == \"loc\" ",
+    "Topic",
+    "MQTT → Syslog"
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

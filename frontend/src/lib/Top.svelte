@@ -13,7 +13,7 @@
   import * as icons from "@mdi/js";
   import { onMount, tick } from "svelte";
   import {
-    GetMapName,
+    GetMapConf,
     IsDark,
     IsLatest,
     SetDark,
@@ -39,6 +39,7 @@
   import CertMonitor from "./CertMonitor.svelte";
   import PKI from "./PKI.svelte";
   import OTel from "./OTel.svelte";
+  import Mqtt from "./Mqtt.svelte";
   import Help from "./Help.svelte";
   import { _ } from "svelte-i18n";
   import Location from "./Location.svelte";
@@ -47,6 +48,9 @@
 
   let dark: boolean = false;
   let mainHeight = 0;
+  let mapConfig :any = {
+    MapName: "",
+  };
   let mapName = "";
   let page = "map";
   let oldPage = "";
@@ -60,10 +64,6 @@
     IconSize: 24,
     Zoom: 2,
     Center: "",
-  };
-
-  const updateMapName = async () => {
-    mapName = await GetMapName();
   };
 
   const checkLatest = async () => {
@@ -91,6 +91,7 @@
     if (lock == "loc" && locConf.Style != "") {
       page = "loc";
     }
+    mapConfig = await GetMapConf();
     const l = await GetIcons();
     if (l) {
       for (const icon of l) {
@@ -100,7 +101,6 @@
     version = await GetVersion();
     await tick();
     mainHeight = window.innerHeight - 96;
-    updateMapName();
     checkLatest();
   });
 
@@ -118,14 +118,14 @@
 
 <Navbar let:hidden let:toggle style="--wails-draggable:drag">
   <NavBrand href="/">
-    <img src={logo} class="mr-3 h-12" alt="TWSNMP Logo" />
+    <img src={logo} class="mr-2 h-12" alt="TWSNMP Logo" />
     <span
       class="self-center whitespace-nowrap text-xl font-semibold dark:text-white"
     >
-      TWSNMP FK - {mapName}
+      TWSNMP FK - {mapConfig.MapName}
     </span>
   </NavBrand>
-  <NavUl ulClass="flex flex-col p-3 mt-3 md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium">
+  <NavUl ulClass="flex flex-col p-2 mt-3 md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium">
     {#if !lock}
       <NavLi
         active={page == "map"}
@@ -201,6 +201,7 @@
         <Icon path={icons.mdiCalendarCheck} size={1.8} />
         {$_("Top.Log")}
       </NavLi>
+    {#if mapConfig.EnableSyslogd}
       <NavLi
         active={page == "syslog"}
         on:click={() => {
@@ -210,6 +211,8 @@
         <Icon path={icons.mdiCalendarText} size={1.8} />
         syslog
       </NavLi>
+    {/if}
+    {#if mapConfig.EnableTrapd}
       <NavLi
         active={page == "trap"}
         on:click={() => {
@@ -219,6 +222,8 @@
         <Icon path={icons.mdiAlert} size={1.8} />
         TRAP
       </NavLi>
+    {/if}
+    {#if mapConfig.EnableNetflowd}
       <NavLi
         active={page == "netflow"}
         on:click={() => {
@@ -228,6 +233,8 @@
         <Icon path={icons.mdiCompareHorizontal} size={1.8} />
         NetFlow
       </NavLi>
+    {/if}
+    {#if mapConfig.EnableSFlowd}
       <NavLi
         active={page == "sflow"}
         on:click={() => {
@@ -237,6 +244,7 @@
         <Icon path={icons.mdiClockCheckOutline} size={1.8} />
         sFlow
       </NavLi>
+    {/if}
       <NavLi
         active={page == "arp"}
         on:click={() => {
@@ -246,6 +254,7 @@
         <Icon path={icons.mdiCheckNetwork} size={1.8} />
         ARP
       </NavLi>
+    {#if mapConfig.EnableOTel}
       <NavLi
         active={page == "otel"}
         on:click={() => {
@@ -255,6 +264,18 @@
         <Icon path={icons.mdiTelescope} size={1.8} />
         OTel
       </NavLi>
+    {/if}
+    {#if mapConfig.EnableMqtt}
+      <NavLi
+        active={page == "mqtt"}
+        on:click={() => {
+          page = "mqtt";
+        }}
+      >
+        <Icon path={icons.mdiQueueFirstInLastOut} size={1.8} />
+        MQTT
+      </NavLi>
+    {/if}
       <NavLi
         active={page == "ai"}
         on:click={() => {
@@ -350,6 +371,8 @@
   <PKI />
 {:else if page == "otel"}
   <OTel />
+{:else if page == "mqtt"}
+  <Mqtt />
 {:else if page == "cert"}
   <CertMonitor />
 {/if}
@@ -358,7 +381,7 @@
   bind:show={showConfig}
   on:close={async () => {
     page = oldPage;
-    updateMapName();
+    mapConfig = await GetMapConf()
     locConf = await GetLocConf();
     if (page == "loc" && !locConf.Style) {
       page = "map";

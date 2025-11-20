@@ -426,6 +426,15 @@ var transMap = map[string]map[string]string{
 	"Server certificate check: target=%s:%d subject=%s notAfter=%s error=%s": {
 		"ja": "サーバー証明書の確認: 対象=%s:%d subject=%s 有効期限=%s エラー=%s",
 	},
+	"Delete all OpenTelemetry data": {
+		"ja": "OpenTelemetryのデータを全て削除しました",
+	},
+	"Delete all MQTT stat": {
+		"ja": "MQTT統計情報を全て削除しました",
+	},
+	"Delete MQTT stat(%d)": {
+		"ja": "MQTT統計情報を%d件削除しました",
+	},
 }
 
 func init() {

@@ -244,7 +244,6 @@ var grokTestMap = map[string][]string{
 
 var grokList = []string{
 	`Login %{NOTSPACE:stat}: \[(host/)*%{USER:user}\].+cli %{MAC:client}`,
-	`FileZen: %{IP:client} %{USER:user} "Authentication %{NOTSPACE:stat}`,
 	`Login %{NOTSPACE:stat}: \[.+\] %{USER:user}`,
 	`mac=%{MAC:mac}.+ip=%{IP:ip}`,
 	`ip=%{IP:ip}.+mac=%{MAC:mac}`,

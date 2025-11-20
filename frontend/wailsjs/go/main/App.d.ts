@@ -28,6 +28,8 @@ export function DeleteAIResult(arg1:string):Promise<boolean>;
 
 export function DeleteAllEventLogs():Promise<boolean>;
 
+export function DeleteAllMqttStat():Promise<boolean>;
+
 export function DeleteAllNetFlow():Promise<boolean>;
 
 export function DeleteAllOTelData():Promise<boolean>;
@@ -49,6 +51,8 @@ export function DeleteDrawItems(arg1:Array<string>):Promise<void>;
 export function DeleteIcon(arg1:string):Promise<boolean>;
 
 export function DeleteLine(arg1:string):Promise<boolean>;
+
+export function DeleteMqttStats(arg1:Array<string>):Promise<void>;
 
 export function DeleteNetwork(arg1:string):Promise<void>;
 
@@ -175,6 +179,8 @@ export function GetMapEventLogs():Promise<Array<datastore.EventLogEnt>>;
 export function GetMapName():Promise<string>;
 
 export function GetMonitorDatas():Promise<Array<backend.MonitorDataEnt>>;
+
+export function GetMqttStatList():Promise<Array<datastore.MqttStatEnt>>;
 
 export function GetMySSHPublicKey():Promise<string>;
 

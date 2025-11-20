@@ -8,7 +8,7 @@ import (
 )
 
 func getTmpDBFile() (string, error) {
-	f, err := os.CreateTemp("", "twsnmpfc_test")
+	f, err := os.CreateTemp("", "twsnmpfk_test")
 	if err != nil {
 		return "", err
 	}
@@ -17,7 +17,7 @@ func getTmpDBFile() (string, error) {
 
 func TestDataStore(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
-	td, err := os.MkdirTemp("", "twsnmpfc_test")
+	td, err := os.MkdirTemp("", "twsnmpfk_test")
 	if err != nil {
 		t.Fatal(err)
 	}

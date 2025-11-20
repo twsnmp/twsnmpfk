@@ -1017,5 +1017,14 @@
     "TargetIPOrHost": "対象IPまたはホスト名",
     "PortNumber": "ポート番号",
     "Save": "保存"
+  },
+  "Mqtt": {
+    "ClientID": "クライアントID",
+    "Remote": "送信元",
+    "Topic": "トピック",
+    "Count": "回数",
+    "Bytes": "バイト数",
+    "First": "初回",
+    "DeleteAll": "全MQTTデータ削除"
   }
 }
