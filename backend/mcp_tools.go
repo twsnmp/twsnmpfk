@@ -41,6 +41,10 @@ func addTools(s *mcp.Server) {
 		Description: "get polling log from TWSNMP",
 	}, getPollingLog)
 	mcp.AddTool(s, &mcp.Tool{
+		Name:        "get_polling_log_data",
+		Description: "get polling log data from TWSNMP",
+	}, getPollingLogData)
+	mcp.AddTool(s, &mcp.Tool{
 		Name:        "do_ping",
 		Description: "do ping",
 	}, doPing)
@@ -290,7 +294,7 @@ type mcpPollingLogEnt struct {
 
 type getPollingLogParams struct {
 	ID    string `json:"id" jsonschema:"The ID of the polling to retrieve the polling log"`
-	Limit int    `json:"limit" jsonschema:"Limit on number of logs retrieved. min 1,max 2000"`
+	Limit int    `json:"limit" jsonschema:"Limit on number of logs retrieved. min 1, max 2000"`
 }
 
 func getPollingLog(ctx context.Context, req *mcp.CallToolRequest, args getPollingLogParams) (*mcp.CallToolResult, any, error) {
@@ -326,6 +330,60 @@ func getPollingLog(ctx context.Context, req *mcp.CallToolRequest, args getPollin
 	}, nil, nil
 }
 
+func getPollingLogData(ctx context.Context, req *mcp.CallToolRequest, args getPollingLogParams) (*mcp.CallToolResult, any, error) {
+	id := args.ID
+	if id == "" {
+		return nil, nil, fmt.Errorf("no id")
+	}
+	polling := datastore.GetPolling(id)
+	if polling == nil {
+		return nil, nil, fmt.Errorf("polling not found")
+	}
+	limit := args.Limit
+	if limit < 100 || limit > 2000 {
+		limit = 100
+	}
+	list := []mcpPollingLogEnt{}
+	datastore.ForEachLastPollingLog(id, func(l *datastore.PollingLogEnt) bool {
+		list = append(list, mcpPollingLogEnt{
+			Time:   time.Unix(0, l.Time).Format(time.RFC3339),
+			State:  l.State,
+			Result: l.Result,
+		})
+		return len(list) < limit
+	})
+	if len(list) < 1 {
+		return nil, nil, fmt.Errorf("polling log not found")
+	}
+	keys := []string{}
+	for k, v := range list[0].Result {
+		if k == "lastTime" {
+			continue
+		}
+		if _, ok := v.(float64); !ok {
+			continue
+		}
+		keys = append(keys, k)
+	}
+	csv := []string{"time,state," + strings.Join(keys, ",")}
+	for _, l := range list {
+		s := fmt.Sprintf("%s,%s", l.Time, l.State)
+		for _, k := range keys {
+			if v, ok := l.Result[k].(float64); ok {
+				s += "," + fmt.Sprintf("%f", v)
+			} else {
+				s += ","
+			}
+		}
+		csv = append(csv, s)
+	}
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{Text: strings.Join(csv, "\n")},
+		},
+	}, nil, nil
+}
+
 // do_ping tool
 type mcpPingEnt struct {
 	Result       string `json:"Result"`
@@ -340,7 +398,7 @@ type mcpPingEnt struct {
 type doPingParams struct {
 	Target  string `json:"target" jsonschema:"ping target ip address or host name"`
 	Size    int    `json:"size" jsonschema:"ping packet size"`
-	TTL     int    `json:"ttl" jsonschema:"ip packet TTL"`
+	TTL     int    `json:"ttl" jsonschema:"IP packet TTL"`
 	Timeout int    `json:"timeout" jsonschema:"timeout sec of ping"`
 }
 
@@ -561,7 +619,7 @@ func addNode(ctx context.Context, req *mcp.CallToolRequest, args addNodeParams) 
 	}
 	ip := args.IP
 	if ip == "" {
-		return nil, nil, fmt.Errorf("ip is empty")
+		return nil, nil, fmt.Errorf("IP is empty")
 	}
 	x := args.X
 	if x < 1 || x > 1000 {
@@ -762,20 +820,20 @@ type mcpEventLogEnt struct {
 }
 
 type searchEventLogParams struct {
-	NodeFilter  string `json:"node_filter" jsonschema:"node_filter specifies the search criteria for node names using regular expressions.If blank, no filter."`
+	NodeFilter  string `json:"node_filter" jsonschema:"node_filter specifies the search criteria for node names using regular expressions. If blank, no filter."`
 	TypeFilter  string `json:"type_filter" jsonschema:"type_filter specifies the search criteria for type names using regular expressions.If blank, no filter."`
-	LevelFilter string `json:"level_filter" jsonschema:"level_filter specifies the search criteria for level names using regular expressions.If blank, no filter.Level names can be warn,low,high,debug,info"`
+	LevelFilter string `json:"level_filter" jsonschema:"level_filter specifies the search criteria for level names using regular expressions. If blank, no filter.Level names can be warn,low,high,debug,info"`
 	EventFilter string `json:"event_filter" jsonschema:"event_filter specifies the search criteria for events using regular expressions.If blank, no filter."`
 	StartTime   string `json:"start_time" jsonschema:"start date and time of logs to search or duration from now."`
 	EndTime     string `json:"end_time" jsonschema:"end date and time of logs to search.empty or now is current time."`
-	Limit       int    `json:"limit_log_count" jsonschema:"Limit on number of logs retrieved. min 100,max 10000"`
+	Limit       int    `json:"limit" jsonschema:"Limit on number of logs retrieved. min 100,max 10000"`
 }
 
 func searchEventLog(ctx context.Context, req *mcp.CallToolRequest, args searchEventLogParams) (*mcp.CallToolResult, any, error) {
 	node := makeRegexFilter(args.NodeFilter)
 	typeFilter := makeRegexFilter(args.TypeFilter)
 	level := makeRegexFilter(args.LevelFilter)
-	event := makeRegexFilter(args.LevelFilter)
+	event := makeRegexFilter(args.EventFilter)
 	start := args.StartTime
 	if start == "" {
 		start = "-1h"
@@ -840,13 +898,13 @@ type mcpSyslogEnt struct {
 	Facility int
 }
 type searchSyslogParams struct {
-	LevelFilter   string `json:"level_filter" jsonschema:"level_filter specifies the search criteria for level names using regular expressions.If blank, no filter.Level names can be warn,low,high,debug,info"`
-	HostFilter    string `json:"host_filter" jsonschema:"host_filter specifies the search criteria for host names using regular expressions.If blank, no filter."`
+	LevelFilter   string `json:"level_filter" jsonschema:"level_filter specifies the search criteria for level names using regular expressions. If blank, no filter.Level names can be warn,low,high,debug,info"`
+	HostFilter    string `json:"host_filter" jsonschema:"host_filter specifies the search criteria for host names using regular expressions. If blank, no filter."`
 	TagFilter     string `json:"tag_filter" jsonschema:"tag_filter specifies the search criteria for tag names using regular expressions.If blank, no filter."`
 	MessageFilter string `json:"message_filter" jsonschema:"message_filter specifies the search criteria for messages using regular expressions.If blank, no filter."`
 	StartTime     string `json:"start_time" jsonschema:"start date and time of logs to search or duration from now."`
 	EndTime       string `json:"end_time" jsonschema:"end date and time of logs to search.empty or now is current time."`
-	Limit         int    `json:"limit_log_count" jsonschema:"Limit on number of logs retrieved. min 100,max 10000"`
+	Limit         int    `json:"limit" jsonschema:"Limit on number of logs retrieved. min 100,max 10000"`
 }
 
 func searchSyslog(ctx context.Context, req *mcp.CallToolRequest, args searchSyslogParams) (*mcp.CallToolResult, any, error) {
@@ -916,8 +974,8 @@ type mcpSyslogSummaryEnt struct {
 }
 
 type getSyslogSummaryParams struct {
-	LevelFilter   string `json:"level_filter" jsonschema:"level_filter specifies the search criteria for level names using regular expressions.If blank, no filter.Level names can be warn,low,high,debug,info"`
-	HostFilter    string `json:"host_filter" jsonschema:"host_filter specifies the search criteria for host names using regular expressions.If blank, no filter."`
+	LevelFilter   string `json:"level_filter" jsonschema:"level_filter specifies the search criteria for level names using regular expressions. If blank, no filter.Level names can be warn,low,high,debug,info"`
+	HostFilter    string `json:"host_filter" jsonschema:"host_filter specifies the search criteria for host names using regular expressions. If blank, no filter."`
 	TagFilter     string `json:"tag_filter" jsonschema:"tag_filter specifies the search criteria for tag names using regular expressions.If blank, no filter."`
 	MessageFilter string `json:"message_filter" jsonschema:"message_filter specifies the search criteria for messages using regular expressions.If blank, no filter."`
 	StartTime     string `json:"start_time" jsonschema:"start date and time of logs to search or duration from now."`
@@ -990,13 +1048,13 @@ func getSyslogSummary(ctx context.Context, req *mcp.CallToolRequest, args getSys
 }
 
 var regNum = regexp.MustCompile(`\b-?\d+(\.\d+)?\b`)
-var regUUDI = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
+var regUUID = regexp.MustCompile(`\b[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\b`)
 var regEmail = regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b`)
 var regIP = regexp.MustCompile(`\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b`)
 var regMAC = regexp.MustCompile(`\b(?:[0-9a-fA-F]{2}[:-]){5}(?:[0-9a-fA-F]{2})\b`)
 
 func normalizeLog(s string) string {
-	s = regUUDI.ReplaceAllString(s, "#UUID#")
+	s = regUUID.ReplaceAllString(s, "#UUID#")
 	s = regEmail.ReplaceAllString(s, "#EMAIL#")
 	s = regIP.ReplaceAllString(s, "#IP#")
 	s = regMAC.ReplaceAllString(s, "#MAC#")
@@ -1222,7 +1280,7 @@ type mcpMACInfoEnt struct {
 }
 
 func getMACInfo(ctx context.Context, req *mcp.CallToolRequest, args getMACInfoParams) (*mcp.CallToolResult, any, error) {
-	mac := normMACAddr(args.MAC)
+	mac := normalizeMACAddr(args.MAC)
 	info := new(mcpMACInfoEnt)
 	info.MAC = mac
 	if n := datastore.FindNodeFromMAC(mac); n != nil {
@@ -1243,7 +1301,7 @@ func getMACInfo(ctx context.Context, req *mcp.CallToolRequest, args getMACInfoPa
 	}, nil, nil
 }
 
-func normMACAddr(m string) string {
+func normalizeMACAddr(m string) string {
 	if hw, err := net.ParseMAC(m); err == nil {
 		m = strings.ToUpper(hw.String())
 		return m
@@ -1281,7 +1339,7 @@ func getTimeRange(start, end string) (int64, int64, error) {
 	var err error
 	et := time.Now()
 	if start == "" {
-		return 0, 0, fmt.Errorf("start_time must not empty")
+		return 0, 0, fmt.Errorf("start_time must not be empty")
 	}
 	if d, err := str2duration.ParseDuration(start); err == nil {
 		st = et.Add(d)
@@ -1294,7 +1352,7 @@ func getTimeRange(start, end string) (int64, int64, error) {
 		}
 	}
 	if st.UnixNano() > et.UnixNano() {
-		return 0, 0, fmt.Errorf("start_time must before end_time")
+		return 0, 0, fmt.Errorf("start_time must be before end_time")
 	}
 	return st.UnixNano(), et.UnixNano(), nil
 }
@@ -1305,7 +1363,7 @@ func nameToOID(name string) string {
 		oid = ".1.3"
 	}
 	if oid == ".0.0" {
-		if matched, _ := regexp.MatchString(`\.[0-9.]+`, name); matched {
+		if matched, _ := regexp.MatchString(`\\.[0-9.]+`, name); matched {
 			return name
 		}
 	}

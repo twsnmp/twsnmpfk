@@ -130,7 +130,7 @@ func startMCPServer() *echo.Echo {
 		}, nil)
 		e.Any("/mcp", func(c echo.Context) error {
 			if !checkMCPACL(c) {
-				log.Printf("mcp reject c=%+v", c)
+				log.Printf("mcp reject connection from %s", c.Request().RemoteAddr)
 				return echo.ErrUnauthorized
 			}
 			handler.ServeHTTP(c.Response().Writer, c.Request())

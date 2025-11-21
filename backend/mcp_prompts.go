@@ -58,7 +58,7 @@ func addPrompts(s *mcp.Server) {
 			{
 				Name:        "icon",
 				Title:       "Icon",
-				Description: "Icon. (desktop,laptop,server,cloud,router,ip)",
+				Description: "Icon. (desktop,laptop,server,cloud,router, ip)",
 				Required:    false,
 			},
 			{
@@ -85,7 +85,7 @@ func addPrompts(s *mcp.Server) {
 			{
 				Name:        "id",
 				Title:       "ID of node to update",
-				Description: "ID of node to update. ID or name,IP address.",
+				Description: "ID of node to update. ID or name, IP address.",
 				Required:    true,
 			},
 			{
@@ -205,7 +205,7 @@ func addPrompts(s *mcp.Server) {
 			{
 				Name:        "target",
 				Title:       "Ping target",
-				Description: "Ping target(ip,node name or host name)",
+				Description: "Ping target (ip, node name or host name)",
 				Required:    true,
 			},
 			{
@@ -293,9 +293,9 @@ func addPrompts(s *mcp.Server) {
 				Required:    false,
 			},
 			{
-				Name:        "level_name_filter",
+				Name:        "level_filter",
 				Title:       "Level filter",
-				Description: "Level filter.(info,normal,warn,low,high)",
+				Description: "Level filter (info,normal,warn,low,high)",
 				Required:    false,
 			},
 			{
@@ -334,7 +334,7 @@ func addPrompts(s *mcp.Server) {
 			{
 				Name:        "level_filter",
 				Title:       "Level filter",
-				Description: "Level filter.(warn,low,high,debug,info)",
+				Description: "Level filter (warn,low,high,debug,info)",
 				Required:    false,
 			},
 			{
@@ -385,7 +385,7 @@ func addPrompts(s *mcp.Server) {
 			{
 				Name:        "level_filter",
 				Title:       "Level filter",
-				Description: "Level filter.(warn,low,high,debug,info)",
+				Description: "Level filter (warn,low,high,debug,info)",
 				Required:    false,
 			},
 			{
@@ -430,13 +430,13 @@ func addPrompts(s *mcp.Server) {
 	// search_snmp_trap_log
 	s.AddPrompt(&mcp.Prompt{
 		Name:        "search_snmp_trap_log",
-		Title:       "Search snmp trap log with filters",
-		Description: "Search snmp trap log of TWSNMP with filters",
+		Title:       "Search SNMP trap log with filters",
+		Description: "Search SNMP trap logs from TWSNMP with filters",
 		Arguments: []*mcp.PromptArgument{
 			{
 				Name:        "from_filter",
 				Title:       "Trap from filter",
-				Description: "Trap from filter.",
+				Description: "Trap sender address filter.",
 				Required:    false,
 			},
 			{
@@ -448,7 +448,7 @@ func addPrompts(s *mcp.Server) {
 			{
 				Name:        "variable_filter",
 				Title:       "Variable of trap filter",
-				Description: "Variable of trap filter",
+				Description: "Trap variable filter",
 				Required:    false,
 			},
 			{
@@ -482,8 +482,8 @@ func addPrompts(s *mcp.Server) {
 	// get_ip_address_list
 	s.AddPrompt(&mcp.Prompt{
 		Name:        "get_ip_address_list",
-		Title:       "Get the list of IP address managed by TWSNMP.",
-		Description: "Get the list of IP address managed by TWSNMP by using get_ip_address_list tool",
+		Title:       "Get the list of IP addresses managed by TWSNMP.",
+		Description: "Get the list of IP addresses managed by TWSNMP by using get_ip_address_list tool",
 	}, getIPAddressListPrompt)
 
 	// get_resource_monitor_list
@@ -491,25 +491,25 @@ func addPrompts(s *mcp.Server) {
 		Name:        "get_resource_monitor_list",
 		Title:       "Get resource monitor info of TWSNMP",
 		Description: "Get resource monitor info of TWSNMP by using get_resource_monitor_list tool",
-	}, getResorceMonitorPrompt)
+	}, getResourceMonitorPrompt)
 
 	// get_server_certificate_list
 	s.AddPrompt(&mcp.Prompt{
 		Name:        "get_server_certificate_list",
 		Title:       "Get the list of server certificates managed by TWSNMP",
-		Description: "Get the list of server certificates managed by TWSNMP by using get_server_certificate_list tool",
+		Description: "Get the list of server certificates managed by TWSNMP by using get_server_certificate_list tool.",
 	}, getServerCertificateListPrompt)
 
 	// add_event_log
 	s.AddPrompt(&mcp.Prompt{
 		Name:        "add_event_log",
 		Title:       "Add Event log to TWSNMP",
-		Description: "Add Event log to TWSNMP.",
+		Description: "Add event log to TWSNMP.",
 		Arguments: []*mcp.PromptArgument{
 			{
 				Name:        "level",
 				Title:       "Level of event log",
-				Description: "Level of event log(info,normal,warn,low,high)",
+				Description: "Level of event log (info,normal,warn,low,high)",
 				Required:    true,
 			},
 			{
@@ -717,7 +717,7 @@ func getPollingLogPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.G
 	} else {
 		c = append(c, fmt.Sprintf("- ID: %s", id))
 	}
-	if limit, ok := req.Params.Arguments["name"]; ok {
+	if limit, ok := req.Params.Arguments["limit"]; ok {
 		c = append(c, fmt.Sprintf("- Limit: %s", limit))
 	}
 	p := "Get polling log by using get_polling_log tool with the following conditions:\n" + strings.Join(c, "\n")
@@ -782,7 +782,7 @@ func doSnmpWalkPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetP
 		c = append(c, fmt.Sprintf("- User: %s", user))
 	}
 	if password, ok := req.Params.Arguments["password"]; ok {
-		c = append(c, fmt.Sprintf("- User: %s", password))
+		c = append(c, fmt.Sprintf("- Password: %s", password))
 	}
 	p := "Do snmpwalk to target by using snmpwalk tool with the following conditions:\n" + strings.Join(c, "\n")
 	return &mcp.GetPromptResult{
@@ -977,7 +977,7 @@ func getIPAddressListPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mc
 	}, nil
 }
 
-func getResorceMonitorPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+func getResourceMonitorPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
 	return &mcp.GetPromptResult{
 		Description: "Get resource monitor info of TWSNMP by using get_resource_monitor_list tool.",
 		Messages: []*mcp.PromptMessage{
@@ -1038,7 +1038,7 @@ func getIPAddressInfoPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mc
 		Messages: []*mcp.PromptMessage{
 			{
 				Role:    "user",
-				Content: &mcp.TextContent{Text: fmt.Sprintf("Get IP address information by using get_ip_info tool. The IP address to look up is %s.", ip)},
+				Content: &mcp.TextContent{Text: fmt.Sprintf("Get IP address information by using get_ip_address_info tool. The IP address to look up is %s.", ip)},
 			},
 		},
 	}, nil
@@ -1054,7 +1054,7 @@ func getMACAddressInfoPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*m
 		Messages: []*mcp.PromptMessage{
 			{
 				Role:    "user",
-				Content: &mcp.TextContent{Text: fmt.Sprintf("Get MAC address information by using get_mac_info tool. The MAC address to look up is %s.", mac)},
+				Content: &mcp.TextContent{Text: fmt.Sprintf("Get MAC address information by using get_mac_address_info tool. The MAC address to look up is %s.", mac)},
 			},
 		},
 	}, nil
