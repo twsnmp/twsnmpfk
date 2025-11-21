@@ -764,6 +764,58 @@ OpenTelemetryコレクターの画面です。
 otelCertとotelKeyに証明書と秘密鍵を指定すれば、TLSモードになります。
 otelCAにクライアント証明書を発行したCAの証明書を指定すれば、mTLSモードになります。
 
+## MQTT
+
+受信したMQTTのトピック一覧です。
+
+![](./images/ja/2025-11-22_04-56-15.png)
+
+
+|項目|内容|
+|----|----|
+|状態|受信状態です。１日以上受信していないと注意、7日以上受信していないと軽度です。それ以外は正常です。|
+|クライアントID|送信元のクライアントIDです。|
+|トピック|受信したトピック名です。|
+|回数|トピックの受信回数です。|
+|バイト数|トピックの受信バイト数です。|
+|初回|トピックを最初に受信した日時です。|
+|最終確認|トピックを最後に受信した日時です。|
+
+
+### MQTT（ボタン）
+
+|項目|内容|
+|----|----|
+|<span style="color: red;">削除</span>|選択したMQTTデータを削除します。|
+|<span style="color: red;">全MQTTデータ削除</span>|全MQTTデータを削除します。|
+|更新|情報を更新します。|
+
+### MQTT設定
+
+マップ設定のMQTT関連の設定は、黄色の矢印の部分です。
+
+![](./images/ja/2025-11-22_04-56-29.png)
+
+
+有効無効の切り替えと、MQTTで受信したデータをsyslogに記録する設定があります。
+
+### 起動パラメータ
+
+```
+  -mqttCert string
+    	MQTT server cert path
+  -mqttFrom string
+    	MQTT client IP
+  -mqttKey string
+    	MQTT server key path
+  -mqttTCPPort int
+    	MQTT server TCP port (default 1883)
+  -mqttUsers string
+    	MQTT user and password
+  -mqttWSPort int
+    	MQTT server WebSock port (default 1884)
+```
+
 ## MCPサーバー
 
 AIがTWSNMP FKを利用するためのMCPサーバー機能があります。
@@ -1699,7 +1751,7 @@ SNMPのMIBを管理する画面です。
 
 ```
 Usage of twsnmpfk:
-  -caCert string
+ -caCert string
     	CA Cert path
   -clientCert string
     	Client cert path
@@ -1719,6 +1771,18 @@ Usage of twsnmpfk:
     	MCP server cert path
   -mcpKey string
     	MCP server key path
+  -mqttCert string
+    	MQTT server cert path
+  -mqttFrom string
+    	MQTT client IP
+  -mqttKey string
+    	MQTT server key path
+  -mqttTCPPort int
+    	MQTT server TCP port (default 1883)
+  -mqttUsers string
+    	MQTT user and password
+  -mqttWSPort int
+    	MQTT server WebSock port (default 1884)
   -netflowPort int
     	Netflow port (default 2055)
   -notifyOAuth2Port int
@@ -1767,6 +1831,12 @@ Usage of twsnmpfk:
 |otelKey <file>|OpenTelemetryのサーバーの秘密鍵|
 |otelGRPCPort <number>|OpenTelemetryのgRPCのポート番号|
 |otelHTTPPort <file>|OpenTelemetryのHTTPのポート番号|
+| mqttTCPPort |MQTTサーバーのTCPポート番号 (default 1883)|
+| mqttWSPort |MQTTサーバーのWebsockポート番号 (default 1884)|
+| mqttCert |MQTTサーバー証明書のパス|
+| mqttKey |MQTTサーバーの秘密鍵のパス|
+| mqttFrom |MQTT server 許可クライアントIP|
+| mqttUsers |MQTT server ユーザーIDとパスワード|
 | mcpCert |MCPサーバーの証明書のパス|
 | mcpKey |MCPサーバーの秘密鍵のパス|
 | notifyOAuth2Port |OAuth2リダイレクトサーバーのポート番号(default 8180)|
@@ -1803,5 +1873,9 @@ sshdPort=2023
 [MCP]
 #mcpCert=
 #mcpKey=
+
+[MQTT]
+#mqttTCPPort=1883
+#mqttWSPort=1884
 
 ```

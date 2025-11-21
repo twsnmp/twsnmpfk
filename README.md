@@ -47,6 +47,7 @@ The following functions will work
 - TCP Log server
 - OpenTelemetry collector
 - MCP Server
+- MQTT Server and Polling
 
 以下の機能が動作します。
 
@@ -72,6 +73,7 @@ The following functions will work
 - TCP Log server
 - OpenTelemetry コレクター
 - MCP サーバー
+- MQTT サーバーとコレクター
 
 ## Build 
 
@@ -111,7 +113,7 @@ It can also be started from the command line by specifying the following paramet
 
 ```
 Usage of twsnmpfk:
-  -caCert string
+ -caCert string
     	CA Cert path
   -clientCert string
     	Client cert path
@@ -131,6 +133,18 @@ Usage of twsnmpfk:
     	MCP server cert path
   -mcpKey string
     	MCP server key path
+  -mqttCert string
+    	MQTT server cert path
+  -mqttFrom string
+    	MQTT client IP
+  -mqttKey string
+    	MQTT server key path
+  -mqttTCPPort int
+    	MQTT server TCP port (default 1883)
+  -mqttUsers string
+    	MQTT user and password
+  -mqttWSPort int
+    	MQTT server WebSock port (default 1884)
   -netflowPort int
     	Netflow port (default 2055)
   -notifyOAuth2Port int
@@ -180,6 +194,12 @@ Usage of twsnmpfk:
 | otelGRPCPort |OpenTelemetry server gRPC port (default 4317)|
 | otelHTTPPort |OpenTelemetry server HTTP port (default 4318)|
 | otelKey |OpenTelemetry server key path|
+| mqttTCPPort |MQTT server TCP port (default 1883)|
+| mqttWSPort |MQTT server Websock port (default 1884)|
+| mqttCert |MQTT server cert path|
+| mqttKey |MQTT server key path|
+| mqttFrom |MQTT server Client|
+| mqttUsers |MQTT server User ID and password list|
 | mcpCert |MCP server cert path|
 | mcpKey |MCP server key path|
 | notifyOAuth2Port |OAuth2 redirect port (default 8180)|
@@ -204,6 +224,12 @@ Usage of twsnmpfk:
 | otelGRPCPort |OpenTelemetryサーバーのgRPCポート番号 (default 4317)|
 | otelHTTPPort |OpenTelemetryサーバーのHTTPポート番号 (default 4318)|
 | otelKey |OpenTelemetryサーバーの秘密鍵のパス|
+| mqttTCPPort |MQTTサーバーのTCPポート番号 (default 1883)|
+| mqttWSPort |MQTTサーバーのWebsockポート番号 (default 1884)|
+| mqttCert |MQTTサーバー証明書のパス|
+| mqttKey |MQTTサーバーの秘密鍵のパス|
+| mqttFrom |MQTT server 許可クライアントIP|
+| mqttUsers |MQTT server ユーザーIDとパスワード|
 | mcpCert |MCPサーバーの証明書のパス|
 | mcpKey |MCPサーバーの秘密鍵のパス|
 | notifyOAuth2Port |OAuth2リダイレクトサーバーのポート番号(default 8180)|

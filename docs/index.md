@@ -1373,6 +1373,56 @@ You can change the port number.
 Specify the certificate and private key for otelCert and otelKey and enter TLS mode.
 If you specify the certificate of the CA that issued the client certificate to otelCA, it will enter mTLS mode.
 
+## MQTT
+
+This is a list of received MQTT topics.
+
+![](./images/en/2025-11-22_05-36-45.png)
+
+|Item|Contents|
+|----|----|
+|Status|Reception status. If you haven't received it for more than a day, it's a warning, and if you haven't received it for more than 7 days, it's a mild condition. Everything else is normal. |
+|Client ID|The client ID of the sender. |
+|Topic|Received topic name. |
+|Number of times|Number of times the topic was received. |
+|Number of Bytes|Number of bytes received by the topic. |
+|First|The date and time the topic was first received. |
+|Last Checked|The date and time the topic was last received. |
+
+### MQTT(button)
+
+|Item|Contents|
+|----|----|
+|<span style="color: red;">Delete</span>|Delete the selected MQTT data. |
+|<span style="color: red;">Delete all MQTT data</span>|Delete all MQTT data. |
+|Update|Update information. |
+
+### MQTT settings
+
+MQTT-related settings in the map settings are indicated by yellow arrows.
+
+![](./images/en/2025-11-22_05-37-02.png)
+
+
+There are settings to enable/disable it and to record data received via MQTT to syslog.
+
+### startup parameters
+
+```
+	-mqttCert string
+			MQTT server cert path
+	-mqttFrom string
+			MQTT client IP
+	-mqttKey string
+			MQTT server key path
+	-mqttTCPPort int
+			MQTT server TCP port (default 1883)
+	-mqttUsers string
+			MQTT user and password
+	-mqttWSPort int
+			MQTT server WebSock port (default 1884)
+```
+
 
 ## MCP Server
 
@@ -1704,6 +1754,18 @@ Usage of twsnmpfk:
     	MCP server cert path
   -mcpKey string
     	MCP server key path
+  -mqttCert string
+    	MQTT server cert path
+  -mqttFrom string
+    	MQTT client IP
+  -mqttKey string
+    	MQTT server key path
+  -mqttTCPPort int
+    	MQTT server TCP port (default 1883)
+  -mqttUsers string
+    	MQTT user and password
+  -mqttWSPort int
+    	MQTT server WebSock port (default 1884)
   -netflowPort int
     	Netflow port (default 2055)
   -notifyOAuth2Port int
@@ -1750,6 +1812,12 @@ Usage of twsnmpfk:
 |otelKey <file>|OpenTelemetry server private key|
 |otelGRPCPPort <number>|GRPC port number for OpenTelemetry |
 |otelHTTPPort <file>|OpenTelemetry HTTP port number|
+| mqttTCPPort |MQTT server TCP port (default 1883)|
+| mqttWSPort |MQTT server Websock port (default 1884)|
+| mqttCert |MQTT server cert path|
+| mqttKey |MQTT server key path|
+| mqttFrom |MQTT server Client|
+| mqttUsers |MQTT server User ID and password list|
 | mcpCert |MCP server cert path|
 | mcpKey |MCP server key path|
 | notifyOAuth2Port |OAuth2 redirect port (default 8180)|
@@ -1786,5 +1854,9 @@ sshdPort=2023
 [MCP]
 #mcpCert=
 #mcpKey=
+
+[MQTT]
+#mqttTCPPort=1883
+#mqttWSPort=1884
 
 ```

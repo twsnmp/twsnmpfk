@@ -75,6 +75,15 @@ The server exposes the following tools for agents.
 
 ---
 
+### `get_polling_log_data`
+- **Description**: Get the polling log data for a specific polling ID.
+- **Parameters**:
+  - `id` (string, required): The ID of the polling.
+  - `limit` (int, optional): The maximum number of log entries to retrieve (1-2000, default 100).
+- **Returns**: A CSV of polling log  data entries.
+
+---
+
 ### `do_ping`
 - **Description**: Perform a ping to a target.
 - **Parameters**:
