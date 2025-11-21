@@ -1,5 +1,11 @@
 [
   {
+    "Name": "新規ポーリング",
+    "Type": "",
+    "Level": "off",
+    "Descr": "新規ポーリング"
+  },
+  {
     "Name": "PING監視",
     "Type": "ping",
     "Level": "low",
@@ -380,6 +386,20 @@
     "Descr": "TwLogEye Windows event logレポート監視"
   },
   {
+    "Name": "TwLogEye OpenTelemetryレポート",
+    "Type": "twlogeye",
+    "Mode": "report.otel",
+    "Level": "off",
+    "Descr": "TwLogEye OpenTelemetryレポート監視"
+  },
+  {
+    "Name": "TwLogEye MQTTレポート",
+    "Type": "twlogeye",
+    "Mode": "report.mqtt",
+    "Level": "off",
+    "Descr": "TwLogEye MQTTレポート監視"
+  },
+  {
     "Name": "TwLogEye 異常検知レポート",
     "Type": "twlogeye",
     "Mode": "report.anomaly",
@@ -439,6 +459,25 @@
     "Params": "",
     "Level": "off",
     "Descr": "NetFlowの情報から通信量を集計",
+    "AutoMode": "disable"
+  },
+  {
+    "Name": "MQTT接続確認",
+    "Type": "mqtt",
+    "Mode": "connect",
+    "Params": "TODO：MQTTブロッカーのURL",
+    "Level": "off",
+    "Descr": "MQTTブロッカーへの接続確認",
+    "AutoMode": "disable"
+  },
+  {
+    "Name": "MQTT Topic監視",
+    "Type": "mqtt",
+    "Mode": "subscribe",
+    "Params": "TODO：MQTTブロッカーのURL",
+    "Filter": "TODO:Topicパス",
+    "Level": "off",
+    "Descr": "MQTTのTopic監視",
     "AutoMode": "disable"
   },
   {

@@ -1,5 +1,11 @@
 [
   {
+    "Name": "New Polling",
+    "Type": "",
+    "Level": "off",
+    "Descr": "New Polling"
+  },  
+  {
     "Name": "PING",
     "Type": "ping",
     "Level": "low",
@@ -255,6 +261,20 @@
     "Level": "off",
     "Descr": "TwLogEye Windows Event Log Report"
   },
+{
+    "Name": "TwLogEye OpenTelemetry Report",
+    "Type": "twlogeye",
+    "Mode": "report.otel",
+    "Level": "off",
+    "Descr": "TwLogEye OpenTelemetry report monitoring"
+  },
+  {
+    "Name": "TwLogEye MQTT Report",
+    "Type": "twlogeye",
+    "Mode": "report.mqtt",
+    "Level": "off",
+    "Descr": "TwLogEye MQTT report monitoring"
+  },
   {
     "Name": "TwLogEye Anomaly Report",
     "Type": "twlogeye",
@@ -317,6 +337,25 @@
     "Descr": "NetFlow traffic",
     "AutoMode": "disable"
   },
+  {
+    "Name": "MQTT connection confirmation",
+    "Type": "mqtt",
+    "Mode": "connect",
+    "Params": "TODO: MQTT blocker URL",
+    "Level": "off",
+    "Descr": "Check connection to MQTT blocker",
+    "AutoMode": "disable"
+  },
+  {
+    "Name": "MQTT Topic monitoring",
+    "Type": "mqtt",
+    "Mode": "subscribe",
+    "Params": "TODO: MQTT blocker URL",
+    "Filter": "TODO:Topic path",
+    "Level": "off",
+    "Descr": "MQTT Topic monitoring",
+    "AutoMode": "disable"
+  },  
   {
     "Name": "Pi-hole percent blocked",
     "Type": "pihole",
