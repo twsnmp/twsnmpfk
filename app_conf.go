@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/labstack/gommon/log"
 	"github.com/twsnmp/twsnmpfk/backend"
@@ -90,6 +91,27 @@ func (a *App) GetNotifyOAuth2Token() string {
 
 func (a *App) HasValidNotifyOAuth2Token(n datastore.NotifyConfEnt) bool {
 	return datastore.HasValidNotifyOAuth2Token(n)
+}
+
+type nottifyOAuth2Info struct {
+	HasAccessToken  bool
+	HasRefreshToken bool
+	Expiry          string
+	RedirectURL     string
+}
+
+func (a *App) GetNotifyOAuth2Info() nottifyOAuth2Info {
+	r := nottifyOAuth2Info{
+		RedirectURL: fmt.Sprintf("http://localhost:%d/callback", datastore.NotifyOAuth2RedirectPort),
+	}
+	token := datastore.GetNotifyOAuth2Token()
+	if token == nil {
+		return r
+	}
+	r.HasAccessToken = token.Valid()
+	r.HasRefreshToken = token.RefreshToken != ""
+	r.Expiry = token.Expiry.Format(time.DateTime)
+	return r
 }
 
 // GetAIConf returns AI config

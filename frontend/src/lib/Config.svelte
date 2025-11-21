@@ -53,6 +53,7 @@
     ImportV4Map,
     HasValidNotifyOAuth2Token,
     GetNotifyOAuth2Token,
+    GetNotifyOAuth2Info,
   } from "../../wailsjs/go/main/App";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
@@ -77,6 +78,8 @@
 
   let notifyConf: any = undefined;
   let notifyHasValidToken = false;
+  let notifyOAuth2Info: any = {RedirectURL:""};
+  let notifyOAuth2TokenInfo  = "";
   let savedProvider = "";
   let showTestError: boolean = false;
   let showWebhookTestError: boolean = false;
@@ -98,6 +101,14 @@
     notifyConf = await GetNotifyConf();
     savedProvider = notifyConf.Provider;
     notifyHasValidToken = await HasValidNotifyOAuth2Token(notifyConf);
+    notifyOAuth2Info = await GetNotifyOAuth2Info();
+    notifyOAuth2TokenInfo = "";
+    if (notifyOAuth2Info.HasAccessToken) {
+      notifyOAuth2TokenInfo = $_('Config.AccessToken') + notifyOAuth2Info.Expiry + " ";
+    }
+    if (notifyOAuth2Info.HasRefreshToken) {
+     notifyOAuth2TokenInfo += $_('Config.RefreshToken')
+    }
     aiConf = await GetAIConf();
     locConf = await GetLocConf();
     sshHostPublicKey = await GetSshdPublicKeys();
@@ -1019,6 +1030,18 @@
             </Label>
           {/if}
           </div>
+          {#if notifyConf.Provider != "" && notifyConf.Provider != "smtp" }
+          <div class="grid gap-4 grid-cols-2">
+            <Label class="space-y-2 text-xs">
+              <span> {$_('Config.RedirectURL')} </span>
+              <Input class="h-8" readonly value={notifyOAuth2Info.RedirectURL}  size="sm" />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span> {$_('Config.OAuth2TokenInfo')} </span>
+              <Input class="h-8" readonly value={notifyOAuth2TokenInfo} size="sm" />
+            </Label>
+          </div>
+          {/if}
           <div class="grid gap-4 grid-cols-4">
             <Label class="space-y-2 text-xs col-span-2">
               <span> {$_("Config.Subject")} </span>

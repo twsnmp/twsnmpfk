@@ -551,7 +551,9 @@
     " {\n    page = oldPage;\n    mapConfig = await GetMapConf()\n    locConf = await GetLocConf();\n    if (page == \"loc\" ",
     "Topic",
     "MQTT → Syslog",
-    "Isolation Forest"
+    "Isolation Forest",
+    "\n          {#if notifyConf.Provider != \"\" ",
+    "& notifyConf.Provider != \"smtp\" }\n          "
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -17,32 +19,39 @@ import (
 )
 
 var oauth2CodeCh = make(chan string)
-var oauth2RediretServer *http.Server
+var oauth2RediretServer *echo.Echo
 
 func GetNotifyOAuth2TokenStep1() (string, error) {
 	config := getNotifyOAuth2Config()
 	if config == nil {
 		return "", fmt.Errorf("no oauth2 config")
 	}
+	if oauth2RediretServer != nil {
+		return "", fmt.Errorf("oauth2 redirect server busy")
+	}
 	state := randCryptoString(32)
 	url := config.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
-	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
-		if r.FormValue("state") != state {
-			http.Error(w, "State mismatch", http.StatusBadRequest)
-			return
+	oauth2RediretServer = echo.New()
+	oauth2RediretServer.HideBanner = true
+	oauth2RediretServer.HidePort = true
+	oauth2RediretServer.Use(middleware.Recover())
+	oauth2RediretServer.Use(middleware.Logger())
+	oauth2RediretServer.GET("/callback", func(c echo.Context) error {
+		if c.FormValue("state") != state {
+			return echo.ErrBadRequest
 		}
-		code := r.FormValue("code")
+		code := c.FormValue("code")
 		if code == "" {
-			http.Error(w, "Authorization code not found", http.StatusBadRequest)
-			return
+			return echo.ErrBadRequest
 		}
-		fmt.Fprintf(w, "OAuth2 authorization done. close this Window")
 		oauth2CodeCh <- code
+		return c.String(http.StatusOK, "OAuth2 authorization done. close this Window")
 	})
 	go func() {
-		oauth2RediretServer = &http.Server{Addr: fmt.Sprintf("127.0.0.1:%d", datastore.NotifyOAuth2RedirectPort)}
-		if err := oauth2RediretServer.ListenAndServe(); err != nil {
-			log.Printf("oauth2RediretServer err=%v", err)
+		if err := oauth2RediretServer.Start(fmt.Sprintf(":%d", datastore.NotifyOAuth2RedirectPort)); err != nil {
+			if err != http.ErrServerClosed {
+				log.Printf("oauth2RediretServer err=%v", err)
+			}
 		}
 	}()
 	return url, nil

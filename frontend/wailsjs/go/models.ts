@@ -2035,6 +2035,24 @@ export namespace main {
 	        this.Y = source["Y"];
 	    }
 	}
+	export class nottifyOAuth2Info {
+	    HasAccessToken: boolean;
+	    HasRefreshToken: boolean;
+	    Expiry: string;
+	    RedirectURL: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new nottifyOAuth2Info(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.HasAccessToken = source["HasAccessToken"];
+	        this.HasRefreshToken = source["HasRefreshToken"];
+	        this.Expiry = source["Expiry"];
+	        this.RedirectURL = source["RedirectURL"];
+	    }
+	}
 
 }
 

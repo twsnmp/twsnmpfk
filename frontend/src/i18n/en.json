@@ -306,7 +306,11 @@
     "MSTenant": "Tenant name",
     "Provider": "Provider",
     "SelectProvider": "Choose a provider",
-    "WaitMsg": "Please wait..."
+    "WaitMsg": "Please wait...",
+    "AccessToken": "Access Token:",
+    "OAuth2TokenInfo": "Refresh Token",
+    "RedirectURL": "Redirect URL",
+    "RefreshToken": "Refresh Token"
   },
   "DrawItem": {
     "Cancel": "Cancel",

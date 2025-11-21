@@ -293,7 +293,11 @@
     "ClientID": "クライアントID",
     "ClientSecret": "クライアントシークレット",
     "MSTenant": "テナント名",
-    "GetTokenBtn": "トークンの取得"
+    "GetTokenBtn": "トークンの取得",
+    "AccessToken": "アクセストークン:",
+    "RefreshToken": "更新トークン",
+    "RedirectURL": "リダイレクトURL",
+    "OAuth2TokenInfo": "OAuth2トークン情報"
   },
   "DrawItem": {
     "Rect": "矩形",

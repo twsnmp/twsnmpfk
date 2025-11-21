@@ -200,6 +200,8 @@ export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
 
+export function GetNotifyOAuth2Info():Promise<main.nottifyOAuth2Info>;
+
 export function GetNotifyOAuth2Token():Promise<string>;
 
 export function GetOTelMetric(arg1:main.OTelMetricEnt):Promise<datastore.OTelMetricEnt>;

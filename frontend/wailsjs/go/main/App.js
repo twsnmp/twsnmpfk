@@ -390,6 +390,10 @@ export function GetNotifyConf() {
   return window['go']['main']['App']['GetNotifyConf']();
 }
 
+export function GetNotifyOAuth2Info() {
+  return window['go']['main']['App']['GetNotifyOAuth2Info']();
+}
+
 export function GetNotifyOAuth2Token() {
   return window['go']['main']['App']['GetNotifyOAuth2Token']();
 }
