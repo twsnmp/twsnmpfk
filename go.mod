@@ -37,7 +37,7 @@ require (
 	github.com/twsnmp/go-mibdb v0.0.0-20210104220414-91387072cee7
 	github.com/twsnmp/lxi v0.3.2
 	github.com/twsnmp/rdap v0.9.1
-	github.com/twsnmp/twlogeye/api v0.3.0
+	github.com/twsnmp/twlogeye/api v0.4.0
 	github.com/vjeantet/grok v1.0.1
 	github.com/wailsapp/wails/v2 v2.9.3
 	github.com/wneessen/go-mail v0.7.2

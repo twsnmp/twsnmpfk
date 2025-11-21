@@ -32,6 +32,10 @@ func doPollingTwLogEye(pe *datastore.PollingEnt) bool {
 		return doPollingTwLogEyeNetflowReport(pe)
 	case "report.winevent":
 		return doPollingTwLogEyeWindowsEventReport(pe)
+	case "report.mqtt":
+		return doPollingTwLogEyeMqttReport(pe)
+	case "report.otel":
+		return doPollingTwLogEyeOTelReport(pe)
 	case "report.anomaly":
 		return doPollingTwLogEyeAnomalyReport(pe)
 	default: // notify
@@ -325,6 +329,123 @@ func doPollingTwLogEyeWindowsEventReport(pe *datastore.PollingEnt) bool {
 	pe.Result["normal"] = float64(l.GetNormal())
 	pe.Result["types"] = float64(l.GetTypes())
 	pe.Result["errTypes"] = float64(l.GetErrorTypes())
+	if pe.Script == "" {
+		setPollingState(pe, "normal")
+		return true
+	}
+	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
+	for k, v := range pe.Result {
+		vm.Set(k, v)
+	}
+	vm.Set("interval", pe.PollInt)
+	value, err := vm.Run(pe.Script)
+	if err != nil {
+		setPollingError("twlogeye", pe, err)
+		return false
+	}
+	if ok, _ := value.ToBoolean(); ok {
+		setPollingState(pe, "normal")
+	} else {
+		setPollingState(pe, pe.Level)
+	}
+	return true
+}
+
+func doPollingTwLogEyeOTelReport(pe *datastore.PollingEnt) bool {
+	n := datastore.GetNode(pe.NodeID)
+	if n == nil {
+		log.Printf("node not found id=%x", pe.NodeID)
+		return false
+	}
+	conn, err := getTwLogEyeClientConn(n, pe)
+	if err != nil {
+		setPollingError("twlogeye", pe, err)
+		return false
+	}
+	defer conn.Close()
+	client := api.NewTWLogEyeServiceClient(conn)
+	st := time.Now().Add(time.Duration(pe.PollInt) * time.Second * -1).UnixNano()
+	if v, ok := pe.Result["lastTime"]; ok {
+		if lt, ok := v.(int64); ok {
+			st = lt
+		}
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(pe.Timeout)*time.Second)
+	defer cancel()
+	l, err := client.GetLastOTelReport(ctx, &api.Empty{})
+	if err != nil {
+		setPollingError("twlogeye", pe, err)
+		return false
+	}
+	if st >= l.Time {
+		return false
+	}
+	pe.Result["lastTime"] = l.Time
+	pe.Result["errors"] = float64(l.GetError())
+	pe.Result["warns"] = float64(l.GetWarn())
+	pe.Result["normal"] = float64(l.GetNormal())
+	pe.Result["types"] = float64(l.GetTypes())
+	pe.Result["errTypes"] = float64(l.GetErrorTypes())
+	pe.Result["hosts"] = float64(l.GetErrorTypes())
+	pe.Result["traceIDs"] = float64(l.GetTraceIds())
+	pe.Result["traceCount"] = float64(l.GetTraceCount())
+	pe.Result["metricCount"] = float64(l.GetMericsCount())
+	if pe.Script == "" {
+		setPollingState(pe, "normal")
+		return true
+	}
+	vm := otto.New()
+	setVMFuncAndValues(pe, vm)
+	for k, v := range pe.Result {
+		vm.Set(k, v)
+	}
+	vm.Set("interval", pe.PollInt)
+	value, err := vm.Run(pe.Script)
+	if err != nil {
+		setPollingError("twlogeye", pe, err)
+		return false
+	}
+	if ok, _ := value.ToBoolean(); ok {
+		setPollingState(pe, "normal")
+	} else {
+		setPollingState(pe, pe.Level)
+	}
+	return true
+}
+
+func doPollingTwLogEyeMqttReport(pe *datastore.PollingEnt) bool {
+	n := datastore.GetNode(pe.NodeID)
+	if n == nil {
+		log.Printf("node not found id=%x", pe.NodeID)
+		return false
+	}
+	conn, err := getTwLogEyeClientConn(n, pe)
+	if err != nil {
+		setPollingError("twlogeye", pe, err)
+		return false
+	}
+	defer conn.Close()
+	client := api.NewTWLogEyeServiceClient(conn)
+	st := time.Now().Add(time.Duration(pe.PollInt) * time.Second * -1).UnixNano()
+	if v, ok := pe.Result["lastTime"]; ok {
+		if lt, ok := v.(int64); ok {
+			st = lt
+		}
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(pe.Timeout)*time.Second)
+	defer cancel()
+	l, err := client.GetLastMqttReport(ctx, &api.Empty{})
+	if err != nil {
+		setPollingError("twlogeye", pe, err)
+		return false
+	}
+	if st >= l.Time {
+		return false
+	}
+	pe.Result["lastTime"] = l.Time
+	pe.Result["count"] = float64(l.GetCount())
+	pe.Result["types"] = float64(l.GetTypes())
 	if pe.Script == "" {
 		setPollingState(pe, "normal")
 		return true
