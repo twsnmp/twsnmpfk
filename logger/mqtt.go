@@ -21,7 +21,9 @@ func mqttd(stopCh chan bool) {
 	datastore.LoadMqttStat()
 	s := startMqttServer()
 	<-stopCh
-	s.Close()
+	if s != nil {
+		s.Close()
+	}
 	datastore.SaveMqttStat()
 	log.Printf("stop mqttd")
 }
@@ -31,12 +33,14 @@ func startMqttServer() *mqtt.Server {
 	server := mqtt.New(nil)
 	err := server.AddHook(new(mqttHook), nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil
 	}
 	if datastore.MqttFrom == "" && datastore.MqttUsers == "" {
 		// Allow all connections.
 		if err := server.AddHook(new(auth.AllowHook), nil); err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return nil
 		}
 	} else {
 		authRules := &auth.Ledger{}
@@ -59,14 +63,16 @@ func startMqttServer() *mqtt.Server {
 		if err := server.AddHook(new(auth.Hook), &auth.Options{
 			Ledger: authRules,
 		}); err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return nil
 		}
 	}
 	var tlsConfig *tls.Config
 	if datastore.MqttCert != "" && datastore.MqttKey != "" {
 		cert, err := tls.LoadX509KeyPair(datastore.MqttCert, datastore.MqttKey)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return nil
 		}
 		tlsConfig = &tls.Config{
 			Certificates: []tls.Certificate{cert},
@@ -79,7 +85,8 @@ func startMqttServer() *mqtt.Server {
 			TLSConfig: tlsConfig,
 		})
 		if err := server.AddListener(tcp); err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return nil
 		}
 	}
 	if datastore.MqttWSPort > 0 {
@@ -89,7 +96,8 @@ func startMqttServer() *mqtt.Server {
 			TLSConfig: tlsConfig,
 		})
 		if err := server.AddListener(ws); err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return nil
 		}
 	}
 	go func() {
