@@ -8,6 +8,7 @@ import (
 	"net"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -56,6 +57,10 @@ func addTools(s *mcp.Server) {
 		Name:        "snmpwalk",
 		Description: "SNMP walk tool",
 	}, snmpWalk)
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "snmpset",
+		Description: "SNMP set tool",
+	}, snmpSet)
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "add_node",
 		Description: "add node to TWSNMP",
@@ -586,6 +591,142 @@ func snmpWalk(ctx context.Context, req *mcp.CallToolRequest, args snmpWalkParams
 	})
 	if err != nil {
 		return nil, nil, err
+	}
+	j, err := json.Marshal(&res)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{Text: string(j)},
+		},
+	}, nil, nil
+}
+
+type snmpSetParams struct {
+	Target        string `json:"target"`
+	MIBObjectName string `json:"mib_object_name" jsonschema:"mib object name"`
+	Community     string `json:"community" jsonschema:"community name for snmp v2c mode"`
+	User          string `json:"user" jsonschema:"User name for snmp v3 mode"`
+	Password      string `json:"password" jsonschema:"Password for snmp v3 mode"`
+	SnmpMode      string `json:"snmp_mode" jsonschema:"snmp mode (v2c,v3auth,v3authpriv,v3authprivex)"`
+	Type          string `json:"type" jsonschema:"Type of set value(integer or string)"`
+	Value         string `json:"value" jsonschema:"Set value"`
+}
+
+func snmpSet(ctx context.Context, req *mcp.CallToolRequest, args snmpSetParams) (*mcp.CallToolResult, any, error) {
+	community := args.Community
+	user := args.User
+	password := args.Password
+	snmpMode := args.SnmpMode
+	name := args.MIBObjectName
+	if name == "" {
+		return nil, nil, fmt.Errorf("no mib_object_name")
+	}
+	target := args.Target
+	if target == "" {
+		return nil, nil, fmt.Errorf("no target")
+	}
+	if n := datastore.FindNodeFromName(target); n != nil {
+		if community == "" {
+			community = n.Community
+		}
+		if user == "" {
+			user = n.User
+		}
+		if password == "" {
+			password = n.Password
+		}
+		if snmpMode == "" {
+			snmpMode = n.SnmpMode
+		}
+		target = n.IP
+	} else {
+		target = getTargetIP(target)
+		if target == "" {
+			return nil, nil, fmt.Errorf("target not found")
+		}
+	}
+	agent := &gosnmp.GoSNMP{
+		Target:    target,
+		Port:      161,
+		Transport: "udp",
+		Community: community,
+		Version:   gosnmp.Version2c,
+		Timeout:   time.Duration(datastore.MapConf.Timeout) * time.Second,
+		Retries:   datastore.MapConf.Retry,
+		MaxOids:   gosnmp.MaxOids,
+	}
+	switch snmpMode {
+	case "v3auth":
+		agent.Version = gosnmp.Version3
+		agent.SecurityModel = gosnmp.UserSecurityModel
+		agent.MsgFlags = gosnmp.AuthNoPriv
+		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
+			UserName:                 user,
+			AuthenticationProtocol:   gosnmp.SHA,
+			AuthenticationPassphrase: password,
+		}
+	case "v3authpriv":
+		agent.Version = gosnmp.Version3
+		agent.SecurityModel = gosnmp.UserSecurityModel
+		agent.MsgFlags = gosnmp.AuthPriv
+		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
+			UserName:                 user,
+			AuthenticationProtocol:   gosnmp.SHA,
+			AuthenticationPassphrase: password,
+			PrivacyProtocol:          gosnmp.AES,
+			PrivacyPassphrase:        password,
+		}
+	case "v3authprivex":
+		agent.Version = gosnmp.Version3
+		agent.SecurityModel = gosnmp.UserSecurityModel
+		agent.MsgFlags = gosnmp.AuthPriv
+		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
+			UserName:                 user,
+			AuthenticationProtocol:   gosnmp.SHA256,
+			AuthenticationPassphrase: password,
+			PrivacyProtocol:          gosnmp.AES256,
+			PrivacyPassphrase:        password,
+		}
+	}
+	res := []mcpMIBEnt{}
+	err := agent.Connect()
+	if err != nil {
+		return nil, nil, err
+	}
+	defer agent.Conn.Close()
+	setPDU := []gosnmp.SnmpPDU{}
+	switch args.Type {
+	case "integer":
+		i, err := strconv.Atoi(args.Value)
+		if err != nil {
+			return nil, nil, err
+		}
+		setPDU = append(setPDU, gosnmp.SnmpPDU{
+			Name:  nameToOID(name),
+			Type:  gosnmp.Integer,
+			Value: i,
+		})
+	default:
+		// string
+		setPDU = append(setPDU, gosnmp.SnmpPDU{
+			Name:  nameToOID(name),
+			Type:  gosnmp.OctetString,
+			Value: []byte(args.Value),
+		})
+	}
+	r, err := agent.Set(setPDU)
+	if err != nil {
+		return nil, nil, err
+	}
+	for _, variable := range r.Variables {
+		name := datastore.MIBDB.OIDToName(variable.Name)
+		value := datastore.GetMIBValueString(name, &variable, false)
+		res = append(res, mcpMIBEnt{
+			Name:  name,
+			Value: value,
+		})
 	}
 	j, err := json.Marshal(&res)
 	if err != nil {
