@@ -15,6 +15,9 @@
     Select,
     Toggle,
     Progressbar,
+    Alert,
+    Input,
+    Label,
   } from "flowbite-svelte";
   import { createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -24,6 +27,7 @@
     SnmpWalk,
     ExportAny,
     GetDefaultPolling,
+    SnmpSet,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import { getTableLang } from "./common";
@@ -72,9 +76,19 @@
   let missingList: any = [];
   let selectedMissingCount = 0;
 
+  let showSet = false;
+  let setError = "";
+  let setName = "";
+  let setType = "integer";
+  let setValue = "";
+  const setTypeList = [
+    { name: "INTEGER", value: "integer" },
+    { name: "String", value: "string" },
+  ];
   const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
+    selectedCount = 0;
     mibTree.children = await GetMIBTree();
     data = [];
     resultMibTree = {};
@@ -527,6 +541,24 @@
     pollingTmp.Script = name + "==" + d[0].Value;
     showPolling = true;
   };
+
+  const showSetDialog =  () => {
+    const d = table.rows({ selected: true }).data();
+    if (d.length != 1) {
+      return;
+    }
+    setName = d[0].Name;
+    setValue = d[0].Value;
+    showSet = true;
+  };
+
+  const doSet = async () => {
+    setError = await SnmpSet(nodeID,setName,setType,setValue)
+    if (setError == "") {
+      showSet = false;
+      get();
+    }
+  };
 </script>
 
 <Modal
@@ -598,6 +630,16 @@
           >
             <Icon path={icons.mdiEye} size={1} />
             {$_("NodeReport.Polling")}
+          </GradientButton>
+          <GradientButton
+            shadow
+            color="red"
+            type="button"
+            on:click={showSetDialog}
+            size="xs"
+          >
+            <Icon path={icons.mdiSend} size={1} />
+            SET
           </GradientButton>
         {/if}
         <Toggle bind:checked={scalar} on:change={refreshTable}
@@ -834,6 +876,80 @@
     </div>
   </div>
 </Modal>
+
+<Modal
+  bind:open={showSet}
+  size="md"
+  dismissable={false}
+  class="w-full min-h-[20vh]"
+>
+  <div class="flex flex-col space-y-4">
+    {#if setError}
+      <Alert color="red" dismissable>
+        <div class="flex">
+          <Icon path={icons.mdiExclamation} size={1} />
+          {setError}
+        </div>
+      </Alert>
+    {/if}
+    <div class="grid gap-2 grid-cols-4">
+      <Label class="col-span-3 space-y-2 text-xs">
+        <span>{$_('MIBBrowser.ObjectName')}</span>
+        <Input
+          class="h-8"
+          bind:value={setName}
+          placeholder={$_('MIBBrowser.ObjectName')}
+          required
+          size="sm"
+        />
+      </Label>
+      <Label>
+        {$_('MIBBrowser.Type')}
+        <Select
+          items={setTypeList}
+          bind:value={setType}
+          placeholder={$_('MIBBrowser.Type')}
+          size="sm"
+        />
+      </Label>
+    </div>
+    <Label class="space-y-2 text-xs">
+      <span>{$_('MIBBrowser.Value')}</span>
+      <Input
+        class="h-8"
+        bind:value={setValue}
+        placeholder={$_('MIBBrowser.Value')}
+        required
+        size="sm"
+      />
+    </Label>
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        color="red"
+        type="button"
+        on:click={doSet}
+        size="xs"
+      >
+        <Icon path={icons.mdiSend} size={1} />
+        SET
+      </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={() => {
+          showSet = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_("MIBBrowser.Close")}
+      </GradientButton>
+    </div>
+  </div>
+</Modal>
+
 
 <Polling bind:show={showPolling} {pollingTmp} />
 

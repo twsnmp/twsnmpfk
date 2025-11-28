@@ -553,7 +553,9 @@
     "MQTT → Syslog",
     "Isolation Forest",
     "\n          {#if notifyConf.Provider != \"\" ",
-    "& notifyConf.Provider != \"smtp\" }\n          "
+    "& notifyConf.Provider != \"smtp\" }\n          ",
+    "String",
+    " {\n          showSet = false;\n        }}\n        size=\"xs\"\n      >\n        "
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

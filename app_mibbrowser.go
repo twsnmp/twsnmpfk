@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,14 +24,72 @@ type MibEnt struct {
 
 func (a *App) SnmpWalk(nodeID, name string, raw bool) []*MibEnt {
 	var ret []*MibEnt
+	et := time.Now().Unix() + (3 * 60)
+	agent, err := getSNMPAgent(nodeID)
+	if err != nil {
+		return ret
+	}
+	defer agent.Conn.Close()
+	err = agent.Walk(nameToOID(name), func(variable gosnmp.SnmpPDU) error {
+		if et < time.Now().Unix() {
+			return fmt.Errorf("timeout")
+		}
+		name := datastore.MIBDB.OIDToName(variable.Name)
+		value := datastore.GetMIBValueString(name, &variable, raw)
+		ret = append(ret, &MibEnt{
+			Name:  name,
+			Value: value,
+		})
+		return nil
+	})
+	if err != nil {
+		log.Println(err)
+	}
+	return ret
+}
+
+func (a *App) SnmpSet(nodeID, name, t, v string) string {
+	agent, err := getSNMPAgent(nodeID)
+	if err != nil {
+		return err.Error()
+	}
+	defer agent.Conn.Close()
+	setPDU := []gosnmp.SnmpPDU{}
+	switch t {
+	case "integer":
+		i, err := strconv.Atoi(v)
+		if err != nil {
+			return err.Error()
+		}
+		setPDU = append(setPDU, gosnmp.SnmpPDU{
+			Name:  nameToOID(name),
+			Type:  gosnmp.Integer,
+			Value: i,
+		})
+	default:
+		// string
+		setPDU = append(setPDU, gosnmp.SnmpPDU{
+			Name:  nameToOID(name),
+			Type:  gosnmp.OctetString,
+			Value: []byte(v),
+		})
+	}
+	_, err = agent.Set(setPDU)
+	if err != nil {
+		return err.Error()
+	}
+	return ""
+}
+
+func getSNMPAgent(nodeID string) (*gosnmp.GoSNMP, error) {
 	n := datastore.GetNode(nodeID)
 	if n == nil {
 		if !strings.HasPrefix(nodeID, "NET:") {
-			return ret
+			return nil, fmt.Errorf("node not found")
 		}
 		nt := datastore.GetNetwork(nodeID)
 		if nt == nil {
-			return ret
+			return nil, fmt.Errorf("network node not found")
 		}
 		n = &datastore.NodeEnt{
 			ID:        nodeID,
@@ -87,26 +146,9 @@ func (a *App) SnmpWalk(nodeID, name string, raw bool) []*MibEnt {
 	err := agent.Connect()
 	if err != nil {
 		log.Println(err)
-		return ret
+		return nil, err
 	}
-	et := time.Now().Unix() + (3 * 60)
-	defer agent.Conn.Close()
-	err = agent.Walk(nameToOID(name), func(variable gosnmp.SnmpPDU) error {
-		if et < time.Now().Unix() {
-			return fmt.Errorf("timeout")
-		}
-		name := datastore.MIBDB.OIDToName(variable.Name)
-		value := datastore.GetMIBValueString(name, &variable, raw)
-		ret = append(ret, &MibEnt{
-			Name:  name,
-			Value: value,
-		})
-		return nil
-	})
-	if err != nil {
-		log.Println(err)
-	}
-	return ret
+	return agent, nil
 }
 
 func nameToOID(name string) string {

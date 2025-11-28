@@ -290,6 +290,8 @@ export function SetDark(arg1:boolean):Promise<void>;
 
 export function SetPKIControl(arg1:datastore.PKIControlEnt):Promise<void>;
 
+export function SnmpSet(arg1:string,arg2:string,arg3:string,arg4:string):Promise<string>;
+
 export function SnmpWalk(arg1:string,arg2:string,arg3:boolean):Promise<Array<main.MibEnt>>;
 
 export function StartDiscover(arg1:datastore.DiscoverConfEnt):Promise<boolean>;

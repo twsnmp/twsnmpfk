@@ -570,6 +570,10 @@ export function SetPKIControl(arg1) {
   return window['go']['main']['App']['SetPKIControl'](arg1);
 }
 
+export function SnmpSet(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['SnmpSet'](arg1, arg2, arg3, arg4);
+}
+
 export function SnmpWalk(arg1, arg2, arg3) {
   return window['go']['main']['App']['SnmpWalk'](arg1, arg2, arg3);
 }

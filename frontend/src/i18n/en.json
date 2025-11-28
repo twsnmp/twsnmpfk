@@ -465,7 +465,8 @@
     "Count": "Count",
     "Missing": "Missing Ext MIB",
     "Name": "Name",
-    "Search": "Search"
+    "Search": "Search",
+    "Type": "Type"
   },
   "Node": {
     "AddressMode": "Address mode",

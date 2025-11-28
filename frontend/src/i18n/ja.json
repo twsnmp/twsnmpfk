@@ -452,7 +452,8 @@
     "Name": "名前",
     "Count": "件数",
     "Missing": "不足している拡張MIB",
-    "Search": "検索"
+    "Search": "検索",
+    "Type": "タイプ"
   },
   "Node": {
     "NewNode": "新規ノード",
