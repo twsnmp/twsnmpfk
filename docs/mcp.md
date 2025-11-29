@@ -79,7 +79,7 @@ The server exposes the following tools for agents.
 - **Description**: Get the polling log data for a specific polling ID.
 - **Parameters**:
   - `id` (string, required): The ID of the polling.
-  - `limit` (int, optional): The maximum number of log entries to retrieve (1-2000, default 100).
+  - `limit` (int, optional): The maximum number of log entries to retrieve (100-2000, default 100).
 - **Returns**: A CSV of polling log  data entries.
 
 ---
@@ -111,6 +111,21 @@ The server exposes the following tools for agents.
   - `user` (string, optional): Username for SNMPv3.
   - `password` (string, optional): Password for SNMPv3.
   - `snmp_mode` (string, optional): SNMP mode (`v2c`, `v3auth`, `v3authpriv`, `v3authprivex`).
+- **Returns**: A JSON array of MIB objects with their names and values.
+
+---
+
+### `snmpset`
+- **Description**: SNMP set tool.
+- **Parameters**:
+  - `target` (string, required): The target IP address or node name.
+  - `mib_object_name` (string, required): The MIB object name or OID.
+  - `community` (string, optional): Community string for SNMPv2c. If not provided, the node's configured community is used.
+  - `user` (string, optional): Username for SNMPv3.
+  - `password` (string, optional): Password for SNMPv3.
+  - `snmp_mode` (string, optional): SNMP mode (`v2c`, `v3auth`, `v3authpriv`, `v3authprivex`).
+  - `type` (string, required): Type of set value (`integer` or `string`).
+  - `value` (string, required): The value to set.
 - **Returns**: A JSON array of MIB objects with their names and values.
 
 ---
@@ -164,8 +179,7 @@ The server exposes the following tools for agents.
   - `level_filter` (string, optional): Regex to filter by event level (`info`, `warn`, `low`, `high`, `debug`).
   - `event_filter` (string, optional): Regex to filter by event message content.
   - `start_time` (string, optional): Start time for the search (e.g., "2023-10-27 00:00:00" or "-1h"). Default is "-1h".
-  - `end_time` (string, optional): End time for the search (e.g., "2023-10-27 23:59:59" or "now"). Default is "now".
-  - `limit_log_count` (int, optional): Max number of logs to return (100-10000, default 100).
+- `limit` (int, optional): Max number of logs to return (100-10000, default 100).
 - **Returns**: A JSON array of event log entries.
 
 ---
@@ -179,7 +193,7 @@ The server exposes the following tools for agents.
   - `message_filter` (string, optional): Regex to filter by message content.
   - `start_time` (string, optional): Start time (default: "-1h").
   - `end_time` (string, optional): End time (default: "now").
-  - `limit_log_count` (int, optional): Max number of logs to return (100-10000, default 100).
+  - `limit` (int, optional): Max number of logs to return (100-10000, default 100).
 - **Returns**: A JSON array of syslog entries.
 
 ---
