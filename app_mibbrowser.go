@@ -74,9 +74,12 @@ func (a *App) SnmpSet(nodeID, name, t, v string) string {
 			Value: []byte(v),
 		})
 	}
-	_, err = agent.Set(setPDU)
+	r, err := agent.Set(setPDU)
 	if err != nil {
 		return err.Error()
+	}
+	if r.Error != gosnmp.NoError {
+		return r.Error.String()
 	}
 	return ""
 }

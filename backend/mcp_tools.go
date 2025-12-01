@@ -720,6 +720,9 @@ func snmpSet(ctx context.Context, req *mcp.CallToolRequest, args snmpSetParams) 
 	if err != nil {
 		return nil, nil, err
 	}
+	if r.Error != gosnmp.NoError {
+		return nil, nil, fmt.Errorf("snmp set %s", r.Error.String())
+	}
 	for _, variable := range r.Variables {
 		name := datastore.MIBDB.OIDToName(variable.Name)
 		value := datastore.GetMIBValueString(name, &variable, false)
