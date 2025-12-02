@@ -822,7 +822,6 @@ func (a *App) ExportPollingAsTemplate(id string) error {
 // ImportPollingTemplate : ポーリングテンプレートファイルを読み込む
 func (a *App) ImportPollingTemplate() datastore.PollingTemplateEnt {
 	var r datastore.PollingTemplateEnt
-	r.ID = -1
 	file, err := wails.OpenFileDialog(a.ctx, wails.OpenDialogOptions{
 		Title: "TWSNMP Polling Template",
 		Filters: []wails.FileFilter{{
@@ -843,7 +842,6 @@ func (a *App) ImportPollingTemplate() datastore.PollingTemplateEnt {
 		return r
 	}
 	if err = json.Unmarshal(d, &r); err != nil {
-		r.ID = -1
 		log.Printf("err=%v", err)
 	}
 	return r

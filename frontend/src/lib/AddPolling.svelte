@@ -4,7 +4,7 @@
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { tick, createEventDispatcher } from "svelte";
-  import { GetPollingTemplates,ImportPollingTemplate } from "../../wailsjs/go/main/App";
+  import { GetDefaultPolling, GetPollingTemplates,ImportPollingTemplate } from "../../wailsjs/go/main/App";
   import { getTableLang,renderPollingType } from "./common";
   import Polling from "./Polling.svelte";
 
@@ -56,17 +56,19 @@
   const addFromFile = async () => {
     selectedTemplateID = 0;
     const pt = await ImportPollingTemplate();
-    pollingTmp = {
-      Level: pt.Level,
-      Type: pt.Type,
-      Name: pt.Name,
-      Mode: pt.Mode,
-      Params: pt.Params,
-      Filer: pt.Filter,
-      Script: pt.Script,
-      Extractor: pt.Extractor,
+    if (!pt.Type) {
+      return;
     }
-    show = false;
+    const p = await GetDefaultPolling("")
+    p.Level = pt.Level;
+    p.Type = pt.Type;
+    p.Name = pt.Name;
+    p.Mode = pt.Mode;
+    p.Params = pt.Params;
+    p.Filter = pt.Filter;
+    p.Script = pt.Script;
+    p.Extractor = pt.Extractor;
+    pollingTmp = p
     showEditPolling = true;
   }
 
@@ -106,8 +108,8 @@
   };
 
   const close = () => {
-    show = false;
     showEditPolling = false;
+    show = false;
     dispatch("close", {});
   };
 </script>
