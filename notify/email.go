@@ -317,7 +317,7 @@ func sendMailOAuth2(server, subject, body string) error {
 		if !strings.Contains(rcpt, "@") {
 			continue
 		}
-		if err := message.To(rcpt); err != nil {
+		if err := message.AddTo(rcpt); err != nil {
 			return err
 		}
 	}
@@ -332,7 +332,6 @@ func sendTestMailOAuth2(server string, testConf *datastore.NotifyConfEnt) error 
 	if token == nil {
 		return fmt.Errorf("oauth2 token not found")
 	}
-	log.Printf("send test mail token=%v", token.Expiry)
 	client, err := mail.NewClient(server,
 		mail.WithTLSPortPolicy(mail.TLSMandatory),
 		mail.WithSMTPAuth(mail.SMTPAuthXOAUTH2),
@@ -348,7 +347,7 @@ func sendTestMailOAuth2(server string, testConf *datastore.NotifyConfEnt) error 
 		if !strings.Contains(rcpt, "@") {
 			continue
 		}
-		if err := message.To(rcpt); err != nil {
+		if err := message.AddTo(rcpt); err != nil {
 			return err
 		}
 	}
