@@ -1,6 +1,7 @@
 import * as echarts from "echarts";
 import * as ecStat from "echarts-stat";
-import { _,unwrapFunctionStore } from 'svelte-i18n';
+import { probit } from "simple-statistics";
+import { _, unwrapFunctionStore } from "svelte-i18n";
 const $_ = unwrapFunctionStore(_);
 
 const vmapUsage = [
@@ -20,7 +21,7 @@ const vmapUsage = [
   },
 ];
 
-const chartParams :any = {
+const chartParams: any = {
   rtt: {
     mul: 1.0 / (1000 * 1000 * 1000),
     axis: $_("Ts.RespTimeSec"),
@@ -128,7 +129,7 @@ const chartParams :any = {
   },
 };
 
-export const getChartParams = (ent:any) => {
+export const getChartParams = (ent: any) => {
   const r = chartParams[ent];
   if (r) {
     return r;
@@ -139,7 +140,7 @@ export const getChartParams = (ent:any) => {
   };
 };
 
-let chart :any;
+let chart: any;
 
 const getPollingChartOption = () => {
   return {
@@ -185,7 +186,7 @@ const getPollingChartOption = () => {
       axisLabel: {
         color: "#ccc",
         fontSize: "8px",
-        formatter(value:any) {
+        formatter(value: any) {
           const date = new Date(value);
           return echarts.time.format(date, "{yyyy}/{MM}/{dd} {HH}:{mm}", false);
         },
@@ -230,7 +231,7 @@ const getPollingChartOption = () => {
   };
 };
 
-const setChartData = (series:any, t:any, values:any) => {
+const setChartData = (series: any, t: any, values: any) => {
   const name = echarts.time.format(t, "{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}", false);
   const mean = ecStat.statistics.mean(values);
   series[0].data.push({
@@ -259,11 +260,11 @@ const setChartData = (series:any, t:any, values:any) => {
   });
 };
 
-export const showPollingChart = (div:string, logs:any, ent:any) => {
+export const showPollingChart = (div: string, logs: any, ent: any) => {
   if (chart) {
     chart.dispose();
   }
-  chart = echarts.init(document.getElementById(div),"dark");
+  chart = echarts.init(document.getElementById(div), "dark");
 
   const option: any = getPollingChartOption();
 
@@ -324,9 +325,9 @@ export const showPollingChart = (div:string, logs:any, ent:any) => {
   option.legend.data.push($_("Ts.Median"));
   option.legend.data.push($_("Ts.Variance"));
   let tS = -1;
-  const values :any = [];
+  const values: any = [];
   const dt = 3600 * 1000;
-  logs.forEach((l:any) => {
+  logs.forEach((l: any) => {
     const t = new Date(l.Time / (1000 * 1000));
     const tC = Math.floor(t.getTime() / dt);
     if (tS !== tC) {
@@ -356,12 +357,12 @@ export const showPollingChart = (div:string, logs:any, ent:any) => {
   chart.resize();
 };
 
-const makePollingHistogram = (div:string) => {
+const makePollingHistogram = (div: string) => {
   if (chart) {
     chart.dispose();
   }
-  chart = echarts.init(document.getElementById(div),"dark");
-  const option :any = {
+  chart = echarts.init(document.getElementById(div), "dark");
+  const option: any = {
     title: {
       show: false,
     },
@@ -376,7 +377,7 @@ const makePollingHistogram = (div:string) => {
     dataZoom: [{}],
     tooltip: {
       trigger: "axis",
-      formatter(params:any) {
+      formatter(params: any) {
         const p = params[0];
         return p.value[0] + ":" + p.value[1];
       },
@@ -411,14 +412,14 @@ const makePollingHistogram = (div:string) => {
   chart.resize();
 };
 
-export const showPollingHistogram = (div:string, logs:any, ent:any) => {
+export const showPollingHistogram = (div: string, logs: any, ent: any) => {
   makePollingHistogram(div);
   if (ent === "") {
     return;
   }
-  const data :any = [];
+  const data: any = [];
   const dp = getChartParams(ent);
-  logs.forEach((l:any) => {
+  logs.forEach((l: any) => {
     if (!l.Result.error) {
       let numVal = getNumVal(ent, l.Result);
       numVal *= dp.mul;
@@ -439,8 +440,138 @@ export const showPollingHistogram = (div:string, logs:any, ent:any) => {
   chart.resize();
 };
 
+const  calculateQQPlotData = (data: Array<number>,mu:number, sigma: number) => {
+  const n = data.length;
+  if (n === 0) return [];
 
-const getNumVal = (key:any, r:any) => {
-  return r[key] || 0.0;
+  // 1. 標本データをソート (Sample Quantiles)
+  const sortedData = [...data].sort((a, b) => a - b);
+
+  const qqData = [];
+
+  // 2. 理論的分位点 (Theoretical Quantiles) の計算
+  // 標準正規分布 (平均0, 標準偏差1) を仮定
+  // Cunnaneのプロット位置: p_i = (i - 0.5) / n を使用
+  for (let i = 0; i < n; i++) {
+    const rank = i + 1; // 順位 (1 から n)
+
+    // 累積確率 p
+    const p = (rank - 0.5) / n;
+
+    // 平均 mu, 標準偏差 sigma の正規分布の場合
+    const theoreticalQuantile = mu + (sigma * probit(p));
+    const sampleQuantile = sortedData[i];
+
+    // [理論分位点, 標本分位点] のペアを保存
+    qqData.push([theoreticalQuantile, sampleQuantile]);
+  }
+  return qqData;
+}
+
+export const showPollingQQPlot = (div: string, logs: any, ent: any) => {
+  if (ent === "") {
+    return;
+  }
+  const data: any = [];
+  const dp = getChartParams(ent);
+  logs.forEach((l: any) => {
+    if (!l.Result.error) {
+      let numVal = getNumVal(ent, l.Result);
+      numVal *= dp.mul;
+      data.push(numVal);
+    }
+  });
+  const mu = ecStat.statistics.mean(data);
+  const sigma = ecStat.statistics.deviation(data);
+  const qqPlotData = calculateQQPlotData(data, mu, sigma);
+  const scatterData = qqPlotData;
+  // 基準線の座標 (対角線 y=x)
+  const lineMin = mu - 4 * sigma; // 平均から下方向に4標準偏差
+  const lineMax = mu + 4 * sigma; // 平均から上方向に4標準偏差
+  const lineData = [
+    [lineMin, lineMin],
+    [lineMax, lineMax],
+  ];
+  if (chart) {
+    chart.dispose();
+  }
+  chart = echarts.init(document.getElementById(div), "dark");
+  const option: any = {
+    tooltip: {
+      trigger: "item",
+      formatter: function (params: any) {
+        if (params.seriesName === "Sample plot") {
+          return  $_('Ts.TheoreticalQuantile') + '(Z):' +
+            params.value[0].toFixed(4) +
+            '<br/>' + 
+            $_('Ts.SampleQuantile') + ':' + 
+            params.value[1].toFixed(4);
+        }
+        return params.seriesName;
+      },
+    },
+    graphic: [
+      {
+        type: 'text',
+        left: '10%',
+        bottom: '15%',
+        style: {
+          text: `μ: ${mu.toFixed(2)}\nσ: ${sigma.toFixed(2)}`,
+          fill: '#fff',
+          font: '14px sans-serif',
+        },
+      },
+    ],
+    grid: {
+      left: "5%",
+      right: "15%",
+      top: 40,
+      buttom: 0,
+    },
+    xAxis: {
+      name: $_('Ts.TheoreticalQuantile'),
+      type: "value",
+      scale: true,
+      splitLine: {
+        show: false,
+      },
+    },
+    yAxis: {
+      name: $_('Ts.SampleQuantile'),
+      type: "value",
+      scale: true,
+      splitLine: {
+        show: false,
+      },
+    },
+    series: [
+      {
+        name: "Reference line (y=x)",
+        type: "line",
+        data: lineData,
+        symbol: "none",
+        lineStyle: {
+          color: "red",
+          type: "dashed",
+        },
+        z: 1,
+      },
+      {
+        name: "Sample plot",
+        type: "scatter",
+        data: scatterData,
+        symbolSize: 8,
+        itemStyle: {
+          color: "steelblue",
+        },
+        z: 2,
+      },
+    ],
+  };
+  chart.setOption(option);
+  chart.resize();
 };
 
+const getNumVal = (key: any, r: any) => {
+  return r[key] || 0.0;
+};

@@ -28,6 +28,7 @@
     showPollingChart,
     showPollingHistogram,
     getChartParams,
+    showPollingQQPlot,
   } from "./chart/polling";
   import {
     getStateIcon,
@@ -41,7 +42,6 @@
   import "datatables.net-select-dt";
   import { showAIHeatMap } from "./chart/ai";
   import { _ } from "svelte-i18n";
-  import { EdgeInsets } from "maplibre-gl";
 
   export let show: boolean = false;
   export let id = "";
@@ -195,6 +195,12 @@
     selectedTab = "histogram";
     await tick();
     chart = showPollingHistogram("histogram", logs, selectedEnt);
+  };
+
+  const showQQPlot = async () => {
+    selectedTab = "qqplot";
+    await tick();
+    chart = showPollingQQPlot("qqplot", logs, selectedEnt);
   };
 
   const showAI = async () => {
@@ -375,6 +381,13 @@
             </div>
             <div id="histogram" />
           </TabItem>
+          <TabItem on:click={showQQPlot}>
+            <div slot="title" class="flex items-center gap-2">
+              <Icon path={icons.mdiAppsBox} size={1} />
+              {$_('PollingReport.QQPlot')}
+            </div>
+            <div id="qqplot" />
+          </TabItem>
           {#if polling.LogMode == 3 && aiResult}
             <TabItem on:click={showAI}>
               <div slot="title" class="flex items-center gap-2">
@@ -404,6 +417,16 @@
             items={entList}
             bind:value={selectedEnt}
             on:change={showHistogram}
+            placeholder={$_("PollingReport.SelectVal")}
+          />
+        {/if}
+        {#if selectedTab == "qqplot"}
+          <Select
+            class="w-64"
+            size="sm"
+            items={entList}
+            bind:value={selectedEnt}
+            on:change={showQQPlot}
             placeholder={$_("PollingReport.SelectVal")}
           />
         {/if}
@@ -463,6 +486,7 @@
   }
   #time,
   #histogram,
+  #qqplot,
   #ai {
     min-height: 500px;
     height: 70vh;

@@ -121,7 +121,9 @@
     "Packets": "Packets",
     "PPS": "Packets/Sec",
     "Load": "Load",
-    "Available": "Available"
+    "Available": "Available",
+    "TheoreticalQuantile": "Theoretical Quantiles",
+    "SampleQuantile": "Sample Quantiles"
   },
   "Top": {
     "AI": "AI",
@@ -696,7 +698,8 @@
     "SelectVal": "Select variable",
     "State": "State",
     "Time": "Time",
-    "TimeChart": "Time chart"
+    "TimeChart": "Time chart",
+    "QQPlot": "QQ Plot"
   },
   "Syslog": {
     "Host": "Host",

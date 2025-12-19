@@ -121,7 +121,9 @@
     "PPS": "パケット/秒",
     "Dur": "通信期間(Sec)",
     "Load": "負荷",
-    "Available": "利用可能容量"
+    "Available": "利用可能容量",
+    "TheoreticalQuantile": "理論分位点",
+    "SampleQuantile": "標本分位点"
   },
   "Log": {
     "Level": "レベル",
@@ -683,7 +685,8 @@
     "Histogram": "ヒストグラム",
     "SelectVal": "変数を選択",
     "AI": "AI分析",
-    "Close": "閉じる"
+    "Close": "閉じる",
+    "QQPlot": "QQプロット"
   },
   "Syslog": {
     "Level": "レベル",
