@@ -34,6 +34,7 @@ func UpdateArpTable(ip, mac string) {
 
 func arpWatch(stopCh chan bool) {
 	log.Println("start arp")
+	setLocalSegment()
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "info",
@@ -71,13 +72,14 @@ func arpWatch(stopCh chan bool) {
 				makeLoacalCheckAddrs()
 			}
 			i := 0
+			st := time.Now().Unix()
 			for len(localCheckAddrs) > 0 {
 				i++
 				a := localCheckAddrs[0]
 				ping.DoPing(a, 1, 0, 64, 0)
 				localCheckAddrs[0] = ""
 				localCheckAddrs = localCheckAddrs[1:]
-				if i > 50 {
+				if i > 50 || time.Now().Unix()-st >= 4 {
 					break
 				}
 			}
@@ -90,6 +92,46 @@ func arpWatch(stopCh chan bool) {
 			}
 		}
 	}
+}
+
+var localSegment = []*net.IPNet{}
+
+func setLocalSegment() {
+	localSegment = []*net.IPNet{}
+	ifs, err := net.Interfaces()
+	if err != nil {
+		log.Printf("setLocalSegment err=%v", err)
+		return
+	}
+	for _, i := range ifs {
+		if (i.Flags&net.FlagLoopback) == net.FlagLoopback ||
+			(i.Flags&net.FlagPointToPoint) == net.FlagPointToPoint ||
+			len(i.HardwareAddr) != 6 {
+			continue
+		}
+		addrs, err := i.Addrs()
+		if err != nil {
+			continue
+		}
+		for _, a := range addrs {
+			cidr := a.String()
+			_, ipnet, err := net.ParseCIDR(cidr)
+			if err != nil {
+				continue
+			}
+			localSegment = append(localSegment, ipnet)
+			log.Printf("add local segment net=%v", ipnet)
+		}
+	}
+}
+
+func isOnLocalSegment(ip net.IP) bool {
+	for _, n := range localSegment {
+		if n.Contains(ip) {
+			return true
+		}
+	}
+	return false
 }
 
 var lastAddressUsage = make(map[string]float64)
@@ -125,7 +167,7 @@ func makeLoacalCheckAddrs() {
 		localHitCount := 0
 		for nIP := sIP; nIP <= eIP; nIP++ {
 			ip := int2ip(nIP)
-			if !ip.IsGlobalUnicast() || ip.IsMulticast() {
+			if !ip.IsGlobalUnicast() || ip.IsMulticast() || !isOnLocalSegment(ip) {
 				continue
 			}
 			sa := ip.String()
