@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -16,6 +17,7 @@ import (
 	"time"
 
 	"github.com/Songmu/timeout"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/robertkrimen/otto"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
@@ -347,7 +349,7 @@ func doOneAction(alin []string, pe *datastore.PollingEnt) bool {
 			subject := al[1]
 			body := subject
 			if len(al) > 2 {
-				body = al[2]
+				body = strings.Join(al[2:], " ")
 			}
 			if subject != "" {
 				notify.SendMail(subject, body)
@@ -388,6 +390,8 @@ func doOneAction(alin []string, pe *datastore.PollingEnt) bool {
 				log.Printf("polling webhook node not found id=%s", pe.NodeID)
 			}
 		}
+	case "mqtt":
+		doNotifyToMQTT(al[1:])
 	}
 	return true
 }
@@ -500,5 +504,39 @@ func updatePolling(pe *datastore.PollingEnt, oldState string) {
 		if err := datastore.AddPollingLog(pe); err != nil {
 			log.Printf("add polling log err=%v %#v", err, pe)
 		}
+	}
+}
+
+func doNotifyToMQTT(p []string) {
+	if len(p) < 3 {
+		log.Printf("doNotifyToMQTT missing params %+v", p)
+		return
+	}
+	name := datastore.MapConf.MapName
+	if name == "" {
+		var err error
+		name, err = os.Hostname()
+		if err != nil {
+			name = "unknown"
+			log.Printf("failed to get hostname: %v", err)
+		}
+	}
+	opts := mqtt.NewClientOptions()
+	opts.AddBroker(p[0])
+	opts.SetClientID("TWSNMP_FC_" + name)
+
+	client := mqtt.NewClient(opts)
+	token := client.Connect()
+	token.Wait()
+	if token.Error() != nil {
+		log.Println(token.Error())
+		return
+	}
+	defer client.Disconnect(250)
+	token = client.Publish(p[1], 1, false, strings.Join(p[2:], " "))
+	token.Wait()
+	if token.Error() != nil {
+		log.Println(token.Error())
+		return
 	}
 }
