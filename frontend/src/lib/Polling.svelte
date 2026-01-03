@@ -255,6 +255,34 @@
           />
         </Label>
       </div>
+      <div class="grid gap-4 mb-4 grid-cols-3">
+          <Label class="space-y-2 text-xs">
+          <span>MQTTサーバーURL</span>
+          <Input
+            class="h-8"
+            bind:value={polling.MqttURL}
+            placeholder="tcp://localhost:1883"
+            size="sm"
+          />
+        </Label>
+          <Label class="space-y-2 text-xs">
+          <span>トピック</span>
+          <Input
+            class="h-8"
+            bind:value={polling.MqttTopic}
+            placeholder="twsnmpfk/polling"
+            size="sm"
+          />
+        </Label>
+          <Label class="space-y-2 text-xs">
+          <span>送信するデータ名</span>
+          <Input
+            class="h-8"
+            bind:value={polling.MqttCols}
+            size="sm"
+          />
+        </Label>
+      </div>
       {#if polling.LogMode == 3}
       <div class="grid gap-4 mb-4 grid-cols-2">
         <Label class="space-y-2 text-xs">

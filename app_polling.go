@@ -75,6 +75,9 @@ func (a *App) UpdatePolling(up datastore.PollingEnt) bool {
 	p.RepairAction = up.RepairAction
 	p.AIMode = up.AIMode
 	p.VectorCols = up.VectorCols
+	p.MqttURL = up.MqttURL
+	p.MqttTopic = up.MqttTopic
+	p.MqttCols = up.MqttCols
 	// Re check now
 	p.State = "unknown"
 	p.NextTime = 0

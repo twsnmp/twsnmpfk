@@ -32,6 +32,9 @@ type PollingEnt struct {
 	RepairAction string                 `json:"RepairAction"`
 	AIMode       string                 `json:"AIMode"`
 	VectorCols   string                 `json:"VectorCols"`
+	MqttURL      string                 `json:"MqttURL"`
+	MqttTopic    string                 `json:"MqttTopic"`
+	MqttCols     string                 `json:"MqttCols"`
 }
 
 type PollingLogEnt struct {

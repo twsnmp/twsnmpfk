@@ -179,7 +179,7 @@ func getMqttClient(pe *datastore.PollingEnt) (mqtt.Client, error) {
 		return nil, fmt.Errorf("node not found id=%x", pe.NodeID)
 	}
 	opts := mqtt.NewClientOptions()
-	opts.SetClientID("TWSNMP_FC_" + pe.ID)
+	opts.SetClientID("TWSNMP_FK_" + pe.ID)
 	if pe.Params == "" {
 		opts.AddBroker(fmt.Sprintf("tcp://%s:1883", n.IP))
 	} else {
