@@ -663,7 +663,10 @@
     "Default": "Default",
     "SelectAIMode": "Select AI mode",
     "VectorCols": "Variable name to vectorize",
-    "VectorColsHelp": "Specify variable names to be vectorized separated by commas."
+    "VectorColsHelp": "Specify variable names to be vectorized separated by commas.",
+    "MqttCols": "Data name",
+    "MqttTopic": "Topic",
+    "MqttURL": "MQTT server URL"
   },
   "PollingList": {
     "Add": "Add",

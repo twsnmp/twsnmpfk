@@ -650,7 +650,10 @@
     "AIMode": "AIモード",
     "SelectAIMode": "AIモードを選択",
     "VectorCols": "ベクトル化する変数名",
-    "VectorColsHelp": "ベクトル化する変数名をカンマ区切りで指定"
+    "VectorColsHelp": "ベクトル化する変数名をカンマ区切りで指定",
+    "MqttURL": "MQTTサーバーURL",
+    "MqttTopic": "トピック",
+    "MqttCols": "送信するデータ名"
   },
   "PollingList": {
     "State": "状態",

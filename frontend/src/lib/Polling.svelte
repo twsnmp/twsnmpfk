@@ -257,7 +257,7 @@
       </div>
       <div class="grid gap-4 mb-4 grid-cols-3">
           <Label class="space-y-2 text-xs">
-          <span>MQTTサーバーURL</span>
+          <span>{$_('Polling.MqttURL')}</span>
           <Input
             class="h-8"
             bind:value={polling.MqttURL}
@@ -266,7 +266,7 @@
           />
         </Label>
           <Label class="space-y-2 text-xs">
-          <span>トピック</span>
+          <span>{$_('Polling.MqttTopic')}</span>
           <Input
             class="h-8"
             bind:value={polling.MqttTopic}
@@ -275,7 +275,7 @@
           />
         </Label>
           <Label class="space-y-2 text-xs">
-          <span>送信するデータ名</span>
+          <span>{$_('Polling.MqttCols')}</span>
           <Input
             class="h-8"
             bind:value={polling.MqttCols}
