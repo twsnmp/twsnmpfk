@@ -91,7 +91,7 @@ func LoadMqttStat() {
 	log.Printf("load mqtt stat dur=%v", time.Since(st))
 }
 
-func SaveMqttStat() {
+func SaveMqttStats() {
 	if db == nil {
 		return
 	}
@@ -121,6 +121,7 @@ func DeleteMqttStats(ids []string) {
 	for _, id := range ids {
 		mqttStatMap.Delete(id)
 	}
+	SaveMqttStats()
 }
 
 func DeleteAllMqttStat() error {

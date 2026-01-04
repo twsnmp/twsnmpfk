@@ -24,7 +24,7 @@ func mqttd(stopCh chan bool) {
 	if s != nil {
 		s.Close()
 	}
-	datastore.SaveMqttStat()
+	datastore.SaveMqttStats()
 	log.Printf("stop mqttd")
 }
 

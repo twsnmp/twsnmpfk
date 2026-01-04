@@ -79,9 +79,9 @@ func logger(ctx context.Context, wg *sync.WaitGroup) {
 				if oteldRunning {
 					close(stopOteld)
 				}
-				// if mqttdRunning {
-				// 	close(stopMqttd)
-				// }
+				if mqttdRunning {
+					close(stopMqttd)
+				}
 				if len(logBuffer) > 0 {
 					datastore.SaveLogBuffer(logBuffer)
 				}
