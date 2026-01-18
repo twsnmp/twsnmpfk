@@ -402,7 +402,7 @@ var transMap = map[string]map[string]string{
 	"ARP Watch": {
 		"ja": "ARP監視",
 	},
-	"Not fond": {
+	"Not found": {
 		"ja": "不明",
 	},
 	"DNS Host": {
@@ -434,6 +434,21 @@ var transMap = map[string]map[string]string{
 	},
 	"Delete MQTT stat(%d)": {
 		"ja": "MQTT統計情報を%d件削除しました",
+	},
+	"Domain": {
+		"ja": "ドメイン",
+	},
+	"Mail server": {
+		"ja": "メールサーバー",
+	},
+	"Name server": {
+		"ja": "ネームサーバー",
+	},
+	"TXT record": {
+		"ja": "TXT レコード",
+	},
+	"SRV record": {
+		"ja": "SRV レコード",
 	},
 }
 

@@ -1465,6 +1465,7 @@ export namespace main {
 	}
 	export class AddrInfoEnt {
 	    Title: string;
+	    Level: string;
 	    Value: string;
 	
 	    static createFrom(source: any = {}) {
@@ -1474,6 +1475,7 @@ export namespace main {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Title = source["Title"];
+	        this.Level = source["Level"];
 	        this.Value = source["Value"];
 	    }
 	}

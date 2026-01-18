@@ -2,22 +2,22 @@
   import {
     Modal,
     GradientButton,
-    Table,
-    TableBody,
-    TableBodyCell,
-    TableBodyRow,
-    TableHead,
-    TableHeadCell,
     Label,
     Spinner,
     Input,
   } from "flowbite-svelte";
+  import {
+    getTableLang,
+    renderState
+  } from "./common";
   import { GetAddressInfo } from "../../wailsjs/go/main/App";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, tick } from "svelte";
+  import DataTable from "datatables.net-dt";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
+  import { copyText } from "svelte-copy";
 
   export let show: boolean = false;
   export let address: string = "";
@@ -32,6 +32,37 @@
   let wait = false;
   let isGlobalIP = false;
   let latLong = "";
+  let table :any = undefined;
+
+  const showAddressInfoTable = () => {
+    table = new DataTable("#addrInfoTable", {
+      destroy: true,
+      columns: columns,
+      pageLength: window.innerHeight > 800 ? 25 : 10,
+      stateSave: true,
+      data: addressInfoList,
+      language: getTableLang(),
+    });
+
+  }
+  const columns = [
+    {
+      data: "Level",
+      title: $_('Address.State'),
+      width: "10%",
+      render: renderState,
+    },
+    {
+      data: "Title",
+      title: $_('Address.Name'),
+      width: "30%",
+    },
+    {
+      data: "Value",
+      title: $_('Address.Value'),
+      width: "60%",
+    },
+  ];
 
   const showAddressInfo = async () => {
     if (address == "") {
@@ -54,12 +85,34 @@
         }
       }
     }
+    if (addressInfoList && addressInfoList.length > 0) {
+      await tick();
+      showAddressInfoTable();
+    }
   };
 
   const close = () => {
     show = false;
     dispatch("close", {});
   };
+
+  let copied = false;
+  const copy = () => {
+    let s: string[] = [];
+    const h = columns.map((e: any) => e.title);
+    s.push(h.join("\t"));
+    for (let i = 0; i < addressInfoList.length; i++) {
+      const row: any = [];
+      row.push(addressInfoList[i].Level);
+      row.push(addressInfoList[i].Title);
+      row.push(addressInfoList[i].Value);
+      s.push(row.join("\t"));
+    }
+    copyText(s.join("\n"));
+    copied = true;
+    setTimeout(() => (copied = false), 2000);
+  };
+
 </script>
 
 <Modal
@@ -81,26 +134,7 @@
         <Input class="h-8" bind:value={address} size="sm" />
       </Label>
     </form>
-    <div class="flex flex-col space-y-4">
-      <Table striped={true}>
-        <TableHead>
-          <TableHeadCell>{$_('Address.Name')}</TableHeadCell>
-          <TableHeadCell>{$_('Address.Value')}</TableHeadCell>
-        </TableHead>
-        <TableBody tableBodyClass="divide-y">
-          {#each addressInfoList as i}
-            <TableBodyRow>
-              <TableBodyCell tdClass="py-2 px-4 font-small"
-                >{i.Title}</TableBodyCell
-              >
-              <TableBodyCell tdClass="py-2 px-4 font-small"
-                >{i.Value}</TableBodyCell
-              >
-            </TableBodyRow>
-          {/each}
-        </TableBody>
-      </Table>
-    </div>
+    <table id="addrInfoTable" class="display compact" style="width:99%" />
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait && address}
         <GradientButton
@@ -112,6 +146,22 @@
           <Icon path={icons.mdiRecycle} size={1} />
           {$_('Address.Search')}
         </GradientButton>
+        {#if addressInfoList.length > 0} 
+        <GradientButton
+          shadow
+          color="cyan"
+          type="button"
+          on:click={copy}
+          size="xs"
+        >
+          {#if copied}
+            <Icon path={icons.mdiCheck} size={1} />
+          {:else}
+            <Icon path={icons.mdiContentCopy} size={1} />
+          {/if}
+          Copy
+        </GradientButton>
+        {/if}
         {#if isGlobalIP}
           {#if latLong}
             <GradientButton
