@@ -86,6 +86,7 @@ export const typeList = [
   { name: 'LXI', value: 'lxi' },
   { name: 'Monitor', value: 'monitor' },
   { name: 'MQTT', value: 'mqtt' },
+  { name: 'EMAIL', value: 'email' },
 ]
 
 const pollingTypeMap = new Map();

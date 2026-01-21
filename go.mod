@@ -16,11 +16,13 @@ require (
 	github.com/davidebianchi/go-jsonclient v1.5.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/eclipse/paho.mqtt.golang v1.5.1
+	github.com/emersion/go-imap/v2 v2.0.0-beta.7
 	github.com/fatih/color v1.18.0
 	github.com/gliderlabs/ssh v0.3.8
 	github.com/go-jose/go-jose/v4 v4.0.5
 	github.com/google/gopacket v1.1.19
 	github.com/gosnmp/gosnmp v1.38.0
+	github.com/knadh/go-pop3 v1.0.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/labstack/gommon v0.4.2
 	github.com/mochi-mqtt/server/v2 v2.7.9
@@ -73,6 +75,8 @@ require (
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/bufbuild/protocompile v0.14.1 // indirect
+	github.com/emersion/go-message v0.18.1 // indirect
+	github.com/emersion/go-sasl v0.0.0-20231106173351-e73c9f7bad43 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/foxboron/go-tpm-keyfiles v0.0.0-20250323135004-b31fac66206e // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
