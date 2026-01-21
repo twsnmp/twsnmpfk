@@ -371,5 +371,22 @@
     "Script": "",
     "Level": "off",
     "Descr": "Resource(CPU,Memory,Disk...) monitor "
+ },
+ {
+    "Name": "Mail server login confirmation",
+    "Type": "email",
+    "Mode": "login",
+    "Params": "TODO: Mail server URL (imaps://user:pass@imap.example.com:993/INBOX)",
+    "Level": "off",
+    "Descr": "Confirm login to IMAP or POP3 server"
+  },
+  {
+    "Name": "Mail Server Receipt Confirmation",
+    "Type": "email",
+    "Mode": "stats",
+    "Params": "TODO: Mail server URL (imaps://user:pass@imap.example.com:993/INBOX)",
+    "Script": "!newMsg",
+    "Level": "off",
+    "Descr": "Confirm receipt of new mail from IMAP or POP3 server"
   }
 ]
