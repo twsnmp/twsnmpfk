@@ -1,5 +1,5 @@
 ---
-title: はじめてのTWSMMP FK
+title: はじめてのTWSNMP FK
 layout: default
 ---
 

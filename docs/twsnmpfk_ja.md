@@ -4,7 +4,7 @@ paginate: true
 theme: graph_paper
 header: はじめてのTWSNMP FK
 footer: Copyright (c) 2023 Masayuki Yamai
-title: はじめてのTWSMMP
+title: はじめてのTWSNMP
 ---
 
 # はじめてのTWSNMP FK
