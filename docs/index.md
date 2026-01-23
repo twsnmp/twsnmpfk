@@ -709,6 +709,19 @@ This is a report that shows the relationship between IP address and MAC address 
 
 ![](./images/en/2023-12-03_05-52-16.png)
 
+### Address Analysis
+
+This screen displays detailed information on IP addresses, MAC addresses, and domain names.
+It can be displayed from the address list or log lists (Syslog, NetFlow, etc.).
+You can also enter a domain name to investigate.
+The displayed information can be copied to the clipboard with the Copy button.
+
+| Item | Contents |
+| ---- | ---- |
+| State | Information level (severity). |
+| Name | Information item name. |
+| Value | Information value. |
+
 ## Server certificate list
 
 A list of server certificates to monitor from TWSNMP.
