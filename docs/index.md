@@ -489,7 +489,7 @@ A list of polling related to nodes.
 | State | Polling state.<br> Severe, mild, precautions, return, normal, unknown.|
 | Name | Polling name.|
 | Level | Pauling level.|
-| Type | Polling type.<br> Ping, SNMP, TCP, etc. |
+| Type | Polling type.<br> Ping, SNMP, TCP, Email(IMAP/POP3) etc. |
 | Log | Log mode.|
 | Last time | This is the last date and time when polling was implemented.|
 | Add | Add polling to nodes.|
@@ -601,7 +601,7 @@ This is the selection screen of the template displayed when adding polling.
 | ---- | ---- |
 | ID | Template number.|
 | Name | Polling name.|
-| Type | Polling type.<br> Ping, SNMP, TCP, etc. |
+| Type | Polling type.<br> Ping, SNMP, TCP, Email(IMAP/POP3) etc. |
 | Mode | Polling mode.|
 | Description | Polling explanation.|
 | Template file | Import polling from template file|
@@ -654,7 +654,7 @@ Polling edit can be displayed from the button by selecting a polling list on the
 | ---- | ---- |
 | Name | Polling name.|
 | Level | Pauling disability level.|
-| Type | Polling type.<br> Ping, SNMP, TCP, etc. |
+| Type | Polling type.<br> Ping, SNMP, TCP, Email(IMAP/POP3) etc. |
 | Mode | Operation mode depends on the type of polling.|
 | Log mode | How to save the polling result log.|
 | Parameter | Polling type and mode -dependent parameters.|
