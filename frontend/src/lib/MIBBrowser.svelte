@@ -58,23 +58,57 @@
   let data: any = [];
   let selectedCount = 0;
   let showMIBTree = false;
+  let mibTreeFilter = "";
   let mibTree: any = {
     oid: ".1",
     name: ".iso",
     MIBInfo: null,
     children: undefined,
   };
+
+  const filterMIBTree = (node: any, filter: string): any => {
+    if (!node) return null;
+    const nameMatch = node.name.toLowerCase().includes(filter);
+    const oidMatch = node.oid.includes(filter);
+    const match = nameMatch || oidMatch;
+
+    let filteredChildren: any[] = [];
+    if (node.children) {
+      filteredChildren = node.children
+        .map((c: any) => filterMIBTree(c, filter))
+        .filter((c: any) => c !== null);
+    }
+
+    if (match || filteredChildren.length > 0) {
+      return {
+        ...node,
+        children: filteredChildren,
+        forceExpand: filteredChildren.length > 0,
+      };
+    }
+    return null;
+  };
+
+  $: filteredMibTree = mibTreeFilter
+    ? filterMIBTree(mibTree, mibTreeFilter.toLowerCase())
+    : mibTree;
+
   let showHelp = false;
   let isTable = false;
 
   let showResultMIBTree = false;
   let resultMibTree: any = {};
+  let resultMibTreeFilter = "";
   let resultMibTreeWait = false;
   let resultMibTreeProgress: string = "0";
   let stopResultMibTree = false;
   let showMissing = false;
   let missingList: any = [];
   let selectedMissingCount = 0;
+
+  $: filteredResultMibTree = resultMibTreeFilter
+    ? filterMIBTree(resultMibTree, resultMibTreeFilter.toLowerCase())
+    : resultMibTree;
 
   let showSet = false;
   let setError = "";
@@ -749,14 +783,21 @@
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
+    <Search
+      size="sm"
+      bind:value={mibTreeFilter}
+      placeholder={$_("MIBBrowser.ObjectName")}
+    />
     <div id="mibtree">
-      <MibTree
-        tree={mibTree}
-        on:select={(e) => {
-          name = e.detail;
-          showMIBTree = false;
-        }}
-      />
+      {#if filteredMibTree}
+        <MibTree
+          tree={filteredMibTree}
+          on:select={(e) => {
+            name = e.detail;
+            showMIBTree = false;
+          }}
+        />
+      {/if}
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
@@ -803,14 +844,21 @@
       </div>
     {:else}
       <div id="mibtree">
-        <MibTree
-          tree={resultMibTree}
-          on:select={(e) => {
-            name = e.detail;
-            showResultMIBTree = false;
-            get();
-          }}
+        <Search
+          size="sm"
+          bind:value={resultMibTreeFilter}
+          placeholder={$_("MIBBrowser.ObjectName")}
         />
+        {#if filteredResultMibTree}
+          <MibTree
+            tree={filteredResultMibTree}
+            on:select={(e) => {
+              name = e.detail;
+              showResultMIBTree = false;
+              get();
+            }}
+          />
+        {/if}
       </div>
       <div class="flex justify-end space-x-2 mr-2">
         {#if missingList}

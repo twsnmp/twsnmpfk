@@ -9,20 +9,30 @@
   import { createEventDispatcher } from "svelte";
   import { Tooltip } from "flowbite-svelte";
   export let tree;
-  const { oid, name, MIBInfo, children,count } = tree;
+  $: ({ oid, name, MIBInfo, children, count, forceExpand } = tree);
   const dispatch = createEventDispatcher();
 
   let mibInfoTooltip = "";
   let type = "";
-  if (MIBInfo) {
-    mibInfoTooltip = MIBInfo.Description;
-    type = ":" + MIBInfo.Type;
+  $: {
+    if (MIBInfo) {
+      mibInfoTooltip = MIBInfo.Description;
+      type = ":" + MIBInfo.Type;
+    } else {
+      mibInfoTooltip = "";
+      type = "";
+    }
   }
 
   let expanded = _expansionState[oid] || false;
   const toggleExpansion = () => {
     expanded = _expansionState[oid] = !expanded;
   };
+
+  $: if (forceExpand) {
+    expanded = true;
+  }
+
   $: arrowDown = expanded;
 </script>
 
