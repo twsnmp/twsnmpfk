@@ -679,11 +679,11 @@ export const showNetFlowGraph = (div:string, logs:any,mode :number, type:string)
   const n50 = ecStat.statistics.quantile(nvs, 0.5)
   const e95 = ecStat.statistics.quantile(evs, 0.95)
   const categories = [
-    { name: 'IPv4 Private' },
-    { name: 'IPv6 Private' },
-    { name: 'IPv4 Global' },
-    { name: 'IPV6 Global' },
-    { name: 'MAC Address' },
+    { name: 'IPv4 Private', itemStyle: { color: '#1f78b4' } },
+    { name: 'IPv6 Private', itemStyle: { color: '#a6cee3' } },
+    { name: 'IPv4 Global', itemStyle: { color: '#e31a1c' } },
+    { name: 'IPV6 Global', itemStyle: { color: '#fb9a99' } },
+    { name: 'MAC Address', itemStyle: { color: '#fbca00' } },
   ]
   let mul = 1.0
   if (type === 'gl') {
@@ -734,7 +734,6 @@ export const showNetFlowGraph = (div:string, logs:any,mode :number, type:string)
         }),
       },
     ],
-    color: ['#1f78b4', '#a6cee3', '#e31a1c', '#fb9a99', '#fbca00'],
     animationDurationUpdate: 1500,
     animationEasingUpdate: 'quinticInOut',
     series: [],
@@ -825,6 +824,7 @@ export const showNetFlowGraph = (div:string, logs:any,mode :number, type:string)
         categories,
         roam: true,
         label: {
+          show: true,
           position: 'right',
           formatter: '{b}',
           fontSize: 10,

@@ -28,6 +28,12 @@ type VPanelPortEnt struct {
 
 // GetVPanelPowerInfo : パネルの電源状態を取得
 func GetVPanelPowerInfo(id string) bool {
+	if strings.HasPrefix(id, "NET:") {
+		if nn := datastore.GetNetwork(id); nn != nil {
+			return nn.Error == ""
+		}
+		return false
+	}
 	n := datastore.GetNode(id)
 	// まずはノードの状態を反映
 	state := n.State
@@ -48,6 +54,9 @@ func GetVPanelPowerInfo(id string) bool {
 // 2.SNMPから取得
 // 3.ラインの設定
 func GetVPanelPorts(id string) []*VPanelPortEnt {
+	if strings.HasPrefix(id, "NET:") {
+		return getNetworkPortsBySNMP(id)
+	}
 	// ポーリングから取得
 	if ports := getPortsFromPolling(id); len(ports) > 0 {
 		return ports

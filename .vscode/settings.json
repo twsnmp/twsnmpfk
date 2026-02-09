@@ -556,7 +556,8 @@
     "& notifyConf.Provider != \"smtp\" }\n          ",
     "String",
     " {\n          showSet = false;\n        }}\n        size=\"xs\"\n      >\n        ",
-    " exportLogData()}\n            size=\"xs\"\n          >\n            "
+    " exportLogData()}\n            size=\"xs\"\n          >\n            ",
+    "VLAN ID"
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

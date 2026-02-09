@@ -500,14 +500,19 @@ func (a *App) CopyDrawItem(id string) bool {
 	return true
 }
 
-// GetVPanelPorts returns port info of node
+// GetVPanelPorts returns port info of node or network
 func (a *App) GetVPanelPorts(id string) []*backend.VPanelPortEnt {
 	return backend.GetVPanelPorts(id)
 }
 
-// GetVPanelPowerInfo returns power info of node
+// GetVPanelPowerInfo returns power info of node or network
 func (a *App) GetVPanelPowerInfo(id string) bool {
 	return backend.GetVPanelPowerInfo(id)
+}
+
+// GetFDBTable returns FDB Table of node or network
+func (a *App) GetFDBTable(id string) []*backend.FDBTableEnt {
+	return backend.GetFDBTable(id)
 }
 
 // addNetwork add network

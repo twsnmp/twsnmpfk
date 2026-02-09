@@ -278,6 +278,10 @@ export function GetEventLogs(arg1) {
   return window['go']['main']['App']['GetEventLogs'](arg1);
 }
 
+export function GetFDBTable(arg1) {
+  return window['go']['main']['App']['GetFDBTable'](arg1);
+}
+
 export function GetHostResource(arg1) {
   return window['go']['main']['App']['GetHostResource'](arg1);
 }

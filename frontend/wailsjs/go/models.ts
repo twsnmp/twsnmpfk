@@ -1,5 +1,27 @@
 export namespace backend {
 	
+	export class FDBTableEnt {
+	    VLanID: number;
+	    Port: number;
+	    IfIndex: number;
+	    Node: string;
+	    MAC: string;
+	    Vendor: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FDBTableEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.VLanID = source["VLanID"];
+	        this.Port = source["Port"];
+	        this.IfIndex = source["IfIndex"];
+	        this.Node = source["Node"];
+	        this.MAC = source["MAC"];
+	        this.Vendor = source["Vendor"];
+	    }
+	}
 	export class FindNeighborNetworksAndLinesResp {
 	    Networks: datastore.NetworkEnt[];
 	    Lines: datastore.LineEnt[];

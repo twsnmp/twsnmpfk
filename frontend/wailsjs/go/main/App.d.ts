@@ -144,6 +144,8 @@ export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
 
 export function GetEventLogs(arg1:main.EventLogFilterEnt):Promise<Array<datastore.EventLogEnt>>;
 
+export function GetFDBTable(arg1:string):Promise<Array<backend.FDBTableEnt>>;
+
 export function GetHostResource(arg1:string):Promise<backend.HostResourceEnt>;
 
 export function GetIPAM():Promise<Array<main.IPAMRangeEnt>>;

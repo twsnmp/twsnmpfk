@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -616,4 +618,216 @@ func getPortState(nodeID, pollingID string) string {
 		}
 	}
 	return st
+}
+
+func getNetworkPortsBySNMP(id string) []*VPanelPortEnt {
+	ports := []*VPanelPortEnt{}
+	n := datastore.GetNetwork(id)
+	agent := getSNMPAgentForNetwork(n)
+	if agent == nil {
+		return ports
+	}
+	err := agent.Connect()
+	if err != nil {
+		log.Printf("getNetworkPortsBySNMP err=%v", err)
+		return ports
+	}
+	defer agent.Conn.Close()
+	ifMap := make(map[string]*VPanelPortEnt)
+	_ = agent.Walk(datastore.MIBDB.NameToOID("ifTable"), func(variable gosnmp.SnmpPDU) error {
+		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
+		if len(a) != 2 {
+			return nil
+		}
+		e, ok := ifMap[a[1]]
+		if !ok {
+			ifMap[a[1]] = new(VPanelPortEnt)
+			e = ifMap[a[1]]
+		}
+		switch a[0] {
+		case "ifDescr":
+			e.Name = getMIBStringVal(variable.Value)
+		case "ifType":
+			e.Type = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifSpeed":
+			e.Speed = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifIndex":
+			e.Index = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifPhysAddress":
+			mac := getMIBStringVal(variable.Value)
+			if len(mac) > 5 {
+				e.MAC = fmt.Sprintf("%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
+			}
+		case "ifAdminStatus":
+			e.Admin = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifOperStatus":
+			e.Oper = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifInOctets":
+			e.InBytes = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifInUcastPkts", "ifInNUcastPkts", "ifInUnknownProtos":
+			e.InPacktes += gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifInErrors":
+			e.InError = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifOutOctets":
+			e.OutBytes = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifOutUcastPkts", "ifOutNUcastPkts":
+			e.OutPacktes += gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifOutErrors":
+			e.OutError = gosnmp.ToBigInt(variable.Value).Int64()
+		}
+		return nil
+	})
+	// ifXTableからも取得する
+	ifXTable := false
+	_ = agent.Walk(datastore.MIBDB.NameToOID("ifXTable"), func(variable gosnmp.SnmpPDU) error {
+		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
+		if len(a) != 2 {
+			return nil
+		}
+		e, ok := ifMap[a[1]]
+		if !ok {
+			return nil
+		}
+		if !ifXTable {
+			// Reset Counter
+			for _, e := range ifMap {
+				e.InBytes = 0
+				e.InPacktes = 0
+				e.OutBytes = 0
+				e.OutPacktes = 0
+			}
+			ifXTable = true
+		}
+		switch a[0] {
+		case "ifName":
+			e.Name = getMIBStringVal(variable.Value)
+		case "ifHighSpeed":
+			e.Speed = gosnmp.ToBigInt(variable.Value).Int64() * 1000 * 1000
+		case "ifHCInOctets":
+			e.InBytes = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifHCInMulticastPkts", "ifHCInBroadcastPkts", "ifHCInUcastPkts":
+			e.InPacktes += gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifHCOutOctets":
+			e.OutBytes = gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifHCOutUcastPkts", "ifHCOutMulticastPkts", "ifHCOutBroadcastPkts":
+			e.OutPacktes += gosnmp.ToBigInt(variable.Value).Int64()
+		case "ifOutErrors":
+			e.OutError = gosnmp.ToBigInt(variable.Value).Int64()
+		}
+		return nil
+	})
+	for _, e := range ifMap {
+		if e.Oper == 1 {
+			e.State = "up"
+		} else if e.Admin == 1 {
+			e.State = "down"
+		} else {
+			e.State = "off"
+		}
+		ports = append(ports, e)
+	}
+	sort.Slice(ports, func(i, j int) bool {
+		return ports[i].Index < ports[j].Index
+	})
+	return ports
+}
+
+type FDBTableEnt struct {
+	VLanID  int
+	Port    int
+	IfIndex int
+	Node    string
+	MAC     string
+	Vendor  string
+}
+
+func GetFDBTable(id string) []*FDBTableEnt {
+	ret := []*FDBTableEnt{}
+	n := datastore.GetNetwork(id)
+	if n == nil {
+		log.Printf("GetFDBTable network not found id=%s", id)
+		return ret
+	}
+	agent := getSNMPAgentForNetwork(n)
+	if agent == nil {
+		log.Println("GetFDBTable agent is nil")
+		return ret
+	}
+	err := agent.Connect()
+	if err != nil {
+		log.Printf("GetFDBTable err=%v", err)
+		return ret
+	}
+	defer agent.Conn.Close()
+	// ブリッジのポートからifIndexに変換するテーブルの作成
+	portToIFIndexMap := make(map[int]int)
+	err = agent.Walk(datastore.MIBDB.NameToOID("dot1dBasePortIfIndex"), func(variable gosnmp.SnmpPDU) error {
+		a := strings.SplitN(datastore.MIBDB.OIDToName(variable.Name), ".", 2)
+		if len(a) != 2 {
+			return nil
+		}
+		idx, err := strconv.Atoi(a[1])
+		if err != nil {
+			return nil
+		}
+		switch a[0] {
+		case "dot1dBasePortIfIndex":
+			portToIFIndexMap[idx] = int(gosnmp.ToBigInt(variable.Value).Int64())
+		}
+		return nil
+	})
+	if err != nil {
+		log.Printf("get dot1dBasePortIfIndex err=%v", err)
+		return ret
+	}
+	err = agent.Walk(datastore.MIBDB.NameToOID("dot1qTpFdbPort"), func(variable gosnmp.SnmpPDU) error {
+		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
+		if len(a) != 1+1+6 {
+			return nil
+		}
+		vlan, err := strconv.Atoi(a[1])
+		if err != nil {
+			return nil
+		}
+		mac, err := indexToMacAddress(a[2:])
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
+		switch a[0] {
+		case "dot1qTpFdbPort":
+			port := int(gosnmp.ToBigInt(variable.Value).Int64())
+			if idx, ok := portToIFIndexMap[port]; ok {
+				node := ""
+				if nn := datastore.FindNodeFromMAC(mac); nn != nil {
+					node = nn.Name
+				}
+				ret = append(ret, &FDBTableEnt{
+					MAC:     mac,
+					VLanID:  vlan,
+					Port:    port,
+					IfIndex: idx,
+					Node:    node,
+					Vendor:  datastore.FindVendor(mac),
+				})
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		log.Printf("get dot1qTpFdbPort err=%v", err)
+	}
+	return ret
+}
+
+func indexToMacAddress(a []string) (string, error) {
+	ret := []string{}
+	for _, s := range a {
+		if i, err := strconv.Atoi(s); err == nil {
+			ret = append(ret, fmt.Sprintf("%02X", i))
+		} else {
+			return "", err
+		}
+	}
+	return strings.Join(ret, ":"), nil
 }

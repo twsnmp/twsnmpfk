@@ -18,12 +18,13 @@
   import { Icon } from "mdi-svelte-ts";
   import Discover from "./Discover.svelte";
   import Node from "./Node.svelte";
-  import Network from "./Network.svelte";
   import Line from "./Line.svelte";
   import DrawItem from "./DrawItem.svelte";
   import NodeReport from "./NodeReport.svelte";
   import NodePolling from "./NodePolling.svelte";
   import Ping from "./Ping.svelte";
+  import Network from "./Network.svelte";
+  import NetworkReport from "./NetworkReport.svelte";
   import NetworkLines from "./NetworkLines.svelte";
   import NeighborNetworksAndLines from "./NeighborNetworksAndLines.svelte";
   import {
@@ -74,6 +75,7 @@
   let showGrid: boolean = false;
   let gridSize: number = 40;
   let showNodeReport: boolean = false;
+  let showNetworkReport: boolean = false;
   let showPolling: boolean = false;
   let showPing: boolean = false;
   let showMibBr: boolean = false;
@@ -680,6 +682,20 @@
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
           showNetworkMenu = false;
+          showNetworkReport = true;
+          setMapReadOnly(true);
+        }}
+      >
+        <Icon path={icons.mdiChartBarStacked} size={0.7} />
+        <div>
+          {$_("Map.Report")}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showNetworkMenu = false;
           CheckNetwork(selectedNetwork);
           refreshMap();
         }}
@@ -879,6 +895,15 @@
   posY={mapPosY}
   on:close={(e) => {
     networkTemplate = undefined;
+    setMapReadOnly(false);
+    refreshMap();
+  }}
+/>
+
+<NetworkReport
+  bind:show={showNetworkReport}
+  id={selectedNetwork}
+  on:close={(e) => {
     setMapReadOnly(false);
     refreshMap();
   }}

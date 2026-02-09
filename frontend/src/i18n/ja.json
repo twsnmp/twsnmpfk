@@ -1042,5 +1042,14 @@
     "Bytes": "バイト数",
     "First": "初回",
     "DeleteAll": "全MQTTデータ削除"
+  },
+  "NetworkReport": {
+    "Port": "ポート",
+    "Node": "ノード",
+    "Vendor": "ベンダー",
+    "PortNum": "ポート数",
+    "Error": "エラー",
+    "FDBTable": "FDBテーブル",
+    "FDBTableNotSupported": "FDBテーブルに対応していません。"
   }
 }

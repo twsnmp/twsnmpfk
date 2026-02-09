@@ -1042,5 +1042,14 @@
     "First": "First Time",
     "Remote": "Remote",
     "Topic": "Topic"
+  },
+  "NetworkReport": {
+    "Error": "Error",
+    "FDBTable": "FDB table",
+    "FDBTableNotSupported": "FDB tables are not supported.",
+    "Node": "Node",
+    "Port": "Port",
+    "PortNum": "Number of port",
+    "Vendor": "Vendor"
   }
 }
