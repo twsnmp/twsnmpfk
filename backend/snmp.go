@@ -430,6 +430,12 @@ func getPortsBySNMP(id string) []*VPanelPortEnt {
 		return ports
 	}
 	defer agent.Conn.Close()
+	sysUpTime, err := getSysUpTime(agent)
+	if err != nil {
+		log.Printf("getPortsBySNMP err=%v", err)
+		return ports
+	}
+	now := time.Now().UnixNano()
 	ifMap := make(map[string]*VPanelPortEnt)
 	_ = agent.Walk(datastore.MIBDB.NameToOID("ifTable"), func(variable gosnmp.SnmpPDU) error {
 		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
@@ -455,6 +461,9 @@ func getPortsBySNMP(id string) []*VPanelPortEnt {
 			if len(mac) > 5 {
 				e.MAC = fmt.Sprintf("%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
 			}
+		case "ifLastChange":
+			lt := gosnmp.ToBigInt(variable.Value).Uint64()
+			e.LastChanged = now - int64((sysUpTime-lt)*10*1000*1000)
 		case "ifAdminStatus":
 			e.Admin = gosnmp.ToBigInt(variable.Value).Int64()
 		case "ifOperStatus":
@@ -527,6 +536,17 @@ func getPortsBySNMP(id string) []*VPanelPortEnt {
 		return ports[i].Index < ports[j].Index
 	})
 	return ports
+}
+
+func getSysUpTime(agent *gosnmp.GoSNMP) (uint64, error) {
+	r, err := agent.Get([]string{datastore.MIBDB.NameToOID("sysUpTime.0")})
+	if err != nil {
+		return 0, err
+	}
+	if len(r.Variables) < 1 {
+		return 0, fmt.Errorf("cant not get sysuptime")
+	}
+	return gosnmp.ToBigInt(r.Variables[0].Value).Uint64(), nil
 }
 
 func getSNMPAgent(n *datastore.NodeEnt) *gosnmp.GoSNMP {

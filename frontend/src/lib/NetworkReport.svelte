@@ -28,6 +28,7 @@
     renderBytes,
     renderCount,
     renderSpeed,
+    renderTime,
   } from "./common";
   import { showFDBTableGraph } from "./chart/network";
   import { deleteVPanel, initVPanel, setVPanel } from "./vpanel";
@@ -72,7 +73,7 @@
         {
           data: "State",
           title: $_("NodePolling.State"),
-          width: "10%",
+          width: "5%",
         },
         {
           data: "Name",
@@ -87,12 +88,12 @@
         {
           data: "MAC",
           title: $_("NodeReport.MACAddress"),
-          width: "15%",
+          width: "10%",
         },
         {
           data: "Speed",
           title: $_("NodeReport.Speed"),
-          width: "10%",
+          width: "8%",
           render: renderSpeed,
           className: "dt-body-right",
         },
@@ -123,6 +124,12 @@
           width: "10%",
           render: renderBytes,
           className: "dt-body-right",
+        },
+        {
+          data: "LastChanged",
+          title: $_('NodeReport.LastChanged'),
+          width: "12%",
+          render: renderTime,
         },
       ],
     });

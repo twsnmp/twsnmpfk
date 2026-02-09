@@ -23,6 +23,7 @@ type VPanelPortEnt struct {
 	Admin        int64  `json:"Admin"`
 	Oper         int64  `json:"Oper"`
 	MAC          string `json:"MAC"`
+	LastChanged  int64  `json:"LastChanged"`
 	pollingIndex string
 }
 

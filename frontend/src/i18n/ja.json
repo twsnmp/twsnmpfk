@@ -584,7 +584,8 @@
     "FileSystem": "ファイル・システム",
     "Memo": "メモ",
     "MemoPlaceHolder": "ノードに関するメモを記入",
-    "Save": "保存"
+    "Save": "保存",
+    "LastChanged": "最終変化"
   },
   "Ping": {
     "Cont": "連続",

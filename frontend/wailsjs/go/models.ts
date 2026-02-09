@@ -257,6 +257,7 @@ export namespace backend {
 	    Admin: number;
 	    Oper: number;
 	    MAC: string;
+	    LastChanged: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new VPanelPortEnt(source);
@@ -278,6 +279,7 @@ export namespace backend {
 	        this.Admin = source["Admin"];
 	        this.Oper = source["Oper"];
 	        this.MAC = source["MAC"];
+	        this.LastChanged = source["LastChanged"];
 	    }
 	}
 

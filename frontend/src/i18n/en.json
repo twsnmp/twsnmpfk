@@ -597,7 +597,8 @@
     "FileSystem": "File System",
     "Memo": "Memo",
     "MemoPlaceHolder": "Enter memo about this node",
-    "Save": "Save"
+    "Save": "Save",
+    "LastChanged": "Last changed"
   },
   "Ping": {
     "Chart3D": "3D Chart",
