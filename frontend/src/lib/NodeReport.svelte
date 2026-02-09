@@ -142,6 +142,7 @@
           data: "State",
           title: $_("NodePolling.State"),
           width: "5%",
+          render: renderState,
         },
         {
           data: "Name",

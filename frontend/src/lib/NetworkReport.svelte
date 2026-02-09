@@ -29,6 +29,7 @@
     renderCount,
     renderSpeed,
     renderTime,
+    renderState,
   } from "./common";
   import { showFDBTableGraph } from "./chart/network";
   import { deleteVPanel, initVPanel, setVPanel } from "./vpanel";
@@ -74,6 +75,7 @@
           data: "State",
           title: $_("NodePolling.State"),
           width: "5%",
+          render: renderState,
         },
         {
           data: "Name",
