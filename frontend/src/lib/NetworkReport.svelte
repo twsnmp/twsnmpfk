@@ -223,6 +223,10 @@
   };
 
   const onOpen = async () => {
+    network = undefined;
+    ports = undefined;
+    power = undefined;
+    fdbTable = undefined;
     network = await GetNetwork(id);
   };
 

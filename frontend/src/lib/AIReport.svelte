@@ -13,6 +13,8 @@
   let results : any =undefined;
 
   const onOpen = async () => {
+    results = undefined;
+    chart = undefined;
     results = await GetAIResult(id);
     showChart("heatmap");
   };

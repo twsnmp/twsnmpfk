@@ -18,6 +18,7 @@
   export let logs : datastore.SyslogEnt[] | undefined =undefined;
 
   const onOpen = async () => {
+    chart = undefined;
     showChart("level");
   };
 

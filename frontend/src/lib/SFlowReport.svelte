@@ -48,6 +48,15 @@
   let selectedCountFlow = 0;
 
   const onOpen = () => {
+    chart = undefined;
+    topList = [];
+    fftMap = undefined;
+    tab = "heatmap";
+    tableTop = undefined;
+    selectedCountTop = 0;
+    tableFlow = undefined;
+    selectedCountFlow = 0;
+    flowList = [];
     showHeatmap();
   };
 

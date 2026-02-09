@@ -784,6 +784,14 @@
   };
 
   const onOpen = async () => {
+    node = undefined;
+    ports = undefined;
+    power = undefined;
+    hostResource = undefined;
+    logTable = undefined;
+    pollingTmp = undefined;
+    memo = "";
+    clearSelectedCount();
     node = await GetNode(id);
     memo = await GetNodeMemo(id)
   };

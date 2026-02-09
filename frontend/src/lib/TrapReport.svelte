@@ -15,6 +15,7 @@
   export let logs: any = undefined;
 
   const onOpen = async () => {
+    chart = undefined;
     showChart("type");
   };
 

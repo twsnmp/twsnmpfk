@@ -27,6 +27,7 @@
   const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
+    chart = undefined;
     showIPAM();
   };
 

@@ -65,6 +65,14 @@
   };
 
   const onOpen = async () => {
+    polling = undefined;
+    node = undefined;
+    logs = undefined;
+    dispLogs = [];
+    aiResult = undefined;
+    resultData = [];
+    entList = [];
+    selectedTab = "";
     polling = await GetPolling(id);
     node = await GetNode(polling.NodeID);
     if (polling.LogMode > 0) {

@@ -49,6 +49,16 @@
   let locConf :any = undefined;
 
   const onOpen = async () => {
+    chart = undefined;
+    topList = [];
+    fftMap = undefined;
+    tab = "heatmap";
+    tableTop = undefined;
+    selectedCountTop = 0;
+    tableFlow = undefined;
+    selectedCountFlow = 0;
+    locConf = undefined;
+    flowList = [];
     locConf = await GetLocConf();
     showHeatmap();
   };
