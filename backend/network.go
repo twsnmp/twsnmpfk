@@ -409,7 +409,49 @@ func FindNeighborNetworksAndLines(n *datastore.NetworkEnt) FindNeighborNetworksA
 			}
 		}
 	}
+	findLineFromFDB(n, &ret)
 	return ret
+}
+
+func findLineFromFDB(n *datastore.NetworkEnt, ret *FindNeighborNetworksAndLinesResp) {
+	list := GetFDBTable(n.ID)
+	for _, e := range list {
+		node := datastore.FindNodeFromMAC(e.MAC)
+		if node == nil {
+			continue
+		}
+		pid := ""
+		pcmp := fmt.Sprintf("ifOperStatus.%d", e.IfIndex)
+		datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
+			if p.NodeID == node.ID {
+				if p.Type == "snmp" && p.Params == pcmp {
+					pid = p.ID
+					return false
+				}
+				if pid == "" {
+					pid = p.ID
+				} else if p.Type == "ping" {
+					pid = p.ID
+				}
+			}
+			return true
+		})
+		idx := fmt.Sprintf("%d", e.IfIndex)
+		for _, lp := range n.Ports {
+			if lp.Index == idx {
+				l := datastore.LineEnt{
+					NodeID1:    fmt.Sprintf("NET:%s", n.ID),
+					PollingID1: lp.ID,
+					NodeID2:    node.ID,
+					PollingID2: pid,
+					Width:      2,
+				}
+				if !datastore.HasLine(&l, true) {
+					ret.Lines = append(ret.Lines, l)
+				}
+			}
+		}
+	}
 }
 
 func checkNetworkPortState(n *datastore.NetworkEnt) {
