@@ -298,7 +298,7 @@
               </TableBodyRow>
               <TableBodyRow>
                 <TableBodyCell>{$_('NetworkReport.Error')}</TableBodyCell>
-                <TableBodyCell><span class="text-red-700">{network.Error}</span></TableBodyCell>
+                <TableBodyCell><span class="text-red-700 dark:text-red-400">{network.Error}</span></TableBodyCell>
               </TableBodyRow>
               <TableBodyRow>
                 <TableBodyCell>{$_("NodeReport.Descr")}</TableBodyCell>

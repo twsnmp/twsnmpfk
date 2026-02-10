@@ -234,11 +234,15 @@
     switch (s) {
       case "Running":
         return (
-          `<span class="text-blue-700">` + $_("NodeReport.Running") + `</span>`
+          `<span class="text-blue-700 dark:text-blue-400">` +
+          $_("NodeReport.Running") +
+          `</span>`
         );
       case "Runnable":
         return (
-          `<span class="text-blue-900">` + $_("NodeReport.Runnable") + `</span>`
+          `<span class="text-blue-900 dark:text-blue-300">` +
+          $_("NodeReport.Runnable") +
+          `</span>`
         );
       case "Testing":
         return $_("NodeReport.Testing");
@@ -247,7 +251,9 @@
       case "Invalid":
       case "Down":
         return (
-          `<span class="text-red-800">` + $_("NodeReport.Down") + `</span>`
+          `<span class="text-red-800 dark:text-red-400">` +
+          $_("NodeReport.Down") +
+          `</span>`
         );
     }
     return $_("NodeReport.Unknown");
@@ -255,11 +261,11 @@
 
   const renderRate = (r: any) => {
     if (r < 80.0) {
-      return `<span class="text-blue-700">${r.toFixed(2)}</span>`;
+      return `<span class="text-blue-700 dark:text-blue-400">${r.toFixed(2)}</span>`;
     } else if (r < 90.0) {
-      return `<span class="text-yellow-700">${r.toFixed(2)}</span>`;
+      return `<span class="text-yellow-700 dark:text-yellow-400">${r.toFixed(2)}</span>`;
     }
-    return `<span class="text-red-700">${r.toFixed(2)}</span>`;
+    return `<span class="text-red-700 dark:text-red-400">${r.toFixed(2)}</span>`;
   };
 
   const renderStorageType = (t: any) => {
