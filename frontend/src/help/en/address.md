@@ -9,9 +9,11 @@ You can detect duplicate and the change in the address.
 | ---- | ---- |
 | State | It is the state of the address.(Normal, duplicate, IP change, Mac change.) |
 | Address | IP address.|
+| Domain | Domain information obtained from reverse IP lookup, etc.|
 | MAC address | MAC address.|
 | Node name | The name of the node registered on the map as a management target.|
 | Vendor | The name of the vendor corresponding to the MAC address.|
+| Risk | Risk level determined from the IP address.|
 | Final change | This is the last change date and time.|
 </div>
 

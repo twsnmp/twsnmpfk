@@ -72,6 +72,26 @@ The flow of creating a map is
 
 You can now search for PCs, routers, servers, etc. connected to the managed network and register on the map.
 
+## New Features
+
+TWSNMP FK is continuously enhanced with new features. Here are the main new features and improvements added since v1.30.0.
+
+### Network Report Function
+
+A function has been added to visualize MAC addresses, IP addresses, and other information of devices connected to each port from the FDB (Forwarding Database) table information of network switches, allowing you to grasp the overall connection status of the network. This helps in identifying suspicious connections and fault locations.
+
+### MIB Browser Enhancements
+
+A filtering function has been added to the MIB tree, allowing you to quickly find the desired MIB information. You can search by OID, MIB name, description, and more. Also, the display of TimeTicks and MacAddress MIB values has been improved for better readability.
+
+### Email Polling (IMAP/POP3) Added
+
+New email polling supporting IMAP and POP3 protocols has been added. This enables monitoring of mail server operational status and mailboxes.
+
+### Enhanced Address Information
+
+The IP address and MAC address lists now display domain information and a risk assessment based on the IP address. This allows for a deeper understanding of the status of each device in the network and early detection of security risks.
+
 
 ## Map
 

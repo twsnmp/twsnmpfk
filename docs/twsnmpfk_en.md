@@ -73,6 +73,23 @@ The flow of creating a map is
 You can now search for PCs, routers, servers, etc. connected to the managed network and register on the map.
 
 ---
+## Network Report
+
+TWSNMP FK provides a "Network Report" function that visualizes MAC addresses, IP addresses, hostnames, and other information of devices connected to each port from the FDB (Forwarding Database) table information of network switches, allowing you to grasp the overall connection status of the network.
+
+### Displaying the Report
+
+By clicking on the network icon on the map displayed on the "Network" screen, a detailed report of that network will be displayed. This report includes the FDB table, last change time of each port, and so on.
+
+### FDB Table Visualization
+
+Based on the FDB table information, a list of which MAC addresses are connected to each port, and the corresponding IP addresses and hostnames for those MAC addresses, is displayed. This allows you to see at a glance which device in the network is connected to which port.
+
+### Line Search
+
+By entering a MAC address or IP address, you can quickly search for the switch port to which the target device is connected.
+
+---
 ## Map
 
 The map screen has three large parts.
@@ -398,6 +415,8 @@ If you want to use MIB other than built -in, save the MIB file to the extmibs of
 #### MIB tree
 
 This is a screen for selecting the obtained MIB object name.
+You can narrow down the displayed MIBs by entering keywords in the search box at the top of the MIB tree.
+OIDs, MIB names, descriptions, etc., are subject to search.
 Open the tree and click the object name to see the explanation.
 Double click to select.
 
@@ -585,7 +604,7 @@ A list of polling to be managed.
 | Node name | Node related to polling.|
 | Name | Polling name.|
 | Level | Pauling disability level.|
-| Type | Polling type.|
+| Type | Polling type.(Ping, SNMP, TCP, HTTP, DNS, TWSNMP, Syslog, Mail, etc.)|
 | Log | Polling log mode.|
 | Final confirmation | Polling final confirmation date and time.|
 
@@ -676,7 +695,7 @@ Polling edit can be displayed from the button by selecting a polling list on the
 ---
 | Items | Contents |
 | ---- | ---- |
-| Parameter | Polling type and mode -dependent parameters.|
+| Parameter | Polling type and mode -dependent parameters.<br>For email polling, set the following:<br><ul><li>**Mail Server**: Hostname or IP address of the IMAP/POP3 server</li><li>**Port**: Port number of the IMAP/POP3 server (993 for IMAP, 995 for POP3 are common)</li><li>**User Name**: Username for the mailbox</li><li>**Password**: Password for the mailbox</li><li>**Protocol**: IMAP or POP3</li><li>**Secure Connection**: Whether to use SSL/TLS</li><li>**Keyword**: Check if the mail subject or body contains specific keywords (optional)</li></ul>|
 | Filter | Polling type and filter condition that depends on mode.|
 | Extract pattern | This is a GROK pattern that depends on the type of polling and the mode.Use when extracting data from logs.|
 | Script | Java Script that determines disability and calculates variables.|
@@ -697,9 +716,11 @@ This is a list of IP address found by TWSNMP.Only the IP address in the same seg
 | ---- | ---- |
 | State | It is the state of the address.(Normal, duplicate, IP change, Mac change.) |
 | Address | IP address.|
+| Domain | Domain information obtained from reverse IP lookup, etc.|
 | MAC address | MAC address.|
 | Node name | The name of the node registered on the map as a management target.|
 | Vendor | The name of the vendor corresponding to the MAC address.|
+| Risk | Risk level determined from the IP address.|
 | Final change | This is the last change date and time.|
 
 ---

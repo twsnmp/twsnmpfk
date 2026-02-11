@@ -32,6 +32,11 @@ If you want to use MIB other than built -in, save the MIB file to the extmibs of
 This is a screen for selecting the obtained MIB object name.
 Open the tree and click the object name to see the explanation.
 Double click to select.
+
+**Filtering the MIB Tree**
+
+You can narrow down the displayed MIBs by entering keywords in the search box at the top of the MIB tree.
+OIDs, MIB names, descriptions, etc., are subject to search.
 </div>
 
 ---

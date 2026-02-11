@@ -11,7 +11,7 @@ A list of polling to be managed.
 | Node name | Node related to polling.|
 | Name | Polling name.|
 | Level | Pauling disability level.|
-| Type | Polling type.|
+| Type | Polling type.<br> Ping, TCP, HTTP, DNS, TWSNMP, Syslog, Mail, etc.|
 | Log | Polling log mode.|
 | Final confirmation | Polling final confirmation date and time.|
 
@@ -51,7 +51,7 @@ This is the selection screen of the template displayed when adding polling.
 | ---- | ---- |
 | ID | Template number.|
 | Name | Polling name.|
-| Type | Polling type.<br> Ping, SNMP, TCP, etc. |
+| Type | Polling type.<br> Ping, SNMP, TCP, Mail, etc. |
 | Mode | Polling mode.|
 | Description | Polling explanation.|
 

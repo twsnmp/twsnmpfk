@@ -37,6 +37,7 @@
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
   import { copyText } from "svelte-copy";
+  import Help from "./Help.svelte";
 
   export let show: boolean = false;
   export let id = "";
@@ -45,6 +46,7 @@
   let physicalPort = true;
   let showVPanelBtn = false;
   let chart: any = undefined;
+  let showHelp = false;
 
   let portTable: any = undefined;
 
@@ -360,6 +362,21 @@
         <GradientButton
           shadow
           type="button"
+          size="xs"
+          color="lime"
+          class="ml-2"
+          on:click={() => {
+            showHelp = true;
+          }}
+        >
+          <Icon path={icons.mdiHelp} size={1} />
+          <span>
+            {$_("Line.Help")}
+          </span>
+        </GradientButton>
+        <GradientButton
+          shadow
+          type="button"
           color="teal"
           on:click={close}
           size="xs"
@@ -371,6 +388,8 @@
     </div>
   {/if}
 </Modal>
+
+<Help bind:show={showHelp} page="network_report" />
 
 <style>
   #vpanel {
