@@ -14,7 +14,7 @@
     Toggle,
     Button,
   } from "flowbite-svelte";
-  import { tick } from "svelte";
+  import { tick, createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
@@ -47,6 +47,7 @@
   let showVPanelBtn = false;
   let chart: any = undefined;
   let showHelp = false;
+  const dispatch = createEventDispatcher();
 
   let portTable: any = undefined;
 
@@ -222,6 +223,7 @@
   const close = () => {
     deleteVPanel();
     show = false;
+    dispatch('close');
   };
 
   const onOpen = async () => {

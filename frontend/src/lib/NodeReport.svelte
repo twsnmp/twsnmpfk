@@ -15,7 +15,7 @@
     Button,
     Textarea,
   } from "flowbite-svelte";
-  import { tick } from "svelte";
+  import { tick, createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
@@ -659,6 +659,7 @@
   const close = () => {
     deleteVPanel();
     show = false;
+    dispatch('close');
   };
 
   let pollingTmp: any = undefined;
@@ -817,6 +818,7 @@
   let memo = "";
   let savedMemo = false;
   let showSaveMemoBtn = false
+  const dispatch = createEventDispatcher();
   const showMemo = () => {
     clearSelectedCount();
     showSaveMemoBtn = true;

@@ -939,7 +939,12 @@
   }}
 />
 
-<NodeReport bind:show={showNodeReport} id={selectedNode} />
+<NodeReport bind:show={showNodeReport} id={selectedNode}
+  on:close={(e) => {
+    setMapReadOnly(false);
+    refreshMap();
+  }}
+/>
 
 <NodePolling
   bind:show={showPolling}
