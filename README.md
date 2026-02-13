@@ -1,5 +1,20 @@
-# twsnmpfk
-TWSNMP For Kiosk
+# TWSNMP FK
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/twsnmp/twsnmpfk)](https://goreportcard.com/report/github.com/twsnmp/twsnmpfk)
+![GitHub Go version](https://img.shields.io/github/go-mod/go-version/twsnmp/twsnmpfk)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/twsnmp/twsnmpfk)
+![GitHub License](https://img.shields.io/github/license/twsnmp/twsnmpfk)
+![GitHub Repo stars](https://img.shields.io/github/stars/twsnmp/twsnmpfk?style=social)
+【Built with】
+![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
+![Wails](https://img.shields.io/badge/wails-%23E24329.svg?style=for-the-badge&logo=wails&logoColor=white)
+![Svelte](https://img.shields.io/badge/svelte-%23f1413d.svg?style=for-the-badge&logo=svelte&logoColor=white)
+
+TWSNMP FK is a next-generation Network Management System. It combines the performance of Go, the simplicity of Svelte, and the seamless desktop experience of Wails to provide a lightweight yet powerful observability tool.
+
+![TWSNMP FK](docs/images/en/2026-02-13_04-41-52.png)
+
+---
 
 Ultra lightweight SNMP manager.
 To keep maps and event logs, etc. always visible.
@@ -17,9 +32,9 @@ Windowsのキオスクモードでの利用を想定しています。
 
 ## Document
 
-[English Manual](https://twsnmp.github.io/twsnmpfk/index.html)
+[English](https://twsnmp.github.io/twsnmpfk/index.html)
 
-[日本語マニュアル](https://twsnmp.github.io/twsnmpfk/index_ja.html)
+[日本語](https://twsnmp.github.io/twsnmpfk/index_ja.html)
 
 ## Status
 
