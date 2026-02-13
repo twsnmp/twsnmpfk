@@ -1,5 +1,7 @@
 # TWSNMP FK
 
+[日本語版はこちら](README_ja.md)
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/twsnmp/twsnmpfk)](https://goreportcard.com/report/github.com/twsnmp/twsnmpfk)
 ![GitHub Go version](https://img.shields.io/github/go-mod/go-version/twsnmp/twsnmpfk)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/twsnmp/twsnmpfk)
@@ -23,18 +25,9 @@ Of course, it can also be used as a normal application.
 
 ![](doc/images/en/2025-03-11_06-29-01.png)
 
-超軽量なSNMPマネージャーです。
-マップとイベントログなどを常に表示しておくため
-Windowsのキオスクモードでの利用を想定しています。
-もちろん通常のアプリとしても利用可能です。
-
-![](doc/images/ja/2023-10-07_06-47-37.png);
-
 ## Document
 
 [English](https://twsnmp.github.io/twsnmpfk/index.html)
-
-[日本語](https://twsnmp.github.io/twsnmpfk/index_ja.html)
 
 ## Status
 
@@ -64,32 +57,6 @@ The following functions will work
 - MCP Server
 - MQTT Server and Polling
 
-以下の機能が動作します。
-
-- マップ表示
-- ノードリスト
-- ポーリング(PING/TCP/HTTP/NTP/DNS/SNMP)
-- イベントログ
-- Syslog受信
-- SNMP TRAP受信
-- ARP監視
-- MIBブラウザー
-- PING確認
-- パネル表示
-- ホストリソースMIB表示
-- Wake On LAN対応
-- HTMLメール通知、定期レポート
-- AI分析
-- NetFlow/IPFIX
-- sFlow
-- gNMI
-- PKI (CA機能とCRL/OCSP/ACME/SCEPサーバー)
-- SSH Server
-- TCP Log server
-- OpenTelemetry コレクター
-- MCP サーバー
-- MQTT サーバーとコレクター
-
 ## Build 
 
 The following environment is used for development
@@ -105,26 +72,10 @@ You can build it with the following command.
  task
  ````
 
-以下の環境で開発しています。
-
- - go 1.24以上
- - wails 2.9.3以上
- - nsis
- - go-task
-
-以下のコマンドでビルドできます。
- ```
- task
- ```
- 
  ## Run
 
  Double-click from the built executable file to drive it as a normal application.
 It can also be started from the command line by specifying the following parameters
-
-ビルドした実行ファイルからダブルクリックで通常のアプリとして
-駆動できます。
-コマンドラインから以下のパラメータを指定して起動することもできます。
 
 ```
 Usage of twsnmpfk:
@@ -218,33 +169,3 @@ Usage of twsnmpfk:
 | mcpCert |MCP server cert path|
 | mcpKey |MCP server key path|
 | notifyOAuth2Port |OAuth2 redirect port (default 8180)|
-
----
-
-|パラメータ|説明|
-|---|---|
-| datastore |データストアのパス|
-| kiosk |キオスクモード（フレームレス、フルスクリーン）|
-| lock <page> | マップの編集を禁止して表示するページを固定|
-| maxDispLog <number> |ログの最大表示数(デフォルト 10000)| 
-| ping <mode> |pingの動作モード(icmp又はudp)|
-| syslogPort <port> |syslogの受信ポート(デフォルト514)|
-| trapPort <port> | SNMP TRAP受信ポート(デフォルト162)|
-| sshdPort <port> | SSH Server受信ポート(デフォルト2022)|
-| netflowPort <port> | NetFlow/IPFIX受信ポート(デフォルト2055)|
-| sFlowPort <port> | sFlow受信ポート(デフォルト6343)|
-| tcpdPort <port> | TCPログ受信ポート(デフォルト8086)|
-| otelCA |OpenTelementry CA証明書のパス|
-| otelCert |OpenTelemetryサーバー証明書のパス|
-| otelGRPCPort |OpenTelemetryサーバーのgRPCポート番号 (default 4317)|
-| otelHTTPPort |OpenTelemetryサーバーのHTTPポート番号 (default 4318)|
-| otelKey |OpenTelemetryサーバーの秘密鍵のパス|
-| mqttTCPPort |MQTTサーバーのTCPポート番号 (default 1883)|
-| mqttWSPort |MQTTサーバーのWebsockポート番号 (default 1884)|
-| mqttCert |MQTTサーバー証明書のパス|
-| mqttKey |MQTTサーバーの秘密鍵のパス|
-| mqttFrom |MQTT server 許可クライアントIP|
-| mqttUsers |MQTT server ユーザーIDとパスワード|
-| mcpCert |MCPサーバーの証明書のパス|
-| mcpKey |MCPサーバーの秘密鍵のパス|
-| notifyOAuth2Port |OAuth2リダイレクトサーバーのポート番号(default 8180)|
