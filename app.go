@@ -181,8 +181,8 @@ func (a *App) SelectFile(title string, image bool) string {
 	filter := []wails.FileFilter{}
 	if image {
 		filter = append(filter, wails.FileFilter{
-			DisplayName: "Image File(*.png,*.jpg)",
-			Pattern:     "*.png;*.jpg;",
+			DisplayName: "Image File(*.png,*.jpg,*.svg)",
+			Pattern:     "*.png;*.jpg;*.svg",
 		})
 	}
 	file, err := wails.OpenFileDialog(a.ctx, wails.OpenDialogOptions{
@@ -203,8 +203,12 @@ func (a *App) GetImage(path string) string {
 		return ""
 	}
 	t := "png"
-	if filepath.Ext(path) == "jpg" {
+	ext := filepath.Ext(path)
+	switch ext {
+	case ".jpg":
 		t = "jpeg"
+	case ".svg":
+		t = "svg+xml"
 	}
 	return fmt.Sprintf("data:image/%s;base64,%s", t, base64.StdEncoding.EncodeToString(b))
 }
@@ -221,6 +225,11 @@ func (a *App) GetImageIconList() []string {
 		}
 	}
 	if files, err := filepath.Glob(filepath.Join(dataStorePath, "icons", "*.jpg")); err == nil {
+		for _, p := range files {
+			ret = append(ret, filepath.Base(p))
+		}
+	}
+	if files, err := filepath.Glob(filepath.Join(dataStorePath, "icons", "*.svg")); err == nil {
 		for _, p := range files {
 			ret = append(ret, filepath.Base(p))
 		}

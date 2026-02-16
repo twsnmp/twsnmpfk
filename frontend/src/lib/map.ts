@@ -699,8 +699,10 @@ const mapMain = (p5: P5) => {
       p5.translate(nodes[k].X, nodes[k].Y);
       if (nodes[k].Image && imageMap.has(nodes[k].Image)) {
         const img = imageMap.get(nodes[k].Image);
-        const w = 48 + 16;
-        const h = img.height + 16 + fontSize;
+        const iw = selectedNodes.includes(nodes[k].ID) ? 48 : 32;
+        const ih = img.width > 0 ? (img.height * iw) / img.width : iw;
+        const w = iw + 16;
+        const h = ih + 16 + fontSize;
         if (selectedNodes.includes(nodes[k].ID)) {
           if (dark) {
             p5.fill("rgba(23,23,23,0.9)");
@@ -710,7 +712,6 @@ const mapMain = (p5: P5) => {
           p5.stroke(getStateColor(nodes[k].State));
           p5.rect(-w / 2, -h / 2, w, h);
         } else {
-          const w = 40;
           if (dark) {
             p5.fill("rgba(23,23,23,0.9)");
             p5.stroke("rgba(23,23,23,0.9)");
@@ -721,18 +722,17 @@ const mapMain = (p5: P5) => {
           p5.rect(-w / 2, -h / 2, w, h);
         }
         p5.tint(getStateColor(nodes[k].State));
-        p5.image(img, -24, -h / 2 + 10, 48);
+        p5.image(img, -iw / 2, -h / 2 + 8, iw, ih);
         p5.noTint();
         p5.textAlign(p5.CENTER, p5.CENTER);
         p5.textFont("Roboto");
-        p5.textSize(fontSize);
         p5.textSize(fontSize);
         if (dark) {
           p5.fill(250);
         } else {
           p5.fill(23);
         }
-        p5.text(nodes[k].Name, 0, img.height);
+        p5.text(nodes[k].Name, 0, h / 2 - fontSize / 2 - 4);
       } else {
         if (selectedNodes.includes(nodes[k].ID)) {
           if (dark) {
