@@ -1,13 +1,4 @@
 <script lang="ts">
-  import neko_ng from "../assets/images/neko_ng.png";
-  import neko_ok from "../assets/images/neko_ok.png";
-  import neko1 from "../assets/images/neko_anm1.png";
-  import neko2 from "../assets/images/neko_anm2.png";
-  import neko3 from "../assets/images/neko_anm3.png";
-  import neko4 from "../assets/images/neko_anm4.png";
-  import neko5 from "../assets/images/neko_anm5.png";
-  import neko6 from "../assets/images/neko_anm6.png";
-  import neko7 from "../assets/images/neko_anm7.png";
   import {
     Modal,
     GradientButton,
@@ -38,6 +29,7 @@
   import MibTree from "./MIBTree.svelte";
   import Polling from "./Polling.svelte";
   import AskLLMDailog from "./AskLLMDialog.svelte";
+  import Neko from "./Neko.svelte";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
   import { copyText } from "svelte-copy";
@@ -50,11 +42,8 @@
   let raw = false;
   let history: any = [];
   let selected = "";
-  let wait = false;
-  let neko = neko1;
   let showNeko = false;
-  let nekoNo = 0;
-  const nekos: any = [];
+  let nekoStatus: "" | "waiting" | "ok" | "ng" = "";
   let timer: any = undefined;
   let table: any = undefined;
   let columns: any = [];
@@ -129,15 +118,6 @@
     mibTree.children = await GetMIBTree();
     data = [];
     resultMibTree = {};
-    if (nekos.length === 0) {
-      nekos.push(neko1);
-      nekos.push(neko2);
-      nekos.push(neko3);
-      nekos.push(neko4);
-      nekos.push(neko5);
-      nekos.push(neko6);
-      nekos.push(neko7);
-    }
   };
 
   const showTable = () => {
@@ -193,18 +173,16 @@
   let scalar = false;
 
   const get = async () => {
-    wait = true;
-    waitAnimation();
+    waitAnimation("waiting");
     mibs = await SnmpWalk(nodeID, name, raw);
     if (!mibs) {
-      neko = neko_ng;
+      waitAnimation("ng");
     } else {
       updateHistory();
       resultMibTree = [];
-      neko = neko_ok;
+      waitAnimation("ok");
       refreshTable();
     }
-    wait = false;
   };
 
   const refreshTable = () => {
@@ -497,20 +475,15 @@
     return r;
   };
 
-  const waitAnimation = () => {
-    if (!wait) {
+  const waitAnimation = (status: "waiting" | "ok" | "ng") => {
+    nekoStatus = status
+    if (status == "waiting") {
+      showNeko = true;
+    } else {
       setTimeout(() => {
         showNeko = false;
-      }, 2000);
-      return;
+      }, 1000);
     }
-    showNeko = true;
-    neko = nekos[nekoNo];
-    nekoNo++;
-    if (nekoNo >= nekos.length) {
-      nekoNo = 0;
-    }
-    timer = setTimeout(waitAnimation, 200);
   };
 
   const close = () => {
@@ -605,17 +578,17 @@
 
   const llmMIBSearch = async () => {
     llmMIBsearchError = "";
-    wait = true;
-    waitAnimation();
+    waitAnimation("waiting");
     const r = await LLMMIBSearch(mibSearchPrompt);
-    wait = false;
     if (r.Error != "") {
+      waitAnimation("ng");
       llmMIBsearchError = r.Error;
       return;
     }
     name = r.ObjectName;
     showLLMMIBSearch = false;
     showMIBTree = false;
+    waitAnimation("ok");
   };
   let askLLMError = "";
   let askLLMResult = "";
@@ -631,16 +604,16 @@
     mibs.forEach((e: any) => {
       a.push(e.Name + "=" + e.Value);
     });
-    wait = true;
-    waitAnimation();
+    waitAnimation("waiting");
     const r = await LLMAskMIB(a.join("\n"));
-    wait = false;
     askLLMDialog = true;
     if (r.Error != "") {
+      waitAnimation("ng");
       askLLMError = r.Error;
       return;
     }
     askLLMResult = r.Results;
+    waitAnimation("ok");
   };
 </script>
 
@@ -651,7 +624,7 @@
   class="w-full"
   on:open={onOpen}
 >
-  <div class="flex flex-col space-y-4">
+  <div class="flex flex-col space-y-4 min-h-[70vh] max-h-[80vh]">
     <div class="flex flex-row mb-2">
       <div class="flex-auto">
         <Search
@@ -682,11 +655,11 @@
         }}
       />
     </div>
-    <div id="mibbrTable">
+    <div id="mibbrTable" class="flex-1 overflow-auto">
       <table id="mibTable" class="display compact" style="width:99%" />
     </div>
     <div class="flex justify-end space-x-2 mr-2">
-      {#if !wait}
+      {#if nekoStatus != "waiting"}
         {#if selectedCount > 0}
           <GradientButton
             shadow
@@ -1111,16 +1084,7 @@
 
 <Help bind:show={showHelp} page="mibbrowser" />
 
-<Modal
-  bind:open={showNeko}
-  size="sm"
-  dismissable={false}
-  class="w-full bg-white bg-opacity-75 dark:bg-white"
->
-  <div class="flex justify-center items-center">
-    <img src={neko} alt="neko" />
-  </div>
-</Modal>
+<Neko bind:show={showNeko} status={nekoStatus} />
 
 <style>
   #mibtree {
