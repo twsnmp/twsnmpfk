@@ -75,6 +75,7 @@ const config = {
   },
 
   plugins: [
+    require('@tailwindcss/typography'),
     require('flowbite/plugin')
   ],
   darkMode: 'class',

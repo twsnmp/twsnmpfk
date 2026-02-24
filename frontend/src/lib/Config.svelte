@@ -494,6 +494,14 @@
     mapConf.MCPToken = generateMCPToken();
   };
 
+   const llmProvidertList = [
+    { name: $_('Config.LLMProviderNone'), value: 'none' },
+    { name: 'ollama', value: 'ollama' },
+    { name: 'Open AI', value: 'openai' },
+    { name: 'Google(Gemini)', value: 'gemini' },
+    { name: 'Anthropic(Claude)', value: 'anthropic' },
+  ];
+ 
   let iconImportError : string = "";
 
   const importIcons = async () => {
@@ -714,6 +722,42 @@
               </Button>
             </div>
           </div>
+          <div class="grid gap-4 md:grid-cols-4">
+            <Label class="space-y-2 text-xs">
+              <span> {$_('Config.LLMProvider')} </span>
+              <Select
+                items={llmProvidertList}
+                bind:value={mapConf.LLMProvider}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>LLM URL</span>
+              <Input
+                class="h-8"
+                bind:value={mapConf.LLMBaseURL}
+                placeholder="http://127.0.0.1:11434"
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.LLMAPIKey')}</span>
+              <Input
+                class="h-8"
+                type="password"
+                bind:value={mapConf.LLMAPIKey}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.LLMModel')}</span>
+              <Input
+                class="h-8"
+                bind:value={mapConf.LLMModel}
+                size="sm"
+              />
+            </Label>
+          </div>
           <div class="grid gap-4 md:grid-cols-3">
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.SNMPMode")} </span>
@@ -756,7 +800,7 @@
               </Label>
             {/if}
           </div>
-          <div class="grid gap-3 mb-4 md:grid-cols-9">
+          <div class="grid gap-2 mb-4 md:grid-cols-10">
             <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox>
             <Checkbox bind:checked={mapConf.EnableNetflowd}>NetFlow</Checkbox>
             <Checkbox bind:checked={mapConf.EnableSFlowd}>sFlow</Checkbox>
@@ -766,10 +810,12 @@
             <Checkbox bind:checked={mapConf.EnableTcpd}>TCP Sever</Checkbox>
             <Checkbox bind:checked={mapConf.EnableOTel}>OpenTelemetry</Checkbox>
             <Checkbox bind:checked={mapConf.EnableMqtt}>MQTT</Checkbox>
+            {#if mapConf.EnableMqtt}
+              <Checkbox bind:checked={mapConf.Mqtt2Syslog}>MQTT → Syslog</Checkbox>
+            {:else}
+              <div></div>
+            {/if}
           </div>
-          {#if mapConf.EnableMqtt}
-            <Checkbox bind:checked={mapConf.Mqtt2Syslog}>MQTT → Syslog</Checkbox>
-          {/if}
           {#if mapConf.EnableArpWatch}
             <div class="grid gap-4 mb-4 md:grid-cols-3">
               <Label class="space-y-2 text-xs col-span-2">

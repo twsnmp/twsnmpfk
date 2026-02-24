@@ -268,6 +268,12 @@ export function IsDark():Promise<boolean>;
 
 export function IsLatest():Promise<boolean>;
 
+export function LLMAskLog(arg1:string):Promise<main.LLMResp>;
+
+export function LLMAskMIB(arg1:string):Promise<main.LLMResp>;
+
+export function LLMMIBSearch(arg1:string):Promise<main.LLMMIBSearchResp>;
+
 export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 
 export function ResetArpTable():Promise<boolean>;

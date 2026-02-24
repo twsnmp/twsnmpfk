@@ -526,6 +526,18 @@ export function IsLatest() {
   return window['go']['main']['App']['IsLatest']();
 }
 
+export function LLMAskLog(arg1) {
+  return window['go']['main']['App']['LLMAskLog'](arg1);
+}
+
+export function LLMAskMIB(arg1) {
+  return window['go']['main']['App']['LLMAskMIB'](arg1);
+}
+
+export function LLMMIBSearch(arg1) {
+  return window['go']['main']['App']['LLMMIBSearch'](arg1);
+}
+
 export function Ping(arg1) {
   return window['go']['main']['App']['Ping'](arg1);
 }

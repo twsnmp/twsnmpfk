@@ -468,7 +468,10 @@
     "Missing": "Missing Ext MIB",
     "Name": "Name",
     "Search": "Search",
-    "Type": "Type"
+    "Type": "Type",
+    "AIExprain": "AI explanation",
+    "AskAI": "Ask AI",
+    "AskAIQ": "MIB Questions for AI"
   },
   "Node": {
     "AddressMode": "Address mode",

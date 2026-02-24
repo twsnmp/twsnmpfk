@@ -28,6 +28,8 @@
     ExportAny,
     GetDefaultPolling,
     SnmpSet,
+    LLMMIBSearch,
+    LLMAskMIB,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import { getTableLang } from "./common";
@@ -35,6 +37,7 @@
   import "datatables.net-select-dt";
   import MibTree from "./MIBTree.svelte";
   import Polling from "./Polling.svelte";
+  import AskLLMDailog from "./AskLLMDialog.svelte";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
   import { copyText } from "svelte-copy";
@@ -126,13 +129,15 @@
     mibTree.children = await GetMIBTree();
     data = [];
     resultMibTree = {};
-    nekos.push(neko1);
-    nekos.push(neko2);
-    nekos.push(neko3);
-    nekos.push(neko4);
-    nekos.push(neko5);
-    nekos.push(neko6);
-    nekos.push(neko7);
+    if (nekos.length === 0) {
+      nekos.push(neko1);
+      nekos.push(neko2);
+      nekos.push(neko3);
+      nekos.push(neko4);
+      nekos.push(neko5);
+      nekos.push(neko6);
+      nekos.push(neko7);
+    }
   };
 
   const showTable = () => {
@@ -414,7 +419,7 @@
   const missingColumns = [
     {
       data: "name",
-      title: $_('MIBBrowser.Name'),
+      title: $_("MIBBrowser.Name"),
       width: "40%",
     },
     {
@@ -424,7 +429,7 @@
     },
     {
       data: "count",
-      title: $_('MIBBrowser.Count'),
+      title: $_("MIBBrowser.Count"),
       width: "10%",
     },
   ];
@@ -576,7 +581,7 @@
     showPolling = true;
   };
 
-  const showSetDialog =  () => {
+  const showSetDialog = () => {
     const d = table.rows({ selected: true }).data();
     if (d.length != 1) {
       return;
@@ -587,11 +592,55 @@
   };
 
   const doSet = async () => {
-    setError = await SnmpSet(nodeID,setName,setType,setValue)
+    setError = await SnmpSet(nodeID, setName, setType, setValue);
     if (setError == "") {
       showSet = false;
       get();
     }
+  };
+
+  let showLLMMIBSearch = false;
+  let llmMIBsearchError = "";
+  let mibSearchPrompt = "";
+
+  const llmMIBSearch = async () => {
+    llmMIBsearchError = "";
+    wait = true;
+    waitAnimation();
+    const r = await LLMMIBSearch(mibSearchPrompt);
+    wait = false;
+    if (r.Error != "") {
+      llmMIBsearchError = r.Error;
+      return;
+    }
+    name = r.ObjectName;
+    showLLMMIBSearch = false;
+    showMIBTree = false;
+  };
+  let askLLMError = "";
+  let askLLMResult = "";
+  let askLLMDialog = false;
+
+  const askLLM = async () => {
+    askLLMError = "";
+    askLLMResult = "";
+    if (!mibs || mibs.length < 1) {
+      return;
+    }
+    const a: any = [];
+    mibs.forEach((e: any) => {
+      a.push(e.Name + "=" + e.Value);
+    });
+    wait = true;
+    waitAnimation();
+    const r = await LLMAskMIB(a.join("\n"));
+    wait = false;
+    askLLMDialog = true;
+    if (r.Error != "") {
+      askLLMError = r.Error;
+      return;
+    }
+    askLLMResult = r.Results;
   };
 </script>
 
@@ -734,6 +783,16 @@
             <Icon path={icons.mdiFileExcel} size={1} />
             Excel
           </GradientButton>
+          <GradientButton
+            shadow
+            color="pink"
+            type="button"
+            on:click={askLLM}
+            size="xs"
+          >
+            <Icon path={icons.mdiBrain} size={1} />
+            {$_('MIBBrowser.AIExprain')}
+          </GradientButton>
         {/if}
       {/if}
       <GradientButton
@@ -766,17 +825,6 @@
 </Modal>
 
 <Modal
-  bind:open={showNeko}
-  size="sm"
-  dismissable={false}
-  class="w-full bg-white bg-opacity-75 dark:bg-white"
->
-  <div class="flex justify-center items-center">
-    <img src={neko} alt="neko" />
-  </div>
-</Modal>
-
-<Modal
   bind:open={showMIBTree}
   size="lg"
   dismissable={false}
@@ -803,6 +851,18 @@
       <GradientButton
         shadow
         type="button"
+        color="pink"
+        on:click={() => {
+          showLLMMIBSearch = true;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiBrain} size={1} />
+        {$_('MIBBrowser.AskAI')}
+      </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
         color="teal"
         on:click={() => {
           showMIBTree = false;
@@ -811,6 +871,53 @@
       >
         <Icon path={icons.mdiCancel} size={1} />
         {$_("MIBBrowser.Close")}
+      </GradientButton>
+    </div>
+  </div>
+</Modal>
+
+<Modal
+  bind:open={showLLMMIBSearch}
+  size="lg"
+  dismissable={false}
+  class="w-full min-h-[80vh]"
+>
+  <div class="flex flex-col space-y-4">
+    {#if llmMIBsearchError}
+      <Alert color="red" dismissable>
+        <div class="flex">
+          <Icon path={icons.mdiExclamation} size={1} />
+          {llmMIBsearchError}
+        </div>
+      </Alert>
+    {/if}
+    <Search
+      size="sm"
+      bind:value={mibSearchPrompt}
+      placeholder={$_('MIBBrowser.AskAIQ')}
+    />
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        type="button"
+        color="lime"
+        on:click={llmMIBSearch}
+        size="xs"
+      >
+        <Icon path={icons.mdiPlay} size={1} />
+        {$_('MIBBrowser.Search')}
+      </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        on:click={() => {
+          showLLMMIBSearch = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_('Map.Cancel')}
       </GradientButton>
     </div>
   </div>
@@ -870,7 +977,7 @@
             size="xs"
           >
             <Icon path={icons.mdiCheck} size={1} />
-            {$_('MIBBrowser.Missing')}
+            {$_("MIBBrowser.Missing")}
           </GradientButton>
         {/if}
         <GradientButton
@@ -908,7 +1015,7 @@
           size="xs"
         >
           <Icon path={icons.mdiSearchWeb} size={1} />
-          {$_('MIBBrowser.Search')}
+          {$_("MIBBrowser.Search")}
         </GradientButton>
       {/if}
       <GradientButton
@@ -942,31 +1049,31 @@
     {/if}
     <div class="grid gap-2 grid-cols-4">
       <Label class="col-span-3 space-y-2 text-xs">
-        <span>{$_('MIBBrowser.ObjectName')}</span>
+        <span>{$_("MIBBrowser.ObjectName")}</span>
         <Input
           class="h-8"
           bind:value={setName}
-          placeholder={$_('MIBBrowser.ObjectName')}
+          placeholder={$_("MIBBrowser.ObjectName")}
           required
           size="sm"
         />
       </Label>
       <Label>
-        {$_('MIBBrowser.Type')}
+        {$_("MIBBrowser.Type")}
         <Select
           items={setTypeList}
           bind:value={setType}
-          placeholder={$_('MIBBrowser.Type')}
+          placeholder={$_("MIBBrowser.Type")}
           size="sm"
         />
       </Label>
     </div>
     <Label class="space-y-2 text-xs">
-      <span>{$_('MIBBrowser.Value')}</span>
+      <span>{$_("MIBBrowser.Value")}</span>
       <Input
         class="h-8"
         bind:value={setValue}
-        placeholder={$_('MIBBrowser.Value')}
+        placeholder={$_("MIBBrowser.Value")}
         required
         size="sm"
       />
@@ -998,10 +1105,22 @@
   </div>
 </Modal>
 
+<AskLLMDailog bind:show={askLLMDialog} content={askLLMResult}  error={askLLMError}/>
 
 <Polling bind:show={showPolling} {pollingTmp} />
 
 <Help bind:show={showHelp} page="mibbrowser" />
+
+<Modal
+  bind:open={showNeko}
+  size="sm"
+  dismissable={false}
+  class="w-full bg-white bg-opacity-75 dark:bg-white"
+>
+  <div class="flex justify-center items-center">
+    <img src={neko} alt="neko" />
+  </div>
+</Modal>
 
 <style>
   #mibtree {

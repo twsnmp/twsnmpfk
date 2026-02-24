@@ -58,6 +58,10 @@ type MapConfEnt struct {
 	ArpTimeout     int    `json:"ArpTimeout"`
 	OTelRetention  int    `json:"OTelRetention"`
 	OTelFrom       string `json:"OTelFrom"`
+	LLMProvider    string `json:"LLMProvider"`
+	LLMBaseURL     string `json:"LLMBaseURL"`
+	LLMAPIKey      string `json:"LLMAPIKey"`
+	LLMModel       string `json:"LLMModel"`
 }
 
 // LocConfEnt : 地図設定
@@ -91,6 +95,9 @@ func initConf() {
 	LocConf.Zoom = 2
 	LocConf.Center = "139.75,35.68"
 	LocConf.IconSize = 24
+	if MapConf.LLMProvider == "" {
+		MapConf.LLMProvider = "none"
+	}
 }
 
 func loadConf() error {

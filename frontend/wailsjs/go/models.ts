@@ -707,6 +707,10 @@ export namespace datastore {
 	    ArpTimeout: number;
 	    OTelRetention: number;
 	    OTelFrom: string;
+	    LLMProvider: string;
+	    LLMBaseURL: string;
+	    LLMAPIKey: string;
+	    LLMModel: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new MapConfEnt(source);
@@ -743,6 +747,10 @@ export namespace datastore {
 	        this.ArpTimeout = source["ArpTimeout"];
 	        this.OTelRetention = source["OTelRetention"];
 	        this.OTelFrom = source["OTelFrom"];
+	        this.LLMProvider = source["LLMProvider"];
+	        this.LLMBaseURL = source["LLMBaseURL"];
+	        this.LLMAPIKey = source["LLMAPIKey"];
+	        this.LLMModel = source["LLMModel"];
 	    }
 	}
 	export class MqttStatEnt {
@@ -1730,6 +1738,36 @@ export namespace main {
 		    }
 		    return a;
 		}
+	}
+	export class LLMMIBSearchResp {
+	    ObjectName: string;
+	    OID: string;
+	    Error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LLMMIBSearchResp(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ObjectName = source["ObjectName"];
+	        this.OID = source["OID"];
+	        this.Error = source["Error"];
+	    }
+	}
+	export class LLMResp {
+	    Results: string;
+	    Error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LLMResp(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Results = source["Results"];
+	        this.Error = source["Error"];
+	    }
 	}
 	export class MibEnt {
 	    Name: string;

@@ -557,7 +557,12 @@
     "String",
     " {\n          showSet = false;\n        }}\n        size=\"xs\"\n      >\n        ",
     " exportLogData()}\n            size=\"xs\"\n          >\n            ",
-    "VLAN ID"
+    "VLAN ID",
+    " {\n          showLLMMIBSearch = true;\n        }}\n        size=\"xs\"\n      >\n        ",
+    " {\n          showLLMMIBSearch = false;\n        }}\n        size=\"xs\"\n      >\n        ",
+    "LLM URL",
+    "Open AI",
+    " (show = false)}\n        size=\"xs\"\n      >\n        "
   ],
   "i18n-ally.extract.ignoredByFiles": {
     "frontend/src/lib/PKI.svelte": [

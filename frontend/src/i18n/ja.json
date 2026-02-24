@@ -299,7 +299,11 @@
     "AccessToken": "アクセストークン:",
     "RefreshToken": "更新トークン",
     "RedirectURL": "リダイレクトURL",
-    "OAuth2TokenInfo": "OAuth2トークン情報"
+    "OAuth2TokenInfo": "OAuth2トークン情報",
+    "LLMProvider": "LLMプロバイダー",
+    "LLMAPIKey": "LLM APIキー",
+    "LLMModel": "LLMモデル",
+    "LLMProviderNone": "使用しない"
   },
   "DrawItem": {
     "Rect": "矩形",
@@ -455,7 +459,10 @@
     "Count": "件数",
     "Missing": "不足している拡張MIB",
     "Search": "検索",
-    "Type": "タイプ"
+    "Type": "タイプ",
+    "AIExprain": "AIの解説",
+    "AskAI": "AIに聞く",
+    "AskAIQ": "AIへのMIBに関する質問"
   },
   "Node": {
     "NewNode": "新規ノード",
