@@ -28,7 +28,7 @@
   import "datatables.net-select-dt";
   import MibTree from "./MIBTree.svelte";
   import Polling from "./Polling.svelte";
-  import AskLLMDailog from "./AskLLMDialog.svelte";
+  import AskLLMDialog from "./AskLLMDialog.svelte";
   import Neko from "./Neko.svelte";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
@@ -764,7 +764,7 @@
             size="xs"
           >
             <Icon path={icons.mdiBrain} size={1} />
-            {$_('MIBBrowser.AIExprain')}
+            {$_('MIBBrowser.AIExplain')}
           </GradientButton>
         {/if}
       {/if}
@@ -1078,7 +1078,7 @@
   </div>
 </Modal>
 
-<AskLLMDailog bind:show={askLLMDialog} content={askLLMResult}  error={askLLMError}/>
+<AskLLMDialog bind:show={askLLMDialog} content={askLLMResult}  error={askLLMError}/>
 
 <Polling bind:show={showPolling} {pollingTmp} />
 

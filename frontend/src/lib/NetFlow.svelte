@@ -18,6 +18,7 @@
     GetNetFlow,
     ExportNetFlow,
     DeleteAllNetFlow,
+    LLMAskLog,
   } from "../../wailsjs/go/main/App";
   import { renderTime, getTableLang, renderTimeMili,renderBytes,renderCount } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
@@ -31,6 +32,8 @@
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
   import { copyText } from "svelte-copy";
+  import AskLLMDialog from "./AskLLMDialog.svelte";
+  import Neko from "./Neko.svelte";
 
   let data: any = [];
   let logs: any = [];
@@ -59,6 +62,8 @@
   let showAddrInfo = false;
   let address = "";
   let addrList :any = [];
+  let showNeko = false;
+  let nekoStatus: "" | "waiting" | "ok" | "ng" = "";
 
   const showTable = () => {
     selectedCount = 0;
@@ -264,6 +269,52 @@
     }
     return Prism.highlight(code, Prism.languages[syntax], syntax);
   };
+
+
+  const waitAnimation = (status: "waiting" | "ok" | "ng") => {
+    nekoStatus = status
+    if (status == "waiting") {
+      showNeko = true;
+    } else {
+      setTimeout(() => {
+        showNeko = false;
+      }, 1000);
+    }
+  };
+
+  let askLLMError = "";
+  let askLLMResult = "";
+  let askLLMDialog = false;
+  const askLLM = async () => {
+    askLLMError = "";
+    askLLMResult = "";
+    const selected = table.rows({ selected: true }).data();
+    let s: string[] = [];
+    const h = columns.map((e: any) => e.title);
+    s.push(h.join("\t"));
+    for (let i = 0; i < selected.length; i++) {
+      const row: any = [];
+      for (const c of columns) {
+        if (c.data == "Time") {
+          row.push(renderTime(selected[i][c.data] || "", ""));
+        } else {
+          row.push(selected[i][c.data] || "");
+        }
+      }
+      s.push(row.join("\t"));
+    }
+    waitAnimation("waiting");
+    const r = await LLMAskLog(s.join("\n"));
+    askLLMDialog = true;
+    if (r.Error != "") {
+      waitAnimation("ng");
+      askLLMError = r.Error;
+      return;
+    }
+    askLLMResult = r.Results;
+    waitAnimation("ok");
+  };
+
 </script>
 
 <svelte:window on:resize={resizeLogCountChart} />
@@ -321,6 +372,16 @@
             <Icon path={icons.mdiContentCopy} size={1} />
           {/if}
           Copy
+        </GradientButton>
+        <GradientButton
+          shadow
+          color="pink"
+          type="button"
+          on:click={askLLM}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_('MIBBrowser.AIExplain')}
         </GradientButton>
         <GradientButton>
           {$_('Address.AddressInfo')}
@@ -596,6 +657,10 @@
   bind:show = {showAddrInfo}
   {address}
 />
+
+<AskLLMDialog bind:show={askLLMDialog} content={askLLMResult}  error={askLLMError}/>
+
+<Neko bind:show={showNeko} status={nekoStatus} />
 
 <style>
   #chart {
