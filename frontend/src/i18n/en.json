@@ -313,7 +313,11 @@
     "OAuth2TokenInfo": "Refresh Token",
     "RedirectURL": "Redirect URL",
     "RefreshToken": "Refresh Token",
-    "LLMSummary": "AI Summary"
+    "LLMSummary": "AI Summary",
+    "LLMAPIKey": "LLM API key",
+    "LLMModel": "LLM model",
+    "LLMProvider": "LLM provider",
+    "LLMProviderNone": "not used"
   },
   "DrawItem": {
     "Cancel": "Cancel",
