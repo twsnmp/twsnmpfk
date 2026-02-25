@@ -203,6 +203,7 @@
     "TimeoutSec": "タイムアウト(秒)",
     "Retry": "リトライ(回)",
     "LogDays": "ログ保存日数(日)",
+    "LLMSummary": "AIによる要約",
     "SNMPMode": "SNMPモード",
     "SelectSnmpMode": "SNMPのモードを選択",
     "SnmpUser": "SNMPユーザー",

@@ -1112,7 +1112,7 @@
               />
             </Label>
           </div>
-          <div class="grid gap-4 grid-cols-4">
+          <div class="grid gap-4 grid-cols-5">
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.NotifyLevel")} </span>
               <Select
@@ -1136,6 +1136,9 @@
             </Label>
             <Checkbox bind:checked={notifyConf.Report}
               >{$_("Config.MailReport")}</Checkbox
+            >
+            <Checkbox bind:checked={notifyConf.LLMSummary}
+              >{$_("Config.LLMSummary")}</Checkbox
             >
             <Checkbox bind:checked={notifyConf.NotifyRepair}
               >{$_("Config.NotifyRepair")}</Checkbox

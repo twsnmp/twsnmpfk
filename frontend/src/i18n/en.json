@@ -312,7 +312,8 @@
     "AccessToken": "Access Token:",
     "OAuth2TokenInfo": "Refresh Token",
     "RedirectURL": "Redirect URL",
-    "RefreshToken": "Refresh Token"
+    "RefreshToken": "Refresh Token",
+    "LLMSummary": "AI Summary"
   },
   "DrawItem": {
     "Cancel": "Cancel",

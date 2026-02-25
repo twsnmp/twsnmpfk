@@ -450,6 +450,21 @@ var transMap = map[string]map[string]string{
 	"SRV record": {
 		"ja": "SRV レコード",
 	},
+	"LLM error err=%v": {
+		"ja": "LLMエラー err=%v",
+	},
+	"Attached below is the event log with more than a warning": {
+		"ja": "以下に警告以上のイベントログを添付します",
+	},
+	"Time,Level,Type,Node,Event": {
+		"ja": "日時,レベル,種別,ノード名,イベント",
+	},
+	"An error occurred when contacting AI. err=%v": {
+		"ja": "AIの問い合わせでエラーが発生しました。 err=%v",
+	},
+	"No answer from AI.": {
+		"ja": "AIから応答がありません。",
+	},
 }
 
 func init() {

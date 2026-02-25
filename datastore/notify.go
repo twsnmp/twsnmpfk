@@ -25,6 +25,7 @@ type NotifyConfEnt struct {
 	Interval           int    `json:"Interval"`
 	Level              string `json:"Level"`
 	Report             bool   `json:"Report"`
+	LLMSummary         bool   `json:"LLMSummary"`
 	NotifyRepair       bool   `json:"NotifyRepair"`
 	ExecCmd            string `json:"ExecCmd"`
 	BeepHigh           string `json:"BeepHigh"`

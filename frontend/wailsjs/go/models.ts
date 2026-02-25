@@ -989,6 +989,7 @@ export namespace datastore {
 	    Interval: number;
 	    Level: string;
 	    Report: boolean;
+	    LLMSummary: boolean;
 	    NotifyRepair: boolean;
 	    ExecCmd: string;
 	    BeepHigh: string;
@@ -1016,6 +1017,7 @@ export namespace datastore {
 	        this.Interval = source["Interval"];
 	        this.Level = source["Level"];
 	        this.Report = source["Report"];
+	        this.LLMSummary = source["LLMSummary"];
 	        this.NotifyRepair = source["NotifyRepair"];
 	        this.ExecCmd = source["ExecCmd"];
 	        this.BeepHigh = source["BeepHigh"];

@@ -3,12 +3,16 @@ package notify
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
 	"log"
 	"runtime"
 	"sort"
+	"strings"
 	"time"
+
+	"github.com/tmc/langchaingo/llms"
 
 	"github.com/dustin/go-humanize"
 	"github.com/montanaflynn/stats"
@@ -323,9 +327,10 @@ func sendReport() {
 	}
 	body := new(bytes.Buffer)
 	if err = t.Execute(body, map[string]interface{}{
-		"Title":  title,
-		"Info":   info,
-		"AIList": aiList,
+		"Title":      title,
+		"Info":       info,
+		"AIList":     aiList,
+		"LLMSummary": getLLMSummary(&info),
 	}); err != nil {
 		log.Printf("send report mail err=%v", err)
 		datastore.AddEventLog(&datastore.EventLogEnt{
@@ -349,4 +354,82 @@ func sendReport() {
 			Event: i18n.Trans("Send report mail"),
 		})
 	}
+}
+
+func getLLMSummary(info *[]reportInfoEnt) string {
+	if !datastore.NotifyConf.LLMSummary {
+		return ""
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*10)
+	defer cancel()
+	llm, err := datastore.GetLLM(ctx)
+	if err != nil {
+		return fmt.Sprintf(i18n.Trans("LLM error err=%v"), err)
+	}
+	prompts := []string{}
+	for _, e := range *info {
+		prompts = append(prompts, fmt.Sprintf("%s = %s", e.Name, e.Value))
+	}
+	prompts = append(prompts, i18n.Trans("Attached below is the event log with more than a warning"))
+	prompts = append(prompts, i18n.Trans("Time,Level,Type,Node,Event"))
+	st := time.Now().Add(time.Duration(-24) * time.Hour).UnixNano()
+	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
+		if l.Time < st {
+			return false
+		}
+		switch l.Level {
+		case "high", "low", "warn":
+			prompts = append(prompts, fmt.Sprintf("%s,%s,%s,%s,%s", time.Unix(0, l.Time).Format(time.RFC3339), l.Level, l.Type, l.NodeName, l.Event))
+		}
+		return true
+	})
+	system := `You are an expert in network management.
+Analyze and summarize the information provided by users in a way that is easy to understand.
+
+[Strict observance of output format]
+- Please create it in complete plain text format as it will be pasted directly into the body of the email.
+- Please do not use any Markdown format (headings using "#", bullet points using "*" or "-", bold decorations, etc.).
+- In particular, do not use "**" in places you want to emphasize.
+- If you want to separate items, please use full-width symbols such as "■" or "・" or numbers (1. 2.) and insert line breaks as appropriate.
+
+[Analysis priority]
+・Please point out any particular problems.
+- Judge the condition of the sensor as worse depending on the length of time it has not received data.
+・The higher the credit score, the higher the reliability.
+・The AI analysis score indicates the degree of abnormality, and the higher the score, the worse the condition.
+
+Do not include symbols such as # at the beginning of your answer.
+`
+	if i18n.GetLang() == "ja" {
+		system = `あなたはネットワーク管理の専門家です。
+ユーザーの提供した情報を分析して、わかりやすく要約してください。
+
+【出力形式の厳守事項】
+・メール本文にそのまま貼り付けるため、完全なプレインテキスト形式で作成してください。
+・Markdown形式（「#」による見出し、「*」や「-」による箇条書き、太字装飾など）は一切使用しないでください。
+・特に、強調したい箇所に「**」を使わないでください。
+・項目を分ける場合は、全角の「■」や「・」などの記号、または番号（1. 2.）を使用し、適宜改行を入れてください。
+
+【分析の優先順位】
+・特に問題点について指摘してください。
+・センサーの状態はデータの受信が無い期間が長い順に悪いと判断してください。
+・信用スコアは値が大きいほど信頼度が高いことを示します。
+・AI分析スコアは異常度を示し、高いほど状態が悪いと判断してください。
+
+回答の冒頭に # などの記号を含めないでください。
+`
+	}
+	history := []llms.MessageContent{
+		llms.TextParts(llms.ChatMessageTypeSystem, system),
+		llms.TextParts(llms.ChatMessageTypeHuman, strings.Join(prompts, "\n")),
+	}
+	resp, err := llm.GenerateContent(ctx, history)
+	if err != nil {
+		log.Printf("llmAsk err=%v", err)
+		return fmt.Sprintf(i18n.Trans("An error occurred when contacting AI. err=%v"), err)
+	}
+	if len(resp.Choices) < 1 {
+		return i18n.Trans("No answer from AI.")
+	}
+	return strings.TrimSpace(resp.Choices[0].Content)
 }
