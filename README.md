@@ -169,3 +169,23 @@ Usage of twsnmpfk:
 | mcpCert |MCP server cert path|
 | mcpKey |MCP server key path|
 | notifyOAuth2Port |OAuth2 redirect port (default 8180)|
+
+## History
+
+### v1.32.0 (2026/02/27)
+
+#### AI (LLM) Integration Features
+*   **MIB Browser Enhancements**: Added natural language MIB search and AI-powered MIB object explanation.
+*   **Log Analysis Support**: Integrated AI explanations for NetFlow, Syslog, and SNMP Trap logs.
+*   **Periodic Report Summarization**: Added an AI-driven summary feature for periodic reports to quickly grasp network status.
+*   **Multi-Provider Support**: Supports multiple LLM providers including Gemini (Google AI), OpenAI, Anthropic (Claude), and Ollama (local LLM).
+
+#### Map and Display Improvements
+*   **SVG Format Support**: Added support for SVG node images on maps, ensuring high quality at any scale.
+*   **Node Display Adjustments**: Optimized icon sizing and layout based on node selection status.
+*   **Component Refactoring**: Reusable "Neko" animation component for consistent UI across MIB Browser and other views.
+
+#### Security and Maintenance
+*   **Vulnerability Fixes**: Updated Go and npm dependencies to address security concerns.
+*   **Documentation Update**: Separated README into English and Japanese versions for better maintainability.
+*   **Bug Fixes**: Resolved translation issues in LLM settings and fixed minor UI typos.
