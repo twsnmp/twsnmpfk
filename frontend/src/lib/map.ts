@@ -475,6 +475,286 @@ const condCheck = (c: number) => {
   return mapState >= c || showAllItems;
 };
 
+const drawBackground = (p5: P5, dark: boolean) => {
+  p5.background(dark ? 23 : 252);
+  if (_backImage) {
+    if (backImage.Width) {
+      p5.image(
+        _backImage,
+        backImage.X,
+        backImage.Y,
+        backImage.Width,
+        backImage.Height
+      );
+    } else {
+      p5.image(_backImage, backImage.X, backImage.Y);
+    }
+  }
+};
+
+const drawNetworks = (p5: P5) => {
+  for (const k in networks) {
+    p5.push();
+    p5.translate(networks[k].X, networks[k].Y);
+    if (selectedNetwork === networks[k].ID) {
+      p5.stroke("#02c");
+    } else if (networks[k].Error != "") {
+      p5.stroke("#cc3300");
+    } else {
+      p5.stroke("#999");
+    }
+    p5.fill("rgba(23,23,23,0.9)");
+    p5.rect(0, 0, networks[k].W, networks[k].H);
+    p5.stroke("#999");
+    p5.textFont("Roboto");
+    p5.textSize(fontSize);
+    p5.fill("#eee");
+    p5.text(networks[k].Name, 5, fontSize + 5);
+    if (!networks[k].Ports || networks[k].Ports.length < 1) {
+      if (networks[k].Error !== "") {
+        p5.fill("#cc3300");
+        p5.text(networks[k].Error, 15, fontSize * 2 + 15);
+      } else {
+        p5.fill("#11ee00");
+        p5.text("Check network node...", 15, fontSize * 2 + 15);
+      }
+    } else if (portImage) {
+      p5.textSize(6);
+      for (const p of networks[k].Ports) {
+        const x = p.X * 45 + 10;
+        const y = p.Y * 55 + fontSize + 15;
+        p5.image(portImage, x, y, 40, 40);
+        p5.fill(p.State === "up" ? "#11ee00" : " #999");
+        p5.circle(x + 4, y + 4, 8);
+        p5.fill("#eee");
+        p5.text(p.Name, x, y + 40 + 10);
+      }
+    }
+    p5.pop();
+  }
+};
+
+const drawLines = (p5: P5) => {
+  for (const k in lines) {
+    const lp1 = getLinePos(lines[k].NodeID1, lines[k].PollingID1);
+    if (!lp1) {
+      continue;
+    }
+    const lp2 = getLinePos(lines[k].NodeID2, lines[k].PollingID2);
+    if (!lp2) {
+      continue;
+    }
+    const x1 = lp1.X;
+    const x2 = lp2.X;
+    const y1 = lp1.Y;
+    const y2 = lp2.Y;
+    const xm = (x1 + x2) / 2;
+    const ym = (y1 + y2) / 2;
+    p5.push();
+    p5.strokeWeight(lines[k].Width || 1);
+    p5.stroke(getStateColor(lines[k].State1));
+    p5.line(x1, y1, xm, ym);
+    p5.stroke(getStateColor(lines[k].State2));
+    p5.line(xm, ym, x2, y2);
+    if (lines[k].Info) {
+      const color: any = getLineColor(lines[k].State);
+      const dx = Math.abs(x1 - x2);
+      const dy = Math.abs(y1 - y2);
+      p5.textFont("Roboto");
+      p5.textSize(fontSize);
+      p5.fill(color);
+      if (dx === 0 || dy / dx > 0.8) {
+        p5.text(lines[k].Info, xm + 10, ym);
+      } else {
+        p5.text(lines[k].Info, xm - dx / 4, ym + 20);
+      }
+    }
+    p5.pop();
+  }
+};
+
+const drawDrawItems = (p5: P5, dark: boolean) => {
+  for (const k in items) {
+    if (items[k].Type < 4 && !condCheck(items[k].Cond)) {
+      continue;
+    }
+    p5.push();
+    p5.translate(items[k].X, items[k].Y);
+    if (selectedDrawItems.includes(items[k].ID)) {
+      if (dark) {
+        p5.fill("rgba(23,23,23,0.9)");
+        p5.stroke("#ccc");
+      } else {
+        p5.fill("rgba(252,252,252,0.9)");
+        p5.stroke("#333");
+      }
+      const w = items[k].W + 10;
+      const h = items[k].H + 10;
+      p5.rect(-5, -5, w, h);
+    }
+    switch (items[k].Type) {
+      case 0: // rect
+        p5.fill(items[k].Color);
+        p5.stroke("rgba(23,23,23,0.9)");
+        p5.rect(0, 0, items[k].W, items[k].H);
+        break;
+      case 1: // ellipse
+        p5.fill(items[k].Color);
+        p5.stroke("rgba(23,23,23,0.9)");
+        p5.ellipse(items[k].W / 2, items[k].H / 2, items[k].W, items[k].H);
+        break;
+      case 2: // text
+      case 4: // Polling
+        p5.textSize(items[k].Size || 12);
+        p5.fill(items[k].Color);
+        p5.text(
+          items[k].Text,
+          0,
+          0,
+          items[k].Size * items[k].Text.length + 10,
+          items[k].Size + 10
+        );
+        break;
+      case 3: // Image
+        if (imageMap.has(items[k].ID)) {
+          p5.image(imageMap.get(items[k].ID), 0, 0, items[k].W, items[k].H);
+        } else {
+          p5.fill("#aaa");
+          p5.rect(0, 0, items[k].W, items[k].H);
+        }
+        break;
+      case 5: {
+        // Gauge
+        const x = items[k].W / 2;
+        const y = items[k].H / 2;
+        const r0 = items[k].W;
+        const r1 = items[k].W - items[k].Size;
+        const r2 = items[k].W - items[k].Size * 4;
+        p5.noStroke();
+        p5.fill(dark ? "#eee" : "#333");
+        p5.arc(x, y, r0, r0, 5 * p5.QUARTER_PI, -p5.QUARTER_PI);
+        if (items[k].Value > 0) {
+          p5.fill(items[k].Color);
+          p5.arc(
+            x,
+            y,
+            r0,
+            r0,
+            5 * p5.QUARTER_PI,
+            -p5.QUARTER_PI -
+              (p5.HALF_PI - p5.HALF_PI * Math.min(items[k].Value / 100, 1.0))
+          );
+        }
+        p5.fill(dark ? 23 : 252);
+        p5.arc(x, y, r1, r1, -p5.PI, 0);
+        p5.textAlign(p5.CENTER);
+        p5.textSize(8);
+        p5.fill(dark ? "#eee" : "#333");
+        p5.text(Number(items[k].Value).toFixed(3) + "%", x, y - 10);
+        p5.textSize(items[k].Size);
+        p5.text(items[k].Text || "", x, y + items[k].Size);
+        p5.fill("#e31a1c");
+        const angle = -p5.QUARTER_PI + (p5.HALF_PI * items[k].Value) / 100;
+        const x1 = x + (r1 / 2) * p5.sin(angle);
+        const y1 = y - (r1 / 2) * p5.cos(angle);
+        const x2 = x + (r2 / 2) * p5.sin(angle) + 5 * p5.cos(angle);
+        const y2 = y - (r2 / 2) * p5.cos(angle) + 5 * p5.sin(angle);
+        const x3 = x + (r2 / 2) * p5.sin(angle) - 5 * p5.cos(angle);
+        const y3 = y - (r2 / 2) * p5.cos(angle) - 5 * p5.sin(angle);
+        p5.triangle(x1, y1, x2, y2, x3, y3);
+      }
+      case 6: // New Gauge,Line,Bar
+      case 7:
+      case 8:
+        if (imageMap.has(k)) {
+          p5.image(imageMap.get(k), 0, 0, items[k].W, items[k].H);
+        }
+        break;
+    }
+    p5.pop();
+  }
+};
+
+const drawNodes = (p5: P5, dark: boolean) => {
+  for (const k in nodes) {
+    const icon = getIconCode(nodes[k].Icon);
+    p5.push();
+    p5.translate(nodes[k].X, nodes[k].Y);
+    if (nodes[k].Image && imageMap.has(nodes[k].Image)) {
+      const img = imageMap.get(nodes[k].Image);
+      const iw = selectedNodes.includes(nodes[k].ID) ? 48 : 32;
+      const ih = img.width > 0 ? (img.height * iw) / img.width : iw;
+      const w = iw + 16;
+      const h = ih + 16 + fontSize;
+      if (selectedNodes.includes(nodes[k].ID)) {
+        if (dark) {
+          p5.fill("rgba(23,23,23,0.9)");
+        } else {
+          p5.fill("rgba(252,252,252,0.9)");
+        }
+        p5.stroke(getStateColor(nodes[k].State));
+        p5.rect(-w / 2, -h / 2, w, h);
+      } else {
+        if (dark) {
+          p5.fill("rgba(23,23,23,0.9)");
+          p5.stroke("rgba(23,23,23,0.9)");
+        } else {
+          p5.fill("rgba(252,252,252,0.9)");
+          p5.stroke("rgba(252,252,252,0.9)");
+        }
+        p5.rect(-w / 2, -h / 2, w, h);
+      }
+      p5.tint(getStateColor(nodes[k].State));
+      p5.image(img, -iw / 2, -h / 2 + 8, iw, ih);
+      p5.noTint();
+      p5.textAlign(p5.CENTER, p5.CENTER);
+      p5.textFont("Roboto");
+      p5.textSize(fontSize);
+      if (dark) {
+        p5.fill(250);
+      } else {
+        p5.fill(23);
+      }
+      p5.text(nodes[k].Name, 0, h / 2 - fontSize / 2 - 4);
+    } else {
+      if (selectedNodes.includes(nodes[k].ID)) {
+        if (dark) {
+          p5.fill("rgba(23,23,23,0.9)");
+        } else {
+          p5.fill("rgba(252,252,252,0.9)");
+        }
+        p5.stroke(getStateColor(nodes[k].State));
+        const w = iconSize + 16;
+        p5.rect(-w / 2, -w / 2, w, w);
+      } else {
+        if (dark) {
+          p5.fill("rgba(23,23,23,0.9)");
+          p5.stroke("rgba(23,23,23,0.9)");
+        } else {
+          p5.fill("rgba(252,252,252,0.9)");
+          p5.stroke("rgba(252,252,252,0.9)");
+        }
+        const w = iconSize - 8;
+        p5.rect(-w / 2, -w / 2, w, w);
+      }
+      p5.textFont("Material Design Icons");
+      p5.textSize(iconSize);
+      p5.textAlign(p5.CENTER, p5.CENTER);
+      p5.fill(getStateColor(nodes[k].State));
+      p5.text(icon, 0, 0);
+      p5.textFont("Roboto");
+      p5.textSize(fontSize);
+      if (dark) {
+        p5.fill(250);
+      } else {
+        p5.fill(23);
+      }
+      p5.text(nodes[k].Name, 0, 32);
+    }
+    p5.pop();
+  }
+};
+
 const mapMain = (p5: P5) => {
   let startMouseX = 0;
   let startMouseY = 0;
@@ -505,271 +785,11 @@ const mapMain = (p5: P5) => {
     mapRedraw = false;
     p5.clear();
     p5.removeElements();
-    p5.background(dark ? 23 : 252);
-    if (_backImage) {
-      if (backImage.Width) {
-        p5.image(
-          _backImage,
-          backImage.X,
-          backImage.Y,
-          backImage.Width,
-          backImage.Height
-        );
-      } else {
-        p5.image(_backImage, backImage.X, backImage.Y);
-      }
-    }
-    for (const k in networks) {
-      p5.push();
-      p5.translate(networks[k].X, networks[k].Y);
-      if (selectedNetwork === networks[k].ID) {
-        p5.stroke("#02c");
-      } else if (networks[k].Error != "") {
-        p5.stroke("#cc3300");
-      } else {
-        p5.stroke("#999");
-      }
-      p5.fill("rgba(23,23,23,0.9)");
-      p5.rect(0, 0, networks[k].W, networks[k].H);
-      p5.stroke("#999");
-      p5.textFont("Roboto");
-      p5.textSize(fontSize);
-      p5.fill("#eee");
-      p5.text(networks[k].Name, 5, fontSize + 5);
-      if (!networks[k].Ports || networks[k].Ports.length < 1) {
-        if (networks[k].Error !== "") {
-          p5.fill("#cc3300");
-          p5.text(networks[k].Error, 15, fontSize * 2 + 15);
-        } else {
-          p5.fill("#11ee00");
-          p5.text("Check network node...", 15, fontSize * 2 + 15);
-        }
-      } else if (portImage) {
-        p5.textSize(6);
-        for (const p of networks[k].Ports) {
-          const x = p.X * 45 + 10;
-          const y = p.Y * 55 + fontSize + 15;
-          p5.image(portImage, x, y, 40, 40);
-          p5.fill(p.State === "up" ? "#11ee00" : " #999");
-          p5.circle(x + 4, y + 4, 8);
-          p5.fill("#eee");
-          p5.text(p.Name, x, y + 40 + 10);
-        }
-      }
-      p5.pop();
-    }
-    for (const k in lines) {
-      const lp1 = getLinePos(lines[k].NodeID1, lines[k].PollingID1);
-      if (!lp1) {
-        continue;
-      }
-      const lp2 = getLinePos(lines[k].NodeID2, lines[k].PollingID2);
-      if (!lp2) {
-        continue;
-      }
-      const x1 = lp1.X;
-      const x2 = lp2.X;
-      const y1 = lp1.Y;
-      const y2 = lp2.Y;
-      const xm = (x1 + x2) / 2;
-      const ym = (y1 + y2) / 2;
-      p5.push();
-      p5.strokeWeight(lines[k].Width || 1);
-      p5.stroke(getStateColor(lines[k].State1));
-      p5.line(x1, y1, xm, ym);
-      p5.stroke(getStateColor(lines[k].State2));
-      p5.line(xm, ym, x2, y2);
-      if (lines[k].Info) {
-        const color: any = getLineColor(lines[k].State);
-        const dx = Math.abs(x1 - x2);
-        const dy = Math.abs(y1 - y2);
-        p5.textFont("Roboto");
-        p5.textSize(fontSize);
-        p5.fill(color);
-        if (dx === 0 || dy / dx > 0.8) {
-          p5.text(lines[k].Info, xm + 10, ym);
-        } else {
-          p5.text(lines[k].Info, xm - dx / 4, ym + 20);
-        }
-      }
-      p5.pop();
-    }
-    for (const k in items) {
-      if (items[k].Type < 4 && !condCheck(items[k].Cond)) {
-        continue;
-      }
-      p5.push();
-      p5.translate(items[k].X, items[k].Y);
-      if (selectedDrawItems.includes(items[k].ID)) {
-        if (dark) {
-          p5.fill("rgba(23,23,23,0.9)");
-          p5.stroke("#ccc");
-        } else {
-          p5.fill("rgba(252,252,252,0.9)");
-          p5.stroke("#333");
-        }
-        const w = items[k].W + 10;
-        const h = items[k].H + 10;
-        p5.rect(-5, -5, w, h);
-      }
-      switch (items[k].Type) {
-        case 0: // rect
-          p5.fill(items[k].Color);
-          p5.stroke("rgba(23,23,23,0.9)");
-          p5.rect(0, 0, items[k].W, items[k].H);
-          break;
-        case 1: // ellipse
-          p5.fill(items[k].Color);
-          p5.stroke("rgba(23,23,23,0.9)");
-          p5.ellipse(items[k].W / 2, items[k].H / 2, items[k].W, items[k].H);
-          break;
-        case 2: // text
-        case 4: // Polling
-          p5.textSize(items[k].Size || 12);
-          p5.fill(items[k].Color);
-          p5.text(
-            items[k].Text,
-            0,
-            0,
-            items[k].Size * items[k].Text.length + 10,
-            items[k].Size + 10
-          );
-          break;
-        case 3: // Image
-          if (imageMap.has(items[k].ID)) {
-            p5.image(imageMap.get(items[k].ID), 0, 0, items[k].W, items[k].H);
-          } else {
-            p5.fill("#aaa");
-            p5.rect(0, 0, items[k].W, items[k].H);
-          }
-          break;
-        case 5: {
-          // Gauge
-          const x = items[k].W / 2;
-          const y = items[k].H / 2;
-          const r0 = items[k].W;
-          const r1 = items[k].W - items[k].Size;
-          const r2 = items[k].W - items[k].Size * 4;
-          p5.noStroke();
-          p5.fill(dark ? "#eee" : "#333");
-          p5.arc(x, y, r0, r0, 5 * p5.QUARTER_PI, -p5.QUARTER_PI);
-          if (items[k].Value > 0) {
-            p5.fill(items[k].Color);
-            p5.arc(
-              x,
-              y,
-              r0,
-              r0,
-              5 * p5.QUARTER_PI,
-              -p5.QUARTER_PI -
-                (p5.HALF_PI - p5.HALF_PI * Math.min(items[k].Value / 100, 1.0))
-            );
-          }
-          p5.fill(dark ? 23 : 252);
-          p5.arc(x, y, r1, r1, -p5.PI, 0);
-          p5.textAlign(p5.CENTER);
-          p5.textSize(8);
-          p5.fill(dark ? "#eee" : "#333");
-          p5.text(Number(items[k].Value).toFixed(3) + "%", x, y - 10);
-          p5.textSize(items[k].Size);
-          p5.text(items[k].Text || "", x, y + items[k].Size);
-          p5.fill("#e31a1c");
-          const angle = -p5.QUARTER_PI + (p5.HALF_PI * items[k].Value) / 100;
-          const x1 = x + (r1 / 2) * p5.sin(angle);
-          const y1 = y - (r1 / 2) * p5.cos(angle);
-          const x2 = x + (r2 / 2) * p5.sin(angle) + 5 * p5.cos(angle);
-          const y2 = y - (r2 / 2) * p5.cos(angle) + 5 * p5.sin(angle);
-          const x3 = x + (r2 / 2) * p5.sin(angle) - 5 * p5.cos(angle);
-          const y3 = y - (r2 / 2) * p5.cos(angle) - 5 * p5.sin(angle);
-          p5.triangle(x1, y1, x2, y2, x3, y3);
-        }
-        case 6: // New Gauge,Line,Bar
-        case 7:
-        case 8:
-          if (imageMap.has(k)) {
-            p5.image(imageMap.get(k), 0, 0, items[k].W, items[k].H);
-          }
-          break;
-      }
-      p5.pop();
-    }
-    for (const k in nodes) {
-      const icon = getIconCode(nodes[k].Icon);
-      p5.push();
-      p5.translate(nodes[k].X, nodes[k].Y);
-      if (nodes[k].Image && imageMap.has(nodes[k].Image)) {
-        const img = imageMap.get(nodes[k].Image);
-        const iw = selectedNodes.includes(nodes[k].ID) ? 48 : 32;
-        const ih = img.width > 0 ? (img.height * iw) / img.width : iw;
-        const w = iw + 16;
-        const h = ih + 16 + fontSize;
-        if (selectedNodes.includes(nodes[k].ID)) {
-          if (dark) {
-            p5.fill("rgba(23,23,23,0.9)");
-          } else {
-            p5.fill("rgba(252,252,252,0.9)");
-          }
-          p5.stroke(getStateColor(nodes[k].State));
-          p5.rect(-w / 2, -h / 2, w, h);
-        } else {
-          if (dark) {
-            p5.fill("rgba(23,23,23,0.9)");
-            p5.stroke("rgba(23,23,23,0.9)");
-          } else {
-            p5.fill("rgba(252,252,252,0.9)");
-            p5.stroke("rgba(252,252,252,0.9)");
-          }
-          p5.rect(-w / 2, -h / 2, w, h);
-        }
-        p5.tint(getStateColor(nodes[k].State));
-        p5.image(img, -iw / 2, -h / 2 + 8, iw, ih);
-        p5.noTint();
-        p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.textFont("Roboto");
-        p5.textSize(fontSize);
-        if (dark) {
-          p5.fill(250);
-        } else {
-          p5.fill(23);
-        }
-        p5.text(nodes[k].Name, 0, h / 2 - fontSize / 2 - 4);
-      } else {
-        if (selectedNodes.includes(nodes[k].ID)) {
-          if (dark) {
-            p5.fill("rgba(23,23,23,0.9)");
-          } else {
-            p5.fill("rgba(252,252,252,0.9)");
-          }
-          p5.stroke(getStateColor(nodes[k].State));
-          const w = iconSize + 16;
-          p5.rect(-w / 2, -w / 2, w, w);
-        } else {
-          if (dark) {
-            p5.fill("rgba(23,23,23,0.9)");
-            p5.stroke("rgba(23,23,23,0.9)");
-          } else {
-            p5.fill("rgba(252,252,252,0.9)");
-            p5.stroke("rgba(252,252,252,0.9)");
-          }
-          const w = iconSize - 8;
-          p5.rect(-w / 2, -w / 2, w, w);
-        }
-        p5.textFont("Material Design Icons");
-        p5.textSize(iconSize);
-        p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.fill(getStateColor(nodes[k].State));
-        p5.text(icon, 0, 0);
-        p5.textFont("Roboto");
-        p5.textSize(fontSize);
-        if (dark) {
-          p5.fill(250);
-        } else {
-          p5.fill(23);
-        }
-        p5.text(nodes[k].Name, 0, 32);
-      }
-      p5.pop();
-    }
+    drawBackground(p5, dark);
+    drawDrawItems(p5, dark);
+    drawNetworks(p5);
+    drawLines(p5);
+    drawNodes(p5, dark);
     if (dragMode === 1) {
       let x = startMouseX;
       let y = startMouseY;
