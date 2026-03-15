@@ -51,7 +51,7 @@ let selectedNetwork = "";
 
 const imageMap = new Map();
 let mapState = 0;
-let showAllItems = false;
+let editDrawItems = false;
 
 let _mapP5: P5 | undefined = undefined;
 let beepHigh: any = undefined;
@@ -417,8 +417,8 @@ export const circle = (selected: any) => {
   mapRedraw = true;
 };
 
-export const setShowAllItems = (s: boolean) => {
-  showAllItems = s;
+export const setEditDrawItems = (s: boolean) => {
+  editDrawItems = s;
   mapRedraw = true;
 };
 
@@ -472,7 +472,7 @@ const isDark = (): boolean => {
 };
 
 const condCheck = (c: number) => {
-  return mapState >= c || showAllItems;
+  return mapState >= c || editDrawItems;
 };
 
 const drawBackground = (p5: P5, dark: boolean) => {
@@ -670,6 +670,31 @@ const drawDrawItems = (p5: P5, dark: boolean) => {
           p5.image(imageMap.get(k), 0, 0, items[k].W, items[k].H);
         }
         break;
+      case 9: // Group(枠)
+        p5.fill('rgba(23,23,23,0.01)');
+        p5.strokeWeight(2);
+        p5.stroke(items[k].Color);
+        p5.rect(0, 0, items[k].W, items[k].H);
+        if (items[k].Text) {
+          p5.textSize(items[k].Size || 12);
+          p5.fill(dark ? "#eee" : "#333");
+          p5.noStroke();
+          p5.textAlign(p5.RIGHT, p5.BOTTOM);
+          p5.text(items[k].Text, items[k].W - 5, items[k].H - 5);
+        }
+        break;
+      case 10: // Group(塗りつぶし)
+        p5.fill(items[k].Color);
+        p5.noStroke();
+        p5.rect(0, 0, items[k].W, items[k].H);
+        if (items[k].Text) {
+          p5.textSize(items[k].Size || 12);
+          p5.fill(dark ? "#eee" : "#333");
+          p5.noStroke();
+          p5.textAlign(p5.RIGHT, p5.BOTTOM);
+          p5.text(items[k].Text, items[k].W - 5, items[k].H - 5);
+        }
+        break
     }
     p5.pop();
   }
@@ -1032,6 +1057,17 @@ const mapMain = (p5: P5) => {
             }
             items[id].W = items[id].H * 4;
             break;
+          case 9: // Group
+          case 10:
+            items[id].W += add * 5;
+            items[id].H += add * 5;
+            if (items[id].W < 10) {
+              items[id].W = 10;
+            }
+            if (items[id].H < 10) {
+              items[id].H = 10;
+            }
+            break;
           default:
             items[id].W += add * 5;
             items[id].H += add * 5;
@@ -1181,7 +1217,7 @@ const mapMain = (p5: P5) => {
         items[k].X - 10 < x &&
         items[k].Y + h > y &&
         items[k].Y - 10 < y &&
-        (condCheck(items[k].Cond) || showAllItems)
+        editDrawItems
       ) {
         if (selectedDrawItems.includes(items[k].ID)) {
           return;

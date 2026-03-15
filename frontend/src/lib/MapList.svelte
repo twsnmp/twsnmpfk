@@ -90,6 +90,8 @@
     $_("DrawItem.NewGauge"),
     $_("DrawItem.Bar"),
     $_("DrawItem.Line"),
+    $_("DrawItem.GroupFrame"),
+    $_("DrawItem.GroupFill"),
   ];
 
   const getDrawItemType = (t: number): string => {

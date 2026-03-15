@@ -5,7 +5,7 @@
     resetMap,
     deleteMap,
     grid,
-    setShowAllItems,
+    setEditDrawItems,
     zoom,
     horizontal,
     vertical,
@@ -79,7 +79,7 @@
   let showPolling: boolean = false;
   let showPing: boolean = false;
   let showMibBr: boolean = false;
-  let showAllItems: boolean = false;
+  let editDrawItems: boolean = false;
 
   let showGNMITool: boolean = false;
 
@@ -440,12 +440,12 @@
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
         on:click={() => {
-          showAllItems = !showAllItems;
-          setShowAllItems(showAllItems);
+          editDrawItems = !editDrawItems;
+          setEditDrawItems(editDrawItems);
           showMapMenu = false;
         }}
       >
-        {#if showAllItems}
+        {#if editDrawItems}
           <Icon path={icons.mdiEye} size={0.7} />
           <div>
             {$_("Map.showDrawItemNomal")}

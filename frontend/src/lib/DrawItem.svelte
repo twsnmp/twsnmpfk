@@ -28,7 +28,6 @@
   let drawItem: any = undefined;
   let image: string = "";
   let nodeID: string = "";
-  let pollingID: string = "";
   let pollings: any = [];
   let pollingList: any = [];
   const nodeList: any = [];
@@ -46,6 +45,8 @@
     { name: $_('DrawItem.NewGauge'), value: 6},
     { name: $_('DrawItem.Bar'), value: 7 },
     { name: $_('DrawItem.Line'), value: 8 },
+    { name: $_("DrawItem.GroupFrame"), value: 9 },
+    { name: $_("DrawItem.GroupFill"), value: 10 },
   ];
 
   const condList = [
@@ -94,7 +95,6 @@
         });
       }
     }
-    pollingID = drawItem.PollingID;
   };
 
   const close = () => {
@@ -281,7 +281,7 @@
           {/if}
         </Label>
       {/if}
-      {#if drawItem.Type >= 4}
+      {#if drawItem.Type >= 4 && drawItem.Type < 9}
         <div class="grid gap-4 mb-4 grid-cols-4">
           {#if drawItem.Type < 6}
             <Label class="space-y-2 text-xs">
@@ -342,37 +342,90 @@
             size="sm"
           />
         </Label>
-      {/if}
-      {#if drawItem.Type == 4}
+        {#if drawItem.Type == 4}
+          <Label class="space-y-2 text-xs">
+            <span>{$_("DrawItem.TextFormat")}</span>
+            <Input
+              class="h-8"
+              bind:value={drawItem.Format}
+              placeholder={$_("DrawItem.TextFormatPH")}
+              size="sm"
+            />
+          </Label>
+        {/if}
+        {#if drawItem.Type >= 5 && drawItem.Type < 9}
+          <Label class="space-y-2 text-xs">
+            <span>{$_("DrawItem.GaugeLabel")}</span>
+            <Input class="h-8" bind:value={drawItem.Text} size="sm" />
+          </Label>
+        {/if}
         <Label class="space-y-2 text-xs">
-          <span>{$_("DrawItem.TextFormat")}</span>
+          <span>{$_("DrawItem.Zoom")}</span>
           <Input
-            class="h-8"
-            bind:value={drawItem.Format}
-            placeholder={$_("DrawItem.TextFormatPH")}
+            class="h-8 w-24 text-right"
+            type="number"
+            min={0.1}
+            max={5.0}
+            step={0.1}
+            bind:value={drawItem.Scale}
             size="sm"
           />
         </Label>
       {/if}
-      {#if drawItem.Type >= 5}
+      {#if drawItem.Type == 9 || drawItem.Type == 10}
+        <div class="grid gap-4 mb-4 md:grid-cols-4">
+          <Label class="space-y-2 text-xs">
+            <span>{$_("DrawItem.Width")}</span>
+            <Input
+              class="h-8 w-24 text-right"
+              type="number"
+              min={0}
+              max={1000}
+              bind:value={drawItem.W}
+              placeholder={$_("DrawItem.Width")}
+              size="sm"
+            />
+          </Label>
+          <Label class="space-y-2 text-xs">
+            <span>{$_("DrawItem.Height")}</span>
+            <Input
+              class="h-8 w-24 text-right"
+              type="number"
+              min={0}
+              max={1000}
+              bind:value={drawItem.H}
+              placeholder={$_("DrawItem.Height")}
+              size="sm"
+            />
+          </Label>
+          <Label class="space-y-2 text-xs">
+            <div>{$_("DrawItem.Color")}</div>
+            <input type="color" bind:value={drawItem.Color} />
+          </Label>
+          <Label class="space-y-2 text-xs">
+            <span>{$_("DrawItem.FontSize")}</span>
+            <Input
+              class="h-8 w-24 text-right"
+              type="number"
+              min={8}
+              max={128}
+              bind:value={drawItem.Size}
+              placeholder={$_("DrawItem.FontSize")}
+              size="sm"
+            />
+          </Label>
+        </div>
         <Label class="space-y-2 text-xs">
-          <span>{$_("DrawItem.GaugeLabel")}</span>
-          <Input class="h-8" bind:value={drawItem.Text} size="sm" />
+          <span>{$_("DrawItem.Text")}</span>
+          <Input
+            class="h-8"
+            bind:value={drawItem.Text}
+            placeholder={$_("DrawItem.TextToDisplay")}
+            size="sm"
+          />
         </Label>
       {/if}
-      <Label class="space-y-2 text-xs">
-        <span>{$_("DrawItem.Zoom")}</span>
-        <Input
-          class="h-8 w-24 text-right"
-          type="number"
-          min={0.1}
-          max={5.0}
-          step={0.1}
-          bind:value={drawItem.Scale}
-          size="sm"
-        />
-      </Label>
-      <div class="flex justify-end space-x-2 mr-2">
+     <div class="flex justify-end space-x-2 mr-2">
         <GradientButton
           shadow
           color="blue"

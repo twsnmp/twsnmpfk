@@ -358,7 +358,9 @@
     "Help": "Help",
     "NewGauge": "Polling result (new gauge)",
     "Bar": "Polling result (bar)",
-    "Line": "Polling result (line)"
+    "Line": "Polling result (line)",
+    "GroupFrame": "Group(Frame)",
+    "GroupFill": "Group(Background)"
   },
   "Discover": {
     "AutoAddPolling": "Polling automatic add",
