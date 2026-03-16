@@ -5,6 +5,7 @@ let ports :any = [];
 let power = false;
 let rotate = false;
 let vpanelZoom = 1.0;
+let portWrap = 16;
 let _vpanelP5 :P5 | undefined  = undefined;
 let cw = 1000;
 let ch = 400;
@@ -32,9 +33,9 @@ const vpanelMain = (p:any) => {
   }
 
   p.draw = () => {
-    width = (ports.length < 16 ? ports.length : 16) * PORT_SIZE + PORT_SIZE;
+    width = (ports.length < portWrap ? ports.length : portWrap) * PORT_SIZE + PORT_SIZE;
     height =
-      Math.ceil(ports.length / 16) * ((5 * PORT_SIZE) / 4) + PORT_SIZE / 2;
+      Math.ceil(ports.length / portWrap) * ((5 * PORT_SIZE) / 4) + PORT_SIZE / 2;
     if (ports.length === 0) {
       height = (5 * PORT_SIZE) / 4;
     }
@@ -54,8 +55,8 @@ const vpanelMain = (p:any) => {
     p.fill(50, 50, 50);
     p.box(width, height, depth);
     for (let i = 0; i < ports.length; i++) {
-      const x = i % 16;
-      const y = Math.floor(i / 16);
+      const x = i % portWrap;
+      const y = Math.floor(i / portWrap);
       p.push();
       // Port
       p.translate(
@@ -126,11 +127,12 @@ const vpanelMain = (p:any) => {
   }
 }
 
-export const setVPanel = (po:any, pw:any, r:any, z:number) => {
+export const setVPanel = (po:any, pw:any, r:any, z:number, pwv: number) => {
   ports = po
   power = pw
   rotate = r
   vpanelZoom = z || 1.0;
+  portWrap = pwv || 16;
 }
 
 export const initVPanel = (div:string) => {

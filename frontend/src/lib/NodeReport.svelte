@@ -14,6 +14,7 @@
     Toggle,
     Button,
     Textarea,
+    Select,
   } from "flowbite-svelte";
   import { tick, createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -215,6 +216,7 @@
   let waitVPanel = false;
   let rotateVPanel = false;
   let vpanelZoom = 1.0;
+  let vpanelPortWrap = 16;
   let pVPanel: any = [];
 
   const showVPanel = async () => {
@@ -231,7 +233,7 @@
     showPortTable(pVPanel);
   };
 
-  $: setVPanel(pVPanel, power, rotateVPanel, vpanelZoom);
+  $: setVPanel(pVPanel, power, rotateVPanel, vpanelZoom, vpanelPortWrap);
 
   const renderStatus = (s: any) => {
     switch (s) {
@@ -1105,6 +1107,17 @@
           <Toggle bind:checked={physicalPort} on:change={showVPanel}>
             {$_("NodeReport.PhysicalPort")}
           </Toggle>
+          <Select
+            class="w-20 h-8 !p-0"
+            items={[
+              { value: 16, name: "16" },
+              { value: 24, name: "24" },
+              { value: 32, name: "32" },
+              { value: 48, name: "48" },
+              { value: 64, name: "64" },
+            ]}
+            bind:value={vpanelPortWrap}
+          />
           <div class="flex items-center gap-1">
             <Icon path={icons.mdiMagnifyMinus} size={0.8} />
             <input
