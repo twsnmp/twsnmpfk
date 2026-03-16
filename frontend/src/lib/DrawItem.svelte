@@ -145,6 +145,7 @@
           bind:value={drawItem.Type}
           placeholder={$_("DrawItem.SelectType")}
           size="sm"
+          disabled={id !== ""}
         />
       </Label>
       {#if drawItem.Type < 2}
