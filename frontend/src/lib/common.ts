@@ -119,6 +119,8 @@ export const snmpModeList = [
   { name: $_("Ts.SNMPv3Auth"), value: 'v3auth' },
   { name: $_("Ts.SNMPv3AuthPriv"), value: 'v3authpriv' },
   { name: $_("Ts.SNMPv3AuthPrivEx"), value: 'v3authprivex' },
+  { name: $_("Ts.SNMPv3SHA256AES128"), value: 'v3sha256aes128' },
+  { name: $_("Ts.SNMPv3SHA512AES256"), value: 'v3sha512aes256' },
 ]
 
 

@@ -573,6 +573,28 @@ func snmpWalk(ctx context.Context, req *mcp.CallToolRequest, args snmpWalkParams
 			PrivacyProtocol:          gosnmp.AES256,
 			PrivacyPassphrase:        password,
 		}
+	case "v3sha256aes128":
+		agent.Version = gosnmp.Version3
+		agent.SecurityModel = gosnmp.UserSecurityModel
+		agent.MsgFlags = gosnmp.AuthPriv
+		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
+			UserName:                 user,
+			AuthenticationProtocol:   gosnmp.SHA256,
+			AuthenticationPassphrase: password,
+			PrivacyProtocol:          gosnmp.AES,
+			PrivacyPassphrase:        password,
+		}
+	case "v3sha512aes256":
+		agent.Version = gosnmp.Version3
+		agent.SecurityModel = gosnmp.UserSecurityModel
+		agent.MsgFlags = gosnmp.AuthPriv
+		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
+			UserName:                 user,
+			AuthenticationProtocol:   gosnmp.SHA512,
+			AuthenticationPassphrase: password,
+			PrivacyProtocol:          gosnmp.AES256,
+			PrivacyPassphrase:        password,
+		}
 	}
 	res := []mcpMIBEnt{}
 	err := agent.Connect()
@@ -685,6 +707,28 @@ func snmpSet(ctx context.Context, req *mcp.CallToolRequest, args snmpSetParams) 
 		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
 			UserName:                 user,
 			AuthenticationProtocol:   gosnmp.SHA256,
+			AuthenticationPassphrase: password,
+			PrivacyProtocol:          gosnmp.AES256,
+			PrivacyPassphrase:        password,
+		}
+	case "v3sha256aes128":
+		agent.Version = gosnmp.Version3
+		agent.SecurityModel = gosnmp.UserSecurityModel
+		agent.MsgFlags = gosnmp.AuthPriv
+		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
+			UserName:                 user,
+			AuthenticationProtocol:   gosnmp.SHA256,
+			AuthenticationPassphrase: password,
+			PrivacyProtocol:          gosnmp.AES,
+			PrivacyPassphrase:        password,
+		}
+	case "v3sha512aes256":
+		agent.Version = gosnmp.Version3
+		agent.SecurityModel = gosnmp.UserSecurityModel
+		agent.MsgFlags = gosnmp.AuthPriv
+		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
+			UserName:                 user,
+			AuthenticationProtocol:   gosnmp.SHA512,
 			AuthenticationPassphrase: password,
 			PrivacyProtocol:          gosnmp.AES256,
 			PrivacyPassphrase:        password,
