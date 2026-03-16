@@ -1,6 +1,6 @@
 module github.com/twsnmp/twsnmpfk
 
-go 1.24.4
+go 1.25.0
 
 require (
 	github.com/Cistern/sflow v0.0.0-20240622235316-ed105e3cf9fb
@@ -24,7 +24,7 @@ require (
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/labstack/gommon v0.4.2
 	github.com/mochi-mqtt/server/v2 v2.7.9
-	github.com/modelcontextprotocol/go-sdk v1.0.0
+	github.com/modelcontextprotocol/go-sdk v1.3.1
 	github.com/montanaflynn/stats v0.7.1
 	github.com/openconfig/gnmic/pkg/api v0.1.9
 	github.com/oschwald/geoip2-golang v1.11.0
@@ -54,7 +54,7 @@ require (
 	go.opentelemetry.io/collector/receiver v1.32.0
 	go.opentelemetry.io/collector/receiver/otlpreceiver v0.126.0
 	golang.org/x/crypto v0.48.0
-	golang.org/x/net v0.50.0
+	golang.org/x/net v0.51.0
 	golang.org/x/oauth2 v0.30.0
 	golang.org/x/text v0.34.0
 	google.golang.org/grpc v1.72.0
@@ -100,7 +100,7 @@ require (
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/google/generative-ai-go v0.15.1 // indirect
 	github.com/google/go-tpm v0.9.4 // indirect
-	github.com/google/jsonschema-go v0.3.0 // indirect
+	github.com/google/jsonschema-go v0.4.2 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
@@ -142,6 +142,8 @@ require (
 	github.com/rs/cors v1.11.1 // indirect
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/samber/lo v1.49.1 // indirect
+	github.com/segmentio/asm v1.1.3 // indirect
+	github.com/segmentio/encoding v0.5.3 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/smallstep/pkcs7 v0.2.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.15 // indirect
