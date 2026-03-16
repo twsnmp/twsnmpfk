@@ -1071,7 +1071,7 @@
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Map.BackImage")}
     </h3>
-    <div class="grid gap-4 mb-4 grid-cols-5">
+    <div class="grid gap-4 mb-4 grid-cols-2">
       <Label class="space-y-2 text-xs">
         <span>X</span>
         <Input
@@ -1094,6 +1094,8 @@
           size="sm"
         />
       </Label>
+    </div>
+    <div class="grid gap-4 mb-4 grid-cols-2">
       <Label class="space-y-2 text-xs">
         <span>{$_("DrawItem.Width")}</span>
         <Input
@@ -1116,18 +1118,18 @@
           size="sm"
         />
       </Label>
-      <GradientButton
-        shadow
-        class="h-8 mt-6 w-20"
-        type="button"
-        size="xs"
-        color="blue"
-        on:click={selectImage}
-      >
-        <Icon path={icons.mdiImage} size={1} />
-        {$_("DrawItem.Select")}
-      </GradientButton>
     </div>
+    <GradientButton
+      shadow
+      class="h-8 mt-6 w-20"
+      type="button"
+      size="xs"
+      color="blue"
+      on:click={selectImage}
+    >
+      <Icon path={icons.mdiImage} size={1} />
+      {$_("DrawItem.Select")}
+    </GradientButton>
     <Label class="space-y-2 text-xs">
       <span>{$_("DrawItem.Image")}</span>
       {#if image}

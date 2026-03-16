@@ -32,6 +32,7 @@
   let pollingList: any = [];
   const nodeList: any = [];
   let showHelp = false;
+  let alpha = 255;
 
   const dispatch = createEventDispatcher();
 
@@ -58,6 +59,7 @@
   const onOpen = async () => {
     pollings = await GetPollings("");
     const nodes = await GetNodes();
+    nodeList.length = 0;
     for (const k in nodes) {
       nodeList.push({
         name: nodes[k].Name,
@@ -68,7 +70,14 @@
     if (id == "") {
       drawItem.X = posX;
       drawItem.Y = posY;
+      alpha = 255;
     } else {
+      if (drawItem.Color.length === 9) {
+        alpha = parseInt(drawItem.Color.substring(7), 16);
+        drawItem.Color = drawItem.Color.substring(0, 7);
+      } else {
+        alpha = 255;
+      }
       if (drawItem.PollingID) {
         nodeID = "";
         for (const p of pollings) {
@@ -109,6 +118,8 @@
     drawItem.Scale *= 1;
     drawItem.X *= 1;
     drawItem.Y *= 1;
+    const a = alpha.toString(16).padStart(2, "0");
+    drawItem.Color = drawItem.Color.substring(0, 7) + a;
     const r = await UpdateDrawItem(drawItem);
     if (r) {
       close();
@@ -176,7 +187,10 @@
           </Label>
           <Label class="space-y-2 text-xs">
             <div>{$_("DrawItem.Color")}</div>
-            <input type="color" bind:value={drawItem.Color} />
+            <div class="flex flex-row items-center space-x-2">
+              <input type="color" bind:value={drawItem.Color} />
+              <input type="range" min={0} max={255} step={1} bind:value={alpha} />
+            </div>
           </Label>
           <Label class="space-y-2 text-xs">
             <span> {$_("DrawItem.showCond")} </span>
@@ -206,7 +220,10 @@
           <div />
           <Label class="space-y-2 text-xs">
             <div>{$_("DrawItem.Color")}</div>
-            <input type="color" bind:value={drawItem.Color} />
+            <div class="flex flex-row items-center space-x-2">
+              <input type="color" bind:value={drawItem.Color} />
+              <input type="range" min={0} max={255} step={1} bind:value={alpha} />
+            </div>
           </Label>
           <Label class="space-y-2 text-xs">
             <span> {$_("DrawItem.showCond")} </span>
@@ -401,7 +418,10 @@
           </Label>
           <Label class="space-y-2 text-xs">
             <div>{$_("DrawItem.Color")}</div>
-            <input type="color" bind:value={drawItem.Color} />
+            <div class="flex flex-row items-center space-x-2">
+              <input type="color" bind:value={drawItem.Color} />
+              <input type="range" min={0} max={255} step={1} bind:value={alpha} />
+            </div>
           </Label>
           <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.FontSize")}</span>
