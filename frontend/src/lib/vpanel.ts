@@ -4,6 +4,7 @@ import port from "../assets/images/port.png";
 let ports :any = [];
 let power = false;
 let rotate = false;
+let vpanelZoom = 1.0;
 let _vpanelP5 :P5 | undefined  = undefined;
 let cw = 1000;
 let ch = 400;
@@ -42,6 +43,7 @@ const vpanelMain = (p:any) => {
     p.background(128);
     // カメラの制御
     p.orbitControl();
+    p.scale(vpanelZoom);
     if (rotate) {
       r += 0.1;
     }
@@ -124,10 +126,11 @@ const vpanelMain = (p:any) => {
   }
 }
 
-export const setVPanel = (po:any, pw:any, r:any) => {
+export const setVPanel = (po:any, pw:any, r:any, z:number) => {
   ports = po
   power = pw
   rotate = r
+  vpanelZoom = z || 1.0;
 }
 
 export const initVPanel = (div:string) => {

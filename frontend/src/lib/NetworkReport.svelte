@@ -144,6 +144,8 @@
   let power: any;
   let waitVPanel = false;
   let rotateVPanel = false;
+  let vpanelZoom = 1.0;
+  let pVPanel: any = [];
 
   const showVPanel = async () => {
     clear();
@@ -155,10 +157,11 @@
       power = await GetVPanelPowerInfo("NET:" + id);
       waitVPanel = false;
     }
-    const p = physicalPort ? ports.filter((e: any) => e.Type == 6) : ports;
-    setVPanel(p, power, rotateVPanel);
-    showPortTable(p);
+    pVPanel = physicalPort ? ports.filter((e: any) => e.Type == 6) : ports;
+    showPortTable(pVPanel);
   };
+
+  $: setVPanel(pVPanel, power, rotateVPanel, vpanelZoom);
 
   let fdbTable: any = undefined;
   let fdbTableTable: any = undefined;
@@ -357,7 +360,19 @@
           <Toggle bind:checked={physicalPort} on:change={showVPanel}>
             {$_("NodeReport.PhysicalPort")}
           </Toggle>
-          <Toggle bind:checked={rotateVPanel} on:change={showVPanel}>
+          <div class="flex items-center gap-1">
+            <Icon path={icons.mdiMagnifyMinus} size={0.8} />
+            <input
+              type="range"
+              bind:value={vpanelZoom}
+              min="0.1"
+              max="5"
+              step="0.1"
+              class="w-24 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+            />
+            <Icon path={icons.mdiMagnifyPlus} size={0.8} />
+          </div>
+          <Toggle bind:checked={rotateVPanel}>
             {$_("NodeReport.RotateVPanel")}
           </Toggle>
         {/if}
