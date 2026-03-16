@@ -52,6 +52,7 @@ let selectedNetwork = "";
 const imageMap = new Map();
 let mapState = 0;
 let editDrawItems = false;
+let showNodeInfo = false;
 
 let _mapP5: P5 | undefined = undefined;
 let beepHigh: any = undefined;
@@ -422,6 +423,11 @@ export const setEditDrawItems = (s: boolean) => {
   mapRedraw = true;
 };
 
+export const setShowNodeInfo = (s: boolean) => {
+  showNodeInfo = s;
+  mapRedraw = true;
+};
+
 const getLineColor = (state: any) => {
   if (state === "high" || state === "low" || state === "warn") {
     return getStateColor(state);
@@ -710,7 +716,7 @@ const drawNodes = (p5: P5, dark: boolean) => {
       const iw = selectedNodes.includes(nodes[k].ID) ? 48 : 32;
       const ih = img.width > 0 ? (img.height * iw) / img.width : iw;
       const w = iw + 16;
-      const h = ih + 16 + fontSize;
+      const h = ih + 16 + fontSize + (showNodeInfo ? fontSize : 0);
       if (selectedNodes.includes(nodes[k].ID)) {
         if (dark) {
           p5.fill("rgba(23,23,23,0.9)");
@@ -718,7 +724,7 @@ const drawNodes = (p5: P5, dark: boolean) => {
           p5.fill("rgba(252,252,252,0.9)");
         }
         p5.stroke(getStateColor(nodes[k].State));
-        p5.rect(-w / 2, -h / 2, w, h);
+        p5.rect(-w / 2, -ih / 2 - 8, w, h);
       } else {
         if (dark) {
           p5.fill("rgba(23,23,23,0.9)");
@@ -727,10 +733,10 @@ const drawNodes = (p5: P5, dark: boolean) => {
           p5.fill("rgba(252,252,252,0.9)");
           p5.stroke("rgba(252,252,252,0.9)");
         }
-        p5.rect(-w / 2, -h / 2, w, h);
+        p5.rect(-w / 2, -ih / 2 - 8, w, h);
       }
       p5.tint(getStateColor(nodes[k].State));
-      p5.image(img, -iw / 2, -h / 2 + 8, iw, ih);
+      p5.image(img, -iw / 2, -ih / 2, iw, ih);
       p5.noTint();
       p5.textAlign(p5.CENTER, p5.CENTER);
       p5.textFont("Roboto");
@@ -740,7 +746,11 @@ const drawNodes = (p5: P5, dark: boolean) => {
       } else {
         p5.fill(23);
       }
-      p5.text(nodes[k].Name, 0, h / 2 - fontSize / 2 - 4);
+      p5.text(nodes[k].Name, 0, ih / 2 + 8 + fontSize / 2);
+      if (showNodeInfo) {
+        p5.textSize(Math.max(fontSize - 2, 8));
+        p5.text(nodes[k].IP, 0, ih / 2 + 8 + fontSize + fontSize / 2);
+      }
     } else {
       if (selectedNodes.includes(nodes[k].ID)) {
         if (dark) {
@@ -750,7 +760,8 @@ const drawNodes = (p5: P5, dark: boolean) => {
         }
         p5.stroke(getStateColor(nodes[k].State));
         const w = iconSize + 16;
-        p5.rect(-w / 2, -w / 2, w, w);
+        const h = iconSize + 16 + fontSize + (showNodeInfo ? fontSize : 0);
+        p5.rect(-w / 2, -iconSize / 2 - 8, w, h);
       } else {
         if (dark) {
           p5.fill("rgba(23,23,23,0.9)");
@@ -774,7 +785,11 @@ const drawNodes = (p5: P5, dark: boolean) => {
       } else {
         p5.fill(23);
       }
-      p5.text(nodes[k].Name, 0, 32);
+      p5.text(nodes[k].Name, 0, iconSize / 2 + 8 + fontSize / 2);
+      if (showNodeInfo) {
+        p5.textSize(Math.max(fontSize - 2, 8));
+        p5.text(nodes[k].IP, 0, iconSize / 2 + 8 + fontSize + fontSize / 2);
+      }
     }
     p5.pop();
   }

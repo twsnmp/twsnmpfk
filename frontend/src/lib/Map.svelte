@@ -6,6 +6,7 @@
     deleteMap,
     grid,
     setEditDrawItems,
+    setShowNodeInfo,
     zoom,
     horizontal,
     vertical,
@@ -80,6 +81,7 @@
   let showPing: boolean = false;
   let showMibBr: boolean = false;
   let editDrawItems: boolean = false;
+  let showNodeInfo: boolean = false;
 
   let showGNMITool: boolean = false;
 
@@ -454,6 +456,27 @@
           <Icon path={icons.mdiDraw} size={0.7} />
           <div>
             {$_("Map.showDrawItemEdit")}
+          </div>
+        {/if}
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        on:click={() => {
+          showNodeInfo = !showNodeInfo;
+          setShowNodeInfo(showNodeInfo);
+          showMapMenu = false;
+        }}
+      >
+        {#if showNodeInfo}
+          <Icon path={icons.mdiEye} size={0.7} />
+          <div>
+           {$_('Map.ShowNodeInfo')}
+          </div>
+        {:else}
+          <Icon path={icons.mdiEyeClosed} size={0.7} />
+          <div>
+          {$_('Map.ShowNodeInfo')}
           </div>
         {/if}
       </div>

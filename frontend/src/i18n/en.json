@@ -459,7 +459,8 @@
     "Vertical": "Vertical",
     "AddNetwork": "New Network",
     "EditLine": "Edit line",
-    "FindNeighbor": "Find neighbor"
+    "FindNeighbor": "Find neighbor",
+    "ShowNodeInfo": "Node Info"
   },
   "MIBBrowser": {
     "Close": "Close",

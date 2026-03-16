@@ -446,7 +446,8 @@
     "Circle": "円形に整列",
     "AddNetwork": "新規ネットワーク",
     "EditLine": "ライン編集",
-    "FindNeighbor": "接続先を探す"
+    "FindNeighbor": "接続先を探す",
+    "ShowNodeInfo": "ノード情報表示"
   },
   "MIBBrowser": {
     "ObjectName": "オブジェクト名",
