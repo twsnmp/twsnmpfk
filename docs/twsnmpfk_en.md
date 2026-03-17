@@ -73,7 +73,41 @@ The flow of creating a map is
 You can now search for PCs, routers, servers, etc. connected to the managed network and register on the map.
 
 ---
-## Network Report
+
+## New Features
+
+TWSNMP FK is continuously enhanced. v1.30.0+ added several key features and improvements.
+
+### SNMPv3 Security (v1.33.0)
+
+Added support for SHA256/AES128 and SHA512/AES256, providing stronger security for modern network monitoring requirements.
+
+### Map and UI Improvements (v1.33.0)
+
+- **Node IP Display**: Option to show node IP addresses directly on the map.
+- **Group Drawing Items**: New group (frame/background) items for better organization.
+- **VPanel Enhancements**: Zoom and port wrap controls for the virtual panel.
+- **Map Aesthetics**: Removed background rectangles for unselected nodes.
+
+---
+
+### Drawing Item Enhancements (v1.33.0)
+
+Added support for opacity (transparency) and improved UI for background images.
+
+### AI (LLM) Integration (v1.32.0)
+
+- **MIB Browser**: Natural language search and AI-powered MIB object explanations.
+- **Log Analysis**: AI explanations for NetFlow, Syslog, and SNMP Trap logs.
+- **Report Summarization**: AI-driven summaries for periodic reports.
+- **Multi-Provider Support**: Supports Gemini, OpenAI, Claude, and Ollama.
+
+### Other
+- **Network Report**: Connection visualization and line search.
+- **Email Polling (IMAP/POP3)**: Mail server monitoring.
+- **Enhanced Address Info**: Domain info and risk assessment.
+
+---
 
 TWSNMP FK provides a "Network Report" function that visualizes MAC addresses, IP addresses, hostnames, and other information of devices connected to each port from the FDB (Forwarding Database) table information of network switches, allowing you to grasp the overall connection status of the network.
 
@@ -419,8 +453,16 @@ You can narrow down the displayed MIBs by entering keywords in the search box at
 OIDs, MIB names, descriptions, etc., are subject to search.
 Open the tree and click the object name to see the explanation.
 Double click to select.
+Also, AI-powered object explanation is available.
 
 ![h:400 center](./images/en/2023-12-03_10-35-25.png)
+
+---
+#### Set dialog
+
+This is the screen for executing SNMP Set. Specify the object name, type, and value and press the <SET> button to send a Set request.
+
+![h:400 center](./images/en/2025-11-29_16-58-38.png)
 
 ---
 ### GNMI tool
@@ -759,6 +801,25 @@ This is a report that shows the relationship between IP address and MAC address 
 ![h:400 center](./images/en/2023-12-03_05-52-16.png)
 
 ---
+### Address Analysis
+
+Displays detailed info on IP addresses, MAC addresses, and domain names.
+Available from the address list or log lists (Syslog, NetFlow, etc.).
+
+| Item | Contents |
+| ---- | ---- |
+| State | Information level (severity). |
+| Name | Information item name. |
+| Value | Information value. |
+
+---
+## Server certificate list
+
+Monitor server certificates from TWSNMP. Add targets via the edit screen.
+
+![h:400 center](./images/en/2025-07-25_05-47-29.png)
+
+---
 ## PKI CA construction
 <!-- _class: tinytext -->
 
@@ -987,6 +1048,14 @@ This is a report of the number of syslogs by state.
 This is a report of the number of cases of syslog on the heat map.
 
 ![h:400 center](./images/en/2023-12-03_11-47-15.png)
+
+---
+### Normalization Analysis
+
+Report that normalizes syslog and aggregates it.
+Counts numbers, IP addresses, email addresses, etc. with common characters.
+
+![h:400 center](./images/en/2025-07-25_05-55-30.png)
 
 ---
 ### Syslog count by host
@@ -1352,6 +1421,57 @@ This is a report of ARP watch logs from both IP addresses and time series.The ti
 ![h:400 center](./images/en/2023-12-03_06-42-37.png)
 
 ---
+## OpenTelemetry
+
+OpenTelemetry Collector screen. Toggle between Metrics, Traces, and Logs.
+
+![h:400 center](./images/en/2025-05-25_16-37-34.png)
+
+---
+### Metrics
+Time charts and histograms are available for visualization.
+
+![h:400 center](./images/en/2025-05-25_16-37-46.png)
+
+---
+### Traces
+Displays DAG (relationships between services) and timeline graphs.
+
+![h:400 center](./images/ja/2025-05-25_16-51-04.png)
+
+---
+### Settings
+Retention Time, Source IP limits, and reception ON/OFF.
+
+![h:400 center](./images/ja/2025-05-25_17-09-31.png)
+
+---
+## MQTT
+Displays received MQTT topics, status, client ID, and counts.
+
+![h:400 center](./images/en/2025-11-22_05-36-45.png)
+
+---
+### MQTT settings
+Toggle enable/disable and record MQTT data to syslog.
+
+![h:400 center](./images/en/2025-11-22_05-37-02.png)
+
+---
+## MCP Server
+
+MCP server function for AI to use TWSNMP FK.
+
+![h:400 center](./images/en/2025-07-25_05-56-03.png)
+
+---
+### MCP Server Features
+
+Provides tools for network monitoring and management.
+- [MCP server specifications](./mcp.html)
+- [MCP server prompt specifications](./mcp_prompt.html)
+
+---
 ## AI analysis
 The screen of the AI analysis list.Only the list is displayed in the polling log settings and the analysis is performed.
 <!-- _class: tinytext -->
@@ -1473,32 +1593,29 @@ The port number is specified by the startup parameter of the program.
 ## Notification settings
 This is the screen to set the notification.
 
-![h:400 center](./images/en/2024-02-15_05-32-34.png)
+![h:400 center](./images/en/2025-10-04_15-38-07.png)
 
 ---
 | Items | Contents |
 | ---- | ---- |
-| Mail server | Specify a mail server to send notification emails.<br> Host name or IP address: port number |
-| Do not check the server certificate | Check when the specified mail server is self certificate.|
-| User | Set a user ID for authentication.|
-| Password | Set the password for authentication|
-| Form | Sending source email address.|
-| To | Notification email destination email address.<BR> You can specify multiple by separation of comma.|
----
-| Items | Contents |
-| ---- | ---- |
+|Provider|Select from smtp/Google/Microsoft.|
+|OAuth2|Client ID, Secret, Tenant Name (Microsoft).|
+| Mail server | Host name or IP address: port number |
+| Certificate | Check when the mail server is self-signed.|
+| Auth | User ID and Password.|
+| From/To | Sending source and destination emails.|
 |Subject | Notification email subject.|
-| Notification level | Specify the monitoring level to send disability notifications.|
-| Notification interval | Specify the interval to check the notification.|
-| Regular report | Send a daily report.|
-| repair notification | We will also send an email when you repair.|
+
 ---
 | Items | Contents |
 | ---- | ---- |
-| Repair notification | We will also send an email when you repair.|
-| Command execution | Run the command specified in the state parameter when the map changes.<br> $ Level is in the map.0: Severe, 1: Mild, 2: Note, 3: Normal, -1: Unknown |
-| Sounds played during severe disorders | Specify the audio file to play when the state of the map is severe.|
-| Sounds played during mild disability | Specify the audio file to be played when the state of the map is mild.|
+| Notification level | Monitoring level to send notifications.|
+| Notification interval | Interval to check notifications.|
+| Regular report | Send a daily report.|
+| Repair notification | Send an email when repaired.|
+| Webhook | Webhook URL for failures and reports.|
+| Command | Run command when state changes.|
+| Audio | Audio file to play for severe/mild status.|
 
 ---
 ### Email send test
@@ -1665,52 +1782,41 @@ You can customize it by saving the following files in the data folder.
 
 ```
 Usage of twsnmpfk:
-  -caCert string
-    	CA Cert path
-  -clientCert string
-    	Client cert path
-  -clientKey string
-    	Client key path
-  -datastore string
-    	Path to data store directory
-  -kiosk
-    	Kisok mode(frameless and full screen)
-  -lang string
-    	Language(en|jp)
-  -lock string
-    	Disable edit map and lock page(map or loc)
-  -maxDispLog int
-    	Max log size to diplay (default 10000)
+  -datastore string  Path to data store directory
+  -kiosk             Kisok mode(frameless and full screen)
+  -lang string       Language(en|jp)
+  -lock string       Disable edit map and lock page(map or loc)
+  -maxDispLog int    Max log size to diplay (default 10000)
+  -ping string       ping mode icmp or udp
+  -syslogPort int    Syslog port (default 514)
+  -trapPort int      SNMP TRAP port (default 162)
+  -sshdPort int      SSH server port (default 2022)
+  -netflowPort int   Netflow port (default 2055)
+  -sFlowPort int     sFlow port (default 6343)
+  -tcpdPort int      tcp server port (default 8086)
 ```
 ---
 ```
-  -netflowPort int
-    	Netflow port (default 2055)
-  -ping string
-    	ping mode icmp or udp
-  -sFlowPort int
-    	sFlow port (default 6343)
-  -sshdPort int
-    	SSH server port (default 2022)
-  -syslogPort int
-    	Syslog port (default 514)
-  -tcpdPort int
-    	tcp server port (default 8086)
-  -trapPort int
-    	SNMP TRAP port (default 162)
+  -caCert, -clientCert, -clientKey   TLS/mTLS for TWLogEye
+  -otelGRPCPort, -otelHTTPPort       OTel receiver ports
+  -otelCert, -otelKey, -otelCA       OTel TLS/mTLS settings
+  -mqttTCPPort, -mqttWSPort          MQTT server ports
+  -mqttCert, -mqttKey, -mqttFrom     MQTT TLS and client limits
+  -mqttUsers                         MQTT user/password list
+  -mcpCert, -mcpKey                  MCP server TLS settings
+  -notifyOAuth2Port                  OAuth2 redirect port
 ```
 
 ---
 | Parameters | Description |
 | --- | --- |
-| dataStore | Datstore Pass |
+| dataStore | Datastore Path |
 | kiosk | Kiosk mode (frameless, full screen) |
 | lock <page> | disable edit map and show fixed page |
 | Maxdisplog <number> | Maximum number of logs (default 10000) |
 | ping <Mode> | Ping operation mode (ICMP or UDP) |
 | syslogPort <PORT> | Syslog receiving port (default 514) |
 | trapPort <Port> | SNMP TRAP Reception port (Default 162) |
-| sshdPort <Port> | SSH server port (Default 162) |
 ---
 | Parameters | Description |
 | --- | --- |
@@ -1718,4 +1824,51 @@ Usage of twsnmpfk:
 |netflowPort <port>| NetFlow/IPFIX receive port (default 2055)|
 |sFlowPort <port>| sFlow receiving port (default 6343)|
 |tcpdPort <port>| TCP log receiving port (default 8086)|
+|otelCert <file>|OpenTelemetry server certificate|
+|otelKey <file>|OpenTelemetry server private key|
+|otelGRPCPPort <number>|GRPC port number for OpenTelemetry |
+|otelHTTPPort <file>|OpenTelemetry HTTP port number|
+---
+| Parameters | Description |
+| --- | --- |
+| mqttTCPPort |MQTT server TCP port (default 1883)|
+| mqttWSPort |MQTT server Websock port (default 1884)|
+| mqttCert |MQTT server cert path|
+| mqttKey |MQTT server key path|
+| mqttFrom |MQTT server Client IP limit|
+| mqttUsers |MQTT server User ID and password list|
+| mcpCert |MCP server cert path|
+| mcpKey |MCP server key path|
+| notifyOAuth2Port |OAuth2 redirect port (default 8180)|
+
+---
+## Configuration File
+
+Place `.twsnmpfk.ini` in the datastore folder to load boot parameters.
+
+<!-- _class: tinytext -->
+
+```ini:.twsnmpfk.ini
+#lang=ja
+#maxDispLog=10000
+#lock=map
+
+[logger]
+syslogPort=8514
+trapPort=8162
+netflowPort=2056
+sshdPort=2023
+
+[OTel]
+#otelGRPCPort=4317
+#otelHTTPPort=4318
+
+[MCP]
+#mcpCert=
+#mcpKey=
+
+[MQTT]
+#mqttTCPPort=1883
+#mqttWSPort=1884
+```
 
