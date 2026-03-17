@@ -725,15 +725,6 @@ const drawNodes = (p5: P5, dark: boolean) => {
         }
         p5.stroke(getStateColor(nodes[k].State));
         p5.rect(-w / 2, -ih / 2 - 8, w, h);
-      } else {
-        if (dark) {
-          p5.fill("rgba(23,23,23,0.9)");
-          p5.stroke("rgba(23,23,23,0.9)");
-        } else {
-          p5.fill("rgba(252,252,252,0.9)");
-          p5.stroke("rgba(252,252,252,0.9)");
-        }
-        p5.rect(-w / 2, -ih / 2 - 8, w, h);
       }
       p5.tint(getStateColor(nodes[k].State));
       p5.image(img, -iw / 2, -ih / 2, iw, ih);
@@ -762,16 +753,6 @@ const drawNodes = (p5: P5, dark: boolean) => {
         const w = iconSize + 16;
         const h = iconSize + 16 + fontSize + (showNodeInfo ? fontSize : 0);
         p5.rect(-w / 2, -iconSize / 2 - 8, w, h);
-      } else {
-        if (dark) {
-          p5.fill("rgba(23,23,23,0.9)");
-          p5.stroke("rgba(23,23,23,0.9)");
-        } else {
-          p5.fill("rgba(252,252,252,0.9)");
-          p5.stroke("rgba(252,252,252,0.9)");
-        }
-        const w = iconSize - 8;
-        p5.rect(-w / 2, -w / 2, w, w);
       }
       p5.textFont("Material Design Icons");
       p5.textSize(iconSize);
