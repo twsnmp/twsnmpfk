@@ -172,6 +172,24 @@ Usage of twsnmpfk:
 
 ## History
 
+### v1.33.0 (2026/03/17)
+
+#### SNMPv3 Security Enhancements
+*   **Enhanced Security Modes**: Added support for SHA256/AES128 and SHA512/AES256 authentication and encryption modes, providing stronger security for SNMP monitoring.
+
+#### Map and UI Improvements
+*   **Node IP Display**: Added an option to display node IP addresses directly on the map for easier identification.
+*   **Group Drawing Items**: Introduced new "group" (frame/background) drawing items to better organize nodes and areas on the map.
+*   **VPanel Enhancements**: Added zoom control and port wrap control for the virtual panel (VPanel) in both node and network reports.
+*   **Clean Map Style**: Removed the background rectangle for unselected nodes to provide a cleaner and less cluttered map interface.
+
+#### Drawing Item Enhancements
+*   **Opacity Support**: Added support for setting the opacity (transparency) of drawing items.
+*   **Background Image UI**: Improved the user interface for background image settings, making it more intuitive to customize map backgrounds.
+
+#### Security and Maintenance
+*   **Vulnerability Fixes**: Updated Go and npm dependencies to address the latest security concerns.
+
 ### v1.32.0 (2026/02/27)
 
 #### AI (LLM) Integration Features

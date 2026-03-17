@@ -76,6 +76,30 @@ You can now search for PCs, routers, servers, etc. connected to the managed netw
 
 TWSNMP FK is continuously enhanced with new features. Here are the main new features and improvements added since v1.30.0.
 
+### SNMPv3 Security Enhancements (v1.33.0)
+
+Added support for SHA256/AES128 and SHA512/AES256 authentication and encryption modes, providing stronger security for modern network monitoring requirements.
+
+### Map and UI Improvements (v1.33.0)
+
+New features to improve map usability and organization have been added:
+- **Node IP Display**: Option to show node IP addresses directly on the map.
+- **Group Drawing Items**: New group (frame/background) drawing items for better node and area organization.
+- **VPanel Enhancements**: Added zoom and port wrap controls for the virtual panel in node and network reports.
+- **Map Aesthetics**: Removed background rectangles for unselected nodes for a cleaner look.
+
+### Drawing Item Enhancements (v1.33.0)
+
+Added support for setting the opacity (transparency) of drawing items and improved the user interface for background image settings.
+
+### AI (LLM) Integration (v1.32.0)
+
+Significant AI-powered features have been added:
+- **MIB Browser**: Natural language search and AI-powered MIB object explanations.
+- **Log Analysis**: AI explanations for NetFlow, Syslog, and SNMP Trap logs.
+- **Report Summarization**: AI-driven summaries for periodic network reports.
+- **Multi-Provider Support**: Supports Gemini, OpenAI, Claude, and Ollama.
+
 ### Network Report Function
 
 A function has been added to visualize MAC addresses, IP addresses, and other information of devices connected to each port from the FDB (Forwarding Database) table information of network switches, allowing you to grasp the overall connection status of the network. This helps in identifying suspicious connections and fault locations.
