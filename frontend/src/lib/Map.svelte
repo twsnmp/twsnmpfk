@@ -626,14 +626,16 @@
         {#if url}
           <!-- svelte-ignore a11y-no-static-element-interactions -->
           <div
-            class="flex space-x-2 hover:bg-sky-500/[0.8]"
+            class="flex items-center space-x-2 hover:bg-sky-500/[0.8] overflow-hidden"
             on:click={() => {
               showNodeMenu = false;
               BrowserOpenURL(url);
             }}
           >
-            <Icon path={icons.mdiLink} size={0.7} />
-            <div>
+            <div class="flex-none">
+              <Icon path={icons.mdiLink} size={0.7} />
+            </div>
+            <div class="truncate">
               {url}
             </div>
           </div>
