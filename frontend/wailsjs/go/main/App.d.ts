@@ -140,7 +140,7 @@ export function GetDiscoverStats():Promise<discover.DiscoverStat>;
 
 export function GetDrawItem(arg1:string):Promise<datastore.DrawItemEnt>;
 
-export function GetDrawItems():Promise<{[key: string]: datastore.DrawItemEnt}>;
+export function GetDrawItems():Promise<Record<string, datastore.DrawItemEnt>>;
 
 export function GetEventLogs(arg1:main.EventLogFilterEnt):Promise<Array<datastore.EventLogEnt>>;
 
@@ -192,13 +192,13 @@ export function GetNetFlow(arg1:main.NetFlowFilterEnt):Promise<Array<datastore.N
 
 export function GetNetwork(arg1:string):Promise<datastore.NetworkEnt>;
 
-export function GetNetworks():Promise<{[key: string]: datastore.NetworkEnt}>;
+export function GetNetworks():Promise<Record<string, datastore.NetworkEnt>>;
 
 export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
 
 export function GetNodeMemo(arg1:string):Promise<string>;
 
-export function GetNodes():Promise<{[key: string]: datastore.NodeEnt}>;
+export function GetNodes():Promise<Record<string, datastore.NodeEnt>>;
 
 export function GetNotifyConf():Promise<datastore.NotifyConfEnt>;
 

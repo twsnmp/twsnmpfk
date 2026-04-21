@@ -200,6 +200,11 @@ export namespace backend {
 		    return a;
 		}
 	}
+	
+	
+	
+	
+	
 	export class MonitorDataEnt {
 	    Time: number;
 	    CPU: number;
@@ -602,7 +607,7 @@ export namespace datastore {
 	    Units: string;
 	    Index: string;
 	    Description: string;
-	    EnumMap: {[key: number]: string};
+	    EnumMap: Record<number, string>;
 	    Hint: string;
 	
 	    static createFrom(source: any = {}) {
@@ -1235,7 +1240,7 @@ export namespace datastore {
 	    LogMode: number;
 	    NextTime: number;
 	    LastTime: number;
-	    Result: {[key: string]: any};
+	    Result: Record<string, any>;
 	    State: string;
 	    FailAction: string;
 	    RepairAction: string;
@@ -1282,7 +1287,7 @@ export namespace datastore {
 	    Time: number;
 	    PollingID: string;
 	    State: string;
-	    Result: {[key: string]: any};
+	    Result: Record<string, any>;
 	
 	    static createFrom(source: any = {}) {
 	        return new PollingLogEnt(source);
@@ -1785,6 +1790,7 @@ export namespace main {
 	        this.Value = source["Value"];
 	    }
 	}
+	
 	export class NetFlowFilterEnt {
 	    Start: string;
 	    End: string;
