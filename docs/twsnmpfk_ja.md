@@ -57,6 +57,22 @@ https://apps.apple.com/jp/app/twsnmpfk/id6468539128
 https://github.com/twsnmp/twsnmpfk/releases
 からパッケージをダウンロードできます。
 ![w:350 bg right:30%](./images/ja/2023-11-24_15-40-18.png)
+---
+
+## Linux版
+
+GitHubのリリースからパッケージ（`.tar.gz`形式）をダウンロードできます。
+
+### Linux環境での起動と注意点
+一般ユーザーとして実行すると、ICMP監視（RAWソケット）や特権ポート（514, 162等）の使用権限がないためエラーになります。
+**`sudo` で直接アプリを実行しないでください**（GUIの表示サーバーと接続できなくなります）。
+
+1. **特権の付与**:
+   `sudo setcap 'cap_net_bind_service,cap_net_raw+ep' ./twsnmpfk`
+2. **ARP監視ツールのインストール** (`arp`コマンドの追加):
+   `sudo apt-get update && sudo apt-get install -y net-tools`
+3. **一般ユーザーとしての起動**:
+   `./twsnmpfk`
 
 ---
 

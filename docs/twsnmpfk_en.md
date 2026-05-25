@@ -38,8 +38,25 @@ https://apps.apple.com/jp/app/twsnmpfk/id6468539128
 You can buy it.
 
 ![h:400 center](./images/en/2023-11-24_15-40-18.png)
+---
+
+## Linux Version
+
+You can download the package (`.tar.gz` format) from the GitHub Releases.
+
+### Notes for Running on Linux
+Running the application as a normal user will result in permission errors (no raw socket permission for ICMP Ping, no privileged port permission for 514/162).
+**Do not run the application directly with `sudo`** (connection to the X11/Wayland display server will break).
+
+1. **Grant Capabilities**:
+   `sudo setcap 'cap_net_bind_service,cap_net_raw+ep' ./twsnmpfk`
+2. **Install ARP Monitoring Tools** (adds `arp` command):
+   `sudo apt-get update && sudo apt-get install -y net-tools`
+3. **Run as a normal user**:
+   `./twsnmpfk`
 
 ---
+
 ## Starting TWSNMP FK
 In the case of Windows, start from the start menu to the Mac OS in your favorite method, such as from the launcher.Welcome to the screen.Start with the <Start> button.Stop the program with the <Stop> button.The explanation screen of how to use it is displayed with the <Help> button.
 <!-- _class: tinytext -->

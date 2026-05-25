@@ -41,6 +41,32 @@ You can buy it.
 ![](./images/en/2023-11-24_15-40-18.png){: width="95%"}
 
 
+## Linux Version
+
+You can download the package (`.tar.gz` format) from the GitHub Releases.
+
+### Notes for Running on Linux
+
+In Linux environments, running the application as a normal user will result in permission errors during startup (e.g., raw socket permission error for ICMP Ping, or port binding permission error for privileged ports under 1024 like 514 for Syslog or 162 for Trap).
+
+To resolve this securely, **do not run the application directly with `sudo`** (which will break connection to the X11/Wayland display server, preventing the GUI from launching). Instead, grant the executable the required Linux Capabilities to bind to privileged ports and use raw sockets, and then run it as a normal user.
+
+Additionally, modern Linux distributions (like Ubuntu) do not have the `arp` command installed by default. **You must install the `net-tools` package to use the ARP monitoring feature.**
+
+1. **Grant Capabilities**:
+   ```bash
+   sudo setcap 'cap_net_bind_service,cap_net_raw+ep' ./twsnmpfk
+   ```
+2. **Install ARP Monitoring Tools (net-tools)**:
+   ```bash
+   sudo apt-get update && sudo apt-get install -y net-tools
+   ```
+3. **Run as a normal user**:
+   ```bash
+   ./twsnmpfk
+   ```
+
+
 ## Starting TWSNMP FK
 In the case of Windows, start from the start menu to the Mac OS in your favorite method, such as from the launcher.Welcome to the screen.Start with the <Start> button.Stop the program with the <Stop> button.The explanation screen of how to use it is displayed with the <Help> button.
 <!-- _class: tinytext -->
