@@ -9,8 +9,8 @@
 |横の最大ポート数|ポートを折り返す数です。|
 |LLDP|LLDP対応を状態です。|
 |ARP監視|ARPテーブルを監視します。|
-|SNMPモード|SNMPのモードです。SNMPv1,v2c,v3（認証と暗号化別）があります。|
-|SNMP Community|SNMPv1,v2cの時のCommunity名です。|
+|SNMPモード|SNMPのモードです。SNMPv2c,v3（認証と暗号化別）があります。|
+|SNMP Community|SNMPv2cの時のCommunity名です。|
 |ユーザー|SNMPv3でアクセスする時のユーザーIDです。|
 |パスワード|SNMPv3でアクセスする時のパスワードです。|
 |URL|ブラウザーなどでアクセスする時のURLです。<br>設定すればダブルクリックで接続します。|

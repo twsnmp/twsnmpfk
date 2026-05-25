@@ -114,7 +114,6 @@ export const addrModeList = [
 ]
 
 export const snmpModeList = [
-  { name: 'SNMPv1', value: 'v1' },
   { name: 'SNMPv2c', value: 'v2c' },
   { name: $_("Ts.SNMPv3Auth"), value: 'v3auth' },
   { name: $_("Ts.SNMPv3AuthPriv"), value: 'v3authpriv' },

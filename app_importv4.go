@@ -356,7 +356,7 @@ func convertV4AddrMode(m string) string {
 func convertV4SnmpMode(m string) string {
 	switch m {
 	case "1":
-		return "v1"
+		return "v2c"
 	case "3", "5":
 		return "v3auth"
 	case "4", "6":

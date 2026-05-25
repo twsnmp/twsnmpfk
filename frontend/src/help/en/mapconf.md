@@ -13,8 +13,8 @@ This is the screen to set the management map.
 | Timeout | Default timeout.|
 | Retry | Default number of retry times.|
 | Log saving days | It is the number of days to save the log.The log will be deleted automatically after passing.|
-| SNMP mode | SNMP version and type of encryption.(SNMPV1, SNMPv2C, SNMPv3) |
-| SNMP Community | Community name for SNMPV1, V2C.|
+| SNMP mode | SNMP version and type of encryption.(SNMPv2c, SNMPv3) |
+| SNMP Community | Community name for SNMPv2c.|
 | SNMP user | User name at SNMPv3.|
 | SNMP password | Password name for SNMPv3.|
 | Syslog | Receive syslog.|

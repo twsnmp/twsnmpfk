@@ -13,8 +13,8 @@
 |タイムアウト|デフォルトのタイムアウトです。|
 |リトライ|デフォルトのリトライ回数です。|
 |ログ保存日数|ログを保存する日数です。過ぎた場合にログは自動で削除します。|
-|SNMPモード|SNMPのバージョンと暗号化の種類です。(SNMPv1,SNMPv2c,SNMPv3)|
-|SNMP Community|SNMPv1,v2cの時のCommunity名です。|
+|SNMPモード|SNMPのバージョンと暗号化の種類です。(SNMPv2c,SNMPv3)|
+|SNMP Community|SNMPv2cの時のCommunity名です。|
 |SNMP ユーザー|SNMPv3の時のユーザー名です。|
 |SNMP パスワード|SNMPv3の時のパスワード名です。|
 |Syslog|Syslogを受信します。|
