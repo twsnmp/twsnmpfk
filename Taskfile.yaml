@@ -25,6 +25,9 @@ tasks:
   macdebug:
     cmds:
       - wails build  -platform darwin -debug -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+  linux:
+    cmds:
+      - wails build -clean -platform linux/amd64 -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   windows:
     cmds:
       - wails build -clean -webview2 Browser -platform windows/amd64 -nsis -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
