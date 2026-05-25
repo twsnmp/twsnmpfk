@@ -3,7 +3,7 @@ marp: true
 paginate: true
 theme: graph_paper
 header: First TWSNMP FK
-footer: Copyright (c) 2023 Masayuki Yamai
+footer: Copyright (c) 2023-2026 Masayuki Yamai
 title: TWSNMP FK
 ---
 
@@ -16,7 +16,7 @@ Most popular SNMP manager in Japan
 
 ## At the beginning
 
-TWSNMP is an SNMP manager that supports the most popular SNMPv3 in Japan for over 20 years.
+TWSNMP is an SNMP manager that supports the most popular SNMPv3 in Japan for over 25 years.
 It is TWSNMP FK that has been reprinted with the latest machine technology in 2023.
 The TWSNMP FC that runs on the container is accessed from the web browser, but the FK is a desktop app and does not require a browser.
 

@@ -1,4 +1,7 @@
 {
+  "markdown.marp.themes": [
+    "docs/graph_paper.css"
+  ],
   "i18n-ally.localesPaths": [
     "frontend/src/i18n"
   ],

@@ -3,7 +3,7 @@ marp: true
 paginate: true
 theme: graph_paper
 header: はじめてのTWSNMP FK
-footer: Copyright (c) 2023 Masayuki Yamai
+footer: Copyright (c) 2023-2026 Masayuki Yamai
 title: はじめてのTWSNMP
 ---
 
@@ -17,7 +17,7 @@ title: はじめてのTWSNMP
 
 ## はじめに
 
-TWSNMPは日本で20年以上定番のSNMPv3に対応したSNMPマネージャです。
+TWSNMPは日本で25年以上定番のSNMPv3に対応したSNMPマネージャです。
 これを2023年の最新機技術で復刻したのがTWSNMP FKです。
 コンテナで動作するTWSNMP FCはWebブラウザーからアクセスして操作しますが、FKは、デスクトップアプリであるためブラウザー不要です。
 
