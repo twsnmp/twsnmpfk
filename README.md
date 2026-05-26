@@ -196,6 +196,30 @@ Usage of twsnmpfk:
 
 ## History
 
+### v1.34.0 (2026/05/26)
+
+#### Official Linux Support and Enhancements
+*   **CI Auto-Build & Release Pipeline**: Added a GitHub Actions workflow (`build-linux.yml`) to automatically build and package the Linux version (`.tar.gz`).
+*   **Ubuntu 24.04 Compatibility in CI**: Upgraded `WebKit2Gtk` to 4.1 to ensure compatibility and smooth building on Ubuntu 24.04 in CI.
+*   **Linux Capability and Execution Instructions**: Added step-by-step instructions to the README and web docs on running twsnmpfk as a standard user with proper Linux Capabilities (`setcap` for `cap_net_bind_service` and `cap_net_raw`) rather than `sudo`.
+*   **ARP Monitoring Dependency**: Documented that `net-tools` is required for Linux ARP monitoring.
+
+#### Cleanup of Deprecated Features
+*   **Removal of Unsupported SNMPv1**: Completely removed SNMPv1 options and controls from map, node, and network configuration UIs.
+*   **Import & Help Docs Synchronization**: Refactored the v4 map import logic to align with the SNMPv1 deprecation, and updated corresponding English and Japanese help files (`editnetwork.md`, `editnode.md`, `mapconf.md`).
+
+#### UI Improvements and Bug Fixes
+*   **Long URL Menu Layout Fix**: Resolved a layout bug in the node right-click menu where extremely long URLs would squash the associated menu icons.
+*   **Network Report VPanel Port Wrap**: Enhanced the virtual panel (VPanel) under Network/Node reports by introducing customizable Port Wrap and zoom settings.
+
+#### Security and Maintenance
+*   **Vulnerability Mitigations**: Audited and upgraded Go modules and frontend NPM dependencies to patch known security vulnerabilities.
+*   **Framework Updates**: Bumped Wails framework to `v2.12.0` and upgraded TypeScript to `5.5.x`.
+
+#### Documentation and Presentation Slide Updates
+*   **Marp Presentation Theme Fix**: Resolved the "graph_paper" theme error in Marp by introducing a local `graph_paper.css` file and registering it in VS Code settings. Regrew and updated the distributable PDF slide manuals.
+*   **Custom Website Headers**: Added a custom head snippet (`head-custom.html`) to the Jekyll-based web docs for easier customization of theme settings, analytics, and OGP metadata.
+
 ### v1.33.0 (2026/03/17)
 
 #### SNMPv3 Security Enhancements
