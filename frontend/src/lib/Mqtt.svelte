@@ -8,6 +8,7 @@
     GetMqttStatList,
     DeleteMqttStats,
     DeleteAllMqttStat,
+    GetDefaultPolling,
   } from "../../wailsjs/go/main/App";
   import {
     renderState,
@@ -19,10 +20,15 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { copyText } from "svelte-copy";
+  import Polling from "./Polling.svelte";
 
   let data: any = [];
   let table: any = undefined;
   let selectedCount = 0;
+  let showPolling = false;
+  let polling: any = undefined;
+  let copied = false;
 
   const showTable = () => {
     selectedCount = 0;
@@ -69,6 +75,37 @@
     await DeleteAllMqttStat();
     refresh();
   }
+
+  const copyTopic = () => {
+    const selected = table.rows({ selected: true }).data();
+    if (selected.length < 1) {
+      return;
+    }
+    const topics: string[] = [];
+    for (let i = 0; i < selected.length; i++) {
+      topics.push(selected[i].Topic);
+    }
+    copyText(topics.join("\n"));
+    copied = true;
+    setTimeout(() => (copied = false), 2000);
+  };
+
+  const makePolling = async () => {
+    const selected = table.rows({ selected: true }).data();
+    if (!selected || selected.length !== 1) {
+      return;
+    }
+    const host = selected[0].Remote;
+    polling = await GetDefaultPolling(host);
+    polling.Name = `mqtt ${selected[0].Topic}`;
+    polling.Type = "mqtt";
+    polling.Mode = "subscribe";
+    polling.Params = "tcp://localhost:1883";
+    polling.Filter = selected[0].Topic;
+    polling.Extractor = "";
+    polling.Script = "";
+    showPolling = true;
+  };
 
   const columns = [
     {
@@ -133,7 +170,33 @@
     <table id="mqttStatTable" class="display compact" style="width:99%" />
   </div>
   <div class="flex justify-end space-x-2 mr-2">
+    {#if selectedCount === 1}
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        on:click={makePolling}
+        size="xs"
+      >
+        <Icon path={icons.mdiEye} size={1} />
+        {$_('Mqtt.CreatePolling')}
+      </GradientButton>
+    {/if}
     {#if selectedCount > 0}
+      <GradientButton
+        shadow
+        color="cyan"
+        type="button"
+        on:click={copyTopic}
+        size="xs"
+      >
+        {#if copied}
+          <Icon path={icons.mdiCheck} size={1} />
+        {:else}
+          <Icon path={icons.mdiContentCopy} size={1} />
+        {/if}
+        {$_('Mqtt.CopyTopic')}
+      </GradientButton>
       <GradientButton
         shadow
         color="red"
@@ -167,3 +230,6 @@
     </GradientButton>
   </div>
 </div>
+
+<Polling bind:show={showPolling} pollingTmp={polling} />
+

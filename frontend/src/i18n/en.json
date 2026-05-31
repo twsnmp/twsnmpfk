@@ -1055,7 +1055,9 @@
     "DeleteAll": "Delete All",
     "First": "First Time",
     "Remote": "Remote",
-    "Topic": "Topic"
+    "Topic": "Topic",
+    "CopyTopic": "Copy Topic",
+    "CreatePolling": "Create Polling"
   },
   "NetworkReport": {
     "Error": "Error",
