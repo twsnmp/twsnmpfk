@@ -390,7 +390,7 @@ func checkFixMACMode(n *datastore.NodeEnt) {
 				Level:    "warn",
 				NodeID:   n.ID,
 				NodeName: n.Name,
-				Event:    fmt.Sprintf(i18n.Trans("Fixed MAC address node '%s' Chnage IP address from '%s' to '%s'"), n.MAC, oldIP, ip),
+				Event:    fmt.Sprintf(i18n.Trans("Fixed MAC address node '%s' Change IP address from '%s' to '%s'"), n.MAC, oldIP, ip),
 			})
 		}
 	}
@@ -429,6 +429,6 @@ func checkFixHostMode(n *datastore.NodeEnt) {
 		Level:    "warn",
 		NodeID:   n.ID,
 		NodeName: n.Name,
-		Event:    fmt.Sprintf(i18n.Trans("Fixed host name node '%s' Chnage IP from '%s' to ''%s"), n.Name, oldIP, hitIP),
+		Event:    fmt.Sprintf(i18n.Trans("Fixed host name node '%s' Change IP from '%s' to '%s'"), n.Name, oldIP, hitIP),
 	})
 }

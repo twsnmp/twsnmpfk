@@ -86,7 +86,7 @@ func getMapInfo() []reportInfoEnt {
 		class = "low"
 	} else if warn > 0 {
 		class = "warn"
-		state = i18n.Trans("Warnning")
+		state = i18n.Trans("Warning")
 	} else if normal+repair > 0 {
 		class = "normal"
 		state = i18n.Trans("Normal")

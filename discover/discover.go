@@ -382,7 +382,7 @@ func addFoundNode(dent *discoverInfoEnt) {
 		Level:    "info",
 		NodeID:   n.ID,
 		NodeName: n.Name,
-		Event:    i18n.Trans("Add by dicover"),
+		Event:    i18n.Trans("Add by discover"),
 	})
 	if datastore.DiscoverConf.AddNetwork && datastore.FindNetworkByIP(n.IP) == nil {
 		if _, ok := dent.ServerList["lldp"]; ok {
@@ -426,7 +426,7 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 		Level:    "info",
 		NodeID:   n.ID,
 		NodeName: n.Name,
-		Event:    i18n.Trans("Update by dicover"),
+		Event:    i18n.Trans("Update by discover"),
 	})
 	if datastore.DiscoverConf.AddNetwork && datastore.FindNetworkByIP(n.IP) == nil {
 		if _, ok := dent.ServerList["lldp"]; ok {

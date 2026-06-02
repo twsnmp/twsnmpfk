@@ -102,10 +102,10 @@ var transMap = map[string]map[string]string{
 	"Protocol:": {
 		"ja": "対応プロトコル:",
 	},
-	"Add by dicover": {
+	"Add by discover": {
 		"ja": "自動発見により追加",
 	},
-	"Update by dicover": {
+	"Update by discover": {
 		"ja": "自動発見により更新",
 	},
 	"ARP Watch range %s usage:%d/%d %.2f%%": {
@@ -120,11 +120,11 @@ var transMap = map[string]map[string]string{
 	"Fixed MAC address node MAC is %s": {
 		"ja": "MACアドレス固定ノードのアドレス取得 %s",
 	},
-	"Fixed MAC address node '%s' Chnage IP address from '%s' to '%s'": {
+	"Fixed MAC address node '%s' Change IP address from '%s' to '%s'": {
 		"ja": "MACアドレス固定ノード'%s'のIPアドレスが'%s'から'%s'に変化",
 	},
-	"Fixed host name node '%s' Chnage IP from '%s' to ''%s": {
-		"ja": "ホスト名固定ノード'%s'のIPアドレスが'%s'から''%sに変化",
+	"Fixed host name node '%s' Change IP from '%s' to '%s'": {
+		"ja": "ホスト名固定ノード'%s'のIPアドレスが'%s'から'%s'に変化",
 	},
 	"Send notify mail %s": {
 		"ja": "通知メール送信 %s",
@@ -150,7 +150,7 @@ var transMap = map[string]map[string]string{
 	"Low": {
 		"ja": "軽度",
 	},
-	"Warnning": {
+	"Warning": {
 		"ja": "注意",
 	},
 	"Normal": {
@@ -279,10 +279,10 @@ var transMap = map[string]map[string]string{
 	"Clear all arp watch info": {
 		"ja": "ARP監視情報を全削除",
 	},
-	"Failed to send rapair notify to line": {
+	"Failed to send repair notification to LINE": {
 		"ja": "復帰通知をLINEへ送信できません",
 	},
-	"Sent rapair notify to line": {
+	"Sent repair notification to LINE": {
 		"ja": "復帰通知をLINEへ送信しました",
 	},
 	"Failed to send notify to line": {

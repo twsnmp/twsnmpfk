@@ -196,7 +196,7 @@ func levelName(s string) string {
 	case "low":
 		return i18n.Trans("Low")
 	case "warn":
-		return i18n.Trans("Warnning")
+		return i18n.Trans("Warning")
 	case "normal", "up":
 		return i18n.Trans("Normal")
 	case "repair":
