@@ -9,6 +9,7 @@
     DeleteMqttStats,
     DeleteAllMqttStat,
     GetDefaultPolling,
+    GetNodes,
   } from "../../wailsjs/go/main/App";
   import {
     renderState,
@@ -95,8 +96,29 @@
     if (!selected || selected.length !== 1) {
       return;
     }
-    const host = selected[0].Remote;
-    polling = await GetDefaultPolling(host);
+    const nodes = await GetNodes();
+    const nodeList = Object.values(nodes);
+    
+    // (1) Remote IP address
+    const remoteIP = selected[0].Remote;
+    let node = nodeList.find(n => n.IP === remoteIP);
+    
+    // (2) MQTT broker (TWSNMP FK itself) node
+    if (!node) {
+      node = nodeList.find(n => n.IP === "127.0.0.1" || n.IP === "localhost" || n.IP === "::1");
+      if (!node) {
+        node = nodeList.find(n => n.Name.toLowerCase().includes("twsnmp"));
+      }
+    }
+    
+    // (3) First node in the node list
+    if (!node && nodeList.length > 0) {
+      node = nodeList[0];
+    }
+    
+    const nodeID = node ? node.ID : "";
+    polling = await GetDefaultPolling(nodeID);
+    
     polling.Name = `mqtt ${selected[0].Topic}`;
     polling.Type = "mqtt";
     polling.Mode = "subscribe";
