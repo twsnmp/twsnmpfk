@@ -269,6 +269,7 @@ func oldLogChecker(ctx context.Context, wg *sync.WaitGroup) {
 			deleteOldLogs()
 			deleteOldArpTable()
 			chekOldOTelData()
+			DeleteOldMqttStats(MapConf.LogDays)
 		}
 	}
 }

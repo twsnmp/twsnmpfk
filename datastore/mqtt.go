@@ -134,3 +134,28 @@ func DeleteAllMqttStat() error {
 		return nil
 	})
 }
+
+func DeleteOldMqttStats(days int) {
+	if days < 1 {
+		return
+	}
+	limit := time.Now().AddDate(0, 0, -days).UnixNano()
+	delList := []string{}
+	mqttStatMap.Range(func(key any, value any) bool {
+		if s, ok := value.(*MqttStatEnt); ok {
+			if s.Last < limit {
+				if id, ok := key.(string); ok {
+					delList = append(delList, id)
+				}
+			}
+		}
+		return true
+	})
+	if len(delList) > 0 {
+		for _, id := range delList {
+			mqttStatMap.Delete(id)
+		}
+		SaveMqttStats()
+		log.Printf("delete old mqtt stats count=%d", len(delList))
+	}
+}
