@@ -17,7 +17,7 @@ require (
 	github.com/emersion/go-imap/v2 v2.0.0-beta.7
 	github.com/fatih/color v1.18.0
 	github.com/gliderlabs/ssh v0.3.8
-	github.com/go-jose/go-jose/v4 v4.1.3
+	github.com/go-jose/go-jose/v4 v4.1.4
 	github.com/google/gopacket v1.1.19
 	github.com/gosnmp/gosnmp v1.38.0
 	github.com/knadh/go-pop3 v1.0.0
