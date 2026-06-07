@@ -36,6 +36,7 @@ type NodeEnt struct {
 	AddrMode     string `json:"AddrMode"`
 	AutoAck      bool   `json:"AutoAck"`
 	Loc          string `json:"Loc"`
+	SnmpPort     int    `json:"SnmpPort"`
 }
 
 func loadMapData() error {

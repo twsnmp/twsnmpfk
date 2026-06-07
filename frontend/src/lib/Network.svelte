@@ -60,6 +60,7 @@
         ArpWatch: false,
         Unmanaged: false,
         Ports: [],
+        SnmpPort: 0,
       };
     }
     if (!network.SnmpMode) {
@@ -98,6 +99,7 @@
     if (network.Unmanaged) {
       updateUnmanagedNetworkPort()
     }
+    network.SnmpPort = Number(network.SnmpPort);
     const r = await UpdateNetwork(network);
     if (r) {
       close();
@@ -368,7 +370,7 @@
             >{$_("Network.ArpWatch")}</Checkbox
           >
         </div>
-        <div class="grid gap-4 md:grid-cols-3">
+        <div class="grid gap-4 md:grid-cols-4">
           <Label class="space-y-2 text-xs">
             <span> {$_("Node.SNMPMode")} </span>
             <Select
@@ -399,6 +401,10 @@
               <Input class="h-8" type="password" bind:value={network.Password} size="sm" />
             </Label>
           {/if}
+          <Label class="space-y-2 text-xs">
+            <span>{$_("Node.SnmpPort")}</span>
+            <Input class="h-8" type="number" min="0" max="65535" bind:value={network.SnmpPort} placeholder="161" size="sm" />
+          </Label>
         </div>
       {/if}
       <div class="grid gap-2 md:grid-cols-2">

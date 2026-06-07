@@ -501,6 +501,7 @@
     "SelectIcon": "Select icon",
     "SelectSnmpMode": "Select SNMP mode",
     "SnmpPassword": "SNMP password",
+    "SnmpPort": "SNMP Port",
     "SnmpUser": "SNMP user",
     "Image": "Image",
     "None": "None",

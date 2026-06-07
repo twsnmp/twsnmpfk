@@ -28,6 +28,7 @@ type NetworkEnt struct {
 	Community string    `json:"Community"`
 	User      string    `json:"User"`
 	Password  string    `json:"Password"`
+	SnmpPort  int       `json:"SnmpPort"`
 	URL       string    `json:"URL"`
 	ArpWatch  bool      `json:"ArpWatch"`
 	Unmanaged bool      `json:"Unmanaged"`

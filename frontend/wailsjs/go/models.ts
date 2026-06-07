@@ -863,6 +863,7 @@ export namespace datastore {
 	    Community: string;
 	    User: string;
 	    Password: string;
+	    SnmpPort: number;
 	    URL: string;
 	    ArpWatch: boolean;
 	    Unmanaged: boolean;
@@ -890,6 +891,7 @@ export namespace datastore {
 	        this.Community = source["Community"];
 	        this.User = source["User"];
 	        this.Password = source["Password"];
+	        this.SnmpPort = source["SnmpPort"];
 	        this.URL = source["URL"];
 	        this.ArpWatch = source["ArpWatch"];
 	        this.Unmanaged = source["Unmanaged"];
@@ -948,6 +950,7 @@ export namespace datastore {
 	    AddrMode: string;
 	    AutoAck: boolean;
 	    Loc: string;
+	    SnmpPort: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new NodeEnt(source);
@@ -980,6 +983,7 @@ export namespace datastore {
 	        this.AddrMode = source["AddrMode"];
 	        this.AutoAck = source["AutoAck"];
 	        this.Loc = source["Loc"];
+	        this.SnmpPort = source["SnmpPort"];
 	    }
 	}
 	export class NotifyConfEnt {

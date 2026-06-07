@@ -60,6 +60,7 @@ func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
 	n.Icon = nu.Icon
 	n.Image = nu.Image
 	n.SnmpMode = nu.SnmpMode
+	n.SnmpPort = nu.SnmpPort
 	n.Community = nu.Community
 	n.User = nu.User
 	n.SSHUser = nu.SSHUser
@@ -116,6 +117,7 @@ func (a *App) CopyNode(id string) bool {
 	n.Icon = ns.Icon
 	n.Image = ns.Image
 	n.SnmpMode = ns.SnmpMode
+	n.SnmpPort = ns.SnmpPort
 	n.Community = ns.Community
 	n.User = ns.User
 	n.SSHUser = ns.SSHUser

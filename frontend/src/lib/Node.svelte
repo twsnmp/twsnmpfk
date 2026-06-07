@@ -61,6 +61,7 @@
         AddrMode: "ip",
         AutoAck: false,
         Loc: "",
+        SnmpPort: 0,
       };
     }
     if (!node.AddrMode) {
@@ -94,6 +95,7 @@
   };
 
   const save = async () => {
+    node.SnmpPort = Number(node.SnmpPort);
     const r = await UpdateNode(node);
     if (r) {
       close();
@@ -199,7 +201,7 @@
           {/if}
         </div>
       </div>
-      <div class="grid gap-4 md:grid-cols-4">
+      <div class="grid gap-4 md:grid-cols-5">
         <Label class="space-y-2 text-xs">
           <span> {$_("Node.SNMPMode")} </span>
           <Select
@@ -224,6 +226,10 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Password")}</span>
           <Input class="h-8" type="password" bind:value={node.Password} size="sm" />
+        </Label>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Node.SnmpPort")}</span>
+          <Input class="h-8" type="number" min="0" max="65535" bind:value={node.SnmpPort} placeholder="161" size="sm" />
         </Label>
     </div>
       <div class="grid gap-4 md:grid-cols-4">

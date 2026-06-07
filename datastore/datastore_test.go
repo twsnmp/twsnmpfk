@@ -34,6 +34,9 @@ func TestDataStore(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.Remove(backdb)
+	if err := BackupDB(backdb); err != nil {
+		t.Fatal(err)
+	}
 	CloseDB()
 	MapConf.MapName = ""
 	err = openDB(backdb)
