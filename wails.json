@@ -1,5 +1,5 @@
 {
-  "$schema": "https://wails.io/schemas/config.v2.json",
+  "$schema": "./.vscode/wails.json.schema",
   "name": "twsnmpfk",
   "outputfilename": "twsnmpfk",
   "frontend:install": "npm install",
