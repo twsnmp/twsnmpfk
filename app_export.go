@@ -691,7 +691,7 @@ func (a *App) ExportMap(data string) error {
 		return err
 	}
 	if filepath.Ext(file) == ".png" {
-		return os.WriteFile(file, img, 0640)
+		return os.WriteFile(file, img, 0600)
 	}
 	f := excelize.NewFile()
 	f.SetCellValue("Sheet1", "A1", "TWSNMP FK MAP"+"-"+d)
@@ -752,7 +752,7 @@ func (a *App) ExportPortDef(d string) error {
 	if file == "" {
 		return nil
 	}
-	return os.WriteFile(file, []byte(d), 0644)
+	return os.WriteFile(file, []byte(d), 0600)
 }
 
 func (a *App) ImportPortDef() string {
@@ -816,7 +816,7 @@ func (a *App) ExportPollingAsTemplate(id string) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(file, j, 0666)
+	return os.WriteFile(file, j, 0600)
 }
 
 // ImportPollingTemplate : ポーリングテンプレートファイルを読み込む
@@ -871,5 +871,5 @@ func (a *App) ExportAIData(id string) error {
 	if err := req.Df.ToCSV(&b); err != nil {
 		return err
 	}
-	return os.WriteFile(file, b.Bytes(), 0644)
+	return os.WriteFile(file, b.Bytes(), 0600)
 }

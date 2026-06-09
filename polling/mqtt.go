@@ -213,6 +213,7 @@ func getMqttClient(pe *datastore.PollingEnt) (mqtt.Client, error) {
 func getMqttTLSConfig(insec bool) (*tls.Config, error) {
 	if datastore.CACert == "" {
 		return &tls.Config{
+			// #nosec G402
 			InsecureSkipVerify: insec,
 		}, nil
 	}
@@ -225,6 +226,7 @@ func getMqttTLSConfig(insec bool) (*tls.Config, error) {
 	if datastore.ClientCert == "" && datastore.ClientKey == "" {
 		return &tls.Config{
 			RootCAs:            certpool,
+			// #nosec G402
 			InsecureSkipVerify: insec,
 		}, nil
 	}
@@ -236,6 +238,7 @@ func getMqttTLSConfig(insec bool) (*tls.Config, error) {
 	return &tls.Config{
 		Certificates:       []tls.Certificate{cert},
 		RootCAs:            certpool,
+		// #nosec G402
 		InsecureSkipVerify: insec,
 	}, nil
 

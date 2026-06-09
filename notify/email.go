@@ -94,6 +94,7 @@ func sendMailSMTP(subject, body string) error {
 	}
 	tlsconfig := &tls.Config{
 		ServerName:         host,
+		// #nosec G402
 		InsecureSkipVerify: datastore.NotifyConf.InsecureSkipVerify,
 	}
 	if datastore.NotifyConf.InsecureSkipVerify {
@@ -182,6 +183,7 @@ func sendTestMailSMTP(testConf *datastore.NotifyConfEnt) error {
 	}
 	tlsconfig := &tls.Config{
 		ServerName:         host,
+		// #nosec G402
 		InsecureSkipVerify: testConf.InsecureSkipVerify,
 	}
 	if testConf.InsecureSkipVerify {

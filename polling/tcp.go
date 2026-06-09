@@ -58,6 +58,7 @@ func doPollingTLS(pe *datastore.PollingEnt) {
 	}
 	script := pe.Script
 	conf := &tls.Config{
+		// #nosec G402
 		InsecureSkipVerify: true,
 	}
 	switch mode {

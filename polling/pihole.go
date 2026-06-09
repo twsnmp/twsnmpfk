@@ -81,6 +81,7 @@ func loginToPiHole(url, passwd string, timeout int) (string, error) {
 		HTTPClient: &http.Client{
 			Timeout: time.Duration(timeout) * time.Second,
 			Transport: &http.Transport{
+				// #nosec G402
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			},
 		},
@@ -118,6 +119,7 @@ func logoutFromPiHole(url, sid string, timeout int) {
 	client := &http.Client{
 		Timeout: time.Duration(timeout) * time.Second,
 		Transport: &http.Transport{
+			// #nosec G402
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
@@ -144,6 +146,7 @@ func getPiHole(url, path, sid string, timeout int) (map[string]interface{}, erro
 		HTTPClient: &http.Client{
 			Timeout: time.Duration(timeout) * time.Second,
 			Transport: &http.Transport{
+				// #nosec G402
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			},
 		},

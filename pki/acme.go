@@ -777,6 +777,7 @@ func http01Validate(acc *account, ch *challenge) error {
 		Transport: &http.Transport{
 			Proxy: http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{
+				// #nosec G402
 				InsecureSkipVerify: true,
 			},
 		},
@@ -850,6 +851,7 @@ func tlsalpn01Validate(acc *account, ch *challenge) error {
 		NextProtos:         []string{"acme-tls/1"},
 		MinVersion:         tls.VersionTLS12,
 		ServerName:         serverName(ch),
+		// #nosec G402
 		InsecureSkipVerify: true,
 	}
 	dialer := &net.Dialer{

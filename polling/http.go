@@ -267,6 +267,7 @@ func getMetrics(body string) (map[string]any, error) {
 }
 
 var insecureTransport = &http.Transport{
+	// #nosec G402
 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 }
 

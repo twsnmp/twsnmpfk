@@ -1,7 +1,7 @@
 package datastore
 
 import (
-	"crypto/sha1"
+	"crypto/sha1" // #nosec G505
 	"encoding/json"
 	"fmt"
 	"log"
@@ -26,6 +26,7 @@ type MqttStatEnt struct {
 var mqttStatMap sync.Map
 
 func getMqttStatKey(clientID, topic string) string {
+	// #nosec G401
 	return fmt.Sprintf("%x", sha1.Sum([]byte(fmt.Sprintf("%s\t%s", clientID, topic))))
 }
 

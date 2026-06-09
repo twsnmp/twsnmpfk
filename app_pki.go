@@ -190,7 +190,7 @@ func (a *App) ExportCert(id string) {
 	if err != nil || file == "" {
 		return
 	}
-	os.WriteFile(file, []byte(cert.Certificate), 0660)
+	os.WriteFile(file, []byte(cert.Certificate), 0600)
 }
 
 func (a *App) GetPKIControl() datastore.PKIControlEnt {

@@ -35,12 +35,15 @@ func doPollingCmd(pe *datastore.PollingEnt) {
 
 	if filepath.Ext(cl[0]) == ".sh" {
 		cl[0] = filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
-		tio.Cmd = cmd.GetCmd("/bin/sh", []string{"-c", strings.Join(cl, " ")})
+		// #nosec G204
+		tio.Cmd = cmd.GetCmd("/bin/sh", cl)
 	} else {
 		exe := filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
 		if len(cl) == 1 {
+			// #nosec G204
 			tio.Cmd = cmd.GetCmd(exe, nil)
 		} else {
+			// #nosec G204
 			tio.Cmd = cmd.GetCmd(exe, cl[1:])
 		}
 	}

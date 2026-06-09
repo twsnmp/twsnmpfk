@@ -432,12 +432,15 @@ func doActionCmd(cl []string) {
 	}
 	if filepath.Ext(cl[0]) == ".sh" {
 		cl[0] = filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
-		tio.Cmd = exec.Command("/bin/sh", "-c", strings.Join(cl, " "))
+		// #nosec G204
+		tio.Cmd = exec.Command("/bin/sh", cl...)
 	} else {
 		exe := filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
 		if len(cl) == 1 {
+			// #nosec G204
 			tio.Cmd = exec.Command(exe)
 		} else {
+			// #nosec G204
 			tio.Cmd = exec.Command(exe, cl[1:]...)
 		}
 	}

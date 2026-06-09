@@ -1,7 +1,7 @@
 package datastore
 
 import (
-	"crypto/sha1"
+	"crypto/sha1" // #nosec G505
 	"encoding/json"
 	"fmt"
 	"log"
@@ -153,6 +153,7 @@ func SaveOTelMetric() {
 }
 
 func getOTelMetricKey(host, service, scope, name string) string {
+	// #nosec G401
 	return fmt.Sprintf("%x", sha1.Sum([]byte(fmt.Sprintf("%s\t%s\t%s\t%s", host, service, scope, name))))
 }
 

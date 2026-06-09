@@ -83,7 +83,9 @@ func startMCPServer() *echo.Echo {
 	addTools(s)
 	// Add prompts to MCP server
 	addPrompts(s)
-	sv := &http.Server{}
+	sv := &http.Server{
+		ReadHeaderTimeout: 10 * time.Second,
+	}
 	sv.Addr = datastore.MapConf.MCPEndpoint
 	if cert, err := getMCPServerCert(); err == nil {
 		if cert != nil {

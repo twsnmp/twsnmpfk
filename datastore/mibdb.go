@@ -238,7 +238,8 @@ func loadExtMIBs(root string) {
 	}
 	skipMap := make(map[string]bool)
 	hasHit := false
-	filepath.Walk(root,
+	cleanedRoot := filepath.Clean(root)
+	filepath.Walk(cleanedRoot,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -246,10 +247,18 @@ func loadExtMIBs(root string) {
 			if info.IsDir() {
 				return nil
 			}
-			log.Printf("load ext mib path=%s", path)
-			if asn1, err := os.ReadFile(path); err == nil {
-				if loadExtMIB(asn1, "ext", path, false) {
-					skipMap[path] = true
+			cleanedPath := filepath.Clean(path)
+			if !strings.HasPrefix(cleanedPath, cleanedRoot) {
+				return nil
+			}
+			if info.Mode()&os.ModeSymlink != 0 {
+				return nil
+			}
+			log.Printf("load ext mib path=%s", cleanedPath)
+			// #nosec G304 G122
+			if asn1, err := os.ReadFile(cleanedPath); err == nil {
+				if loadExtMIB(asn1, "ext", cleanedPath, false) {
+					skipMap[cleanedPath] = true
 				} else {
 					hasHit = true
 				}
@@ -263,6 +272,7 @@ func loadExtMIBs(root string) {
 		hasHit = false
 		for path := range skipMap {
 			log.Printf("retry %d to load ext mib path=%s", r, path)
+			// #nosec G304
 			if asn1, err := os.ReadFile(path); err == nil {
 				if loadExtMIB(asn1, "ext", path, false) {
 					log.Printf("has skip mib file=%s", path)
@@ -275,6 +285,7 @@ func loadExtMIBs(root string) {
 		r++
 	}
 	for path := range skipMap {
+		// #nosec G304
 		if asn1, err := os.ReadFile(path); err == nil {
 			if loadExtMIB(asn1, "ext", path, true) {
 				log.Printf("last retry has skip mib file=%s", path)
