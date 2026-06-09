@@ -177,7 +177,6 @@ func setMCPAllow() {
 func checkMCPACL(c echo.Context) bool {
 	if datastore.MapConf.MCPToken != "" {
 		t := c.Request().Header.Get("Authorization")
-		log.Printf("checkMCPACL token=%+v", t)
 		if !strings.Contains(t, datastore.MapConf.MCPToken) {
 			return false
 		}

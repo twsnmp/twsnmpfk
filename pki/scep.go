@@ -120,7 +120,6 @@ type request struct {
 func scepFunc(c echo.Context) error {
 	req, err := decodeRequest(c)
 	if err != nil {
-		log.Printf("scep err=%v", err)
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	switch req.Operation {
@@ -131,7 +130,6 @@ func scepFunc(c echo.Context) error {
 	case "PKIOperation":
 		return pkiOperation(c, req)
 	default:
-		log.Printf("scep unknown operation op=%v", req.Operation)
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("unknown operation: %s", req.Operation))
 	}
 }
@@ -187,7 +185,6 @@ func getCACert(c echo.Context) error {
 	}
 	data, err := scep.DegenerateCertificates(certs)
 	if err != nil {
-		log.Printf(" err=%v", err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	return c.Blob(http.StatusOK, "application/x-x509-ca-ra-cert", data)
@@ -216,44 +213,36 @@ func pkiOperation(c echo.Context, req request) error {
 	// key, ok := rootCAPrivateKey.(crypto.Signer)
 	key, ok := scepCAPrivateKey.(crypto.Signer)
 	if !ok {
-		log.Printf("err=%v", err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	// ca, err := x509.ParseCertificate(rootCACertificate)
 	ca, err := x509.ParseCertificate(scepCACertificate)
 	if err != nil {
-		log.Printf("err=%v", err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	// extract encrypted pkiEnvelope
 	err = msg.DecryptPKIEnvelope(ca, key)
 	if err != nil {
-		log.Printf("err=%v", err)
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	csr := msg.CSR
 	transactionID := string(msg.TransactionID)
 	challengePassword := msg.ChallengePassword
-	log.Printf("transactionID=%v  challengePassword=%v fromIP=%s", transactionID, challengePassword, c.RealIP())
 	crtBytes, _, err := createCertificateFromCSR(csr.Raw, "scep",
 		map[string]string{"RemoteAddr": c.RealIP(), "TransactionID": transactionID, "ChallengePassword": challengePassword})
 	if err != nil {
-		log.Printf("create cert err=%v", err)
 		rsp, err := msg.Fail(ca, key, scep.BadRequest)
 		if err != nil {
-			log.Printf("err=%v", err)
 			return c.JSON(http.StatusInternalServerError, err)
 		}
 		return c.Blob(http.StatusOK, "application/x-pki-message", rsp.Raw)
 	}
 	crt, err := x509.ParseCertificate(crtBytes)
 	if err != nil {
-		log.Printf("err=%v", err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	rsp, err := msg.Success(ca, key, crt)
 	if err != nil {
-		log.Printf("err=%v", err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	return c.Blob(http.StatusOK, "application/x-pki-message", rsp.Raw)

@@ -108,8 +108,8 @@ func sshdGetlog(t string, s ssh.Session) {
 		} else if v, err := time.Parse(time.RFC3339, cmds[2]); err == nil {
 			st = v.UnixNano()
 		}
-		if v, err := strconv.ParseInt(cmds[3], 10, 64); err == nil {
-			count = int(v)
+		if v, err := strconv.Atoi(cmds[3]); err == nil {
+			count = v
 		}
 	}
 	if t == "eventlog" {
@@ -144,12 +144,12 @@ func sshdPutSyslog(s ssh.Session) {
 	}
 	cmds := s.Command()
 	if len(cmds) > 2 {
-		if v, err := strconv.ParseInt(cmds[2], 10, 64); err == nil {
-			facility = int(v)
+		if v, err := strconv.Atoi(cmds[2]); err == nil {
+			facility = v
 		}
 		if len(cmds) > 3 {
-			if v, err := strconv.ParseInt(cmds[3], 10, 64); err == nil {
-				severity = int(v)
+			if v, err := strconv.Atoi(cmds[3]); err == nil {
+				severity = v
 			}
 			if len(cmds) > 4 {
 				host = cmds[4]
