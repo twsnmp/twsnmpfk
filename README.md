@@ -196,6 +196,25 @@ Usage of twsnmpfk:
 
 ## History
 
+### v1.35.0 (2026/06/11)
+
+#### Custom SNMP Port Configuration
+*   **Custom Port Settings**: Added a custom SNMP Port field to both Node and Network configuration dialogs. SNMP operations, including polling and reporting, will now respect the customized port (defaults to 161 if set to 0).
+
+#### MQTT Feature Enhancements
+*   **Enhanced Polling Node Selection**: Enhanced the node selection logic when creating MQTT polling items from MQTT statistics. It prioritizes (1) Matching remote IP address, (2) Localhost/TWSNMP broker node, (3) Falling back to the first available node.
+*   **Topic Operations**: Added "Copy Topic" and "Create Polling" options directly into the MQTT statistics list view.
+*   **Auto-Cleanup of Statistics**: Added automatic cleanup of old MQTT statistics based on the configured log retention days.
+
+#### Security & Compliance Remediations
+*   **Dependency Upgrades**: Upgraded `go.opentelemetry.io/otel/sdk` to v1.43.0 (CVE-2026-39883), `go.opentelemetry.io/otel` to v1.41.0 (CVE-2026-29181), and `go-jose` to v4.1.4 (GO-2026-4945) to patch known vulnerabilities.
+*   **GoSec & CodeQL Security Fixes**: Fixed several code scanning security alerts (G112, G122, G204, G306, G401, G402, G505) covering file permissions, command variables, timeouts, weak hashes, TLS, and loop pointers.
+*   **SSHd Logging & Refactoring**: Resolved integer conversion warnings in the SSH server module (`logger/sshd`) and cleaned up verbosity/sensitive logs.
+
+#### UI/UX and Translation Polish
+*   **Wails Local Schema**: Introduced a local VS Code schema for `wails.json` to resolve trust-related warning messages in editors.
+*   **Localization Corrections**: Corrected multiple typos, spelling mistakes, and translation inconsistencies across Japanese and English locales.
+
 ### v1.34.0 (2026/05/26)
 
 #### Official Linux Support and Enhancements
