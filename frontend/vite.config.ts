@@ -8,6 +8,18 @@ export default defineConfig({
   build: {
     target: 'esnext'
   },
+  esbuild: {
+    supported: {
+      'destructuring': true
+    }
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      supported: {
+        'destructuring': true
+      }
+    }
+  },
   plugins: [
     svelte(),
     viteStaticCopy({
