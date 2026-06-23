@@ -485,7 +485,7 @@
     </h3>
     <Alert
       color={pkiControl.AcmeStatus.indexOf("error") != -1 ? "red" : "blue"}
-      class="m-1 text-xs p-0"
+      class="m-1 text-xs p-3"
     >
       <div class="flex">
         <Icon
@@ -502,7 +502,7 @@
     </Alert>
     <Alert
       color={pkiControl.HttpStatus.indexOf("error") != -1 ? "red" : "blue"}
-      class="m-1 text-xs p-0"
+      class="m-1 text-xs p-3"
     >
       <div class="flex">
         <Icon
