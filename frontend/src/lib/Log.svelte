@@ -1,6 +1,6 @@
 <script lang="ts">
   import "../assets/css/jquery.dataTables.css";
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy, tick } from "svelte";
   import { GetMapEventLogs } from "../../wailsjs/go/main/App";
   import {
     renderState,
@@ -15,6 +15,9 @@
   let timer: any = undefined;
 
   const showTable = () => {
+    if (!document.getElementById("logTable")) {
+      return;
+    }
     table = new DataTable("#logTable", {
       destroy: true,
       stateSave: true,
@@ -61,6 +64,7 @@
 
   const updateLogs = async () => {
     data = await GetMapEventLogs();
+    await tick();
     showTable();
     timer = setTimeout(() => {
       updateLogs();
@@ -77,5 +81,5 @@
   });
 </script>
 
-<table id="logTable" class="display compact" style="width:98%;" />
+<table id="logTable" class="display compact" style="width:98%;"></table>
 

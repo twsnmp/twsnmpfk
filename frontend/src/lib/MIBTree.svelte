@@ -41,10 +41,10 @@
     {#if children && children.length > 0}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <span on:click={toggleExpansion} class="hover:bg-sky-400">
+      <span onclick={toggleExpansion} class="hover:bg-sky-400">
         <span class="arrow" class:arrowDown>&#x25b6</span>
         <span
-          on:dblclick={() => {
+          ondblclick={() => {
             dispatch("select", name);
           }}
         >
@@ -59,7 +59,7 @@
       </span>
       {#if expanded}
         {#each children as child}
-          <svelte:self tree={child} on:select />
+          <svelte:self tree={child} onselect />
         {/each}
       {/if}
     {:else}
@@ -67,11 +67,11 @@
         {#if type == ":Notification"}
           <span class="text-red-500">*</span>
         {:else}
-          <span class="no-arrow" />
+          <span class="no-arrow"></span>
         {/if}
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <span
-          on:dblclick={() => {
+          ondblclick={() => {
             dispatch("select", name);
           }}
         >

@@ -4,9 +4,18 @@ const chartMap = new Map();
 
 export const showHrBarChart = (div:string, type:any, xAxis:any, list:any, max?:any) => {
   if (chartMap.has(div)) {
-    chartMap.get(div).dispose();
+    try {
+      chartMap.get(div).dispose();
+    } catch (e) {
+      console.error("Error disposing chart: " + div, e);
+    }
+    chartMap.delete(div);
   }
-  const chart = echarts.init(document.getElementById(div),"dark");
+  const el = document.getElementById(div);
+  if (!el) {
+    return;
+  }
+  const chart = echarts.init(el,"dark");
   chartMap.set(div,chart);
 
   const yellow = max ? max * 0.8 : 80
@@ -86,9 +95,18 @@ export const showHrBarChart = (div:string, type:any, xAxis:any, list:any, max?:a
 
 export const showHrSummary = (div:string, data:any) => {
   if (chartMap.has(div)) {
-    chartMap.get(div).dispose();
+    try {
+      chartMap.get(div).dispose();
+    } catch (e) {
+      console.error("Error disposing chart: " + div, e);
+    }
+    chartMap.delete(div);
   }
-  const chart = echarts.init(document.getElementById(div),"dark");
+  const el = document.getElementById(div);
+  if (!el) {
+    return;
+  }
+  const chart = echarts.init(el,"dark");
   chartMap.set(div,chart);
 
   const gaugeData = [

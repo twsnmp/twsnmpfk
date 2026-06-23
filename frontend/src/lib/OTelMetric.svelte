@@ -157,37 +157,40 @@
     }
   };
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <div class="mb-2">{metricName}</div>
     <Select
       items={metricIndexes}
       bind:value={metricIndex}
-      on:change={showTimeChart}
+      onchange={showTimeChart}
       placeholder=""
       class="h-10 mb-2"
       size="sm"
     />
     <div id="metricChart"></div>
     <div>
-      <table id="metricTable" class="display compact" style="width:99%" />
+      <table id="metricTable" class="display compact" style="width:99%"></table>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

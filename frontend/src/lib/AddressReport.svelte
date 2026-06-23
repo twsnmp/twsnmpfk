@@ -71,30 +71,35 @@
     return "red";
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem
         open
-        on:click={() => {
+        onclick={() => {
           showIPAM();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           {$_('ArpReport.IPAM')}
         </div>
-        <div id="ipam" />
+      {/snippet}
+        <div id="ipam"></div>
         <Table striped={true}>
           <TableHead>
             <TableHeadCell>{$_('ArpReport.IPRange')}</TableHeadCell>
@@ -117,30 +122,34 @@
         </Table>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("graphForce");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiGraph} size={1} />
           { $_('ArpReport.IPtoMACForceGraph') }
         </div>
-        <div id="graphForce" />
+      {/snippet}
+        <div id="graphForce"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("graphCircular");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiCircle} size={1} />
           { $_('ArpReport.IPtoMACCircelGraph') }
         </div>
-        <div id="graphCircular"/>
+      {/snippet}
+        <div id="graphCircular"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton type="button" color="teal" on:click={close} size="xs">
+      <GradientButton type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('ArpReport.Close') }
       </GradientButton>

@@ -121,27 +121,30 @@
     }
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <div class="mb-5">
       {name}
     </div>
-    <div id="traceTimeline" />
+    <div id="traceTimeline"></div>
     <div>
-      <table id="traceTable" class="display compact" style="width:99%" />
+      <table id="traceTable" class="display compact" style="width:99%"></table>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_('SyslogReport.Close')}
       </GradientButton>

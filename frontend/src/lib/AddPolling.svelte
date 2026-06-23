@@ -112,26 +112,30 @@
     show = false;
     dispatch("close", {});
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:open={onOpen}>
+<Modal bind:open={show} size="xl" dismissable={false} class="w-full">
   <div class="flex flex-col">
     <div class="m-5 grow">
-      <table id="tmpTable" class="display compact" style="width:99%" />
+      <table id="tmpTable" class="display compact" style="width:99%"></table>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if selectedCount == 1}
-        <GradientButton shadow color="blue" type="button" on:click={add} size="xs">
+        <GradientButton shadow color="blue" type="button" onclick={add} size="xs">
           <Icon path={icons.mdiPlus} size={1} />
           { $_('AddPolling.Add') }
         </GradientButton>
       {:else}
-        <GradientButton shadow color="blue" type="button" on:click={addFromFile} size="xs">
+        <GradientButton shadow color="blue" type="button" onclick={addFromFile} size="xs">
           <Icon path={icons.mdiFile} size={1} />
           {$_('AddPolling.AddFromTmpFile')}
         </GradientButton>
       {/if}
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('AddPolling.Cancel') }
       </GradientButton>

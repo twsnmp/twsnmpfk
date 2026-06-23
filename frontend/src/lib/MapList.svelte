@@ -281,6 +281,10 @@
   const onOpen = () => {
     showNetworks();
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -288,12 +292,12 @@
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs tabStyle="underline">
-      <TabItem open on:click={showNetworks}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={showNetworks}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           {#if wait}
             <Spinner color="red" size="6" />
           {:else}
@@ -301,10 +305,14 @@
           {/if}
           {$_('MapList.Network')}
         </div>
-        <table id="networkTable" class="display compact" style="width:99%" />
+      {/snippet}
+        <div>
+          <table id="networkTable" class="display compact" style="width:99%"></table>
+        </div>
       </TabItem>
-      <TabItem on:click={showDrawItems}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={showDrawItems}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           {#if wait}
             <Spinner color="red" size="6" />
           {:else}
@@ -312,10 +320,14 @@
           {/if}
           {$_('MapList.DrawItem')}
         </div>
-        <table id="drawItemTable" class="display compact" style="width:99%" />
+      {/snippet}
+        <div>
+          <table id="drawItemTable" class="display compact" style="width:99%"></table>
+        </div>
       </TabItem>
-      <TabItem on:click={showLines}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={showLines}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           {#if wait}
             <Spinner color="red" size="6" />
           {:else}
@@ -323,7 +335,10 @@
           {/if}
           {$_('MapList.Line')}
         </div>
-        <table id="lineTable" class="display compact" style="width:99%" />
+      {/snippet}
+        <div>
+          <table id="lineTable" class="display compact" style="width:99%"></table>
+        </div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -332,7 +347,7 @@
           shadow
           color="red"
           type="button"
-          on:click={deleteSelected}
+          onclick={deleteSelected}
           size="xs"
         >
           <Icon path={icons.mdiTrashCan} size={1} />
@@ -343,7 +358,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

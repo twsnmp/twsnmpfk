@@ -122,6 +122,10 @@
     }
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -129,7 +133,6 @@
   size="xl"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   {#if !node}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -166,7 +169,7 @@
           <span>{$_('Config.IconFilter')}</span>
           <Input
             bind:value={filterIcon}
-            on:change={filterIconList}
+            onchange={filterIconList}
             size="sm"
           />
         </Label>
@@ -180,7 +183,7 @@
           />
         </Label>
         <div class="mt-5 ml-5">
-          <span class="mdi {getIcon(node.Icon)} text-4xl" />
+          <span class="mdi {getIcon(node.Icon)} text-4xl"></span>
         </div>
         <Checkbox bind:checked={node.AutoAck}>{$_("Node.AutoCheck")}</Checkbox>
       </div>
@@ -190,7 +193,7 @@
           <Select
             items={imageIconList}
             bind:value={node.Image}
-            on:change={selectImageIcon}
+            onchange={selectImageIcon}
             placeholder={$_('Node.SelectImageIcon')}
             size="sm"
           />
@@ -273,7 +276,7 @@
           shadow
           color="blue"
           type="button"
-          on:click={save}
+          onclick={save}
           size="xs"
         >
           <Icon path={icons.mdiContentSave} size={1} />
@@ -285,7 +288,7 @@
           size="xs"
           color="lime"
           class="ml-2"
-          on:click={() => {
+          onclick={() => {
             showHelp = true;
           }}
         >
@@ -298,7 +301,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />

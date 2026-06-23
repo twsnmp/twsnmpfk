@@ -128,17 +128,17 @@
   };
 </script>
 
-<svelte:window on:resize={resizeLogCountChart} />
+<svelte:window onresize={resizeLogCountChart} />
 
 <div class="flex flex-col">
-  <div id="chart"/>
-  <table id="arpLogTable" class="display compact" style="width:99%" />
+  <div id="chart"></div>
+  <table id="arpLogTable" class="display compact" style="width:99%"></table>
   <div class="flex justify-end space-x-2 mr-2 mt-2">
     {#if arpLogs.length > 0}
       <GradientButton
         type="button"
         color="green"
-        on:click={() => {
+        onclick={() => {
           showReport = true;
         }}
         size="xs"
@@ -151,7 +151,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveCSV}
+      onclick={saveCSV}
       size="xs"
     >
       <Icon path={icons.mdiFileDelimited} size={1} />
@@ -161,7 +161,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveExcel}
+      onclick={saveExcel}
       size="xs"
     >
       <Icon path={icons.mdiFileExcel} size={1} />
@@ -171,7 +171,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />

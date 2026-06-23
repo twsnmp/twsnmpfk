@@ -34,7 +34,7 @@
 </script>
 
 <div class="grid h-screen place-items-center">
-  <Card padding="xl" size="xl">
+  <Card size="xl" class="p-8">
     <div class="flex justify-center">
       <img id="logo" class="margin" src={logo} alt="logo" />
     </div>
@@ -54,7 +54,7 @@
         type="button"
         size="xl"
         color="teal"
-        on:click={select}
+        onclick={select}
         disabled={started}
       >
         {#if started}
@@ -76,7 +76,7 @@
           size="xl"
           color="red"
           class="ml-2"
-          on:click={Quit}
+          onclick={Quit}
         >
           <Icon path={icons.mdiStop} size={1} />
           <span>
@@ -90,7 +90,7 @@
         size="xl"
         color="lime"
         class="ml-2"
-        on:click={() => {
+        onclick={() => {
           showHelp = true;
         }}
       >

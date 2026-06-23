@@ -143,7 +143,11 @@ export const initVPanel = (div:string) => {
   cw = d.clientWidth || 1000;
   ch = d.clientHeight || 400;
   if (_vpanelP5) {
-    _vpanelP5.remove();
+    try {
+      _vpanelP5.remove();
+    } catch (e) {
+      console.error("Error removing old vpanel in initVPanel:", e);
+    }
     _vpanelP5 = undefined;
   }
   _vpanelP5 = new P5(vpanelMain, d);
@@ -151,7 +155,11 @@ export const initVPanel = (div:string) => {
 
 export const deleteVPanel = () => {
   if(_vpanelP5) {
-    _vpanelP5.remove();
+    try {
+      _vpanelP5.remove();
+    } catch (e) {
+      console.error("Error removing vpanel:", e);
+    }
     _vpanelP5 = undefined;
   }
 }

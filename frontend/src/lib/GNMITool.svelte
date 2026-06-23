@@ -276,6 +276,10 @@ var value = JSON.parse(data);
 value == "${d[0].Value}";`;
     showPolling = true;
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -283,7 +287,6 @@ value == "${d[0].Value}";`;
   size="xl"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <div class="flex flex-row mb-2">
@@ -312,12 +315,12 @@ value == "${d[0].Value}";`;
         items={history}
         bind:value={selected}
         placeholder={$_("MIBBrowser.History")}
-        on:change={() => {
+        onchange={() => {
           path = selected;
         }}
       />
     </div>
-    <table id="gnmiGetTable" class="display compact" style="width:99%" />
+    <table id="gnmiGetTable" class="display compact" style="width:99%"></table>
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait}
         {#if selectedCount > 0}
@@ -325,7 +328,7 @@ value == "${d[0].Value}";`;
             shadow
             color="cyan"
             type="button"
-            on:click={copy}
+            onclick={copy}
             size="xs"
           >
             {#if copied}
@@ -341,7 +344,7 @@ value == "${d[0].Value}";`;
             shadow
             color="blue"
             type="button"
-            on:click={addPolling}
+            onclick={addPolling}
             size="xs"
           >
             <Icon path={icons.mdiEye} size={1} />
@@ -352,7 +355,7 @@ value == "${d[0].Value}";`;
           shadow
           color="cyan"
           type="button"
-          on:click={cap}
+          onclick={cap}
           size="xs"
         >
           <Icon path={icons.mdiTree} size={1} />
@@ -362,7 +365,7 @@ value == "${d[0].Value}";`;
           shadow
           color="cyan"
           type="button"
-          on:click={()=>{
+          onclick={()=>{
             BrowserOpenURL("https://github.com/YangModels/yang");
           }}
           size="xs"
@@ -374,7 +377,7 @@ value == "${d[0].Value}";`;
           shadow
           type="button"
           color="blue"
-          on:click={get}
+          onclick={get}
           size="xs"
         >
           <Icon path={icons.mdiPlay} size={1} />
@@ -385,7 +388,7 @@ value == "${d[0].Value}";`;
             shadow
             color="lime"
             type="button"
-            on:click={() => {
+            onclick={() => {
               exportMIB("csv");
             }}
             size="xs"
@@ -397,7 +400,7 @@ value == "${d[0].Value}";`;
             shadow
             color="lime"
             type="button"
-            on:click={() => {
+            onclick={() => {
               exportMIB("excel");
             }}
             size="xs"
@@ -413,7 +416,7 @@ value == "${d[0].Value}";`;
         size="xs"
         color="lime"
         class="ml-2"
-        on:click={() => {
+        onclick={() => {
           showHelp = true;
         }}
       >
@@ -426,7 +429,7 @@ value == "${d[0].Value}";`;
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
@@ -458,13 +461,13 @@ value == "${d[0].Value}";`;
       <p>gNMI Version:{ capData.Version }</p>
       <p>Encodings:{ capData.Encodings }</p>
     </div>
-    <table id="gnmiCapTable" class="display compact" style="width:99%" />
+    <table id="gnmiCapTable" class="display compact" style="width:99%"></table>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showCap = false;
         }}
         size="xs"

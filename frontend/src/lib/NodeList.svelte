@@ -209,7 +209,7 @@
 
 <div class="flex flex-col">
   <div class="m-5 grow">
-    <table id="nodeListTable" class="display compact" style="width:99%" />
+    <table id="nodeListTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1}
@@ -217,7 +217,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={edit}
+        onclick={edit}
         size="xs"
       >
         <Icon path={icons.mdiPencil} size={1} />
@@ -227,7 +227,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={polling}
+        onclick={polling}
         size="xs"
       >
         <Icon path={icons.mdiLanCheck} size={1} />
@@ -237,7 +237,7 @@
         shadow
         color="green"
         type="button"
-        on:click={report}
+        onclick={report}
         size="xs"
       >
         <Icon path={icons.mdiChartBar} size={1} />
@@ -250,12 +250,12 @@
         /></GradientButton
       >
       <Dropdown bind:open={actionOpen}>
-        <DropdownItem on:click={ping}>PING</DropdownItem>
-        <DropdownItem on:click={MIBBr}>{$_("Map.MIBBrowser")}</DropdownItem>
-        <DropdownItem on:click={gNMITool}
+        <DropdownItem onclick={ping}>PING</DropdownItem>
+        <DropdownItem onclick={MIBBr}>{$_("Map.MIBBrowser")}</DropdownItem>
+        <DropdownItem onclick={gNMITool}
           >{$_("GNMITool.gNMITool")}</DropdownItem
         >
-        <DropdownItem on:click={doWakeOnLan}>Wake On Lan</DropdownItem>
+        <DropdownItem onclick={doWakeOnLan}>Wake On Lan</DropdownItem>
       </Dropdown>
     {/if}
     {#if selectedCount > 0}
@@ -263,7 +263,7 @@
         shadow
         color="red"
         type="button"
-        on:click={deleteNodes}
+        onclick={deleteNodes}
         size="xs"
       >
         <Icon path={icons.mdiTrashCan} size={1} />
@@ -273,7 +273,7 @@
         shadow
         color="teal"
         type="button"
-        on:click={check}
+        onclick={check}
         size="xs"
       >
         <Icon path={icons.mdiCheck} size={1} />
@@ -284,7 +284,7 @@
       shadow
       color="green"
       type="button"
-      on:click={()=> {
+      onclick={()=> {
         showMapList = true;
       }}
       size="xs"
@@ -296,7 +296,7 @@
       shadow
       color="teal"
       type="button"
-      on:click={checkAll}
+      onclick={checkAll}
       size="xs"
     >
       <Icon path={icons.mdiCheckAll} size={1} />
@@ -306,7 +306,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveCSV}
+      onclick={saveCSV}
       size="xs"
     >
       <Icon path={icons.mdiFileDelimited} size={1} />
@@ -316,7 +316,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveExcel}
+      onclick={saveExcel}
       size="xs"
     >
       <Icon path={icons.mdiFileExcel} size={1} />
@@ -326,7 +326,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />

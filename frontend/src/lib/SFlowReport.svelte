@@ -395,117 +395,136 @@
     copiedFlow = true;
     setTimeout(() => (copiedFlow = false), 2000);
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem
         open
-        on:click={() => {
+        onclick={() => {
           showHeatmap();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
           {$_("TrapReport.Heatmap")}
         </div>
-        <div id="heatmap" />
+      {/snippet}
+        <div id="heatmap"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showTraffic();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiTrafficCone} size={1} />
           {$_('NetFlowReport.Traffic')}
         </div>
-        <div id="traffic" />
+      {/snippet}
+        <div id="traffic"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showTopList();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiFormatListNumbered} size={1} />
           {$_('NetFlowReport.TopLIst')}
         </div>
+      {/snippet}
         <div class="grid gap-2 grid-cols-2">
-          <div id="topList" />
+          <div id="topList"></div>
           <div>
-            <table id="topTable" class="display compact" style="width:99%" />
+            <table id="topTable" class="display compact" style="width:99%"></table>
           </div>
         </div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showTopList3D();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiFormatListNumbered} size={1} />
           {$_('NetFlowReport.TopList3D')}
         </div>
-        <div id="topList3D" />
+      {/snippet}
+        <div id="topList3D"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showFlow();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiFormatListNumbered} size={1} />
           {$_('NetFlowReport.FlowGraph')}
         </div>
+      {/snippet}
         <div class="grid gap-2 grid-cols-5">
-          <div id="flow" class="col-span-3" />
+          <div id="flow" class="col-span-3"></div>
           <div class="col-span-2">
-            <table id="flowTable" class="display compact" style="width:99%" />
+            <table id="flowTable" class="display compact" style="width:99%"></table>
           </div>
         </div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showFFT();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiWaveform} size={1} />
           {$_('NetFlowReport.FFT')}
         </div>
-        <div id="fft" />
+      {/snippet}
+        <div id="fft"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showFFT3D();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiWaveform} size={1} />
           {$_('NetFlowReport.FFT3D')}
         </div>
-        <div id="fft3d" />
+      {/snippet}
+        <div id="fft3d"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showMap();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiMapMarker} size={1} />
           {$_('NetFlowReport.Map')}
         </div>
-        <div id="map" />
+      {/snippet}
+        <div id="map"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -516,7 +535,7 @@
           items={topListTypes}
           bind:value={topListType}
           size="sm"
-          on:change={() => {
+          onchange={() => {
             showTopList();
           }}
         />
@@ -525,7 +544,7 @@
             shadow
             color="cyan"
             type="button"
-            on:click={copyTop}
+            onclick={copyTop}
             size="xs"
           >
             {#if copiedTop}
@@ -544,7 +563,7 @@
           items={topListTypes}
           bind:value={topListType}
           size="sm"
-          on:change={() => {
+          onchange={() => {
             showTopList3D();
           }}
         />
@@ -556,7 +575,7 @@
           items={flowModes}
           bind:value={flowMode}
           size="sm"
-          on:change={() => {
+          onchange={() => {
             showFlow();
           }}
         />
@@ -566,7 +585,7 @@
           items={flowTypes}
           bind:value={flowType}
           size="sm"
-          on:change={() => {
+          onchange={() => {
             showFlow();
           }}
         />
@@ -575,7 +594,7 @@
             shadow
             color="cyan"
             type="button"
-            on:click={copyFlow}
+            onclick={copyFlow}
             size="xs"
           >
             {#if copiedFlow}
@@ -594,7 +613,7 @@
           items={fftSrcs}
           bind:value={fftSrc}
           size="sm"
-          on:change={() => {
+          onchange={() => {
             updateFFT();
           }}
         />
@@ -604,7 +623,7 @@
           items={fftTypes}
           bind:value={fftType}
           size="sm"
-          on:change={() => {
+          onchange={() => {
             updateFFT();
           }}
         />
@@ -616,7 +635,7 @@
           items={fftTypes}
           bind:value={fftType}
           size="sm"
-          on:change={() => {
+          onchange={() => {
             updateFFT3D();
           }}
         />
@@ -625,7 +644,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

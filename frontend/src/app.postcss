@@ -1,4 +1,21 @@
-/* Write your global styles here, in PostCSS syntax */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .bg-linear-to-r {
+    @apply bg-gradient-to-r;
+  }
+  .bg-linear-to-br {
+    @apply bg-gradient-to-br;
+  }
+  .hover\:bg-linear-to-br:hover {
+    @apply hover:bg-gradient-to-br;
+  }
+  .hover\:bg-linear-to-bl:hover {
+    @apply hover:bg-gradient-to-bl;
+  }
+  .hover\:bg-linear-to-l:hover {
+    @apply hover:bg-gradient-to-l;
+  }
+}

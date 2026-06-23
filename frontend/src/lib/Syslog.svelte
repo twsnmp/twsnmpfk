@@ -40,7 +40,7 @@
   import "datatables.net-select-dt";
   import type { datastore, main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
-  import { CodeJar } from "@novacbn/svelte-codejar";
+  import CodeJar from "./CodeJar.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
   import { copyText } from "svelte-copy";
@@ -78,7 +78,11 @@
     { name: $_("Syslog.High"), value: 2 },
   ];
 
-  const showTable = () => {
+  const showTable = async () => {
+    await tick();
+    if (!document.getElementById("syslogTable")) {
+      return;
+    }
     selectedCount = 0;
     table = new DataTable("#syslogTable", {
       destroy: true,
@@ -139,22 +143,30 @@
   };
 
   const refresh = async () => {
-    filter.Severity *= 1;
     showLoading = true;
-    logs = await GetSyslogs(filter);
-    data = [];
-    for (let i = 0; i < logs.length; i++) {
-      data.push(logs[i]);
+    try {
+      filter.Severity *= 1;
+      logs = await GetSyslogs(filter);
+      data = [];
+      for (let i = 0; i < logs.length; i++) {
+        data.push(logs[i]);
+      }
+      logs.reverse();
+      await showTable();
+      await showChart();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      showLoading = false;
     }
-    logs.reverse();
-    showTable();
-    showChart();
-    showLoading = false;
   };
 
   let chart: any = undefined;
   const showChart = async () => {
     await tick();
+    if (!document.getElementById("chart")) {
+      return;
+    }
     chart = showLogLevelChart("chart", logs, zoomCallBack);
   };
 
@@ -470,7 +482,7 @@
       magicTable = undefined;
       const e = document.getElementById("magicTableBase");
       if (e) {
-        e.innerHTML = `<table id="magicTable" class="display compact" style="width:99%" />`;
+        e.innerHTML = `<table id="magicTable" class="display compact" style="width:99%"></table>`;
       }
     }
     magicSelectedCount = 0;
@@ -717,16 +729,16 @@
 </script>
 
 <svelte:window
-  on:resize={() => {
+  onresize={() => {
     resizeLogLevelChart();
     resizeLogCountChart();
   }}
 />
 
 <div class="flex flex-col">
-  <div id="chart" />
+  <div id="chart"></div>
   <div class="m-5 grow">
-    <table id="syslogTable" class="display compact" style="width:99%" />
+    <table id="syslogTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount == 1}
@@ -734,7 +746,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={watch}
+        onclick={watch}
         size="xs"
       >
         <Icon path={icons.mdiEye} size={1} />
@@ -744,7 +756,7 @@
         shadow
         color="cyan"
         type="button"
-        on:click={magic}
+        onclick={magic}
         size="xs"
       >
         <Icon path={icons.mdiMagicStaff} size={1} />
@@ -756,7 +768,7 @@
         shadow
         color="cyan"
         type="button"
-        on:click={copy}
+        onclick={copy}
         size="xs"
       >
         {#if copied}
@@ -770,7 +782,7 @@
         shadow
         color="pink"
         type="button"
-        on:click={askLLM}
+        onclick={askLLM}
         size="xs"
       >
         <Icon path={icons.mdiBrain} size={1} />
@@ -782,7 +794,7 @@
       </GradientButton>
       <Dropdown bind:open={addrInfoOpen}>
         {#each addrList as a}
-          <DropdownItem on:click={() => showAddrInfoFunc(a)}>{a}</DropdownItem>
+          <DropdownItem onclick={() => showAddrInfoFunc(a)}>{a}</DropdownItem>
         {/each}
       </Dropdown>
     {/if}
@@ -790,7 +802,7 @@
       shadow
       color="blue"
       type="button"
-      on:click={() => (showFilter = true)}
+      onclick={() => (showFilter = true)}
       size="xs"
     >
       <Icon path={icons.mdiFilter} size={1} />
@@ -800,7 +812,7 @@
       shadow
       color="red"
       type="button"
-      on:click={deleteAll}
+      onclick={deleteAll}
       size="xs"
     >
       <Icon path={icons.mdiTrashCan} size={1} />
@@ -811,7 +823,7 @@
         shadow
         type="button"
         color="green"
-        on:click={() => {
+        onclick={() => {
           showReport = true;
         }}
         size="xs"
@@ -824,7 +836,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveCSV}
+      onclick={saveCSV}
       size="xs"
     >
       <Icon path={icons.mdiFileDelimited} size={1} />
@@ -834,7 +846,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveExcel}
+      onclick={saveExcel}
       size="xs"
     >
       <Icon path={icons.mdiFileExcel} size={1} />
@@ -844,7 +856,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />
@@ -885,7 +897,7 @@
         <Button
           class="!p-2 w-8 h-8 mt-6 ml-4"
           color="red"
-          on:click={() => {
+          onclick={() => {
             filter.Start = "";
             filter.End = "";
           }}
@@ -937,7 +949,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showFilter = false;
           refresh();
         }}
@@ -950,7 +962,7 @@
         shadow
         color="teal"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showFilter = false;
         }}
         size="xs"
@@ -962,7 +974,7 @@
   </form>
 </Modal>
 
-<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
+<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full" transitionParams={{ duration: 0 }}>
   <div>
     <Spinner />
     <span class="ml-2"> {$_("Syslog.Loading")} </span>
@@ -971,9 +983,9 @@
 
 <Modal bind:open={showMagic} size="xl" dismissable={false} class="w-full">
   <div class="flex flex-col space-y-4">
-    <div id="magicChart" />
+    <div id="magicChart"></div>
     <div class="m-5 grow" id="magicTableBase">
-      <table id="magicTable" class="display compact" style="width:99%" />
+      <table id="magicTable" class="display compact" style="width:99%"></table>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if magicData.length > 0}
@@ -983,7 +995,7 @@
           bind:value={magicChartType}
           placeholder={$_("Syslog.ChartType")}
           class="w-96"
-          on:change={showMagicChart}
+          onchange={showMagicChart}
         />
         {#if magicChartType == "hour" || magicChartType == "time"}
           <Select
@@ -992,7 +1004,7 @@
             bind:value={magicNumEnt}
             placeholder={$_("Syslog.NumData")}
             class="w-96"
-            on:change={showMagicChart}
+            onchange={showMagicChart}
           />
         {:else if magicChartType == "sum" || magicChartType == "graph"}
           <Select
@@ -1001,7 +1013,7 @@
             bind:value={magicCatEnt}
             placeholder={$_("Syslog.CatData")}
             class="w-96"
-            on:change={showMagicChart}
+            onchange={showMagicChart}
           />
           {#if magicChartType == "graph"}
             <Select
@@ -1010,7 +1022,7 @@
               bind:value={magicCatEnt2}
               placeholder={$_("Syslog.CatData")}
               class="w-96"
-              on:change={showMagicChart}
+              onchange={showMagicChart}
             />
           {/if}
         {/if}
@@ -1019,7 +1031,7 @@
             shadow
             color="cyan"
             type="button"
-            on:click={copyMagic}
+            onclick={copyMagic}
             size="xs"
           >
             {#if magicCopied}
@@ -1034,7 +1046,7 @@
           shadow
           color="lime"
           type="button"
-          on:click={() => {
+          onclick={() => {
             exportMagic("csv");
           }}
           size="xs"
@@ -1046,7 +1058,7 @@
           shadow
           color="lime"
           type="button"
-          on:click={() => {
+          onclick={() => {
             exportMagic("excel");
           }}
           size="xs"
@@ -1059,7 +1071,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => (showMagic = false)}
+        onclick={() => (showMagic = false)}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

@@ -24,7 +24,7 @@
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
   import type { main } from "wailsjs/go/models";
-  import { CodeJar } from "@novacbn/svelte-codejar";
+  import CodeJar from "./CodeJar.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
 
@@ -52,7 +52,11 @@
     { name: $_("EventLog.High"), value: 3 },
   ];
 
-  const showTable = () => {
+  const showTable = async () => {
+    await tick();
+    if (!document.getElementById("eventLogTable")) {
+      return;
+    }
     table = new DataTable("#eventLogTable", {
       destroy: true,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
@@ -66,19 +70,27 @@
 
   const refresh = async () => {
     showLoading = true;
-    logs = await GetEventLogs(filter);
-    data = [];
-    for (let i = 0; i < logs.length; i++) {
-      data.push(logs[i]);
+    try {
+      logs = await GetEventLogs(filter);
+      data = [];
+      for (let i = 0; i < logs.length; i++) {
+        data.push(logs[i]);
+      }
+      logs.reverse();
+      await showTable();
+      await showChart();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      showLoading = false;
     }
-    logs.reverse();
-    showTable();
-    showChart();
-    showLoading = false;
   };
   let chart :any = undefined;
   const showChart = async () => {
     await tick();
+    if (!document.getElementById("chart")) {
+      return;
+    }
     chart = showLogLevelChart("chart", logs, zoomCallBack);
   };
 
@@ -155,19 +167,19 @@
   };
 </script>
 
-<svelte:window on:resize={resizeLogLevelChart} />
+<svelte:window onresize={resizeLogLevelChart} />
 
 <div class="flex flex-col">
-  <div id="chart" />
+  <div id="chart"></div>
   <div class="m-5 grow">
-    <table id="eventLogTable" class="display compact" style="width:99%" />
+    <table id="eventLogTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
       shadow
       color="blue"
       type="button"
-      on:click={() => (showFilter = true)}
+      onclick={() => (showFilter = true)}
       size="xs"
     >
       <Icon path={icons.mdiFilter} size={1} />
@@ -178,7 +190,7 @@
         shadow
         color="red"
         type="button"
-        on:click={deleteAll}
+        onclick={deleteAll}
         size="xs"
       >
         <Icon path={icons.mdiTrashCan} size={1} />
@@ -188,7 +200,7 @@
         shadow
         type="button"
         color="green"
-        on:click={() => {
+        onclick={() => {
           showReport = true;
         }}
         size="xs"
@@ -200,7 +212,7 @@
         shadow
         color="lime"
         type="button"
-        on:click={saveCSV}
+        onclick={saveCSV}
         size="xs"
       >
         <Icon path={icons.mdiFileDelimited} size={1} />
@@ -210,7 +222,7 @@
         shadow
         color="lime"
         type="button"
-        on:click={saveExcel}
+        onclick={saveExcel}
         size="xs"
       >
         <Icon path={icons.mdiFileExcel} size={1} />
@@ -221,7 +233,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />
@@ -232,7 +244,7 @@
 
 <EventLogReport bind:show={showReport} {logs} />
 
-<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
+<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full" transitionParams={{ duration: 0 }}>
   <div>
     <Spinner />
     <span class="ml-2"> {$_("EventLog.Loading")} </span>
@@ -257,7 +269,7 @@
         <Button
           class="!p-2 w-8 h-8 mt-6 ml-4"
           color="red"
-          on:click={() => {
+          onclick={() => {
             filter.Start = "";
             filter.End = "";
           }}
@@ -294,7 +306,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showFilter = false;
           refresh();
         }}
@@ -307,7 +319,7 @@
         shadow
         color="teal"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showFilter = false;
         }}
         size="xs"

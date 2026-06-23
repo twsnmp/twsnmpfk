@@ -247,27 +247,32 @@
 
   let copied = false;
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   {#if !network}
     <div class="text-center mt-10"><Spinner size={16} /></div>
   {:else}
     <div class="flex flex-col space-y-4">
       <Tabs style="underline">
-        <TabItem open on:click={clear}>
-          <div slot="title" class="flex items-center gap-2">
+        <TabItem onclick={clear}>
+          {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
             <Icon path={icons.mdiChartPie} size={1} />
             {$_("NodeReport.BasicInfo")}
           </div>
+      {/snippet}
           <Table striped={true}>
             <TableHead>
               <TableHeadCell>{$_("NodeReport.Item")}</TableHeadCell>
@@ -286,7 +291,7 @@
                     color="alternative"
                     type="button"
                     class="ml-2 !p-2"
-                    on:click={async () => {
+                    onclick={async () => {
                       copied = true
                       copyText(network.IP)
                       setTimeout(()=> copied = false,2000);
@@ -316,8 +321,9 @@
             </TableBody>
           </Table>
         </TabItem>
-        <TabItem on:click={showVPanel}>
-          <div slot="title" class="flex items-center gap-2">
+        <TabItem onclick={showVPanel}>
+          {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
             {#if waitVPanel}
               <Spinner color="red" size="6" />
             {:else}
@@ -325,15 +331,16 @@
             {/if}
             {$_("NodeReport.Panel")}
           </div>
-          <div id="vpanel" />
+      {/snippet}
+          <div id="vpanel"></div>
           <table
             id="portTable"
             class="display compact mt-5"
-            style="width:99%"
-          />
+            style="width:99%"></table>
         </TabItem>
-        <TabItem on:click={showFDBTable} >
-          <div slot="title" class="flex items-center gap-2">
+        <TabItem onclick={showFDBTable} >
+          {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
             {#if waitFDBTable}
               <Spinner color="red" size="6" />
             {:else}
@@ -341,15 +348,15 @@
             {/if}
             <span>{$_('NetworkReport.FDBTable')}</span>
           </div>
+      {/snippet}
           {#if fdbTable}
             <div class="grid grid-cols-2 gap-1">
-              <div id="fdbTableChart" />
+              <div id="fdbTableChart"></div>
               <div>
                 <table
                   id="fdbTable"
                   class="display compact"
-                  style="width:100%"
-                />
+                  style="width:100%"></table>
               </div>
             </div>
           {:else if !waitFDBTable}
@@ -359,7 +366,7 @@
       </Tabs>
       <div class="flex justify-end space-x-2 mr-2">
         {#if showVPanelBtn}
-          <Toggle bind:checked={physicalPort} on:change={showVPanel}>
+          <Toggle bind:checked={physicalPort} onchange={showVPanel}>
             {$_("NodeReport.PhysicalPort")}
           </Toggle>
           <Select
@@ -395,7 +402,7 @@
           size="xs"
           color="lime"
           class="ml-2"
-          on:click={() => {
+          onclick={() => {
             showHelp = true;
           }}
         >
@@ -408,7 +415,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />

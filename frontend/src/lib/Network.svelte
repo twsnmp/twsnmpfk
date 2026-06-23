@@ -282,6 +282,10 @@
     network.Ports[selectedPortIndex] = editPort;
     showTable();
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -289,7 +293,6 @@
   size="xl"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   {#if !network}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -418,7 +421,7 @@
         </Label>
       </div>
       <div class="m-5 grow">
-        <table id="portTable" class="display compact" style="width:99%" />
+        <table id="portTable" class="display compact" style="width:99%"></table>
       </div>
       <div class="flex justify-end space-x-2 mr-2">
         {#if selectedCount > 0}
@@ -426,7 +429,7 @@
             shadow
             color="cyan"
             type="button"
-            on:click={portTop}
+            onclick={portTop}
             size="xs"
           >
             <Icon path={icons.mdiArrowCollapseUp} size={1} />
@@ -435,7 +438,7 @@
             shadow
             color="cyan"
             type="button"
-            on:click={portUp}
+            onclick={portUp}
             size="xs"
           >
             <Icon path={icons.mdiArrowUp} size={1} />
@@ -444,7 +447,7 @@
             shadow
             color="cyan"
             type="button"
-            on:click={portDown}
+            onclick={portDown}
             size="xs"
           >
             <Icon path={icons.mdiArrowDown} size={1} />
@@ -453,7 +456,7 @@
             shadow
             color="cyan"
             type="button"
-            on:click={portBottom}
+            onclick={portBottom}
             size="xs"
           >
             <Icon path={icons.mdiArrowCollapseDown} size={1} />
@@ -462,7 +465,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={portEdit}
+            onclick={portEdit}
             size="xs"
           >
             <Icon path={icons.mdiPencil} size={1} />
@@ -471,7 +474,7 @@
             shadow
             color="red"
             type="button"
-            on:click={portDelete}
+            onclick={portDelete}
             size="xs"
           >
             <Icon path={icons.mdiTrashCan} size={1} />
@@ -482,7 +485,7 @@
             shadow
             color="lime"
             type="button"
-            on:click={reNumber}
+            onclick={reNumber}
             size="xs"
           >
             <Icon path={icons.mdiOrderNumericAscending} size={1} />
@@ -492,7 +495,7 @@
             shadow
             color="red"
             type="button"
-            on:click={reSearch}
+            onclick={reSearch}
             size="xs"
           >
             <Icon path={icons.mdiRefresh} size={1} />
@@ -503,7 +506,7 @@
           shadow
           color="cyan"
           type="button"
-          on:click={() => {
+          onclick={() => {
             const ports = [];
             for(const p of network.Ports) {
               ports.push({
@@ -523,7 +526,7 @@
           shadow
           color="cyan"
           type="button"
-          on:click={async () => {
+          onclick={async () => {
             const d = await ImportPortDef();
             if (!d) {
               return;
@@ -552,7 +555,7 @@
           shadow
           color="blue"
           type="button"
-          on:click={save}
+          onclick={save}
           size="xs"
         >
           <Icon path={icons.mdiContentSave} size={1} />
@@ -564,7 +567,7 @@
           size="xs"
           color="lime"
           class="ml-2"
-          on:click={() => {
+          onclick={() => {
             showHelp = true;
           }}
         >
@@ -577,7 +580,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />
@@ -631,7 +634,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={savePort}
+        onclick={savePort}
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
@@ -641,7 +644,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showEditPort = false;
         }}
         size="xs"

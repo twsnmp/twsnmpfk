@@ -127,7 +127,7 @@
       table = undefined;
       const e = document.getElementById("mibbrTable");
       if (e) {
-        e.innerHTML = `<table id="mibTable" class="display compact" style="width:99%" />`;
+        e.innerHTML = `<table id="mibTable" class="display compact" style="width:99%"></table>`;
       }
     }
     selectedCount = 0;
@@ -615,6 +615,10 @@
     askLLMResult = r.Results;
     waitAnimation("ok");
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -622,7 +626,6 @@
   size="xl"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4 min-h-[70vh] max-h-[80vh]">
     <div class="flex flex-row mb-2">
@@ -638,7 +641,7 @@
         color="blue"
         size="xs"
         class="ml-2"
-        on:click={() => {
+        onclick={() => {
           showMIBTree = true;
         }}
       >
@@ -650,13 +653,13 @@
         items={history}
         bind:value={selected}
         placeholder={$_("MIBBrowser.History")}
-        on:change={() => {
+        onchange={() => {
           name = selected;
         }}
       />
     </div>
     <div id="mibbrTable" class="flex-1 overflow-auto">
-      <table id="mibTable" class="display compact" style="width:99%" />
+      <table id="mibTable" class="display compact" style="width:99%"></table>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       {#if nekoStatus != "waiting"}
@@ -665,7 +668,7 @@
             shadow
             color="cyan"
             type="button"
-            on:click={copyMIB}
+            onclick={copyMIB}
             size="xs"
           >
             {#if copied}
@@ -681,7 +684,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={addPolling}
+            onclick={addPolling}
             size="xs"
           >
             <Icon path={icons.mdiEye} size={1} />
@@ -691,14 +694,14 @@
             shadow
             color="red"
             type="button"
-            on:click={showSetDialog}
+            onclick={showSetDialog}
             size="xs"
           >
             <Icon path={icons.mdiSend} size={1} />
             SET
           </GradientButton>
         {/if}
-        <Toggle bind:checked={scalar} on:change={refreshTable}
+        <Toggle bind:checked={scalar} onchange={refreshTable}
           >{$_("MIBBrowser.ScalarOnly")}</Toggle
         >
         <Toggle bind:checked={raw}>{$_("MIBBrowser.RawData")}</Toggle>
@@ -706,7 +709,7 @@
           shadow
           type="button"
           color="blue"
-          on:click={get}
+          onclick={get}
           size="xs"
         >
           <Icon path={icons.mdiPlay} size={1} />
@@ -717,7 +720,7 @@
             shadow
             color="cyan"
             type="button"
-            on:click={() => {
+            onclick={() => {
               showResultMIBTree = true;
               if (
                 !resultMibTree ||
@@ -736,7 +739,7 @@
             shadow
             color="lime"
             type="button"
-            on:click={() => {
+            onclick={() => {
               exportMIB("csv");
             }}
             size="xs"
@@ -748,7 +751,7 @@
             shadow
             color="lime"
             type="button"
-            on:click={() => {
+            onclick={() => {
               exportMIB("excel");
             }}
             size="xs"
@@ -760,7 +763,7 @@
             shadow
             color="pink"
             type="button"
-            on:click={askLLM}
+            onclick={askLLM}
             size="xs"
           >
             <Icon path={icons.mdiBrain} size={1} />
@@ -774,7 +777,7 @@
         size="xs"
         color="lime"
         class="ml-2"
-        on:click={() => {
+        onclick={() => {
           showHelp = true;
         }}
       >
@@ -787,7 +790,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
@@ -813,7 +816,7 @@
       {#if filteredMibTree}
         <MibTree
           tree={filteredMibTree}
-          on:select={(e) => {
+          onselect={(e) => {
             name = e.detail;
             showMIBTree = false;
           }}
@@ -825,7 +828,7 @@
         shadow
         type="button"
         color="pink"
-        on:click={() => {
+        onclick={() => {
           showLLMMIBSearch = true;
         }}
         size="xs"
@@ -837,7 +840,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showMIBTree = false;
         }}
         size="xs"
@@ -874,7 +877,7 @@
         shadow
         type="button"
         color="lime"
-        on:click={llmMIBSearch}
+        onclick={llmMIBSearch}
         size="xs"
       >
         <Icon path={icons.mdiPlay} size={1} />
@@ -884,7 +887,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showLLMMIBSearch = false;
         }}
         size="xs"
@@ -913,7 +916,7 @@
           shadow
           type="button"
           color="red"
-          on:click={() => {
+          onclick={() => {
             stopResultMibTree = true;
           }}
           size="xs"
@@ -932,7 +935,7 @@
         {#if filteredResultMibTree}
           <MibTree
             tree={filteredResultMibTree}
-            on:select={(e) => {
+            onselect={(e) => {
               name = e.detail;
               showResultMIBTree = false;
               get();
@@ -946,7 +949,7 @@
             shadow
             color="red"
             type="button"
-            on:click={showMissingDialog}
+            onclick={showMissingDialog}
             size="xs"
           >
             <Icon path={icons.mdiCheck} size={1} />
@@ -957,7 +960,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={() => {
+          onclick={() => {
             showResultMIBTree = false;
           }}
           size="xs"
@@ -977,14 +980,14 @@
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
-    <table id="missingTable" class="display compact" style="width:99%" />
+    <table id="missingTable" class="display compact" style="width:99%"></table>
     <div class="flex justify-end space-x-2 mr-2">
       {#if selectedMissingCount == 1}
         <GradientButton
           shadow
           color="lime"
           type="button"
-          on:click={searchExtMIB}
+          onclick={searchExtMIB}
           size="xs"
         >
           <Icon path={icons.mdiSearchWeb} size={1} />
@@ -995,7 +998,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => (showMissing = false)}
+        onclick={() => (showMissing = false)}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
@@ -1056,7 +1059,7 @@
         shadow
         color="red"
         type="button"
-        on:click={doSet}
+        onclick={doSet}
         size="xs"
       >
         <Icon path={icons.mdiSend} size={1} />
@@ -1066,7 +1069,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showSet = false;
         }}
         size="xs"

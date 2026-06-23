@@ -102,69 +102,83 @@
     }
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem open on:click={()=>{showChart("level")}}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={()=>{showChart("level")}}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           {$_('SyslogReport.CountByLevel')}
         </div>
+      {/snippet}
         <div id="level"></div>
       </TabItem>
-      <TabItem on:click={()=>{showChart("heatmap")}}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={()=>{showChart("heatmap")}}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
           {$_('SyslogReport.Heatmap')}
         </div>
+      {/snippet}
         <div id="heatmap"></div>
       </TabItem>
-      <TabItem on:click={()=>{showChart("host")}}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={()=>{showChart("host")}}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
           {$_('SyslogReport.CountByHost')}
         </div>
+      {/snippet}
         <div id="host"></div>
       </TabItem>
-      <TabItem on:click={showSummary}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={showSummary}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiFilterCheck} size={1} />
           {$_('SyslogReport.Summary')}
         </div>
+      {/snippet}
         <div id="syslogSummary"></div>
         <table
           id="syslogSummaryTable"
           class="display compact mt-5"
-          style="width:99%"
-        />
+          style="width:99%"></table>
       </TabItem>
-      <TabItem on:click={()=>{showChart("host3D")}}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={()=>{showChart("host3D")}}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartScatterPlot} size={1} />
           {$_('SyslogReport.Chart3D')}
         </div>
+      {/snippet}
         <div id="host3D"></div>
       </TabItem>
-      <TabItem on:click={()=>{showChart("fft")}}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={()=>{showChart("fft")}}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
           {$_('SyslogReport.FFT')}
         </div>
+      {/snippet}
         <div id="fft"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_('SyslogReport.Close')}
       </GradientButton>

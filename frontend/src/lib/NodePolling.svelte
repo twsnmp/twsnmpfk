@@ -165,6 +165,10 @@
   const close = () => {
     show = false;
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -172,18 +176,17 @@
   size="xl"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   <div class="flex flex-col">
     <div class="m-5 grow">
-      <table id="nodePollingTable" class="display compact" style="width:99%" />
+      <table id="nodePollingTable" class="display compact" style="width:99%"></table>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         shadow
         color="blue"
         type="button"
-        on:click={add}
+        onclick={add}
         size="xs"
       >
         <Icon path={icons.mdiPlus} size={1} />
@@ -194,7 +197,7 @@
           shadow
           color="blue"
           type="button"
-          on:click={edit}
+          onclick={edit}
           size="xs"
         >
           <Icon path={icons.mdiPencil} size={1} />
@@ -204,7 +207,7 @@
           shadow
           color="lime"
           type="button"
-          on:click={copy}
+          onclick={copy}
           size="xs"
         >
           <Icon path={icons.mdiContentCopy} size={1} />
@@ -214,7 +217,7 @@
           shadow
           color="green"
           type="button"
-          on:click={report}
+          onclick={report}
           size="xs"
         >
           <Icon path={icons.mdiChartBar} size={1} />
@@ -226,7 +229,7 @@
           shadow
           color="red"
           type="button"
-          on:click={deletePollings}
+          onclick={deletePollings}
           size="xs"
         >
           <Icon path={icons.mdiTrashCan} size={1} />
@@ -237,7 +240,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={refresh}
+        onclick={refresh}
         size="xs"
       >
         <Icon path={icons.mdiRecycle} size={1} />
@@ -247,7 +250,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

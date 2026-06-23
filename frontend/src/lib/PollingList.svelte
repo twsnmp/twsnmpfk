@@ -203,10 +203,10 @@
 
 <div class="flex flex-col">
   <div class="m-5 grow">
-    <table id="pollingListTable" class="display compact" style="width:99%" />
+    <table id="pollingListTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-    <GradientButton shadow color="blue" type="button" on:click={add} size="xs">
+    <GradientButton shadow color="blue" type="button" onclick={add} size="xs">
       <Icon path={icons.mdiPlus} size={1} />
       {$_("PollingList.Add")}
     </GradientButton>
@@ -215,7 +215,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={edit}
+        onclick={edit}
         size="xs"
       >
         <Icon path={icons.mdiPencil} size={1} />
@@ -225,7 +225,7 @@
         shadow
         color="lime"
         type="button"
-        on:click={copy}
+        onclick={copy}
         size="xs"
       >
         <Icon path={icons.mdiContentCopy} size={1} />
@@ -235,7 +235,7 @@
         shadow
         color="lime"
         type="button"
-        on:click={exportTemp}
+        onclick={exportTemp}
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
@@ -245,7 +245,7 @@
         shadow
         color="green"
         type="button"
-        on:click={report}
+        onclick={report}
         size="xs"
       >
         <Icon path={icons.mdiChartBar} size={1} />
@@ -257,7 +257,7 @@
         shadow
         color="red"
         type="button"
-        on:click={deletePollingLogs}
+        onclick={deletePollingLogs}
         size="xs"
       >
         <Icon path={icons.mdiTrashCan} size={1} />
@@ -267,7 +267,7 @@
         shadow
         color="red"
         type="button"
-        on:click={deletePollings}
+        onclick={deletePollings}
         size="xs"
       >
         <Icon path={icons.mdiTrashCan} size={1} />
@@ -278,7 +278,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveCSV}
+      onclick={saveCSV}
       size="xs"
     >
       <Icon path={icons.mdiFileDelimited} size={1} />
@@ -288,7 +288,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveExcel}
+      onclick={saveExcel}
       size="xs"
     >
       <Icon path={icons.mdiFileExcel} size={1} />
@@ -298,7 +298,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />

@@ -113,6 +113,10 @@
     setTimeout(() => (copied = false), 2000);
   };
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -120,7 +124,6 @@
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   {#if wait}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -134,13 +137,13 @@
         <Input class="h-8" bind:value={address} size="sm" />
       </Label>
     </form>
-    <table id="addrInfoTable" class="display compact" style="width:99%" />
+    <table id="addrInfoTable" class="display compact" style="width:99%"></table>
     <div class="flex justify-end space-x-2 mr-2">
       {#if !wait && address}
         <GradientButton
           type="button"
           color="blue"
-          on:click={showAddressInfo}
+          onclick={showAddressInfo}
           size="xs"
         >
           <Icon path={icons.mdiRecycle} size={1} />
@@ -151,7 +154,7 @@
           shadow
           color="cyan"
           type="button"
-          on:click={copy}
+          onclick={copy}
           size="xs"
         >
           {#if copied}
@@ -170,7 +173,7 @@
               color="lime"
               class="mr-2"
               size="xs"
-              on:click={() => {
+              onclick={() => {
                 BrowserOpenURL(
                   `https://www.google.com/maps/search/?api=1&query=` + latLong
                 );
@@ -186,7 +189,7 @@
             color="lime"
             class="mr-2"
             size="xs"
-            on:click={() => {
+            onclick={() => {
               BrowserOpenURL(
                 `https://www.virustotal.com/gui/ip-address/` + address
               );
@@ -197,7 +200,7 @@
           </GradientButton>
         {/if}
       {/if}
-      <GradientButton type="button" color="teal" on:click={close} size="xs">
+      <GradientButton type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_("ArpReport.Close")}
       </GradientButton>

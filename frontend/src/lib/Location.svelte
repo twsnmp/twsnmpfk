@@ -216,7 +216,7 @@
 
 <div class="flex flex-col">
   <div class="m-5 grow">
-    <div id="map" />
+    <div id="map"></div>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedNode != ""}
@@ -225,7 +225,7 @@
           shadow
           color="blue"
           type="button"
-          on:click={edit}
+          onclick={edit}
           size="xs"
         >
           <Icon path={icons.mdiPencil} size={1} />
@@ -235,7 +235,7 @@
           shadow
           color="blue"
           type="button"
-          on:click={polling}
+          onclick={polling}
           size="xs"
         >
           <Icon path={icons.mdiLanCheck} size={1} />
@@ -245,7 +245,7 @@
           shadow
           color="red"
           type="button"
-          on:click={del}
+          onclick={del}
           size="xs"
         >
           <Icon path={icons.mdiTrashCan} size={1} />
@@ -256,7 +256,7 @@
         shadow
         color="green"
         type="button"
-        on:click={report}
+        onclick={report}
         size="xs"
       >
         <Icon path={icons.mdiChartBar} size={1} />
@@ -269,7 +269,7 @@
         type="button"
         color="red"
         disabled={inSaveDef}
-        on:click={saveDef}
+        onclick={saveDef}
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
@@ -280,7 +280,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />
@@ -317,7 +317,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={add}
+        onclick={add}
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
@@ -327,7 +327,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showAddNode = false;
         }}
         size="xs"

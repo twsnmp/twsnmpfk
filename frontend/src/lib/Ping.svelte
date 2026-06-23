@@ -36,7 +36,7 @@
   let chartOption :any = undefined;
   let results :any = [];
   let ip = "";
-  let ipColor: any = "base";
+  let ipColor: any = undefined;
   let size = 64;
   let count = 10;
   let ttl = 64;
@@ -265,7 +265,7 @@
       ipColor ="red";
       return;
     } else {
-      ipColor = "base";
+      ipColor = undefined;
     }
     stopFlag = false;
     if (chart) {
@@ -377,18 +377,24 @@
     }
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
-<Modal bind:open={show} size="xl" dismissable={false} class="w-full" on:open={onOpen}>
+<Modal bind:open={show} size="xl" dismissable={false} class="w-full">
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem bind:open={pingTab} on:click={showPing}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem bind:open={pingTab} onclick={showPing}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiCheckNetwork} size={1} />
           { $_('Ping.DoPing') }
         </div>
+      {/snippet}
         <div class="flex flex-row mb-2">
           <Input
             class="h-8 mt-1"
@@ -420,42 +426,50 @@
             size="sm"
           />
         </div>
-        <div id="pingChart" class="mb-2" />
-        <table id="pingTable" class="display compact" style="width:99%" />
+        <div id="pingChart" class="mb-2"></div>
+        <table id="pingTable" class="display compact" style="width:99%"></table>
       </TabItem>
       {#if !wait && results.length > 0}
         {#if canShowHistogram}
-          <TabItem on:click={showHistogram}>
-            <div slot="title" class="flex items-center gap-2">
+          <TabItem onclick={showHistogram}>
+            {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
               <Icon path={icons.mdiChartHistogram} size={1} />
               { $_('Ping.Histogram') }
             </div>
-            <div id="histogram"/>
+      {/snippet}
+            <div id="histogram"></div>
           </TabItem>
         {/if}
-        <TabItem on:click={show3D}>
-          <div slot="title" class="flex items-center gap-2">
+        <TabItem onclick={show3D}>
+          {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
             <Icon path={icons.mdiRotate3d} size={1} />
             { $_('Ping.Chart3D') }
           </div>
-          <div id="chart3d" />
+      {/snippet}
+          <div id="chart3d"></div>
         </TabItem>
         {#if canShowLinear}
-          <TabItem on:click={showLinear}>
-            <div slot="title" class="flex items-center gap-2">
+          <TabItem onclick={showLinear}>
+            {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
               <Icon path={icons.mdiChartScatterPlot} size={1} />
               { $_('Ping.LineSpeed') }
             </div>
-            <div id="linear"/>
+      {/snippet}
+            <div id="linear"></div>
           </TabItem>
         {/if}
         {#if canShowWorld}
-          <TabItem on:click={showWorld}>
-            <div slot="title" class="flex items-center gap-2">
+          <TabItem onclick={showWorld}>
+            {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
               <Icon path={icons.mdiMapMarker} size={1} />
               { $_('Ping.World') }
             </div>
-            <div id="world" />
+      {/snippet}
+            <div id="world"></div>
           </TabItem>
         {/if}
       {/if}
@@ -464,12 +478,12 @@
       {#if pingTab}
         <Toggle bind:checked={beep}>BEEP</Toggle>
         {#if wait}
-          <GradientButton shadow type="button" color="red" on:click={stop} size="xs">
+          <GradientButton shadow type="button" color="red" onclick={stop} size="xs">
             <Icon path={icons.mdiStop} size={1} />
             { $_('Ping.Stop') }
           </GradientButton>
         {:else}
-          <GradientButton shadow type="button" color="blue" on:click={start} size="xs">
+          <GradientButton shadow type="button" color="blue" onclick={start} size="xs">
             <Icon path={icons.mdiPlay} size={1} />
             { $_('Ping.Start') }
           </GradientButton>
@@ -479,7 +493,7 @@
             size="xs"
             color="lime"
             class="ml-2"
-            on:click={() => {
+            onclick={() => {
               showHelp = true;
             }}
           >
@@ -490,7 +504,7 @@
           </GradientButton>
         {/if}
       {/if}
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('Ping.Close') }
       </GradientButton>

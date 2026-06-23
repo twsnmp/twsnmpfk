@@ -316,14 +316,14 @@
 </script>
 
 <div class="flex flex-col">
-  <table id="arpTable" class="display compact" style="width:99%" />
+  <table id="arpTable" class="display compact" style="width:99%"></table>
   <div class="flex justify-end space-x-2 mr-2 mt-2">
     {#if selectedNodeID}
       <GradientButton
         shadow
         color="green"
         type="button"
-        on:click={() => (showNodeReport = true)}
+        onclick={() => (showNodeReport = true)}
         size="xs"
       >
         <Icon path={icons.mdiChartBar} size={1} />
@@ -333,7 +333,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={() => (showEditNode = true)}
+        onclick={() => (showEditNode = true)}
         size="xs"
       >
         <Icon path={icons.mdiPencil} size={1} />
@@ -346,7 +346,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showAddNode = true;
         }}
         size="xs"
@@ -361,7 +361,7 @@
         shadow
         color="cyan"
         type="button"
-        on:click={copy}
+        onclick={copy}
         size="xs"
       >
         {#if copied}
@@ -375,7 +375,7 @@
         shadow
         color="red"
         type="button"
-        on:click={deleteAddress}
+        onclick={deleteAddress}
         size="xs"
       >
         <Icon path={icons.mdiTrashCan} size={1} />
@@ -386,7 +386,7 @@
       <GradientButton
         type="button"
         color="green"
-        on:click={() => {
+        onclick={() => {
           showReport = true;
         }}
         size="xs"
@@ -398,7 +398,7 @@
       <GradientButton
         type="button"
         color="green"
-        on:click={() => {
+        onclick={() => {
           showAddressInfo = true;
         }}
         size="xs"
@@ -406,7 +406,7 @@
         <Icon path={icons.mdiInbox} size={1} />
         {$_('Address.AddressInfo')}
       </GradientButton>
-    <GradientButton shadow color="red" type="button" on:click={reset} size="xs">
+    <GradientButton shadow color="red" type="button" onclick={reset} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
       {$_("Address.Clear")}
     </GradientButton>
@@ -414,7 +414,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveCSV}
+      onclick={saveCSV}
       size="xs"
     >
       <Icon path={icons.mdiFileDelimited} size={1} />
@@ -424,7 +424,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveExcel}
+      onclick={saveExcel}
       size="xs"
     >
       <Icon path={icons.mdiFileExcel} size={1} />
@@ -434,7 +434,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />

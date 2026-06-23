@@ -538,6 +538,10 @@ export function LLMMIBSearch(arg1) {
   return window['go']['main']['App']['LLMMIBSearch'](arg1);
 }
 
+export function LogFromJS(arg1) {
+  return window['go']['main']['App']['LogFromJS'](arg1);
+}
+
 export function Ping(arg1) {
   return window['go']['main']['App']['Ping'](arg1);
 }

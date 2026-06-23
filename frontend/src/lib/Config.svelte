@@ -59,7 +59,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import MibTree from "./MIBTree.svelte";
-  import { CodeJar } from "@novacbn/svelte-codejar";
+  import CodeJar from "./CodeJar.svelte";
   import Help from "./Help.svelte";
   import Prism from "prismjs";
   import { copyText } from "svelte-copy";
@@ -550,6 +550,10 @@
     }
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -557,17 +561,18 @@
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   {#if !locConf}
     <div class="text-center mt-10"><Spinner size={16} /></div>
   {:else}
     <Tabs style="underline">
-      <TabItem open>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiCog} size={1} />
           {$_("Config.Map")}
         </div>
+      {/snippet}
         <form class="flex flex-col space-y-4" action="#">
           <div class="grid gap-2 grid-cols-4">
             <Label class="col-span-3 space-y-2 text-xs">
@@ -702,7 +707,7 @@
                 color="alternative"
                 type="button"
                 class="ml-2 !p-2"
-                on:click={copyMCPToken}
+                onclick={copyMCPToken}
                 size="xs"
               >
                 {#if copied}
@@ -715,7 +720,7 @@
                 color="red"
                 type="button"
                 class="ml-2 !p-2"
-                on:click={refreshMCPToken}
+                onclick={refreshMCPToken}
                 size="xs"
               >
                 <Icon path={icons.mdiRefresh} size={1} />
@@ -845,7 +850,7 @@
               shadow
               color="lime"
               type="button"
-              on:click={importMap}
+              onclick={importMap}
               size="xs"
             >
               <Icon path={icons.mdiKeyChain} size={1} />
@@ -855,7 +860,7 @@
               shadow
               color="blue"
               type="button"
-              on:click={() => (showSSHPublicKey = true)}
+              onclick={() => (showSSHPublicKey = true)}
               size="xs"
             >
               <Icon path={icons.mdiKeyChain} size={1} />
@@ -865,7 +870,7 @@
               shadow
               color="blue"
               type="button"
-              on:click={saveMapConf}
+              onclick={saveMapConf}
               size="xs"
             >
               <Icon path={icons.mdiContentSave} size={1} />
@@ -877,7 +882,7 @@
               size="xs"
               color="lime"
               class="ml-2"
-              on:click={() => {
+              onclick={() => {
                 helpPage = "mapconf";
                 showHelp = true;
               }}
@@ -891,7 +896,7 @@
               shadow
               type="button"
               color="teal"
-              on:click={close}
+              onclick={close}
               size="xs"
             >
               <Icon path={icons.mdiCancel} size={1} />
@@ -901,10 +906,12 @@
         </form>
       </TabItem>
       <TabItem>
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiSend} size={1} />
           {$_("Config.Notify")}
         </div>
+      {/snippet}
         <form class="flex flex-col space-y-4" action="#">
           {#if showTestError}
             <Alert color="red" dismissable>
@@ -970,7 +977,7 @@
                 bind:value={notifyConf.Provider}
                 placeholder={$_('Config.SelectProvider')}
                 size="sm"
-                on:change={changeProvider}
+                onchange={changeProvider}
               />
             </Label>
             {#if notifyConf.Provider == "google"}
@@ -1174,7 +1181,7 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.AudioHigh")}</span>
               {#if notifyConf.BeepHigh}
-                <audio src={notifyConf.BeepHigh} controls />
+                <audio src={notifyConf.BeepHigh} controls></audio>
               {/if}
             </Label>
             {#if notifyConf.BeepHigh}
@@ -1183,7 +1190,7 @@
                 class="h-8 mt-6 w-28"
                 color="red"
                 type="button"
-                on:click={() => deleteBeep(true)}
+                onclick={() => deleteBeep(true)}
                 size="xs"
               >
                 <Icon path={icons.mdiTrashCan} size={1} />
@@ -1195,7 +1202,7 @@
                 class="h-8 mt-6 w-28"
                 color="blue"
                 type="button"
-                on:click={() => selectBeep(true)}
+                onclick={() => selectBeep(true)}
                 size="xs"
               >
                 <Icon path={icons.mdiSoundbar} size={1} />
@@ -1205,7 +1212,7 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.AodioLow")}</span>
               {#if notifyConf.BeepLow}
-                <audio src={notifyConf.BeepLow} controls />
+                <audio src={notifyConf.BeepLow} controls></audio>
               {/if}
             </Label>
             {#if notifyConf.BeepLow}
@@ -1214,7 +1221,7 @@
                 class="h-8 mt-6 w-28"
                 color="red"
                 type="button"
-                on:click={() => deleteBeep(false)}
+                onclick={() => deleteBeep(false)}
                 size="xs"
               >
                 <Icon path={icons.mdiTrashCan} size={1} />
@@ -1226,7 +1233,7 @@
                 class="h-8 mt-6 w-28"
                 color="blue"
                 type="button"
-                on:click={() => selectBeep(false)}
+                onclick={() => selectBeep(false)}
                 size="xs"
               >
                 <Icon path={icons.mdiSoundbar} size={1} />
@@ -1239,7 +1246,7 @@
               shadow
               color="blue"
               type="button"
-              on:click={saveNotifyConf}
+              onclick={saveNotifyConf}
               size="xs"
             >
               <Icon path={icons.mdiContentSave} size={1} />
@@ -1250,7 +1257,7 @@
               shadow
               type="button"
               color="red"
-              on:click={testMail}
+              onclick={testMail}
               size="xs"
             >
               <Icon path={icons.mdiEmail} size={1} />
@@ -1261,7 +1268,7 @@
               shadow
               type="button"
               color="red"
-              on:click={getOAuth2Token}
+              onclick={getOAuth2Token}
               size="xs"
             >
               <Icon path={icons.mdiKey} size={1} />
@@ -1272,7 +1279,7 @@
               shadow
               type="button"
               color="red"
-              on:click={testWebhook}
+              onclick={testWebhook}
               size="xs"
             >
               <Icon path={icons.mdiPost} size={1} />
@@ -1284,7 +1291,7 @@
               size="xs"
               color="lime"
               class="ml-2"
-              on:click={() => {
+              onclick={() => {
                 helpPage = "notifyconf";
                 showHelp = true;
               }}
@@ -1298,7 +1305,7 @@
               shadow
               type="button"
               color="teal"
-              on:click={close}
+              onclick={close}
               size="xs"
             >
               <Icon path={icons.mdiCancel} size={1} />
@@ -1308,10 +1315,12 @@
         </form>
       </TabItem>
       <TabItem>
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiBrain} size={1} />
           {$_("Config.AI")}
         </div>
+      {/snippet}
         <form class="flex flex-col space-y-4" action="#">
           <Label class="space-y-2 text-xs">
             <span> {$_("Config.AIHighLevel")} </span>
@@ -1345,7 +1354,7 @@
               shadow
               color="blue"
               type="button"
-              on:click={saveAIConf}
+              onclick={saveAIConf}
               size="xs"
             >
               <Icon path={icons.mdiContentSave} size={1} />
@@ -1357,7 +1366,7 @@
               size="xs"
               color="lime"
               class="ml-2"
-              on:click={() => {
+              onclick={() => {
                 helpPage = "aiconf";
                 showHelp = true;
               }}
@@ -1371,7 +1380,7 @@
               shadow
               type="button"
               color="teal"
-              on:click={close}
+              onclick={close}
               size="xs"
             >
               <Icon path={icons.mdiCancel} size={1} />
@@ -1381,10 +1390,12 @@
         </form>
       </TabItem>
       <TabItem>
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiMap} size={1} />
           {$_("Config.LocConf")}
         </div>
+      {/snippet}
         <form class="flex flex-col space-y-4" action="#">
           {#if showLocStyleError}
             <Alert color="red" dismissable>
@@ -1399,6 +1410,7 @@
             <CodeJar
               syntax="javascript"
               {highlight}
+              catchTab={true}
               bind:value={locConf.Style}
             />
           </Label>
@@ -1434,7 +1446,7 @@
               shadow
               color="blue"
               type="button"
-              on:click={saveLocConf}
+              onclick={saveLocConf}
               size="xs"
             >
               <Icon path={icons.mdiContentSave} size={1} />
@@ -1446,7 +1458,7 @@
               size="xs"
               color="lime"
               class="ml-2"
-              on:click={() => {
+              onclick={() => {
                 helpPage = "locconf";
                 showHelp = true;
               }}
@@ -1460,7 +1472,7 @@
               shadow
               type="button"
               color="teal"
-              on:click={close}
+              onclick={close}
               size="xs"
             >
               <Icon path={icons.mdiCancel} size={1} />
@@ -1469,11 +1481,13 @@
           </div>
         </form>
       </TabItem>
-      <TabItem on:click={showIconList}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={showIconList}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiDotsGrid} size={1} />
           {$_("Config.IconMan")}
         </div>
+      {/snippet}
         {#if iconImportError}
           <Alert color="red" dismissable>
             <div class="flex">
@@ -1482,13 +1496,15 @@
             </div>
           </Alert>
         {/if}
-        <table id="iconTable" class="display compact mt-2" style="width:99%" />
+        <div>
+          <table id="iconTable" class="display compact mt-2" style="width:99%"></table>
+        </div>
         <div class="flex justify-end space-x-2 mr-2 mt-3">
           <GradientButton
             shadow
             color="blue"
             type="button"
-            on:click={addIcon}
+            onclick={addIcon}
             size="xs"
           >
             <Icon path={icons.mdiPlus} size={1} />
@@ -1499,7 +1515,7 @@
               shadow
               color="blue"
               type="button"
-              on:click={editIcon}
+              onclick={editIcon}
               size="xs"
             >
               <Icon path={icons.mdiPencil} size={1} />
@@ -1511,7 +1527,7 @@
               shadow
               color="red"
               type="button"
-              on:click={delIcon}
+              onclick={delIcon}
               size="xs"
             >
               <Icon path={icons.mdiTrashCan} size={1} />
@@ -1522,7 +1538,7 @@
             shadow
             color="lime"
             type="button"
-            on:click={importIcons}
+            onclick={importIcons}
             size="xs"
           >
             <Icon path={icons.mdiUpload} size={1} />
@@ -1532,7 +1548,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={exportIcons}
+            onclick={exportIcons}
             size="xs"
           >
             <Icon path={icons.mdiContentSave} size={1} />
@@ -1544,7 +1560,7 @@
             size="xs"
             color="lime"
             class="ml-2"
-            on:click={() => {
+            onclick={() => {
               helpPage = "iconconf";
               showHelp = true;
             }}
@@ -1558,7 +1574,7 @@
             shadow
             type="button"
             color="teal"
-            on:click={close}
+            onclick={close}
             size="xs"
           >
             <Icon path={icons.mdiCancel} size={1} />
@@ -1566,22 +1582,25 @@
           </GradientButton>
         </div>
       </TabItem>
-      <TabItem on:click={showMIBModules}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={showMIBModules}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiFileTree} size={1} />
           {$_("Config.MIB")}
         </div>
-        <table
-          id="mibModuleTable"
-          class="display compact mt-2"
-          style="width:99%"
-        />
+      {/snippet}
+        <div>
+          <table
+            id="mibModuleTable"
+            class="display compact mt-2"
+            style="width:99%"></table>
+        </div>
         <div class="flex justify-end space-x-2 mr-2">
           <GradientButton
             shadow
             color="lime"
             type="button"
-            on:click={() => (showMIBTree = true)}
+            onclick={() => (showMIBTree = true)}
             size="xs"
           >
             <Icon path={icons.mdiFileTree} size={1} />
@@ -1593,7 +1612,7 @@
             size="xs"
             color="lime"
             class="ml-2"
-            on:click={() => {
+            onclick={() => {
               helpPage = "mibconf";
               showHelp = true;
             }}
@@ -1607,7 +1626,7 @@
             shadow
             type="button"
             color="teal"
-            on:click={close}
+            onclick={close}
             size="xs"
           >
             <Icon path={icons.mdiCancel} size={1} />
@@ -1627,14 +1646,14 @@
 >
   <div class="flex flex-col space-y-4">
     <div id="mibtree">
-      <MibTree tree={mibTree} on:select={(e) => {}} />
+      <MibTree tree={mibTree} onselect={(e) => {}} />
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showMIBTree = false;
         }}
         size="xs"
@@ -1661,7 +1680,7 @@
         <span>{$_('Config.IconFilter')}</span>
         <Input
           bind:value={filterIcon}
-          on:change={filterIconList}
+          onchange={filterIconList}
           size="sm"
         />
       </Label>
@@ -1676,7 +1695,7 @@
         />
       </Label>
       <div class="mt-5 ml-5">
-        <span class="mdi {icon.Icon} text-4xl" />
+        <span class="mdi {icon.Icon} text-4xl"></span>
       </div>
     </div>
     <Label class="space-y-2 text-xs">
@@ -1686,7 +1705,7 @@
         bind:value={icon.Name}
         required
         size="sm"
-        color={hasIconTextError ? "red" : "base"}
+        color={hasIconTextError ? "red" : undefined}
       />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
@@ -1694,7 +1713,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={saveIocn}
+        onclick={saveIocn}
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
@@ -1704,7 +1723,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showEditIcon = false;
         }}
         size="xs"
@@ -1733,7 +1752,7 @@
           color="alternative"
           type="button"
           class="ml-2 !p-2"
-          on:click={copyMySSHPublicKey}
+          onclick={copyMySSHPublicKey}
           size="xs"
         >
           {#if copied}
@@ -1746,7 +1765,7 @@
           color="red"
           type="button"
           class="ml-2 !p-2"
-          on:click={refreshMySSHPublicKey}
+          onclick={refreshMySSHPublicKey}
           size="xs"
         >
           <Icon path={icons.mdiRefresh} size={1} />
@@ -1763,7 +1782,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={saveSSHPublicKey}
+        onclick={saveSSHPublicKey}
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
@@ -1773,7 +1792,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showSSHPublicKey = false;
         }}
         size="xs"

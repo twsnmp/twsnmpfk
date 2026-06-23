@@ -296,16 +296,19 @@
     }
     ExportAny("csv", ed);
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   {#if !node}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -314,16 +317,18 @@
       <Tabs style="underline">
         <TabItem
           open
-          on:click={() => {
+          onclick={() => {
             chart = undefined;
             selectedTab = "";
             showResultTable();
           }}
         >
-          <div slot="title" class="flex items-center gap-2">
+          {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
             <Icon path={icons.mdiChartPie} size={1} />
             {$_("PollingReport.BasicInfo")}
           </div>
+      {/snippet}
           <div class="grid gap-2 grid-cols-2">
             <Table striped={true}>
               <TableHead>
@@ -344,8 +349,7 @@
                   <TableBodyCell>
                     <span
                       class="mdi {getStateIcon(polling.State)} text-xl"
-                      style="color:{getStateColor(polling.State)};"
-                    />
+                      style="color:{getStateColor(polling.State)};"></span>
                     <span class="ml-2 text-xs text-black dark:text-white"
                       >{getStateName(polling.State)}</span
                     >
@@ -359,50 +363,59 @@
                 </TableBodyRow>
               </TableBody>
             </Table>
-            <table id="resultTable" class="display compact" style="width:99%" />
+            <table id="resultTable" class="display compact" style="width:99%"></table>
           </div>
         </TabItem>
         {#if polling.LogMode > 0}
-          <TabItem on:click={showLog}>
-            <div slot="title" class="flex items-center gap-2">
+          <TabItem onclick={showLog}>
+            {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
               <Icon path={icons.mdiLanCheck} size={1} />
               {$_("PollingReport.PollingLog")}
             </div>
-            <div id="log" />
+      {/snippet}
+            <div id="log"></div>
             <table
               id="pollingLogTable"
               class="display compact"
-              style="width:99%;"
-            />
+              style="width:99%;"></table>
           </TabItem>
-          <TabItem on:click={showTimeChart}>
-            <div slot="title" class="flex items-center gap-2">
+          <TabItem onclick={showTimeChart}>
+            {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
               <Icon path={icons.mdiCalendarCheck} size={1} />
               {$_("PollingReport.TimeChart")}
             </div>
-            <div id="time" />
+      {/snippet}
+            <div id="time"></div>
           </TabItem>
-          <TabItem on:click={showHistogram}>
-            <div slot="title" class="flex items-center gap-2">
+          <TabItem onclick={showHistogram}>
+            {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
               <Icon path={icons.mdiAppsBox} size={1} />
               {$_("PollingReport.Histogram")}
             </div>
-            <div id="histogram" />
+      {/snippet}
+            <div id="histogram"></div>
           </TabItem>
-          <TabItem on:click={showQQPlot}>
-            <div slot="title" class="flex items-center gap-2">
+          <TabItem onclick={showQQPlot}>
+            {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
               <Icon path={icons.mdiAppsBox} size={1} />
               {$_('PollingReport.QQPlot')}
             </div>
-            <div id="qqplot" />
+      {/snippet}
+            <div id="qqplot"></div>
           </TabItem>
           {#if polling.LogMode == 3 && aiResult}
-            <TabItem on:click={showAI}>
-              <div slot="title" class="flex items-center gap-2">
+            <TabItem onclick={showAI}>
+              {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
                 <Icon path={icons.mdiAppsBox} size={1} />
                 {$_("PollingReport.AI")}
               </div>
-              <div id="ai" />
+      {/snippet}
+              <div id="ai"></div>
             </TabItem>
           {/if}
         {/if}
@@ -414,7 +427,7 @@
             size="sm"
             items={entList}
             bind:value={selectedEnt}
-            on:change={showTimeChart}
+            onchange={showTimeChart}
             placeholder={$_("PollingReport.SelectVal")}
           />
         {/if}
@@ -424,7 +437,7 @@
             size="sm"
             items={entList}
             bind:value={selectedEnt}
-            on:change={showHistogram}
+            onchange={showHistogram}
             placeholder={$_("PollingReport.SelectVal")}
           />
         {/if}
@@ -434,7 +447,7 @@
             size="sm"
             items={entList}
             bind:value={selectedEnt}
-            on:change={showQQPlot}
+            onchange={showQQPlot}
             placeholder={$_("PollingReport.SelectVal")}
           />
         {/if}
@@ -443,7 +456,7 @@
             shadow
             color="lime"
             type="button"
-            on:click={() => exportLogs("csv")}
+            onclick={() => exportLogs("csv")}
             size="xs"
           >
             <Icon path={icons.mdiFileDelimited} size={1} />
@@ -453,7 +466,7 @@
             shadow
             color="lime"
             type="button"
-            on:click={() => exportLogData()}
+            onclick={() => exportLogData()}
             size="xs"
           >
             <Icon path={icons.mdiFileDelimited} size={1} />
@@ -463,7 +476,7 @@
             shadow
             color="lime"
             type="button"
-            on:click={() => exportLogs("excel")}
+            onclick={() => exportLogs("excel")}
             size="xs"
           >
             <Icon path={icons.mdiFileExcel} size={1} />
@@ -474,7 +487,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />

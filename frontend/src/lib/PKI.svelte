@@ -378,7 +378,7 @@
           </div>
         </Alert>
       {/if}
-      <table id="certListTable" class="display compact" style="width:99%" />
+      <table id="certListTable" class="display compact" style="width:99%"></table>
     {/if}
   </div>
   <div class="flex justify-end space-x-2 mr-2">
@@ -386,7 +386,7 @@
       shadow
       color="green"
       type="button"
-      on:click={() => (showCreateCSRDialog = true)}
+      onclick={() => (showCreateCSRDialog = true)}
       size="xs"
     >
       <Icon path={icons.mdiKey} size={1} />
@@ -398,7 +398,7 @@
         color="blue"
         type="button"
         disabled={wait}
-        on:click={doCreateCA}
+        onclick={doCreateCA}
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
@@ -410,7 +410,7 @@
           shadow
           color="lime"
           type="button"
-          on:click={exportCert}
+          onclick={exportCert}
           size="xs"
         >
           <Icon path={icons.mdiContentSave} size={1} />
@@ -421,7 +421,7 @@
             shadow
             color="red"
             type="button"
-            on:click={revokeCert}
+            onclick={revokeCert}
             size="xs"
           >
             <Icon path={icons.mdiBookRemove} size={1} />
@@ -433,7 +433,7 @@
         shadow
         color="green"
         type="button"
-        on:click={doCreateCRT}
+        onclick={doCreateCRT}
         size="xs"
       >
         <Icon path={icons.mdiCertificate} size={1} />
@@ -443,7 +443,7 @@
         shadow
         color="red"
         type="button"
-        on:click={destroyCA}
+        onclick={destroyCA}
         size="xs"
       >
         <Icon path={icons.mdiTrashCan} size={1} />
@@ -453,7 +453,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={() => (showPKIControlDialog = true)}
+        onclick={() => (showPKIControlDialog = true)}
         size="xs"
       >
         <Icon path={icons.mdiCog} size={1} />
@@ -463,7 +463,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={refresh}
+        onclick={refresh}
         size="xs"
       >
         <Icon path={icons.mdiRecycle} size={1} />
@@ -564,7 +564,7 @@
       shadow
       type="button"
       color="blue"
-      on:click={doPKIControl}
+      onclick={doPKIControl}
       size="xs"
     >
       <Icon path={icons.mdiController} size={1} />
@@ -574,7 +574,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={() => {
+      onclick={() => {
         showPKIControlDialog = false;
       }}
       size="xs"
@@ -642,7 +642,7 @@
       shadow
       type="button"
       color="blue"
-      on:click={doCreateCSR}
+      onclick={doCreateCSR}
       size="xs"
     >
       <Icon path={icons.mdiContentSave} size={1} />
@@ -652,7 +652,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={() => {
+      onclick={() => {
         showCreateCSRDialog = false;
       }}
       size="xs"

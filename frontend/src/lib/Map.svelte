@@ -282,12 +282,12 @@
   }
 </script>
 
-<div bind:this={map} class="h-full w-full overflow-scroll" />
+<div bind:this={map} class="h-full w-full overflow-scroll"></div>
 
 <Button
   color="alternative"
   class="!p-2 absolute end-6 bottom-16"
-  on:click={saveMap}
+  onclick={saveMap}
 >
   <Icon path={icons.mdiContentSave}></Icon>
 </Button>
@@ -295,7 +295,7 @@
 <Button
   color="alternative"
   class="!p-2 absolute end-20 bottom-6"
-  on:click={() => zoom(true)}
+  onclick={() => zoom(true)}
 >
   <Icon path={icons.mdiMagnifyPlus}></Icon>
 </Button>
@@ -303,7 +303,7 @@
 <Button
   color="alternative"
   class="!p-2 absolute end-6 bottom-6"
-  on:click={() => zoom(false)}
+  onclick={() => zoom(false)}
 >
   <Icon path={icons.mdiMagnifyMinus}></Icon>
 </Button>
@@ -317,7 +317,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           selectedNode = "";
           showEditNode = true;
           showMapMenu = false;
@@ -332,7 +332,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           selectedDrawItem = "";
           showEditDrawItem = true;
           showMapMenu = false;
@@ -347,7 +347,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           selectedNetwork = "";
           showEditNetwork = true;
           showMapMenu = false;
@@ -362,7 +362,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showMapMenu = false;
           CheckPolling("all");
           refreshMap();
@@ -376,7 +376,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showMapMenu = false;
           showDiscover = true;
         }}
@@ -389,7 +389,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={async () => {
+        onclick={async () => {
           showMapMenu = false;
           if (await ImportV4Map()) {
             refreshMap();
@@ -404,7 +404,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showMapMenu = false;
           showGrid = true;
         }}
@@ -417,7 +417,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={showEditBackImageDlg}
+        onclick={showEditBackImageDlg}
       >
         <Icon path={icons.mdiImage} size={0.7} />
         <div>
@@ -427,7 +427,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showMapMenu = false;
           resetMap();
           refreshMap();
@@ -441,7 +441,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           editDrawItems = !editDrawItems;
           setEditDrawItems(editDrawItems);
           showMapMenu = false;
@@ -462,7 +462,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNodeInfo = !showNodeInfo;
           setShowNodeInfo(showNodeInfo);
           showMapMenu = false;
@@ -493,7 +493,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNodeMenu = false;
           showNodeReport = true;
         }}
@@ -506,7 +506,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNodeMenu = false;
           showPing = true;
           setMapReadOnly(true);
@@ -518,7 +518,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNodeMenu = false;
           showMibBr = true;
           setMapReadOnly(true);
@@ -532,7 +532,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNodeMenu = false;
           showGNMITool = true;
           setMapReadOnly(true);
@@ -546,7 +546,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNodeMenu = false;
           WakeOnLan(selectedNode);
         }}
@@ -557,7 +557,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNodeMenu = false;
           showEditNode = true;
           setMapReadOnly(true);
@@ -571,7 +571,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNodeMenu = false;
           showPolling = true;
         }}
@@ -584,7 +584,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNodeMenu = false;
           CheckPolling(selectedNode);
           refreshMap();
@@ -598,7 +598,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={async () => {
+        onclick={async () => {
           showNodeMenu = false;
           await CopyNode(selectedNode);
           refreshMap();
@@ -612,7 +612,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           deleteNodes([selectedNode]);
           refreshMap();
         }}
@@ -627,7 +627,7 @@
           <!-- svelte-ignore a11y-no-static-element-interactions -->
           <div
             class="flex items-center space-x-2 hover:bg-sky-500/[0.8] overflow-hidden"
-            on:click={() => {
+            onclick={() => {
               showNodeMenu = false;
               BrowserOpenURL(url);
             }}
@@ -654,7 +654,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showDrawItemMenu = false;
           showEditDrawItem = true;
           setMapReadOnly(true);
@@ -668,7 +668,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={async () => {
+        onclick={async () => {
           showDrawItemMenu = false;
           await CopyDrawItem(selectedDrawItem);
           refreshMap();
@@ -682,7 +682,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           deleteDrawItems([selectedDrawItem]);
           refreshMap();
         }}
@@ -705,7 +705,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNetworkMenu = false;
           showNetworkReport = true;
           setMapReadOnly(true);
@@ -719,7 +719,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNetworkMenu = false;
           CheckNetwork(selectedNetwork);
           refreshMap();
@@ -733,7 +733,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNetworkMenu = false;
           showEditNetwork = true;
           setMapReadOnly(true);
@@ -747,7 +747,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNetworkMenu = false;
           showNetworkLines = true;
           setMapReadOnly(true);
@@ -761,7 +761,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNetworkMenu = false;
           selectedNode = "NET:" + selectedNetwork;
           showPing = true;
@@ -774,7 +774,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNetworkMenu = false;
           selectedNode = "NET:" + selectedNetwork;
           showMibBr = true;
@@ -789,7 +789,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showNetworkMenu = false;
           showNeighborNetworksAndLines = true;
           setMapReadOnly(true);
@@ -803,7 +803,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           deleteNetwork(selectedNetwork);
           refreshMap();
         }}
@@ -826,7 +826,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showFormatNodesMenu = false;
           horizontal(selectedNodes);
           selectedNodes = [];
@@ -840,7 +840,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showFormatNodesMenu = false;
           vertical(selectedNodes);
           selectedNodes = [];
@@ -854,7 +854,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        on:click={() => {
+        onclick={() => {
           showFormatNodesMenu = false;
           circle(selectedNodes);
           selectedNodes = [];
@@ -941,7 +941,7 @@
     setMapReadOnly(false);
     refreshMap();
   }}
-  on:editLine={(e) => {
+  oneditLine={(e) => {
     selectedLineID = e.detail;
     selectedLineNode1= "";
     selectedLineNode2= "";
@@ -957,7 +957,7 @@
     setMapReadOnly(false);
     refreshMap();
   }}
-  on:addNetwork={(e) => {
+  onaddNetwork={(e) => {
     networkTemplate = e.detail;
     showEditNetwork = true;
     setMapReadOnly(true);
@@ -1025,7 +1025,7 @@
       <GradientButton
         color="red"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showGrid = false;
           grid(gridSize, false);
         }}
@@ -1038,7 +1038,7 @@
         shadow
         color="lime"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showGrid = false;
           grid(gridSize, true);
         }}
@@ -1051,7 +1051,7 @@
         shadow
         color="teal"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showGrid = false;
         }}
         size="xs"
@@ -1127,7 +1127,7 @@
       type="button"
       size="xs"
       color="blue"
-      on:click={selectImage}
+      onclick={selectImage}
     >
       <Icon path={icons.mdiImage} size={1} />
       {$_("DrawItem.Select")}
@@ -1137,14 +1137,14 @@
       {#if image}
         <img src={image} alt="" class="h-32" />
       {:else}
-        <div />
+        <div></div>
       {/if}
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         color="blue"
         type="button"
-        on:click={saveBackImage}
+        onclick={saveBackImage}
         size="xs"
       >
         <Icon path={icons.mdiContentSave} size={1} />
@@ -1154,7 +1154,7 @@
         <GradientButton
           color="red"
           type="button"
-          on:click={clearBackImage}
+          onclick={clearBackImage}
           size="xs"
         >
           <Icon path={icons.mdiDelete} size={1} />
@@ -1165,7 +1165,7 @@
         shadow
         color="teal"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showEditBackImage = false;
         }}
         size="xs"
@@ -1178,7 +1178,7 @@
 </Modal>
 
 <svelte:window
-  on:click={() => {
+  onclick={() => {
     showMapMenu = false;
     showNetworkMenu = false;
     showNodeMenu = false;

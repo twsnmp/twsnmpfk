@@ -114,9 +114,10 @@
     }
 </script>
 
-<svelte:window on:resize={() => (mainHeight = window.innerHeight - 96)} />
+<svelte:window onresize={() => (mainHeight = window.innerHeight - 96)} />
 
-<Navbar let:hidden let:toggle style="--wails-draggable:drag">
+<Navbar style="--wails-draggable:drag">
+  {#snippet children({ hidden, toggle })}
   <NavBrand href="/">
     <img src={logo} class="mr-2 h-12" alt="TWSNMP Logo" />
     <span
@@ -125,183 +126,201 @@
       TWSNMP FK - {mapConfig.MapName}
     </span>
   </NavBrand>
-  <NavUl ulClass="flex flex-col p-2 mt-3 md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium">
+  <NavUl activeUrl={showConfig ? "config" : page} ulClass="flex flex-col p-2 mt-3 md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium">
     {#if !lock}
       <NavLi
-        active={page == "map"}
-        on:click={() => {
-          page = "map";
-        }}
-      >
+  href="map"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "map";
+  }}
+>
         <Icon path={icons.mdiLan} size={1.8} />
         {$_("Top.Map")}
       </NavLi>
       {#if locConf.Style}
         <NavLi
-          active={page == "loc"}
-          on:click={() => {
-            page = "loc";
-          }}
-        >
+  href="loc"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "loc";
+  }}
+>
           <Icon path={icons.mdiMap} size={1.8} />
           {$_("Top.Loc")}
         </NavLi>
       {/if}
       <NavLi
-        active={page == "node"}
-        on:click={() => {
-          page = "node";
-        }}
-      >
+  href="node"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "node";
+  }}
+>
         <Icon path={icons.mdiLaptop} size={1.8} />
         {$_("Top.Node")}
       </NavLi>
       <NavLi
-        active={page == "polling"}
-        on:click={() => {
-          page = "polling";
-        }}
-      >
+  href="polling"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "polling";
+  }}
+>
         <Icon path={icons.mdiLanCheck} size={1.8} />
         {$_("Top.Polling")}
       </NavLi>
       <NavLi
-        active={page == "address"}
-        on:click={() => {
-          page = "address";
-        }}
-      >
+  href="address"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "address";
+  }}
+>
         <Icon path={icons.mdiListStatus} size={1.8} />
         {$_("Top.Address")}
       </NavLi>
       <NavLi
-        active={page == "cert"}
-        on:click={() => {
-          page = "cert";
-        }}
-      >
+  href="cert"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "cert";
+  }}
+>
         <Icon path={icons.mdiInvoiceList} size={1.8} />
         {$_('Top.Cert')}
       </NavLi>
       <NavLi
-        active={page == "pki"}
-        on:click={() => {
-          page = "pki";
-        }}
-      >
+  href="pki"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "pki";
+  }}
+>
         <Icon path={icons.mdiCertificate} size={1.8} />
         PKI
       </NavLi>
       <NavLi
-        active={page == "eventlog"}
-        on:click={() => {
-          page = "eventlog";
-        }}
-      >
+  href="eventlog"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "eventlog";
+  }}
+>
         <Icon path={icons.mdiCalendarCheck} size={1.8} />
         {$_("Top.Log")}
       </NavLi>
     {#if mapConfig.EnableSyslogd}
       <NavLi
-        active={page == "syslog"}
-        on:click={() => {
-          page = "syslog";
-        }}
-      >
+  href="syslog"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "syslog";
+  }}
+>
         <Icon path={icons.mdiCalendarText} size={1.8} />
         syslog
       </NavLi>
     {/if}
     {#if mapConfig.EnableTrapd}
       <NavLi
-        active={page == "trap"}
-        on:click={() => {
-          page = "trap";
-        }}
-      >
+  href="trap"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "trap";
+  }}
+>
         <Icon path={icons.mdiAlert} size={1.8} />
         TRAP
       </NavLi>
     {/if}
     {#if mapConfig.EnableNetflowd}
       <NavLi
-        active={page == "netflow"}
-        on:click={() => {
-          page = "netflow";
-        }}
-      >
+  href="netflow"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "netflow";
+  }}
+>
         <Icon path={icons.mdiCompareHorizontal} size={1.8} />
         NetFlow
       </NavLi>
     {/if}
     {#if mapConfig.EnableSFlowd}
       <NavLi
-        active={page == "sflow"}
-        on:click={() => {
-          page = "sflow";
-        }}
-      >
+  href="sflow"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "sflow";
+  }}
+>
         <Icon path={icons.mdiClockCheckOutline} size={1.8} />
         sFlow
       </NavLi>
     {/if}
       <NavLi
-        active={page == "arp"}
-        on:click={() => {
-          page = "arp";
-        }}
-      >
+  href="arp"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "arp";
+  }}
+>
         <Icon path={icons.mdiCheckNetwork} size={1.8} />
         ARP
       </NavLi>
     {#if mapConfig.EnableOTel}
       <NavLi
-        active={page == "otel"}
-        on:click={() => {
-          page = "otel";
-        }}
-      >
+  href="otel"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "otel";
+  }}
+>
         <Icon path={icons.mdiTelescope} size={1.8} />
         OTel
       </NavLi>
     {/if}
     {#if mapConfig.EnableMqtt}
       <NavLi
-        active={page == "mqtt"}
-        on:click={() => {
-          page = "mqtt";
-        }}
-      >
+  href="mqtt"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "mqtt";
+  }}
+>
         <Icon path={icons.mdiQueueFirstInLastOut} size={1.8} />
         MQTT
       </NavLi>
     {/if}
       <NavLi
-        active={page == "ai"}
-        on:click={() => {
-          page = "ai";
-        }}
-      >
+  href="ai"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "ai";
+  }}
+>
         <Icon path={icons.mdiBrain} size={1.8} />
         {$_("Top.AI")}
       </NavLi>
       <NavLi
-        active={page == "system"}
-        on:click={() => {
-          page = "system";
-        }}
-      >
+  href="system"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "system";
+  }}
+>
         <Icon path={icons.mdiChartLine} size={1.8} />
         {$_("Top.System")}
       </NavLi>
       <NavLi
-        active={showConfig}
-        on:click={() => {
-          oldPage = page;
-          page = "";
-          showConfig = true;
-        }}
-      >
+  href="config"
+  onclick={(e) => {
+    e.preventDefault();
+    oldPage = page;
+    page = "";
+    showConfig = true;
+  }}
+>
         <Icon path={icons.mdiCog} size={1.8} />
         {$_("Top.Config")}
       </NavLi>
@@ -311,7 +330,7 @@
     {#if !latest}
       <Badge class="mr-2 h-8" border color="red">{$_("Top.HasUpdate")}</Badge>
     {/if}
-    <Button class="!p-2" color="alternative" on:click={toggleDark}>
+    <Button class="!p-2" color="alternative" onclick={toggleDark}>
       {#if dark}
         <Icon path={icons.mdiWeatherSunny} size={1} />
       {:else}
@@ -322,7 +341,7 @@
       id="help"
       class="!p-2 ml-2"
       color="alternative"
-      on:click={() => {
+      onclick={() => {
         oldPage = page;
         page = "";
         showHelp = true;
@@ -332,6 +351,7 @@
     </Button>
     <Tooltip triggeredBy="#help" placement="left">{version}</Tooltip>
   </div>
+  {/snippet}
 </Navbar>
 
 {#if page == "map"}

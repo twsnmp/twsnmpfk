@@ -148,6 +148,10 @@
     show = false;
     dispatch("editLine", data[i].ID);
   }
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -155,7 +159,6 @@
   size="lg"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   {#if wait}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -165,7 +168,7 @@
         {$_('NetworkLine.EditLine')}
       </h3>
       <div class="m-5 grow">
-        <table id="lineTable" class="display compact" style="width:99%" />
+        <table id="lineTable" class="display compact" style="width:99%"></table>
       </div>
       <div class="flex justify-end space-x-2 mr-2">
         {#if selectedCount > 0}
@@ -173,7 +176,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={lineEdit}
+            onclick={lineEdit}
             size="xs"
           >
             <Icon path={icons.mdiPencil} size={1} />
@@ -182,7 +185,7 @@
             shadow
             color="red"
             type="button"
-            on:click={lineDelete}
+            onclick={lineDelete}
             size="xs"
           >
             <Icon path={icons.mdiTrashCan} size={1} />
@@ -192,7 +195,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />

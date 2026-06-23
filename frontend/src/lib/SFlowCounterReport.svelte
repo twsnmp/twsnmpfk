@@ -223,96 +223,113 @@
   };
 
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem
         open
-        on:click={() => {
+        onclick={() => {
           showHeatmap();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
           {$_("TrapReport.Heatmap")}
         </div>
-        <div id="heatmap" />
+      {/snippet}
+        <div id="heatmap"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showIFCounter("bps");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiTrafficCone} size={1} />
           I/F BPS
         </div>
-        <div id="ifCounter_bps" />
+      {/snippet}
+        <div id="ifCounter_bps"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showIFCounter("pps");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiTrafficCone} size={1} />
           I/F PPS
         </div>
-        <div id="ifCounter_pps" />
+      {/snippet}
+        <div id="ifCounter_pps"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showCpuCounter();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiGauge} size={1} />
           CPU
         </div>
-        <div id="cpuCounter" />
+      {/snippet}
+        <div id="cpuCounter"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showMemCounter();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiMemory} size={1} />
           Memory
         </div>
-        <div id="memCounter" />
+      {/snippet}
+        <div id="memCounter"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showDiskCounter();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiHarddisk} size={1} />
           Disk
         </div>
-        <div id="diskCounter" />
+      {/snippet}
+        <div id="diskCounter"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showNetCounter();
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiNetwork} size={1} />
           Network
         </div>
-        <div id="netCounter" />
+      {/snippet}
+        <div id="netCounter"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -323,7 +340,7 @@
           items={ifCounterSrcList}
           bind:value={ifCounterSrc}
           size="sm"
-          on:change={() => {
+          onchange={() => {
             showIFCounter("bps")
           }}
         />
@@ -335,7 +352,7 @@
           items={ifCounterSrcList}
           bind:value={ifCounterSrc}
           size="sm"
-          on:change={() => {
+          onchange={() => {
             showIFCounter("pps")
           }}
         />
@@ -347,7 +364,7 @@
           items={cpuCounterSrcList}
           bind:value={cpuCounterSrc}
           size="sm"
-          on:change={showCpuCounter}
+          onchange={showCpuCounter}
         />
       {/if}
       {#if tab == "memCounter"}
@@ -357,7 +374,7 @@
           items={memCounterSrcList}
           bind:value={memCounterSrc}
           size="sm"
-          on:change={showMemCounter}
+          onchange={showMemCounter}
         />
       {/if}
       {#if tab == "diskCounter"}
@@ -367,7 +384,7 @@
           items={diskCounterSrcList}
           bind:value={diskCounterSrc}
           size="sm"
-          on:change={showDiskCounter}
+          onchange={showDiskCounter}
         />
       {/if}
       {#if tab == "netCounter"}
@@ -377,14 +394,14 @@
           items={netCounterSrcList}
           bind:value={netCounterSrc}
           size="sm"
-          on:change={showNetCounter}
+          onchange={showNetCounter}
         />
       {/if}
       <GradientButton
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

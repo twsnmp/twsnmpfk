@@ -102,6 +102,10 @@
       selIPRange = 0;
     }
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -109,7 +113,6 @@
   size="lg"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   {#if !conf}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -173,7 +176,7 @@
           shadow
           color="blue"
           type="button"
-          on:click={start}
+          onclick={start}
           size="xs"
         >
           <Icon path={icons.mdiSearchWeb} size={1} />
@@ -183,7 +186,7 @@
           shadow
           type="button"
           color="red"
-          on:click={getIPRange}
+          onclick={getIPRange}
           size="xs"
         >
           <Icon path={icons.mdiMagicStaff} size={1} />
@@ -195,7 +198,7 @@
           size="xs"
           color="lime"
           class="ml-2"
-          on:click={() => {
+          onclick={() => {
             showHelp = true;
           }}
         >
@@ -208,7 +211,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />
@@ -327,7 +330,7 @@
           shadow
           type="button"
           color="red"
-          on:click={stop}
+          onclick={stop}
           size="xs"
         >
           <Icon path={icons.mdiStop} size={1} />
@@ -338,7 +341,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

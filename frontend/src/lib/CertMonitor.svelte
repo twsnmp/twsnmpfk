@@ -199,24 +199,24 @@
 
 <div class="flex flex-col">
   <div class="m-5 grow">
-    <table id="certMonitorListTable" class="display compact" style="width:99%" />
+    <table id="certMonitorListTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-    <GradientButton shadow color="blue" type="button" on:click={add} size="xs">
+    <GradientButton shadow color="blue" type="button" onclick={add} size="xs">
       <Icon path={icons.mdiPlus} size={1} />
       {$_('CertMonitor.Add')}
     </GradientButton>
   {#if selectedCount == 1}
-    <GradientButton shadow color="blue" type="button" on:click={edit} size="xs">
+    <GradientButton shadow color="blue" type="button" onclick={edit} size="xs">
       <Icon path={icons.mdiPencil} size={1} />
       {$_('CertMonitor.Edit')}
     </GradientButton>
-    <GradientButton shadow color="red" type="button" on:click={del} size="xs">
+    <GradientButton shadow color="red" type="button" onclick={del} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
       {$_('CertMonitor.Del')}
     </GradientButton>
   {/if} 
-    <GradientButton shadow type="button" color="teal" on:click={refresh} size="xs">
+    <GradientButton shadow type="button" color="teal" onclick={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       { $_('AIList.Reload') }
     </GradientButton>
@@ -254,7 +254,7 @@
       shadow
       type="button"
       color="blue"
-      on:click={update}
+      onclick={update}
       size="xs"
     >
       <Icon path={icons.mdiContentSave} size={1} />
@@ -264,7 +264,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={() => {
+      onclick={() => {
         showEditDialog = false;
       }}
       size="xs"

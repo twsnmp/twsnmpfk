@@ -2,8 +2,6 @@
   import {
     Modal,
     GradientButton,
-    Tabs,
-    TabItem,
     Table,
     TableBody,
     TableBodyCell,
@@ -52,6 +50,7 @@
   export let show: boolean = false;
   export let id = "";
   let node: any;
+  let activeTab = "basic";
 
   let selectedPortCount = 0;
   let selectedHrSystemCount = 0;
@@ -69,8 +68,96 @@
     selectedhrStorageCount = 0;
     selectedHrProcessCount = 0;
     showVPanelBtn = false;
-    chart = undefined;
-    chartMem = undefined;
+    deleteVPanel();
+    if (chart) {
+      try {
+        chart.dispose();
+      } catch (e) {
+        // ignore
+      }
+      chart = undefined;
+    }
+    if (chartMem) {
+      try {
+        chartMem.dispose();
+      } catch (e) {
+        // ignore
+      }
+      chartMem = undefined;
+    }
+    if (logTable) {
+      try {
+        logTable.destroy();
+      } catch (e) {
+        // ignore
+      }
+      logTable = undefined;
+    }
+    if (portTable) {
+      try {
+        portTable.destroy();
+      } catch (e) {
+        // ignore
+      }
+      portTable = undefined;
+    }
+    if (hrSystemTable) {
+      try {
+        hrSystemTable.destroy();
+      } catch (e) {
+        // ignore
+      }
+      hrSystemTable = undefined;
+    }
+    if (hrStorageTable) {
+      try {
+        hrStorageTable.destroy();
+      } catch (e) {
+        // ignore
+      }
+      hrStorageTable = undefined;
+    }
+    if (hrDeviceTable) {
+      try {
+        hrDeviceTable.destroy();
+      } catch (e) {
+        // ignore
+      }
+      hrDeviceTable = undefined;
+    }
+    if (hrFileSystemTable) {
+      try {
+        hrFileSystemTable.destroy();
+      } catch (e) {
+        // ignore
+      }
+      hrFileSystemTable = undefined;
+    }
+    if (hrProcessTable) {
+      try {
+        hrProcessTable.destroy();
+      } catch (e) {
+        // ignore
+      }
+      hrProcessTable = undefined;
+    }
+  };
+
+  const safeInit = (selector: string, initFn: () => void) => {
+    let retries = 0;
+    const checkAndInit = () => {
+      if (document.querySelector(selector)) {
+        try {
+          initFn();
+        } catch (e) {
+          console.error("Failed to initialize: " + selector, e);
+        }
+      } else if (retries < 10) {
+        retries++;
+        setTimeout(checkAndInit, 50);
+      }
+    };
+    checkAndInit();
   };
 
   let logTable = undefined;
@@ -85,40 +172,47 @@
       EventType:"",
       Level:0,
     });
-    logTable = new DataTable("#logTable", {
-      data: logs,
-      language: getTableLang(),
-      order: [[1, "desc"]],
-      columns: [
-        {
-          data: "Level",
-          title: $_("NodeReport.Level"),
-          width: "15%",
-          render: renderState,
-        },
-        {
-          data: "Time",
-          title: $_("NodeReport.Time"),
-          width: "20%",
-          render: renderTime,
-        },
-        {
-          data: "Type",
-          title: $_("NodeReport.Type"),
-          width: "15%",
-        },
-        {
-          data: "Event",
-          title: $_("NodeReport.Event"),
-          width: "50%",
-        },
-      ],
+    if (activeTab !== "log") return;
+    safeInit("#nodeReportLogTable", () => {
+      logTable = new DataTable("#nodeReportLogTable", {
+        destroy: true,
+        data: logs,
+        language: getTableLang(),
+        order: [[1, "desc"]],
+        columns: [
+          {
+            data: "Level",
+            title: $_("NodeReport.Level"),
+            width: "15%",
+            render: renderState,
+          },
+          {
+            data: "Time",
+            title: $_("NodeReport.Time"),
+            width: "20%",
+            render: renderTime,
+          },
+          {
+            data: "Type",
+            title: $_("NodeReport.Type"),
+            width: "15%",
+          },
+          {
+            data: "Event",
+            title: $_("NodeReport.Event"),
+            width: "50%",
+          },
+        ],
+      });
     });
   };
 
   let portTable: any = undefined;
 
   const showPortTable = (p: any) => {
+    if (!document.getElementById("portTable")) {
+      return;
+    }
     portTable = new DataTable("#portTable", {
       destroy: true,
       stateSave: true,
@@ -222,15 +316,26 @@
   const showVPanel = async () => {
     clearSelectedCount();
     showVPanelBtn = true;
-    initVPanel("vpanel");
     if (!ports) {
       waitVPanel = true;
-      ports = await GetVPanelPorts(id);
-      power = await GetVPanelPowerInfo(id);
+      const p = await GetVPanelPorts(id);
+      const pow = await GetVPanelPowerInfo(id);
+      if (activeTab !== "panel") return;
+      ports = p;
+      power = pow;
       waitVPanel = false;
     }
-    pVPanel = physicalPort ? ports.filter((e: any) => e.Type == 6) : ports;
-    showPortTable(pVPanel);
+    if (activeTab !== "panel") return;
+    const portsList = ports || [];
+    pVPanel = physicalPort ? portsList.filter((e: any) => e.Type == 6) : portsList;
+
+    safeInit("#vpanel", () => {
+      initVPanel("vpanel");
+    });
+
+    safeInit("#portTable", () => {
+      showPortTable(pVPanel);
+    });
   };
 
   $: setVPanel(pVPanel, power, rotateVPanel, vpanelZoom, vpanelPortWrap);
@@ -338,50 +443,55 @@
   const showHrSystem = async () => {
     if (!hostResource) {
       waitHr = true;
-      hostResource = await GetHostResource(id);
+      const res = await GetHostResource(id);
+      if (activeTab !== "hostinfo") return;
+      hostResource = res;
       waitHr = false;
-      await tick();
     }
     if (!hostResource) {
       return;
     }
+    if (activeTab !== "hostinfo") return;
     clearSelectedCount();
-    hrSystemTable = new DataTable("#hrSystemTable", {
-      paging: false,
-      searching: false,
-      info: false,
-      data: hostResource.System,
-      language: getTableLang(),
-      order: [[0, "asc"]],
-      select: {
-        style: "single",
-      },
-      columns: [
-        {
-          data: "Index",
-          title: "No",
-          width: "10%",
+    safeInit("#hrSystemTable", () => {
+      hrSystemTable = new DataTable("#hrSystemTable", {
+        destroy: true,
+        paging: false,
+        searching: false,
+        info: false,
+        data: hostResource.System || [],
+        language: getTableLang(),
+        order: [[0, "asc"]],
+        select: {
+          style: "single",
         },
-        {
-          data: "Key",
-          title: $_("NodeReport.Name"),
-          width: "30%",
-          render: renderHrSystemName,
-        },
-        {
-          data: "Value",
-          title: $_("MIBBrowser.Value"),
-          width: "60%",
-        },
-      ],
+        columns: [
+          {
+            data: "Index",
+            title: "No",
+            width: "10%",
+          },
+          {
+            data: "Key",
+            title: $_("NodeReport.Name"),
+            width: "30%",
+            render: renderHrSystemName,
+          },
+          {
+            data: "Value",
+            title: $_("MIBBrowser.Value"),
+            width: "60%",
+          },
+        ],
+      });
+      hrSystemTable.on("select", () => {
+        selectedHrSystemCount = hrSystemTable.rows({ selected: true }).count();
+      });
+      hrSystemTable.on("deselect", () => {
+        selectedHrSystemCount = hrSystemTable.rows({ selected: true }).count();
+      });
+      showHrSummaryChart();
     });
-    hrSystemTable.on("select", () => {
-      selectedHrSystemCount = hrSystemTable.rows({ selected: true }).count();
-    });
-    hrSystemTable.on("deselect", () => {
-      selectedHrSystemCount = hrSystemTable.rows({ selected: true }).count();
-    });
-    showHrSummaryChart();
   };
 
   const showHrStorage = () => {
@@ -389,61 +499,65 @@
     if (!hostResource) {
       return;
     }
-    hrStorageTable = new DataTable("#hrStorageTable", {
-      paging: false,
-      searching: false,
-      info: false,
-      scrollY: "25vh",
-      data: hostResource.Storage,
-      language: getTableLang(),
-      order: [[4, "desc"]],
-      select: {
-        style: "single",
-      },
-      columns: [
-        {
-          title: $_("NodeReport.Type"),
-          data: "Type",
-          width: "20%",
-          render: renderStorageType,
+    if (activeTab !== "storage") return;
+    safeInit("#hrStorageTable", () => {
+      hrStorageTable = new DataTable("#hrStorageTable", {
+        destroy: true,
+        paging: false,
+        searching: false,
+        info: false,
+        scrollY: "25vh",
+        data: hostResource.Storage || [],
+        language: getTableLang(),
+        order: [[4, "desc"]],
+        select: {
+          style: "single",
         },
-        { title: $_("NodeReport.Descr"), data: "Descr", width: "40%" },
-        {
-          title: $_("NodeReport.Size"),
-          data: "Size",
-          width: "10%",
-          render: renderBytes,
-          className: "dt-body-right",
-        },
-        {
-          title: $_("NodeReport.Used"),
-          data: "Used",
-          width: "10%",
-          render: renderBytes,
-          className: "dt-body-right",
-        },
-        {
-          title: $_("NodeReport.Rate"),
-          data: "Rate",
-          width: "10%",
-          render: renderRate,
-          className: "dt-body-right",
-        },
-        {
-          title: $_("NodeReport.Unit"),
-          data: "Unit",
-          width: "10%",
-          className: "dt-body-right",
-        },
-      ],
+        columns: [
+          {
+            title: $_("NodeReport.Type"),
+            data: "Type",
+            width: "20%",
+            render: renderStorageType,
+          },
+          { title: $_("NodeReport.Descr"), data: "Descr", width: "40%" },
+          {
+            title: $_("NodeReport.Size"),
+            data: "Size",
+            width: "10%",
+            render: renderBytes,
+            className: "dt-body-right",
+          },
+          {
+            title: $_("NodeReport.Used"),
+            data: "Used",
+            width: "10%",
+            render: renderBytes,
+            className: "dt-body-right",
+          },
+          {
+            title: $_("NodeReport.Rate"),
+            data: "Rate",
+            width: "10%",
+            render: renderRate,
+            className: "dt-body-right",
+          },
+          {
+            title: $_("NodeReport.Unit"),
+            data: "Unit",
+            width: "10%",
+            className: "dt-body-right",
+          },
+        ],
+      });
+      hrStorageTable.on("select", () => {
+        selectedhrStorageCount = hrStorageTable.rows({ selected: true }).count();
+      });
+      hrStorageTable.on("deselect", () => {
+        selectedhrStorageCount = hrStorageTable.rows({ selected: true }).count();
+      });
+      showHrStorageChart();
     });
-    hrStorageTable.on("select", () => {
-      selectedhrStorageCount = hrStorageTable.rows({ selected: true }).count();
-    });
-    hrStorageTable.on("deselect", () => {
-      selectedhrStorageCount = hrStorageTable.rows({ selected: true }).count();
-    });
-    showHrStorageChart();
   };
 
   const showHrDevice = () => {
@@ -451,31 +565,35 @@
     if (!hostResource) {
       return;
     }
-    hrDeviceTable = new DataTable("#hrDeviceTable", {
-      paging: false,
-      searching: false,
-      info: false,
-      scrollY: "55vh",
-      data: hostResource.Device,
-      language: getTableLang(),
-      order: [[0, "asc"]],
-      columns: [
-        {
-          title: $_("NodeReport.Status"),
-          data: "Status",
-          width: "10%",
-          render: renderStatus,
-        },
-        { title: $_("NodeReport.Index"), data: "Index", width: "10%" },
-        {
-          title: $_("NodeReport.Type"),
-          data: "Type",
-          width: "30%",
-          render: renderDeviceType,
-        },
-        { title: $_("NodeReport.Descr"), data: "Descr", width: "40%" },
-        { title: $_("NodeReport.Errors"), data: "Errors", width: "10%" },
-      ],
+    if (activeTab !== "device") return;
+    safeInit("#hrDeviceTable", () => {
+      hrDeviceTable = new DataTable("#hrDeviceTable", {
+        destroy: true,
+        paging: false,
+        searching: false,
+        info: false,
+        scrollY: "55vh",
+        data: hostResource.Device || [],
+        language: getTableLang(),
+        order: [[0, "asc"]],
+        columns: [
+          {
+            title: $_("NodeReport.Status"),
+            data: "Status",
+            width: "10%",
+            render: renderStatus,
+          },
+          { title: $_("NodeReport.Index"), data: "Index", width: "10%" },
+          {
+            title: $_("NodeReport.Type"),
+            data: "Type",
+            width: "30%",
+            render: renderDeviceType,
+          },
+          { title: $_("NodeReport.Descr"), data: "Descr", width: "40%" },
+          { title: $_("NodeReport.Errors"), data: "Errors", width: "10%" },
+        ],
+      });
     });
   };
 
@@ -484,36 +602,40 @@
     if (!hostResource) {
       return;
     }
-    hrFileSystemTable = new DataTable("#hrFileSystemTable", {
-      paging: false,
-      searching: false,
-      info: false,
-      scrollY: "55vh",
-      data: hostResource.FileSystem,
-      language: getTableLang(),
-      order: [[0, "asc"]],
-      columns: [
-        { title: $_("NodeReport.Mount"), data: "Mount", width: "30%" },
-        { title: $_("NodeReport.Remote"), data: "Remote", width: "30%" },
-        {
-          title: $_("NodePolling.Type"),
-          data: "Type",
-          width: "20%",
-          render: renderFSType,
-        },
-        {
-          title: $_("NodeReport.Access"),
-          data: "Access",
-          width: "10%",
-          render: renderAccess,
-        },
-        {
-          title: $_("NodeReport.Bootable"),
-          data: "Bootable",
-          width: "10%",
-          render: renderTrueFalse,
-        },
-      ],
+    if (activeTab !== "filesystem") return;
+    safeInit("#hrFileSystemTable", () => {
+      hrFileSystemTable = new DataTable("#hrFileSystemTable", {
+        destroy: true,
+        paging: false,
+        searching: false,
+        info: false,
+        scrollY: "55vh",
+        data: hostResource.FileSystem || [],
+        language: getTableLang(),
+        order: [[0, "asc"]],
+        columns: [
+          { title: $_("NodeReport.Mount"), data: "Mount", width: "30%" },
+          { title: $_("NodeReport.Remote"), data: "Remote", width: "30%" },
+          {
+            title: $_("NodePolling.Type"),
+            data: "Type",
+            width: "20%",
+            render: renderFSType,
+          },
+          {
+            title: $_("NodeReport.Access"),
+            data: "Access",
+            width: "10%",
+            render: renderAccess,
+          },
+          {
+            title: $_("NodeReport.Bootable"),
+            data: "Bootable",
+            width: "10%",
+            render: renderTrueFalse,
+          },
+        ],
+      });
     });
   };
 
@@ -522,143 +644,156 @@
     if (!hostResource) {
       return;
     }
-    hrProcessTable = new DataTable("#hrProcessTable", {
-      paging: false,
-      searching: false,
-      info: false,
-      scrollY: "25vh",
-      data: hostResource.Process,
-      language: getTableLang(),
-      order: [[1, "asc"]],
-      select: {
-        style: "single",
-      },
-      columns: [
-        {
-          title: $_("NodeReport.Status"),
-          data: "Status",
-          width: "10%",
-          render: renderStatus,
+    if (activeTab !== "process") return;
+    safeInit("#hrProcessTable", () => {
+      hrProcessTable = new DataTable("#hrProcessTable", {
+        destroy: true,
+        paging: false,
+        searching: false,
+        info: false,
+        scrollY: "25vh",
+        data: hostResource.Process || [],
+        language: getTableLang(),
+        order: [[1, "asc"]],
+        select: {
+          style: "single",
         },
-        { title: "PID", data: "PID", width: "10%" },
-        { title: $_("NodeReport.Type"), data: "Type", width: "10%" },
-        {
-          title: $_("NodeReport.Name"),
-          data: "Name",
-          width: "15%",
-        },
-        { title: $_("NodeReport.Path"), data: "Path", width: "15%" },
-        { title: $_("NodeReport.Param"), data: "Param", width: "20%" },
-        {
-          title: "CPU",
-          data: "CPU",
-          width: "10%",
-          render: renderCPU,
-          className: "dt-body-right",
-        },
-        {
-          title: "Mem",
-          data: "Mem",
-          width: "10%",
-          render: renderMem,
-          className: "dt-body-right",
-        },
-      ],
-    });
-    hrProcessTable.on("select", () => {
-      selectedHrProcessCount = hrProcessTable.rows({ selected: true }).count();
-    });
-    hrProcessTable.on("deselect", () => {
-      selectedHrProcessCount = hrProcessTable.rows({ selected: true }).count();
-    });
-    chart = showHrProcChart(true);
-    chartMem = showHrProcChart(false);
-  };
-
-  const showHrSummaryChart = async () => {
-    if (!hostResource) {
-      return;
-    }
-    await tick();
-    const data = {
-      CPU: 0,
-      Mem: 0,
-      VM: 0,
-    };
-    hostResource.System.forEach((e: any) => {
-      if (e.Key == "hrProcessorLoad") {
-        data.CPU = Number(e.Value);
-      }
-    });
-    hostResource.Storage.forEach((e: any) => {
-      if (e.Type.includes("hrStorageRam")) {
-        data.Mem = e.Rate;
-      }
-      if (
-        e.Type.includes("hrStorageVirtualMemory") &&
-        !e.Descr.includes("wap")
-      ) {
-        data.VM = e.Rate;
-      }
-    });
-    chart = showHrSummary("hrSummaryChart", data);
-  };
-
-  const showHrStorageChart = async () => {
-    if (!hostResource) {
-      return;
-    }
-    await tick();
-    const list: any = [];
-    hostResource.Storage.forEach((e: any) => {
-      const t = renderStorageType(e.Type);
-      if (!t.includes($_("NodeReport.Other"))) {
-        list.unshift({
-          Name: e.Descr + "(" + t + ")",
-          Value: e.Rate,
-        });
-      }
-    });
-    chart = showHrBarChart(
-      "hrStorageChart",
-      $_("NodeReport.StorageUsgae"),
-      "%",
-      list
-    );
-  };
-
-  const showHrProcChart = async (bCPU: boolean) => {
-    if (!hostResource) {
-      return;
-    }
-    await tick();
-    let max = 0;
-    const list: any = [];
-    hostResource.Process.forEach((e: any) => {
-      const v = bCPU ? e.CPU / 100.0 : e.Mem * 1024;
-      if (max < v) {
-        max = v;
-      }
-      list.push({
-        Name: e.Name + "(" + e.PID + ")",
-        Value: v,
+        columns: [
+          {
+            title: $_("NodeReport.Status"),
+            data: "Status",
+            width: "10%",
+            render: renderStatus,
+          },
+          { title: "PID", data: "PID", width: "10%" },
+          { title: $_("NodeReport.Type"), data: "Type", width: "10%" },
+          {
+            title: $_("NodeReport.Name"),
+            data: "Name",
+            width: "15%",
+          },
+          { title: $_("NodeReport.Path"), data: "Path", width: "15%" },
+          { title: $_("NodeReport.Param"), data: "Param", width: "20%" },
+          {
+            title: "CPU",
+            data: "CPU",
+            width: "10%",
+            render: renderCPU,
+            className: "dt-body-right",
+          },
+          {
+            title: "Mem",
+            data: "Mem",
+            width: "10%",
+            render: renderMem,
+            className: "dt-body-right",
+          },
+        ],
       });
+      hrProcessTable.on("select", () => {
+        selectedHrProcessCount = hrProcessTable.rows({ selected: true }).count();
+      });
+      hrProcessTable.on("deselect", () => {
+        selectedHrProcessCount = hrProcessTable.rows({ selected: true }).count();
+      });
+      showHrProcChart(true);
+      showHrProcChart(false);
     });
-    list.sort((a: any, b: any) => {
-      if (a.Value < b.Value) return -1;
-      if (a.Value > b.Value) return 1;
-      return 0;
-    });
-    while (list.length > 20) {
-      list.shift();
+  };
+
+  const showHrSummaryChart = () => {
+    if (!hostResource) {
+      return;
     }
-    return showHrBarChart(
-      bCPU ? "hrProcessCPUChart" : "hrProcessMemChart",
-      bCPU ? $_("NodeReport.CPUUsage") : $_("NodeReport.MemUsage"),
-      bCPU ? $_("NodeReport.Sec") : "Bytes",
-      list,
-      max
-    );
+    safeInit("#hrSummaryChart", () => {
+      const data = {
+        CPU: 0,
+        Mem: 0,
+        VM: 0,
+      };
+      (hostResource.System || []).forEach((e: any) => {
+        if (e.Key == "hrProcessorLoad") {
+          data.CPU = Number(e.Value);
+        }
+      });
+      (hostResource.Storage || []).forEach((e: any) => {
+        if (e.Type.includes("hrStorageRam")) {
+          data.Mem = e.Rate;
+        }
+        if (
+          e.Type.includes("hrStorageVirtualMemory") &&
+          !e.Descr.includes("wap")
+        ) {
+          data.VM = e.Rate;
+        }
+      });
+      chart = showHrSummary("hrSummaryChart", data);
+    });
+  };
+
+  const showHrStorageChart = () => {
+    if (!hostResource) {
+      return;
+    }
+    safeInit("#hrStorageChart", () => {
+      const list: any = [];
+      (hostResource.Storage || []).forEach((e: any) => {
+        const t = renderStorageType(e.Type);
+        if (!t.includes($_("NodeReport.Other"))) {
+          list.unshift({
+            Name: e.Descr + "(" + t + ")",
+            Value: e.Rate,
+          });
+        }
+      });
+      chart = showHrBarChart(
+        "hrStorageChart",
+        $_("NodeReport.StorageUsgae"),
+        "%",
+        list
+      );
+    });
+  };
+
+  const showHrProcChart = (bCPU: boolean) => {
+    if (!hostResource) {
+      return;
+    }
+    const elementId = bCPU ? "hrProcessCPUChart" : "hrProcessMemChart";
+    safeInit("#" + elementId, () => {
+      let max = 0;
+      const list: any = [];
+      (hostResource.Process || []).forEach((e: any) => {
+        const v = bCPU ? e.CPU / 100.0 : e.Mem * 1024;
+        if (max < v) {
+          max = v;
+        }
+        list.push({
+          Name: e.Name + "(" + e.PID + ")",
+          Value: v,
+        });
+      });
+      list.sort((a: any, b: any) => {
+        if (a.Value < b.Value) return -1;
+        if (a.Value > b.Value) return 1;
+        return 0;
+      });
+      while (list.length > 20) {
+        list.shift();
+      }
+      const c = showHrBarChart(
+        elementId,
+        bCPU ? $_("NodeReport.CPUUsage") : $_("NodeReport.MemUsage"),
+        bCPU ? $_("NodeReport.Sec") : "Bytes",
+        list,
+        max
+      );
+      if (bCPU) {
+        chart = c;
+      } else {
+        chartMem = c;
+      }
+    });
   };
 
   const close = () => {
@@ -803,17 +938,82 @@
     logTable = undefined;
     pollingTmp = undefined;
     memo = "";
+    activeTab = "basic";
     clearSelectedCount();
-    node = await GetNode(id);
-    memo = await GetNodeMemo(id)
+    try {
+      node = await GetNode(id);
+      memo = await GetNodeMemo(id)
+    } catch (e) {
+      console.error("Error loading node/memo:", e);
+      node = {
+        ID: id,
+        Name: "Unknown Node",
+        IP: "",
+        MAC: "",
+        Vendor: "Unknown",
+        Descr: "Failed to load node info: " + String(e)
+      };
+    }
   };
+
+  const handleTabChange = (tab: string) => {
+    switch (tab) {
+      case "basic":
+        clearSelectedCount();
+        break;
+      case "memo":
+        clearSelectedCount();
+        showMemo();
+        break;
+      case "log":
+        clearSelectedCount();
+        showLog();
+        break;
+      case "panel":
+        clearSelectedCount();
+        showVPanel();
+        break;
+      case "hostinfo":
+        clearSelectedCount();
+        showHrSystem();
+        break;
+      case "storage":
+        clearSelectedCount();
+        showHrStorage();
+        break;
+      case "device":
+        clearSelectedCount();
+        showHrDevice();
+        break;
+      case "filesystem":
+        clearSelectedCount();
+        showHrFileSystem();
+        break;
+      case "process":
+        clearSelectedCount();
+        showHrProcess();
+        break;
+    }
+  };
+
+  $: if (activeTab) {
+    handleTabChange(activeTab);
+  }
 
   const resizeChart = () => {
     if (chart) {
-      chart.resize();
+      try {
+        chart.resize();
+      } catch (e) {
+        // ignore
+      }
     }
     if (chartMem) {
-      chartMem.resize();
+      try {
+        chartMem.resize();
+      } catch (e) {
+        // ignore
+      }
     }
   };
 
@@ -836,33 +1036,137 @@
     },1000)
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   {#if !node}
-    <div class="text-center mt-10"><Spinner size={16} /></div>
+    <div class="text-center mt-10"><Spinner size="16" /></div>
   {:else}
     <div class="flex flex-col space-y-4">
-      <Tabs style="underline">
-        <TabItem open on:click={clearSelectedCount}>
-          <div slot="title" class="flex items-center gap-2">
+      <!-- Custom Tabs List -->
+      <ul class="flex flex-wrap -mb-px text-sm font-medium text-center border-b border-gray-200 dark:border-gray-700">
+        <li class="mr-2">
+          <button
+            type="button"
+            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'basic' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            onclick={() => activeTab = 'basic'}
+          >
             <Icon path={icons.mdiChartPie} size={1} />
             {$_("NodeReport.BasicInfo")}
-          </div>
+          </button>
+        </li>
+        <li class="mr-2">
+          <button
+            type="button"
+            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'memo' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            onclick={() => activeTab = 'memo'}
+          >
+            <Icon path={icons.mdiNote} size={1} />
+            {$_('NodeReport.Memo')}
+          </button>
+        </li>
+        <li class="mr-2">
+          <button
+            type="button"
+            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'log' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            onclick={() => activeTab = 'log'}
+          >
+            <Icon path={icons.mdiCalendarCheck} size={1} />
+            {$_("NodeReport.Log")}
+          </button>
+        </li>
+        <li class="mr-2">
+          <button
+            type="button"
+            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'panel' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            onclick={() => activeTab = 'panel'}
+          >
+            {#if waitVPanel}
+              <Spinner color="red" size="6" />
+            {:else}
+              <Icon path={icons.mdiAppsBox} size={1} />
+            {/if}
+            {$_("NodeReport.Panel")}
+          </button>
+        </li>
+        <li class="mr-2">
+          <button
+            type="button"
+            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'hostinfo' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            onclick={() => activeTab = 'hostinfo'}
+          >
+            {#if waitHr}
+              <Spinner color="red" size="6" />
+            {:else}
+              <Icon path={icons.mdiInformation} size={1} />
+            {/if}
+            <span>{$_("NodeReport.HostInfo")}</span>
+          </button>
+        </li>
+        {#if hostResource}
+          <li class="mr-2">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'storage' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+              onclick={() => activeTab = 'storage'}
+            >
+              <Icon path={icons.mdiDatabase} size={1} />
+              {$_("NodeReport.Storage")}
+            </button>
+          </li>
+          <li class="mr-2">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'device' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+              onclick={() => activeTab = 'device'}
+            >
+              <Icon path={icons.mdiApplicationCog} size={1} />
+              {$_("NodeReport.Device")}
+            </button>
+          </li>
+          <li class="mr-2">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'filesystem' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+              onclick={() => activeTab = 'filesystem'}
+            >
+              <Icon path={icons.mdiFileCabinet} size={1} />
+              {$_('NodeReport.FileSystem')}
+            </button>
+          </li>
+          <li class="mr-2">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'process' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+              onclick={() => activeTab = 'process'}
+            >
+              <Icon path={icons.mdiViewList} size={1} />
+              {$_("NodeReport.Process")}
+            </button>
+          </li>
+        {/if}
+      </ul>
+
+      <!-- Custom Tabs Content Panel -->
+      <div class="p-4 bg-transparent rounded-lg mt-2">
+        {#if activeTab === 'basic'}
           <Table striped={true}>
             <TableHead>
               <TableHeadCell>{$_("NodeReport.Item")}</TableHeadCell>
               <TableHeadCell>{$_("NodeReport.Content")}</TableHeadCell>
             </TableHead>
-            <TableBody tableBodyClass="divide-y">
+            <TableBody class="divide-y">
               <TableBodyRow>
                 <TableBodyCell>{$_("NodeReport.Name")}</TableBodyCell>
                 <TableBodyCell>{node.Name}</TableBodyCell>
@@ -872,8 +1176,7 @@
                 <TableBodyCell>
                   <span
                     class="mdi {getIcon(node.Icon)} text-xl"
-                    style="color:{getStateColor(node.State)};"
-                  />
+                    style="color:{getStateColor(node.State)};"></span>
                   <span class="ml-2 text-xs text-black dark:text-white"
                     >{getStateName(node.State)}</span
                   >
@@ -887,7 +1190,7 @@
                     color="alternative"
                     type="button"
                     class="ml-2 !p-2"
-                    on:click={async () => {
+                    onclick={async () => {
                       copiedIP = true
                       copyText(node.IP)
                       setTimeout(()=> copiedIP = false,2000);
@@ -911,7 +1214,7 @@
                       color="alternative"
                       type="button"
                       class="ml-2 !p-2"
-                      on:click={async () => {
+                      onclick={async () => {
                         copiedMAC = true
                         copyText(node.MAC)
                         setTimeout(()=> copiedMAC = false,2000);
@@ -937,120 +1240,64 @@
               </TableBodyRow>
             </TableBody>
           </Table>
-        </TabItem>
-        <TabItem on:click={showMemo}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiNote} size={1} />
-            {$_('NodeReport.Memo')}
-          </div>
-          <Textarea placeholder={$_('NodeReport.MemoPlaceHolder')} rows="16" bind:value={memo} />
-        </TabItem>
-        <TabItem on:click={showLog}>
-          <div slot="title" class="flex items-center gap-2">
-            <Icon path={icons.mdiCalendarCheck} size={1} />
-            {$_("NodeReport.Log")}
-          </div>
-          <table id="logTable" class="display compact" style="width:99%" />
-        </TabItem>
-        <TabItem on:click={showVPanel}>
-          <div slot="title" class="flex items-center gap-2">
-            {#if waitVPanel}
-              <Spinner color="red" size="6" />
-            {:else}
-              <Icon path={icons.mdiAppsBox} size={1} />
-            {/if}
-            {$_("NodeReport.Panel")}
-          </div>
-          <div id="vpanel" />
+        {:else if activeTab === 'memo'}
+          <Textarea placeholder={$_('NodeReport.MemoPlaceHolder')} class="w-full h-[55vh]" bind:value={memo} />
+        {:else if activeTab === 'log'}
+          <table id="nodeReportLogTable" class="display compact" style="width:99%"></table>
+        {:else if activeTab === 'panel'}
+          <div id="vpanel"></div>
           <table
             id="portTable"
             class="display compact mt-5"
-            style="width:99%"
-          />
-        </TabItem>
-        <TabItem on:click={showHrSystem} >
-          <div slot="title" class="flex items-center gap-2">
-            {#if waitHr}
-              <Spinner color="red" size="6" />
-            {:else}
-              <Icon path={icons.mdiInformation} size={1} />
-            {/if}
-            <span>{$_("NodeReport.HostInfo")}</span>
-          </div>
+            style="width:99%"></table>
+        {:else if activeTab === 'hostinfo'}
           {#if hostResource}
             <div class="grid grid-cols-2 gap-1">
-              <div id="hrSummaryChart" />
+              <div id="hrSummaryChart"></div>
               <div>
                 <table
                   id="hrSystemTable"
                   class="display compact"
-                  style="width:100%"
-                />
+                  style="width:100%"></table>
               </div>
             </div>
           {:else if !waitHr}
             <div>{$_("NodeReport.NoHRMIB")}</div>
           {/if}
-        </TabItem>
-        {#if hostResource}
-          <TabItem on:click={showHrStorage}>
-            <div slot="title" class="flex items-center gap-2">
-              <Icon path={icons.mdiDatabase} size={1} />
-              {$_("NodeReport.Storage")}
-            </div>
-            <div id="hrStorageChart" class="mb-2" />
-            <table
-              id="hrStorageTable"
-              class="display compact mt-2"
-              style="width:99%"
-            />
-          </TabItem>
-          <TabItem on:click={showHrDevice}>
-            <div slot="title" class="flex items-center gap-2">
-              <Icon path={icons.mdiApplicationCog} size={1} />
-              {$_("NodeReport.Device")}
-            </div>
-            <table
-              id="hrDeviceTable"
-              class="display compact mt-2"
-              style="width:99%"
-            />
-          </TabItem>
-          <TabItem on:click={showHrFileSystem}>
-            <div slot="title" class="flex items-center gap-2">
-              <Icon path={icons.mdiFileCabinet} size={1} />
-              {$_('NodeReport.FileSystem')}
-            </div>
-            <table
-              id="hrFileSystemTable"
-              class="display compact mt-2"
-              style="width:99%"
-            />
-          </TabItem>
-          <TabItem on:click={showHrProcess}>
-            <div slot="title" class="flex items-center gap-2">
-              <Icon path={icons.mdiViewList} size={1} />
-              {$_("NodeReport.Process")}
-            </div>
-            <div class="grid grid-cols-2 gap-1 mb-2">
-              <div id="hrProcessCPUChart" />
-              <div id="hrProcessMemChart" />
-            </div>
-            <table
-              id="hrProcessTable"
-              class="display compact mt-2"
-              style="width:99%"
-            />
-          </TabItem>
+        {:else if activeTab === 'storage' && hostResource}
+          <div id="hrStorageChart" class="mb-2"></div>
+          <table
+            id="hrStorageTable"
+            class="display compact mt-2"
+            style="width:99%"></table>
+        {:else if activeTab === 'device' && hostResource}
+          <table
+            id="hrDeviceTable"
+            class="display compact mt-2"
+            style="width:99%"></table>
+        {:else if activeTab === 'filesystem' && hostResource}
+          <table
+            id="hrFileSystemTable"
+            class="display compact mt-2"
+            style="width:99%"></table>
+        {:else if activeTab === 'process' && hostResource}
+          <div class="grid grid-cols-2 gap-1 mb-2">
+            <div id="hrProcessCPUChart"></div>
+            <div id="hrProcessMemChart"></div>
+          </div>
+          <table
+            id="hrProcessTable"
+            class="display compact mt-2"
+            style="width:99%"></table>
         {/if}
-      </Tabs>
+      </div>
       <div class="flex justify-end space-x-2 mr-2">
         {#if selectedPortCount > 0}
           <GradientButton
             shadow
             color="blue"
             type="button"
-            on:click={watchPortState}
+            onclick={watchPortState}
             size="xs"
           >
             <Icon path={icons.mdiEye} size={1} />
@@ -1060,7 +1307,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={watchPortTraffic}
+            onclick={watchPortTraffic}
             size="xs"
           >
             <Icon path={icons.mdiEye} size={1} />
@@ -1072,7 +1319,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={watchHrSystem}
+            onclick={watchHrSystem}
             size="xs"
           >
             <Icon path={icons.mdiEye} size={1} />
@@ -1084,7 +1331,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={watchHrStorage}
+            onclick={watchHrStorage}
             size="xs"
           >
             <Icon path={icons.mdiEye} size={1} />
@@ -1096,7 +1343,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={watchHrProcess}
+            onclick={watchHrProcess}
             size="xs"
           >
             <Icon path={icons.mdiEye} size={1} />
@@ -1104,7 +1351,7 @@
           </GradientButton>
         {/if}
         {#if showVPanelBtn}
-          <Toggle bind:checked={physicalPort} on:change={showVPanel}>
+          <Toggle bind:checked={physicalPort} onchange={showVPanel}>
             {$_("NodeReport.PhysicalPort")}
           </Toggle>
           <Select
@@ -1139,7 +1386,7 @@
           shadow
           color="blue"
           type="button"
-          on:click={saveMemo}
+          onclick={saveMemo}
           size="xs"
         >
           {#if savedMemo}
@@ -1156,7 +1403,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />

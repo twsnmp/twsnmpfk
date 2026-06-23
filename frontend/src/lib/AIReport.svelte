@@ -46,43 +46,52 @@
     }
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
-      <TabItem open on:click={()=>{showChart("heatmap")}}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={()=>{showChart("heatmap")}}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
           { $_('AIReport.Heatmap') }
         </div>
+      {/snippet}
         <div id="heatmap"></div>
       </TabItem>
-      <TabItem on:click={()=>{showChart("pie")}}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={()=>{showChart("pie")}}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           { $_('AIReport.PieChart') }
         </div>
+      {/snippet}
         <div id="pie"></div>
       </TabItem>
-      <TabItem on:click={()=>{showChart("time")}}>
-        <div slot="title" class="flex items-center gap-2">
+      <TabItem onclick={()=>{showChart("time")}}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
           { $_('AIReport.TimeChart') }
         </div>
+      {/snippet}
         <div id="time"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton shadow type="button" color="teal" on:click={close} size="xs">
+      <GradientButton shadow type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         {$_('AIReport.Close')}
       </GradientButton>

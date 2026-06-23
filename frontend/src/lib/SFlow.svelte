@@ -32,7 +32,7 @@
   import "datatables.net-select-dt";
   import type { main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
-  import { CodeJar } from "@novacbn/svelte-codejar";
+  import CodeJar from "./CodeJar.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
   import { copyText } from "svelte-copy";
@@ -75,14 +75,18 @@
 
   let showLoading = false;
 
-  const showTable = () => {
+  const showTable = async () => {
+    await tick();
+    if (!document.getElementById("sFlowTable")) {
+      return;
+    }
     if (table && DataTable.isDataTable("#sFlowTable")) {
       table.clear();
       table.destroy(true);
       table = undefined;
       const e = document.getElementById("tableBase");
       if (e) {
-        e.innerHTML = `<table id="sFlowTable" class="display compact" style="width:99%" />`;
+        e.innerHTML = `<table id="sFlowTable" class="display compact" style="width:99%"></table>`;
       }
     }
     selectedCount = 0;
@@ -132,26 +136,34 @@
 
   const refresh = async () => {
     showLoading = true;
-    if (counter) {
-      logs = await GetSFlowCounter(filterCounter);
-    } else {
-      filter.SrcPort *= 1;
-      filter.DstPort *= 1;
-      filter.Reason *= 1;
-      logs = await GetSFlow(filter);
+    try {
+      if (counter) {
+        logs = await GetSFlowCounter(filterCounter);
+      } else {
+        filter.SrcPort *= 1;
+        filter.DstPort *= 1;
+        filter.Reason *= 1;
+        logs = await GetSFlow(filter);
+      }
+      data = [];
+      for (let i = 0; i < logs.length; i++) {
+        data.push(logs[i]);
+      }
+      logs.reverse();
+      await showTable();
+      await showChart();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      showLoading = false;
     }
-    data = [];
-    for (let i = 0; i < logs.length; i++) {
-      data.push(logs[i]);
-    }
-    logs.reverse();
-    showTable();
-    showChart();
-    showLoading = false;
   };
   let chart: any = undefined;
   const showChart = async () => {
     await tick();
+    if (!document.getElementById("chart")) {
+      return;
+    }
     chart = showLogCountChart("chart", data, zoomCallBack);
   };
 
@@ -338,22 +350,22 @@
   };
 </script>
 
-<svelte:window on:resize={resizeLogCountChart} />
+<svelte:window onresize={resizeLogCountChart} />
 
 <div class="flex flex-col">
-  <div id="chart" />
+  <div id="chart"></div>
   <div id="tableBase" class="m-5 grow">
-    <table id="sFlowTable" class="display compact" style="width:99%" />
+    <table id="sFlowTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
-    <Toggle bind:checked={counter} on:change={refresh}>
+    <Toggle bind:checked={counter} onchange={refresh}>
       {$_("SFlow.Counter")}
     </Toggle>
     <GradientButton
       shadow
       color="blue"
       type="button"
-      on:click={() => {
+      onclick={() => {
         if (counter) {
           showFilterCounter = true;
         } else {
@@ -369,7 +381,7 @@
       shadow
       color="red"
       type="button"
-      on:click={deleteAll}
+      onclick={deleteAll}
       size="xs"
     >
       <Icon path={icons.mdiTrashCan} size={1} />
@@ -380,7 +392,7 @@
         shadow
         type="button"
         color="green"
-        on:click={() => {
+        onclick={() => {
           if (counter) {
             showCounterReport = true;
           } else {
@@ -397,7 +409,7 @@
           shadow
           color="cyan"
           type="button"
-          on:click={copy}
+          onclick={copy}
           size="xs"
         >
           {#if copied}
@@ -413,7 +425,7 @@
         </GradientButton>
         <Dropdown bind:open={addrInfoOpen}>
           {#each addrList as a}
-            <DropdownItem on:click={() => showAddrInfoFunc(a)}>{a}</DropdownItem
+            <DropdownItem onclick={() => showAddrInfoFunc(a)}>{a}</DropdownItem
             >
           {/each}
         </Dropdown>
@@ -423,7 +435,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveCSV}
+      onclick={saveCSV}
       size="xs"
     >
       <Icon path={icons.mdiFileDelimited} size={1} />
@@ -433,7 +445,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={saveExcel}
+      onclick={saveExcel}
       size="xs"
     >
       <Icon path={icons.mdiFileExcel} size={1} />
@@ -443,7 +455,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />
@@ -483,7 +495,7 @@
         <Button
           class="!p-2 w-8 h-8 mt-6 ml-4"
           color="red"
-          on:click={() => {
+          onclick={() => {
             filter.Start = "";
             filter.End = "";
           }}
@@ -647,7 +659,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showFilter = false;
           refresh();
         }}
@@ -660,7 +672,7 @@
         shadow
         color="teal"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showFilter = false;
         }}
         size="xs"
@@ -705,7 +717,7 @@
         <Button
           class="!p-2 w-8 h-8 mt-6 ml-4"
           color="red"
-          on:click={() => {
+          onclick={() => {
             filter.Start = "";
             filter.End = "";
           }}
@@ -737,7 +749,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showFilterCounter = false;
           refresh();
         }}
@@ -750,7 +762,7 @@
         shadow
         color="teal"
         type="button"
-        on:click={() => {
+        onclick={() => {
           showFilterCounter = false;
         }}
         size="xs"
@@ -762,7 +774,7 @@
   </form>
 </Modal>
 
-<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
+<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full" transitionParams={{ duration: 0 }}>
   <div>
     <Spinner />
     <span class="ml-2"> {$_("Syslog.Loading")} </span>

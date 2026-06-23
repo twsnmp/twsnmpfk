@@ -38,7 +38,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => (show = false)}
+        onclick={() => (show = false)}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

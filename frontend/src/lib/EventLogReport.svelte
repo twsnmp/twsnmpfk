@@ -54,74 +54,87 @@
       chart.resize();
     }
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem
         open
-        on:click={() => {
+        onclick={() => {
           showChart("state");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           {$_("EventLogReport.CountByState")}
         </div>
-        <div id="state" />
+      {/snippet}
+        <div id="state"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("heatmap");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
           {$_("EventLogReport.Heatmap")}
         </div>
-        <div id="heatmap" />
+      {/snippet}
+        <div id="heatmap"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("node");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
           {$_("EventLogReport.CountByNode")}
         </div>
-        <div id="node" />
+      {/snippet}
+        <div id="node"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("oprate");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
           {$_("EventLogREport.Oprate")}
         </div>
-        <div id="oprate" />
+      {/snippet}
+        <div id="oprate"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("arpwatch");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartLine} size={1} />
           {$_("EventLogReport.ArpWatch")}
         </div>
-        <div id="arpwatch" />
+      {/snippet}
+        <div id="arpwatch"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -129,7 +142,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

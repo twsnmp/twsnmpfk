@@ -51,63 +51,74 @@
     }
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem
         open
-        on:click={() => {
+        onclick={() => {
           showChart("type");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           {$_("TrapReport.CountByType")}
         </div>
-        <div id="type"/>
+      {/snippet}
+        <div id="type"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("heatmap");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBox} size={1} />
           {$_("TrapReport.Heatmap")}
         </div>
-        <div id="heatmap"/>
+      {/snippet}
+        <div id="heatmap"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("from");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
           {$_("TrapReport.CountByFromAddress")}
         </div>
-        <div id="from"/>
+      {/snippet}
+        <div id="from"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("trap3D");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartScatterPlot} size={1} />
           {$_("TrapReport.Chart3D")}
         </div>
-        <div id="trap3D"/>
+      {/snippet}
+        <div id="trap3D"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
@@ -115,7 +126,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

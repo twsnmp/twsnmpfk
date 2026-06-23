@@ -126,11 +126,11 @@
 
 <div class="flex flex-col">
   <div class="m-5 grow">
-    <table id="aiListTable" class="display compact" style="width:99%" />
+    <table id="aiListTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
   {#if selectedCount == 1}
-    <GradientButton shadow color="green" type="button" on:click={show} size="xs">
+    <GradientButton shadow color="green" type="button" onclick={show} size="xs">
       <Icon path={icons.mdiChartBarStacked} size={1} />
       {$_('AIList.Report')}
     </GradientButton>
@@ -138,7 +138,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={exportAIData}
+      onclick={exportAIData}
       size="xs"
     >
       <Icon path={icons.mdiFileDelimited} size={1} />
@@ -146,12 +146,12 @@
     </GradientButton>
   {/if}
   {#if selectedCount > 0}
-    <GradientButton shadow color="red" type="button" on:click={clearAIResult} size="xs">
+    <GradientButton shadow color="red" type="button" onclick={clearAIResult} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
       { $_('AIList.Clear') }
     </GradientButton>
   {/if}
-    <GradientButton shadow type="button" color="teal" on:click={refresh} size="xs">
+    <GradientButton shadow type="button" color="teal" onclick={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       { $_('AIList.Reload') }
     </GradientButton>

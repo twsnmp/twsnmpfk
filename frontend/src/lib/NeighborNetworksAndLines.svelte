@@ -228,6 +228,10 @@
     lineData.splice(i, 1);
     showLineTable();
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -235,7 +239,6 @@
   size="xl"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   {#if wait}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -245,10 +248,10 @@
         {$_('NeighborNetworksAndLines.Title')}
       </h3>
       <div class="m-5 grow">
-        <table id="networkTable" class="display compact" style="width:99%" />
+        <table id="networkTable" class="display compact" style="width:99%"></table>
       </div>
       <div class="m-5 grow">
-        <table id="lineTable" class="display compact" style="width:99%" />
+        <table id="lineTable" class="display compact" style="width:99%"></table>
       </div>
       <div class="flex justify-end space-x-2 mr-2">
         {#if networkSelectedCount > 0}
@@ -256,7 +259,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={addNetwork}
+            onclick={addNetwork}
             size="xs"
           >
             <Icon path={icons.mdiPlus} size={1} />
@@ -268,7 +271,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={connectLine}
+            onclick={connectLine}
             size="xs"
           >
             <Icon path={icons.mdiLanConnect} size={1} />
@@ -279,7 +282,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />

@@ -133,6 +133,10 @@
       image = await GetImage(p);
     }
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -140,7 +144,6 @@
   size="lg"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   {#if !drawItem}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -217,7 +220,7 @@
               size="sm"
             />
           </Label>
-          <div />
+          <div></div>
           <Label class="space-y-2 text-xs">
             <div>{$_("DrawItem.Color")}</div>
             <div class="flex flex-row items-center space-x-2">
@@ -284,7 +287,7 @@
             type="button"
             size="xs"
             color="blue"
-            on:click={selectImage}
+            onclick={selectImage}
           >
             <Icon path={icons.mdiImage} size={1} />
             {$_("DrawItem.Select")}
@@ -295,7 +298,7 @@
           {#if image}
             <img src={image} alt="" class="h-32" />
           {:else}
-            <div />
+            <div></div>
           {/if}
         </Label>
       {/if}
@@ -326,9 +329,9 @@
               />
             </Label>
           {/if}
-          <div />
-          <div />
-          <div />
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
         <div class="grid gap-4 mb-4 grid-cols-2">
           <Label class="space-y-2 text-xs">
@@ -338,7 +341,7 @@
               bind:value={nodeID}
               placeholder={$_("DrawItem.SelectNode")}
               size="sm"
-              on:change={updatePollingList}
+              onchange={updatePollingList}
             />
           </Label>
           <Label class="space-y-2 text-xs">
@@ -451,7 +454,7 @@
           shadow
           color="blue"
           type="button"
-          on:click={save}
+          onclick={save}
           size="xs"
         >
           <Icon path={icons.mdiContentSave} size={1} />
@@ -463,7 +466,7 @@
           size="xs"
           color="lime"
           class="ml-2"
-          on:click={() => {
+          onclick={() => {
             showHelp = true;
           }}
         >
@@ -476,7 +479,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />

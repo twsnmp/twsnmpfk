@@ -21,7 +21,11 @@
   let table : any = undefined;
   let showLoading = false;
 
-  const showTable = () => {
+  const showTable = async () => {
+    await tick();
+    if (!document.getElementById("systemTable")) {
+      return;
+    }
     table = new DataTable("#systemTable", {
       destroy: true,
       stateSave: true,
@@ -38,15 +42,23 @@
 
   const refresh = async () => {
     showLoading = true;
-    logs = await GetMonitorDatas();
-    logs.reverse();
-    showTable();
-    showChart();
-    showLoading = false;
+    try {
+      logs = await GetMonitorDatas();
+      logs.reverse();
+      await showTable();
+      await showChart();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      showLoading = false;
+    }
   };
 
   const showChart = async () => {
     await tick();
+    if (!document.getElementById("resChart") || !document.getElementById("netChart")) {
+      return;
+    }
     showMonitorResChart("resChart", logs);
     showMonitorNetChart("netChart", logs);
   };
@@ -183,20 +195,20 @@
   };
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <div class="flex flex-col">
-  <div id="resChart"/>
-  <div id="netChart"/>
+  <div id="resChart"></div>
+  <div id="netChart"></div>
   <div class="m-5 grow">
-    <table id="systemTable" class="display compact" style="width:99%" />
+    <table id="systemTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
       shadow
       type="button"
       color="green"
-      on:click={forecast}
+      onclick={forecast}
       size="xs"
     >
       <Icon path={icons.mdiChartLine} size={1} />
@@ -206,7 +218,7 @@
       shadow
       color="lime"
       type="button"
-      on:click={backup}
+      onclick={backup}
       size="xs"
     >
       <Icon path={icons.mdiDatabaseArrowDown} size={1} />
@@ -216,7 +228,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />
@@ -226,13 +238,13 @@
 </div>
 
 <Modal bind:open={showForecast} size="xl" dismissable={false} class="w-full">
-  <div id="forecast" />
+  <div id="forecast"></div>
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
       shadow
       type="button"
       color="teal"
-      on:click={() => {
+      onclick={() => {
         showForecast = false;
       }}
       size="xs"
@@ -243,7 +255,7 @@
   </div>
 </Modal>
 
-<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
+<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full" transitionParams={{ duration: 0 }}>
   <div>
     <Spinner />
     <span class="ml-2"> $_('System.Loading') </span>

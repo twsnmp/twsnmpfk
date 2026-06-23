@@ -1,3 +1,4 @@
+<svelte:options runes={true} />
 <script lang="ts">
   import "../assets/css/jquery.dataTables.css";
   import {
@@ -41,19 +42,23 @@
   import { showOTelTrace, showOTelDAG } from "./chart/otel";
   import { showLogLevelChart } from "./chart/loglevel";
 
-  let metrics: any = [];
-  let traces: any = [];
-  let logs: any = [];
-  let tab = "metric";
-  let traceBuckets: any = [];
-  let selectedTraceBuckets: any = [];
-  let showMetricReport = false;
-  let showTraceReport = false;
-  let table: any = undefined;
-  let selectedCount = 0;
-  let showLoading = false;
+  let metrics: any = $state([]);
+  let traces: any = $state([]);
+  let logs: any = $state([]);
+  let tab = $state("metric");
+  let traceBuckets: any = $state([]);
+  let selectedTraceBuckets: any = $state([]);
+  let showMetricReport = $state(false);
+  let showTraceReport = $state(false);
+  let table: any = $state(undefined);
+  let selectedCount = $state(0);
+  let showLoading = $state(false);
 
-  const showTable = (div: string, columns: any, data: any, scol: number) => {
+  const showTable = async (div: string, columns: any, data: any, scol: number) => {
+    await tick();
+    if (!document.querySelector(div)) {
+      return;
+    }
     selectedCount = 0;
     table = new DataTable(div, {
       destroy: true,
@@ -78,57 +83,68 @@
 
   const refresh = async () => {
     showLoading = true;
-    switch (tab) {
-      case "metric":
-        metrics = await GetOTelMetrics();
-        showTable("#otelMetricTable", columnsMetric, metrics, 0);
-        break;
-      case "trace":
-        const bks = await GetOTelTraceBucketList();
-        const sel: any = [];
-        selectedTraceBuckets.forEach((t: any) => {
-          if (bks.includes(t)) {
-            sel.push(t);
+    try {
+      switch (tab) {
+        case "metric":
+          metrics = await GetOTelMetrics();
+          await showTable("#otelMetricTable", columnsMetric, metrics, 0);
+          break;
+        case "trace":
+          const bks = await GetOTelTraceBucketList();
+          const sel: any = [];
+          selectedTraceBuckets.forEach((t: any) => {
+            if (bks.includes(t)) {
+              sel.push(t);
+            }
+          });
+          selectedTraceBuckets = sel;
+          traceBuckets = [];
+          bks.forEach((b: string) => {
+            traceBuckets.push({ name: b, value: b });
+          });
+          if (selectedTraceBuckets.length < 1 && bks.length > 0) {
+            selectedTraceBuckets.push(bks[bks.length - 1]);
           }
-        });
-        selectedTraceBuckets = sel;
-        traceBuckets = [];
-        bks.forEach((b: string) => {
-          traceBuckets.push({ name: b, value: b });
-        });
-        if (selectedTraceBuckets.length < 1 && bks.length > 0) {
-          selectedTraceBuckets.push(bks[bks.length - 1]);
-        }
-        if (selectedTraceBuckets.length > 0) {
-          traces = await GetOTelTraces(selectedTraceBuckets);
-        } else {
-          traces = [];
-        }
-        showTable("#otelTraceTable", columnsTrace, traces, 0);
-        showTraceChart();
-        break;
-      case "log":
-        logs = await GetLastOTelLogs();
-        showTable("#otelLogTable", columnsLog, logs, 1);
-        showSyslogChart();
-        break;
+          if (selectedTraceBuckets.length > 0) {
+            traces = await GetOTelTraces(selectedTraceBuckets);
+          } else {
+            traces = [];
+          }
+          await showTable("#otelTraceTable", columnsTrace, traces, 0);
+          await showTraceChart();
+          break;
+        case "log":
+          logs = await GetLastOTelLogs();
+          await showTable("#otelLogTable", columnsLog, logs, 1);
+          await showSyslogChart();
+          break;
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      showLoading = false;
     }
-    showLoading = false;
   };
 
   let chart: any = undefined;
 
   const showTraceChart = async () => {
     await tick();
+    if (!document.getElementById("otelTraceChart")) {
+      return;
+    }
     chart = showOTelTrace("otelTraceChart", traces);
   };
 
   const showSyslogChart = async () => {
     await tick();
+    if (!document.getElementById("otelSyslogChart")) {
+      return;
+    }
     chart = showLogLevelChart("otelSyslogChart", logs, undefined);
   };
 
-  let showDAG = false;
+  let showDAG = $state(false);
   let dagChart: any = undefined;
 
   const showDAGFunc = async () => {
@@ -136,11 +152,19 @@
       return;
     }
     showLoading = true;
-    const dag = await GetOTelTraceDAG(selectedTraceBuckets);
-    showDAG = dag && dag.Nodes.length > 0;
-    await tick();
-    dagChart = showOTelDAG("dagChart", dag);
-    showLoading = false;
+    try {
+      const dag = await GetOTelTraceDAG(selectedTraceBuckets);
+      showDAG = dag && dag.Nodes.length > 0;
+      await tick();
+      if (!document.getElementById("dagChart")) {
+        return;
+      }
+      dagChart = showOTelDAG("dagChart", dag);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      showLoading = false;
+    }
   };
 
   const columnsMetric = [
@@ -280,8 +304,8 @@
     refresh();
   };
 
-  let selectedMetric: any = undefined;
-  let selectedTrace: any = undefined;
+  let selectedMetric: any = $state(undefined);
+  let selectedTrace: any = $state(undefined);
 
   const showReport = async () => {
     const d = table.rows({ selected: true }).data();
@@ -308,8 +332,8 @@
     }
   };
 
-  let showMetricInfoDialog = false;
-  let metric: any = undefined;
+  let showMetricInfoDialog = $state(false);
+  let metric: any = $state(undefined);
 
   const showMetricInfo = async () => {
     const d = table.rows({ selected: true }).data();
@@ -324,51 +348,57 @@
   };
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <div class="flex flex-col">
   <Tabs style="underline">
     <TabItem
       open
-      on:click={() => {
+      onclick={() => {
         tab = "metric";
         refresh();
       }}
     >
-      <div slot="title" class="flex items-center gap-2">
+      {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
         <Icon path={icons.mdiChartHistogram} size={1} />
         {$_("OTel.Metric")}
       </div>
-      <table id="otelMetricTable" class="display compact" style="width:99%" />
+      {/snippet}
+      <table id="otelMetricTable" class="display compact" style="width:99%"></table>
     </TabItem>
     <TabItem
-      on:click={() => {
+      onclick={() => {
         tab = "trace";
         refresh();
       }}
     >
-      <div slot="title" class="flex items-center gap-2">
+      {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
         <Icon path={icons.mdiEye} size={1} />
         {$_("OTel.Trace")}
       </div>
-      <div id="otelTraceChart" />
+      {/snippet}
+      <div id="otelTraceChart"></div>
       <div class="m-5 grow">
-        <table id="otelTraceTable" class="display compact" style="width:99%" />
+        <table id="otelTraceTable" class="display compact" style="width:99%"></table>
       </div>
     </TabItem>
     <TabItem
-      on:click={() => {
+      onclick={() => {
         tab = "log";
         refresh();
       }}
     >
-      <div slot="title" class="flex items-center gap-2">
+      {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
         <Icon path={icons.mdiTextBox} size={1} />
         {$_("OTel.Log")}
       </div>
-      <div id="otelSyslogChart" />
+      {/snippet}
+      <div id="otelSyslogChart"></div>
       <div class="m-5 grow">
-        <table id="otelLogTable" class="display compact" style="width:99%" />
+        <table id="otelLogTable" class="display compact" style="width:99%"></table>
       </div>
     </TabItem>
   </Tabs>
@@ -380,7 +410,7 @@
           shadow
           color="green"
           type="button"
-          on:click={showMetricInfo}
+          onclick={showMetricInfo}
           size="xs"
         >
           <Icon path={icons.mdiInformation} size={1} />
@@ -391,7 +421,7 @@
         shadow
         color="green"
         type="button"
-        on:click={showReport}
+        onclick={showReport}
         size="xs"
       >
         <Icon path={icons.mdiEye} size={1} />
@@ -403,7 +433,7 @@
         shadow
         color="green"
         type="button"
-        on:click={showDAGFunc}
+        onclick={showDAGFunc}
         size="xs"
       >
         <Icon path={icons.mdiGraph} size={1} />
@@ -421,7 +451,7 @@
       shadow
       color="red"
       type="button"
-      on:click={deleteAll}
+      onclick={deleteAll}
       size="xs"
     >
       <Icon path={icons.mdiTrashCan} size={1} />
@@ -432,7 +462,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />
@@ -441,7 +471,7 @@
   </div>
 </div>
 
-<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full">
+<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full" transitionParams={{ duration: 0 }}>
   <div>
     <Spinner />
     <span class="ml-2"> {$_("Syslog.Loading")} </span>
@@ -456,7 +486,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showDAG = false;
         }}
         size="xs"
@@ -528,7 +558,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={() => {
+        onclick={() => {
           showMetricInfoDialog = false;
         }}
         size="xs"

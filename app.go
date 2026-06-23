@@ -450,3 +450,8 @@ func calcHash(msg string) string {
 	}
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
+
+// LogFromJS prints JavaScript logs directly in Wails terminal
+func (a *App) LogFromJS(message string) {
+	log.Println("[JS ERROR/LOG]", message)
+}

@@ -133,6 +133,10 @@
     } else {
     }
   };
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -140,7 +144,6 @@
   size="lg"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   {#if wait}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -221,7 +224,7 @@
             shadow
             color="red"
             type="button"
-            on:click={disconnect}
+            onclick={disconnect}
             size="xs"
           >
             <Icon path={icons.mdiLanDisconnect} size={1} />
@@ -231,7 +234,7 @@
             shadow
             color="blue"
             type="button"
-            on:click={connect}
+            onclick={connect}
             size="xs"
           >
             <Icon path={icons.mdiContentSave} size={1} />
@@ -241,7 +244,7 @@
           <GradientButton
             color="blue"
             type="button"
-            on:click={connect}
+            onclick={connect}
             size="xs"
           >
             <Icon path={icons.mdiLanConnect} size={1} />
@@ -254,7 +257,7 @@
           size="xs"
           color="lime"
           class="ml-2"
-          on:click={() => {
+          onclick={() => {
             showHelp = true;
           }}
         >
@@ -267,7 +270,7 @@
           shadow
           color="teal"
           type="button"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />

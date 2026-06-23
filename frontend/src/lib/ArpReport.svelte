@@ -38,45 +38,52 @@
     }
   }
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
-<svelte:window on:resize={resizeChart} />
+<svelte:window onresize={resizeChart} />
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
   class="w-full min-h-[90vh]"
-  on:open={onOpen}
 >
   <div class="flex flex-col space-y-4">
     <Tabs style="underline">
       <TabItem
         open
-        on:click={() => {
+        onclick={() => {
           showChart("ip");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartBarStacked} size={1} />
           { $_('ArpReport.CountByIP') }
         </div>
-        <div id="ip"/>
+      {/snippet}
+        <div id="ip"></div>
       </TabItem>
       <TabItem
-        on:click={() => {
+        onclick={() => {
           showChart("ip3D");
         }}
       >
-        <div slot="title" class="flex items-center gap-2">
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartScatterPlot} size={1} />
           { $_('ArpReport.Chart3DByIP') }
         </div>
-        <div id="ip3D"/>
+      {/snippet}
+        <div id="ip3D"></div>
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton type="button" color="teal" on:click={close} size="xs">
+      <GradientButton type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('ArpReport.Close') }
       </GradientButton>

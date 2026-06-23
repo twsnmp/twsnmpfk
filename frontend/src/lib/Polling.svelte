@@ -21,7 +21,7 @@
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
-  import { CodeJar } from "@novacbn/svelte-codejar";
+  import CodeJar from "./CodeJar.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
 
@@ -158,11 +158,11 @@
     dispatch("close", {});
   };
 
-  let paramsColor: any = "base";
-  let filterColor: any = "base";
+  let paramsColor: any = undefined;
+  let filterColor: any = undefined;
   const save = async () => {
-    filterColor = "base";
-    paramsColor = "base";
+    filterColor = undefined;
+    paramsColor = undefined;
     if (polling) {
       if (polling.Filter.startsWith("TODO:")) {
         filterColor = "red";
@@ -188,6 +188,10 @@
     { name: "Isolation Forest", value: "iforest" },
   ];
 
+
+  $: if (show) {
+    onOpen();
+  }
 </script>
 
 <Modal
@@ -195,7 +199,6 @@
   size="lg"
   dismissable={false}
   class="w-full"
-  on:open={onOpen}
 >
   {#if !polling}
     <div class="text-center mt-10"><Spinner size={16} /></div>
@@ -329,7 +332,7 @@
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Script")}</span>
-          <CodeJar syntax="javascript" {highlight} bind:value={polling.Script}/>
+          <CodeJar syntax="javascript" {highlight} catchTab={true} bind:value={polling.Script}/>
         </Label>
       </div>
       <div class="grid gap-4 grid-cols-3">
@@ -369,18 +372,18 @@
       </div>
       <Label class="space-y-2 text-xs">
         <span>{$_('Polling.FailAction')}</span>
-        <CodeJar syntax="twaction" {highlight} bind:value={polling.FailAction}/>
+        <CodeJar syntax="twaction" {highlight} catchTab={true} bind:value={polling.FailAction}/>
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_('Polling.RepairAction')}</span>
-        <CodeJar syntax="twaction" {highlight} bind:value={polling.RepairAction}/>
+        <CodeJar syntax="twaction" {highlight} catchTab={true} bind:value={polling.RepairAction}/>
       </Label>
       <div class="flex justify-end space-x-2 mr-2">
         <GradientButton
           shadow
           color="blue"
           type="button"
-          on:click={save}
+          onclick={save}
           size="xs"
         >
           <Icon path={icons.mdiContentSave} size={1} />
@@ -392,7 +395,7 @@
           size="xs"
           color="lime"
           class="ml-2"
-          on:click={() => {
+          onclick={() => {
             showHelp = true;
           }}
         >
@@ -405,7 +408,7 @@
           shadow
           type="button"
           color="teal"
-          on:click={close}
+          onclick={close}
           size="xs"
         >
           <Icon path={icons.mdiCancel} size={1} />
@@ -418,14 +421,14 @@
 
 <Modal bind:open={showList} size="xl" dismissable={false} class="w-full">
   <div class="flex flex-col space-y-4">
-    <table id="pollingTable" class="display compact mt-2" style="width:99%" />
+    <table id="pollingTable" class="display compact mt-2" style="width:99%"></table>
     <div class="flex justify-end space-x-2 mr-2">
       {#if selectedCount == 1}
         <GradientButton
           shadow
           type="button"
           color="blue"
-          on:click={select}
+          onclick={select}
           size="xs"
         >
           <Icon path={icons.mdiCheck} size={1} />
@@ -436,7 +439,7 @@
         shadow
         type="button"
         color="teal"
-        on:click={close}
+        onclick={close}
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />

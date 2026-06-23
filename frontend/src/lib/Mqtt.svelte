@@ -189,7 +189,7 @@
 
 <div class="flex flex-col">
   <div class="m-5 grow">
-    <table id="mqttStatTable" class="display compact" style="width:99%" />
+    <table id="mqttStatTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
     {#if selectedCount === 1}
@@ -197,7 +197,7 @@
         shadow
         color="blue"
         type="button"
-        on:click={makePolling}
+        onclick={makePolling}
         size="xs"
       >
         <Icon path={icons.mdiEye} size={1} />
@@ -209,7 +209,7 @@
         shadow
         color="cyan"
         type="button"
-        on:click={copyTopic}
+        onclick={copyTopic}
         size="xs"
       >
         {#if copied}
@@ -223,7 +223,7 @@
         shadow
         color="red"
         type="button"
-        on:click={deleteMqttStats}
+        onclick={deleteMqttStats}
         size="xs"
       >
         <Icon path={icons.mdiTrashCan} size={1} />
@@ -234,7 +234,7 @@
       shadow
       color="red"
       type="button"
-      on:click={deleteAll}
+      onclick={deleteAll}
       size="xs"
     >
       <Icon path={icons.mdiTrashCan} size={1} />
@@ -244,7 +244,7 @@
       shadow
       type="button"
       color="teal"
-      on:click={refresh}
+      onclick={refresh}
       size="xs"
     >
       <Icon path={icons.mdiRecycle} size={1} />

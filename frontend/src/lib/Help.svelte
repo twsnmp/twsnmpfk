@@ -6,24 +6,20 @@
     Alert,
     Spinner,
   } from "flowbite-svelte";
-  import { tick,createEventDispatcher } from "svelte";
+  import { createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
   import { lang } from "../i18n/i18n";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
-  import Reveal from "reveal.js";
-  import Highlight from "reveal.js/plugin/highlight/highlight";
-  import Markdown from "reveal.js/plugin/markdown/markdown";
-  import "reveal.js/dist/reveal.css";
-  import "reveal.js/dist/theme/black.css";
-  import "reveal.js/plugin/highlight/monokai.css";
+  import { marked } from "marked";
+  import DOMPurify from "dompurify";
   import { SendFeedback } from "../../wailsjs/go/main/App";
 
   export let page = "";
   export let show: boolean = false;
-  let reveal: any = undefined;
-  let helpUrl = "";
+  let markdownContent = "";
+  let renderedContent = "";
   let showFeedback = false;
   let feedback = "";
   let feedbackError = false;
@@ -31,22 +27,30 @@
 
   const dispatch = createEventDispatcher();
 
-  const onOpen = async () => {
-    helpUrl = `help/${lang}/${page}.md`;
-    await tick();
-    reveal = new Reveal({
-      plugins: [Markdown, Highlight],
-      hash: true,
-      center: false,
-    });
-    reveal.initialize();
+  const fetchHelp = async () => {
+    if (!page) return;
+    try {
+      const response = await fetch(`help/${lang}/${page}.md`);
+      if (response.ok) {
+        const text = await response.text();
+        markdownContent = text
+          .replace(/^\n>>>\n/gm, "\n\n---\n\n")
+          .replace(/^>>>$/gm, "---");
+      } else {
+        markdownContent = `Help not found for page: ${page}`;
+      }
+    } catch (err) {
+      markdownContent = `Failed to load help: ${err}`;
+    }
   };
 
+  $: if (show && page) {
+    fetchHelp();
+  }
+
+  $: renderedContent = DOMPurify.sanitize(marked.parse(markdownContent || "") as string);
+
   const close = () => {
-    if (reveal) {
-      reveal.destroy();
-      reveal = undefined;
-    }
     show = false;
     dispatch("close", {});
   };
@@ -56,35 +60,25 @@
   bind:open={show}
   size="xl"
   dismissable={false}
-  class="w-full min-h-[90vh] bg-gray-800 help"
-  on:open={onOpen}
+  class="w-full help"
 >
-  <div class="reveal max-h-[90%]">
-    <div class="slides">
-      <section data-markdown={helpUrl} data-separator-vertical="^\n>>>\n" />
+  <div class="flex flex-col h-[70vh]">
+    <div
+      class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 help-content"
+    >
+      <article class="prose prose-sm md:prose-base dark:prose-invert max-w-none">
+        {@html renderedContent}
+      </article>
     </div>
   </div>
-  <div class="flex justify-end space-x-2 mr-2">
-    <GradientButton
-      shadow
-      color="blue"
-      type="button"
-      class="mr-2"
-      size="xs"
-      on:click={() => {
-        reveal.toggleOverview();
-      }}
-    >
-      <Icon path={icons.mdiGrid} size={1} />
-      {$_("Help.Overiview")}
-    </GradientButton>
+  <div class="flex justify-end space-x-2 mr-2 mt-4">
     <GradientButton
       shadow
       type="button"
       color="lime"
       class="mr-2"
       size="xs"
-      on:click={() => {
+      onclick={() => {
         BrowserOpenURL(
           `https://twsnmp.github.io/twsnmpfk/`
         );
@@ -99,7 +93,7 @@
       color="lime"
       class="mr-2"
       size="xs"
-      on:click={() => {
+      onclick={() => {
         BrowserOpenURL(
           `https://lhx98.linkclub.jp/twise.co.jp/#sec06`
         );
@@ -114,7 +108,7 @@
       type="button"
       class="mr-2"
       size="xs"
-      on:click={() => {
+      onclick={() => {
         showFeedback = true;
       }}
     >
@@ -126,7 +120,7 @@
       type="button"
       color="teal"
       size="xs"
-      on:click={close}
+      onclick={close}
     >
       <Icon path={icons.mdiCancel} size={1} />
       {$_("Help.Close")}
@@ -153,7 +147,7 @@
         color="red"
         type="button"
         size="xs"
-        on:click={async () => {
+        onclick={async () => {
           if (feedback) {
             sending = true;
             feedbackError = false;
@@ -179,7 +173,7 @@
         color="teal"
         type="button"
         size="xs"
-        on:click={() => {
+        onclick={() => {
           showFeedback = false;
         }}
       >
@@ -191,11 +185,8 @@
 </Modal>
 
 <style global>
-  .help .reveal img {
+  .help-content img {
     margin: 0 auto;
   }
-
-  .help .reveal pre.code-wrapper {
-    background-color: white;
-  }
 </style>
+
