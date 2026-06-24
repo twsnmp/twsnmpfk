@@ -249,7 +249,7 @@
           size={1}
         /></GradientButton
       >
-      <Dropdown bind:open={actionOpen}>
+      <Dropdown bind:isOpen={actionOpen}>
         <DropdownItem onclick={ping}>PING</DropdownItem>
         <DropdownItem onclick={MIBBr}>{$_("Map.MIBBrowser")}</DropdownItem>
         <DropdownItem onclick={gNMITool}

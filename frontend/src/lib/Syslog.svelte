@@ -792,7 +792,7 @@
         {$_('Address.AddressInfo')}
         <Icon path={icons.mdiChevronDown} size={1} />
       </GradientButton>
-      <Dropdown bind:open={addrInfoOpen}>
+      <Dropdown bind:isOpen={addrInfoOpen}>
         {#each addrList as a}
           <DropdownItem onclick={() => showAddrInfoFunc(a)}>{a}</DropdownItem>
         {/each}
