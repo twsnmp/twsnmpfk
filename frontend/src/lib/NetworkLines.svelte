@@ -161,7 +161,7 @@
   class="w-full"
 >
   {#if wait}
-    <div class="text-center mt-10"><Spinner size={16} /></div>
+    <div class="text-center mt-10"><Spinner size="16" /></div>
   {:else}
     <form class="flex flex-col space-y-4" action="#">
       <h3 class="mb-1 font-medium text-gray-900 dark:text-white">

@@ -153,10 +153,10 @@
         </div>
       {/snippet}
         <div id="syslogSummary"></div>
-        <table
+        <div><table
           id="syslogSummaryTable"
           class="display compact mt-5"
-          style="width:99%"></table>
+          style="width:99%"></table></div>
       </TabItem>
       <TabItem onclick={()=>{showChart("host3D")}}>
         {#snippet titleSlot()}

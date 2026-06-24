@@ -311,7 +311,7 @@
   class="w-full min-h-[90vh]"
 >
   {#if !node}
-    <div class="text-center mt-10"><Spinner size={16} /></div>
+    <div class="text-center mt-10"><Spinner size="16" /></div>
   {:else}
     <div class="flex flex-col space-y-4">
       <Tabs style="underline">
@@ -335,7 +335,7 @@
                 <TableHeadCell>{$_("PollingReport.Item")}</TableHeadCell>
                 <TableHeadCell>{$_("PollingReport.Content")}</TableHeadCell>
               </TableHead>
-              <TableBody tableBodyClass="divide-y">
+              <TableBody class="divide-y">
                 <TableBodyRow>
                   <TableBodyCell>{$_("PollingReport.NodeName")}</TableBodyCell>
                   <TableBodyCell>{node.Name}</TableBodyCell>
@@ -363,7 +363,7 @@
                 </TableBodyRow>
               </TableBody>
             </Table>
-            <table id="resultTable" class="display compact" style="width:99%"></table>
+            <div><table id="resultTable" class="display compact" style="width:99%"></table></div>
           </div>
         </TabItem>
         {#if polling.LogMode > 0}
@@ -375,10 +375,10 @@
             </div>
       {/snippet}
             <div id="log"></div>
-            <table
+            <div><table
               id="pollingLogTable"
               class="display compact"
-              style="width:99%;"></table>
+              style="width:99%;"></table></div>
           </TabItem>
           <TabItem onclick={showTimeChart}>
             {#snippet titleSlot()}

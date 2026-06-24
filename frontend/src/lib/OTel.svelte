@@ -365,7 +365,7 @@
         {$_("OTel.Metric")}
       </div>
       {/snippet}
-      <table id="otelMetricTable" class="display compact" style="width:99%"></table>
+      <div><table id="otelMetricTable" class="display compact" style="width:99%"></table></div>
     </TabItem>
     <TabItem
       onclick={() => {
@@ -381,7 +381,7 @@
       {/snippet}
       <div id="otelTraceChart"></div>
       <div class="m-5 grow">
-        <table id="otelTraceTable" class="display compact" style="width:99%"></table>
+        <div><table id="otelTraceTable" class="display compact" style="width:99%"></table></div>
       </div>
     </TabItem>
     <TabItem
@@ -398,9 +398,10 @@
       {/snippet}
       <div id="otelSyslogChart"></div>
       <div class="m-5 grow">
-        <table id="otelLogTable" class="display compact" style="width:99%"></table>
+        <div><table id="otelLogTable" class="display compact" style="width:99%"></table></div>
       </div>
     </TabItem>
+
   </Tabs>
 
   <div class="flex justify-end space-x-2 mr-2">

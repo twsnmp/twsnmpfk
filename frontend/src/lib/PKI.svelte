@@ -264,7 +264,7 @@
         {#if wait}
           <Alert color="blue">
             <div class="flex">
-              <Spinner size={6}></Spinner>
+              <Spinner size="6"></Spinner>
               <span class="ml-2">
                 {$_("PKI.BuildCA")}
               </span>

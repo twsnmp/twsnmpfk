@@ -427,7 +427,7 @@
           />
         </div>
         <div id="pingChart" class="mb-2"></div>
-        <table id="pingTable" class="display compact" style="width:99%"></table>
+        <div><table id="pingTable" class="display compact" style="width:99%"></table></div>
       </TabItem>
       {#if !wait && results.length > 0}
         {#if canShowHistogram}

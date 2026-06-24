@@ -816,7 +816,7 @@
       {#if filteredMibTree}
         <MibTree
           tree={filteredMibTree}
-          onselect={(e) => {
+          on:select={(e) => {
             name = e.detail;
             showMIBTree = false;
           }}
@@ -935,7 +935,7 @@
         {#if filteredResultMibTree}
           <MibTree
             tree={filteredResultMibTree}
-            onselect={(e) => {
+            on:select={(e) => {
               name = e.detail;
               showResultMIBTree = false;
               get();

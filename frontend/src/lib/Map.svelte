@@ -941,7 +941,7 @@
     setMapReadOnly(false);
     refreshMap();
   }}
-  oneditLine={(e) => {
+  on:editLine={(e) => {
     selectedLineID = e.detail;
     selectedLineNode1= "";
     selectedLineNode2= "";
@@ -957,7 +957,7 @@
     setMapReadOnly(false);
     refreshMap();
   }}
-  onaddNetwork={(e) => {
+  on:addNetwork={(e) => {
     networkTemplate = e.detail;
     showEditNetwork = true;
     setMapReadOnly(true);

@@ -262,7 +262,7 @@
   class="w-full min-h-[90vh]"
 >
   {#if !network}
-    <div class="text-center mt-10"><Spinner size={16} /></div>
+    <div class="text-center mt-10"><Spinner size="16" /></div>
   {:else}
     <div class="flex flex-col space-y-4">
       <Tabs style="underline">
@@ -278,7 +278,7 @@
               <TableHeadCell>{$_("NodeReport.Item")}</TableHeadCell>
               <TableHeadCell>{$_("NodeReport.Content")}</TableHeadCell>
             </TableHead>
-            <TableBody tableBodyClass="divide-y">
+            <TableBody class="divide-y">
               <TableBodyRow>
                 <TableBodyCell>{$_("NodeReport.Name")}</TableBodyCell>
                 <TableBodyCell>{network.Name}</TableBodyCell>
@@ -333,10 +333,12 @@
           </div>
       {/snippet}
           <div id="vpanel"></div>
-          <table
-            id="portTable"
-            class="display compact mt-5"
-            style="width:99%"></table>
+          <div>
+            <table
+              id="portTable"
+              class="display compact mt-5"
+              style="width:99%"></table>
+          </div>
         </TabItem>
         <TabItem onclick={showFDBTable} >
           {#snippet titleSlot()}

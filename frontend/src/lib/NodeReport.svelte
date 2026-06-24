@@ -61,6 +61,8 @@
   let showVPanelBtn = false;
   let chart: any = undefined;
   let chartMem: any = undefined;
+  let logTable: any = undefined;
+
 
   const clearSelectedCount = () => {
     selectedPortCount = 0;
@@ -160,7 +162,6 @@
     checkAndInit();
   };
 
-  let logTable = undefined;
   const showLog = async () => {
     clearSelectedCount();
     const logs = await GetEventLogs({
@@ -435,8 +436,8 @@
   let hostResource: any = undefined;
   let hrSystemTable: any = undefined;
   let hrStorageTable: any = undefined;
-  let hrDeviceTable = undefined;
-  let hrFileSystemTable = undefined;
+  let hrDeviceTable:any = undefined;
+  let hrFileSystemTable:any = undefined;
   let hrProcessTable: any = undefined;
   let waitHr = false;
 

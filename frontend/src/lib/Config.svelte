@@ -563,7 +563,7 @@
   class="w-full min-h-[90vh]"
 >
   {#if !locConf}
-    <div class="text-center mt-10"><Spinner size={16} /></div>
+    <div class="text-center mt-10"><Spinner size="16" /></div>
   {:else}
     <Tabs style="underline">
       <TabItem>
@@ -963,7 +963,7 @@
           {/if}
           {#if notifyBusy }
             <Alert class="flex" color="indigo">
-                <Spinner size={4} />
+                <Spinner size="4" />
                 <div class="mr-4">
                   {$_('Config.WaitMsg')}
                 </div>
@@ -1646,7 +1646,7 @@
 >
   <div class="flex flex-col space-y-4">
     <div id="mibtree">
-      <MibTree tree={mibTree} onselect={(e) => {}} />
+      <MibTree tree={mibTree} on:select={(e) => {}} />
     </div>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
@@ -1771,11 +1771,11 @@
           <Icon path={icons.mdiRefresh} size={1} />
         </Button>
       </span>
-      <Textarea rows="8" bind:value={sshMyPublicKey} readonly />
+      <Textarea rows={8} bind:value={sshMyPublicKey} readonly />
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("Config.HostSSHPublicKey")}</span>
-      <Textarea rows="8" bind:value={sshHostPublicKey} />
+      <Textarea rows={8} bind:value={sshHostPublicKey} />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton

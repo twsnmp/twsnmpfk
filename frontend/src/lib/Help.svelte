@@ -141,7 +141,7 @@
         </div>
       </Alert>
     {/if}
-    <Textarea rows="10" bind:value={feedback}></Textarea>
+    <Textarea rows={10} bind:value={feedback}></Textarea>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton
         color="red"

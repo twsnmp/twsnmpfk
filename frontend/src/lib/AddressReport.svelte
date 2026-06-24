@@ -107,7 +107,7 @@
             <TableHeadCell>{$_('ArpReport.Used')}</TableHeadCell>
             <TableHeadCell>{$_('ArpReport.Usage')}</TableHeadCell>
           </TableHead>
-          <TableBody tableBodyClass="divide-y">
+          <TableBody class="divide-y">
             {#each ipam as i }
               <TableBodyRow>
                 <TableBodyCell>{i.Range}</TableBodyCell>
