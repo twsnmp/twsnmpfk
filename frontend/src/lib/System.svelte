@@ -33,7 +33,7 @@
       paging: false,
       searching: false,
       info: false,
-      scrollY: "25vh",
+      scrollY: "19vh",
       data: logs,
       order: [[0, "desc"]],
       language: getTableLang(),
@@ -200,10 +200,10 @@
 <div class="flex flex-col">
   <div id="resChart"></div>
   <div id="netChart"></div>
-  <div class="m-5 grow">
+  <div class="mx-2 mt-4">
     <table id="systemTable" class="display compact" style="width:99%"></table>
   </div>
-  <div class="flex justify-end space-x-2 mr-2">
+  <div class="flex justify-end space-x-2 mr-2 pt-3 pb-2">
     <GradientButton
       shadow
       type="button"
@@ -265,8 +265,8 @@
 <style>
   #resChart,
   #netChart{
-    min-height: 200px;
-    height: 25vh;
+    min-height: 150px;
+    height: 19vh;
     width: 98%;
     margin: 0 auto;
   }
