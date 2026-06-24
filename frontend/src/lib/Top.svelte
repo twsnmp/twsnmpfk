@@ -126,7 +126,7 @@
       TWSNMP FK - {mapConfig.MapName}
     </span>
   </NavBrand>
-  <NavUl activeUrl={showConfig ? "config" : page} ulClass="flex flex-col p-2 mt-3 md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium">
+  <NavUl activeUrl={showConfig ? "config" : page} classes={{ ul: "flex flex-col p-2 mt-3 md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium" }}>
     {#if !lock}
       <NavLi
   href="map"
