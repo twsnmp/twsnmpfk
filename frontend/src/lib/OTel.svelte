@@ -404,7 +404,7 @@
 
   </Tabs>
 
-  <div class="flex justify-end space-x-2 mr-2">
+  <div class="flex items-center justify-end space-x-2 mr-2">
     {#if selectedCount == 1 && tab != "log"}
       {#if tab == "metric"}
         <GradientButton
@@ -444,7 +444,7 @@
         items={traceBuckets}
         bind:value={selectedTraceBuckets}
         placeholder="Date and Time"
-        class="h-10 mb-2 w-96"
+        class="h-8 w-96"
         size="sm"
       />
     {/if}

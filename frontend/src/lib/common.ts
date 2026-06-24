@@ -380,6 +380,16 @@ export const renderCount = (n:number,type:string) => {
   return numeral(n).format('0,0');
 }
 
+export const renderFloat3 = (n:number,type:string) => {
+  if (type == "sort") {
+    return n;
+  }
+  if (n === undefined || n === null) {
+    return "";
+  }
+  return numeral(n).format('0.000');
+}
+
 export const renderBytes = (n:number,type:string) => {
   if (type == "sort") {
     return n;

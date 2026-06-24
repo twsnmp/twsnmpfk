@@ -8,7 +8,7 @@
   import { showOTelTimeChart, showOTelHistogram } from "./chart/otel";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import { getTableLang, renderTime,renderCount } from "./common";
+  import { getTableLang, renderTime, renderCount, renderFloat3 } from "./common";
 
   export let show: boolean = false;
   export let metric: any = undefined;
@@ -72,44 +72,49 @@
     {
       data: "Time",
       title: $_('OTel.Time'),
-      width: "10%",
+      width: "15%",
       render: renderTime,
+      "className": "dt-nowrap",
     },
     {
       data: "Start",
       title: $_('OTel.StartMetric'),
-      width: "10%",
+      width: "15%",
       render: renderTime,
+      "className": "dt-nowrap",
     },
     {
       data: "Attributes",
       title: $_('OTel.Attributes'),
-      width: "40%",
+      width: "38%",
       render: (s: any) => s.join(" "),
     },
     {
       data: "Count",
       title: $_('OTel.Count'),
-      width: "10%",
+      width: "8%",
       render: renderCount,
       "className": "dt-right",
     },
     {
       data: "Sum",
       title: $_('OTel.Sum'),
-      width: "10%",
+      width: "8%",
+      render: renderFloat3,
       "className": "dt-right",
     },
     {
       data: "Min",
       title: $_('OTel.Min'),
-      width: "10%",
+      width: "8%",
+      render: renderFloat3,
       "className": "dt-right",
     },
     {
       data: "Max",
       title: $_('OTel.Max'),
-      width: "10%",
+      width: "8%",
+      render: renderFloat3,
       "className": "dt-right",
     },
   ];
@@ -202,8 +207,8 @@
 
 <style>
   #metricChart {
-    min-height: 400px;
-    height: 50vh;
+    min-height: 200px;
+    height: 30vh;
     width: 98%;
     margin: 0 auto;
   }
