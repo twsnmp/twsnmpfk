@@ -1,40 +1,33 @@
-#### Icon management
-<div class="text-xl">
-This is a screen that manages the icon.
-</div>
+# Icon Management
 
-<div class="text-lg">
+Screen for registering and editing additional custom MDI (Material Design Icons) icons used for nodes on the map.
 
-| Items | Contents |
-| ---- | ---- |
-| Icon | It is an image of an icon.|
-| Name | Name when choosing.You can attach it freely.|
-| Code | icon code.|
+## Table Columns
 
-</div>
+* **Icon**
+  Preview of the registered icon.
+* **Name**
+  Display name assigned to the icon.
+* **Code**
+  MDI code point value.
 
->>>
-#### Icon management(button)
+## Button Descriptions
 
-<div class="text-lg">
+* **[Add]** : Displays the screen to add a new custom icon.
+* **[Edit]** : Displays the screen to edit the selected icon (rename).
+* **[Delete]** : Deletes the selected icon.
+* **[Import]** : Imports icon definitions from a JSON file.
+* **[Export]** : Exports the list of custom icon definitions to a JSON file.
+* **[Help]** : Displays this help.
+* **[Close]** : Closes the icon management tab.
 
-| Button | Contents |
-| ---- | ---- |
-| Added | Add a new icon.|
-| Edit | Edit the name of the selected icon.|
-| <Span style = "color: red"> Delete </span> | Delete the selected icon.|
-| Help | Display this help.|
-| Close | Close the setting screen.|
-</div>
+## Settings Parameters
 
----
-#### Icon editing screen
-
-<div class="text-lg">
-
-| Items | Contents |
-| ---- | ---- |
-| Icon | Select an icon.The name of the web font of the MDI icon.|
-| Name | Give the icon your favorite name.|
-
-</div>
+* **Icon Filter**
+  Keyword to filter the list of available MDI icons.
+* **Icon**
+  MDI icon name to register (changeable only when adding).
+* **Name**
+  Custom display name to assign to the icon.
+* **[Save]** : Saves the settings.
+* **[Cancel]** : Closes the edit window without saving.

@@ -1,21 +1,30 @@
-#### Line editing
-<div class="text-xl">
-To edit the line, press the two nodes while pressing the shift key on the map screen.
-</div>
+# Line Editing
 
-<div class="text-lg">
+Configuration screen for lines connecting nodes on the map. Opened by holding the Shift key and selecting two nodes on the map.
 
-| Items | Contents |
-| ---- | ---- |
-| Node 1 | This is the first node to connect the line.|
-| Polling 1 | This is the first node polling that determines the color on one side of the line.|
-| Node 2 | This is the second node to connect the line.|
-| Polling 2 | This is the second node polling that determines the color on one side of the line.|
-| Polling for information | Polling for information displayed next to the line.<br> Specify the traffic monitor polling.|
-| Information | Set the character string to be displayed next to the line.<br> It will be overwritten by setting a polling for information.|
-| Thickness of the line | It is the thickness of the line.|
-| Port | Specify the port number used when displaying the panel.|
+## Settings Parameters
 
-</div>
+* **Node 1**
+  The first node connected by the line.
+* **Polling 1**
+  Polling monitor that determines the color (status) on Node 1's side of the line.
+* **Node 2**
+  The second node connected by the line.
+* **Polling 2**
+  Polling monitor that determines the color (status) on Node 2's side of the line.
+* **Polling for information**
+  Polling monitor to display dynamic values next to the line (e.g., traffic monitoring polling).
+* **Information**
+  Static label string displayed next to the line (overwritten by polling values if "Polling for information" is configured).
+* **Thickness of the line**
+  Draw thickness of the line (value from 1 to 5).
+* **Port**
+  Port number used when displaying the device panel view.
 
+## Button Descriptions
 
+* **[Connect]** : Creates a new line connection.
+* **[Update]** : Saves changes to the existing line.
+* **[Disconnect]** : Deletes the line connection.
+* **[Help]** : Displays this help.
+* **[Cancel]** : Closes the window without saving.

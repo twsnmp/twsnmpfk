@@ -1,57 +1,49 @@
-#### Location map settings
-<div class="text-xl">
-This is the screen to set the map.
-</div>
+# Location Map Settings
 
-<div class="text-lg">
+Settings tab to configure the location map display style and default view.
 
-| Items | Contents |
-| ---- | ---- |
-| Style | Specify the map style.Specify in URL or JSON.|
-| Central coordinates | The central coordinates on the map are in the order of longitude and latitude.<br>Example: 135.3338576281734, 39.614306840830096 |
-| Zoom | Specify the enlargement level of the map.|
-| Icon size | Specify the size of the icon to be displayed.|
-</div>
+## Settings Parameters
 
----
-#### About map style
+* **Style**
+  Style configuration for the map (MapLibre GL style URL or JSON object).
+* **Central coordinates**
+  Default center coordinates of the map specified as "longitude,latitude" (e.g., `135.338,39.614`).
+* **Zoom**
+  Initial zoom level of the map.
+* **Icon size**
+  Display size of the node icons in pixels (configurable between 16 and 64 pixels via slider).
 
-<div class="text-xl">
-The map is displayed using Maplibre GL JS.The map to be displayed is specified in the style.
-  You can specify it with URL or JSON.Search for MAPLIBRE GL JS and find something suitable.
-</div>
+## Button Descriptions
 
+* **[Save]** : Saves the settings.
+* **[Cancel]** : Closes the settings window without saving.
 
-#### URL example
+## About Map Styles
 
-```
-https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json
-```
-
->>>
-
-#### JSON example
-
-```json
-{
-			 	"version": 8,
-			 	"sources": {
-			 		"MIERUNEMAP": {
-						"type": "raster",
-			 			"tiles": ["https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png"],
-						"tileSize": 256,
-			 			"attribution":
-			 				"Maptiles by <a href='https://mierune.co.jp/' target='_blank'>MIERUNE</a>, under CC BY. Data by <a href='https://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors, under ODbL."
-			 		}
-			 	},
-			 	"layers": [
-					{
-						"id": "MIERUNEMAP",
-		 				"type": "raster",
-			 			"source": "MIERUNEMAP",
-			 			"minzoom": 0,
-			 			"maxzoom": 18
-			 		}
-			 	]
-}
-```
+* **Overview**
+  The map is displayed using MapLibre GL JS. The visual design and source tiles of the map are defined by style data, which can be configured via a remote style JSON URL or a custom style JSON object.
+* **Style URL Example**
+  `https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json`
+* **Style JSON Example (Raster Tile Source Definition)**
+  ```json
+  {
+    "version": 8,
+    "sources": {
+      "MIERUNEMAP": {
+        "type": "raster",
+        "tiles": ["https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png"],
+        "tileSize": 256,
+        "attribution": "Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL."
+      }
+    },
+    "layers": [
+      {
+        "id": "MIERUNEMAP",
+        "type": "raster",
+        "source": "MIERUNEMAP",
+        "minzoom": 0,
+        "maxzoom": 18
+      }
+    ]
+  }
+  ```

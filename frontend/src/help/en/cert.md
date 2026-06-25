@@ -1,49 +1,40 @@
-#### Server Certificate Monitor List
+# Server Certificate Monitor List
 
-<div class="text-xl mb-4">
-A list that monitors the status of server certificate expiration and verification.
-</div>
+List for monitoring server certificate expiration and verification status.
 
-<div class="text-xl">
+## Table Columns
 
-|Item|Content|
-|----|---|
-|>|Click to expand and view certificate details.|
-|Status|Status certificate state.Be careful when the deadline expires, and when it is near, and when it is near, and also be careful when it is self-signed.|
-|Target|The host name or IP address to which the server certificate is to be verified.|
-|Port|The port number to be checked.|
-|Subject|A Subject for the certificate.|
-|Issuer|Issuer of the certificate.|
-|Start|The start date and time for the certificate expiration date.|
-|End|The end date and time of the certificate expiration date.|
-|Last confirmation|The date and time of the last AI analysis.|
-</div>
+* **>**
+  Detail expander. Click to expand and view details such as serial number and verification error.
+* **Status**
+  Status of the certificate (e.g., severe alert for expired, warning for near expiration or self-signed).
+* **Target**
+  Host name or IP address to verify.
+* **Port**
+  Target port number.
+* **Subject**
+  Certificate owner information.
+* **Issuer**
+  Certificate issuer information.
+* **Start**
+  Start date and time of validity.
+* **End**
+  End date and time of validity (expiration).
+* **Last confirmation**
+  Date and time of the last verification.
 
->>>
+## Button Descriptions
 
-#### AI analysis (button)
+* **[Add]** : Displays the screen to add a monitoring target.
+* **[Edit]** : Displays the screen to edit the selected monitoring target.
+* **[Delete]** : Deletes the selected monitoring target.
+* **[Reload]** : Reloads the monitor list.
 
-<div class="text-xl">
+## Settings Parameters
 
-|Item|Content|
-|----|---|
-|Add|Add something to monitor.|
-|Edit|Edit the selected monitored object.|
-|<span style="color: red;">Delete</span>|Deletes the selected monitored object.|
-|Update|Refresh the monitor list to the latest state.|
-
-</div>
-
-
----
-#### Server certificate monitored
-
-<div class="text-xl">
-
-|Item|Content|
-|----|---|
-|Target|The host name or IP address to which the server certificate is to be verified.|
-|Port|The port number to be checked.|
-
-</div>
-
+* **Target**
+  Host name or IP address to verify.
+* **Port**
+  Target port number.
+* **[Save]** : Saves the settings.
+* **[Cancel]** : Closes the settings window without saving.

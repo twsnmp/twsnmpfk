@@ -1,74 +1,46 @@
-#### SNMP TRAP
+# SNMP TRAP
 
-<div class="text-xl mb-2">
-SNMP Trap log screen.<br>
-At the top, there is a graph showing the number of logs in chronological order.
-</div>
+Inspect and analyze received SNMP TRAP messages. Chronological log volume chart is displayed at the top.
 
-<div class="text-xl">
+## Table Columns
 
-| Items | Contents |
-| ---- | ---- |
-| Date and time | This is the date and time of receiving SNMP Trap.|
-| Sending source | SNMP Trap's source host.|
-| Type | SNMP Trap type.|
-| Variables | Variables attached to SNMP Trap.|
+* **Time**
+  Date and time the SNMP TRAP was received.
+* **From IP**
+  The source host address of the SNMP TRAP.
+* **Type**
+  Object name or OID identifier representing the TRAP Type.
+* **Variables**
+  Key-value list of variable bindings contained in the SNMP TRAP.
 
-</div>
+## Button Descriptions
 
->>>
-#### SNMP TRAP(button)
+* **[Filter]** : Open the search filter dialog.
+* **[Delete All Logs]** : Delete all SNMP TRAP logs from the database.
+* **[Report]** : Open statistical and analytical charts for SNMP TRAPs.
+* **[Polling]** : Register a new polling task to monitor for specific SNMP TRAP occurrences.
+* **[Copy]** : Copy selected logs to the clipboard.
+* **[AI Explain]** : Request TRAP message explanation from the AI (LLM).
+* **[CSV]** : Export SNMP TRAPs to a CSV file.
+* **[Excel]** : Export SNMP TRAPs to an Excel file.
+* **[Reload]** : Refresh the SNMP TRAP list.
 
-<div class="text-xl">
+## Filter Settings
 
-| Items | Contents |
-| ---- | ---- |
-| Polling | Register the polling from the selected SNMP Trap.|
-| Filter | Specify the search conditions and display SNMP Trap.|
-| <Span style = "color: red;"> Delete all logs </span> | Delete all syslogs.|
-| Report | Displays the analysis report of SNMP Trap.|
-| CSV | Sport the SNMP Trap to the CSV file.|
-| Excel | Export SNMP Trap to Excel file.|
-| Reload | Update the SNMP Trap list to the latest state.|
+Search options in the filter dialog (supports regular expressions).
 
-</div>
+* **From**
+  Filter by source host IP.
+* **Type**
+  Filter by TRAP type or OID.
 
+## Report Types
 
----
-#### SNMP TRAP Filter
-<div class="text-xl mb-4">
-This is a dialog that specifies the search conditions for SNMP Trap.
-</div>
-
-<div class="text-lg">
-
-| Items | Contents |
-| ---- | ---- |
-| Sending source | It is the source host.|
-| Type | SNMP Trap type.|
-
-<Span style = "color: red"> Character strings can be searched in regular expressions.</span>
-</div>
-
-
----
-#### TRAP type
-<div class="text-xl mb-4">
-This is a report of the number of SNMP traps by type.
-</div>
-
-
-#### Heatmap
-<div class="text-xl mb-4">
-This is a report of the number of cases of SNMP TRAP on the heat map.
-</div>
-
-#### By host
-<div class="text-xl mb-4">
-This is a report of the number of SNMP Trap receiving cases by source host.
-</div>
-
-#### Send source and type (3D)
-<div class="text-xl mb-4">
-This is a report displayed in the source host, type, and three -dimensional graph of the SNMP Trap receiving log.
-</div>
+* **By TRAP Type**
+  Distribution chart of SNMP TRAPs by their type.
+* **Heatmap**
+  Hourly density heatmap of received TRAP logs.
+* **By Host**
+  TRAP log count ranking by sending hosts.
+* **From and Type (3D)**
+  3D graph representing Host, Uptime/Time, and TRAP Type distribution.

@@ -1,29 +1,20 @@
-#### MIB management
-<div class="text-xl">
-This is a screen that manages SNMP MIB.
-</div>
+# MIB Management
 
-<div class="text-lg">
+View and manage loaded SNMP MIB modules.
 
-| Items | Contents |
-| ---- | ---- |
-| Type | It is a type of built -in or reading.|
-| Name | MIB module name.|
-| File | It is a read file name.|
-| Error | An error when you read it.|
+## Table Columns
 
-</div>
+* **Type**
+  Indication of whether the module is built-in (system-defined) or external (user-defined).
+* **Name**
+  Name of the MIB module.
+* **File**
+  Filename of the loaded external MIB file.
+* **Error**
+  Errors encountered when loading or parsing the MIB file.
 
->>>
-#### MIB management(button)
+## Button Descriptions
 
-<div class="text-lg">
-
-| Button | Contents |
-| ---- | ---- |
-| MIB Tree | Displays MIB tree.|
-| Help | Display this help.|
-| Close | Close the setting screen.|
-
-</div>
-
+* **[MIB Tree]** : Open the MIB tree viewer.
+* **[Help]** : Open this help document.
+* **[Close]** : Close the MIB management tab.

@@ -1,98 +1,78 @@
-#### OpenTelemetry
-<div class="text-xl mb-2">
-This is the OpenTelemetry Collector screen.
-Toggle in the Metrics, Traces, and Logs tabs.
-</div>
+# OpenTelemetry
 
----
-### metric
+Inspect and analyze metrics, traces, and logs collected via OpenTelemetry. Switch between the Metrics, Traces, and Logs tabs.
 
-<div class="text-lg">
-A list of received metrics.
+## Metrics Columns
 
-|Item|Content|
-|----|---|
-|Source Host|The source host for the metric.|
-|Service|Name of the service associated with the metric.|
-|Scope|Name of the scope associated with the metric.|
-|Name|Name of the metric.|
-|Type|Metric type.|
-|Number of times|The number of times the metric is received.|
-|First time|The date and time when the metric was first received.|
-|Last|The date and time when the metric was last received.|
-</div>
+* **Host**
+  The source host that sent the metric.
+* **Service**
+  The name of the service that emitted the metric.
+* **Scope**
+  The measurement scope (e.g., instrumentation library name).
+* **Name**
+  The name of the metric.
+* **Type**
+  The data type of the metric (e.g., Gauge, Sum, Histogram).
+* **Count**
+  Total count of received metric data points.
+* **First**
+  Date and time when the metric was first received.
+* **Last**
+  Date and time when the metric was last received.
 
->>>
-#### Metric (button)
-<div class="text-xl">
+## Metrics Buttons
 
-|Item|Content|
-|----|---|
-|Report|View a graph for the selected metric.|
-|<span style="color: red;">Delete all logs</span>|Delete all data from OpenTelemetry.|
-|Update|Update information.|
-</div>
+* **[Report]** : View a performance graph of the selected metric.
+* **[Delete All]** : Delete all OpenTelemetry data from the database.
+* **[Reload]** : Refresh the metrics list.
 
----
-### trace
+## Traces Columns
 
-<div class="text-lg">
+Distributed tracing data.
 
-This is the screen for the received trace.At the top there is a graph showing the start time, processing time, and number of spans of traces.
+* **Start**
+  Start date and time of the trace.
+* **End**
+  End date and time of the trace.
+* **Duration**
+  Total duration of the trace in milliseconds.
+* **Trace ID**
+  Unique identifier for the trace.
+* **Host**
+  List of hosts involved in this trace.
+* **Service**
+  List of services involved in this trace.
+* **Span**
+  Number of spans contained in the trace.
+* **Scope**
+  Scope associated with the trace.
 
-|Item|Content|
-|----|---|
-|Start date and time|The start date and time for the trace.|
-|End Date and Time|The end date and time of the trace.|
-|Time|Tracing processing time.|
-|Trace ID|The ID that identifies the trace.|
-|Source Host|The source host for the trace.|
-|Service|The service name associated with the trace.|
-|Span|The number of Spans in the trace.|
-|Scope|Related scope for traces.|
+## Traces Buttons
 
-</div>
+* **[Report]** : Open the waterfall trace/span visualizer for the selected trace.
+* **[DAG]** : Generate and display a Service Dependency Graph (Directed Acyclic Graph) for the selected trace data.
+* **[Delete All]** : Delete all OpenTelemetry data.
+* **[Reload]** : Refresh the trace data and chart.
 
->>>
-#### Trace (button)
-<div class="text-xl">
+## Logs Columns
 
-|Item|Content|
-|----|---|
-|Report|View the graph for the selected trace.|
-|DAG|Views relationships between services from traces for the selected time range.|
-|Time Range|Specifies the time range for the trace.|
-|<span style="color: red;">Delete all logs</span>|Delete all data from OpenTelemetry.|
-|Update|Update information.|
-</div>
+Logs received via OpenTelemetry.
 
----
-### log
+* **Level**
+  Severity level of the log (Severe, Mild, Warn, Info, etc.).
+* **Time**
+  Date and time when the log occurred.
+* **Host**
+  The source host of the log.
+* **Type**
+  Attributes representing facility and priority.
+* **Tag**
+  Process tags or categories.
+* **Message**
+  The log message text.
 
-<div class="text-lg">
+## Logs Buttons
 
-This is a screen to search for the received OpenTelemetry logs from syslog.
-At the top, you will see a graph by log level.
-
-|Item|Content|
-|----|---|
-|Level|Syslog level.<br>Severe, mild, warnings and information.|
-|Date and Time|The date and time when Syslog was received.|
-|Host|The source host for Syslog.|
-|Type|Stand for syslog facility and priority.|
-|Tag|Syslog tag.Process and process ID etc.|
-|Message|Syslog message.|
-
-</div>
-
->>>
-#### Log (button)
-<div class="text-xl">
-
-|Item|Content|
-|----|---|
-|<span style="color: red;">Delete all logs</span>|Delete all data from OpenTelemetry.I won't delete syslog.|
-|Update|Update information.|
-
-</div>
-
+* **[Delete All]** : Delete all OpenTelemetry logs (does not delete regular Syslog logs).
+* **[Reload]** : Refresh the logs table and level distribution chart.

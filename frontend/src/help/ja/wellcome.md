@@ -1,108 +1,54 @@
-## TWSNMP FKへようこそ
+# TWSNMP FKへようこそ
 
-ネットワーク管理マップを作成してみましょう。
+TWSNMP FKの起動およびデータストア（データベースフォルダ）の選択・初期設定を行う画面。
 
-まず、<button class="bg-green-600">＜はじめる＞</button>ボタンをクリックします。
+## データフォルダの説明
 
+TWSNMP FKが管理マップ設定や各種ログを保存するデータベースファイル、追加MIBなどを格納するためのフォルダー。起動時にこのフォルダーの選択を求められる。
 
----
-#### データフォルダを選択
-<span class="text-xl">
-マップの設定やログを記録するデータベースファイルや拡張MIBなどを保存するためのフォルダです。
-</span>
+## データストア内のカスタマイズ用ファイル
 
+データストアフォルダー内に以下のファイルを配置することで、動作のカスタマイズが可能。
 
->>>
-#### データストア内のファイル
-<span class="text-xl">
-データフォルダ内に以下ファイルを保存すればカスタマイズできます。
+* **twsnmpfk.db**
+  管理データおよびログを保存するデータベースファイル。存在しない場合は起動時に自動生成される。
+* **services.txt**
+  ポート番号からサービス名への変換に使用するテキスト定義ファイル（オプション）。
+* **mac-vendors-export.csv**
+  MACアドレスのOUIとベンダー名の紐付け辞書データベース（オプション）。
+* **polling.json**
+  ポーリングテンプレートのカスタム定義ファイル（オプション）。
+* **mail_test.html**
+  メール通知のテスト配信用テンプレートファイル（オプション）。
+* **mail_notify.html**
+  障害発生時のアラート通知配信用テンプレートファイル（オプション）。
+* **mail_report.html**
+  定期レポート（日報）配信用テンプレートファイル（オプション）。
+* **extmibs/***
+  ユーザーが追加する独自の拡張MIBファイルを保存するディレクトリ（オプション）。
 
-|ファイル|内容|
-|---|---|
-|twsnmpfk.db|データベースファイルです。存在しない場合は自動作成されます。|
-|services.txt|サービス名の変換の使用するファイルです。(オプション)|
-|mac-vendors-export.csv|MACアドレスとベンダー名の関係を示すデータベースです。(オプション)|
-|polling.json|ポーリング設定(オプション)|
-|mail_test.html|通知テストメールのテンプレート(オプション)|
-|mail_notify.html|通知メールのテンプレート(オプション)|
-|mail_repot.html|レポートメールのテンプレート(オプション)|
-|extmibs/*|追加読み込みの拡張MIB(オプション)|
+## ボタンの説明
 
-</span>
+* **[はじめる]**（またはStart） ： データストア（保存用フォルダー）を選択するダイアログを表示し、TWSNMP FKを開始するボタン。
+* **[終了する]**（またはStop） ： プログラムを終了してウィンドウを閉じるボタン。
+* **[ヘルプ]** ： このヘルプを表示するボタン。
 
----
-#### マップを表示
-<span class="text-xl">
-フォルダーを選択すると空白のマップが表示されます。
-</span>
+## 起動パラメータ一覧
 
----
-#### 起動パラメータ
-<span class="text-xl">
-起動時に以下のパラメータを指定できます。
-</span>
+プログラムの起動オプションとして、以下の引数をコマンドラインから指定可能。
 
-```
-Usage of twsnmpfk:
-  -caCert string
-    	CA Cert path
-  -clientCert string
-    	Client cert path
-  -clientKey string
-    	Client key path
-  -datastore string
-    	Path to data store directory
-  -kiosk
-    	Kisok mode(frameless and full screen)
-  -lang string
-    	Language(en|jp)
-  -lock string
-    	Disable edit map and lock page(map or loc)
-  -maxDispLog int
-    	Max log size to diplay (default 10000)
-```
->>>
-```
-  -netflowPort int
-    	Netflow port (default 2055)
-  -ping string
-    	ping mode icmp or udp
-  -sFlowPort int
-    	sFlow port (default 6343)
-  -sshdPort int
-    	SSH server port (default 2022)
-  -syslogPort int
-    	Syslog port (default 514)
-  -tcpdPort int
-    	tcp server port (default 8086)
-  -trapPort int
-    	SNMP TRAP port (default 162)
-```
-
->>>
-#### 起動パラメータの説明
-
-<div class="text-xl">
-
-|パラメータ|説明|
-|---|---|
-|datastore|データストアのパス|
-|kiosk|キオスクモード（フレームレス、フルスクリーン）|
-|lock <page>| マップの編集を禁止して表示するページを固定<br>(pageにはmap又はlocを指定)|
-|maxDispLog <number>|ログの最大表示数(デフォルト 10000)| 
-|ping <mode>|pingの動作モード(icmp又はudp)|
-|syslogPort <port>|syslogの受信ポート(デフォルト514)|
-|trapPort <port>| SNMP TRAP受信ポート(デフォルト162)|
->>>
-|パラメータ|説明|
-|---|---|
-|sshdPort <port>| SSH Server受信ポート(デフォルト2022)|
-|netflowPort <port>| NetFlow/IPFIX受信ポート(デフォルト2055)|
-|sFlowPort <port>| sFlow受信ポート(デフォルト6343)|
-|tcpdPort <port>| TCPログ受信ポート(デフォルト8086)|
-|caCert <file>| TWLogEyeとTLS通信するためのCA証明書|
-|clientCert <file>| TWLogEyeとmTLS通信するためのクライアント証明書|
-|clientKey <file>| TWLogEyeとmTLS通信するためのクライアント鍵|
-
-</div>
-
+* **-datastore <path>** : データストアのパス。
+* **-kiosk** : キオスクモード（フルスクリーン・フレームレス）での起動。
+* **-lang <lang>** : 表示言語の指定（`en` または `ja`）。
+* **-lock <page>** : 設定変更を禁止し、表示画面を固定（`map` または `loc`）。
+* **-maxDispLog <number>** : テーブルに表示するログの最大件数（デフォルト: 10000）。
+* **-ping <mode>** : PINGコマンドの動作モード（`icmp` または `udp`）。
+* **-syslogPort <port>** : Syslogサーバー機能の受信ポート（デフォルト: 514）。
+* **-trapPort <port>** : SNMP TRAPサーバー機能の受信ポート（デフォルト: 162）。
+* **-sshdPort <port>** : SSHサーバー機能の待受ポート（デフォルト: 2022）。
+* **-netflowPort <port>** : NetFlow/IPFIXサーバー機能の受信ポート（デフォルト: 2055）。
+* **-sFlowPort <port>** : sFlowサーバー機能の受信ポート（デフォルト: 6343）。
+* **-tcpdPort <port>** : TCP経由でのログ受信ポート（デフォルト: 8086）。
+* **-caCert <file>** : TWLogEyeサービスとTLS通信するためのCA証明書。
+* **-clientCert <file>** : TWLogEyeとmTLS通信するためのクライアント証明書。
+* **-clientKey <file>** : TWLogEyeとmTLS通信するためのクライアント秘密鍵。

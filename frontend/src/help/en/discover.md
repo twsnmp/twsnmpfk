@@ -1,32 +1,37 @@
-#### Discover
-<div class="text-xl">
-Automatic discovery screen.
-</div>
+# Auto Discovery
 
-<div class="text-lg">
+Screen for automatically discovering network devices and hosts not yet registered on the map.
 
-| Items | Contents |
-| ---- | ---- |
-| Start IP | The first IP address range to search.|
-| End IP | The end of the IP address range to search.|
-| Timeout | This is the timeout of ping when searching.|
-| Retry | This is the number of retrys of ping when searching.|
-| Port scan | Perform a port scan on the found node.<br><Span style = "color: red"> Please note that security software may warn you.</span> |
-| Polling automatic setting | Polling is automatically set on the found node.|
-| <Start> button | Start automatic discovery.|
-| <Auto IP range> button | Automatically set the search range from the PC IP address.|
+## Settings Parameters
 
-</div>
+* **Start IP**
+  Start address of the IP address range to search.
+* **End IP**
+  End address of the IP address range to search.
+* **Timeout**
+  PING timeout in seconds for verifying host availability.
+* **Retry**
+  Number of PING retries.
+* **Port scan**
+  Performs a port scan on discovered nodes to identify running services (caution: may trigger security software alerts).
+* **Polling automatic setting**
+  Automatically creates and assigns polling monitors to discovered nodes.
+* **Recheck**
+  Rechecks already registered nodes.
+* **Add Network**
+  Automatically generates network elements on the map based on discovered subnets.
 
----
-#### Automatic discovery is being performed
-<div class="text-xl">
-The number of nodes you have executed or discovered is displayed.
-</div>
+## Button Descriptions
 
+* **[Start]** : Starts the discovery process and opens the status view.
+* **[Auto IP Range]** : Automatically sets the IP address range (Class C) based on the local machine's IP address.
+* **[Help]** : Displays this help.
+* **[Close]** : Closes the window.
+* **[Stop]** : (On status view) Stops the active discovery process.
 
-#### Automatic discovery is being executed (with port scanning)
-<div class="text-xl">
-The number of nodes you have executed or discovered is displayed.When performing a port scan, the discovered server function is also displayed.
-</div>
+## Status Descriptions
 
+* **Status view during execution**
+  Displays execution time, sent/waiting counts, discovered nodes, and SNMP-responsive nodes in real-time.
+* **Additional status with port scanning**
+  If port scanning is enabled, displays the count of nodes running services such as Web, Mail, SSH, File, RDP/VNC, and LDAP/AD.

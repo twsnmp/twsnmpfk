@@ -1,49 +1,44 @@
-#### MIB browser
+# MIB Browser
 
-<div class="text-xl mb-2">
-This is a screen to get MIB information of SNMP from the node.
-It is necessary to set SNMP access information in the node setting.
-If you want to use MIB other than built -in, save the MIB file to the extmibs of the data folder.
-</div>
+Tool for retrieving, inspecting, and writing SNMP MIB information from a node. Correct SNMP settings must be configured on the target node beforehand.
+To use external MIB files, place them in the `extmibs` directory in the application data folder.
 
-<div class="text-lg">
+## Settings Parameters
 
-| Items | Contents |
-| ---- | ---- |
-| Object name | Specify the object name of the MIB you want to get.<br> You can choose from the MIB tree.Example: System |
-|<MIB Tree> button|Displays the MIB tree for object selection. |
-| History | It is the history of the object name obtained so far.You can select and get it again.|
-| Results | Acquired MIB information.In the case of MIB in a table format, it is automatically displayed in a table format.|
-|Copy|Click to copy the selected MIB to the board. |
-|Polling|Create a poll from the selected MIB. |
-|SET|Displays a dialog to perform SET on the selected MIB. |
-|Scalar only|Display only objects with index 0. |
-| Raw data | Displays the acquired MIB information without converting it.<BR> In the case of off, convert the time data to an easy -to -understand display.|
-| Get | Get MIB information.|
-|MIB Tree|Displays the acquired MIB information in a tree view. |
-| CSV | Export the obtained MIB information of the CSV file.|
-| Excel | Export the acquired MIB information of the Excel file.|
+* **Object Name**
+  The MIB object name or OID to retrieve.
+* **History**
+  History of previously searched MIB objects.
+* **Scalar Only**
+  Toggle to display only scalar objects (with index 0).
+* **Raw Data**
+  Toggle to display retrieved MIB values as raw data. If disabled, timestamp and other values are automatically formatted into readable text.
 
-</div>
+## Button Descriptions
 
----
-#### MIB tree
-<div class="text-xl mb-2">
-This is a screen for selecting the obtained MIB object name.
-Open the tree and click the object name to see the explanation.
-Double click to select.
+* **[MIB Tree]** (Tree icon next to Object Name) : Open the MIB Tree selection dialog.
+* **[Copy]** : Copy the selected rows of MIB data to the clipboard.
+* **[Polling]** : Create a new polling setting using the selected MIB object.
+* **[SET]** : Open the SNMP SET dialog to write a value to the selected MIB object.
+* **[Get]** : Run SNMP GET or WALK for the specified object name/OID.
+* **[MIB Tree]** : Display the search results structured in a tree format.
+* **[CSV]** : Export search results to a CSV file.
+* **[Excel]** : Export search results to an Excel file.
+* **[AI Explain]** : Request an explanation of the retrieved MIB data from the AI (LLM).
+* **[Help]** : Open this help document.
+* **[Close]** : Close the MIB browser tool.
 
-**Filtering the MIB Tree**
+## Dialog Descriptions
 
-You can narrow down the displayed MIBs by entering keywords in the search box at the top of the MIB tree.
-OIDs, MIB names, descriptions, etc., are subject to search.
-</div>
+### MIB Tree Dialog
 
----
-#### Set dialog
+Dialog to explore and select MIB objects. Select a node in the tree to read its description. Double-click to insert the selected object into the Object Name input.
 
-<div class="text-xl">
-This is the screen for executing SNMP Set. Specify the object name, type, and value and press the <SET> button.
-Click to send a Set request.
+* **Filtering the MIB Tree**
+  Use the search box at the top to filter the tree. OIDs, MIB names, and descriptions are searchable.
 
-</div>
+### SET Dialog
+
+Dialog for performing SNMP SET operations. Specify the target Object Name, Data Type, and Value.
+
+* **[SET]** : Send the SNMP SET request.

@@ -1,94 +1,56 @@
-#### Drawing item (rectangle, elliptical)
-<div class="text-xl">
-It is an edit screen of drawing item (rectangle, elliptical).
-</div>
+# Drawing Items
 
-<div class="text-lg">
+Edit screen for items used to draw backgrounds or additional information on the map.
 
-| Items | Contents |
-| ---- | ---- |
-| Type | It is a type of drawing item.You can only change it when you add it.|
-| Width | The width of the drawing item.|
-| Height | It is the height of the drawing item.|
-| Color | It is the color of the drawing item.|
-| Display condition | It is a state of the map that displays drawing items.|
-| Magnification | The display rate of drawing items.|
-</div>
+## Common Parameters
 
----
-#### Drawing item (label)
-<div class="text-xl">
-It is the editing screen of the drawing item (label).
-</div>
+* **Type**
+  Type of drawing item (Rectangle, Ellipse, Label, Image, Polling Result, etc. Changeable only during creation).
+* **Display condition**
+  Visibility condition based on the map state ("Always", "When status is Low anomaly or higher", "When status is High anomaly").
+* **Magnification**
+  Display scale ratio.
 
-<div class="text-lg">
+## Parameters by Type
 
-| Items | Contents |
-| ---- | ---- |
-| Type | It is a type of drawing item.You can only change it when you add it.|
-| Character size | Label character size.|
-| Color | It is the color of the drawing item.|
-| Display condition | It is a state of the map that displays drawing items.|
-| Character string | It is a string to be displayed.|
-| Magnification | The display rate of drawing items.|
-</div>
+* **Rectangle, Ellipse, Group (Frame), Group (Fill)**
+  * **Width**
+    Width of the item.
+  * **Height**
+    Height of the item.
+  * **Color**
+    Fill color and opacity.
+* **Label**
+  * **Font Size**
+    Font size of the label text.
+  * **Color**
+    Text color.
+  * **Text**
+    String to be displayed.
+* **Image**
+  * **Width**
+    Width of the displayed image.
+  * **Height**
+    Height of the displayed image.
+  * **Image**
+    Image file path (specified using the **[Select]** button).
+* **Polling Results (Text, Gauge, New Gauge, Bar, Line)**
+  * **Size**
+    Font size or display size of the gauge, bar, or line.
+  * **Node**
+    Node to select the polling target.
+  * **Polling**
+    Target polling to display results from.
+  * **Variable name**
+    Name of the variable to extract and display from the polling results (blank for automatic setting).
+  * **Display format**
+    (Text only) Format specifier for displaying data (blank for automatic setting).
+  * **Gauge label**
+    (Gauge and New Gauge only) Label string displayed below the gauge.
 
----
-#### Drawing item (image)
-<div class="text-xl">
-It is the editing screen of drawing item (image).
-</div>
+## Button Descriptions
 
-<div class="text-lg">
-
-| Items | Contents |
-| ---- | ---- |
-| Type | It is a type of drawing item.You can only change it when you add it.|
-| Width | It is the width of the image.|
-| Height | It is the height of the image.|
-| Display condition | It is a state of the map that displays drawing items.|
-| Image | It is an image to be displayed.Select an image file with the <Select> button.|
-| Magnification | The display rate of drawing items.|
-
-</div>
-
----
-#### Drawing item (polling result)
-
-<div class="text-xl">
-It is the editing screen of drawing item (polling result: text).
-</div>
-
-<div class="text-lg">
-
-| Items | Contents |
-| ---- | ---- |
-| Type | It is a type of drawing item.You can only change it when you add it.|
-| Size | Character size.|
-| Node | This is a node list for selecting polling.|
-| Polling | Polling that displays results.|
-| Variable name | The name of the variable displayed from the polling results.|
-| Display format | Format when displaying.|
-| Magnification | The display rate of drawing items.|
-
-</div>
-
----
-#### Drawing item (polling result: gauge)
-
-<div class="text-xl">
-It is the editing screen of drawing item (polling result: gauge).It can be used to display % data.
-</div>
-
-<div class="text-lg">
-
-| Items | Contents |
-| ---- | ---- |
-| Type | It is a type of drawing item.You can only change it when you add it.|
-| Size | Gauge size.|
-| Node | This is a node list for selecting polling.|
-| Polling | Polling that displays results.|
-| Variable name | The name of the variable displayed from the polling results.|
-| Gauge label | This is a character string displayed under the gauge.<br> In the example below, BPS.|
-| Magnification | The display rate of drawing items.|
-</div>
+* **[Save]** : Saves the drawing item settings.
+* **[Select]** : (For images) Selects an image file from the local file system.
+* **[Help]** : Displays this help.
+* **[Cancel]** : Closes the window without saving.

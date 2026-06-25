@@ -1,27 +1,55 @@
 # Network Report
 
-The network report function visualizes network switch connection information from the FDB (Forwarding Database) table, allowing you to check the MAC address, IP address, and other information of devices connected to specified ports.
+Inspect switch connection details, VPanel, and FDB (Forwarding Database) table information for the selected network map item.
 
----
+## Tab Structure
 
-## Displaying the Report
+* **[Basic Info]** : Profile of the switch including Name, IP, MAC address, Description, and overall status.
+* **[Port]** : Port statuses visualized via a virtual hardware panel (VPanel), alongside detailed port metrics (In/Out packets and bytes, link speed, state change time).
+* **[FDB]** : FDB table records listing connected nodes, MAC addresses, and vendor details, with a graph visualization.
 
-Click on a network on the map displayed on the "Network" screen to view its report.
+## Port Table Columns (under Port tab)
 
----
-## FDB Table
+* **No.**
+  Port index.
+* **State**
+  Operational status of the port.
+* **Name**
+  Port name (ifDescr).
+* **Type**
+  Interface type (e.g., Ethernet).
+* **MAC Address**
+  Physical MAC address of the interface.
+* **Speed**
+  Link speed of the port.
+* **Out Packets**
+  Cumulative sent packets.
+* **Out Bytes**
+  Cumulative sent bytes.
+* **In Packets**
+  Cumulative received packets.
+* **In Bytes**
+  Cumulative received bytes.
+* **Last Changed**
+  Date and time when the link state last changed.
 
-The FDB table displays a list of MAC addresses connected to each port of the network switch.
-The following information can be checked here:
+## FDB Table Columns (under FDB tab)
 
-*   **Port**: Port number of the connected switch
-*   **MAC Address**: MAC address of the connected device
-*   **IP Address**: IP address of the connected device (obtained from ARP information)
-*   **Host Name**: Host name of the connected device
-*   **Last Change Time**: The last time the port status changed
+* **Index**
+  Interface index.
+* **Port**
+  Associated physical port number.
+* **VLAN ID**
+  VLAN ID assigned to the port.
+* **Node**
+  Name and IP address of the connected node (mapped via ARP cache).
+* **MAC**
+  MAC address of the connected device.
+* **Vendor**
+  MAC address vendor name.
 
----
+## Button Descriptions
 
-## Line Search
-
-By entering a MAC address or IP address, you can search for the port to which that device is connected.
+* **[Copy]** : Copy target item fields (e.g., IP address) to the clipboard.
+* **[Help]** : Open this help document.
+* **[Close]** : Close the network report window.

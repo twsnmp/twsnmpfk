@@ -1,23 +1,28 @@
-### gNMI tool
+# gNMI Tool
 
-<div class="text-lg">
+Screen for retrieving management information from nodes using the gNMI (gRPC Network Management Interface) protocol, viewing results, and creating polling monitors.
 
-This is a screen to acquire management information from Node from GNMI.
-You need to set the GNMI in the node settings.
+## Settings Parameters
 
-| Items | Contents |
-| ---- | ---- |
-| Target | Specify the IP: port to access with GNMI.|
-| Encoding | Specify GNMI encoding.(JSON | JSON_IETF) |
-| PATH | Specify the path to get.|
-| History | Path history acquired so far.You can select and get it again.|
-| Result | This is the result of acquired.|
-| Copy | Copy the acquired results.|
-| Polling | Create a polling from the selected result.|
-| Capabilities | Get Capabilities.|
-| YANG Information | Displays GitHub in the Yang file.|
-| Acquisition | Execute GET under the specified conditions.|
-| CSV | Save the result with CSV.|
-| Excel | Save the result with Excel.|
+* **Target**
+  IP address and port number to access via gNMI (e.g., `192.168.1.1:57400`).
+* **Encoding**
+  Encoding format for gNMI messages ("json_ietf", "json", "bytes", "proto", "ascii").
+* **Path**
+  gNMI sensor path to retrieve.
+* **History**
+  History list of previously retrieved paths. Select to reload.
+* **Result**
+  Table list of retrieved gNMI values.
 
-</div>
+## Button Descriptions
+
+* **[Copy]** : Copies the retrieval results to the clipboard.
+* **[Polling]** : Creates a new polling monitor based on the selected result value.
+* **[Capabilities]** : Retrieves and displays the gNMI version, supported encodings, and supported YANG models of the target node.
+* **[YANG Info]** : Opens the YangModels/yang repository on GitHub in a web browser.
+* **[Get]** : Executes the gNMI Get request with the specified path.
+* **[CSV]** : Exports the retrieval results to a CSV file.
+* **[Excel]** : Exports the retrieval results to an Excel file.
+* **[Help]** : Displays this help.
+* **[Close]** : Closes the window.

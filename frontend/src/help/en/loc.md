@@ -1,34 +1,20 @@
-#### Location Map screen
+# Location Map
 
-<div class="text-xl mb-2">
-This is a screen that displays the node on the map.<br>
-Map data can be used in OpenStreetMap, which is used in location information services.<br>
-You can select by clicking the node.You can move by dragging.Multiple choices cannot be selected.
-</div>
+Screen for visualizing node status by placing them on a geographical map. Supports map data providers such as OpenStreetMap.
 
+* **Operations**
+  Click a node to select it, or drag to reposition it. Right-click on an empty space on the map to display the node addition dialog.
 
->>>
-#### Location Map(button)
+## Button Descriptions
 
-<div class="text-lg">
+* **[Edit]** : Displays the edit screen for the selected node.
+* **[Polling]** : Displays the polling monitors for the selected node.
+* **[Delete]** : Removes the selected node from the map (retains the node in the system, only clearing its location coordinate).
+* **[Report]** : Displays the report screen for the selected node.
+* **[Save default view]** : Saves the current center coordinates and zoom level of the map as the default view.
+* **[Reload]** : Refreshes the map markers and node statuses to the latest state.
 
-| Items | Contents |
-| ---- | ---- |
-| Edit | Displays the screen of the selected node.|
-| Polling | Displays the selected node polling.|
-| <Span style = "color: red;"> Delete </span> | Delete the selected node from the map screen.|
-| Report | Displays the selected node report screen.|
-| <Span style = "color: red;"> Initial display </span> | Save the center and zoom level of the map.<br> The next time you open the map screen, it will be in the same state.|
-| Reload | Update the list of event logs to the latest state.|
+## Dialog Descriptions
 
-</div>
-
-
----
-#### Addition of node
-
-<div class="text-xl mb-2">
-Right -click where you want to place the node on the map and the dialog to add is displayed.
-<br> You can add it by selecting a node.
-</div>
-
+* **Add Node**
+  Selects a registered node from the dropdown list to place on the map at the right-clicked location.

@@ -1,85 +1,102 @@
-#### NetFlow
+# NetFlow
 
-<div class="text-xl">
+Inspect received NetFlow logs and analyze traffic.
 
-| Items | Contents |
-| ---- | ---- |
-| Date and time | The date and time of receiving Netflow.|
-| Sending source | It is the source IP.|
-| Port | It is the port number of the source.|
-| Location | It is the source of the source.GEOIP DB is required.|
-| Address | IP for the destination.|
-| Port | The destination port number.|
-| Location | It is the destination position.GEOIP DB is required.|
-| Protocol | Protocol such as TCP/UDP/ICMP.|
-| TCP flag | TCP flag.|
-| Packet | The number of sending packets.|
-| Byte | The number of sending bytes.|
-| Period | Flow communication time.|
+## Table Columns
 
-</div>
+* **Time**
+  Date and time the NetFlow packet was received.
+* **Src IP**
+  Source IP address.
+* **Port**
+  Source port number.
+* **Loc**
+  Source geographic location (requires GeoIP database).
+* **Src MAC**
+  Source MAC address.
+* **Dst IP**
+  Destination IP address.
+* **Port**
+  Destination port number.
+* **Loc**
+  Destination geographic location (requires GeoIP database).
+* **Dst MAC**
+  Destination MAC address.
+* **Protocol**
+  Protocol name (e.g., TCP, UDP, ICMP).
+* **TCP Flags**
+  TCP flags detected in the flow.
+* **Packets**
+  Total packets sent in this flow.
+* **Bytes**
+  Total bytes sent in this flow.
+* **Duration**
+  Duration of the flow in milliseconds.
 
->>>
-#### NetFlow(button)
+## Button Descriptions
 
-<div class="text-xl">
+* **[Filter]** : Open the search filter dialog.
+* **[Delete All Logs]** : Delete all NetFlow logs from the database.
+* **[Report]** : Open the NetFlow traffic analysis reports.
+* **[Copy]** : Copy the selected log text to the clipboard.
+* **[AI Explain]** : Request an explanation of the selected logs from the AI (LLM).
+* **[IP/MAC Info]** : Dropdown button to view detailed IP/MAC address lookup information.
+* **[CSV]** : Export current logs to a CSV file.
+* **[Excel]** : Export current logs to an Excel file.
+* **[Reload]** : Refresh the logs list.
 
-| Items | Contents |
-| ---- | ---- |
-| Filter | Specify the search conditions and display Netflow.|
-| <Span style = "color: red;"> Delete all logs </span> | Delete all Netflow.|
-| Copy | Copy the selected log.|
-| Report | Displays Netflow analysis reports.|
-| CSV | Export Netflow to CSV file.|
-| Excel | Export Netflow to Excel file.|
-| Update | Update the Netflow list to the latest state.|
+## Filter Settings
 
-</div>
+Search parameters in the filter dialog (supports regular expressions).
 
+* **Start Time**
+  Start date and time of the search.
+* **End Time**
+  End date and time of the search.
+* **Simple Mode**
+  Toggle to apply IP, Port, and Location filters to both source and destination bidirectionally.
+* **IP (Simple Mode)**
+  Filter IP addresses.
+* **Port (Simple Mode)**
+  Filter port numbers.
+* **Loc (Simple Mode)**
+  Filter locations.
+* **Src IP**
+  Filter source IP address.
+* **Port**
+  Filter source port.
+* **Loc**
+  Filter source location.
+* **Dst IP**
+  Filter destination IP address.
+* **Port**
+  Filter destination port.
+* **Loc**
+  Filter destination location.
+* **Protocol**
+  Filter protocol.
+* **TCP Flags**
+  Filter TCP flags.
 
----
+## Report Types
 
-#### NetFlwo Filter
+Available analysis report types.
 
-<div class="text-sm">
-
-| Items | Contents |
-| ---- | ---- |
-| Start date and time | Specify the date and time of the search start.|
-| End date and time | Specify the date and time of the search termination.|
-| Simple mode | Mode to apply IP, port, and position in both directions.|
-| IP | In the case of simple mode, specify the source and destination IP.|
-| Port | In the case of simple mode, specify the source and destination port.|
-| Location | Specify the source and destination position in the case of simple mode.|
-| Sending source IP | Specify the source IP.|
-| Port | Specify the source port.|
-| Location | Specify the source position.|
-| Destination IP | Specify the destination IP.|
-| Port | Specify the destination port.|
-| Location | Specify the destination position.|
-| Protocol | Specify the protocol name.|
-| TCP flag | Specify the TCP flag.|
-
-<Span style = "color: red"> Character strings can be searched in regular expressions.</span>
-</div>
-
-
----
-#### NetFlow Report
-
-<div class="text-xl mb-2">
-
-| Report name | Contents |
-| ---- | ---- |
-| Heat Map | Heat map by time zone of Netflow's receiving number.|
-| Histogram | Histgram of numerical data.|
-| Traffic | This is a time -series graph of traffic.|
-| TOP List | This is a ranking report for each item.|
-| TOP list (3D) | Ranking reports for each item are displayed in 3D graphs.|
-| IP Pair Flow | The combination of communication is displayed in a graph.|
-| FFT Analysis | Analyzing the communication cycle with FFT.|
-| FFT Analysis (3D) | Analyze the communication cycle with FFT and display it on the 3D graph.|
-| Map | Display the position of the IP address on the map.|
-
-</div>
-
+* **Heatmap**
+  Hourly density heatmap of received flows.
+* **Histogram**
+  Statistical distribution charts.
+* **Traffic**
+  Time-series charts of traffic volume.
+* **TOP List**
+  Top rankings for IP addresses, ports, and protocols.
+* **TOP List (3D)**
+  Ranking report rendered as a 3D bar chart.
+* **IP Pair Flow**
+  Sankey diagram representing traffic combinations between IP addresses.
+* **FFT Analysis**
+  FFT-based periodicity analysis of traffic flow.
+* **FFT Analysis (3D)**
+  3D periodicity chart of FFT analysis.
+* **Map**
+  Map visualizing the locations of IP addresses.

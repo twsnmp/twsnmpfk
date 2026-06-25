@@ -1,76 +1,87 @@
-#### マップ設定
-<div class="text-xl">
-管理マップの設定をする画面です。
-</div>
+# マップ設定
 
-<div class="text-lg">
+管理マップおよび各種サーバー機能、収集機能の設定を行う画面。
 
-|項目|内容|
-|----|----|
-|マップ名|マップの名前です。画面の左上に表示されます。<br>好きな名前をつけてください。|
-|アイコンサイズ|マップに表示するアイコンのサイズです。|
-|ポーリング間隔|デフォルトのポーリング間隔です。|
-|タイムアウト|デフォルトのタイムアウトです。|
-|リトライ|デフォルトのリトライ回数です。|
-|ログ保存日数|ログを保存する日数です。過ぎた場合にログは自動で削除します。|
-|SNMPモード|SNMPのバージョンと暗号化の種類です。(SNMPv2c,SNMPv3)|
-|SNMP Community|SNMPv2cの時のCommunity名です。|
-|SNMP ユーザー|SNMPv3の時のユーザー名です。|
-|SNMP パスワード|SNMPv3の時のパスワード名です。|
-|Syslog|Syslogを受信します。|
-|SNMP TRAP|SNMP TRAPを受信します。|
-|ARP Watch|ARP監視機能を有効にします。|
-|SSH Server|SSHサーバーを起動します。|
+## パラメータの説明
 
-</div>
+* **マップ名**
+  マップの名前。画面左上に表示される。
+* **マップサイズ**
+  マップのキャンバスサイズ（自動、A4縦、A4横など）。
+* **アイコンサイズ**
+  マップに表示するアイコンのサイズ。
+* **ポーリング間隔**
+  デフォルトのポーリング実行間隔（秒）。
+* **タイムアウト**
+  デフォルトの通信タイムアウト（秒）。
+* **リトライ**
+  デフォルトの通信リトライ回数。
+* **ログ保存日数**
+  イベントログや統計データの保存日数。期限を過ぎたデータは自動的に削除される。
+* **OpenTelemetry保存時間**
+  OpenTelemetryデータの保存時間（時間）。
+* **OpenTelemetry送信元**
+  OpenTelemetryサーバーへのデータ送信元IPアドレスの制限設定。
+* **MCPサーバートランスポート**
+  MCPサーバーのトランスポート設定（OFF / SSE / Streamable）。
+* **MCPサーバーエンドポイント**
+  MCPサーバーの待受IPアドレスおよびポート。
+* **MCPサーバー送信元**
+  MCPサーバーへの接続を許可する送信元IPアドレスの制限設定。
+* **MCPサーバーアクセスキー**
+  MCPサーバーの認証用アクセスキー。
+* **AIプロバイダー**
+  使用するLLM（大規模言語モデル）のプロバイダー。
+* **AI APIベースURL**
+  LLM APIのベースURL。
+* **AI APIキー**
+  LLM APIのアクセスキー。
+* **AIモデル**
+  使用するLLMのモデル名。
+* **SNMPモード**
+  デフォルトのSNMPバージョンとセキュリティモード（v1 / v2c / v3）。
+* **SNMPコミュニティ**
+  SNMPv1/v2c時のコミュニティ名。
+* **SNMPユーザー**
+  SNMPv3時のユーザー名。
+* **SNMPパスワード**
+  SNMPv3時の認証・暗号化パスワード。
+* **Syslog**
+  Syslogの受信を行う機能の有効化。
+* **NetFlow**
+  NetFlowの受信を行う機能の有効化。
+* **sFlow**
+  sFlowの受信を行う機能の有効化。
+* **SNMP TRAP**
+  SNMP TRAPの受信を行う機能の有効化。
+* **ARP Watch**
+  ARP監視機能の有効化。
+* **ARP監視範囲**
+  ARP監視を行うIPアドレスの範囲。
+* **ARP消去時間**
+  ARPキャッシュの保存期限。
+* **SSHサーバー**
+  SSHサーバー機能の起動。
+* **TCPサーバー**
+  TCP経由でのログ受信を行うTCPサーバー機能の起動。
+* **OpenTelemetry**
+  OpenTelemetryコレクター機能の起動。
+* **MQTT**
+  MQTTブローカー/クライアント機能の起動。
+* **MQTT → Syslog**
+  MQTTメッセージを受信しSyslogとして記録する機能の有効化。
 
->>>
+## 受信ポートの変更方法
 
-#### マップ設定（続き）
-<div class="text-xl">
-管理マップの設定をする画面です。
-</div>
+SyslogやSNMP TRAP、NetFlowなどの受信ポートは、プログラムの起動パラメータで指定する。
 
-<div class="text-lg">
+* **-netflowPort** : Netflowポート（デフォルト 2055）
+* **-otelGRPCPort** : OpenTelemetry gRPCポート（デフォルト 4317）
+* **-otelHTTPPort** : OpenTelemetry HTTPポート（デフォルト 4318）
+* **-sFlowPort** : sFlowポート（デフォルト 6343）
+* **-sshdPort** : SSHサーバーポート（デフォルト 2022）
+* **-syslogPort** : Syslogポート（デフォルト 514）
+* **-tcpdPort** : TCPサーバーポート（デフォルト 8086）
+* **-trapPort** : SNMP TRAPポート（デフォルト 162）
 
-|項目|内容|
-|----|----|
-|TCP Server|TCPサーバーで受信します。|
-|OpenTelemetry|OpenTelemetryサーバーを起動します。|
-|OpenTelemetry保存時間|OpenTelemetryデータの保存時間を指定します。|
-|OpenTelemetry送信元|OpenTelemetryサーバーへのデータ送信元を限定します。|
-|MCPサーバートランスポート|MCPサーバーのトランスポート(OFF/SSE/Steamable)を指定します。|
-|MCPサーバーエンドポイント|MCPサーバーの受信IPとポートを指定します。|
-
-</div>
-
----
-#### Syslog,SNMP TRAPなどの受信ポートを変えたい時
-
-<div class="text-lg">
-ポート番号は、プログラムの起動パラメータで指定します。
-
-```
-  -netflowPort int
-    	Netflow port (default 2055)
-  -otelGRPCPort int
-    	OpenTelemetry server gRPC port (default 4317)
-  -otelHTTPPort int
-    	OpenTelemetry server HTTP port (default 4318)
-  -sFlowPort int
-    	sFlow port (default 6343)
-  -sshdPort int
-    	SSH server port (default 2022)
-  -syslogPort int
-    	Syslog port (default 514)
-  -tcpdPort int
-    	tcp server port (default 8086)
-  -trapPort int
-    	SNMP TRAP port (default 162)
-```
-</div>
-
-
-<p style="color:red;font-size: 16px;">
-  ※ syslogやSNMP TRAPが受信できない時は、OSやセキュリティーソフトのファイヤーウオールの設定を確認ください。
-</p>
+※ SyslogやSNMP TRAPなどのパケットを受信できない場合は、OSやセキュリティソフトのファイアウォール設定を確認すること。

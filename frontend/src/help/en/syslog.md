@@ -1,85 +1,58 @@
-#### Syslog
+# Syslog
 
-<div class="text-xl mb-2">
-Syslog screen.
-At the top, there is a graph showing the number of logs in chronological order.
-</div>
+View, search, and analyze received Syslog messages. A chronological log volume chart is displayed at the top.
 
-<div class="text-lg">
+## Table Columns
 
-| Items | Contents |
-| ---- | ---- |
-| Level | Syslog level.<br> There is severe, mild, precautions, and information.|
-| Date and time | It is the date and time when I received syslog.|
-| Host | SYSLOG source host.|
-| Type | Syslog Facility and priority string.|
-| Tags | Syslog tag.Process and process ID.|
-| Message | Syslog message.|
+* **Level**
+  Severity level of the log (Severe, Mild, Warn, Info).
+* **Time**
+  Date and time the Syslog message was received.
+* **Host**
+  The source host of the Syslog.
+* **Type**
+  Categorized representation of the Syslog facility and priority.
+* **Tag**
+  Process name and PID tags.
+* **Message**
+  The Syslog message text body.
 
-</div>
+## Button Descriptions
 
->>>
-#### syslog<button>
+* **[Filter]** : Open the search filter dialog.
+* **[Delete All Logs]** : Delete all Syslogs from the database.
+* **[Report]** : Open statistical and analytical charts for Syslog logs.
+* **[Magic]** (or Magic Analysis) : Automatically generate Grok patterns to extract and analyze structured information from the logs.
+* **[Polling]** : Register a new polling task to monitor log occurrences matching the selected pattern.
+* **[Copy]** : Copy selected logs to the clipboard.
+* **[AI Explain]** : Request log analysis explanation from the AI (LLM).
+* **[IP/MAC Info]** : Dropdown button to view detailed information of detected IP or MAC addresses.
+* **[CSV]** : Export Syslogs to a CSV file.
+* **[Excel]** : Export Syslogs to an Excel file.
+* **[Reload]** : Refresh the Syslog list.
 
-<div class="text-lg">
+## Filter Settings
 
-| Items | Contents |
-| ---- | ---- |
-| Polling | Register the polling from the selected syslog.|
-| Filter | Specify the search conditions and display syslog.|
-| <Span style = "color: red;"> Delete all logs </span> | Delete all syslogs.|
-| Report | Displays Syslog analysis reports.|
-| Export CSV | syslog to CSV file.|
-| Excel | EXCEL file is exported to syslog.|
-| Reload | Update the list of syslog to the latest state.|
+Search options in the filter dialog (supports regular expressions).
 
-</div>
+* **Level**
+  Minimum severity level to display (All, Info, Warn, Low, High).
+* **Host**
+  Filter by source host.
+* **Tag**
+  Filter by process tags.
+* **Message**
+  Filter by message text content.
 
+## Report Types
 
----
-#### syslog filter
-
-<div class="text-xl mb-2">
-This is a dialog that specifies the search conditions for syslog.
-</div>
-
-<div class="text-xl">
-
-| Items | Contents |
-| ---- | ---- |
-| Level | Syslog level.<br> All, more than information, more than caution, mild or higher, more severe.|
-| Host | It is the source host.|
-| Tags | The value of the syslog tag.|
-| Message | Syslog message.|
-
-<Span style = "color: red"> Character strings can be searched in regular expressions.</span>
-
-</div>
-
----
-#### By state
-<div class="text-xl mb-4">
-This is a report of the number of syslogs by state.
-</div>
-
-#### Heat map
-<div class="text-xl mb-4">
-This is a report of the number of cases of syslog on the heat map.
-</div>
-
-#### By host
-<div class="text-xl mb-4">
-This is a report of the number of syslogs by the source host.
-</div>
-
----
-#### By host (3D)
-<div class="text-xl mb-4">
-This is a report displayed in three -dimensional graphs of Syslog, source host, priority, and time.
-</div>
-
-#### Catalysis by FFT
-<div class="text-xl mb-4">
-This is a report that analyzes Syslog for each host and analyzes the number of receiving cases.
-</div>
-
+* **By State**
+  Distribution of Syslogs by severity levels.
+* **Heatmap**
+  Hourly density heatmap of received logs.
+* **By Host**
+  Log count ranking by sending hosts.
+* **By Host (3D)**
+  3D graph representing Host, Uptime/Time, and Priority distribution.
+* **Periodicity Analysis by FFT**
+  Fast Fourier Transform analysis of host log generation cycles.

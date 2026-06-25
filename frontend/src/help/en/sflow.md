@@ -1,127 +1,92 @@
-#### sFlow
+# sFlow
 
-##### Flow Sample
-<div class="text-xl">
+Analyze flow samples (traffic data) and counter samples (performance metrics) received from sFlow agents.
 
-| Items | Contents |
-| ---- | ---- |
-| Date and time | It is the date and time when the SFLOW sample received.|
-| Sending source | It is the source IP.|
-| Port | It is the port number of the source.|
-| Location | It is the source of the source.GEOIP DB is required.|
-| Mac | This is the MAC address of the source.|
-| Address | IP for the destination.|
-| Port | The destination port number.|
-| Location | It is the destination position.GEOIP DB is required.|
-| Mac | This is the destination MAC address.|
-| Protocol | Protocol such as TCP/UDP/ICMP.|
-| TCP flag | TCP flag.|
-| Byte | The number of sending bytes.|
-</div>
+## Flow Sample Columns
 
->>>
-#### sFlow(button)
+* **Time**
+  Date and time the sFlow sample was received.
+* **Src IP**
+  Source IP address.
+* **Port**
+  Source port number.
+* **Loc**
+  Source geographic location (requires GeoIP database).
+* **Src MAC**
+  Source MAC address.
+* **Dst IP**
+  Destination IP address.
+* **Port**
+  Destination port number.
+* **Loc**
+  Destination geographic location (requires GeoIP database).
+* **Dst MAC**
+  Destination MAC address.
+* **Protocol**
+  Protocol name (e.g., TCP, UDP, ICMP).
+* **TCP Flags**
+  TCP flags detected in the sample.
+* **Bytes**
+  Sent bytes.
+* **Reason**
+  The reason code for forwarding/dropping the packet (as defined by sFlow standard).
 
-<div class="text-lg">
+## Counter Sample Columns
 
-| Items | Contents |
-| ---- | ---- |
-| Counter | Switch between flow samples and counter samples.|
-| Filter | Specify the search conditions and display SFLOW.|
-| <Span style = "color: red;"> Delete all logs </span> | Delete all SFLOW.|
-| Copy | Copy the selected log.|
-| Report | Displays SFLOW analysis reports.|
-| CSV | Export SFLOW to CSV file.|
-| Excel | Export SFLOW to Excel file.|
-| Update | Update the list of SFLOW to the latest state.|
+* **Time**
+  Date and time the counter sample was received.
+* **Src IP**
+  Source IP address of the agent.
+* **Type**
+  Type of counter sample (GenericInterfaceCounter, HostCPUCounter, HostMemoryCounter, HostDiskCounter, HostNetCounter).
+* **Data**
+  The detailed key-value metrics returned in the counter sample.
 
-</div>
+## Button Descriptions
 
->>>
+* **[Counter / Flow]** (Counter toggle) : Toggle between flow samples and counter samples views.
+* **[Filter]** : Open the search filter dialog.
+* **[Delete All Logs]** : Delete all sFlow logs.
+* **[Copy]** : Copy the selected log text to the clipboard.
+* **[Report]** : Open the sFlow traffic or counter metrics analysis reports.
+* **[IP/MAC Info]** : Dropdown button to view detailed IP/MAC address lookup information.
+* **[CSV]** : Export the logs list to a CSV file.
+* **[Excel]** : Export the logs list to an Excel file.
+* **[Reload]** : Refresh the logs list.
 
-#### sFlow sample filter
+## Filter Settings
 
-<div class="text-lg">
+### Flow Filter
+* **Start Time / End Time** : Date and time range.
+* **Simple Mode** : Apply IP, Port, and Location filters bidirectionally.
+* **Src IP / Dst IP** : Filter source/destination IP address (regex).
+* **Port** : Filter port numbers.
+* **Loc** : Filter geographic locations.
+* **Protocol** : Filter protocols.
+* **TCP Flags** : Filter TCP flags.
 
-| Items | Contents |
-| ---- | ---- |
-| Start date and time | Specify the date and time of the search start.|
-| End date and time | Specify the date and time of the search termination.|
-| Simple mode | Mode to apply IP, port, and position in both directions.|
-| IP | In the case of simple mode, specify the source and destination IP.|
-| Port | In the case of simple mode, specify the source and destination port.|
-| Location | Specify the source and destination position in the case of simple mode.|
-| Sending source IP | Specify the source IP.|
-| Port | Specify the source port.|
-| Location | Specify the source position.|
-| Destination IP | Specify the destination IP.|
-| Port | Specify the destination port.|
-| Location | Specify the destination position.|
-| Protocol | Specify the protocol name.|
-| TCP flag | Specify the TCP flag.|
+### Counter Filter
+* **Start Time / End Time** : Date and time range.
+* **Src IP** : Filter source agent IP.
+* **Type** : Filter counter sample types.
 
-<Span style = "color: red"> Character strings can be searched in regular expressions.</span>
-</div>
+## Report Types
 
+### Flow Sample Reports
+* **Heatmap** : Hourly density heatmap of received flows.
+* **Traffic** : Time-series chart of traffic volume.
+* **TOP List** : Top rankings of IPs, ports, and protocols.
+* **TOP List (3D)** : Top rankings represented as a 3D bar chart.
+* **IP Pair Flow** : Sankey diagram representing communication flow combinations.
+* **FFT Analysis** : Periodicity analysis of traffic using FFT.
+* **FFT Analysis (3D)** : 3D visualization of FFT periodicity analysis.
+* **Map** : Map visualizing the location of IP addresses.
 
----
-##### sFlow Counter Sample
-<div class="text-xl">
-
-| Items | Contents |
-| ---- | ---- |
-| Date and time | It is the date and time when the SFLOW sample received.|
-| Sending source | It is the source IP.|
-| Type | The type of counter sample.(I/F, CPU, Memory, Disk, Netowk) |
-| Data | Data of counter sample.|
-</div>
-
->>>
-
-#### sFlow Counter sample filter
-
-<div class="text-xl">
-
-| Items | Contents |
-| ---- | ---- |
-| Start date and time | Specify the date and time of the search start.|
-| End date and time | Specify the date and time of the search termination.|
-| Submit | Specify the source.|
-| Type | Specify the type of counter sample.|
-
-<Span style = "color: red"> Character strings can be searched in regular expressions.</span>
-</div>
-
----
-#### sFlow report
-
-<div class="text-xl mb-2">
-
-| Report name | Contents |
-| ---- | ---- |
-| Heat map | Heat map showing the number of log time.|
-| Communications | This is a time -series graph of communication volume.|
-| TOP List | This is a ranking report for each item.|
-| TOP list (3D) | Ranking reports for each item are displayed in 3D graphs.|
-| IP Pair Flow | The combination of communication is displayed in a graph.|
-| FFT Analysis | Analyzing the communication cycle with FFT.|
-| FFT Analysis (3D) | Analyze the communication cycle with FFT and display it on the 3D graph.|
-| Map | Display the position of the IP address on the map.|
-</div>
-
----
-#### sFlow Counter sample report
-
-<div class="text-xl mb-2">
-
-| Report name | Contents |
-| ---- | ---- |
-| Heat map | Heat map showing the number of log time.|
-| I/F BPS | This is a time -series graph of the communication volume (Bytes/Sec) obtained from I/F sample.|
-| I/F PPS | This is a time -series graph of the communication volume (Packets/Sec) obtained from I/F sample.|
-| CPU | CPU usage rate and load time series graph acquired from CPU sample.|
-| Memory | Memory is a graph of memory usage and available capacity obtained from a sample.|
-| DISK | This is a graph of disk usage and access amount acquired from Disk sample.|
-| Network | Network is a graph of network usage obtained from sample.|
-</div>
-
+### Counter Sample Reports
+* **Heatmap** : Hourly density heatmap of received samples.
+* **I/F BPS** : Time-series chart of interface speed (Bytes/Sec).
+* **I/F PPS** : Time-series chart of interface packet rates (Packets/Sec).
+* **CPU** : Time-series chart of host CPU usage and load average.
+* **Memory** : Chart of host memory utilization and available capacity.
+* **Disk** : Chart of disk space utilization and disk I/O.
+* **Network** : Chart of host network statistics.

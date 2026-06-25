@@ -1,41 +1,42 @@
-#### System
-<div class="text-xl mb-2">
-System information screen.
-At the top, there is a graph showing log resources and communication information in a chronological order.
-</div>
+# System Resources
 
+Monitor the system resources of the host machine and the performance of the TWSNMP FK process itself. Chronological resource utilization charts are displayed at the top.
 
-<div class="text-xl">
+## Table Columns
 
-| Items | Contents |
-| ---- | ---- |
-| Date and time | It is the date and time when System information is recorded.|
-| CPU | CPU usage rate.|
-| Memory | Memory usage rate.|
-| Disk | Data folder is the usage rate of disks.|
-| Load | load.|
-| Communication amount | LAN port communication amount.|
-| Connection number | TCP connection number.|
-| Process | Total number of processes.|
-| DB size | Database size.|
+* **Time**
+  Date and time when the system metrics were recorded.
+* **CPU**
+  Host CPU usage rate (%).
+* **Memory**
+  Host memory usage rate (%).
+* **My CPU**
+  CPU usage rate of the TWSNMP FK process (%).
+* **My Memory**
+  Memory usage rate of the TWSNMP FK process (%).
+* **Swap**
+  Host swap space utilization (%).
+* **Disk**
+  Disk space utilization where the data folder is located (%).
+* **Load**
+  Host CPU load average.
+* **Net**
+  Network transfer speed of the host network interface.
+* **Conn**
+  Total number of active TCP connections.
+* **Proc**
+  Total number of active processes on the host.
+* **Go Goroutines**
+  Total number of Go Goroutines running inside the application.
+* **Heap**
+  Heap memory allocation size of the application.
+* **Sys**
+  Virtual memory size obtained from the OS.
+* **DB Size**
+  Physical file size of the embedded database.
 
-</div>
+## Button Descriptions
 
->>>
-#### System(button)
-<div class="text-lg">
-
-| Items | Contents |
-| ---- | ---- |
-| Size prediction | Database size and disk usage rate are forecast for one year.|
-| Backup | Get backup.|
-| Reload | Update System information to the latest state.|
-
-</div>
-
----
-#### Size prediction
-<div class="text-xl mb-2">
-This is a year forecast for the database size and disk usage rate.
-</div>
-
+* **[Size Prediction]** : Display a simulation chart predicting database size growth and disk usage over the next 12 months.
+* **[Backup]** : Generate a backup archive file of the system database.
+* **[Reload]** : Refresh system resource metrics.

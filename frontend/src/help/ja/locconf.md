@@ -1,58 +1,49 @@
-#### 地図設定
-<div class="text-xl">
-地図の設定をする画面です。
-</div>
+# 地図設定
 
-<div class="text-lg">
+地図画面の表示方法やソースを設定する画面。
 
-|項目|内容|
-|----|----|
-|スタイル|地図のスタイルを指定します。URLかJSONで指定します。|
-|中央座標|地図の中央座標を経度,緯度の順にしています。<br>例:135.33885756281734,39.614306840830096|
-|ズーム|地図の拡大レベルを指定します。|
-|アイコンサイズ|表示するアイコンのサイズを指定します。|
+## 設定項目
 
-</div>
+* **スタイル**
+  地図を表示するためのスタイル（MapLibre GL JSのスタイル定義URLまたはJSONオブジェクト）。
+* **中央座標**
+  地図を開いた際の基準となる中心点の座標（「経度,緯度」の順でカンマ区切りで指定。例: `135.338,39.614`）。
+* **ズーム**
+  地図の初期表示ズームレベル（拡大率）。
+* **アイコンサイズ**
+  地図上に表示するノードアイコンのピクセルサイズ（スライダーで16〜64pxの範囲を指定可能）。
 
----
-#### 地図のスタイルについて
+## ボタンの説明
 
-<div class="text-xl">
-  MapLibre GL JSを使って地図を表示しています。表示する地図は、スタイルで指定します。
-  URLやJSONで指定できます。MapLibre GL JSで検索して適したものを見つけてください。
-</div>
+* **[保存]** ： 設定内容を保存。
+* **[キャンセル]** ： 変更を保存せずに画面を閉じる。
 
-#### URLの例
+## 地図スタイルについて
 
-```
-https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json
-```
-
-
->>>
-
-#### JSONの例
-
-```json
-{
-			 	"version": 8,
-			 	"sources": {
-			 		"MIERUNEMAP": {
-						"type": "raster",
-			 			"tiles": ["https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png"],
-						"tileSize": 256,
-			 			"attribution":
-			 				"Maptiles by <a href='https://mierune.co.jp/' target='_blank'>MIERUNE</a>, under CC BY. Data by <a href='https://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors, under ODbL."
-			 		}
-			 	},
-			 	"layers": [
-					{
-						"id": "MIERUNEMAP",
-		 				"type": "raster",
-			 			"source": "MIERUNEMAP",
-			 			"minzoom": 0,
-			 			"maxzoom": 18
-			 		}
-			 	]
-}
-```
+* **概要**
+  MapLibre GL JSを使用しており、表示する地図はスタイルデータで決定。MapLibre GL形式のスタイルURL、またはローカルタイルソース等を定義したJSONが指定可能。
+* **スタイルURLの例**
+  `https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json`
+* **スタイルJSONの例（ラスタタイルソース定義）**
+  ```json
+  {
+    "version": 8,
+    "sources": {
+      "MIERUNEMAP": {
+        "type": "raster",
+        "tiles": ["https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png"],
+        "tileSize": 256,
+        "attribution": "Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL."
+      }
+    },
+    "layers": [
+      {
+        "id": "MIERUNEMAP",
+        "type": "raster",
+        "source": "MIERUNEMAP",
+        "minzoom": 0,
+        "maxzoom": 18
+      }
+    ]
+  }
+  ```

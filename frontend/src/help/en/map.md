@@ -1,103 +1,96 @@
-#### Map
+# Map
 
-<div class="text-xl mb-2">
-The map screen has three large parts.
-</div>
+Visual representation of network topology, node statuses, and link connections.
 
-<div class="text-lg mb-4">
+## Screen Structure
 
-| Screen | Contents |
-| ---- | ---- |
-| Toolbar | Switch the screen.|
-| Map | This is the part that displays the composition of the network.|
-| Event Log | Displays the latest 100 event logs.|
-</div>
+* **Toolbar**
+  Area for switching screens and other general operations.
+* **Map**
+  Area for displaying nodes, drawing items, and network configurations.
+* **Event Log**
+  Display of the latest 100 event logs.
 
-####  Light/dark mode switching
-<div class="text-lg">
+## Map Menu
 
-Upper right<span class="mdi mdi-moon-waxing-crescent"></span>Switch to dark mode with an icon<br/>
-<span class="mdi mdi-weather-sunny"></span>Switch light mode with icon
+Menu displayed when right-clicking on an empty space on the map.
 
-</div>
+* **[Add Node]** : Manually add a node to the map.
+* **[Draw Item]** : Add a drawing item (such as shapes or text labels) to the map.
+* **[Add Network]** : Add a network subnet to the map.
+* **[Check All]** : Immediately check the statuses of all nodes currently in error state.
+* **[Discover]** : Open the auto-discovery settings screen.
+* **[Import]** : Import a map file from TWSNMP v4.x.
+* **[Grid]** : Align icons to the specified grid interval.
+* **[Back Image]** : Open the background image configuration.
+* **[Reload]** : Reload the map to the latest state.
+* **[Normal View / Edit View]** : Toggle between normal view and draw item editing mode.
+* **[Show Node Info / Hide Node Info]** : Toggle the display of detailed node information on the map.
 
----
-#### Map menu
-<div class="text-xl mb-2">
-Right -click the location other than the node and drawing items on the map to display.
-</div>
+## Background Image Settings
 
-<div class="text-lg">
+Dialog for setting the map background image.
 
-| Menu | Operation |
-| ---- | ---- |
-| Add node | Add the node to the map manually.|
-| Draw item | Add drawing items to the map.|
-| Check all | Reconfirm the node that has occurred.|
-| discover | Displays the automatic discovery screen.|
-| Grid | Align the position of the node at the specified interval.|
-| Backgrand image| set backgrand image to map|
-| Relaod | Update the map to the latest state.|
-| Edit mode | All drawing items are displayed regardless of the state of the map.|
+* **X**
+  X-coordinate of the image's top-left corner.
+* **Y**
+  Y-coordinate of the image's top-left corner.
+* **Width**
+  Display width of the background image.
+* **Height**
+  Display height of the background image.
+* **[Select File]** : Select the image file to use for the background.
+* **[Clear]** : Clear the background image.
+* **[Save]** : Save and apply the background image settings.
 
-</div>
+## Grid Alignment
 
----
-#### Node menu
+Dialog for aligning node icons to a specified grid interval.
 
-<div class="text-xl mb-2">
-Right -click the node on the map to display it.
-</div>
+* **Size**
+  Grid interval in pixels.
+* **[Test]** : Preview the node arrangement before applying the grid alignment.
+* **[Save]** : Apply and save the grid alignment.
 
-<div class="text-lg">
+## Node Menu
 
-| Menu | Operation |
-| ---- | ---- |
-| Report | Displays the report screen related to the node.|
-| Ping | Displays the ping screen.|
-| MIB browser | Displays MIB browser.|
-| Wake on LAN | Wake on LAN packet.|
-| Edit | Displays the screen to edit the node settings.|
-| Polling | Displays a polling list related to nodes.|
-| Reconfirm | Relieve the condition of the node by executing the polling.|
-| Copy | Create a node duplication.|
-| <Span style = "color: red;"> Delete </span> | Delete node.|
-</div>
+Menu displayed when right-clicking a node on the map.
 
----
-#### Drawing item menu
-<div class="text-xl mb-2">
-Right -click the drawing item on the map to display it.
-</div>
+* **[Report]** : Display the node report screen.
+* **[PING]** : Display the PING tool screen.
+* **[MIB Browser]** : Open the MIB browser tool.
+* **[gNMI Tool]** : Open the gNMI tool.
+* **[Wake on LAN]** : Send a Wake-on-LAN magic packet to the node.
+* **[Edit]** : Open the node configuration editor.
+* **[Polling]** : Display the polling settings list for the node.
+* **[Reconfirm]** : Run the polling immediately to reconfirm the node's status.
+* **[Copy]** : Duplicate the node.
+* **[Delete]** : Delete the node from the map.
 
-<div class="text-lg">
+## Drawing Item Menu
 
-| Menu | Operation |
-| ---- | ---- |
-| Edit | Displays the screen to edit the drawing item settings.|
-| Copy | Create drawing items.|
-| <Span style = "color: red;"> Delete </span> | Delete drawing items.|
+Menu displayed when right-clicking a drawing item.
 
-</div>
+* **[Edit]** : Open the drawing item editor.
+* **[Copy]** : Duplicate the drawing item.
+* **[Delete]** : Delete the drawing item.
 
----
-#### Network menu
+## Network Menu
 
-<div class="text-xl mb-2">
-Right -click the network on the map to display it.
-</div>
+Menu displayed when right-clicking a network subnet icon.
 
-<div class="text-lg">
+* **[Reconfirm]** : Reconfirm the status of the network.
+* **[Edit]** : Open the network configuration editor.
+* **[Line Edit]** : Edit the lines connected to this network.
+* **[Ping]** : Run PING check for all addresses in this network.
+* **[MIB Browser]** : Open the MIB browser for the network.
+* **[Find Connection]** : Search for connected ports of this network.
+* **[Delete]** : Delete the network.
 
-| Menu | Operation |
-| ---- | ---- |
-| Reconfirm | Reconfirm the condition of the network.|
-| Edit | Displays the screen to edit the network settings.|
-| Line Edit | Edit the line connected to the selected network.|
-| Ping | Execute ping to the selected network.|
-| MIB browser | Get the MIB information of the selected network.|
-| Find a connection destination | Find the selected network connection destination.|
-| <Span style = "color: red;"> Delete </span> | Delete the network.|
+## Alignment Menu (Multiple Nodes Selected)
 
-</div>
+Menu displayed when multiple nodes are selected and right-clicked.
 
+* **[Horizontal]** : Align selected nodes horizontally.
+* **[Vertical]** : Align selected nodes vertically.
+* **[Circle]** : Arrange selected nodes in a circle.

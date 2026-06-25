@@ -1,28 +1,30 @@
-#### MQTT
+# MQTT
 
-<div class="text-lg">
-This is a list of received MQTT topics.
+List of received MQTT topics and their statistical statuses.
 
-|Item|Contents|
-|----|----|
-|Status|Reception status. If you haven't received it for more than a day, it's a warning, and if you haven't received it for more than 7 days, it's a mild condition. Everything else is normal. |
-|Client ID|The client ID of the sender. |
-|Topic|Received topic name. |
-|Number of times|Number of times the topic was received. |
-|Number of Bytes|Number of bytes received by the topic. |
-|First|The date and time the topic was first received. |
-|Last Checked|The date and time the topic was last received. |
+## Table Columns
 
-</div>
+* **Status**
+  Reception status. Warnings are displayed if no messages are received for over 24 hours, and minor error states for over 7 days.
+* **Client ID**
+  The client identifier of the sender.
+* **Remote**
+  The source IP address of the MQTT client.
+* **Topic**
+  Name of the received MQTT topic.
+* **Count**
+  Total number of times the topic has been received.
+* **Bytes**
+  Total bytes of data received under this topic.
+* **First**
+  Date and time when the topic was first received.
+* **Last Checked**
+  Date and time when the topic was last received.
 
->>>
-#### MQTT(button)
-<div class="text-xl">
+## Button Descriptions
 
-|Item|Contents|
-|----|----|
-|<span style="color: red;">Delete</span>|Delete the selected MQTT data. |
-|<span style="color: red;">Delete all MQTT data</span>|Delete all MQTT data. |
-|Update|Update information. |
-
-</div>
+* **[Delete]** : Delete statistical data for the selected topics.
+* **[Delete All]** : Delete all MQTT statistics.
+* **[Copy]** : Copy selected topic names to the clipboard.
+* **[Make Polling]** : Open the polling configuration screen to monitor the selected MQTT topic.
+* **[Reload]** : Refresh the MQTT stats list.

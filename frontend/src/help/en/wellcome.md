@@ -1,106 +1,54 @@
-## Welcome to TWSNMP FK
+# Welcome to TWSNMP FK
 
-Let's create a network management map.
+Welcome screen for starting TWSNMP FK, selecting the datastore directory, and configuring initial settings.
 
-first,<button class="bg-green-600"><Start></button>Click the button.
+## Data Folder
 
+The folder where TWSNMP FK stores its database, logs, and custom files. You will be prompted to select this folder when starting the application.
 
----
-#### Select a data folder
-<span class="text-xl">
-A folder for storing a database file or an extended MIB that records the map and logs.
-</span>
+## Files in the Datastore
 
+You can customize application behavior by placing the following files in the datastore folder.
 
->>>
-#### File in the datastore
-<span class="text-xl">
-You can customize it by saving the following files in the data folder.
+* **twsnmpfk.db**
+  The main database file. Created automatically if it does not exist.
+* **services.txt**
+  Text file mapping port numbers to service names (optional).
+* **mac-vendors-export.csv**
+  Database mapping MAC address OUIs to manufacturer/vendor names (optional).
+* **polling.json**
+  Custom polling templates definition file (optional).
+* **mail_test.html**
+  HTML template for test alert emails (optional).
+* **mail_notify.html**
+  HTML template for alert notification emails (optional).
+* **mail_report.html**
+  HTML template for daily report emails (optional).
+* **extmibs/***
+  Directory to store custom external MIB files (optional).
 
-| File | Contents |
-| --- | --- |
-| TWSNMPFK.db | Database file.If it does not exist, it will be created automatically.|
-| Services.txt | This is a file to use the service name conversion.(Optional) |
-| Mac-vendors-export.csv | Mac A database that indicates the relationship between the MAC address and the vendor name.(Optional) |
-| Polling.json | Polling settings (optional) |
-| mail_test.html | Notification test mail template (optional) |
-| mail_notify.html | Notification mail template (optional) |
-| Mail_repot.html | Template of report mail (optional) |
-| EXTMIBS/*| Additional reading extended MIB (optional) |
-</span>
+## Button Descriptions
 
----
-#### Display map
-<span class="text-xl">
-Select a folder to display a blank map.</span>
+* **[Start]** : Open the folder selection dialog to select a datastore and launch the map.
+* **[Stop]** : Terminate the application and exit.
+* **[Help]** : Open this help document.
 
----
-#### Starting parameter
-<span class="text-xl">
-You can specify the following parameters at startup.
-</span>
+## Startup Parameters
 
-```
-Usage of twsnmpfk:
-  -caCert string
-    	CA Cert path
-  -clientCert string
-    	Client cert path
-  -clientKey string
-    	Client key path
-  -datastore string
-    	Path to data store directory
-  -kiosk
-    	Kisok mode(frameless and full screen)
-  -lang string
-    	Language(en|jp)
-  -lock string
-    	Disable edit map and lock page(map or loc)
-  -maxDispLog int
-    	Max log size to diplay (default 10000)
-```
->>>
-```
-  -netflowPort int
-    	Netflow port (default 2055)
-  -ping string
-    	ping mode icmp or udp
-  -sFlowPort int
-    	sFlow port (default 6343)
-  -sshdPort int
-    	SSH server port (default 2022)
-  -syslogPort int
-    	Syslog port (default 514)
-  -tcpdPort int
-    	tcp server port (default 8086)
-  -trapPort int
-    	SNMP TRAP port (default 162)
-```
+The following parameters can be specified via the command line at startup.
 
->>>
-#### Explanation of startup parameter
-
-<div class="text-xl">
-
-| Parameters | Description |
-| --- | --- |
-| dataStore | Datstore Pass |
-| kiosk | Kiosk mode (frameless, full screen) |
-| lock <page> | Fix the page that prohibits the editing of the map and displays it <BR> (specified Map or LOC for Page) |
-| Maxdisplog <number> | Maximum number of logs (default 10000) |
-| ping <Mode> | Ping operation mode (ICMP or UDP) |
-| syslogPort <PORT> | Syslog receiving port (default 514) |
-| trapPort <Port> | SNMP TRAP Reception port (Default 162) |
->>>
-|Parameters|Description|
-|---|---|
-|sshdPort <port>| SSH Server Receive Port (Default 2022)|
-|netflowPort <port>| NetFlow/IPFIX receive port (default 2055)|
-|sFlowPort <port>| sFlow receiving port (default 6343)|
-|tcpdPort <port>| TCP log receiving port (default 8086)|
-|caCert <file>| CA certificate for TLS communication with TWLogEye |
-|clientCert <file>| Client certificate for mTLS communication with TWLogEye |
-|clientKey <file>| Client key for mTLS communication with TWLogEye |
-
-</div>
-
+* **-datastore <path>** : Path to the datastore directory.
+* **-kiosk** : Launch in kiosk mode (frameless and full screen).
+* **-lang <lang>** : Interface language selection (`en` or `ja`).
+* **-lock <page>** : Disable map edits and lock view to the specified page (`map` or `loc`).
+* **-maxDispLog <number>** : Maximum number of logs displayed in lists (default: 10000).
+* **-ping <mode>** : PING operation mode (`icmp` or `udp`).
+* **-syslogPort <port>** : Syslog server receiving port (default: 514).
+* **-trapPort <port>** : SNMP TRAP server receiving port (default: 162).
+* **-sshdPort <port>** : SSH server listening port (default: 2022).
+* **-netflowPort <port>** : NetFlow/IPFIX collector port (default: 2055).
+* **-sFlowPort <port>** : sFlow collector port (default: 6343).
+* **-tcpdPort <port>** : TCP log receiving port (default: 8086).
+* **-caCert <file>** : CA certificate path for TLS communication with TWLogEye.
+* **-clientCert <file>** : Client certificate path for mTLS communication with TWLogEye.
+* **-clientKey <file>** : Client private key path for mTLS communication with TWLogEye.

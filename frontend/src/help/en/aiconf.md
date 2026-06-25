@@ -1,26 +1,26 @@
-#### AI analysis setting
-<div class="text-xl">
-This is the screen to set AI analysis.
-</div>
+# AI Analysis Settings
 
-<div class="text-lg">
+Settings for AI analysis anomaly detection thresholds.
 
-| Items | Contents |
-| ---- | ---- |
-| Level to be high | Specify the deviation level of AI analysis determined as severe disorder.|
-| Level to be low | Specify the deviation level of AI analysis determined as mild disorder.|
-| Level to be warn | Specify the deviation level of AI analysis determined as a disorder.|
-</div>
+## Settings Parameters
 
----
-#### About AI analysis
+* **Level to be high**
+  Deviation score threshold to determine a severe anomaly.
+* **Level to be low**
+  Deviation score threshold to determine a mild anomaly.
+* **Level to be warn**
+  Deviation score threshold to determine a warning anomaly.
 
-<div class="text-xl">
+## Button Descriptions
 
-- The AI analysis is implemented by setting the log mode to "AI analysis" in the polling settings.
-- An anomaly detection of the numerical data of the polling result in isolation forest.
-- The results are set to deviation values.
-- The deviation value is familiar to school results.It shows how rare it is.
-- So, the disability level setting is an expression of once every 10,000 times.
+* **[Save]** : Saves the settings.
+* **[Cancel]** : Closes the settings window without saving.
 
-</div>
+## About AI Analysis
+
+* **Execution**
+  Triggered when the log mode is set to "AI Analysis" in the polling settings.
+* **Methodology**
+  Detects anomalies in numeric polling results using the Isolation Forest algorithm and calculates a deviation score.
+* **Interpretation of Score**
+  Indicates how rare the occurrence is. Thresholds are expressed in statistical probabilities (e.g., once in 10,000 times).

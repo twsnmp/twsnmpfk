@@ -1,25 +1,38 @@
-#### Node editing
-<div class="text-xl">
-You can edit the node from the menu or button by selecting a node on the map screen or node list.
-</div>
+# Node Editing
 
-<div class="text-sm">
+Screen for creating a new node or editing the settings of an existing node.
 
-| Items | Contents |
-| ---- | ---- |
-| Name | Node name.|
-| IP address | Node IP address.|
-| Address mode | IP address fixation (default), MAC address fixing, host name fixed.|
-| Icon | It is an icon to be displayed.|
-| Automatic confirmation when returning | When it is returned, it will be automatically normal.|
-| SNMP mode | SNMP mode.There are SNMPv2c, V3 (authentication and encryption).|
-| SNMP Community | Community name for SNMPv2c.|
-| User | User ID when accessing with SNMPv3.|
-| Password | Password when accessing with SNMPv3.|
-| Public key | This is the public key of the node when polling with SSH.<br> In the case of blank, automatically set at the first connection.|
-| URL | URL when accessing with browser etc.<br> It will be displayed on the right -click menu.<BR> You can specify multiple by separation of comma.<br> It is also used for access destinations in the case of TWSNMP linkage.|
-| Description | Supplementary information is described.|
+## Settings Parameters
 
-</div>
+* **Name**
+  Display name of the node.
+* **IP address**
+  IP address or host name of the node.
+* **Address mode**
+  Resolution and tracking mode for the IP address ("Fixed IP Address", "Fixed MAC Address", "Fixed Host Name").
+* **Icon**
+  Icon to display on the map (standard icons or custom registered image icons).
+* **Automatic confirmation when returning**
+  Enables automatic acknowledgment (status reset to normal) when the node recovers from a failure state.
+* **SNMP mode**
+  SNMP protocol version and security level (SNMPv2c, SNMPv3 auth/priv, etc.).
+* **SNMP Community**
+  Community name for SNMPv2c.
+* **User**
+  User ID for SNMPv3.
+* **SSH User**
+  Username for SSH/SFTP polling connections.
+* **Password**
+  Password for SNMPv3 or SSH access.
+* **Public key**
+  Public key of the node for SSH polling. If left blank, it is automatically retrieved and set during the first connection.
+* **URL**
+  Management URL(s) of the node (comma-separated list. Used in right-click menus and for TWSNMP federation links).
+* **Description**
+  Supplementary comments or notes.
 
+## Button Descriptions
 
+* **[Save]** : Saves node configuration changes.
+* **[Help]** : Displays this help.
+* **[Cancel]** : Closes the window without saving.

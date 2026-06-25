@@ -1,108 +1,56 @@
-#### Polling list
-<div class="text-xl mb-2">
-A list of polling to be managed.
-</div>
+# Polling
 
-<div class="text-lg">
+Manage active polling tasks (status monitoring and performance data collection) executed against target nodes.
 
-| Items | Contents |
-| ---- | ---- |
-| State | Polling state.<br> Severe, mild, precautions, return, normal, unknown.|
-| Node name | Node related to polling.|
-| Name | Polling name.|
-| Level | Pauling disability level.|
-| Type | Polling type.<br> Ping, TCP, HTTP, DNS, TWSNMP, Syslog, Mail, etc.|
-| Log | Polling log mode.|
-| Final confirmation | Polling final confirmation date and time.|
+## Table Columns
 
-</div>
+* **State**
+  Current status of the polling task (Severe, Mild, Warn, Recovery, Normal, Unknown).
+* **Node**
+  The name of the node associated with this polling.
+* **Name**
+  The name of the polling task.
+* **Level**
+  Alarm level triggered on failure (Severe, Mild, Warn).
+* **Type**
+  The monitoring protocol/type (e.g., ping, tcp, http, dns, gNMI, syslog, mail).
+* **Log**
+  Log recording mode (None, normal only, error only, always, AI analysis, etc.).
+* **Last Checked**
+  The date and time when the polling was last executed.
 
->>>
+## Button Descriptions
 
-#### Polling List(button)
+* **[Add]** : Open the template selection screen to add a new polling.
+* **[Edit]** : Edit the settings of the selected polling.
+* **[Copy]** : Duplicate the selected polling.
+* **[Export]** : Export the selected polling configuration as a template JSON file.
+* **[Report]** : Open performance reports, history graphs, and AI analysis for the selected polling.
+* **[Delete Logs]** : Delete execution logs of the selected polling.
+* **[Delete]** : Delete the selected polling configuration and its logs.
+* **[CSV]** : Export the polling list to a CSV file.
+* **[Excel]** : Export the polling list to an Excel file.
+* **[Reload]** : Refresh the polling list.
 
-<div class="text-xl">
+## Dialog Descriptions
 
-| Items | Contents |
-| ---- | ---- |
-| Added | Add polling.|
-| Edit | Edit the selected polling.|
-| Copy | Copy the selected polling.|
-| Export | Export selected polling setting.|
-| Report | Displays the selected polling analysis report.|
-| <Span style = "color: red;"> Delete Logs </span> | Delete the selected polling logs.|
-| <Span style = "color: red;"> Delete </span> | Delete the selected polling.|
-| CSV | Export the polling list to the CSV file.|
-| Excel | Export the polling list to the Excel file.|
-| Reload | Update the polling list to the latest state.|
+### Polling Template Selection (Adding Polling)
 
-</div>
+Dialog for selecting a pre-defined monitoring template to add a new polling.
 
+* **[Add]** : Advance to the configuration editor using the selected template.
+* **[Template file]** : Import and restore polling configurations from a local template JSON file.
+* **[Cancel]** : Close the template selection dialog.
 
----
-#### Polling template selection
-<div class="text-xl mb-2">
-This is the selection screen of the template displayed when adding polling.
-</div>
+### Polling Report Tabs
 
-<div class="text-xl">
-
-| Items | Contents |
-| ---- | ---- |
-| ID | Template number.|
-| Name | Polling name.|
-| Type | Polling type.<br> Ping, SNMP, TCP, Mail, etc. |
-| Mode | Polling mode.|
-| Description | Polling explanation.|
-
-</div>
-
->>>
-#### Polling template selection(button)
-
-<div class="text-xl">
-
-| Items | Contents |
-| ---- | ---- |
-| Template file | Import polling from template file.|
-| Add | Select polling.|
-| Cancel | Polling Closes.|
-</div>
-
-
----
-#### Basic information
-<div class="text-xl mb-4">
-Basic information about polling.
-</div>
-
-#### Polling log
-<div class="text-xl mb-4">
-This is a log of the polling result.<br>
-<Span style = "color: red;"> It is displayed only when the log mode is not output.</span>
-</div>
-
-#### Time chart
-<div class="text-xl mb-4">
-In the log of the polling result, the numerical data is displayed in a chronological graph.
-The displayed items can be selected at the top of the graph.<br>
-<Span style = "color: red;"> It is displayed only when the log mode is not output.</span>
-</div>
-
----
-#### Histogram
-
-<div class="text-xl mb-4">
-The numerical data in the log of the polling result is displayed on the histogram.
-The displayed items can be selected at the top of the graph.<br>
-<Span style = "color: red;"> It is displayed only when the log mode is not output.</span>
-</div>
-
-
-#### AI analysis
-<div class="text-xl mb-2">
-This is the result of AI analysis of numerical data in the log of the polling results.<br>
-<Span style = "color: red;"> It is displayed only when the log mode is set to AI analysis and sufficient data is obtained.</span>
-</div>
-
-
+* **Basic Info**
+  Configuration details and summary of recent executions.
+* **Polling Log**
+  Historical list of polling logs (only available if log mode is enabled).
+* **Time Chart**
+  Time-series line chart of measured numerical metrics (only available if logs are recorded).
+* **Histogram**
+  Frequency distribution of measured metrics (only available if logs are recorded).
+* **AI Analysis**
+  Anomalies and predictions analyzed by AI (only available when log mode is set to AI analysis and sufficient data has been collected).

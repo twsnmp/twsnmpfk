@@ -1,73 +1,87 @@
-#### Map settings
-<div class="text-xl">
-This is the screen to set the management map.
-</div>
+# Map Settings
 
-<div class="text-lg">
+Configuration of the management map, server functions, and data collection services.
 
-| Items | Contents |
-| ---- | ---- |
-| Map name | Map name.It will be displayed in the upper left of the screen.<br> Please give your favorite name.|
-| Icon size | It is the size of the icon to be displayed on the map.|
-| Polling interval | Default polling interval.|
-| Timeout | Default timeout.|
-| Retry | Default number of retry times.|
-| Log saving days | It is the number of days to save the log.The log will be deleted automatically after passing.|
-| SNMP mode | SNMP version and type of encryption.(SNMPv2c, SNMPv3) |
-| SNMP Community | Community name for SNMPv2c.|
-| SNMP user | User name at SNMPv3.|
-| SNMP password | Password name for SNMPv3.|
-| Syslog | Receive syslog.|
-| SNMP Trap | Receive SNMP Trap.|
-| SSH Server | start SSH server.|
-| ARP Watch | Enable ARP monitoring function.|
-</div>
+## Settings Parameters
 
->>>
+* **Map Name**
+  Name of the map, displayed in the upper-left corner of the screen.
+* **Map Size**
+  Canvas size for the map (Auto, A4 Portrait, A4 Landscape).
+* **Icon Size**
+  Size of the node icons displayed on the map.
+* **Polling Interval**
+  Default execution interval for pollings (seconds).
+* **Timeout**
+  Default communication timeout (seconds).
+* **Retry**
+  Default number of communication retries.
+* **Log Saving Days**
+  Retention period for event logs and statistical data. Expired data is deleted automatically.
+* **OpenTelemetry Retention**
+  Retention time for OpenTelemetry data (hours).
+* **OpenTelemetry Source**
+  Limit incoming OpenTelemetry traffic to the specified IP source.
+* **MCP Server Transport**
+  Transport setting for the MCP (Model Context Protocol) server (OFF / SSE / Streamable).
+* **MCP Server Endpoint**
+  IP address and port for the MCP server.
+* **MCP Server From**
+  Limit incoming MCP connections to the specified IP source.
+* **MCP Server Token**
+  Access token for MCP server authentication.
+* **AI Provider**
+  LLM (Large Language Model) provider to use.
+* **AI API Base URL**
+  Base URL of the LLM API.
+* **AI API Key**
+  Access key for the LLM API.
+* **AI Model**
+  LLM model name.
+* **SNMP Mode**
+  Default SNMP version and security mode (v1 / v2c / v3).
+* **SNMP Community**
+  Community string for SNMPv1/v2c.
+* **SNMP User**
+  Username for SNMPv3.
+* **SNMP Password**
+  Authentication and encryption password for SNMPv3.
+* **Syslog**
+  Enable Syslog receiving server.
+* **NetFlow**
+  Enable NetFlow collection server.
+* **sFlow**
+  Enable sFlow collection server.
+* **SNMP TRAP**
+  Enable SNMP TRAP receiving server.
+* **ARP Watch**
+  Enable ARP monitoring.
+* **ARP Watch Range**
+  IP address range for ARP monitoring.
+* **ARP Timeout**
+  Retention timeout for ARP cache entries.
+* **SSH Server**
+  Enable built-in SSH server.
+* **TCP Server**
+  Enable TCP server for receiving logs via TCP.
+* **OpenTelemetry**
+  Enable OpenTelemetry receiving server.
+* **MQTT**
+  Enable MQTT broker/client functionality.
+* **MQTT -> Syslog**
+  Enable recording of received MQTT messages to Syslog.
 
-#### Map Settings (continued)
+## Changing Listening Ports
 
-<div class="text-lg">
+Listening ports for servers such as Syslog, SNMP TRAP, or NetFlow are specified as program startup command-line parameters.
 
-|Item|Content|
-|----|---|
-|TCP Server|Received on the TCP server.|
-|OpenTelemetry|Start the OpenTelemetry server.|
-|OpenTelemetry Retention Time|Specify the retention time for OpenTelemetry data.|
-|OpenTelemetry Source|Limits the source of data to the OpenTelemetry server.|
-|MCP Server Transport|Specify the transport of the MCP server (OFF/SSE/Steamable).|
-|MCP Server Endpoint|Specify the incoming IP and port of the MCP server.|
+* **-netflowPort** : Netflow port (default: 2055)
+* **-otelGRPCPort** : OpenTelemetry server gRPC port (default: 4317)
+* **-otelHTTPPort** : OpenTelemetry server HTTP port (default: 4318)
+* **-sFlowPort** : sFlow port (default: 6343)
+* **-sshdPort** : SSH server port (default: 2022)
+* **-syslogPort** : Syslog port (default: 514)
+* **-tcpdPort** : TCP server port (default: 8086)
+* **-trapPort** : SNMP TRAP port (default: 162)
 
-</div>
-
----
-#### When you want to change the receiving port of syslog, SNMP Trap
-
-<div class="text-xl">
-
-The port number is specified by the startup parameter of the program.
-
-```
-  -netflowPort int
-    	Netflow port (default 2055)
-  -otelGRPCPort int
-    	OpenTelemetry server gRPC port (default 4317)
-  -otelHTTPPort int
-    	OpenTelemetry server HTTP port (default 4318)
-  -sFlowPort int
-    	sFlow port (default 6343)
-  -sshdPort int
-    	SSH server port (default 2022)
-  -syslogPort int
-    	Syslog port (default 514)
-  -tcpdPort int
-    	tcp server port (default 8086)
-  -trapPort int
-    	SNMP TRAP port (default 162)
-```
-
-</div>
-
-<p style="color:red;font-size: 16px;">
-* If SYSLOG or SNMP Trap cannot be received, check the OS and security software firewall settings.
-</p>
+If Syslog or SNMP TRAP packets are not received, check the firewall settings of the OS or security software.

@@ -1,83 +1,55 @@
-#### Event Log
-<div class="text-xl mb-2">
-This is the event log screen.<br>
-At the top, there is a graph showing the number of logs in chronological order.
-</div>
+# Event Log
 
-<div class="text-xl">
+Screen displaying system and monitoring event logs. A time-series graph showing log counts is presented at the top.
 
-| Items | Contents |
-| ---- | ---- |
-| Level | Log level.<br> There is severe, mild, attention, return, and information.|
-| Date and time | The date and time of the log is recorded.|
-| Type | Log type.<BR> Polling, System, Oprate, User, ArpWatch, |
-| Related node | Name of node related to logs.<br> The blank means that there is no related node.|
-| Event | This is an event that occurred.|
+## Table Columns
 
-</div>
+* **Level**
+  Severity level of the log ("Severe", "Mild", "Warn", "Recovery", "Info").
+* **Date and time**
+  Date and time the event was recorded.
+* **Type**
+  Type of event source ("polling", "system", "oprate", "user", "arpwatch").
+* **Node**
+  Name of the node related to the log (blank if not related to a specific node).
+* **Event**
+  Details of the recorded event.
 
->>>
-#### Event Log(Button)
+## Button Descriptions
 
-<div class="text-xl">
+* **[Filter]** : Opens the filter settings dialog to search logs.
+* **[Delete All Logs]** : Deletes all event logs from the database.
+* **[Report]** : Displays statistical analysis reports.
+* **[CSV]** : Exports the filtered event log to a CSV file.
+* **[Excel]** : Exports the filtered event log to an Excel file with the chart.
+* **[Reload]** : Reloads the event log list.
 
-| Items | Contents |
-| ---- | ---- |
-| Filter | Specify the search conditions and display the log.|
-| <Span style = "color: red;"> Delete all logs </span> | Delete all event logs.|
-| Report | Displays the event log analysis report.|
-| CSV | Export the event log to the CSV file.|
-| Excel | Export the event log to the Excel file.|
-| Reload | Update the list of event logs to the latest state.|
+## Filter Settings
 
-</div>
+* **Start**
+  Start date and time of the search range.
+* **End**
+  End date and time of the search range.
+* **Level**
+  Log levels to include ("All", "Warn", "Low", "High").
+* **Type**
+  Filter by event type (regular expressions supported).
+* **Node**
+  Filter by node name (regular expressions supported).
+* **Event**
+  Filter by event description (regular expressions supported).
+* **[Search]** : Applies the filters and performs the search.
+* **[Cancel]** : Closes the filter window without applying changes.
 
+## Report Descriptions
 
----
-#### Event Log Filter
-
-<div class="text-xl mb-2">
-This is a dialog that specifies the search conditions for the event log.
-</div>
-
-<div class="text-lg">
-
-| Items | Contents |
-| ---- | ---- |
-| Level | Log level.<br> All, there are more attention, more than severe, mild.|
-| Type | Log type.<br> Polling, System, Oprate, User, ArpWatch, |
-| Related node | Search by node name related to the log.|
-| Event | Search by the string of the event that occurred.|
-
-<span style="color:red">The string can be searched by regular expression.</span>
-
-</div>
-
-
----
-#### By state
-<div class="text-xl mb-4">
-This is a report of the number of event logs by state (level).
-</div>
-
-#### Heat map
-<div class="text-xl mb-4">
-This is a report of the number of cases of each event log on the heat map.
-</div>
-
-#### By node
-<div class="text-xl mb-4">
-This is a report of the number of event logs by node.
-</div>
-
----
-#### Operating rate
-
-<div class="text-xl mb-4">
-This is a report that uses a chronological graph of the value of the operating rate (OPRATE) in the event log.
-</div>
-
-#### ARP watch
-<div class="text-xl mb-4">
-This is a report of the value of the address usage rate (ARPWATCH) in the event log as a chronological graph.
-</div>
+* **By State**
+  Distribution chart of event logs by severity level.
+* **Heatmap**
+  Heat map aggregating event occurrences by hour and day.
+* **By Node**
+  Ranking chart of event logs by node.
+* **Availability**
+  Time-series chart of device availability metrics from "oprate" events.
+* **ARP Watch**
+  Time-series chart of address usage rates from "arpwatch" events.

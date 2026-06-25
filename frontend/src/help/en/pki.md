@@ -1,96 +1,93 @@
-#### PKI Build CA
-<div class="text-xl mb-2">
-This is the settings screen for building a CA.
-</div>
+# PKI (Before CA Build)
 
-<div class="text-lg">
+Configuration screen for initializing and building a new Certificate Authority (CA).
 
-|Item|Content|
-|----|---|
-|Name|This is the name of the CA.I'll try to use the Subject of the CA certificate.|
-|DNS name|Specify the CDP of the certificate to be issued, the OCSP address, the host name and IP address to be used for SANs for the certificate of the ACME server, separated by commas.|
-|ACME Server Basic URL|This is the basic URL for the ACME server.Blanks will be automatically set from the host name.|
-|CRL/OCSP/SCEP Server Basic URL|This is the basic URL for the CRL/OCSP/SCEP Server.Blanks will be automatically set from the host name.|
-|CA key type|Specify the CA key type.|
-|CA certificate duration|Specify the number of years the certificate is valid.|
-|CRL Update Interval|Specify the CRL update interval in hours.|
-|Certificate Period|Specify the period of the certificate to be issued in hours.|
-|CRL/OCSP/SCEP server port number|Specify the HTTP server port number.Cannot be changed later.|
-|ACME Server Port Number|Specify the ACME Server Port Number.Cannot be changed later.|
-</div>
+## CA Build Parameters
 
-
----
-
-#### PKI Cert List
-<div class="text-xl mb-2">
-This is a list screen of certificates issued by the CA.
-</div>
-
-<div class="text-lg">
-
-|Item|Content|
-|----|---|
-|Status|Certificate status.|
-|Type|Certificate type.|
-|ID|Certificate serial number.|
-|Subject|A Subject for the certificate.|
-|Related Node|The node where the certificate was obtained.|
-|Start|The start date and time of the certificate period.|
-|End|The end date and time of the certificate period.|
-|Revoked|The date and time the certificate was revoked.|
-</div>
-
->>>
-<div class="text-lg">
-
-|Item|Content|
-|----|---|
-|Create CSR|Displays the screen for creating a certificate request (CSR).|
-|Certificate creation|Read the CSR and issue the certificate.|
-|CA Initialization|Destroy CA.|
-|Server Control|Displays the server control screen.|
-|Renew|Update the certificate list.|
-|Revokes|Revokes the selected certificate.|
-|Export|Saves the selected certificate to a file.|
-</div>
+* **Name**
+  Name of the CA, used as the Subject for the self-signed CA certificate.
+* **DNS name**
+  Comma-separated list of hostnames or IP addresses used for CDP (CRL Distribution Point), OCSP address, and SANs (Subject Alternative Names) of the ACME server certificate.
+* **ACME Server Basic URL**
+  Base URL of the ACME server. If blank, it is automatically resolved from the hostname.
+* **CRL/OCSP/SCEP Server Basic URL**
+  Base URL of the CRL/OCSP/SCEP server. If blank, it is automatically resolved from the hostname.
+* **CA key type**
+  Algorithm and length of the CA private/public key pair (e.g., RSA, ECDSA).
+* **CA certificate duration**
+  Validity period of the CA certificate in years.
+* **CRL Update Interval**
+  Interval in hours to update the Certificate Revocation List (CRL).
+* **Certificate Period**
+  Validity period in hours for certificates issued by this CA.
+* **CRL/OCSP/SCEP server port number**
+  HTTP port number for the CRL/OCSP/SCEP server. Cannot be changed after building.
+* **ACME Server Port Number**
+  Port number for the ACME server. Cannot be changed after building.
 
 ---
 
-#### Create CSR
-<div class="text-xl mb-2">
-This is the screen for creating a CSR.
-</div>
+# PKI (After CA Build)
 
-<div class="text-lg">
+Management screen for issued digital certificates and manual signing operations after the CA has been established.
 
-|Item|Content|
-|----|---|
-|Key type|Specify the type of key for CSR.|
-|Name|Specifies a value for CN.|
-|DNS Name|Specify the DNS names for the Subject Alt Name, separated by commas.|
-|Organization name|Specify the organization name.It's OK to leave blank.|
-|Organization Unit|Specify an organizational unit.It's OK to leave blank.|
-|Country code|Specify the country code.It's OK to leave blank.|
-|State/Province name|Specify the state or prefecture name.It's OK to leave blank.|
-|City name|Specify the city name.It's OK to leave blank.|
-</div>
+## Certificate List Columns
 
----
-### Server Control
+* **Status**
+  Current status of the certificate (Valid, Expired, Revoked).
+* **Type**
+  Type of certificate (e.g., Client, Server).
+* **ID**
+  Serial number of the certificate.
+* **Subject**
+  Subject details of the certificate owner.
+* **Related Node**
+  The node name associated with the certificate.
+* **Start**
+  Start date and time of the certificate's validity.
+* **End**
+  Expiration date and time of the certificate.
+* **Revoked**
+  Date and time when the certificate was revoked.
 
-<div class="text-xl mb-2">
-This is a screen that controls the operation of the PKI server.
-</div>
+## Button Descriptions
 
-<div class="text-lg">
+* **[Create CSR]** : Open the Certificate Signing Request (CSR) creation dialog.
+* **[Certificate creation]** : Read and sign a CSR to issue a new certificate.
+* **[CA Initialization]** : Delete and destroy the current CA configuration and restore the PKI to the unbuilt state.
+* **[Server Control]** : Open the server control dialog to toggle and adjust PKI services.
+* **[Revokes]** : Revoke the selected certificate and add it to the revocation list.
+* **[Export]** : Export and download the selected certificate file.
+* **[Renew]** : Refresh the certificate list.
 
-|Item|Content|
-|----|---|
-|ACME Server|Start the ACME server.|
-|CRL/OCSP/SCEP Server|Start the CRL/OCSP/SCEP server.|
-|ACME Server Basic URL|Specifies the basic URL that the ACME server responds to.|
-|CRL Update Interval|Specify the CRL update interval in hours.|
-|Certificate Period|Specify the period of the certificate to be issued in hours.|
+## CSR Generation Parameters
 
-</div>
+* **Key type**
+  Key type and length to generate.
+* **Name**
+  Common Name (CN) for the certificate.
+* **DNS Name**
+  Comma-separated DNS names for Subject Alt Names (SAN).
+* **Organization name**
+  Organization (O) name (optional).
+* **Organization Unit**
+  Organizational Unit (OU) name (optional).
+* **Country code**
+  Country (C) code (optional).
+* **State/Province name**
+  State or province (ST) name (optional).
+* **City name**
+  Locality (L) name (optional).
+
+## Server Control Parameters
+
+* **ACME Server**
+  Toggle to enable/disable the built-in ACME server.
+* **CRL/OCSP/SCEP Server**
+  Toggle to enable/disable the built-in CRL/OCSP/SCEP server.
+* **ACME Server Basic URL**
+  Response base URL of the ACME server.
+* **CRL Update Interval**
+  Interval in hours to update the CRL.
+* **Certificate Period**
+  Validity period in hours for newly issued certificates.
