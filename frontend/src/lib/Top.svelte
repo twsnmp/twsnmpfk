@@ -123,10 +123,10 @@
     <span
       class="self-center whitespace-nowrap text-xl font-semibold dark:text-white"
     >
-      TWSNMP FK - {mapConfig.MapName}
+      TWSNMP FK <span class="text-xs font-normal text-gray-500 dark:text-gray-400 mx-1">{version}</span> - {mapConfig.MapName}
     </span>
   </NavBrand>
-  <NavUl activeUrl={showConfig ? "config" : page} classes={{ ul: "flex flex-col p-2 mt-3 md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium" }}>
+  <NavUl activeUrl={showConfig ? "config" : page} classes={{ ul: "flex flex-col p-2 mt-3 md:flex-row md:space-x-1 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium" }}>
     {#if !lock}
       <NavLi
   href="map"
@@ -326,9 +326,9 @@
       </NavLi>
     {/if}
   </NavUl>
-  <div class="flex justify-right">
+  <div class="flex justify-end">
     {#if !latest}
-      <Badge class="mr-2 h-8" border color="red">{$_("Top.HasUpdate")}</Badge>
+      <Badge class="mr-1 h-8" border color="red">{$_("Top.HasUpdate")}</Badge>
     {/if}
     <Button class="!p-2" color="alternative" onclick={toggleDark}>
       {#if dark}
@@ -338,8 +338,7 @@
       {/if}
     </Button>
     <Button
-      id="help"
-      class="!p-2 ml-2"
+      class="!p-2 ml-1"
       color="alternative"
       onclick={() => {
         oldPage = page;
@@ -349,7 +348,6 @@
     >
       <Icon path={icons.mdiHelp} size={1} />
     </Button>
-    <Tooltip triggeredBy="#help" placement="left">{version}</Tooltip>
   </div>
   {/snippet}
 </Navbar>

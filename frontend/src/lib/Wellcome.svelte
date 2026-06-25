@@ -38,14 +38,14 @@
     <div class="flex justify-center">
       <img id="logo" class="margin" src={logo} alt="logo" />
     </div>
-    <div class="flex justify-center mt-5">
+    <div class="flex justify-center mt-5 items-baseline gap-1">
       <span
         class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"
       >
         TWSNMP FK
       </span>
-      <span>
-        <small>{version}</small>
+      <span class="text-xs text-gray-500 dark:text-gray-400">
+        {version}
       </span>
     </div>
     <div class="flex justify-center mt-4">
