@@ -805,20 +805,18 @@
               </Label>
             {/if}
           </div>
-          <div class="grid gap-2 mb-4 md:grid-cols-10">
-            <Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox>
-            <Checkbox bind:checked={mapConf.EnableNetflowd}>NetFlow</Checkbox>
-            <Checkbox bind:checked={mapConf.EnableSFlowd}>sFlow</Checkbox>
-            <Checkbox bind:checked={mapConf.EnableTrapd}>SNMP TRAP</Checkbox>
-            <Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox>
-            <Checkbox bind:checked={mapConf.EnableSshd}>SSH Sever</Checkbox>
-            <Checkbox bind:checked={mapConf.EnableTcpd}>TCP Sever</Checkbox>
-            <Checkbox bind:checked={mapConf.EnableOTel}>OpenTelemetry</Checkbox>
-            <Checkbox bind:checked={mapConf.EnableMqtt}>MQTT</Checkbox>
+          <div class="flex flex-wrap gap-x-4 gap-y-2 mb-4">
+            <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox></div>
+            <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableNetflowd}>NetFlow</Checkbox></div>
+            <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableSFlowd}>sFlow</Checkbox></div>
+            <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableTrapd}>SNMP TRAP</Checkbox></div>
+            <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableArpWatch}>ARP Watch</Checkbox></div>
+            <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableSshd}>SSH Sever</Checkbox></div>
+            <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableTcpd}>TCP Sever</Checkbox></div>
+            <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableOTel}>OpenTelemetry</Checkbox></div>
+            <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableMqtt}>MQTT</Checkbox></div>
             {#if mapConf.EnableMqtt}
-              <Checkbox bind:checked={mapConf.Mqtt2Syslog}>MQTT → Syslog</Checkbox>
-            {:else}
-              <div></div>
+              <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.Mqtt2Syslog}>MQTT → Syslog</Checkbox></div>
             {/if}
           </div>
           {#if mapConf.EnableArpWatch}
