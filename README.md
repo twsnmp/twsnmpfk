@@ -196,6 +196,30 @@ Usage of twsnmpfk:
 
 ## History
 
+### v2.0.0 (2026/06/27)
+
+#### Major Frontend Stack Upgrade & Svelte 5 Migration
+*   **Svelte 5 Migration**: Upgraded the frontend framework from Svelte 4 to Svelte 5. All components have been migrated to the new reactivity system, using the Svelte 5 `$props()` and `$bindable()` syntax.
+*   **Technology Stack Upgrades**: Upgraded major development and runtime dependencies, including Vite 8, Flowbite Svelte v1, Tailwind CSS, and PostCSS.
+*   **Flowbite Svelte Compatibility**: Refactored component properties to align with Flowbite Svelte APIs (e.g. migrating deprecated `ulClass` to `classes` in `NavUl`, and updating Spinner `size` properties).
+
+#### DataTables DOM Isolation
+*   **DOM Isolation**: Wrapped all data table elements (`<table>`) within container `<div>` blocks inside Svelte slots and Flowbite `<TabItem>` components. This prevents DataTables' internal DOM injection from deleting or breaking sibling elements (such as ECharts containers).
+
+#### Layout, Styling & UI Polish
+*   **System Page Layout**: Re-balanced chart and table heights to optimize screen space and ensure action/settings buttons remain visible.
+*   **OpenTelemetry Report Layout**: Resized charts, widened table columns to prevent timestamp line-wrapping, and formatted metric values to 3 decimal places for better readability.
+*   **Server Control Modal**: Re-balanced sizes and margins of status display badges (ACME, SCEP, etc.) for a cleaner design.
+*   **AI Log Explanation Popup**: Optimized code block text styling in markdown overlays, ensuring text is white with no shadow.
+*   **Responsive Configurations**: Adjusted checkbox spacing in various settings views to improve layout responsiveness.
+
+#### Help Document Redesign
+*   **Simplified Help Files**: Rewrote all English and Japanese help documentation files to use a simplified, table-free, HTML-tag-free manual style with unified button and action labels.
+
+#### Security & Go Backend Enhancements
+*   **Vulnerability Mitigations**: Upgraded frontend package versions, including `esbuild` to 0.28.1, to mitigate known vulnerabilities (GHSA-gv7w-rqvm-qjhr).
+*   **Wails Log Routing**: Added a JS log output function to the Go backend (`LogFromJS`), routing JavaScript logs and errors directly to the Wails terminal output for easier debugging.
+
 ### v1.35.0 (2026/06/11)
 
 #### Custom SNMP Port Configuration
