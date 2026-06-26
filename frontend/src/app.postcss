@@ -20,6 +20,9 @@
   }
 }
 
-code, pre, code[class*="language-"], pre[class*="language-"] {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+/* コードブロック内の文字色を白（または薄いグレー）にし、不要な白い影を消す */
+code[class*="language-"], 
+pre[class*="language-"] {
+    color: #e2e8f0 !important;      /* Tailwindのグレーなど、好みの文字色 */
+    text-shadow: none !important;   /* 白い影を完全に無効化 */
 }
