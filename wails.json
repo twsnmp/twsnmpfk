@@ -1,5 +1,5 @@
 {
-  "$schema": "./.vscode/wails.json.schema",
+  "$schema": "https://wails.io/schemas/config.v2.json",
   "name": "twsnmpfk",
   "outputfilename": "twsnmpfk",
   "frontend:install": "npm install",
@@ -7,8 +7,8 @@
   "frontend:dev:watcher": "npm run dev",
   "frontend:dev:serverUrl": "auto",
   "author": {
-    "name": "twsnmp",
-    "email": "ymi@twise.co.jp"
+    "name": "Masayuki Yamai",
+    "email": "twsnmp@gmail.com"
   },
   "Info": {
     "companyName": "TWSNMP",

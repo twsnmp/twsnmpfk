@@ -1,4 +1,11 @@
 {
+   "json.schemas": [
+    {
+      "fileMatch": ["wails.json"],
+      "url": "https://wails.io/schemas/config.v2.json"
+    }
+  ],
+  "json.schemaDownload.enable": true, 
   "markdown.marp.themes": [
     "docs/graph_paper.css"
   ],
