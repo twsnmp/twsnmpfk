@@ -4,12 +4,11 @@ package notify
 import (
 	"bytes"
 	"crypto/tls"
-	"encoding/base64"
 	"fmt"
 	"html/template"
 	"log"
 	"net"
-	"net/smtp"
+	"strconv"
 	"strings"
 
 	"github.com/wneessen/go-mail"
@@ -88,10 +87,20 @@ func SendMail(subject, body string) error {
 }
 
 func sendMailSMTP(subject, body string) error {
-	host, _, err := net.SplitHostPort(datastore.NotifyConf.MailServer)
+	host, portStr, err := net.SplitHostPort(datastore.NotifyConf.MailServer)
 	if err != nil {
 		host = datastore.NotifyConf.MailServer
+		portStr = ""
 	}
+
+	var options []mail.Option
+
+	if portStr != "" {
+		if port, err := strconv.Atoi(portStr); err == nil {
+			options = append(options, mail.WithPort(port))
+		}
+	}
+
 	tlsconfig := &tls.Config{
 		ServerName:         host,
 		// #nosec G402
@@ -104,65 +113,53 @@ func sendMailSMTP(subject, body string) error {
 		tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, tls.TLS_RSA_WITH_AES_128_GCM_SHA256)
 		tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, tls.TLS_RSA_WITH_AES_256_GCM_SHA384)
 	}
-	var c *smtp.Client
+	options = append(options, mail.WithTLSConfig(tlsconfig))
+
 	if strings.HasSuffix(datastore.NotifyConf.MailServer, ":465") {
-		conn, err := tls.Dial("tcp", datastore.NotifyConf.MailServer, tlsconfig)
-		if err != nil {
-			log.Printf("send mail err=%v", err)
-			return err
-		}
-		c, err = smtp.NewClient(conn, host)
-		if err != nil {
-			log.Printf("send mail err=%v", err)
-			return err
-		}
+		options = append(options, mail.WithSSL())
 	} else {
-		c, err = smtp.Dial(datastore.NotifyConf.MailServer)
-		if err != nil {
-			return err
-		}
-		if err = c.StartTLS(tlsconfig); err != nil {
-			log.Printf("send mail err=%s", err)
-		}
+		options = append(options, mail.WithTLSPolicy(mail.TLSOpportunistic))
 	}
-	defer c.Close()
+
 	if datastore.NotifyConf.User != "" {
-		auth := smtp.PlainAuth("", datastore.NotifyConf.User, datastore.NotifyConf.Password, host)
-		if err = c.Auth(auth); err != nil {
-			log.Printf("send mail err=%s", err)
-			return err
-		}
+		options = append(options,
+			mail.WithSMTPAuth(mail.SMTPAuthAutoDiscover),
+			mail.WithUsername(datastore.NotifyConf.User),
+			mail.WithPassword(datastore.NotifyConf.Password),
+		)
 	}
-	if err = c.Mail(datastore.NotifyConf.MailFrom); err != nil {
-		log.Printf("send mail err=%s", err)
+
+	client, err := mail.NewClient(host, options...)
+	if err != nil {
+		log.Printf("send mail err=%v", err)
+		return err
+	}
+
+	message := mail.NewMsg()
+	if err := message.From(datastore.NotifyConf.MailFrom); err != nil {
+		log.Printf("send mail err=%v", err)
 		return err
 	}
 	for _, rcpt := range strings.Split(datastore.NotifyConf.MailTo, ",") {
-		if err = c.Rcpt(rcpt); err != nil {
-			log.Printf("send mail err=%s", err)
+		if !strings.Contains(rcpt, "@") {
+			continue
+		}
+		if err := message.AddTo(rcpt); err != nil {
+			log.Printf("send mail err=%v", err)
 			return err
 		}
 	}
-	w, err := c.Data()
-	if err != nil {
-		log.Printf("send mail err=%s", err)
+
+	message.Subject(subject)
+	message.SetBodyString(mail.TypeTextHTML, body)
+
+	if err := client.DialAndSend(message); err != nil {
+		log.Printf("send mail err=%v", err)
 		return err
 	}
-	defer w.Close()
-	body = convNewline(body, "\r\n")
-	message := makeMailMessage(datastore.NotifyConf.MailFrom, datastore.NotifyConf.MailTo, subject, body)
-	_, _ = w.Write([]byte(message))
-	_ = c.Quit()
+
 	log.Printf("send mail to %s", datastore.NotifyConf.MailTo)
 	return nil
-}
-
-func convNewline(str, nlcode string) string {
-	return strings.NewReplacer(
-		"\r\n", nlcode,
-		"\r", nlcode,
-		"\n", nlcode,
-	).Replace(str)
 }
 
 func SendTestMail(testConf *datastore.NotifyConfEnt) error {
@@ -177,10 +174,20 @@ func SendTestMail(testConf *datastore.NotifyConfEnt) error {
 }
 
 func sendTestMailSMTP(testConf *datastore.NotifyConfEnt) error {
-	host, _, err := net.SplitHostPort(testConf.MailServer)
+	host, portStr, err := net.SplitHostPort(testConf.MailServer)
 	if err != nil {
 		host = testConf.MailServer
+		portStr = ""
 	}
+
+	var options []mail.Option
+
+	if portStr != "" {
+		if port, err := strconv.Atoi(portStr); err == nil {
+			options = append(options, mail.WithPort(port))
+		}
+	}
+
 	tlsconfig := &tls.Config{
 		ServerName:         host,
 		// #nosec G402
@@ -193,52 +200,43 @@ func sendTestMailSMTP(testConf *datastore.NotifyConfEnt) error {
 		tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, tls.TLS_RSA_WITH_AES_128_GCM_SHA256)
 		tlsconfig.CipherSuites = append(tlsconfig.CipherSuites, tls.TLS_RSA_WITH_AES_256_GCM_SHA384)
 	}
-	var c *smtp.Client
+	options = append(options, mail.WithTLSConfig(tlsconfig))
+
 	if strings.HasSuffix(testConf.MailServer, ":465") {
-		conn, err := tls.Dial("tcp", testConf.MailServer, tlsconfig)
-		if err != nil {
-			log.Printf("send test mail err=%v", err)
-			return err
-		}
-		c, err = smtp.NewClient(conn, host)
-		if err != nil {
-			log.Printf("send test mail err=%v", err)
-			return err
-		}
+		options = append(options, mail.WithSSL())
 	} else {
-		c, err = smtp.Dial(testConf.MailServer)
-		if err != nil {
-			log.Printf("send test mail err=%s", err)
-			return err
-		}
-		if err = c.StartTLS(tlsconfig); err != nil {
-			log.Printf("send test mail err=%s", err)
-		}
+		options = append(options, mail.WithTLSPolicy(mail.TLSOpportunistic))
 	}
-	defer c.Close()
+
 	if testConf.User != "" {
-		auth := smtp.PlainAuth("", testConf.User, testConf.Password, host)
-		if err = c.Auth(auth); err != nil {
-			log.Printf("send test mail err=%s", err)
-			return err
-		}
+		options = append(options,
+			mail.WithSMTPAuth(mail.SMTPAuthAutoDiscover),
+			mail.WithUsername(testConf.User),
+			mail.WithPassword(testConf.Password),
+		)
 	}
-	if err = c.Mail(testConf.MailFrom); err != nil {
-		log.Printf("send test mail err=%s", err)
+
+	client, err := mail.NewClient(host, options...)
+	if err != nil {
+		log.Printf("send test mail err=%v", err)
+		return err
+	}
+
+	message := mail.NewMsg()
+	if err := message.From(testConf.MailFrom); err != nil {
+		log.Printf("send test mail err=%v", err)
 		return err
 	}
 	for _, rcpt := range strings.Split(testConf.MailTo, ",") {
-		if err = c.Rcpt(rcpt); err != nil {
-			log.Printf("send test mail err=%s", err)
+		if !strings.Contains(rcpt, "@") {
+			continue
+		}
+		if err := message.AddTo(rcpt); err != nil {
+			log.Printf("send test mail err=%v", err)
 			return err
 		}
 	}
-	w, err := c.Data()
-	if err != nil {
-		log.Printf("send test mail err=%s", err)
-		return err
-	}
-	defer w.Close()
+
 	t, err := template.New("test").Parse(datastore.LoadMailTemplate("test"))
 	if err != nil {
 		log.Printf("send test mail err=%s", err)
@@ -251,52 +249,16 @@ func sendTestMailSMTP(testConf *datastore.NotifyConfEnt) error {
 		return err
 	}
 	body := buffer.String()
-	message := makeMailMessage(testConf.MailFrom, testConf.MailTo, testConf.Subject, body)
-	_, _ = w.Write([]byte(message))
-	_ = c.Quit()
+
+	message.Subject(testConf.Subject)
+	message.SetBodyString(mail.TypeTextHTML, body)
+
+	if err := client.DialAndSend(message); err != nil {
+		log.Printf("send test mail err=%v", err)
+		return err
+	}
+
 	return nil
-}
-
-func makeMailMessage(from, to, subject, body string) string {
-	var header bytes.Buffer
-	header.WriteString("From: " + from + "\r\n")
-	header.WriteString("To: " + to + "\r\n")
-	header.WriteString(encodeSubject(subject))
-	header.WriteString("MIME-Version: 1.0\r\n")
-	header.WriteString("Content-Type: text/html; charset=\"utf-8\"\r\n")
-	message := header
-	message.WriteString("\r\n")
-	message.WriteString(body)
-	return message.String()
-}
-
-// UTF8文字列を指定文字数で分割
-func utf8Split(utf8string string, length int) []string {
-	resultString := []string{}
-	var buffer bytes.Buffer
-	for k, c := range strings.Split(utf8string, "") {
-		buffer.WriteString(c)
-		if k%length == length-1 {
-			resultString = append(resultString, buffer.String())
-			buffer.Reset()
-		}
-	}
-	if buffer.Len() > 0 {
-		resultString = append(resultString, buffer.String())
-	}
-	return resultString
-}
-
-// サブジェクトをMIMEエンコードする
-func encodeSubject(subject string) string {
-	var buffer bytes.Buffer
-	buffer.WriteString("Subject:")
-	for _, line := range utf8Split(subject, 13) {
-		buffer.WriteString(" =?utf-8?B?")
-		buffer.WriteString(base64.StdEncoding.EncodeToString([]byte(line)))
-		buffer.WriteString("?=\r\n")
-	}
-	return buffer.String()
 }
 
 func sendMailOAuth2(server, subject, body string) error {
