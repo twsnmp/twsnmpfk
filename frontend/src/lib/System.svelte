@@ -147,7 +147,7 @@
     },
     {
       data: "NumGoroutine",
-      title: "GOルーチン",
+      title: $_("System.Goroutine"),
       width: "6%",
       "className": "dt-right",
     },

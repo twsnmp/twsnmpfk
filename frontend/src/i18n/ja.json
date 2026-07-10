@@ -629,6 +629,8 @@
     "Histogram": "ヒストグラム",
     "Chart3D": "3D分析",
     "LineSpeed": "回線速度予測",
+    "LineSpeedValue": "回線速度",
+    "DelayValue": "遅延",
     "World": "経路分析",
     "Stop": "停止",
     "Start": "開始",
@@ -803,7 +805,8 @@
     "Backup": "バックアップ",
     "Reload": "更新",
     "Close": "閉じる",
-    "Loading": "取得しています..."
+    "Loading": "取得しています...",
+    "Goroutine": "GOルーチン"
   },
   "Address": {
     "EditNode": "編集",

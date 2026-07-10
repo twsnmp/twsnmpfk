@@ -172,7 +172,7 @@ export const showSFlowTop = (div : string, list:any) => {
     },
     xAxis: {
       type: 'value',
-      name: "件数",
+      name: $_("Ts.NumberOfLog"),
       boundaryGap: [0, 0.01],
     },
     yAxis: {
@@ -709,7 +709,7 @@ export const showSFlowService3D = (div:string, logs:any) => {
     },
     zAxis3D: {
       type: 'value',
-      name: "バイト数",
+      name: $_("Ts.Bytes"),
       nameTextStyle: {
         color: '#eee',
         fontSize: 12,
@@ -864,7 +864,7 @@ export const showSFlowSender3D = (div:string, logs:any, mac:boolean) => {
     },
     zAxis3D: {
       type: 'value',
-      name: "バイト数",
+      name: $_("Ts.Bytes"),
       nameTextStyle: {
         color: '#eee',
         fontSize: 12,
@@ -1023,7 +1023,7 @@ export const showSFlowFlow3D = (div:string, logs:any,mac:boolean) => {
     },
     zAxis3D: {
       type: 'value',
-      name: "バイト数",
+      name: $_("Ts.Bytes"),
       nameTextStyle: {
         color: '#eee',
         fontSize: 12,
@@ -1169,7 +1169,7 @@ export const showSFlowReason3D = (div:string, logs:any) => {
     },
     zAxis3D: {
       type: 'value',
-      name: "バイト数",
+      name: $_("Ts.Bytes"),
       nameTextStyle: {
         color: '#eee',
         fontSize: 12,

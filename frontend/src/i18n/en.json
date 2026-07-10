@@ -633,6 +633,8 @@
     "IPOrHost": "IP or host name",
     "IncSize": "Inc Size mode",
     "LineSpeed": "Line speed prediction",
+    "LineSpeedValue": "Line speed",
+    "DelayValue": "Delay",
     "Loc": "Location",
     "Normal": "Normal",
     "RecvSrc": "Src IP",
@@ -804,7 +806,8 @@
     "Proc": "Processes",
     "Reload": "Reload",
     "SizeForecast": "Forecast size",
-    "Time": "Time"
+    "Time": "Time",
+    "Goroutine": "Goroutines"
   },
   "Address": {
     "EditNode": "Edit",

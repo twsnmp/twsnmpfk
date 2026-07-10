@@ -537,7 +537,7 @@ export const showPingLinearChart = (div:string, results:any) => {
           label: {
             normal: {
               show: true,
-              formatter: `回線速度=${speed} 遅延=${delay}`,
+              formatter: $_('Ping.LineSpeedValue') + `=${speed} ` + $_('Ping.DelayValue') + `=${delay}`,
               textStyle: {
                 color: '#ccc',
                 fontSize: 12,
