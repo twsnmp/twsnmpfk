@@ -22,7 +22,12 @@ const ifCounterBPSChart = (div :string, logs:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -32,8 +37,8 @@ const ifCounterBPSChart = (div :string, logs:any) => {
     grid: {
       left: '10%',
       right: '10%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -96,6 +101,7 @@ const ifCounterBPSChart = (div :string, logs:any) => {
       },
     ],
     legend: {
+      top: 15,
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -144,7 +150,12 @@ const ifCounterPPSChart = (div:string, logs: any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -154,8 +165,8 @@ const ifCounterPPSChart = (div:string, logs: any) => {
     grid: {
       left: '10%',
       right: '10%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -246,6 +257,7 @@ const ifCounterPPSChart = (div:string, logs: any) => {
       },
     ],
     legend: {
+      top: 15,
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -354,7 +366,12 @@ export const showSFlowCpuCounter = (div:string, logs:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -364,8 +381,8 @@ export const showSFlowCpuCounter = (div:string, logs:any) => {
     grid: {
       left: '10%',
       right: '10%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -487,6 +504,7 @@ export const showSFlowCpuCounter = (div:string, logs:any) => {
       },
     ],
     legend: {
+      top: 15,
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -573,7 +591,12 @@ export const showSFlowMemCounter = (div:string, logs:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -583,8 +606,8 @@ export const showSFlowMemCounter = (div:string, logs:any) => {
     grid: {
       left: '10%',
       right: '10%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -691,6 +714,7 @@ export const showSFlowMemCounter = (div:string, logs:any) => {
       },
     ],
     legend: {
+      top: 15,
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -756,7 +780,12 @@ export const showSFlowDiskCounter = (div:string, logs:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -766,8 +795,8 @@ export const showSFlowDiskCounter = (div:string, logs:any) => {
     grid: {
       left: '10%',
       right: '10%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -859,6 +888,7 @@ export const showSFlowDiskCounter = (div:string, logs:any) => {
       },
     ],
     legend: {
+      top: 15,
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -917,7 +947,12 @@ export const showSFlowNetCounter = (div:string, logs: any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -927,8 +962,8 @@ export const showSFlowNetCounter = (div:string, logs: any) => {
     grid: {
       left: '10%',
       right: '10%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -1044,6 +1079,7 @@ export const showSFlowNetCounter = (div:string, logs: any) => {
       },
     ],
     legend: {
+      top: 15,
       textStyle: {
         fontSize: 10,
         color: '#ccc',

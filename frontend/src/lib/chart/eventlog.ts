@@ -43,7 +43,7 @@ export const showLogHeatmap = (div:string, logs:any) => {
       left: '5%',
       right: '5%',
       top: 30,
-      buttom: 0,
+      bottom: 70,
     },
     toolbox: {
       iconStyle: {
@@ -53,7 +53,12 @@ export const showLogHeatmap = (div:string, logs:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'item',
       formatter(params:any) {
@@ -212,6 +217,7 @@ export const showEventLogStateChart = (div:string, logs:any) => {
       formatter: '{a} <br/>{b} : {c} ({d}%)',
     },
     legend: {
+      top: 15,
       data: [ $_("Ts.High"),$_("Ts.Low"),$_("Ts.Warn"), $_("Ts.Normal"),$_("Ts.Repair"),$_("Ts.Other")],
       textStyle: {
         fontSize: 10,
@@ -284,7 +290,12 @@ export const showEventLogTimeChart = (div:string, type:any, logs:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -295,7 +306,7 @@ export const showEventLogTimeChart = (div:string, type:any, logs:any) => {
       left: '10%',
       right: '5%',
       top: 30,
-      buttom: 0,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -451,6 +462,7 @@ export const showEventLogNodeChart = (div:any, logs:any) => {
     },
     color: ['#e31a1c', '#fb9a99', '#dfdf22', '#33a02c', '#1f78b4', '#bbb'],
     legend: {
+      top: 15,
       top: 15,
       textStyle: {
         fontSize: 10,

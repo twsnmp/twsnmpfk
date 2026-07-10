@@ -71,7 +71,8 @@
       paging: false,
       searching:false,
       info:false,
-      scrollY: "40vh",
+      scrollY: "25vh",
+      scrollCollapse: true,
       data: results,
       order: [[1, "asc"]],
       language: getTableLang(),
@@ -520,7 +521,7 @@
 <style>
   #pingChart {
     min-height: 200px;
-    height: 25vh;
+    height: 20vh;
     width:  98%;
     margin: 0 auto;
   }

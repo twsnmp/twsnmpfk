@@ -33,6 +33,7 @@ export const showSyslogHost = (div:string, logs:any) => {
     color: ['#e31a1c', '#fb9a99', '#dfdf22', '#1f78b4'],
     legend: {
       top: 15,
+      top: 15,
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -501,6 +502,7 @@ export const showSyslogLevelChart = (div:string, logs:any) => {
       formatter: '{a} <br/>{b} : {c} ({d}%)',
     },
     legend: {
+      top: 15,
       data: [$_("Ts.High"),$_("Ts.Low") ,$_("Ts.Warn"), $_("Ts.Other")],
       textStyle: {
         fontSize: 10,

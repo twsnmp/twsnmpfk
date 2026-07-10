@@ -43,7 +43,7 @@ export const showAIHeatMap = (div:string, scores:any) => {
       left: '10%',
       right: '5%',
       top: 30,
-      buttom: 0,
+      bottom: 70,
     },
     toolbox: {
       iconStyle: {
@@ -53,7 +53,12 @@ export const showAIHeatMap = (div:string, scores:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'item',
       formatter(params:any) {
@@ -186,6 +191,7 @@ export const showAIPieChart = (div:string, scores:any) => {
       formatter: '{a} <br/>{b} : {c} ({d}%)',
     },
     legend: {
+      top: 15,
       data: [$_("Ts.Normal"), $_("Ts.Warn"), $_("Ts.Anamary")],
       textStyle: {
         fontSize: 10,
@@ -243,7 +249,12 @@ export const showAITimeChart = (div:string, scores:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -254,7 +265,7 @@ export const showAITimeChart = (div:string, scores:any) => {
       left: '10%',
       right: '5%',
       top: 30,
-      buttom: 0,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',

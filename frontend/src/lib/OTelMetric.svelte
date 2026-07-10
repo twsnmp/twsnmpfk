@@ -208,7 +208,7 @@
 <style>
   #metricChart {
     min-height: 200px;
-    height: 30vh;
+    height: 25vh;
     width: 98%;
     margin: 0 auto;
   }

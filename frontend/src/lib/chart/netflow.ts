@@ -27,7 +27,12 @@ const makeNetFlowHistogram = (div:string) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       formatter(params:any) {
@@ -42,7 +47,7 @@ const makeNetFlowHistogram = (div:string) => {
       left: '10%',
       right: '10%',
       top: 30,
-      buttom: 0,
+      bottom: 70,
     },
     xAxis: {
       scale: true,
@@ -134,7 +139,12 @@ const makeNetFlowTraffic = (div:string, type:string) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -144,8 +154,8 @@ const makeNetFlowTraffic = (div:string, type:string) => {
     grid: {
       left: '10%',
       right: '10%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -342,7 +352,7 @@ export const showNetFlowTop = (div : string, list:any, type:string) => {
       left: '20%',
       right: '10%',
       top: 10,
-      buttom: 10,
+      bottom: 40,
     },
     xAxis: {
       type: 'value',
@@ -1607,7 +1617,7 @@ export const showNetFlowFFT = (div:string, fftMap:any, src:string, type:string) 
       left: '10%',
       right: '10%',
       top: '10%',
-      buttom: '10%',
+      bottom: '10%',
     },
     toolbox: {
       iconStyle: {
@@ -1617,7 +1627,12 @@ export const showNetFlowFFT = (div:string, fftMap:any, src:string, type:string) 
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     xAxis: {
       type: 'value',
       name: freq ? $_("Ts.FrequencyHz") : $_("Ts.CycleSec"),

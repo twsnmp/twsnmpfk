@@ -19,7 +19,12 @@ const makeLogLevelChart = (div:string) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -29,8 +34,8 @@ const makeLogLevelChart = (div:string) => {
     grid: {
       left: '5%',
       right: '5%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -111,6 +116,8 @@ const makeLogLevelChart = (div:string) => {
       },
     ],
     legend: {
+      top: 15,
+      top: 15,
       textStyle: {
         fontSize: 10,
         color: '#ccc',

@@ -265,8 +265,8 @@
 <style>
   #resChart,
   #netChart{
-    min-height: 150px;
-    height: 19vh;
+    min-height: 250px;
+    height: 25vh;
     width: 98%;
     margin: 0 auto;
   }

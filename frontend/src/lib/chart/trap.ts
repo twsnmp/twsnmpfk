@@ -16,6 +16,7 @@ export const showTrapFromAddr = (div:string, logs:any) => {
     },
     legend: {
       top: 15,
+      top: 15,
       textStyle: {
         fontSize: 12,
       },
@@ -272,6 +273,7 @@ export const showTrapTypeChart = (div:string, logs:any) => {
       formatter: '{a} <br/>{b} : {c} ({d}%)',
     },
     legend: {
+      top: 15,
       data: [],
       textStyle: {
         color: '#ccc',

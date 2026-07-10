@@ -20,7 +20,12 @@ const makeLogCountChart = (div: string) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: "axis",
       axisPointer: {
@@ -30,8 +35,8 @@ const makeLogCountChart = (div: string) => {
     grid: {
       left: "5%",
       right: "5%",
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: "time",
@@ -175,7 +180,12 @@ const makeMagicTimeChart = (div: string, ent: string) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: "axis",
       axisPointer: {
@@ -185,8 +195,8 @@ const makeMagicTimeChart = (div: string, ent: string) => {
     grid: {
       left: "5%",
       right: "5%",
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: "time",
@@ -286,7 +296,12 @@ const getMagicHourChartOption = (ent: string) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: "axis",
       axisPointer: {
@@ -296,10 +311,11 @@ const getMagicHourChartOption = (ent: string) => {
     grid: {
       left: "10%",
       right: "10%",
-      top: 60,
-      buttom: 0,
+      top: 45,
+      bottom: 70,
     },
     legend: {
+      top: 25,
       data: [""],
       textStyle: {
         color: "#ccc",
@@ -500,7 +516,8 @@ export const showMagicSumChart = (div: string, logs: any, ent: string) => {
         type: "shadow", // 'shadow' as default; can also be 'line' or 'shadow'
       },
     },
-    legend: {},
+    legend: {
+      top: 25,},
     grid: {
       left: "3%",
       right: "4%",

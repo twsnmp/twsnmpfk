@@ -22,7 +22,12 @@ export const showMonitorResChart = (div:string, monitor:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       formatter: (params:any) => {
@@ -39,10 +44,11 @@ export const showMonitorResChart = (div:string, monitor:any) => {
     grid: {
       left: '5%',
       right: '5%',
-      top: 60,
-      buttom: 0,
+      top: 45,
+      bottom: 70,
     },
     legend: {
+      top: 25,
       data: ['CPU', 'Mem','My CPU', 'My Mem','Swap', 'Disk','Load'],
       textStyle: {
         color: '#ccc',
@@ -220,7 +226,12 @@ export const showMonitorNetChart = (div:string, monitor:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       formatter: (params:any) => {
@@ -243,10 +254,11 @@ export const showMonitorNetChart = (div:string, monitor:any) => {
     grid: {
       left: '5%',
       right: '5%',
-      top: 60,
-      buttom: 0,
+      top: 45,
+      bottom: 70,
     },
     legend: {
+      top: 25,
       data: ['Speed', 'Connection'],
       textStyle: {
         color: '#ccc',
@@ -370,8 +382,14 @@ export  const showMonitorForecastChart = (div:string, monitor:any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     legend: {
+      top: 25,
       data: ['Disk(%)', 'DB Size'],
       textStyle: {
         color: '#ccc',
@@ -387,8 +405,8 @@ export  const showMonitorForecastChart = (div:string, monitor:any) => {
     grid: {
       left: '5%',
       right: '15%',
-      top: 60,
-      buttom: 0,
+      top: 45,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',

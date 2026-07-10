@@ -577,8 +577,8 @@
 <style>
   #otelTraceChart,
   #otelSyslogChart {
-    min-height: 200px;
-    height: 20vh;
+    min-height: 250px;
+    height: 25vh;
     width: 98%;
     margin: 0 auto;
   }

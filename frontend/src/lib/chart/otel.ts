@@ -20,8 +20,8 @@ export const showOTelTimeline = (div: string, data: any) => {
     grid: {
       left: "25%",
       right: "5%",
-      top: 60,
-      buttom: 0,
+      top: 45,
+      bottom: 70,
     },
     xAxis: {
       type: "value",
@@ -134,7 +134,12 @@ export const showOTelTrace = (div: string, traces: any) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       formatter(params:any) {
         let ts = params.data[1].toFixed(3) + " Sec";
@@ -153,8 +158,8 @@ export const showOTelTrace = (div: string, traces: any) => {
     grid: {
       left: "5%",
       right: "5%",
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: "time",
@@ -400,7 +405,12 @@ export const showOTelTimeChart = (
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: "axis",
       axisPointer: {
@@ -410,10 +420,11 @@ export const showOTelTimeChart = (
     grid: {
       left: "5%",
       right: "5%",
-      top: 60,
-      buttom: 0,
+      top: 45,
+      bottom: 70,
     },
     legend: {
+      top: 25,
       data: [],
       textStyle: {
         color: "#ccc",

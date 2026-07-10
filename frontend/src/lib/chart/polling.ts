@@ -155,7 +155,12 @@ const getPollingChartOption = () => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: "axis",
       axisPointer: {
@@ -165,10 +170,11 @@ const getPollingChartOption = () => {
     grid: {
       left: "10%",
       right: "10%",
-      top: 60,
-      buttom: 0,
+      top: 45,
+      bottom: 70,
     },
     legend: {
+      top: 25,
       data: [""],
       textStyle: {
         color: "#ccc",
@@ -374,7 +380,12 @@ const makePollingHistogram = (div: string) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: "axis",
       formatter(params: any) {
@@ -389,7 +400,7 @@ const makePollingHistogram = (div: string) => {
       left: "10%",
       right: "10%",
       top: 30,
-      buttom: 0,
+      bottom: 70,
     },
     xAxis: {
       scale: true,
@@ -525,8 +536,8 @@ export const showPollingQQPlot = (div: string, logs: any, ent: any) => {
     grid: {
       left: "5%",
       right: "15%",
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       name: $_('Ts.TheoreticalQuantile'),

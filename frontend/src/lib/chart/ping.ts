@@ -22,10 +22,11 @@ export const getPingChartOption = () => {
     grid: {
       left: '5%',
       right: '5%',
-      top: 60,
-      buttom: 0,
+      top: 45,
+      bottom: 60,
     },
     legend: {
+      top: 25,
       data: [$_("Ts.RespTimeSec"), $_("Ts.SendTTL"),$_("Ts.RecvTTL")],
       textStyle: {
         color: '#ccc',
@@ -395,7 +396,7 @@ export const showPingHistgram = (div:string, results:any) => {
       left: '10%',
       right: '10%',
       top: 30,
-      buttom: 0,
+      bottom: 60,
     },
     xAxis: {
       scale: true,
@@ -471,8 +472,8 @@ export const showPingLinearChart = (div:string, results:any) => {
     grid: {
       left: '10%',
       right: '10%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 60,
     },
     xAxis: {
       type: 'value',

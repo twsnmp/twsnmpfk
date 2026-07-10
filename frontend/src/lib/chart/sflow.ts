@@ -26,7 +26,12 @@ const makeSFlowTraffic = (div:string) => {
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -36,8 +41,8 @@ const makeSFlowTraffic = (div:string) => {
     grid: {
       left: '10%',
       right: '10%',
-      top: 40,
-      buttom: 0,
+      top: 35,
+      bottom: 70,
     },
     xAxis: {
       type: 'time',
@@ -168,7 +173,7 @@ export const showSFlowTop = (div : string, list:any) => {
       left: '20%',
       right: '10%',
       top: 10,
-      buttom: 10,
+      bottom: 40,
     },
     xAxis: {
       type: 'value',
@@ -1324,7 +1329,7 @@ export const showSFlowFFT = (div:string, fftMap:any, src:string, type:string) =>
       left: '10%',
       right: '10%',
       top: '10%',
-      buttom: '10%',
+      bottom: '10%',
     },
     toolbox: {
       iconStyle: {
@@ -1334,7 +1339,12 @@ export const showSFlowFFT = (div:string, fftMap:any, src:string, type:string) =>
         dataZoom: {},
       },
     },
-    dataZoom: [{}],
+    dataZoom: [
+      {
+        bottom: 15,
+        height: 15,
+      }
+    ],
     xAxis: {
       type: 'value',
       name: freq ? $_("Ts.FrequencyHz") : $_("Ts.CycleSec"),

@@ -1089,14 +1089,14 @@
 
 <style>
   #chart {
-    min-height: 200px;
-    height: 20vh;
+    min-height: 250px;
+    height: 25vh;
     width: 95vw;
     margin: 0 auto;
   }
   #magicChart {
-    min-height: 200px;
-    height: 20vh;
+    min-height: 250px;
+    height: 25vh;
     width: 95%;
     margin: 0 auto;
   }

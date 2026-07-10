@@ -27,6 +27,7 @@ export const showArpLogIP = (div: string, logs: any) => {
     color: ["#1f78b4", "#e31a1c"],
     legend: {
       top: 15,
+      top: 15,
       textStyle: {
         fontSize: 10,
         color: "#ccc",
@@ -403,7 +404,7 @@ export const showIPAMHeatmap = (div: string, ipam: any) => {
       left: "12%",
       right: "5%",
       top: 30,
-      buttom: 0,
+      bottom: 60,
     },
     tooltip: {},
     xAxis: {
