@@ -58,6 +58,7 @@ require (
 	golang.org/x/net v0.56.0
 	golang.org/x/oauth2 v0.35.0
 	golang.org/x/text v0.38.0
+	gonum.org/v1/gonum v0.16.0
 	google.golang.org/grpc v1.79.3
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/mcuadros/go-syslog.v2 v2.3.0

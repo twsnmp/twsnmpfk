@@ -21,6 +21,6 @@ Settings for AI analysis anomaly detection thresholds.
 * **Execution**
   Triggered when the log mode is set to "AI Analysis" in the polling settings.
 * **Methodology**
-  Detects anomalies in numeric polling results using the Isolation Forest algorithm and calculates a deviation score.
+  Detects anomalies in numeric polling results using algorithms like "Isolation Forest", "Hotelling's Theory", and "k-NN", and calculates a deviation score.
 * **Interpretation of Score**
   Indicates how rare the occurrence is. Thresholds are expressed in statistical probabilities (e.g., once in 10,000 times).

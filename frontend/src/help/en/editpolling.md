@@ -21,7 +21,7 @@ Screen for creating a new polling monitor or editing the settings of an existing
 * **Sent data columns**
   Comma-separated list of variable names to publish via MQTT.
 * **AI mode**
-  (Visible only when Log mode is "AI analysis") AI algorithm type (e.g., "Isolation Forest").
+  (Visible only when Log mode is "AI analysis") AI algorithm type (e.g., "Isolation Forest", "Hotelling's Theory", "k-NN").
 * **Variables to vectorize**
   (Visible only when Log mode is "AI analysis") Comma-separated variable names of numerical data to analyze.
 * **Parameter**

@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
+	"sort"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/montanaflynn/stats"
+	"gonum.org/v1/gonum/mat"
 
 	go_iforest "github.com/codegaudi/go-iforest"
 	"github.com/twsnmp/twsnmpfk/datastore"
@@ -263,7 +266,10 @@ func getStateNum(s string) float64 {
 func calcAIScore(req *AIReq, aiMode string) {
 	var res *datastore.AIResult
 	switch aiMode {
-	case "lof":
+	case "hotelling":
+		res = calcHotelling(req)
+	case "knn":
+		res = calcKNN(req)
 	default:
 		res = calcIForest(req)
 	}
@@ -320,8 +326,53 @@ func getSampleData(req *AIReq) [][]float64 {
 	return data
 }
 
+func makeDeviationScore(req *AIReq, r []float64) *datastore.AIResult {
+	res := &datastore.AIResult{}
+	if len(r) == 0 {
+		return res
+	}
+	max, err := stats.Max(r)
+	if err != nil {
+		return res
+	}
+	min, err := stats.Min(r)
+	if err != nil {
+		return res
+	}
+	diff := max - min
+	if diff == 0 {
+		for i := range r {
+			res.ScoreData = append(res.ScoreData, []float64{float64(req.Df.Time[i]), 50.0})
+		}
+		res.PollingID = req.PollingID
+		res.LastTime = req.Df.Time[len(req.Df.Time)-1]
+		return res
+	}
+	for i := range r {
+		r[i] /= diff
+		r[i] *= 100.0
+	}
+	mean, err := stats.Mean(r)
+	if err != nil {
+		return res
+	}
+	sd, err := stats.StandardDeviation(r)
+	if err != nil || sd == 0 {
+		for i := range r {
+			res.ScoreData = append(res.ScoreData, []float64{float64(req.Df.Time[i]), 50.0})
+		}
+	} else {
+		for i := range r {
+			score := ((10 * (r[i] - mean) / sd) + 50)
+			res.ScoreData = append(res.ScoreData, []float64{float64(req.Df.Time[i]), score})
+		}
+	}
+	res.PollingID = req.PollingID
+	res.LastTime = req.Df.Time[len(req.Df.Time)-1]
+	return res
+}
+
 func calcIForest(req *AIReq) *datastore.AIResult {
-	res := datastore.AIResult{}
 	sub := 256
 	if req.Df.Len() < sub {
 		sub = req.Df.Len() / 2
@@ -331,41 +382,113 @@ func calcIForest(req *AIReq) *datastore.AIResult {
 	iforest, err := go_iforest.NewIForest(data, 1000, sub)
 	if err != nil {
 		log.Printf("NewIForest err=%v", err)
-		return &res
+		return &datastore.AIResult{}
 	}
 	r := make([]float64, len(data))
 	for i, v := range data {
 		r[i] = iforest.CalculateAnomalyScore(v)
 	}
-	max, err := stats.Max(r)
-	if err != nil {
-		return &res
+	return makeDeviationScore(req, r)
+}
+
+func calcHotelling(req *AIReq) *datastore.AIResult {
+	data := getSampleData(req)
+	n := len(data)
+	if n < 10 {
+		return &datastore.AIResult{}
 	}
-	min, err := stats.Min(r)
-	if err != nil {
-		return &res
+	d := len(data[0])
+
+	// Calculate mean vector
+	mean := make([]float64, d)
+	for _, row := range data {
+		for j, val := range row {
+			mean[j] += val
+		}
 	}
-	diff := max - min
-	if diff == 0 {
-		return &res
+	for j := range mean {
+		mean[j] /= float64(n)
 	}
-	for i := range r {
-		r[i] /= diff
-		r[i] *= 100.0
+
+	// Calculate covariance matrix
+	covData := make([]float64, d*d)
+	for _, row := range data {
+		for r := 0; r < d; r++ {
+			for c := 0; c < d; c++ {
+				covData[r*d+c] += (row[r] - mean[r]) * (row[c] - mean[c])
+			}
+		}
 	}
-	mean, err := stats.Mean(r)
-	if err != nil {
-		return &res
+	for i := range covData {
+		covData[i] /= float64(n)
 	}
-	sd, err := stats.StandardDeviation(r)
-	if err != nil {
-		return &res
+
+	// Ridge Regularization to ensure invertibility
+	epsilon := 1e-6
+	for r := 0; r < d; r++ {
+		covData[r*d+r] += epsilon
 	}
-	for i := range r {
-		score := ((10 * (float64(r[i]) - mean) / sd) + 50)
-		res.ScoreData = append(res.ScoreData, []float64{float64(req.Df.Time[i]), score})
+
+	cov := mat.NewDense(d, d, covData)
+	var inv mat.Dense
+	if err := inv.Inverse(cov); err != nil {
+		log.Printf("Hotelling Inverse err=%v", err)
+		return &datastore.AIResult{}
 	}
-	res.PollingID = req.PollingID
-	res.LastTime = req.Df.Time[len(req.Df.Time)-1]
-	return &res
+
+	r := make([]float64, n)
+	for i, row := range data {
+		diff := make([]float64, d)
+		for j := range row {
+			diff[j] = row[j] - mean[j]
+		}
+		diffVec := mat.NewVecDense(d, diff)
+		var tmp mat.VecDense
+		tmp.MulVec(&inv, diffVec)
+		r[i] = mat.Dot(diffVec, &tmp)
+	}
+
+	return makeDeviationScore(req, r)
+}
+
+func calcKNN(req *AIReq) *datastore.AIResult {
+	data := getSampleData(req)
+	n := len(data)
+	if n < 10 {
+		return &datastore.AIResult{}
+	}
+	d := len(data[0])
+
+	k := 5
+	if k >= n {
+		k = n - 1
+	}
+	if k < 1 {
+		k = 1
+	}
+
+	r := make([]float64, n)
+	for i := 0; i < n; i++ {
+		dists := make([]float64, 0, n-1)
+		for j := 0; j < n; j++ {
+			if i == j {
+				continue
+			}
+			var sum float64
+			for col := 0; col < d; col++ {
+				diff := data[i][col] - data[j][col]
+				sum += diff * diff
+			}
+			dists = append(dists, math.Sqrt(sum))
+		}
+		sort.Float64s(dists)
+
+		var sumDist float64
+		for idx := 0; idx < k; idx++ {
+			sumDist += dists[idx]
+		}
+		r[i] = sumDist / float64(k)
+	}
+
+	return makeDeviationScore(req, r)
 }

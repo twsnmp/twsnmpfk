@@ -186,6 +186,8 @@
   const aiModeList = [
     { name: $_('Polling.Default'), value: "default" },
     { name: "Isolation Forest", value: "iforest" },
+    { name: "Hotelling's Theory", value: "hotelling" },
+    { name: "k-NN", value: "knn" },
   ];
 
 
