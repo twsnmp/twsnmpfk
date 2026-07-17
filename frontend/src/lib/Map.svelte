@@ -84,6 +84,8 @@
   let showNodeInfo: boolean = false;
 
   let showGNMITool: boolean = false;
+  let showExportModal = false;
+  let exporting = false;
 
   let timer: any = undefined;
   let urls: any = [];
@@ -274,12 +276,27 @@
     await SetBackImage(backImage);
     refreshMap();
   };
-  const saveMap = async () => {
-    const map = document.getElementById("defaultCanvas0") as HTMLCanvasElement | undefined;
-    if (map) {
-      ExportMap(map.toDataURL())
+  const saveMap = () => {
+    showExportModal = true;
+  };
+  const handleExport = async (format: string) => {
+    showExportModal = false;
+    exporting = true;
+    try {
+      let pngBase64 = "";
+      if (format === "png" || format === "pdf" || format === "excel") {
+        const canvas = document.getElementById("defaultCanvas0") as HTMLCanvasElement | undefined;
+        if (canvas) {
+          pngBase64 = canvas.toDataURL("image/png");
+        }
+      }
+      await ExportMap(format, pngBase64);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      exporting = false;
     }
-  }
+  };
 </script>
 
 <div bind:this={map} class="h-full w-full overflow-scroll"></div>
@@ -1175,6 +1192,59 @@
       </GradientButton>
     </div>
   </form>
+</Modal>
+
+<Modal bind:open={showExportModal} size="md" dismissable={false} class="w-full">
+  <div class="p-6">
+    <h3 class="text-lg font-bold text-sky-400 mb-2">{$_("Map.ExportTitle")}</h3>
+    <p class="text-slate-300 text-sm mb-6">{$_("Map.ExportDesc")}</p>
+    
+    <div class="grid grid-cols-2 gap-3 mb-6">
+      <button onclick={() => handleExport('png')} class="flex flex-col items-start p-3 bg-slate-700 hover:bg-slate-650 rounded-xl transition duration-150 text-left border border-slate-600 w-full">
+        <span class="text-sm font-semibold text-slate-100">{$_("Map.ExportPng")}</span>
+        <span class="text-xs text-slate-400">{$_("Map.ExportPngDesc")}</span>
+      </button>
+      <button onclick={() => handleExport('svg')} class="flex flex-col items-start p-3 bg-slate-700 hover:bg-slate-650 rounded-xl transition duration-150 text-left border border-slate-600 w-full">
+        <span class="text-sm font-semibold text-slate-100">{$_("Map.ExportSvg")}</span>
+        <span class="text-xs text-slate-400">{$_("Map.ExportSvgDesc")}</span>
+      </button>
+      <button onclick={() => handleExport('pdf')} class="flex flex-col items-start p-3 bg-slate-700 hover:bg-slate-650 rounded-xl transition duration-150 text-left border border-slate-600 w-full">
+        <span class="text-sm font-semibold text-slate-100">{$_("Map.ExportPdf")}</span>
+        <span class="text-xs text-slate-400">{$_("Map.ExportPdfDesc")}</span>
+      </button>
+      <button onclick={() => handleExport('drawio')} class="flex flex-col items-start p-3 bg-slate-700 hover:bg-slate-650 rounded-xl transition duration-150 text-left border border-slate-600 w-full">
+        <span class="text-sm font-semibold text-slate-100">{$_("Map.ExportDrawio")}</span>
+        <span class="text-xs text-slate-400">{$_("Map.ExportDrawioDesc")}</span>
+      </button>
+      <button onclick={() => handleExport('json_map')} class="flex flex-col items-start p-3 bg-slate-700 hover:bg-slate-650 rounded-xl transition duration-150 text-left border border-slate-600 w-full">
+        <span class="text-sm font-semibold text-slate-100">{$_("Map.ExportJsonMap")}</span>
+        <span class="text-xs text-slate-400">{$_("Map.ExportJsonMapDesc")}</span>
+      </button>
+      <button onclick={() => handleExport('csv')} class="flex flex-col items-start p-3 bg-slate-700 hover:bg-slate-650 rounded-xl transition duration-150 text-left border border-slate-600 w-full">
+        <span class="text-sm font-semibold text-slate-100">{$_("Map.ExportCsv")}</span>
+        <span class="text-xs text-slate-400">{$_("Map.ExportCsvDesc")}</span>
+      </button>
+      <button onclick={() => handleExport('excel')} class="flex flex-col items-start p-3 bg-indigo-950/30 hover:bg-indigo-900/50 border border-indigo-800/50 rounded-xl transition duration-150 text-left col-span-2 w-full">
+        <span class="text-sm font-semibold text-indigo-200">{$_("Map.ExportExcel")}</span>
+        <span class="text-xs text-indigo-400">{$_("Map.ExportExcelDesc")}</span>
+      </button>
+    </div>
+    
+    <div class="flex justify-end">
+      <GradientButton
+        shadow
+        color="teal"
+        type="button"
+        onclick={() => {
+          showExportModal = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_("Map.Cancel")}
+      </GradientButton>
+    </div>
+  </div>
 </Modal>
 
 <svelte:window

@@ -150,8 +150,8 @@ export function ExportIcons() {
   return window['go']['main']['App']['ExportIcons']();
 }
 
-export function ExportMap(arg1) {
-  return window['go']['main']['App']['ExportMap'](arg1);
+export function ExportMap(arg1, arg2) {
+  return window['go']['main']['App']['ExportMap'](arg1, arg2);
 }
 
 export function ExportNetFlow(arg1, arg2, arg3) {

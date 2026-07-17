@@ -31,6 +31,7 @@ require (
 	github.com/robertkrimen/otto v0.5.1
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/signalsciences/ipv4 v1.4.0
+	github.com/signintech/gopdf v0.36.2
 	github.com/sleepinggenius2/gosmi v0.3.2
 	github.com/smallstep/scep v0.0.0-20250221100424-171a5fa4fb1b
 	github.com/tehmaze/netflow v0.0.0-20170921210347-852af103667f
@@ -131,6 +132,7 @@ require (
 	github.com/openconfig/gnmi v0.13.0 // indirect
 	github.com/openconfig/grpctunnel v0.1.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.1 // indirect
+	github.com/phpdave11/gofpdi v1.0.14-0.20211212211723-1f10f9844311 // indirect
 	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
 	github.com/pkg/errors v0.9.1 // indirect

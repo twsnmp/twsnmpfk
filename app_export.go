@@ -10,10 +10,10 @@ import (
 	_ "image/png"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/signintech/gopdf"
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
@@ -662,78 +662,593 @@ func (a *App) exportCSV(data *ExportData) error {
 	return w.Error()
 }
 
-// ExportMap saves the map image as a PNG or Excel file.
-func (a *App) ExportMap(data string) error {
+// ExportMap exports the map or data to a file in various formats.
+func (a *App) ExportMap(format string, pngBase64 string) (string, error) {
 	d := time.Now().Format("20060102150405")
-	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
-		Title:                i18n.Trans("Export MAP"),
-		DefaultFilename:      "TWSNMPFK_MAP" + "_" + d + ".xlsx",
-		CanCreateDirectories: true,
-		Filters: []wails.FileFilter{{
-			DisplayName: "PNG;Excel",
-			Pattern:     "*.png;*.xlsx",
-		}},
+	var title string
+	var defaultFilename string
+	var filters []wails.FileFilter
+
+	switch format {
+	case "png":
+		title = i18n.Trans("Export MAP")
+		defaultFilename = "TWSNMPFK_MAP_" + d + ".png"
+		filters = []wails.FileFilter{{DisplayName: "PNG Image (*.png)", Pattern: "*.png"}}
+	case "svg":
+		title = i18n.Trans("Export MAP")
+		defaultFilename = "TWSNMPFK_MAP_" + d + ".svg"
+		filters = []wails.FileFilter{{DisplayName: "SVG Image (*.svg)", Pattern: "*.svg"}}
+	case "pdf":
+		title = i18n.Trans("Export MAP")
+		defaultFilename = "TWSNMPFK_MAP_" + d + ".pdf"
+		filters = []wails.FileFilter{{DisplayName: "PDF Document (*.pdf)", Pattern: "*.pdf"}}
+	case "drawio":
+		title = i18n.Trans("Export MAP")
+		defaultFilename = "TWSNMPFK_MAP_" + d + ".drawio"
+		filters = []wails.FileFilter{{DisplayName: "Draw.io Diagram (*.drawio)", Pattern: "*.drawio"}}
+	case "json_map":
+		title = i18n.Trans("Export MAP")
+		defaultFilename = "TWSNMPFK_MAP_" + d + ".json"
+		filters = []wails.FileFilter{{DisplayName: "JSON Map Data (*.json)", Pattern: "*.json"}}
+	case "csv":
+		title = i18n.Trans("Export MAP")
+		defaultFilename = "TWSNMPFK_MAP_" + d + ".csv"
+		filters = []wails.FileFilter{{DisplayName: "CSV Node List (*.csv)", Pattern: "*.csv"}}
+	case "excel":
+		title = i18n.Trans("Export MAP")
+		defaultFilename = "TWSNMPFK_MAP_" + d + ".xlsx"
+		filters = []wails.FileFilter{{DisplayName: "Excel Document (*.xlsx)", Pattern: "*.xlsx"}}
+	default:
+		err := fmt.Errorf("unsupported format: %s", format)
+		wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+			Type:    wails.ErrorDialog,
+			Title:   i18n.Trans("Export MAP"),
+			Message: err.Error(),
+		})
+		return "", err
+	}
+
+	selectedFile, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
+		Title:           title,
+		DefaultFilename: defaultFilename,
+		Filters:         filters,
 	})
 	if err != nil {
-		log.Println(err)
-		return err
+		wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+			Type:    wails.ErrorDialog,
+			Title:   i18n.Trans("Export MAP"),
+			Message: err.Error(),
+		})
+		return "", err
 	}
-	if file == "" {
-		return nil
+	if selectedFile == "" {
+		return "", nil // user cancelled
 	}
-	v := strings.SplitN(data, ",", 2)
-	if len(v) != 2 {
-		return fmt.Errorf("invalid image data")
+
+	var pngBytes []byte
+	if pngBase64 != "" {
+		parts := strings.SplitN(pngBase64, ",", 2)
+		base64Data := parts[0]
+		if len(parts) > 1 {
+			base64Data = parts[1]
+		}
+		decoded, err := base64.StdEncoding.DecodeString(base64Data)
+		if err != nil {
+			errStr := fmt.Sprintf("failed to decode base64 PNG: %v", err)
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: errStr,
+			})
+			return "", fmt.Errorf(errStr)
+		}
+		pngBytes = decoded
 	}
-	img, err := base64.StdEncoding.DecodeString(v[1])
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	if filepath.Ext(file) == ".png" {
-		return os.WriteFile(file, img, 0600)
-	}
-	f := excelize.NewFile()
-	f.SetCellValue("Sheet1", "A1", "TWSNMP FK MAP"+"-"+d)
-	err = f.AddPictureFromBytes("Sheet1", "A3", &excelize.Picture{
-		Extension: ".png",
-		File:      img,
-		Format:    &excelize.GraphicOptions{AltText: "MAP"},
-	})
-	if err != nil {
-		log.Println(err)
-	}
-	f.SetSheetName("Sheet1", "MAP")
-	f.NewSheet("Sheet2")
-	f.SetCellValue("Sheet2", "A1", "TWSNMP FK Node List"+"-"+d)
-	row := 3
-	col := 'A'
-	for _, h := range []string{"Name", "IP", "MAC", "Descr"} {
-		f.SetCellValue("Sheet2", fmt.Sprintf("%c%d", col, row), h)
-		col++
-	}
-	row++
-	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
-		f.SetCellValue("Sheet2", fmt.Sprintf("A%d", row), n.Name)
-		f.SetCellValue("Sheet2", fmt.Sprintf("B%d", row), n.IP)
-		f.SetCellValue("Sheet2", fmt.Sprintf("C%d", row), n.MAC)
-		f.SetCellValue("Sheet2", fmt.Sprintf("D%d", row), n.Descr)
+
+	switch format {
+	case "png":
+		if len(pngBytes) == 0 {
+			errStr := "no PNG data provided"
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: errStr,
+			})
+			return "", fmt.Errorf(errStr)
+		}
+		if err := os.WriteFile(selectedFile, pngBytes, 0600); err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
+
+	case "svg":
+		var svgBuf bytes.Buffer
+		minX, maxX := 0.0, 1000.0
+		minY, maxY := 0.0, 800.0
+		first := true
+
+		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+			x, y := float64(n.X), float64(n.Y)
+			if first {
+				minX, maxX = x, x
+				minY, maxY = y, y
+				first = false
+			} else {
+				if x < minX {
+					minX = x
+				}
+				if x > maxX {
+					maxX = x
+				}
+				if y < minY {
+					minY = y
+				}
+				if y > maxY {
+					maxY = y
+				}
+			}
+			return true
+		})
+
+		datastore.ForEachNetworks(func(n *datastore.NetworkEnt) bool {
+			x, y := float64(n.X), float64(n.Y)
+			w, h := float64(n.W), float64(n.H)
+			if first {
+				minX, maxX = x, x+w
+				minY, maxY = y, y+h
+				first = false
+			} else {
+				if x < minX {
+					minX = x
+				}
+				if x+w > maxX {
+					maxX = x + w
+				}
+				if y < minY {
+					minY = y
+				}
+				if y+h > maxY {
+					maxY = y + h
+				}
+			}
+			return true
+		})
+
+		margin := 100.0
+		minX -= margin
+		minY -= margin
+		maxX += margin
+		maxY += margin
+		width := maxX - minX
+		height := maxY - minY
+		if width < 100 {
+			width = 800
+		}
+		if height < 100 {
+			height = 600
+		}
+
+		svgBuf.WriteString(fmt.Sprintf(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="%f %f %f %f" width="100%%" height="100%%" style="background-color: #f8fafc;">`, minX, minY, width, height))
+
+		datastore.ForEachLines(func(l *datastore.LineEnt) bool {
+			var x1, y1, x2, y2 float64
+			found1, found2 := false, false
+
+			if n := datastore.GetNode(l.NodeID1); n != nil {
+				x1, y1 = float64(n.X), float64(n.Y)
+				found1 = true
+			} else if net := datastore.GetNetwork(l.NodeID1); net != nil {
+				x1, y1 = float64(net.X+net.W/2), float64(net.Y+net.H/2)
+				found1 = true
+			}
+
+			if n := datastore.GetNode(l.NodeID2); n != nil {
+				x2, y2 = float64(n.X), float64(n.Y)
+				found2 = true
+			} else if net := datastore.GetNetwork(l.NodeID2); net != nil {
+				x2, y2 = float64(net.X+net.W/2), float64(net.Y+net.H/2)
+				found2 = true
+			}
+
+			if found1 && found2 {
+				strokeWidth := fmt.Sprintf("%d", l.Width)
+				if l.Width <= 0 {
+					strokeWidth = "2"
+				}
+				color := "#94a3b8"
+				switch l.State {
+				case "warn":
+					color = "#f59e0b"
+				case "error":
+					color = "#ef4444"
+				case "normal":
+					color = "#10b981"
+				}
+
+				svgBuf.WriteString(fmt.Sprintf(`<line x1="%f" y1="%f" x2="%f" y2="%f" stroke="%s" stroke-width="%s" />`,
+					x1, y1, x2, y2, color, strokeWidth))
+
+				if l.Info != "" {
+					midX := (x1 + x2) / 2
+					midY := (y1 + y2) / 2
+					svgBuf.WriteString(fmt.Sprintf(`<text x="%f" y="%f" text-anchor="middle" font-size="10" fill="#64748b">%s</text>`, midX, midY-5, l.Info))
+				}
+			}
+			return true
+		})
+
+		datastore.ForEachNetworks(func(n *datastore.NetworkEnt) bool {
+			color := "#3b82f6"
+			if n.Error != "" {
+				color = "#ef4444"
+			}
+			svgBuf.WriteString(fmt.Sprintf(`<rect x="%d" y="%d" width="%d" height="%d" rx="8" fill="%s" fill-opacity="0.1" stroke="%s" stroke-width="2" />`,
+				n.X, n.Y, n.W, n.H, color, color))
+			svgBuf.WriteString(fmt.Sprintf(`<text x="%d" y="%d" font-size="12" font-weight="bold" fill="#1e293b">%s</text>`,
+				n.X+10, n.Y+20, n.Name))
+			if n.IP != "" {
+				svgBuf.WriteString(fmt.Sprintf(`<text x="%d" y="%d" font-size="10" fill="#64748b">%s</text>`,
+					n.X+10, n.Y+35, n.IP))
+			}
+			return true
+		})
+
+		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+			color := "#64748b"
+			switch n.State {
+			case "normal":
+				color = "#10b981"
+			case "warn":
+				color = "#f59e0b"
+			case "error":
+				color = "#ef4444"
+			}
+
+			svgBuf.WriteString(fmt.Sprintf(`<circle cx="%d" cy="%d" r="24" fill="%s" stroke="#ffffff" stroke-width="3" />`, n.X, n.Y, color))
+
+			initial := "N"
+			if len(n.Icon) > 0 {
+				initial = strings.ToUpper(n.Icon[:1])
+			} else if len(n.Name) > 0 {
+				initial = strings.ToUpper(n.Name[:1])
+			}
+			svgBuf.WriteString(fmt.Sprintf(`<text x="%d" y="%d" dy="6" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">%s</text>`, n.X, n.Y, initial))
+
+			svgBuf.WriteString(fmt.Sprintf(`<text x="%d" y="%d" text-anchor="middle" font-size="11" font-weight="600" fill="#1e293b">%s</text>`, n.X, n.Y+38, n.Name))
+			if n.IP != "" && n.IP != n.Name {
+				svgBuf.WriteString(fmt.Sprintf(`<text x="%d" y="%d" text-anchor="middle" font-size="9" fill="#64748b">%s</text>`, n.X, n.Y+50, n.IP))
+			}
+			return true
+		})
+
+		svgBuf.WriteString(`</svg>`)
+		if err := os.WriteFile(selectedFile, svgBuf.Bytes(), 0600); err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
+
+	case "pdf":
+		if len(pngBytes) == 0 {
+			errStr := "no PNG data provided"
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: errStr,
+			})
+			return "", fmt.Errorf(errStr)
+		}
+		tmpFile, err := os.CreateTemp("", "twsnmpfk-*.png")
+		if err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
+		defer os.Remove(tmpFile.Name())
+		if _, err := tmpFile.Write(pngBytes); err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
+		tmpFile.Close()
+
+		pdf := gopdf.GoPdf{}
+		pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
+		pdf.AddPage()
+
+		err = pdf.Image(tmpFile.Name(), 20, 20, &gopdf.Rect{W: 555, H: 416})
+		if err != nil {
+			errStr := fmt.Sprintf("failed to add image to PDF: %v", err)
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: errStr,
+			})
+			return "", fmt.Errorf(errStr)
+		}
+
+		if err := pdf.WritePdf(selectedFile); err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
+
+	case "drawio":
+		minX, minY := 0.0, 0.0
+		first := true
+		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+			x, y := float64(n.X), float64(n.Y)
+			if first {
+				minX, minY = x, y
+				first = false
+			} else {
+				if x < minX {
+					minX = x
+				}
+				if y < minY {
+					minY = y
+				}
+			}
+			return true
+		})
+		datastore.ForEachNetworks(func(n *datastore.NetworkEnt) bool {
+			x, y := float64(n.X), float64(n.Y)
+			if first {
+				minX, minY = x, y
+				first = false
+			} else {
+				if x < minX {
+					minX = x
+				}
+				if y < minY {
+					minY = y
+				}
+			}
+			return true
+		})
+
+		var drawioBuf bytes.Buffer
+		drawioBuf.WriteString(`<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" modified="2026-07-14T00:00:00.000Z" agent="5.0" version="20.0.0" type="device">
+  <diagram id="netmap" name="Network Map">
+    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />`)
+
+		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+			x := float64(n.X) - minX + 50.0
+			y := float64(n.Y) - minY + 50.0
+			fillColor := "#D5E8D4"
+			strokeColor := "#82B366"
+			switch n.State {
+			case "warn":
+				fillColor = "#FFF2CC"
+				strokeColor = "#D6B656"
+			case "error":
+				fillColor = "#F8CECC"
+				strokeColor = "#B85450"
+			case "unknown":
+				fillColor = "#F5F5F5"
+				strokeColor = "#666666"
+			}
+			value := fmt.Sprintf("%s\n%s", n.Name, n.IP)
+			value = strings.ReplaceAll(value, "\n", "&lt;br/&gt;")
+			drawioBuf.WriteString(fmt.Sprintf(`
+        <mxCell id="%s" value="%s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=%s;strokeColor=%s;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="%f" y="%f" width="100" height="50" as="geometry" />
+        </mxCell>`, n.ID, value, fillColor, strokeColor, x, y))
+			return true
+		})
+
+		datastore.ForEachNetworks(func(net *datastore.NetworkEnt) bool {
+			x := float64(net.X) - minX + 50.0
+			y := float64(net.Y) - minY + 50.0
+			fillColor := "#DAE8FC"
+			strokeColor := "#6C8EBF"
+			if net.Error != "" {
+				fillColor = "#F8CECC"
+				strokeColor = "#B85450"
+			}
+			value := fmt.Sprintf("%s\n%s", net.Name, net.IP)
+			value = strings.ReplaceAll(value, "\n", "&lt;br/&gt;")
+			drawioBuf.WriteString(fmt.Sprintf(`
+        <mxCell id="%s" value="%s" style="rounded=0;whiteSpace=wrap;html=1;fillColor=%s;strokeColor=%s;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="%f" y="%f" width="%d" height="%d" as="geometry" />
+        </mxCell>`, net.ID, value, fillColor, strokeColor, x, y, net.W, net.H))
+			return true
+		})
+
+		datastore.ForEachLines(func(l *datastore.LineEnt) bool {
+			strokeColor := "#94a3b8"
+			switch l.State {
+			case "warn":
+				strokeColor = "#f59e0b"
+			case "error":
+				strokeColor = "#ef4444"
+			case "normal":
+				strokeColor = "#10b981"
+			}
+			strokeWidth := l.Width
+			if strokeWidth <= 0 {
+				strokeWidth = 2
+			}
+			style := fmt.Sprintf("endArrow=none;html=1;rounded=0;strokeColor=%s;strokeWidth=%d;", strokeColor, strokeWidth)
+			drawioBuf.WriteString(fmt.Sprintf(`
+        <mxCell id="%s" value="%s" style="%s" edge="1" parent="1" source="%s" target="%s">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>`, l.ID, l.Info, style, l.NodeID1, l.NodeID2))
+			return true
+		})
+
+		drawioBuf.WriteString(`
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>`)
+		if err := os.WriteFile(selectedFile, drawioBuf.Bytes(), 0600); err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
+
+	case "json_map":
+		type MapExportData struct {
+			Nodes    []*datastore.NodeEnt    `json:"nodes"`
+			Networks []*datastore.NetworkEnt `json:"networks"`
+			Lines    []*datastore.LineEnt    `json:"lines"`
+		}
+		var expData MapExportData
+		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+			expData.Nodes = append(expData.Nodes, n)
+			return true
+		})
+		datastore.ForEachNetworks(func(net *datastore.NetworkEnt) bool {
+			expData.Networks = append(expData.Networks, net)
+			return true
+		})
+		datastore.ForEachLines(func(l *datastore.LineEnt) bool {
+			expData.Lines = append(expData.Lines, l)
+			return true
+		})
+
+		indent, err := json.MarshalIndent(expData, "", "  ")
+		if err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
+		if err := os.WriteFile(selectedFile, indent, 0600); err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
+
+	case "csv":
+		var buf bytes.Buffer
+		writer := csv.NewWriter(&buf)
+		writer.Write([]string{"Type", "ID", "Name", "IP", "MAC", "State", "X", "Y", "Descr"})
+		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+			writer.Write([]string{
+				"node",
+				n.ID,
+				n.Name,
+				n.IP,
+				n.MAC,
+				n.State,
+				fmt.Sprintf("%d", n.X),
+				fmt.Sprintf("%d", n.Y),
+				n.Descr,
+			})
+			return true
+		})
+		datastore.ForEachNetworks(func(net *datastore.NetworkEnt) bool {
+			writer.Write([]string{
+				"network",
+				net.ID,
+				net.Name,
+				net.IP,
+				"",
+				net.Error,
+				fmt.Sprintf("%d", net.X),
+				fmt.Sprintf("%d", net.Y),
+				net.Descr,
+			})
+			return true
+		})
+		writer.Flush()
+		if err := os.WriteFile(selectedFile, buf.Bytes(), 0600); err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
+
+	case "excel":
+		f := excelize.NewFile()
+		f.SetCellValue("Sheet1", "A1", "TWSNMP FK MAP"+"-"+d)
+		if len(pngBytes) > 0 {
+			err = f.AddPictureFromBytes("Sheet1", "A3", &excelize.Picture{
+				Extension: ".png",
+				File:      pngBytes,
+				Format:    &excelize.GraphicOptions{AltText: "MAP"},
+			})
+			if err != nil {
+				log.Println(err)
+			}
+		}
+		f.SetSheetName("Sheet1", "MAP")
+		f.NewSheet("Sheet2")
+		f.SetCellValue("Sheet2", "A1", "TWSNMP FK Node List"+"-"+d)
+		row := 3
+		col := 'A'
+		for _, h := range []string{"Type", "Name", "IP", "MAC", "Descr"} {
+			f.SetCellValue("Sheet2", fmt.Sprintf("%c%d", col, row), h)
+			col++
+		}
 		row++
-		return true
-	})
-	datastore.ForEachNetworks(func(n *datastore.NetworkEnt) bool {
-		f.SetCellValue("Sheet2", fmt.Sprintf("A%d", row), n.Name)
-		f.SetCellValue("Sheet2", fmt.Sprintf("B%d", row), n.IP)
-		f.SetCellValue("Sheet2", fmt.Sprintf("C%d", row), "")
-		f.SetCellValue("Sheet2", fmt.Sprintf("D%d", row), n.Descr)
-		row++
-		return true
-	})
-	f.SetSheetName("Sheet2", "Node List")
-	if err := f.SaveAs(file); err != nil {
-		return err
+		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+			f.SetCellValue("Sheet2", fmt.Sprintf("A%d", row), "node")
+			f.SetCellValue("Sheet2", fmt.Sprintf("B%d", row), n.Name)
+			f.SetCellValue("Sheet2", fmt.Sprintf("C%d", row), n.IP)
+			f.SetCellValue("Sheet2", fmt.Sprintf("D%d", row), n.MAC)
+			f.SetCellValue("Sheet2", fmt.Sprintf("E%d", row), n.Descr)
+			row++
+			return true
+		})
+		datastore.ForEachNetworks(func(n *datastore.NetworkEnt) bool {
+			f.SetCellValue("Sheet2", fmt.Sprintf("A%d", row), "network")
+			f.SetCellValue("Sheet2", fmt.Sprintf("B%d", row), n.Name)
+			f.SetCellValue("Sheet2", fmt.Sprintf("C%d", row), n.IP)
+			f.SetCellValue("Sheet2", fmt.Sprintf("D%d", row), "")
+			f.SetCellValue("Sheet2", fmt.Sprintf("E%d", row), n.Descr)
+			row++
+			return true
+		})
+		f.SetSheetName("Sheet2", "Node List")
+		if err := f.SaveAs(selectedFile); err != nil {
+			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+				Type:    wails.ErrorDialog,
+				Title:   i18n.Trans("Export MAP"),
+				Message: err.Error(),
+			})
+			return "", err
+		}
 	}
-	return nil
+
+	wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
+		Type:    wails.InfoDialog,
+		Title:   i18n.Trans("Export MAP"),
+		Message: i18n.Trans("Export MAP") + " " + i18n.Trans("Success"),
+	})
+	return selectedFile, nil
 }
 
 func (a *App) ExportPortDef(d string) error {

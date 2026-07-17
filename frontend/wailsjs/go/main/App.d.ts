@@ -80,7 +80,7 @@ export function ExportEventLogs(arg1:string,arg2:main.EventLogFilterEnt,arg3:str
 
 export function ExportIcons():Promise<boolean>;
 
-export function ExportMap(arg1:string):Promise<void>;
+export function ExportMap(arg1:string,arg2:string):Promise<string>;
 
 export function ExportNetFlow(arg1:string,arg2:main.NetFlowFilterEnt,arg3:string):Promise<string>;
 
