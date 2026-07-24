@@ -184,29 +184,34 @@
     {
       data: "Level",
       title: $_("Syslog.Level"),
-      width: "10%",
+      width: "6%",
+      className: "whitespace-nowrap",
       render: renderState,
     },
     {
       data: "Time",
       title: $_("Syslog.Time"),
-      width: "13%",
+      width: "18%",
+      className: "whitespace-nowrap",
       render: renderTimeMili,
     },
     {
       data: "Host",
       title: $_("Syslog.Host"),
-      width: "12%",
+      width: "15%",
+      className: "whitespace-nowrap",
     },
     {
       data: "Type",
       title: $_("Syslog.Type"),
-      width: "10%",
+      width: "9%",
+      className: "whitespace-nowrap",
     },
     {
       data: "Tag",
       title: $_("Syslog.Tag"),
-      width: "15%",
+      width: "12%",
+      className: "whitespace-nowrap",
       render: (data:any, type:any, row:any) => {
                 if (type === 'display') {
                     var maxLen = 30;
@@ -792,9 +797,9 @@
         {$_('Address.AddressInfo')}
         <Icon path={icons.mdiChevronDown} size={1} />
       </GradientButton>
-      <Dropdown bind:isOpen={addrInfoOpen}>
+      <Dropdown bind:isOpen={addrInfoOpen} class="w-44 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
         {#each addrList as a}
-          <DropdownItem onclick={() => showAddrInfoFunc(a)}>{a}</DropdownItem>
+          <DropdownItem class="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600" onclick={() => showAddrInfoFunc(a)}>{a}</DropdownItem>
         {/each}
       </Dropdown>
     {/if}
