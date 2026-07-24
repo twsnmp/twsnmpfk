@@ -249,7 +249,7 @@
           size={1}
         /></GradientButton
       >
-      <Dropdown bind:isOpen={actionOpen} class="w-44 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+      <Dropdown bind:isOpen={actionOpen} class="w-44 bg-white dark:bg-gray-700 text-gray-900 dark:text-white list-none">
         <DropdownItem class="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600" onclick={ping}>PING</DropdownItem>
         <DropdownItem class="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600" onclick={MIBBr}>{$_("Map.MIBBrowser")}</DropdownItem>
         <DropdownItem class="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600" onclick={gNMITool}

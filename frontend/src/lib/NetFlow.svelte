@@ -399,7 +399,7 @@
           {$_('Address.AddressInfo')}
           <Icon path={icons.mdiChevronDown} size={1} />
         </GradientButton>
-        <Dropdown bind:isOpen={addrInfoOpen} class="w-44 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+        <Dropdown bind:isOpen={addrInfoOpen} class="w-44 bg-white dark:bg-gray-700 text-gray-900 dark:text-white list-none">
           {#each addrList as a}
             <DropdownItem class="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600" onclick={() => showAddrInfoFunc(a)}>{a}</DropdownItem>
           {/each}
