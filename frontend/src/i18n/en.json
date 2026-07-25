@@ -155,6 +155,20 @@
     "Type": "Type",
     "AddFromTmpFile": "Template file"
   },
+  "AIPollingAssist": {
+    "Title": "AI Polling Assistant",
+    "AIAssist": "AI Assist",
+    "PurposeLabel": "Monitoring Goal / Intent",
+    "PurposePlaceholder": "e.g. Warn if Web response exceeds 2s, Cisco CPU load monitoring, HTTPS TLS certificate expiration check, etc.",
+    "QuickTags": "Quick Examples",
+    "Analyze": "Analyze Best Settings with AI",
+    "Analyzing": "Analyzing node info and templates...",
+    "ApplySetting": "Apply Settings to Editor",
+    "AdviceTitle": "AI Assistant Advice",
+    "NoAdvice": "Enter your monitoring goal and click 'Analyze Best Settings with AI'.",
+    "GenerateScript": "Generate Script with AI",
+    "Close": "Close"
+  },
   "AppPolling": {
     "Name": "Name"
   },

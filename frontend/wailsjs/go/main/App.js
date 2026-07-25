@@ -542,8 +542,16 @@ export function LLMAskMIB(arg1) {
   return window['go']['main']['App']['LLMAskMIB'](arg1);
 }
 
+export function LLMAssistPolling(arg1, arg2) {
+  return window['go']['main']['App']['LLMAssistPolling'](arg1, arg2);
+}
+
 export function LLMDiagnoseNode(arg1) {
   return window['go']['main']['App']['LLMDiagnoseNode'](arg1);
+}
+
+export function LLMGeneratePollingScript(arg1, arg2, arg3) {
+  return window['go']['main']['App']['LLMGeneratePollingScript'](arg1, arg2, arg3);
 }
 
 export function LLMMIBSearch(arg1) {

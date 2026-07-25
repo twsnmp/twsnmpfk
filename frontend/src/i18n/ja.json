@@ -145,6 +145,20 @@
     "Cancel": "キャンセル",
     "AddFromTmpFile": "テンプレートファイルから追加"
   },
+  "AIPollingAssist": {
+    "Title": "AIポーリング設定アシスタント",
+    "AIAssist": "AIアシスト",
+    "PurposeLabel": "監視目的・指示の入力",
+    "PurposePlaceholder": "例: Webサーバーの応答時間が2秒を超えたら警告、CiscoルーターのCPU負荷監視、HTTPS証明書の期限チェックなど",
+    "QuickTags": "クイック目的例",
+    "Analyze": "AIで最適設定を分析",
+    "Analyzing": "AIがノード情報とテンプレートを分析中...",
+    "ApplySetting": "この設定を編集画面に反映",
+    "AdviceTitle": "AIアシスタントの設定アドバイス",
+    "NoAdvice": "目的を入力して「AIで最適設定を分析」をクリックしてください。",
+    "GenerateScript": "AIでスクリプト生成",
+    "Close": "閉じる"
+  },
   "AIList": {
     "AnomaryScore": "異常スコア",
     "Node": "ノード名",

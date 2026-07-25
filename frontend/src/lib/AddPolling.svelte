@@ -7,6 +7,7 @@
   import { GetDefaultPolling, GetPollingTemplates,ImportPollingTemplate } from "../../wailsjs/go/main/App";
   import { getTableLang,renderPollingType } from "./common";
   import Polling from "./Polling.svelte";
+  import AIPollingAssistDialog from "./AIPollingAssistDialog.svelte";
 
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -19,6 +20,7 @@
   let tmpTable :any = undefined;
   let selectedCount = 0;
   let showEditPolling = false;
+  let showAIAssist = false;
   let selectedTemplateID = 0;
   let pollingTmp : any  = undefined;
 
@@ -72,6 +74,27 @@
     showEditPolling = true;
   }
 
+  const onApplyAIAssist = async (e: CustomEvent) => {
+    const aiPolling = e.detail.polling;
+    if (!aiPolling) return;
+    const p = await GetDefaultPolling("");
+    p.Level = aiPolling.Level || p.Level;
+    p.Type = aiPolling.Type || p.Type;
+    p.Name = aiPolling.Name || p.Name;
+    p.Mode = aiPolling.Mode || p.Mode;
+    p.Params = aiPolling.Params || p.Params;
+    p.Filter = aiPolling.Filter || p.Filter;
+    p.Script = aiPolling.Script || p.Script;
+    p.Extractor = aiPolling.Extractor || p.Extractor;
+    if (aiPolling.PollInt) p.PollInt = aiPolling.PollInt;
+    if (aiPolling.Timeout) p.Timeout = aiPolling.Timeout;
+    if (aiPolling.Retry) p.Retry = aiPolling.Retry;
+    pollingTmp = p;
+    selectedTemplateID = 0;
+    show = false;
+    showEditPolling = true;
+  };
+
   const columns = [
     {
       data: "ID",
@@ -124,6 +147,10 @@
       <table id="tmpTable" class="display compact" style="width:99%"></table>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton shadow color="pink" type="button" onclick={() => (showAIAssist = true)} size="xs">
+        <Icon path={icons.mdiAutoFix} size={1} />
+        {$_('AIPollingAssist.AIAssist')}
+      </GradientButton>
       {#if selectedCount == 1}
         <GradientButton shadow color="blue" type="button" onclick={add} size="xs">
           <Icon path={icons.mdiPlus} size={1} />
@@ -142,6 +169,12 @@
     </div>
   </div>
 </Modal>
+
+<AIPollingAssistDialog
+  bind:show={showAIAssist}
+  {nodeID}
+  on:apply={onApplyAIAssist}
+/>
 
 <Polling
   bind:show={showEditPolling}

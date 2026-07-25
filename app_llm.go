@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -88,6 +89,49 @@ Please explain the log input by the user.`
 	return a.llmAsk(prompt, system)
 }
 
+func formatPollingResultForLLM(res map[string]interface{}) string {
+	if len(res) == 0 {
+		return "{}"
+	}
+	formatted := make([]string, 0, len(res))
+	for k, v := range res {
+		vf, isNum := toFloat64(v)
+		if isNum {
+			switch k {
+			case "rtt", "response_time":
+				ms := vf / 1000000.0
+				formatted = append(formatted, fmt.Sprintf("%s: %.2f ms (%v ns)", k, ms, v))
+			case "speed":
+				formatted = append(formatted, fmt.Sprintf("%s: %.2f Mbps", k, vf))
+			case "days":
+				formatted = append(formatted, fmt.Sprintf("%s: %.0f days", k, vf))
+			default:
+				formatted = append(formatted, fmt.Sprintf("%s: %v", k, v))
+			}
+		} else {
+			formatted = append(formatted, fmt.Sprintf("%s: %v", k, v))
+		}
+	}
+	return "{" + strings.Join(formatted, ", ") + "}"
+}
+
+func toFloat64(v interface{}) (float64, bool) {
+	switch val := v.(type) {
+	case float64:
+		return val, true
+	case float32:
+		return float64(val), true
+	case int64:
+		return float64(val), true
+	case int:
+		return float64(val), true
+	case json.Number:
+		f, err := val.Float64()
+		return f, err == nil
+	}
+	return 0, false
+}
+
 func (a *App) LLMDiagnoseNode(nodeID string) *LLMResp {
 	n := datastore.GetNode(nodeID)
 	if n == nil {
@@ -151,7 +195,7 @@ func (a *App) LLMDiagnoseNode(nodeID string) *LLMResp {
 				for i := len(logs) - 1; i >= 0 && count < 5; i-- {
 					l := logs[i]
 					tStr := time.Unix(0, l.Time).Format(time.RFC3339)
-					sb.WriteString(fmt.Sprintf("  - %s | State: %s | Result: %v\n", tStr, l.State, l.Result))
+					sb.WriteString(fmt.Sprintf("  - %s | State: %s | Result: %s\n", tStr, l.State, formatPollingResultForLLM(l.Result)))
 					count++
 				}
 			}
@@ -221,11 +265,11 @@ func (a *App) LLMDiagnoseNode(nodeID string) *LLMResp {
 	}
 
 	system := `You are an expert in network and system management.
-Please analyze the provided node's information, polling statuses, polling logs, and related logs (Syslog, SNMP Trap, ARP).
+Please analyze the provided node's information, polling statuses, polling logs (where 'rtt' and 'response_time' are converted to ms), and related logs.
 Diagnose the overall status, highlight any anomalies or risks, and provide recommended troubleshooting or optimization actions.`
 	if i18n.GetLang() == "ja" {
 		system = `あなたはネットワークおよびシステム管理の専門家です。
-提示されたノードの基本情報、ポーリング状態・ログ、および関連ログ（Syslog, SNMP Trap, ARP）を分析し、
+提示されたノードの基本情報、ポーリング状態・ログ（※rtt/response_timeはミリ秒[ms]単位を付記）、および関連ログ（Syslog, SNMP Trap, ARP）を分析し、
 1. ノードの現在の状態・健全性の要約
 2. 検出された問題点・異常・リスクの評価
 3. 推奨される対策・具体的なアクション
@@ -487,7 +531,7 @@ Investigate and explain the following in detail:
 						for i := len(pLogs) - 1; i >= 0 && count < 5; i-- {
 							pl := pLogs[i]
 							tStr := time.Unix(0, pl.Time).Format(time.RFC3339)
-							sb.WriteString(fmt.Sprintf("  - %s | State: %s | Result: %v\n", tStr, pl.State, pl.Result))
+							sb.WriteString(fmt.Sprintf("  - %s | State: %s | Result: %s\n", tStr, pl.State, formatPollingResultForLLM(pl.Result)))
 							count++
 						}
 					}
@@ -593,3 +637,201 @@ func (a *App) llmAsk(prompt, system string) *LLMResp {
 	r.Results = resp.Choices[0].Content
 	return r
 }
+
+type LLMAssistPollingResp struct {
+	TemplateID int    `json:"TemplateID"`
+	Name       string `json:"Name"`
+	Type       string `json:"Type"`
+	Mode       string `json:"Mode"`
+	Params     string `json:"Params"`
+	Filter     string `json:"Filter"`
+	Extractor  string `json:"Extractor"`
+	Script     string `json:"Script"`
+	Level      string `json:"Level"`
+	PollInt    int    `json:"PollInt"`
+	Timeout    int    `json:"Timeout"`
+	Retry      int    `json:"Retry"`
+	Advice     string `json:"Advice"`
+	Error      string `json:"Error"`
+}
+
+func (a *App) LLMAssistPolling(nodeID string, prompt string) *LLMAssistPollingResp {
+	r := &LLMAssistPollingResp{
+		Level:   "high",
+		PollInt: 60,
+		Timeout: 3,
+		Retry:   1,
+	}
+	ctx := a.ctx
+	llm, err := datastore.GetLLM(ctx)
+	if err != nil {
+		log.Printf("LLMAssistPolling err=%v", err)
+		r.Error = err.Error()
+		return r
+	}
+
+	templates := a.GetPollingTemplates()
+	var tmplSB strings.Builder
+	for _, t := range templates {
+		tmplSB.WriteString(fmt.Sprintf("- ID: %d, Name: %s, Type: %s, Mode: %s, Descr: %s, Params: %s, Filter: %s, Extractor: %s, Script: %s\n",
+			t.ID, t.Name, t.Type, t.Mode, t.Descr, t.Params, t.Filter, t.Extractor, t.Script))
+	}
+
+	var nodeInfoSB strings.Builder
+	if nodeID != "" {
+		if n := datastore.GetNode(nodeID); n != nil {
+			nodeInfoSB.WriteString(fmt.Sprintf("Name: %s, IP: %s, Vendor: %s, Descr: %s, SnmpMode: %s\n", n.Name, n.IP, n.Vendor, n.Descr, n.SnmpMode))
+		}
+	}
+
+	system := `You are an expert network monitoring engineer specialized in TWSNMP FK.
+Select the best polling template and native parameters based on the user's intent and target node context.
+
+### CRITICAL TWSNMP FK SCRIPT & EVALUATION RULES:
+1. **Script Condition Logic (CRITICAL)**:
+   - In TWSNMP FK, the 'Script' expression MUST evaluate to **true when NORMAL / OK**, and **false when ALARM / FAULT**.
+   - Example (Ping RTT < 100ms): 'rtt < 100 * 1000 * 1000' (evaluates to true if normal). DO NOT write 'rtt >= 100'!
+   - Example (HTTP Status 200): 'code == 200' (evaluates to true if status is 200).
+   - Example (CPU < 90%): 'cpu < 90.0' (evaluates to true if CPU is normal).
+
+2. **Variable Names & RTT Units (CRITICAL)**:
+   - DO NOT prefix variables with 'stats.'. Use direct top-level variables: 'rtt', 'code', 'status', 'count', 'exitCode', etc.
+   - 'rtt' is in **NANOSECONDS (ns)**! (1 ms = 1,000,000 ns).
+   - 100ms is written as '100 * 1000 * 1000' or '100000000' ns (or 'rtt / 1000000 < 100').
+
+3. **Native Polling Types**:
+   - 'ping': Mode: "" or "rtt". Script: 'rtt < 100 * 1000 * 1000' (or 'rtt / 1000000 < 100').
+   - 'snmp': Mode: "get", "stats", etc. Params: OID or MIB name. Script: e.g. 'hrProcessorLoad < 90.0'.
+   - 'http': Mode: "" or "status" or "https". Script: 'code == 200' or 'rtt < 2000 * 1000 * 1000'.
+   - 'tls': Mode: "expire". Script: e.g. '30' (days remaining).
+   - 'syslog' / 'trap': Filter: Regex. Script: 'count == 0' (0 errors is normal).
+   - 'command': Use ONLY when native ping, snmp, http, tls, syslog cannot fulfill the goal.
+
+Return ONLY a raw JSON object with the following structure:
+{
+  "TemplateID": <int, matching template ID or 0>,
+  "Name": "<string, polling name>",
+  "Type": "<string, native type>",
+  "Mode": "<string, mode>",
+  "Params": "<string, params>",
+  "Filter": "<string, filter>",
+  "Extractor": "<string, extractor>",
+  "Script": "<string, script evaluating to true for NORMAL condition, e.g. rtt < 100 * 1000 * 1000>",
+  "Level": "<string, fault level when Script becomes false: info, low, warn, high>",
+  "PollInt": <int, interval in sec>,
+  "Timeout": <int, timeout in sec>,
+  "Retry": <int, retry count>,
+  "Advice": "<string, detailed explanation in Japanese on why this native polling configuration was selected, mentioning nanoseconds units and true=normal logic>"
+}`
+
+	if i18n.GetLang() == "ja" {
+		system = `あなたはTWSNMP FKに特化したネットワーク監視専門家です。
+ユーザーの入力した監視目的と対象ノードの情報に基づき、TWSNMP FKの組み込み仕様に完全に合致した正しいポーリング設定とパラメータ、アドバイスを生成してください。
+
+### 【絶対順守】TWSNMP FK のスクリプト判定・変数仕様ルール:
+
+1. **スクリプトの評価論理 (最重要)**:
+   - TWSNMP FK の 'Script' は「**正常（正常稼働）である条件式 (true = 正常, false = 障害発動)**」を記述します！
+   - ○ 正しい例 (Ping応答時間が100ms未満で正常): 'rtt < 100 * 1000 * 1000' （100ms未満なら true で正常、100ms以上だと false になり障害検知）
+   - × 誤った例: 'rtt >= 100' （障害条件を書くと常時アラートになります）
+   - ○ 正しい例 (HTTPステータスが200で正常): 'code == 200'
+   - ○ 正しい例 (エラーログ件数が0で正常): 'count == 0'
+
+2. **変数名と RTT の単位 (最重要)**:
+   - 変数名に 'stats.' のような接頭辞を付けず、'rtt', 'code', 'status', 'count', 'exitCode' 等の直下変数を直接参照してください。
+   - 'rtt' の単位は **ナノ秒 (ns)** です！（1 ms = 1,000,000 ns）。
+   - 100ms は '100 * 1000 * 1000' または '100000000' (または 'rtt / 1000000 < 100') と記述します。
+
+3. **ポーリング種別と設定例**:
+   - 'ping': Mode: "" または "rtt"。Script: 'rtt < 100 * 1000 * 1000' (または 'rtt / 1000000 < 100')。
+   - 'snmp': Mode: "get", "stats" 等。Params: OID/MIB名。Script: 'hrProcessorLoad < 90.0' 等。
+   - 'http': Mode: "" や "status", "https"。Script: 'code == 200' や 'rtt < 2000 * 1000 * 1000'。
+   - 'tls': Mode: "expire"。Script: '30' (残り30日以上で正常)。
+   - 'syslog' / 'trap': Filter: ログ正規表現。Script: 'count == 0' (0件で正常)。
+   - 'command': 組み込みの ping, snmp, http, tls 等で実現不可能な場合のみ使用。
+
+【重要ルール】
+PingやHTTP等の計測で外部OSコマンド('command')を無理に使用せず、TWSNMP FKネイティブのポーリング種別('ping', 'http', 'snmp', 'tls')を優先選択してください。
+
+必ず余計な説明を行わず、以下の構造のJSONオブジェクトのみを出力してください（Markdownのコードブロック枠線も不要）。
+
+{
+  "TemplateID": テンプレートID(該当するものがあれば数値、なければ0),
+  "Name": "ポーリング名",
+  "Type": "ポーリング種別(ping, snmp, http, tls, command, script, syslog, trap等)",
+  "Mode": "モード",
+  "Params": "パラメータ",
+  "Filter": "フィルター条件式",
+  "Extractor": "抽出式",
+  "Script": "正常時にtrueとなるJavaScript判定式 (例: rtt < 100 * 1000 * 1000)",
+  "Level": "Scriptがfalse(障害)となった時の障害レベル(info, low, warn, high)",
+  "PollInt": ポーリング間隔(秒単位の数値),
+  "Timeout": タイムアウト(秒単位の数値),
+  "Retry": リトライ回数(数値),
+  "Advice": "なぜこの設定が最適か、および単位(ナノ秒)と正常時trueの判定式に関するわかりやすい解説(日本語)"
+}`
+	}
+
+	var userContentSB strings.Builder
+	userContentSB.WriteString("# Target Node Information\n")
+	if nodeInfoSB.Len() > 0 {
+		userContentSB.WriteString(nodeInfoSB.String())
+	} else {
+		userContentSB.WriteString("No specific node selected.\n")
+	}
+	userContentSB.WriteString("\n# Available Polling Templates\n")
+	userContentSB.WriteString(tmplSB.String())
+	userContentSB.WriteString("\n# User Monitoring Purpose / Goal\n")
+	if strings.TrimSpace(prompt) != "" {
+		userContentSB.WriteString(prompt)
+	} else {
+		userContentSB.WriteString("Please suggest the top 1 most recommended polling setting for this node.")
+	}
+
+	history := []llms.MessageContent{
+		llms.TextParts(llms.ChatMessageTypeSystem, system),
+		llms.TextParts(llms.ChatMessageTypeHuman, userContentSB.String()),
+	}
+
+	resp, err := llm.GenerateContent(ctx, history)
+	if err != nil {
+		log.Printf("LLMAssistPolling err=%v", err)
+		r.Error = err.Error()
+		return r
+	}
+	if len(resp.Choices) < 1 {
+		r.Error = "no response from LLM"
+		return r
+	}
+
+	raw := strings.TrimSpace(resp.Choices[0].Content)
+	if idx := strings.Index(raw, "{"); idx != -1 {
+		if lastIdx := strings.LastIndex(raw, "}"); lastIdx != -1 && lastIdx > idx {
+			raw = raw[idx : lastIdx+1]
+		}
+	}
+
+	if err := json.Unmarshal([]byte(raw), r); err != nil {
+		log.Printf("LLMAssistPolling json parse err=%v, raw=%s", err, resp.Choices[0].Content)
+		r.Advice = resp.Choices[0].Content
+	}
+	return r
+}
+
+func (a *App) LLMGeneratePollingScript(pollingType, mode, purpose string) *LLMResp {
+	system := `You are an expert in writing JavaScript evaluation scripts and regex extractors for TWSNMP FK.
+CRITICAL RULES:
+1. In TWSNMP FK, Script MUST evaluate to true when NORMAL / OK, and false when ALARM / FAULT.
+2. 'rtt' unit is NANOSECONDS (ns) (1ms = 1,000,000ns). Example: rtt < 100 * 1000 * 1000 for RTT < 100ms.
+3. DO NOT use 'stats.' prefix on variables; use direct variable names (rtt, code, count, status).`
+	if i18n.GetLang() == "ja" {
+		system = `あなたはTWSNMP FK用判定スクリプト記述の専門家です。
+【重要ルール】:
+1. Scriptは「正常である条件式 (true = 正常, false = 障害検知)」を記述してください。
+2. rttの単位はナノ秒(ns)です (1ms = 1,000,000ns)。例: 100ms未満なら rtt < 100 * 1000 * 1000
+3. 変数名に stats. 接頭辞を付けず、rtt, code, count, status 等を直接参照してください。`
+	}
+	prompt := fmt.Sprintf("Polling Type: %s, Mode: %s\nPurpose: %s", pollingType, mode, purpose)
+	return a.llmAsk(prompt, system)
+}
+

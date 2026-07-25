@@ -1750,6 +1750,44 @@ export namespace main {
 		    return a;
 		}
 	}
+	export class LLMAssistPollingResp {
+	    TemplateID: number;
+	    Name: string;
+	    Type: string;
+	    Mode: string;
+	    Params: string;
+	    Filter: string;
+	    Extractor: string;
+	    Script: string;
+	    Level: string;
+	    PollInt: number;
+	    Timeout: number;
+	    Retry: number;
+	    Advice: string;
+	    Error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LLMAssistPollingResp(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.TemplateID = source["TemplateID"];
+	        this.Name = source["Name"];
+	        this.Type = source["Type"];
+	        this.Mode = source["Mode"];
+	        this.Params = source["Params"];
+	        this.Filter = source["Filter"];
+	        this.Extractor = source["Extractor"];
+	        this.Script = source["Script"];
+	        this.Level = source["Level"];
+	        this.PollInt = source["PollInt"];
+	        this.Timeout = source["Timeout"];
+	        this.Retry = source["Retry"];
+	        this.Advice = source["Advice"];
+	        this.Error = source["Error"];
+	    }
+	}
 	export class LLMMIBSearchResp {
 	    ObjectName: string;
 	    OID: string;

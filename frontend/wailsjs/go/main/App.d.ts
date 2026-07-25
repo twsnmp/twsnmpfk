@@ -276,7 +276,11 @@ export function LLMAskLog(arg1:string):Promise<main.LLMResp>;
 
 export function LLMAskMIB(arg1:string):Promise<main.LLMResp>;
 
+export function LLMAssistPolling(arg1:string,arg2:string):Promise<main.LLMAssistPollingResp>;
+
 export function LLMDiagnoseNode(arg1:string):Promise<main.LLMResp>;
+
+export function LLMGeneratePollingScript(arg1:string,arg2:string,arg3:string):Promise<main.LLMResp>;
 
 export function LLMMIBSearch(arg1:string):Promise<main.LLMMIBSearchResp>;
 
