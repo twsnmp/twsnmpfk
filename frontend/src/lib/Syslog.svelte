@@ -93,7 +93,7 @@
       order: [[1, "desc"]],
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     table.on("select", () => {
@@ -496,7 +496,7 @@
       data: magicData,
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     magicTable.on("select", () => {

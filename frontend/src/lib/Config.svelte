@@ -352,7 +352,7 @@
       data: await GetIcons(),
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     iconTable.on("select", () => {

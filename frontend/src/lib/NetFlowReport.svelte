@@ -174,7 +174,7 @@
       order,
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     tableTop.on("select", () => {
@@ -311,7 +311,7 @@
       order,
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     tableFlow.on("select", () => {

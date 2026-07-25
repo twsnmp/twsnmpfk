@@ -99,7 +99,7 @@
       order: [[0, "desc"]],
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     table.on("select", () => {

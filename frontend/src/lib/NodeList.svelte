@@ -53,7 +53,7 @@
       pageLength: window.innerHeight > 800 ? 25 : 10,
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     table.on("select", () => {

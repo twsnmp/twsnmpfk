@@ -140,7 +140,7 @@
       scrollY: "65vh",
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     table.on("select", () => {

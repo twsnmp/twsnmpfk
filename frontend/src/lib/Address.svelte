@@ -57,7 +57,7 @@
       order: [[0,"asc"]],
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     arpTable.on("select", () => {

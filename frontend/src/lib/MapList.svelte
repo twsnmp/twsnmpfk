@@ -48,7 +48,7 @@
       data: networks,
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
       columns: [
         {
@@ -124,7 +124,7 @@
       data: drawItems,
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
       columns: [
         {
@@ -203,7 +203,7 @@
       data: lines,
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
       columns: [
         {
