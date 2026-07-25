@@ -23,8 +23,12 @@ List of received MQTT topics and their statistical statuses.
 
 ## Button Descriptions
 
+* **[View Data]** : View and format (JSON, TEXT, HEX) the latest received payload of the selected topic.
+* **[Report]** : Display statistical reports and charts for MQTT topics.
 * **[Delete]** : Delete statistical data for the selected topics.
 * **[Delete All]** : Delete all MQTT statistics.
 * **[Copy]** : Copy selected topic names to the clipboard.
 * **[Make Polling]** : Open the polling configuration screen to monitor the selected MQTT topic.
 * **[Reload]** : Refresh the MQTT stats list.
+
+*Note: You can select a range of rows in the table by holding the Shift key while clicking, or toggle select/deselect for all displayed rows.*

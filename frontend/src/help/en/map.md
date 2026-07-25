@@ -21,6 +21,7 @@ Menu displayed when right-clicking on an empty space on the map.
 * **[Check All]** : Immediately check the statuses of all nodes currently in error state.
 * **[Discover]** : Open the auto-discovery settings screen.
 * **[Import]** : Import a map file from TWSNMP v4.x.
+* **[Export]** : Export the map to image (PNG, SVG, PDF), Draw.io (XML/SVG), or structured data (JSON, CSV, Excel) formats.
 * **[Grid]** : Align icons to the specified grid interval.
 * **[Back Image]** : Open the background image configuration.
 * **[Reload]** : Reload the map to the latest state.
@@ -56,6 +57,7 @@ Dialog for aligning node icons to a specified grid interval.
 
 Menu displayed when right-clicking a node on the map.
 
+* **[AI Diagnose]** : Diagnose node status, related logs, and responses using AI (LLM). Results can be copied or exported.
 * **[Report]** : Display the node report screen.
 * **[PING]** : Display the PING tool screen.
 * **[MIB Browser]** : Open the MIB browser tool.

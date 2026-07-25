@@ -118,6 +118,17 @@ New features to improve map usability and organization have been added:
 
 Added support for setting the opacity (transparency) of drawing items and improved the user interface for background image settings.
 
+### New Features in v2.1.0
+
+- **Expanded Map Exporting**: Export maps to various formats, including Images (PNG, SVG, PDF), Diagramming (Draw.io XML/SVG), and Structured Data (JSON, CSV, Excel XLSX).
+- **Enhanced AI (LLM) Integration**:
+  - **Node AI Diagnosis**: Automatically diagnose node status, related logs, and response behaviors via AI (LLM) from map context menus or node lists (supports copy and export).
+  - **Event Log AI Investigation**: AI-driven analysis of root causes and suggested actions for selected event logs.
+  - **Polling AI Assist**: Prompt-based AI assistant for generating and suggesting monitoring types, parameters, and scripts in the polling editor.
+- **Extended AI Polling Algorithms**: Added "Hotelling's T2" and "k-NN" (k-Nearest Neighbors) algorithms alongside Isolation Forest for anomaly detection.
+- **Enhanced MQTT Features**: Formatted viewer for the latest received payload (JSON/TEXT/HEX) and MQTT topic statistical report charts.
+- **Improved Table Navigation**: Multi-select range selection (`multi+shift`) using the Shift key across all data tables.
+
 ### AI (LLM) Integration (v1.32.0)
 
 Significant AI-powered features have been added:
@@ -178,6 +189,8 @@ Right -click the location other than the node and drawing items on the map to di
 | Draw item | Add drawing items to the map.|
 | Check all | Reconfirm the node that has occurred.|
 | Discover | Displays the automatic discovery screen.|
+| Import | Import map file from TWSNMP v4.x.|
+| Export | Export map to Image (PNG, SVG, PDF), Draw.io, or Data (JSON, CSV, Excel) formats.|
 | Grid | Align the position of the node at the specified interval.|
 | Backgrand image| set backgrand image to map|
 | Reload | Update the map to the latest state.|
@@ -192,6 +205,7 @@ Right -click the node on the map to display it.
 
 | Menu | Operation |
 | ---- | ---- |
+| AI Diagnose | Diagnose node status, related logs, and responses using AI (LLM).|
 | Report | Displays the report screen related to the node.|
 | Ping | Displays the ping screen.|
 | MIB browser | Displays MIB browser.|
@@ -538,6 +552,7 @@ A list of nodes to be managed.
 | Description | Supplementary information about nodes.|
 | Edit | Edit node settings.|
 | Polling | Displays a list of polling related to the selected node.|
+| AI Diagnose | Comprehensive AI-powered (LLM) diagnosis of node status, related logs, and responses.|
 | Report | Displays the selected node analysis report.|
 | Delete| Delete the selected node.|
 | Reconfirm | Reconfirm the polling of the selected node.|
@@ -715,7 +730,7 @@ This is the result of AI analysis of numerical data in the log of the polling re
 
 ### Polling editing
 
-Polling edit can be displayed from the button by selecting a polling list on the polling list.
+Polling edit can be displayed by clicking the button on the polling list. The AI Assist feature is available when adding or editing a polling monitor.
 
 ![](./images/en/2023-12-03_09-28-18.png)
 
@@ -726,7 +741,8 @@ Polling edit can be displayed from the button by selecting a polling list on the
 | Level | Pauling disability level.|
 | Type | Polling type.<br> Ping, SNMP, TCP, Email(IMAP/POP3) etc. |
 | Mode | Operation mode depends on the type of polling.|
-| Log mode | How to save the polling result log.|
+| Log mode | How to save the polling result log ("None", "Always", "On change", "AI analysis").|
+| AI mode | Anomaly detection algorithm used when Log mode is "AI analysis" ("Isolation Forest", "Hotelling's T2", "k-NN").|
 | Parameter | Polling type and mode -dependent parameters.|
 | Filter | Polling type and filter condition that depends on mode.|
 | Extract pattern | This is a GROK pattern that depends on the type of polling and the mode.Use when extracting data from logs.|
@@ -736,6 +752,7 @@ Polling edit can be displayed from the button by selecting a polling list on the
 | Retry | This is the number of retry times when polling.|
 |Failure Action|Sets the action when a failure occurs.|
 |Return action|Sets the action when returning from an error.|
+|AI Assist|Generates and suggests monitoring methods, parameters, and scripts using AI (LLM) based on prompt requests.|
 
 ## Address list
 
@@ -1486,8 +1503,12 @@ This is a list of received MQTT topics.
 
 |Item|Contents|
 |----|----|
+|View Data|View and format (JSON, TEXT, HEX) the latest received payload of the selected topic.|
+|Report|Display statistical charts and analysis reports for MQTT topics.|
 |<span style="color: red;">Delete</span>|Delete the selected MQTT data. |
 |<span style="color: red;">Delete all MQTT data</span>|Delete all MQTT data. |
+|Copy|Copy the selected topic name to the clipboard.|
+|Make Polling|Create a polling task to monitor the selected MQTT topic.|
 |Update|Update information. |
 
 ### MQTT settings

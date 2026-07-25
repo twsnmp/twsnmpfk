@@ -54,5 +54,6 @@ Screen for creating a new polling monitor or editing the settings of an existing
 ## Button Descriptions
 
 * **[Save]** : Saves the polling configuration.
+* **[AI Assist]** : AI (LLM) assistant that generates and suggests monitoring types, parameters, and JavaScript scripts based on prompt requests.
 * **[Help]** : Displays this help.
 * **[Cancel]** : Closes the window without saving.

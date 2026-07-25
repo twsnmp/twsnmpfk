@@ -196,6 +196,27 @@ Usage of twsnmpfk:
 
 ## History
 
+### v2.1.0
+
+#### Expanded Map Image & Data Exporting
+* **Diverse Export Formats**: Export maps into Images (PNG, SVG, PDF), Diagramming formats (Draw.io XML/SVG), and Structured Data (JSON, CSV, Excel XLSX) directly from the map toolbar/menu.
+
+#### Enhanced AI (LLM) Integration
+* **Node AI Diagnosis**: Perform comprehensive multi-angle AI diagnoses of node status, related event logs, and responses via the map context menu or node list (supports copy and export).
+* **Event Log AI Investigation**: AI-driven analysis of root causes and suggested remediation steps for selected event logs.
+* **Polling AI Assist**: Prompt-assisted AI generation of monitoring methods, parameters, and JavaScript scripts in the polling editor.
+
+#### Extended AI Polling (Anomaly Detection) Algorithms
+* **Additional Scoring Algorithms**: Added "Hotelling's T2" and "k-NN" (k-Nearest Neighbors) anomaly detection algorithms alongside Isolation Forest.
+
+#### Enhanced MQTT Monitoring & Visualization
+* **Formatted Latest Payload View**: View and format (JSON, TEXT, HEX) the latest received payload of any MQTT topic.
+* **MQTT Topic Reports**: Graphical report functionality visualizing topic message frequency and payload data volume over time.
+
+#### UI/UX & Navigation Polish
+* **Shift-Key Range Selection**: Unified Shift-click range selection (`multi+shift`) across all multi-select data tables.
+* **Graph & Menu Layout Optimization**: Upgraded to ECharts v6 with optimized grid padding, legend positioning, and enhanced context menu styling.
+
 ### v2.0.0 (2026/06/27)
 
 #### Major Frontend Stack Upgrade & Svelte 5 Migration

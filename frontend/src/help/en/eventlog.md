@@ -18,11 +18,14 @@ Screen displaying system and monitoring event logs. A time-series graph showing 
 ## Button Descriptions
 
 * **[Filter]** : Opens the filter settings dialog to search logs.
+* **[AI Investigate]** : Investigates and diagnoses the cause and countermeasures for the selected event log using AI (LLM).
 * **[Delete All Logs]** : Deletes all event logs from the database.
 * **[Report]** : Displays statistical analysis reports.
 * **[CSV]** : Exports the filtered event log to a CSV file.
 * **[Excel]** : Exports the filtered event log to an Excel file with the chart.
 * **[Reload]** : Reloads the event log list.
+
+*Note: You can select a range of rows in the table by holding the Shift key while clicking.*
 
 ## Filter Settings
 

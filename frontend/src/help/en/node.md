@@ -21,8 +21,9 @@ List of managed nodes, settings parameters, and detailed performance reports.
 
 * **[Edit]** : Open the node configuration editor (to edit IP, icon, SNMP/SSH authentication, etc.).
 * **[Polling]** : View the list of pollings (monitoring tasks) defined for the selected node.
+* **[AI Diagnose]** : Comprehensive diagnosis of node status, related logs, and responses using AI (LLM). Results can be copied or exported.
 * **[Report]** : Open the node's detailed diagnostic and performance reports.
-* **[Action]** : Dropdown button for executing network tools (PING, MIB Browser, gNMI Tool, Wake on LAN).
+* **[Action]** : Dropdown button for executing network tools (PING, MIB Browser, gNMI Tool, Wake on LAN, AI Diagnose).
 * **[Delete]** : Delete the selected nodes from the map and monitoring database.
 * **[Recheck]** : Run all pollings for the selected nodes immediately.
 * **[Map Items]** : Switch view to map items list (lines, networks, drawing items).
