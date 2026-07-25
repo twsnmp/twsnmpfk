@@ -1116,7 +1116,21 @@
     "CopyTopic": "トピックコピー",
     "CreatePolling": "ポーリング作成",
     "SelectAll": "全選択",
-    "DeselectAll": "選択解除"
+    "DeselectAll": "選択解除",
+    "Report": "レポート"
+  },
+  "MqttReport": {
+    "Title": "MQTTレポート",
+    "CountByClientID": "クライアントID別",
+    "CountByRemote": "送信元別",
+    "CountByTopic": "トピック別",
+    "Heatmap": "ヒートマップ",
+    "HeatmapTime": "時間帯別アクティビティ",
+    "HeatmapClientTopic": "クライアント×トピック",
+    "CountByState": "状態別",
+    "TopicTreemap": "トピック階層ツリー",
+    "Chart3D": "3Dグラフ",
+    "Close": "閉じる"
   },
   "NetworkReport": {
     "Port": "ポート",

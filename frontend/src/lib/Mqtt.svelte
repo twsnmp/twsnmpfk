@@ -23,6 +23,7 @@
   import { _ } from "svelte-i18n";
   import { copyText } from "svelte-copy";
   import Polling from "./Polling.svelte";
+  import MqttReport from "./MqttReport.svelte";
 
   let data: any = [];
   let table: any = undefined;
@@ -30,6 +31,17 @@
   let showPolling = false;
   let polling: any = undefined;
   let copied = false;
+  let showReport = false;
+  let reportStats: any = [];
+
+  const openReport = () => {
+    if (table) {
+      reportStats = table.rows({ search: "applied" }).data().toArray();
+    } else {
+      reportStats = data;
+    }
+    showReport = true;
+  };
 
   const formatValue = (d: any) => {
     if (!d || !d.Value) {
@@ -310,6 +322,18 @@
       <Icon path={icons.mdiTrashCan} size={1} />
       {$_('Mqtt.DeleteAll')}
     </GradientButton>
+    {#if data.length > 0}
+      <GradientButton
+        shadow
+        type="button"
+        color="green"
+        onclick={openReport}
+        size="xs"
+      >
+        <Icon path={icons.mdiChartPie} size={1} />
+        {$_("Mqtt.Report")}
+      </GradientButton>
+    {/if}
     <GradientButton
       shadow
       type="button"
@@ -324,4 +348,5 @@
 </div>
 
 <Polling bind:show={showPolling} pollingTmp={polling} />
+<MqttReport bind:show={showReport} stats={reportStats} />
 

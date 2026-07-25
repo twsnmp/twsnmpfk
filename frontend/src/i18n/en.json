@@ -1117,7 +1117,21 @@
     "CopyTopic": "Copy Topic",
     "CreatePolling": "Create Polling",
     "SelectAll": "Select All",
-    "DeselectAll": "Deselect All"
+    "DeselectAll": "Deselect All",
+    "Report": "Report"
+  },
+  "MqttReport": {
+    "Title": "MQTT Report",
+    "CountByClientID": "By Client ID",
+    "CountByRemote": "By Source IP",
+    "CountByTopic": "By Topic",
+    "Heatmap": "Heatmap",
+    "HeatmapTime": "Time Activity",
+    "HeatmapClientTopic": "Client x Topic Matrix",
+    "CountByState": "By Status",
+    "TopicTreemap": "Topic Hierarchy Treemap",
+    "Chart3D": "3D Chart",
+    "Close": "Close"
   },
   "NetworkReport": {
     "Error": "Error",
