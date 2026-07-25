@@ -389,7 +389,8 @@
     "High": "重度",
     "Filter": "フィルター",
     "Start": "開始日時",
-    "End": "終了日時"
+    "End": "終了日時",
+    "AIAnalyze": "AI調査"
   },
   "EventLogReport": {
     "CountByState": "状態別",
@@ -540,6 +541,15 @@
     "Loading": "ノード情報、ポーリング、関連ログを収集し、AIが診断中...",
     "Close": "閉じる",
     "ReDiagnose": "再診断",
+    "Copy": "コピー",
+    "Copied": "コピーしました",
+    "Export": "エクスポート"
+  },
+  "EventLogAIDialog": {
+    "Title": "イベントログAI原因調査",
+    "Loading": "イベントログ、関連ノード、ポーリング、関連ログを収集し、AIが原因調査中...",
+    "Close": "閉じる",
+    "ReAnalyze": "再調査",
     "Copy": "コピー",
     "Copied": "コピーしました",
     "Export": "エクスポート"

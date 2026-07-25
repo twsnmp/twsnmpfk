@@ -20,6 +20,7 @@
   import { renderState, renderTime, getTableLang } from "./common";
   import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
   import EventLogReport from "./EventLogReport.svelte";
+  import EventLogAIDialog from "./EventLogAIDialog.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
@@ -34,6 +35,9 @@
   let showReport = false;
   let showLoading = false;
   let showFilter = false;
+  let selectedCount = 0;
+  let selectedLog: any = null;
+  let showAIDialog = false;
 
   const filter: main.EventLogFilterEnt = {
     NodeID: "",
@@ -57,6 +61,8 @@
     if (!document.getElementById("eventLogTable")) {
       return;
     }
+    selectedCount = 0;
+    selectedLog = null;
     table = new DataTable("#eventLogTable", {
       destroy: true,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
@@ -65,6 +71,27 @@
       data,
       language: getTableLang(),
       order:[[1,"desc"]],
+      select: {
+        style: "single",
+      },
+    });
+    table.on("select", () => {
+      selectedCount = table.rows({ selected: true }).count();
+      const selData = table.rows({ selected: true }).data();
+      if (selData && selData.length > 0) {
+        selectedLog = selData[0];
+      } else {
+        selectedLog = null;
+      }
+    });
+    table.on("deselect", () => {
+      selectedCount = table.rows({ selected: true }).count();
+      const selData = table.rows({ selected: true }).data();
+      if (selData && selData.length > 0) {
+        selectedLog = selData[0];
+      } else {
+        selectedLog = null;
+      }
     });
   };
 
@@ -177,6 +204,17 @@
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
       shadow
+      color="pink"
+      type="button"
+      disabled={selectedCount !== 1}
+      onclick={() => (showAIDialog = true)}
+      size="xs"
+    >
+      <Icon path={icons.mdiBrain} size={1} />
+      {$_("EventLog.AIAnalyze")}
+    </GradientButton>
+    <GradientButton
+      shadow
       color="blue"
       type="button"
       onclick={() => (showFilter = true)}
@@ -243,6 +281,7 @@
 </div>
 
 <EventLogReport bind:show={showReport} {logs} />
+<EventLogAIDialog bind:show={showAIDialog} eventLog={selectedLog} />
 
 <Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full" transitionParams={{ duration: 0 }}>
   <div>

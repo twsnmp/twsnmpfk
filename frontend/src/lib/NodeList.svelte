@@ -256,7 +256,7 @@
       </GradientButton>
       <GradientButton
         shadow
-        color="purple"
+        color="pink"
         type="button"
         onclick={aiDiagnose}
         size="xs"

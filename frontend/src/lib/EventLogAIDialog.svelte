@@ -6,7 +6,7 @@
   import DOMPurify from "dompurify";
   import { _ } from "svelte-i18n";
   import { onDestroy } from "svelte";
-  import { LLMDiagnoseNode, ExportMarkdown } from "../../wailsjs/go/main/App";
+  import { LLMAnalyzeEventLog, ExportMarkdown } from "../../wailsjs/go/main/App";
   import { ClipboardSetText } from "../../wailsjs/runtime";
 
   import neko1 from "../assets/images/neko_anm1.png";
@@ -18,12 +18,12 @@
   import neko7 from "../assets/images/neko_anm7.png";
 
   export let show = false;
-  export let nodeID = "";
+  export let eventLog: any = null;
 
   let loading = false;
   let content = "";
   let error = "";
-  let lastNodeID = "";
+  let lastLogTime = 0;
   let copied = false;
 
   const nekos = [neko1, neko2, neko3, neko4, neko5, neko6, neko7];
@@ -46,15 +46,15 @@
 
   onDestroy(stopAnimation);
 
-  const diagnose = async () => {
-    if (!nodeID) return;
+  const analyze = async () => {
+    if (!eventLog) return;
     loading = true;
     startAnimation();
     error = "";
     content = "";
     copied = false;
     try {
-      const resp = await LLMDiagnoseNode(nodeID);
+      const resp = await LLMAnalyzeEventLog(eventLog);
       if (resp.Error) {
         error = resp.Error;
       } else {
@@ -84,15 +84,16 @@
   const exportReport = async () => {
     if (!content) return;
     try {
-      await ExportMarkdown(nodeID, content);
+      const filename = eventLog?.Time ? `event_log_${eventLog.Time}` : "event_log_ai_analysis";
+      await ExportMarkdown(filename, content);
     } catch (e: any) {
       error = e?.message || String(e);
     }
   };
 
-  $: if (show && nodeID && (nodeID !== lastNodeID || (!content && !error && !loading))) {
-    lastNodeID = nodeID;
-    diagnose();
+  $: if (show && eventLog && (eventLog.Time !== lastLogTime || (!content && !error && !loading))) {
+    lastLogTime = eventLog.Time;
+    analyze();
   }
 
   $: renderedContent = DOMPurify.sanitize(marked.parse(content || "") as string);
@@ -103,7 +104,7 @@
     <div class="flex items-center space-x-2 border-b pb-2 mb-3 dark:border-gray-700">
       <Icon path={icons.mdiBrain} size={1.2} class="text-purple-600 dark:text-purple-400" />
       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-        {$_("AIDiagnoseDialog.Title")}
+        {$_("EventLogAIDialog.Title")}
       </h3>
     </div>
 
@@ -113,7 +114,7 @@
           <img src={nekos[nekoNo]} alt="loading animation" class="h-14 w-auto object-contain" />
         </div>
         <p class="text-xs font-medium text-gray-600 dark:text-gray-300">
-          {$_("AIDiagnoseDialog.Loading")}
+          {$_("EventLogAIDialog.Loading")}
         </p>
       </div>
     {:else}
@@ -136,7 +137,7 @@
             {@html renderedContent}
           </article>
         {:else if !error}
-          <p class="text-gray-500 text-sm">No diagnosis content.</p>
+          <p class="text-gray-500 text-sm">No analysis content.</p>
         {/if}
       </div>
     {/if}
@@ -151,7 +152,7 @@
           size="xs"
         >
           <Icon path={copied ? icons.mdiCheck : icons.mdiContentCopy} size={1} />
-          {copied ? $_("AIDiagnoseDialog.Copied") : $_("AIDiagnoseDialog.Copy")}
+          {copied ? $_("EventLogAIDialog.Copied") : $_("EventLogAIDialog.Copy")}
         </GradientButton>
         <GradientButton
           shadow
@@ -161,7 +162,7 @@
           size="xs"
         >
           <Icon path={icons.mdiDownload} size={1} />
-          {$_("AIDiagnoseDialog.Export")}
+          {$_("EventLogAIDialog.Export")}
         </GradientButton>
       {/if}
       <GradientButton
@@ -169,11 +170,11 @@
         type="button"
         color="pink"
         disabled={loading}
-        onclick={diagnose}
+        onclick={analyze}
         size="xs"
       >
         <Icon path={icons.mdiRefresh} size={1} />
-        {$_("AIDiagnoseDialog.ReDiagnose")}
+        {$_("EventLogAIDialog.ReAnalyze")}
       </GradientButton>
       <GradientButton
         shadow
@@ -183,7 +184,7 @@
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        {$_("AIDiagnoseDialog.Close")}
+        {$_("EventLogAIDialog.Close")}
       </GradientButton>
     </div>
   </div>

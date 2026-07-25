@@ -530,6 +530,10 @@ export function IsLatest() {
   return window['go']['main']['App']['IsLatest']();
 }
 
+export function LLMAnalyzeEventLog(arg1) {
+  return window['go']['main']['App']['LLMAnalyzeEventLog'](arg1);
+}
+
 export function LLMAskLog(arg1) {
   return window['go']['main']['App']['LLMAskLog'](arg1);
 }

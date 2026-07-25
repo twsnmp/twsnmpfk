@@ -402,7 +402,8 @@
     "Filter": "Filter",
     "All": "All",
     "End": "End",
-    "Start": "Start"
+    "Start": "Start",
+    "AIAnalyze": "AI Investigation"
   },
   "EventLogREport": {
     "Oprate": "Oparation rate"
@@ -554,6 +555,15 @@
     "Loading": "Collecting node info, pollings, and related logs for AI diagnosis...",
     "Close": "Close",
     "ReDiagnose": "Re-Diagnose",
+    "Copy": "Copy",
+    "Copied": "Copied",
+    "Export": "Export"
+  },
+  "EventLogAIDialog": {
+    "Title": "Event Log AI Investigation",
+    "Loading": "Collecting event log, node info, polling, and related logs for AI investigation...",
+    "Close": "Close",
+    "ReAnalyze": "Re-Analyze",
     "Copy": "Copy",
     "Copied": "Copied",
     "Export": "Export"

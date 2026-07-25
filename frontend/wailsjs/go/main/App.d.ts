@@ -270,6 +270,8 @@ export function IsDark():Promise<boolean>;
 
 export function IsLatest():Promise<boolean>;
 
+export function LLMAnalyzeEventLog(arg1:datastore.EventLogEnt):Promise<main.LLMResp>;
+
 export function LLMAskLog(arg1:string):Promise<main.LLMResp>;
 
 export function LLMAskMIB(arg1:string):Promise<main.LLMResp>;
