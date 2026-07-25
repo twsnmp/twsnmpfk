@@ -82,6 +82,8 @@ export function ExportIcons():Promise<boolean>;
 
 export function ExportMap(arg1:string,arg2:string):Promise<string>;
 
+export function ExportMarkdown(arg1:string,arg2:string):Promise<void>;
+
 export function ExportNetFlow(arg1:string,arg2:main.NetFlowFilterEnt,arg3:string):Promise<string>;
 
 export function ExportNodes(arg1:string):Promise<string>;
@@ -271,6 +273,8 @@ export function IsLatest():Promise<boolean>;
 export function LLMAskLog(arg1:string):Promise<main.LLMResp>;
 
 export function LLMAskMIB(arg1:string):Promise<main.LLMResp>;
+
+export function LLMDiagnoseNode(arg1:string):Promise<main.LLMResp>;
 
 export function LLMMIBSearch(arg1:string):Promise<main.LLMMIBSearchResp>;
 

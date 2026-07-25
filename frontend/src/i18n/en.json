@@ -446,6 +446,7 @@
     "Grid": "Grid",
     "GridSize": "Grid size",
     "MIBBrowser": "MIB Browser",
+    "AIDiagnose": "AI Diagnosis",
     "Polling": "Polling",
     "ReCheck": "ReCheck",
     "Reload": "Reload",
@@ -542,10 +543,20 @@
     "ReCheck": "Re-check",
     "Reload": "Reload",
     "Report": "Report",
+    "AIDiagnose": "AI Diagnosis",
     "State": "State",
     "Vendor": "Vendor",
     "Action": "Action",
     "MapItems": "Map items"
+  },
+  "AIDiagnoseDialog": {
+    "Title": "Node AI Diagnosis",
+    "Loading": "Collecting node info, pollings, and related logs for AI diagnosis...",
+    "Close": "Close",
+    "ReDiagnose": "Re-Diagnose",
+    "Copy": "Copy",
+    "Copied": "Copied",
+    "Export": "Export"
   },
   "NodePolling": {
     "Add": "Add",

@@ -48,6 +48,7 @@
   import { BrowserOpenURL,WindowReloadApp } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
   import GNMITool from "./GNMITool.svelte";
+  import NodeDiagnoseDialog from "./NodeDiagnoseDialog.svelte";
   import { _ } from "svelte-i18n";
   import type { datastore } from "wailsjs/go/models";
 
@@ -61,6 +62,7 @@
   let showFormatNodesMenu: boolean = false;
   let showEditNode: boolean = false;
   let selectedNode: string = "";
+  let showAIDiagnose: boolean = false;
   let showEditLine: boolean = false;
   let selectedLineNode1: string = "";
   let selectedLineNode2: string = "";
@@ -518,6 +520,19 @@
         <Icon path={icons.mdiChartBarStacked} size={0.7} />
         <div>
           {$_("Map.Report")}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        onclick={() => {
+          showNodeMenu = false;
+          showAIDiagnose = true;
+        }}
+      >
+        <Icon path={icons.mdiBrain} size={0.7} />
+        <div>
+          {$_("Map.AIDiagnose")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -987,6 +1002,8 @@
     refreshMap();
   }}
 />
+
+<NodeDiagnoseDialog bind:show={showAIDiagnose} nodeID={selectedNode} />
 
 <NodePolling
   bind:show={showPolling}

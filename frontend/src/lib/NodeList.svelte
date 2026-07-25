@@ -18,6 +18,7 @@
   import Ping from "./Ping.svelte";
   import MIBBrowser from "./MIBBrowser.svelte";
   import GNMITool from "./GNMITool.svelte";
+  import NodeDiagnoseDialog from "./NodeDiagnoseDialog.svelte";
   import MapList from "./MapList.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -28,6 +29,7 @@
   let showNodeReport = false;
   let showPolling = false;
   let showMapList = false;
+  let showAIDiagnose = false;
   let selectedNode = "";
   let table: any = undefined;
   let selectedCount = 0;
@@ -87,6 +89,15 @@
     }
     selectedNode = selected[0];
     showNodeReport = true;
+  };
+
+  const aiDiagnose = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedNode = selected[0];
+    showAIDiagnose = true;
   };
 
   const polling = () => {
@@ -244,6 +255,16 @@
         {$_("NodeList.Report")}
       </GradientButton>
       <GradientButton
+        shadow
+        color="purple"
+        type="button"
+        onclick={aiDiagnose}
+        size="xs"
+      >
+        <Icon path={icons.mdiBrain} size={1} />
+        {$_("NodeList.AIDiagnose")}
+      </GradientButton>
+      <GradientButton
         >{$_("NodeList.Action")}<Icon
           path={icons.mdiChevronDown}
           size={1}
@@ -344,6 +365,8 @@
 />
 
 <NodeReport bind:show={showNodeReport} id={selectedNode} />
+
+<NodeDiagnoseDialog bind:show={showAIDiagnose} nodeID={selectedNode} />
 
 <NodePolling bind:show={showPolling} nodeID={selectedNode} />
 

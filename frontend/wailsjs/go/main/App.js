@@ -154,6 +154,10 @@ export function ExportMap(arg1, arg2) {
   return window['go']['main']['App']['ExportMap'](arg1, arg2);
 }
 
+export function ExportMarkdown(arg1, arg2) {
+  return window['go']['main']['App']['ExportMarkdown'](arg1, arg2);
+}
+
 export function ExportNetFlow(arg1, arg2, arg3) {
   return window['go']['main']['App']['ExportNetFlow'](arg1, arg2, arg3);
 }
@@ -532,6 +536,10 @@ export function LLMAskLog(arg1) {
 
 export function LLMAskMIB(arg1) {
   return window['go']['main']['App']['LLMAskMIB'](arg1);
+}
+
+export function LLMDiagnoseNode(arg1) {
+  return window['go']['main']['App']['LLMDiagnoseNode'](arg1);
 }
 
 export function LLMMIBSearch(arg1) {

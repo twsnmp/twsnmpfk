@@ -427,6 +427,7 @@
     "Grid": "グリッド整列",
     "Reload": "更新",
     "Report": "レポート",
+    "AIDiagnose": "AI診断",
     "MIBBrowser": "MIBブラウザー",
     "Edit": "編集",
     "Polling": "ポーリング",
@@ -525,6 +526,7 @@
     "Edit": "編集",
     "Polling": "ポーリング",
     "Report": "レポート",
+    "AIDiagnose": "AI診断",
     "Delete": "削除",
     "ReCheck": "再確認",
     "CheckAll": "すべて再確認",
@@ -532,6 +534,15 @@
     "Vendor": "ベンダー",
     "Action": "操作",
     "MapItems": "マップ表示項目"
+  },
+  "AIDiagnoseDialog": {
+    "Title": "ノードAI診断",
+    "Loading": "ノード情報、ポーリング、関連ログを収集し、AIが診断中...",
+    "Close": "閉じる",
+    "ReDiagnose": "再診断",
+    "Copy": "コピー",
+    "Copied": "コピーしました",
+    "Export": "エクスポート"
   },
   "NodePolling": {
     "State": "状態",

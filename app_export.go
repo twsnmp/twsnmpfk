@@ -1388,3 +1388,26 @@ func (a *App) ExportAIData(id string) error {
 	}
 	return os.WriteFile(file, b.Bytes(), 0600)
 }
+
+func (a *App) ExportMarkdown(name, content string) error {
+	ts := time.Now().Format("20060102150405")
+	defaultName := fmt.Sprintf("twsnmpfk_ai_report_%s.md", ts)
+	if name != "" {
+		defaultName = fmt.Sprintf("twsnmpfk_%s_ai_report_%s.md", name, ts)
+	}
+	file, err := wails.SaveFileDialog(a.ctx, wails.SaveDialogOptions{
+		DefaultFilename:      defaultName,
+		CanCreateDirectories: true,
+		Filters: []wails.FileFilter{{
+			DisplayName: "Markdown (*.md)",
+			Pattern:     "*.md",
+		}},
+	})
+	if err != nil {
+		return err
+	}
+	if file == "" {
+		return nil
+	}
+	return os.WriteFile(file, []byte(content), 0600)
+}
