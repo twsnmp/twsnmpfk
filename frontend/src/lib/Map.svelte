@@ -123,11 +123,20 @@
     refreshCount = 0;
     switch (p.Cmd) {
       case "contextMenu":
-        posX = p.x;
-        posY = p.y - 96;
-        const bcr = map.getBoundingClientRect()
-        if ((posY + 200) >  bcr.height) {
-          posY -= 200
+        if (map) {
+          const bcr = map.getBoundingClientRect();
+          const menuWidth = 190;
+          let menuHeight = 260;
+          if (p.Node) {
+            menuHeight = 380;
+          } else if (!p.DrawItem && !p.Network) {
+            menuHeight = 360;
+          }
+          posX = p.x + menuWidth > bcr.width ? Math.max(10, p.x - menuWidth) : p.x;
+          posY = p.y + menuHeight > bcr.height ? Math.max(10, p.y - menuHeight) : p.y;
+        } else {
+          posX = p.x;
+          posY = p.y;
         }
         if (p.Node) {
           showNodeMenuFunc(p.Node);
@@ -175,8 +184,16 @@
         deleteNodes(p.Param);
         break;
       case "formatNodes":
-        posX = p.x;
-        posY = p.y - 96;
+        if (map) {
+          const bcr = map.getBoundingClientRect();
+          const menuWidth = 180;
+          const menuHeight = 140;
+          posX = p.x + menuWidth > bcr.width ? Math.max(10, p.x - menuWidth) : p.x;
+          posY = p.y + menuHeight > bcr.height ? Math.max(10, p.y - menuHeight) : p.y;
+        } else {
+          posX = p.x;
+          posY = p.y;
+        }
         selectedNodes = [];
         for(const id of p.Nodes) {
           selectedNodes.push(id);
@@ -329,13 +346,13 @@
 
 {#if showMapMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+  <div class="block z-50" style="position: absolute; left:{posX}px;top: {posY}px">
     <div
-      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
+      class="bg-slate-800/95 text-slate-200 border border-slate-700/80 shadow-2xl backdrop-blur-md rounded-xl p-1.5 min-w-[180px] space-y-0.5 select-none text-xs"
     >
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           selectedNode = "";
           showEditNode = true;
@@ -343,14 +360,14 @@
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiPlus} size={0.7} />
+        <span class="text-sky-400"><Icon path={icons.mdiPlus} size={0.7} /></span>
         <div>
           {$_("Map.AddNode")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           selectedDrawItem = "";
           showEditDrawItem = true;
@@ -358,14 +375,14 @@
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiDrawing} size={0.7} />
+        <span class="text-sky-400"><Icon path={icons.mdiDrawing} size={0.7} /></span>
         <div>
           {$_("Map.AddDrawItem")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           selectedNetwork = "";
           showEditNetwork = true;
@@ -373,41 +390,44 @@
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiDrawing} size={0.7} />
+        <span class="text-sky-400"><Icon path={icons.mdiDrawing} size={0.7} /></span>
         <div>
           {$_('Map.AddNetwork')}
         </div>
       </div>
+
+      <div class="border-t border-slate-700/60 my-1"></div>
+
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showMapMenu = false;
           CheckPolling("all");
           refreshMap();
         }}
       >
-        <Icon path={icons.mdiCached} size={0.7} />
+        <span class="text-emerald-400"><Icon path={icons.mdiCached} size={0.7} /></span>
         <div>
           {$_("Map.CheckAll")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showMapMenu = false;
           showDiscover = true;
         }}
       >
-        <Icon path={icons.mdiFileFind} size={0.7} />
+        <span class="text-indigo-400"><Icon path={icons.mdiFileFind} size={0.7} /></span>
         <div>
           {$_("Map.Discover")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={async () => {
           showMapMenu = false;
           if (await ImportV4Map()) {
@@ -415,51 +435,54 @@
           }
         }}
       >
-        <Icon path={icons.mdiImport} size={0.7} />
+        <span class="text-amber-400"><Icon path={icons.mdiImport} size={0.7} /></span>
         <div>
           {$_('Map.Import')}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showMapMenu = false;
           showGrid = true;
         }}
       >
-        <Icon path={icons.mdiGrid} size={0.7} />
+        <span class="text-slate-400"><Icon path={icons.mdiGrid} size={0.7} /></span>
         <div>
           {$_("Map.Grid")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={showEditBackImageDlg}
       >
-        <Icon path={icons.mdiImage} size={0.7} />
+        <span class="text-slate-400"><Icon path={icons.mdiImage} size={0.7} /></span>
         <div>
           {$_("Map.BackImage")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showMapMenu = false;
           resetMap();
           refreshMap();
         }}
       >
-        <Icon path={icons.mdiRecycle} size={0.7} />
+        <span class="text-slate-400"><Icon path={icons.mdiRecycle} size={0.7} /></span>
         <div>
           {$_("Map.Reload")}
         </div>
       </div>
+
+      <div class="border-t border-slate-700/60 my-1"></div>
+
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           editDrawItems = !editDrawItems;
           setEditDrawItems(editDrawItems);
@@ -467,12 +490,12 @@
         }}
       >
         {#if editDrawItems}
-          <Icon path={icons.mdiEye} size={0.7} />
+          <span class="text-purple-400"><Icon path={icons.mdiEye} size={0.7} /></span>
           <div>
             {$_("Map.showDrawItemNomal")}
           </div>
         {:else}
-          <Icon path={icons.mdiDraw} size={0.7} />
+          <span class="text-purple-400"><Icon path={icons.mdiDraw} size={0.7} /></span>
           <div>
             {$_("Map.showDrawItemEdit")}
           </div>
@@ -480,7 +503,7 @@
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeInfo = !showNodeInfo;
           setShowNodeInfo(showNodeInfo);
@@ -488,12 +511,12 @@
         }}
       >
         {#if showNodeInfo}
-          <Icon path={icons.mdiEye} size={0.7} />
+          <span class="text-purple-400"><Icon path={icons.mdiEye} size={0.7} /></span>
           <div>
            {$_('Map.ShowNodeInfo')}
           </div>
         {:else}
-          <Icon path={icons.mdiEyeClosed} size={0.7} />
+          <span class="text-purple-400"><Icon path={icons.mdiEyeClosed} size={0.7} /></span>
           <div>
           {$_('Map.ShowNodeInfo')}
           </div>
@@ -505,221 +528,234 @@
 
 {#if showNodeMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+  <div class="block z-50" style="position: absolute; left:{posX}px;top: {posY}px">
     <div
-      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
+      class="bg-slate-800/95 text-slate-200 border border-slate-700/80 shadow-2xl backdrop-blur-md rounded-xl p-1.5 min-w-[180px] space-y-0.5 select-none text-xs"
     >
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeMenu = false;
           showNodeReport = true;
         }}
       >
-        <Icon path={icons.mdiChartBarStacked} size={0.7} />
+        <span class="text-sky-400"><Icon path={icons.mdiChartBarStacked} size={0.7} /></span>
         <div>
           {$_("Map.Report")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeMenu = false;
           showAIDiagnose = true;
         }}
       >
-        <Icon path={icons.mdiBrain} size={0.7} />
+        <span class="text-violet-400"><Icon path={icons.mdiBrain} size={0.7} /></span>
         <div>
           {$_("Map.AIDiagnose")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeMenu = false;
           showPing = true;
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiCheckNetwork} size={0.7} />
+        <span class="text-emerald-400"><Icon path={icons.mdiCheckNetwork} size={0.7} /></span>
         <div>PING</div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeMenu = false;
           showMibBr = true;
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiEye} size={0.7} />
+        <span class="text-teal-400"><Icon path={icons.mdiEye} size={0.7} /></span>
         <div>
           {$_("Map.MIBBrowser")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeMenu = false;
           showGNMITool = true;
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiEye} size={0.7} />
+        <span class="text-cyan-400"><Icon path={icons.mdiEye} size={0.7} /></span>
         <div>
           {$_('GNMITool.gNMITool')}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeMenu = false;
           WakeOnLan(selectedNode);
         }}
       >
-        <Icon path={icons.mdiAlarm} size={0.7} />
+        <span class="text-amber-400"><Icon path={icons.mdiAlarm} size={0.7} /></span>
         <div>Wake On Lan</div>
       </div>
+
+      <div class="border-t border-slate-700/60 my-1"></div>
+
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeMenu = false;
           showEditNode = true;
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiPencil} size={0.7} />
+        <span class="text-blue-400"><Icon path={icons.mdiPencil} size={0.7} /></span>
         <div>
           {$_("Map.Edit")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeMenu = false;
           showPolling = true;
         }}
       >
-        <Icon path={icons.mdiLanCheck} size={0.7} />
+        <span class="text-blue-400"><Icon path={icons.mdiLanCheck} size={0.7} /></span>
         <div>
           {$_("Map.Polling")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNodeMenu = false;
           CheckPolling(selectedNode);
           refreshMap();
         }}
       >
-        <Icon path={icons.mdiCached} size={0.7} />
+        <span class="text-blue-400"><Icon path={icons.mdiCached} size={0.7} /></span>
         <div>
           {$_("Map.ReCheck")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={async () => {
           showNodeMenu = false;
           await CopyNode(selectedNode);
           refreshMap();
         }}
       >
-        <Icon path={icons.mdiContentCopy} size={0.7} />
+        <span class="text-blue-400"><Icon path={icons.mdiContentCopy} size={0.7} /></span>
         <div>
           {$_("Map.Copy")}
         </div>
       </div>
+
+      <div class="border-t border-slate-700/60 my-1"></div>
+
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300"
         onclick={() => {
           deleteNodes([selectedNode]);
           refreshMap();
         }}
       >
-        <Icon path={icons.mdiDelete} size={0.7} />
+        <span class="text-rose-400"><Icon path={icons.mdiDelete} size={0.7} /></span>
         <div>
           {$_("Map.Delete")}
         </div>
       </div>
-      {#each urls as url}
-        {#if url}
-          <!-- svelte-ignore a11y-no-static-element-interactions -->
-          <div
-            class="flex items-center space-x-2 hover:bg-sky-500/[0.8] overflow-hidden"
-            onclick={() => {
-              showNodeMenu = false;
-              BrowserOpenURL(url);
-            }}
-          >
-            <div class="flex-none">
-              <Icon path={icons.mdiLink} size={0.7} />
+
+      {#if urls.some((u: string) => u)}
+        <div class="border-t border-slate-700/60 my-1"></div>
+        {#each urls as url}
+          {#if url}
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div
+              class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300 overflow-hidden"
+              onclick={() => {
+                showNodeMenu = false;
+                BrowserOpenURL(url);
+              }}
+            >
+              <div class="flex-none text-sky-400">
+                <Icon path={icons.mdiLink} size={0.7} />
+              </div>
+              <div class="truncate">
+                {url}
+              </div>
             </div>
-            <div class="truncate">
-              {url}
-            </div>
-          </div>
-        {/if}
-      {/each}
+          {/if}
+        {/each}
+      {/if}
     </div>
   </div>
 {/if}
 
 {#if showDrawItemMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+  <div class="block z-50" style="position: absolute; left:{posX}px;top: {posY}px">
     <div
-      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
+      class="bg-slate-800/95 text-slate-200 border border-slate-700/80 shadow-2xl backdrop-blur-md rounded-xl p-1.5 min-w-[180px] space-y-0.5 select-none text-xs"
     >
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showDrawItemMenu = false;
           showEditDrawItem = true;
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiPencil} size={0.7} />
+        <span class="text-blue-400"><Icon path={icons.mdiPencil} size={0.7} /></span>
         <div>
           {$_("Map.Edit")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={async () => {
           showDrawItemMenu = false;
           await CopyDrawItem(selectedDrawItem);
           refreshMap();
         }}
       >
-        <Icon path={icons.mdiContentCopy} size={0.7} />
+        <span class="text-blue-400"><Icon path={icons.mdiContentCopy} size={0.7} /></span>
         <div>
           {$_("Map.Copy")}
         </div>
       </div>
+
+      <div class="border-t border-slate-700/60 my-1"></div>
+
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300"
         onclick={() => {
           deleteDrawItems([selectedDrawItem]);
           refreshMap();
         }}
       >
-        <Icon path={icons.mdiDelete} size={0.7} />
+        <span class="text-rose-400"><Icon path={icons.mdiDelete} size={0.7} /></span>
         <div>
           {$_("Map.Delete")}
         </div>
@@ -730,69 +766,41 @@
 
 {#if showNetworkMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+  <div class="block z-50" style="position: absolute; left:{posX}px;top: {posY}px">
     <div
-      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
+      class="bg-slate-800/95 text-slate-200 border border-slate-700/80 shadow-2xl backdrop-blur-md rounded-xl p-1.5 min-w-[180px] space-y-0.5 select-none text-xs"
     >
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNetworkMenu = false;
           showNetworkReport = true;
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiChartBarStacked} size={0.7} />
+        <span class="text-sky-400"><Icon path={icons.mdiChartBarStacked} size={0.7} /></span>
         <div>
           {$_("Map.Report")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNetworkMenu = false;
           CheckNetwork(selectedNetwork);
           refreshMap();
         }}
       >
-        <Icon path={icons.mdiCached} size={0.7} />
+        <span class="text-emerald-400"><Icon path={icons.mdiCached} size={0.7} /></span>
         <div>
           {$_("Map.ReCheck")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        onclick={() => {
-          showNetworkMenu = false;
-          showEditNetwork = true;
-          setMapReadOnly(true);
-        }}
-      >
-        <Icon path={icons.mdiPencil} size={0.7} />
-        <div>
-          {$_("Map.Edit")}
-        </div>
-      </div>
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
-        onclick={() => {
-          showNetworkMenu = false;
-          showNetworkLines = true;
-          setMapReadOnly(true);
-        }}
-      >
-        <Icon path={icons.mdiPlaylistEdit} size={0.7} />
-        <div>
-          {$_('Map.EditLine')}
-        </div>
-      </div>
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNetworkMenu = false;
           selectedNode = "NET:" + selectedNetwork;
@@ -800,12 +808,12 @@
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiCheckNetwork} size={0.7} />
+        <span class="text-emerald-400"><Icon path={icons.mdiCheckNetwork} size={0.7} /></span>
         <div>PING</div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNetworkMenu = false;
           selectedNode = "NET:" + selectedNetwork;
@@ -813,34 +821,68 @@
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiEye} size={0.7} />
+        <span class="text-teal-400"><Icon path={icons.mdiEye} size={0.7} /></span>
         <div>
           {$_("Map.MIBBrowser")}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNetworkMenu = false;
           showNeighborNetworksAndLines = true;
           setMapReadOnly(true);
         }}
       >
-        <Icon path={icons.mdiLanConnect} size={0.7} />
+        <span class="text-indigo-400"><Icon path={icons.mdiLanConnect} size={0.7} /></span>
         <div>
           {$_('Map.FindNeighbor')}
         </div>
       </div>
+
+      <div class="border-t border-slate-700/60 my-1"></div>
+
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex text-red-500 space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
+        onclick={() => {
+          showNetworkMenu = false;
+          showEditNetwork = true;
+          setMapReadOnly(true);
+        }}
+      >
+        <span class="text-blue-400"><Icon path={icons.mdiPencil} size={0.7} /></span>
+        <div>
+          {$_("Map.Edit")}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
+        onclick={() => {
+          showNetworkMenu = false;
+          showNetworkLines = true;
+          setMapReadOnly(true);
+        }}
+      >
+        <span class="text-blue-400"><Icon path={icons.mdiPlaylistEdit} size={0.7} /></span>
+        <div>
+          {$_('Map.EditLine')}
+        </div>
+      </div>
+
+      <div class="border-t border-slate-700/60 my-1"></div>
+
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300"
         onclick={() => {
           deleteNetwork(selectedNetwork);
           refreshMap();
         }}
       >
-        <Icon path={icons.mdiDelete} size={0.7} />
+        <span class="text-rose-400"><Icon path={icons.mdiDelete} size={0.7} /></span>
         <div>
           {$_("Map.Delete")}
         </div>
@@ -851,48 +893,48 @@
 
 {#if showFormatNodesMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div class="block" style="position: absolute; left:{posX}px;top: {posY}px">
+  <div class="block z-50" style="position: absolute; left:{posX}px;top: {posY}px">
     <div
-      class="bg-white w-40 border border-gray-300 flex flex-col text-xs space-y-1 text-gray-800 p-2"
+      class="bg-slate-800/95 text-slate-200 border border-slate-700/80 shadow-2xl backdrop-blur-md rounded-xl p-1.5 min-w-[180px] space-y-0.5 select-none text-xs"
     >
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showFormatNodesMenu = false;
           horizontal(selectedNodes);
           selectedNodes = [];
         }}
       >
-        <Icon path={icons.mdiFormatVerticalAlignCenter} size={0.7} />
+        <span class="text-sky-400"><Icon path={icons.mdiFormatVerticalAlignCenter} size={0.7} /></span>
         <div>
           {$_('Map.Horizontal')}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showFormatNodesMenu = false;
           vertical(selectedNodes);
           selectedNodes = [];
         }}
       >
-        <Icon path={icons.mdiFormatHorizontalAlignCenter} size={0.7} />
+        <span class="text-sky-400"><Icon path={icons.mdiFormatHorizontalAlignCenter} size={0.7} /></span>
         <div>
           {$_('Map.Vertical')}
         </div>
       </div>
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex space-x-2 hover:bg-sky-500/[0.8]"
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showFormatNodesMenu = false;
           circle(selectedNodes);
           selectedNodes = [];
         }}
       >
-        <Icon path={icons.mdiCircleOutline} size={0.7} />
+        <span class="text-sky-400"><Icon path={icons.mdiCircleOutline} size={0.7} /></span>
         <div>
           {$_('Map.Circle')}
         </div>
