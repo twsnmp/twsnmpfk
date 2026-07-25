@@ -65,7 +65,7 @@
       pageLength: window.innerHeight > 800 ? 25 : 10,
       language: getTableLang(),
       select: {
-        style: "multi",
+        style: "multi+shift",
       },
     });
     table.on("select", () => {
@@ -83,6 +83,18 @@
         row.child(formatValue(row.data())).show();
       }
     });
+  };
+
+  const selectAllDisplayed = () => {
+    if (!table) return;
+    table.rows({ search: "applied" }).select();
+    selectedCount = table.rows({ selected: true }).count();
+  };
+
+  const deselectAll = () => {
+    if (!table) return;
+    table.rows().deselect();
+    selectedCount = 0;
   };
 
   const refresh = async () => {
@@ -228,6 +240,28 @@
     <table id="mqttStatTable" class="display compact" style="width:99%"></table>
   </div>
   <div class="flex justify-end space-x-2 mr-2">
+    <GradientButton
+      shadow
+      color="purple"
+      type="button"
+      onclick={selectAllDisplayed}
+      size="xs"
+    >
+      <Icon path={icons.mdiCheckboxMultipleMarked} size={1} />
+      {$_('Mqtt.SelectAll')}
+    </GradientButton>
+    {#if selectedCount > 0}
+      <GradientButton
+        shadow
+        color="purple"
+        type="button"
+        onclick={deselectAll}
+        size="xs"
+      >
+        <Icon path={icons.mdiCheckboxMultipleBlankOutline} size={1} />
+        {$_('Mqtt.DeselectAll')}
+      </GradientButton>
+    {/if}
     {#if selectedCount === 1}
       <GradientButton
         shadow

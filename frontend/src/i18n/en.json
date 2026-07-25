@@ -1115,7 +1115,9 @@
     "Remote": "Remote",
     "Topic": "Topic",
     "CopyTopic": "Copy Topic",
-    "CreatePolling": "Create Polling"
+    "CreatePolling": "Create Polling",
+    "SelectAll": "Select All",
+    "DeselectAll": "Deselect All"
   },
   "NetworkReport": {
     "Error": "Error",
