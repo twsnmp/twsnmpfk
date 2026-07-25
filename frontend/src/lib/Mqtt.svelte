@@ -31,6 +31,26 @@
   let polling: any = undefined;
   let copied = false;
 
+  const formatValue = (d: any) => {
+    if (!d || !d.Value) {
+      return '<div class="p-2 text-gray-400 italic">No Data</div>';
+    }
+    let val = d.Value;
+    try {
+      const parsed = JSON.parse(val);
+      val = JSON.stringify(parsed, null, 2);
+    } catch {
+      // Not JSON
+    }
+    const escaped = val
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+    return `<div class="p-2 bg-gray-800 text-green-400 rounded font-mono text-xs overflow-x-auto max-h-96"><pre><code>${escaped}</code></pre></div>`;
+  };
+
   const showTable = () => {
     selectedCount = 0;
     table = new DataTable("#mqttStatTable", {
@@ -39,8 +59,8 @@
       data: data,
       stateSave: true,
       order: [
-        [0, "asc"],
         [1, "asc"],
+        [2, "asc"],
       ],
       pageLength: window.innerHeight > 800 ? 25 : 10,
       language: getTableLang(),
@@ -53,6 +73,15 @@
     });
     table.on("deselect", () => {
       selectedCount = table.rows({ selected: true }).count();
+    });
+    table.on('click', 'tbody td.dt-control', function (e: any) {
+      let tr = e.target.closest('tr');
+      let row = table.row(tr);
+      if (row.child.isShown()) {
+        row.child.hide();
+      } else {
+        row.child(formatValue(row.data())).show();
+      }
     });
   };
 
@@ -131,9 +160,16 @@
 
   const columns = [
     {
+      className: 'dt-control',
+      orderable: false,
+      data: null,
+      defaultContent: '',
+      width: '5%',
+    },
+    {
       data: "State",
       title: $_("PollingList.State"),
-      width: "10%",
+      width: "5%",
       render: renderState,
     },
     {

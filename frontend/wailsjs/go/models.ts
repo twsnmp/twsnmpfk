@@ -768,6 +768,7 @@ export namespace datastore {
 	    Bytes: number;
 	    First: number;
 	    Last: number;
+	    Value: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new MqttStatEnt(source);
@@ -784,6 +785,7 @@ export namespace datastore {
 	        this.Bytes = source["Bytes"];
 	        this.First = source["First"];
 	        this.Last = source["Last"];
+	        this.Value = source["Value"];
 	    }
 	}
 	export class NetFlowEnt {

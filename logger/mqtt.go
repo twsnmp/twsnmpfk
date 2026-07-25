@@ -184,7 +184,7 @@ func (h *mqttHook) OnUnsubscribed(cl *mqtt.Client, pk packets.Packet) {
 }
 
 func (h *mqttHook) OnPublished(cl *mqtt.Client, pk packets.Packet) {
-	datastore.UpdateMqttStat(cl.ID, getMqttRemoteIP(cl.Net.Remote), pk.TopicName, len(pk.Payload))
+	datastore.UpdateMqttStat(cl.ID, getMqttRemoteIP(cl.Net.Remote), pk.TopicName, pk.Payload)
 	if datastore.MapConf.MqttToSyslog && datastore.MapConf.EnableSyslogd {
 		logMap := make(map[string]any)
 		logMap["content"] = string(pk.Payload)

@@ -21,6 +21,7 @@ type MqttStatEnt struct {
 	Bytes    int64  `json:"Bytes"`
 	First    int64  `json:"First"`
 	Last     int64  `json:"Last"`
+	Value    string `json:"Value"`
 }
 
 var mqttStatMap sync.Map
@@ -30,14 +31,15 @@ func getMqttStatKey(clientID, topic string) string {
 	return fmt.Sprintf("%x", sha1.Sum([]byte(fmt.Sprintf("%s\t%s", clientID, topic))))
 }
 
-func UpdateMqttStat(clientID, remote, topic string, b int) {
+func UpdateMqttStat(clientID, remote, topic string, payload []byte) {
 	k := getMqttStatKey(clientID, topic)
 	if v, ok := mqttStatMap.Load(k); ok {
 		if s, ok := v.(*MqttStatEnt); ok {
-			s.Bytes += int64(b)
+			s.Bytes += int64(len(payload))
 			s.Count++
 			s.Remote = remote
 			s.Last = time.Now().UnixNano()
+			s.Value = string(payload)
 		}
 		return
 	}
@@ -47,9 +49,10 @@ func UpdateMqttStat(clientID, remote, topic string, b int) {
 		Topic:    topic,
 		Count:    1,
 		Remote:   remote,
-		Bytes:    int64(b),
+		Bytes:    int64(len(payload)),
 		First:    time.Now().UnixNano(),
 		Last:     time.Now().UnixNano(),
+		Value:    string(payload),
 	})
 }
 
