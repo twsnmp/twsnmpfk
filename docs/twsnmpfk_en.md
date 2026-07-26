@@ -182,14 +182,16 @@ Right -click the location other than the node and drawing items on the map to di
 | ---- | ---- |
 | Add node | Add the node to the map manually.|
 | Draw item | Add drawing items to the map.|
+| New Network | Add network elements to the map.|
 | Check all | Reconfirm the node that has occurred.|
 | Discover | Displays the automatic discovery screen.|
 | Import | Import map file from TWSNMP v4.x.|
 | Export | Export map to Image (PNG, SVG, PDF), Draw.io, or Data (JSON, CSV, Excel) formats.|
 | Grid | Align the position of the node at the specified interval.|
-| Backgrand image| set backgrand image to map|
+| Background image | Set background image for the map.|
 | Reload | Update the map to the latest state.|
 | Edit mode | All drawing items are displayed regardless of the state of the map.|
+| Node Info | Display additional information for nodes on the map.|
 
 
 ---
@@ -201,17 +203,38 @@ Right -click the node on the map to display it.
 ---
 | Menu | Operation |
 | ---- | ---- |
-| AI Diagnose | Diagnose node status, related logs, and responses using AI (LLM).|
 | Report | Displays the report screen related to the node.|
-| Ping | Displays the ping screen.|
-| MIB browser | Displays MIB browser.|
+| AI Diagnosis | Diagnose node status, related logs, and responses using AI (LLM).|
+| PING | Displays the ping screen.|
+| MIB Browser | Displays MIB browser.|
 | gNMI Tool | Displays gNMI Tool.|
-| Wake on LAN | Wake on LAN packet.|
+| Wake On Lan | Send Wake On Lan packet.|
 | Edit | Displays the screen to edit the node settings.|
 | Polling | Displays a polling list related to nodes.|
-| ReCheck | Relieve the condition of the node by executing the polling.|
+| ReCheck | Reconfirm the condition of the node by executing polling.|
 | Copy | Create a node duplication.|
-| Delete| Delete node.|
+| Delete | Delete node.|
+
+
+---
+### Network node menu
+
+Right-click a network node on the map to display this menu.
+
+![h:400 center](./images/en/map_network_node_menu.png)
+
+---
+| Menu | Operation |
+| ---- | ---- |
+| Report | Displays the network report screen.|
+| ReCheck | Reconfirm polling for the network node.|
+| PING | Displays the ping screen.|
+| MIB Browser | Displays MIB browser.|
+| Find neighbor | Search connection targets via switch FDB table.|
+| Edit | Edit network node settings.|
+| Edit line | Edit connection lines.|
+| Delete | Delete network node.|
+
 
 ---
 ### Draw item menu
@@ -600,6 +623,22 @@ A list of polling related to nodes.
 | Reload | Update the polling list to the latest state.|
 | Close | Close the list of polling.|
 
+
+---
+### AI Diagnosis
+Uses AI (LLM) to comprehensively analyze the selected node's current status, polling responses, and related logs.
+
+![h:400 center](./images/en/node_list_ai.png)
+
+---
+| Items | Contents |
+| ---- | ---- |
+| Copy | Copy the AI diagnosis report content to the clipboard.|
+| Export | Export the AI diagnosis report content to a text file.|
+| Re-Diagnose | Re-run the AI diagnosis using the latest node status and log data.|
+| Close | Close the AI diagnosis dialog.|
+
+
 ---
 ### Basic information report
 Basic information about nodes.
@@ -713,6 +752,26 @@ This is the selection screen of the template displayed when adding polling.
 | Template file | Import polling from template file.|
 | Add | Select polling.|
 | Cancel | Polling Closes.|
+
+
+---
+### AI Polling Setting Assistant
+
+An assistant feature that leverages AI (LLM) to automatically generate optimal polling types, threshold parameters, evaluation JavaScript scripts, and setup advice from natural language prompts describing monitoring goals and conditions.
+
+![h:400 center](./images/en/polling_list_ai_assistant.png)
+
+---
+| Items | Contents |
+| ---- | ---- |
+| Monitoring goal / instruction input | Enter desired monitoring details or alert conditions in natural language.|
+| Quick goal examples | One-tap input for common monitoring scenarios (Ping response delay, HTTP/HTTPS, Syslog errors, etc.).|
+| Analyze optimal settings with AI | Send request to AI (LLM) based on the instructions to analyze and generate optimal settings.|
+| Setting preview | Preview of the generated polling type, evaluation script, polling interval, and status level.|
+| AI Assistant advice | Detailed explanation and guidance from AI regarding the generated configuration logic.|
+| Apply to edit screen | Apply the AI-generated settings directly to the polling configuration/edit screen.|
+| Close | Close the AI polling setting assistant dialog.|
+
 
 ---
 ### Basic information
@@ -967,12 +1026,28 @@ This is the event log screen.At the top, there is a graph showing the number of 
 
 | Items | Contents |
 | ---- | ---- |
+| AI Investigation | Automatically analyzes and investigates the root cause and suggested measures for selected event logs using AI (LLM).|
 | Filter | Specify the search conditions and display the log.|
 | Delete all logs | Delete all event logs.|
 | Report | Displays the event log analysis report.|
 | CSV | Export the event log to the CSV file.|
 | Excel | Export the event log to the Excel file.|
 | Reload | Update the list of event logs to the latest state.|
+
+---
+### AI Investigation
+Uses AI (LLM) to automatically analyze the root cause of recorded system events and warning logs, timeline event transitions, and recommended troubleshooting steps.
+
+![h:400 center](./images/en/eventlog_ai.png)
+
+---
+| Items | Contents |
+| ---- | ---- |
+| Copy | Copy the investigation report content to the clipboard.|
+| Export | Export the investigation report content to a text file.|
+| Re-Analyze | Re-run the AI cause investigation using the latest event log data.|
+| Close | Close the AI investigation dialog.|
+
 
 ---
 ### Event log filter
@@ -1478,9 +1553,28 @@ Retention Time, Source IP limits, and reception ON/OFF.
 
 ---
 ## MQTT
-Displays received MQTT topics, status, client ID, and counts. Allows viewing and formatting (JSON, TEXT, HEX) the latest received payload, viewing statistical report charts, copying topic names, and creating polling tasks.
+Displays received MQTT topics, status, client ID, and counts. You can expand any topic row to view and inspect the latest received payload data (formatted as JSON, TEXT, or HEX) directly on the screen. Also supports viewing statistical report charts, copying topic names, and creating polling tasks.
 
 ![h:400 center](./images/en/mqtt.png)
+
+---
+### MQTT Report
+
+A report screen that provides multi-faceted analysis of received MQTT messages, including statistical charts, topic hierarchy treemaps, and 3D correlation graphs.
+
+![h:400 center](./images/en/mqtt_report.png)
+
+---
+| Tab | Contents |
+| ---- | ---- |
+| By Client ID | Aggregates and displays message counts and data volume per Client ID.|
+| By Source IP | Aggregates message counts and data volume per sender IP address.|
+| By Topic | Aggregates message counts and data volume ratios per topic.|
+| Heatmap | Visualizes message reception frequency over time using a heatmap.|
+| By Status | Displays the distribution and ratio of topics by status level.|
+| Topic Hierarchy Treemap | Visualizes the hierarchical structure of MQTT topics using a Treemap.|
+| 3D Chart | Plots correlations between topics, senders, and data volume in 3D space.|
+
 
 ---
 ### MQTT settings
