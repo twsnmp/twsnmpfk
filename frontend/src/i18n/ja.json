@@ -157,7 +157,18 @@
     "AdviceTitle": "AIアシスタントの設定アドバイス",
     "NoAdvice": "目的を入力して「AIで最適設定を分析」をクリックしてください。",
     "GenerateScript": "AIでスクリプト生成",
-    "Close": "閉じる"
+    "Close": "閉じる",
+    "TagHttpLabel": "HTTP/HTTPS監視",
+    "TagHttpText": "Webサーバーの応答時間が2秒を超えたら警告、ステータス200以外で重度エラー",
+    "TagCiscoCpuLabel": "Cisco CPU/Mem",
+    "TagCiscoCpuText": "CiscoルーターのCPU使用率が80%を超えたら警告",
+    "TagTlsLabel": "TLS証明書期限",
+    "TagTlsText": "HTTPSのTLS証明書の有効期限が14日未満で警告",
+    "TagSyslogLabel": "Syslogエラー",
+    "TagSyslogText": "SyslogでERRORまたはFAILメッセージが発生したらアラート",
+    "TagPingLabel": "Ping応答遅延",
+    "TagPingText": "Ping応答時間が100ms以上で警告",
+    "DefaultName": "推奨ポーリング設定"
   },
   "AIList": {
     "AnomaryScore": "異常スコア",

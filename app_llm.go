@@ -721,7 +721,7 @@ Return ONLY a raw JSON object with the following structure:
   "PollInt": <int, interval in sec>,
   "Timeout": <int, timeout in sec>,
   "Retry": <int, retry count>,
-  "Advice": "<string, detailed explanation in Japanese on why this native polling configuration was selected, mentioning nanoseconds units and true=normal logic>"
+  "Advice": "<string, detailed explanation in English on why this native polling configuration was selected, mentioning nanoseconds units and true=normal logic>"
 }`
 
 	if i18n.GetLang() == "ja" {

@@ -46,12 +46,12 @@
 
   onDestroy(stopAnimation);
 
-  const quickTags = [
-    { label: "HTTP/HTTPS監視", text: "Webサーバーの応答時間が2秒を超えたら警告、ステータス200以外で重度エラー" },
-    { label: "Cisco CPU/Mem", text: "CiscoルーターのCPU使用率が80%を超えたら警告" },
-    { label: "TLS証明書期限", text: "HTTPSのTLS証明書の有効期限が14日未満で警告" },
-    { label: "Syslogエラー", text: "SyslogでERRORまたはFAILメッセージが発生したらアラート" },
-    { label: "Ping応答遅延", text: "Ping応答時間が100ms以上で警告" },
+  $: quickTags = [
+    { label: $_("AIPollingAssist.TagHttpLabel"), text: $_("AIPollingAssist.TagHttpText") },
+    { label: $_("AIPollingAssist.TagCiscoCpuLabel"), text: $_("AIPollingAssist.TagCiscoCpuText") },
+    { label: $_("AIPollingAssist.TagTlsLabel"), text: $_("AIPollingAssist.TagTlsText") },
+    { label: $_("AIPollingAssist.TagSyslogLabel"), text: $_("AIPollingAssist.TagSyslogText") },
+    { label: $_("AIPollingAssist.TagPingLabel"), text: $_("AIPollingAssist.TagPingText") },
   ];
 
   const setQuickTag = (tagText: string) => {
@@ -163,7 +163,7 @@
           <div class="bg-white dark:bg-gray-900 p-3 rounded border border-pink-200 dark:border-pink-800 space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
               <span class="font-bold text-sm text-pink-700 dark:text-pink-300">
-                {result.Name || "推奨ポーリング設定"}
+                {result.Name || $_("AIPollingAssist.DefaultName")}
               </span>
               <div class="space-x-1">
                 <Badge color="blue">{result.Type}</Badge>

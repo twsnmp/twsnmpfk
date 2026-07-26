@@ -167,7 +167,18 @@
     "AdviceTitle": "AI Assistant Advice",
     "NoAdvice": "Enter your monitoring goal and click 'Analyze Best Settings with AI'.",
     "GenerateScript": "Generate Script with AI",
-    "Close": "Close"
+    "Close": "Close",
+    "TagHttpLabel": "HTTP/HTTPS",
+    "TagHttpText": "Warn if Web server response time exceeds 2s, severe error if status is not 200",
+    "TagCiscoCpuLabel": "Cisco CPU/Mem",
+    "TagCiscoCpuText": "Warn if Cisco router CPU usage exceeds 80%",
+    "TagTlsLabel": "TLS Cert Expiry",
+    "TagTlsText": "Warn if HTTPS TLS certificate expiration is less than 14 days",
+    "TagSyslogLabel": "Syslog Error",
+    "TagSyslogText": "Alert if ERROR or FAIL messages occur in Syslog",
+    "TagPingLabel": "Ping Latency",
+    "TagPingText": "Warn if Ping response time is 100ms or higher",
+    "DefaultName": "Recommended Polling Setting"
   },
   "AppPolling": {
     "Name": "Name"
