@@ -764,12 +764,12 @@ An assistant feature that leverages AI (LLM) to automatically generate optimal p
 ---
 | Items | Contents |
 | ---- | ---- |
-| Monitoring goal / instruction input | Enter desired monitoring details or alert conditions in natural language.|
-| Quick goal examples | One-tap input for common monitoring scenarios (Ping response delay, HTTP/HTTPS, Syslog errors, etc.).|
-| Analyze optimal settings with AI | Send request to AI (LLM) based on the instructions to analyze and generate optimal settings.|
+| Monitoring Goal / Intent | Enter desired monitoring details or alert conditions in natural language.|
+| Quick Examples | One-tap input for common monitoring scenarios (Ping Latency, HTTP/HTTPS, Syslog Error, etc.).|
+| Analyze Best Settings with AI | Send request to AI (LLM) based on the instructions to analyze and generate optimal settings.|
 | Setting preview | Preview of the generated polling type, evaluation script, polling interval, and status level.|
-| AI Assistant advice | Detailed explanation and guidance from AI regarding the generated configuration logic.|
-| Apply to edit screen | Apply the AI-generated settings directly to the polling configuration/edit screen.|
+| AI Assistant Advice | Detailed explanation and guidance from AI regarding the generated configuration logic.|
+| Apply Settings to Editor | Apply the AI-generated settings directly to the polling configuration/edit screen.|
 | Close | Close the AI polling setting assistant dialog.|
 
 
