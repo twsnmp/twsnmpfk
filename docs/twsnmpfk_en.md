@@ -28,7 +28,7 @@ https://www.microsoft.com/store/apps/9nsqn46p0mVL
 You can buy it.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-11-24_15-37-20.png)
+![h:400 center](./images/en/store_ms_store.png)
 
 
 ---
@@ -37,7 +37,7 @@ The Mac version is
 https://apps.apple.com/jp/app/twsnmpfk/id6468539128
 You can buy it.
 
-![h:400 center](./images/en/2023-11-24_15-40-18.png)
+![h:400 center](./images/en/store_app_store.png)
 ---
 
 ## Linux Version
@@ -61,19 +61,19 @@ Running the application as a normal user will result in permission errors (no ra
 In the case of Windows, start from the start menu to the Mac OS in your favorite method, such as from the launcher.Welcome to the screen.Start with the <Start> button.Stop the program with the <Stop> button.The explanation screen of how to use it is displayed with the <Help> button.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-05_06-10-11.png)
+![h:400 center](./images/en/start_app.png)
 
 ---
 ## Select a folder to save data
 Click the <Start> button on the screen to display a dialog to select a folder to save the data.Please select a folder.You can also create a new one.
 
-![h:400 center](./images/en/2023-11-24_16-29-59.png)
+![h:400 center](./images/en/start_select_folder.png)
 
 ---
 ## First map
 Select a new folder and start a map without node.After a while, the log will be displayed.
 
-![h:400 center](./images/en/2023-12-05_06-14-18.png)
+![h:400 center](./images/en/first_map.png)
 
 
 ---
@@ -153,7 +153,7 @@ By entering a MAC address or IP address, you can quickly search for the switch p
 
 The map screen has three large parts.
 
-![h:400 center](./images/en/2023-12-03_10-19-09.png)
+![h:400 center](./images/en/map.png)
 
 ---
 | Screen | Contents |
@@ -168,14 +168,14 @@ The map screen has three large parts.
 
 Click the 🌙 mark on the upper right to dark mode.I like dark mode.Probably the person who aims for a white hacker likes dark mode.There are only white hackers in the cat world.By Cat of the predecessor assistant.The current assistant cat seems to like both because the pattern is black and white.
 
-![h:300 center](./images/en/2023-12-03_10-21-35.png)
+![h:300 center](./images/en/map_mode_switch.png)
 
 ---
 ### Map menu
 
 Right -click the location other than the node and drawing items on the map to display.
 
-![h:400 center](./images/en/2024-02-15_04-58-57.png)
+![h:400 center](./images/en/map_menu.png)
 
 ---
 | Menu | Operation |
@@ -196,7 +196,7 @@ Right -click the location other than the node and drawing items on the map to di
 ### Node menu
 Right -click the node on the map to display it.
 
-![h:400 center](./images/en/2023-12-03_10-25-39.png)
+![h:400 center](./images/en/map_node_menu.png)
 
 ---
 | Menu | Operation |
@@ -217,7 +217,7 @@ Right -click the node on the map to display it.
 ### Draw item menu
 Right -click the drawing item on the map to display it.
 
-![h:400 center](./images/en/2023-12-03_10-27-19.png)
+![h:400 center](./images/en/map_drawitem_menu.png)
 
 ---
 | Menu | Operation |
@@ -231,7 +231,7 @@ Right -click the drawing item on the map to display it.
 ### Discover
 Automatic discovery screen.
 
-![h:400 center](./images/en/2023-12-03_06-49-22.png)
+![h:400 center](./images/en/map_discover.png)
 
 ---
 
@@ -250,19 +250,19 @@ Automatic discovery screen.
 #### Automatic discovery is being performed
 The number of nodes you have executed or discovered is displayed.
 
-![h:400 center](./images/en/2023-12-03_06-52-47.png)
+![h:400 center](./images/en/map_discover_automatic_discovery_is_being_performed.png)
 
 ---
 #### Automatic discovery is being executed (with port scanning)
 The number of nodes you have executed or discovered is displayed.When performing a port scan, the discovered server function is also displayed.
 
-![h:400 center](./images/en/2023-12-03_06-52-04.png)
+![h:400 center](./images/en/map_discover_automatic_discovery_is_being_executed_with_port_scanning.png)
 
 ---
 ### Node editing
 You can edit the node from the menu or button by selecting a node on the map screen or node list.
 
-![h:400 center](./images/en/2023-12-03_09-24-46.png)
+![h:400 center](./images/en/map_edit_node.png)
 
 ---
 | Items | Contents |
@@ -290,7 +290,7 @@ You can edit the node from the menu or button by selecting a node on the map scr
 It is an edit screen of drawing item (rectangle, elliptical).
 
 
-![h:400 center](./images/en/2023-12-03_07-00-20.png)
+![h:400 center](./images/en/map_drawitem_shape.png)
 
 ---
 
@@ -308,7 +308,7 @@ It is an edit screen of drawing item (rectangle, elliptical).
 ### Drawing item (label)
 It is the editing screen of the drawing item (label).
 
-![h:400 center](./images/en/2023-12-03_08-56-46.png)
+![h:400 center](./images/en/map_drawitem_label.png)
 
 ---
 
@@ -325,7 +325,7 @@ It is the editing screen of the drawing item (label).
 ### Drawing item (image)
 It is the editing screen of drawing item (image).
 
-![h:400 center](./images/en/2023-12-03_08-59-07.png)
+![h:400 center](./images/en/map_drawitem_image.png)
 
 ---
 
@@ -343,7 +343,7 @@ It is the editing screen of drawing item (image).
 ### Drawing item (polling result)
 It is the editing screen of drawing item (polling result: text).
 
-![h:400 center](./images/en/2023-12-03_09-05-08.png)
+![h:400 center](./images/en/map_drawitem_polling.png)
 
 ---
 
@@ -361,7 +361,7 @@ It is the editing screen of drawing item (polling result: text).
 ### Drawing item (polling result: gauge)
 It is the editing screen of drawing item (polling result: gauge).It can be used to display % data.
 
-![h:400 center](./images/en/2023-12-03_09-08-10.png)
+![h:400 center](./images/en/map_drawitem_gauge.png)
 
 ---
 | Items | Contents |
@@ -374,13 +374,13 @@ It is the editing screen of drawing item (polling result: gauge).It can be used 
 | Gauge label | This is a character string displayed under the gauge.|
 | Magnification | The display rate of drawing items.|
 
-![h:100 bg right:10%](./images/ja/2023-11-29_10-09-39.png)
+![h:100 bg right:10%](./images/ja/map_drawitem_gauge_2.png)
 
 ---
 ### Line editing
 To edit the line, press the two nodes while pressing the shift key on the map screen.
 
-![h:400 center](./images/en/2023-12-03_10-08-14.png)
+![h:400 center](./images/en/map_edit_line.png)
 
 ---
 
@@ -404,7 +404,7 @@ To edit the line, press the two nodes while pressing the shift key on the map sc
 This is the screen to execute ping.
 To get a location information, you need a Geoip database file.
 
-![h:400 center](./images/en/2023-12-03_11-20-46.png)
+![h:400 center](./images/en/map_ping.png)
 
 ---
 | Items | Contents |
@@ -428,26 +428,26 @@ To get a location information, you need a Geoip database file.
 ####  PING Histogram
 It is a histogram of response time.
 
-![h:400 center](./images/en/2023-12-03_11-22-17.png)
+![h:400 center](./images/en/map_ping_ping_histogram.png)
 
 ---
 #### PING 3D analysis
 The response time, size, and implementation date and time are displayed in 3D graphs.
 
-![h:400 center](./images/en/2023-12-03_11-22-27.png)
+![h:400 center](./images/en/map_ping_ping_3d_analysis.png)
 
 ---
 ####  PING Line speed prediction
 From the change in response time if the size is changed
 This is a report that predicts the line speed.
 
-![h:400 center](./images/en/2023-12-03_11-23-21.png)
+![h:400 center](./images/en/map_ping_ping_line_speed_prediction.png)
 
 ---
 #### PING Route analysis
 Display location information.It cannot be displayed without a GEOIP database.
 
-![h:400 center](./images/en/2023-12-03_11-24-05.png)
+![h:400 center](./images/en/map_ping_ping_route_analysis.png)
 
 ---
 ### MIB browser
@@ -456,7 +456,7 @@ It is necessary to set SNMP access information in the node setting.
 If you want to use MIB other than built -in, save the MIB file to the extmibs of the data folder.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_10-33-26.png)
+![h:400 center](./images/en/map_mib_browser.png)
 
 ---
 | Items | Contents |
@@ -483,14 +483,14 @@ Open the tree and click the object name to see the explanation.
 Double click to select.
 Also, AI-powered object explanation is available.
 
-![h:400 center](./images/en/2023-12-03_10-35-25.png)
+![h:400 center](./images/en/map_mib_browser_mib_tree.png)
 
 ---
 #### Set dialog
 
 This is the screen for executing SNMP Set. Specify the object name, type, and value and press the <SET> button to send a Set request.
 
-![h:400 center](./images/en/2025-11-29_16-58-38.png)
+![h:400 center](./images/en/map_mib_browser_set_dialog.png)
 
 ---
 ### GNMI tool
@@ -521,7 +521,7 @@ Map data can be used in OpenStreetMap, which is used in location information ser
 You can select by clicking the node.You can move by dragging.Multiple choices cannot be selected.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_10-10-10.png)
+![h:400 center](./images/en/loc_map.png)
 
 ---
 | Items | Contents |
@@ -539,13 +539,13 @@ You can select by clicking the node.You can move by dragging.Multiple choices ca
 Right -click where you want to place the node on the map and the dialog to add is displayed.You can add it by selecting a node.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_10-11-46.png)
+![h:400 center](./images/en/loc_map_loc_add_node.png)
 
 ---
 ## Node list
 A list of nodes to be managed.
 
-![h:400 center](./images/en/2023-12-03_11-00-27.png)
+![h:400 center](./images/en/node_list.png)
 
 ---
 | Items | Contents |
@@ -576,7 +576,7 @@ A list of nodes to be managed.
 ### Node polling list
 A list of polling related to nodes.
 
-![h:400 center](./images/en/2023-12-03_11-02-38.png)
+![h:400 center](./images/en/node_list_node_polling_list.png)
 
 ---
 | Items | Contents |
@@ -604,55 +604,55 @@ A list of polling related to nodes.
 ### Basic information report
 Basic information about nodes.
 
-![h:400 center](./images/en/2023-12-03_11-04-41.png)
+![h:400 center](./images/en/node_list_basic_report.png)
 
 ---
 ### Memo
 
 Memo about the node.
 
-![h:400 center](./images/en/2025-03-31_16-43-30.png)
+![h:400 center](./images/en/node_list_memo.png)
 
 ---
 ### node event log
 This is an event log related to the node.
 
-![h:400 center](./images/en/2023-12-03_11-05-12.png)
+![h:400 center](./images/en/node_list_node_eventlog.png)
 
 ---
 ### Panel
 Displays the appearance of the node.Displays the port from the acquisition of the interface mib by SNMP or the line connection information.The <physical port> switch can only be displayed on the physical port.Rotate the panel display with the <rotation> switch.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-05-44.png)
+![h:400 center](./images/en/node_list_panel.png)
 
 ---
 ### Host information
 Displays the information of the host resource mib of SNMP.If it is not compatible with the host resource MIB, it cannot be displayed.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-06-14.png)
+![h:400 center](./images/en/node_list_host_information.png)
 
 ---
 ### Storage
 Displays the storage information of SNMP host resource mib.When you select, the addition button of the polling will be displayed.If it is not compatible with the host resource MIB, it cannot be displayed.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-06-23.png)
+![h:400 center](./images/en/node_list_storage.png)
 
 ---
 ### Device
 Displays the device information of the SNMP host resource MIB.If it is not compatible with the host resource MIB, it cannot be displayed.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-06-35.png)
+![h:400 center](./images/en/node_list_device.png)
 
 ---
 ### File System
 Displays File System, information on SNMP host sources MIB.If it is not compatible with the host resource MIB, it cannot be displayed.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-06-47.png)
+![h:400 center](./images/en/node_list_file_system.png)
 
 ---
 ### Process
@@ -660,13 +660,13 @@ Displays the process information of SNMP host resource mib.When you select, the 
 
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-07-00.png)
+![h:400 center](./images/en/node_list_process.png)
 
 ---
 ## Polling list
 A list of polling to be managed.
 
-![h:400 center](./images/en/2023-12-03_11-29-48.png)
+![h:400 center](./images/en/polling_list.png)
 
 ---
 | Items | Contents |
@@ -700,7 +700,7 @@ A list of polling to be managed.
 
 This is the selection screen of the template displayed when adding polling.
 
-![h:400 center](./images/en/2023-12-03_11-32-15.png)
+![h:400 center](./images/en/polling_list_polling_template_selection.png)
 
 ---
 | Items | Contents |
@@ -718,42 +718,42 @@ This is the selection screen of the template displayed when adding polling.
 ### Basic information
 Basic information about polling.
 
-![h:400 center](./images/en/2023-12-03_11-34-23.png)
+![h:400 center](./images/en/polling_list_basic_information.png)
 
 ---
 ### Polling log
 This is a log of the polling result.It is displayed only when the log mode is not output.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-34-33.png)
+![h:400 center](./images/en/polling_list_polling_log.png)
 
 ---
 ### Time chart
 In the log of the polling result, the numerical data is displayed in a chronological graph.The displayed items can be selected at the top of the graph.It is displayed only when the log mode is not output.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-34-46.png)
+![h:400 center](./images/en/polling_list_time_chart.png)
 
 ---
 ### Histogram
 The numerical data in the log of the polling result is displayed on the histogram.The displayed items can be selected at the top of the graph.It is displayed only when the log mode is not output.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-34-56.png)
+![h:400 center](./images/en/polling_list_histogram.png)
 
 ---
 ### AI analysis
 This is the result of AI analysis of numerical data in the log of the polling results.It is displayed only when the log mode is set to AI analysis and sufficient data is obtained.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-35-06.png)
+![h:400 center](./images/en/polling_list_ai.png)
 
 ---
 ### Polling editing
 Polling edit can be displayed by clicking the button on the polling list. The AI Assist feature is available when adding or editing a polling monitor.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_09-28-18.png)
+![h:400 center](./images/en/polling_list_edit_polling.png)
 
 ---
 | Items | Contents |
@@ -781,7 +781,7 @@ Polling edit can be displayed by clicking the button on the polling list. The AI
 This is a list of IP address found by TWSNMP.Only the IP address in the same segment found in the ARP watch function is displayed.You can detect duplicate and the change in the address.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_05-44-21.png)
+![h:400 center](./images/en/address_list.png)
 
 ---
 
@@ -814,7 +814,7 @@ This is a list of IP address found by TWSNMP.Only the IP address in the same seg
 This is a report on the status of the set IP address.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2024-12-27_20-25-08.png)
+![h:400 center](./images/en/address_list_ip_address_usage_status.png)
 
 ---
 ### Relationship between IP and MAC address (force model)
@@ -822,14 +822,14 @@ This is a report on the status of the set IP address.
 This is a report that shows the relationship between IP address and MAC address with an force model.The normal address is one -on -one for the IP address and the MAC address.You can detect MAC addresses using the same IP address on multiple Macs or having multiple IP addresses.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_05-49-52.png)
+![h:400 center](./images/en/address_list_relationship_between_ip_and_mac_address_force_model.png)
 
 ---
 ### Relationship between IP and MAC address (circular model)
 This is a report that shows the relationship between IP address and MAC address with a circular model.The normal address is one -on -one for the IP address and the MAC address.You can detect MAC addresses with the same IP address on multiple Macs or have multiple IP addresses.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_05-52-16.png)
+![h:400 center](./images/en/address_list_relationship_between_ip_and_mac_address_circular_model.png)
 
 ---
 ### Address Analysis
@@ -848,7 +848,7 @@ Available from the address list or log lists (Syslog, NetFlow, etc.).
 
 Monitor server certificates from TWSNMP. Add targets via the edit screen.
 
-![h:400 center](./images/en/2025-07-25_05-47-29.png)
+![h:400 center](./images/en/cert_list.png)
 
 ---
 ## PKI CA construction
@@ -856,7 +856,7 @@ Monitor server certificates from TWSNMP. Add targets via the edit screen.
 
 This is the screen before building a CA for the PKI function.
 
-![h:400 center](./images/en/2025-03-10_16-32-40.png)
+![h:400 center](./images/en/pki.png)
 
 ---
 <!-- _class: tinytext -->
@@ -883,7 +883,7 @@ This is the screen before building a CA for the PKI function.
 After the CA is built, the certificate list screen will be displayed.You can check the issued certificate.
 
 <!-- _class: tinytext -->
-![h:400 center](./images/en/2025-03-10_16-33-42.png)
+![h:400 center](./images/en/pki_certificate_list.png)
 
 ---
 <!-- _class: tinytext -->
@@ -916,7 +916,7 @@ After the CA is built, the certificate list screen will be displayed.You can che
 <!-- _class: tinytext -->
 This is the screen for creating a certificate request (CSR).
 
-![h:400 center](./images/en/2025-03-10_16-34-09.png)
+![h:400 center](./images/en/pki_certificate_list_create_csr.png)
 
 ---
 
@@ -936,7 +936,7 @@ This is the screen for creating a certificate request (CSR).
 <!-- _class: tinytext -->
 This is a screen that controls the operation of the PKI server.
 
-![h:400 center](./images/en/2025-03-10_16-34-35.png)
+![h:400 center](./images/en/pki_server_control.png)
 
 ---
 
@@ -952,7 +952,7 @@ This is a screen that controls the operation of the PKI server.
 ## Event Log
 This is the event log screen.At the top, there is a graph showing the number of logs in chronological order.
 
-![h:400 center](./images/en/2023-12-03_09-32-12.png)
+![h:400 center](./images/en/eventlog.png)
 
 ---
 | Items | Contents |
@@ -978,7 +978,7 @@ This is the event log screen.At the top, there is a graph showing the number of 
 ### Event log filter
 This is a dialog that specifies the search conditions for the event log.
 
-![h:400 center](./images/en/2023-12-03_09-34-18.png)
+![h:400 center](./images/en/eventlog_event_log_filter.png)
 
 ---
 | Items | Contents |
@@ -996,39 +996,39 @@ The string can be searched by regular expression.
 
 This is a report of the number of event logs by state (level).
 
-![h:400 center](./images/en/2023-12-03_09-36-05.png)
+![h:400 center](./images/en/eventlog_event_log_count_by_state.png)
 
 ---
 ### Event log Heatmap
 This is a report of the number of cases of each event log on the heat map.
 
-![h:400 center](./images/en/2023-12-03_09-37-42.png)
+![h:400 center](./images/en/eventlog_event_log_heatmap.png)
 
 ---
 ### Event log count by node
 
 This is a report of the number of event logs by node.
 
-![h:400 center](./images/en/2023-12-03_09-39-12.png)
+![h:400 center](./images/en/eventlog_event_log_count_by_node.png)
 
 ---
 ### Operating rate
 This is a report that uses a chronological graph of the value of the operating rate (OPRATE) in the event log.
 
-![h:400 center](./images/en/2023-12-03_09-41-25.png)
+![h:400 center](./images/en/eventlog_operating_rate.png)
 
 ---
 ### ARP watch
 
 This is a report of the value of the address usage rate (ARPWATCH) in the event log as a chronological graph.
 
-![h:400 center](./images/en/2023-12-03_09-43-24.png)
+![h:400 center](./images/en/eventlog_arp_watch.png)
 
 ---
 ## Syslog
 Syslog screen.At the top, there is a graph showing the number of logs in chronological order.
 
-![h:400 center](./images/en/2023-12-03_11-43-37.png)
+![h:400 center](./images/en/syslog.png)
 
 ---
 | Items | Contents |
@@ -1056,7 +1056,7 @@ Syslog screen.At the top, there is a graph showing the number of logs in chronol
 ### Syslog Filter
 This is a dialog that specifies the search conditions for syslog.
 
-![h:400 center](./images/en/2023-12-03_11-45-43.png)
+![h:400 center](./images/en/syslog_syslog_filter.png)
 
 ---
 | Items | Contents |
@@ -1072,13 +1072,13 @@ This is a dialog that specifies the search conditions for syslog.
 ### Syslog count by state
 This is a report of the number of syslogs by state.
 
-![h:400 center](./images/en/2023-12-03_11-47-06.png)
+![h:400 center](./images/en/syslog_syslog_count_by_state.png)
 
 ---
 ### Syslog Heatmap
 This is a report of the number of cases of syslog on the heat map.
 
-![h:400 center](./images/en/2023-12-03_11-47-15.png)
+![h:400 center](./images/en/syslog_syslog_heatmap.png)
 
 ---
 ### Normalization Analysis
@@ -1086,31 +1086,31 @@ This is a report of the number of cases of syslog on the heat map.
 Report that normalizes syslog and aggregates it.
 Counts numbers, IP addresses, email addresses, etc. with common characters.
 
-![h:400 center](./images/en/2025-07-25_05-55-30.png)
+![h:400 center](./images/en/syslog_normalization_analysis.png)
 
 ---
 ### Syslog count by host
 This is a report of the number of syslogs by the source host.
 
-![h:400 center](./images/en/2023-12-03_11-47-27.png)
+![h:400 center](./images/en/syslog_syslog_count_by_host.png)
 
 ---
 ### Syslog count by host (3D)
 This is a report displayed in three -dimensional graphs of Syslog, source host, priority, and time.
 
-![h:400 center](./images/en/2023-12-03_11-47-39.png)
+![h:400 center](./images/en/syslog_syslog_count_by_host_3d.png)
 
 ---
 ### Syslog FFT
 This is a report that analyzes Syslog for each host and analyzes the number of receiving cases.
 
-![h:400 center](./images/en/2023-12-03_11-47-51.png)
+![h:400 center](./images/en/syslog_syslog_fft.png)
 
 ---
 ## SNMP TRAP
 SNMP Trap log screen.At the top, there is a graph showing the number of logs in chronological order.
 
-![h:400 center](./images/en/2023-12-03_11-56-57.png)
+![h:400 center](./images/en/trap.png)
 
 ---
 
@@ -1139,7 +1139,7 @@ SNMP Trap log screen.At the top, there is a graph showing the number of logs in 
 
 This is a dialog that specifies the search conditions for SNMP Trap.
 
-![h:400 center](./images/en/2023-12-03_11-58-52.png)
+![h:400 center](./images/en/trap_snmp_trap_filter.png)
 
 
 ---
@@ -1156,26 +1156,26 @@ This is a dialog that specifies the search conditions for SNMP Trap.
 ### SNMP TRAP count by TRAP type
 This is a report of the number of SNMP traps by type.
 
-![h:400 center](./images/en/2023-12-03_12-00-18.png)
+![h:400 center](./images/en/trap_snmp_trap_count_by_trap_type.png)
 
 ---
 ### SNMP TRAP  Heatmap
 This is a report of the number of cases of SNMP TRAP on the heat map.
 
-![h:400 center](./images/en/2023-12-03_12-00-30.png)
+![h:400 center](./images/en/trap_snmp_trap_heatmap.png)
 
 ---
 ### SNMP TRAP count by host
 This is a report of the number of SNMP Trap receiving cases by source host.
 
-![h:400 center](./images/en/2023-12-03_12-00-40.png)
+![h:400 center](./images/en/trap_snmp_trap_count_by_host.png)
 
 ---
 ### SNMP TRAP send source and type (3D)
 This is a report displayed in the source host, type, and three -dimensional graph of the SNMP Trap receiving log.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_12-00-49.png)
+![h:400 center](./images/en/trap_snmp_trap_send_source_and_type_3d.png)
 
 
 ---
@@ -1183,7 +1183,7 @@ This is a report displayed in the source host, type, and three -dimensional grap
 
 This is the analysis screen of Netflow.
 
-![h:400 center](./images/en/2024-05-02_17-24-41.png)
+![h:400 center](./images/en/trap_netflow.png)
 
 ---
 #### Explanation of table items
@@ -1228,7 +1228,7 @@ This is the analysis screen of Netflow.
 
 It is a filter for netflow search.
 
-![center](./images/en/2024-05-02_17-24-58.png)
+![center](./images/en/trap_netflow_filter_item.png)
 
 ---
 | Items | Contents |
@@ -1274,7 +1274,7 @@ It is a filter for netflow search.
 
 This is the analysis screen of sFLOW.
 
-![h:400 center](./images/en/2024-06-30_10-26-20.png)
+![h:400 center](./images/en/trap_netflow_sflow.png)
 
 ##### Flow sample
 
@@ -1414,7 +1414,7 @@ This is the analysis screen of sFLOW.
 ARP watch log screen.
 At the top, there is a graph showing the number of logs in chronological order.
 
-![h:400 center](./images/en/2023-12-03_06-15-40.png)
+![h:400 center](./images/en/arp.png)
 
 ---
 | Items | Contents |
@@ -1442,58 +1442,58 @@ At the top, there is a graph showing the number of logs in chronological order.
 This is a report of the number of logs by IP address.The IP address with many changes is obvious at a glance.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_06-40-51.png)
+![h:400 center](./images/en/arp_arp_watch_log_count_by_ip_address.png)
 
 ---
 ### ARP watch log count by IP address (3D)
 This is a report of ARP watch logs from both IP addresses and time series.The time of new discoveries and changes is obvious at a glance.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_06-42-37.png)
+![h:400 center](./images/en/arp_arp_watch_log_count_by_ip_address_3d.png)
 
 ---
 ## OpenTelemetry
 
 OpenTelemetry Collector screen. Toggle between Metrics, Traces, and Logs.
 
-![h:400 center](./images/en/2025-05-25_16-37-34.png)
+![h:400 center](./images/en/otel_metric.png)
 
 ---
 ### Metrics
 Time charts and histograms are available for visualization.
 
-![h:400 center](./images/en/2025-05-25_16-37-46.png)
+![h:400 center](./images/en/otel_metric_time_chart.png)
 
 ---
 ### Traces
 Displays DAG (relationships between services) and timeline graphs.
 
-![h:400 center](./images/ja/2025-05-25_16-51-04.png)
+![h:400 center](./images/ja/otel_dag.png)
 
 ---
 ### Settings
 Retention Time, Source IP limits, and reception ON/OFF.
 
-![h:400 center](./images/ja/2025-05-25_17-09-31.png)
+![h:400 center](./images/ja/otel_opentelemetry.png)
 
 ---
 ## MQTT
 Displays received MQTT topics, status, client ID, and counts. Allows viewing and formatting (JSON, TEXT, HEX) the latest received payload, viewing statistical report charts, copying topic names, and creating polling tasks.
 
-![h:400 center](./images/en/2025-11-22_05-36-45.png)
+![h:400 center](./images/en/mqtt.png)
 
 ---
 ### MQTT settings
 Toggle enable/disable and record MQTT data to syslog.
 
-![h:400 center](./images/en/2025-11-22_05-37-02.png)
+![h:400 center](./images/en/mqtt_mqtt_settings.png)
 
 ---
 ## MCP Server
 
 MCP server function for AI to use TWSNMP FK.
 
-![h:400 center](./images/en/2025-07-25_05-56-03.png)
+![h:400 center](./images/en/mcp_mcp_server_settings.png)
 
 ---
 ### MCP Server Features
@@ -1507,7 +1507,7 @@ Provides tools for network monitoring and management.
 The screen of the AI analysis list.Only the list is displayed in the polling log settings and the analysis is performed.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_05-57-36.png)
+![h:400 center](./images/en/ai.png)
 
 ---
 | Items | Contents |
@@ -1530,26 +1530,26 @@ The screen of the AI analysis list.Only the list is displayed in the polling log
 This is a report showing an anomaly score on a daily heat map.It indicates that the red color is the time when the anomaly has occurred.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_06-01-04.png)
+![h:400 center](./images/en/ai_ai_anomaly_score_heatmap.png)
 
 ---
 ### AI anomaly score percentage
 The percentage of the anomaly score in the entire period is shown in a circular graph.
 
-![h:400 center](./images/en/2023-12-03_06-03-43.png)
+![h:400 center](./images/en/ai_ai_anomaly_score_percentage.png)
 
 ---
 ### AI anomaly score time chart
 This is a report that displays an anomaly score in chronological order.
 
-![h:400 center](./images/en/2023-12-03_06-06-11.png)
+![h:400 center](./images/en/ai_ai_anomaly_score_time_chart.png)
 
 ---
 ## System
 System information screen.At the top, there is a graph showing log resources and communication information in a chronological order.
 <!-- _class: tinytext -->
 
-![h:400 center](./images/en/2023-12-03_11-52-41.png)
+![h:400 center](./images/en/system.png)
 
 ---
 | Items | Contents |
@@ -1575,13 +1575,13 @@ System information screen.At the top, there is a graph showing log resources and
 ### Size prediction
 This is a year forecast for the database size and disk usage rate.
 
-![h:400 center](./images/en/2023-12-03_11-52-51.png)
+![h:400 center](./images/en/system_size_prediction.png)
 
 ---
 ## Map settings
 This is the screen to set the management map.
 
-![h:400 center](./images/en/2023-12-03_10-29-27.png)
+![h:400 center](./images/en/map_conf.png)
 
 ---
 | Items | Contents |
@@ -1624,7 +1624,7 @@ The port number is specified by the startup parameter of the program.
 ## Notification settings
 This is the screen to set the notification.
 
-![h:400 center](./images/en/2025-10-04_15-38-07.png)
+![h:400 center](./images/en/notify_conf.png)
 
 ---
 | Items | Contents |
@@ -1657,7 +1657,7 @@ Click the <Test> button to send the test email with the configured content.
 ## AI analysis setting
 This is the screen to set AI analysis.
 
-![h:400 center](./images/en/2023-12-03_06-10-19.png)
+![h:400 center](./images/en/ai_conf.png)
 
 ---
 | Items | Contents |
@@ -1679,7 +1679,7 @@ This is the screen to set AI analysis.
 ## Location map settings
 This is the screen to set the map.
 
-![h:400 center](./images/en/2023-12-03_10-15-06.png)
+![h:400 center](./images/en/loc_conf.png)
 
 ---
 | Items | Contents |
@@ -1731,7 +1731,7 @@ https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json
 ## Icon management
 This is a screen that manages the icon.
 
-![h:400 center](./images/en/2023-12-03_10-03-58.png)
+![h:400 center](./images/en/icon_conf.png)
 
 ---
 | Items | Contents |
@@ -1752,7 +1752,7 @@ This is a screen that manages the icon.
 ---
 ### Icon editing screen
 
-![h:400 center](./images/en/2023-12-03_10-06-04.png)
+![h:400 center](./images/en/icon_conf_icon_editing_screen.png)
 
 ---
 | Items | Contents |
@@ -1764,7 +1764,7 @@ This is a screen that manages the icon.
 ## MIB management
 This is a screen that manages SNMP MIB.
 
-![h:400 center](./images/en/2023-12-03_10-37-53.png)
+![h:400 center](./images/en/mib_conf.png)
 
 
 ---
@@ -1786,7 +1786,7 @@ This is a screen that manages SNMP MIB.
 ---
 ### MIB tree screen
 
-![h:500 center](./images/en/2023-12-03_10-40-05.png)
+![h:500 center](./images/en/mib_conf_mib_tree_screen.png)
 
 ---
 

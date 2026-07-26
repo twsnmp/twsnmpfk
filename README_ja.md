@@ -14,7 +14,7 @@
 
 TWSNMP FK is a next-generation Network Management System. It combines the performance of Go, the simplicity of Svelte, and the seamless desktop experience of Wails to provide a lightweight yet powerful observability tool.
 
-![TWSNMP FK](docs/images/en/2026-02-13_04-41-52.png)
+![TWSNMP FK](docs/images/en/readme_hero_banner.png)
 
 ---
 
@@ -23,7 +23,7 @@ TWSNMP FK is a next-generation Network Management System. It combines the perfor
 Windowsのキオスクモードでの利用を想定しています。
 もちろん通常のアプリとしても利用可能です。
 
-![](doc/images/ja/2023-10-07_06-47-37.png)
+![](doc/images/ja/readme_overview_map.png)
 
 ## Document
 

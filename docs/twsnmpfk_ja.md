@@ -30,7 +30,7 @@ https://www.microsoft.com/store/apps/9NSQN46P0MVL
 で購入できます。
 
 
-![h:400 center ](./images/ja/2023-11-24_15-37-20.png)
+![h:400 center ](./images/ja/store_ms_store.png)
 
 
 ---
@@ -56,7 +56,7 @@ https://apps.apple.com/jp/app/twsnmpfk/id6468539128
 無料で使いたい人は、
 https://github.com/twsnmp/twsnmpfk/releases
 からパッケージをダウンロードできます。
-![w:350 bg right:30%](./images/ja/2023-11-24_15-40-18.png)
+![w:350 bg right:30%](./images/ja/store_app_store.png)
 ---
 
 ## Linux版
@@ -81,21 +81,21 @@ GitHubのリリースからパッケージ（`.tar.gz`形式）をダウンロ�
 Windowsの場合はスタートメニューからMac OSの場合はランチャーからなどお好きな方法で起動してください。ようこそ画面が表示されます。＜はじめる＞ボタンで開始します。＜おわる＞ボタンでプログラムを終了します。<ヘルプ＞ボタンで使い方の説明画面が表示されます。
 <!-- _class: tinytext -->
 
-![h:250 center](./images/ja/2023-11-24_16-15-04.png)
+![h:250 center](./images/ja/start_app.png)
 
 ---
 ## データを保存するフォルダーを選択
 
 ようこそ画面で＜はじめる＞ボタンをクリックするとデータを保存するフォルダーを選択するダイアログが表示されます。フォルダー選択してください。新規の作成することもできます。
 
-![h:300 center](./images/ja/2023-11-24_16-29-59.png)
+![h:300 center](./images/ja/start_select_folder.png)
 
 ---
 ## 最初のマップ
 
 新規のフォルダを選択して起動すると何もノードのないマップが表示されます。しばらくするとログが表示されます。
 
-![h:400 center](./images/ja/2023-11-24_16-37-04.png)
+![h:400 center](./images/ja/first_map.png)
 
 
 ---
@@ -178,7 +178,7 @@ MACアドレスやIPアドレスを入力することで、目的の端末が接
 
 マップ画面は大きく３つの部分があります。
 
-![h:400 center](./images/ja/2023-11-24_16-37-04.png)
+![h:400 center](./images/ja/first_map.png)
 
 
 ----
@@ -199,7 +199,7 @@ By 先代助手の猫
 現在の助手の猫さんは模様が白黒なので両方好きだそうです。
 <!-- _class: tinytext -->
 
-![h:300 center](./images/ja/2023-11-24_16-37-33.gif)
+![h:300 center](./images/ja/map_mode_switch.gif)
 
 
 ---
@@ -207,7 +207,7 @@ By 先代助手の猫
 
 マップ上のノードや描画アイテム以外の場所を右クリックして表示します。
 
-![h:400 center](./images/ja/2024-02-15_04-28-34.png)
+![h:400 center](./images/ja/map_menu.png)
 
 ---
 
@@ -229,14 +229,14 @@ By 先代助手の猫
 
 背景の画像を設定するダイアログです。X、Yで左上の座標を指定します。幅と高さ画像ファイルを選択してください。
 
-![背景画像設定 center](./images/ja/2024-02-15_04-28-50.png)
+![背景画像設定 center](./images/ja/map_menu_bg_setting.png)
 
 ---
 #### グリッド整列
 
 マップのアイコンを指定した間隔に整列するダイアログです。間隔を指定します。変更する前に＜テスト＞ボタンで表示を確認できます。
 
-![グリッド整列 center](./images/ja/2024-02-15_04-29-08.png)
+![グリッド整列 center](./images/ja/map_menu_grid_align.png)
 
 
 ---
@@ -244,7 +244,7 @@ By 先代助手の猫
 
 マップ上のノードを右クリックして表示します。
 
-![h:400 center](./images/ja/2023-11-27_17-29-07.png)
+![h:400 center](./images/ja/map_node_menu.png)
 
 ---
 
@@ -268,7 +268,7 @@ By 先代助手の猫
 
 マップ上の描画アイテムを右クリックして表示します。
 
-![h:400 center](./images/ja/2023-11-28_03-56-37.png)
+![h:400 center](./images/ja/map_drawitem_menu.png)
 
 ---
 |メニュー|動作|
@@ -283,7 +283,7 @@ By 先代助手の猫
 
 自動発見の画面です。
 
-![h:400 center](./images/ja/2023-11-29_17-32-15.png)
+![h:400 center](./images/ja/map_discover.png)
 
 ---
 |項目|内容|
@@ -302,7 +302,7 @@ By 先代助手の猫
 
 実行や発見したノードの数が表示されます。
 
-![h:400 center](./images/ja/2023-11-29_17-35-37.png)
+![h:400 center](./images/ja/map_discover_2.png)
 
 ---
 #### 自動発見実行中（ポートスキャンあり）
@@ -310,13 +310,13 @@ By 先代助手の猫
 実行や発見したノードの数が表示されます。ポートスキャンを実施する場合は、発見したサーバー機能も表示されます。
 
 
-![h:400 center](./images/ja/2023-11-29_17-36-27.png)
+![h:400 center](./images/ja/map_discover_3.png)
 
 ---
 ### ノード編集
 ノードの編集はマップ画面やノードリストでノードを選択してメニューかボタンから表示できます。
 
-![h:400 center](./images/ja/2023-11-30_14-59-08.png)
+![h:400 center](./images/ja/map_edit_node.png)
 
 ---
 
@@ -347,7 +347,7 @@ By 先代助手の猫
 描画アイテム（矩形、楕円）の編集画面です。
 
 
-![h:400 center](./images/ja/2023-11-29_09-49-33.png)
+![h:400 center](./images/ja/map_drawitem_shape.png)
 
 ---
 
@@ -365,7 +365,7 @@ By 先代助手の猫
 ### 描画アイテム（ラベル）
 描画アイテム（ラベル）の編集画面です。
 
-![h:400 center](./images/ja/2023-11-29_09-49-48.png)
+![h:400 center](./images/ja/map_drawitem_label.png)
 
 ---
 
@@ -383,7 +383,7 @@ By 先代助手の猫
 ### 描画アイテム（イメージ）
 描画アイテム（イメージ）の編集画面です。
 
-![h:400 center](./images/ja/2023-11-29_09-50-23.png)
+![h:400 center](./images/ja/map_drawitem_image.png)
 
 ---
 |項目|内容|
@@ -399,7 +399,7 @@ By 先代助手の猫
 ### 描画アイテム（ポーリング結果）
 描画アイテム（ポーリング結果：テキスト）の編集画面です。
 
-![h:400 center](./images/ja/2023-11-29_09-50-59.png)
+![h:400 center](./images/ja/map_drawitem_polling.png)
 
 ---
 |項目|内容|
@@ -417,7 +417,7 @@ By 先代助手の猫
 描画アイテム（ポーリング結果：ゲージ）の編集画面です。％のデータの表示に利用できます。
 新ゲージ、バー、ラインも同様の設定です。
 
-![h:400 center](./images/ja/2023-11-29_09-51-18.png)
+![h:400 center](./images/ja/map_drawitem_gauge.png)
 
 ---
 |項目|内容|
@@ -431,13 +431,13 @@ By 先代助手の猫
 |倍率|描画アイテムの表示倍率です。|
 
 
-![h:100 bg right:10%](./images/ja/2023-11-29_10-09-39.png)
+![h:100 bg right:10%](./images/ja/map_drawitem_gauge_2.png)
 
 ---
 ### ライン編集
 ラインの編集はマップ画面でSHIFTキーを押しながら２つのノードを選択して表示します。
 
-![h:400 center](./images/ja/2023-11-30_04-49-19.png)
+![h:400 center](./images/ja/map_edit_line.png)
 
 
 ---
@@ -464,7 +464,7 @@ PINGを実行する画面です。
 位置情報を取得するには、GeoIPのデータベースファイルが必要です。
 
 
-![h:400 center](./images/ja/2023-12-01_06-44-23.png)
+![h:400 center](./images/ja/map_ping.png)
 
 ---
 |項目|内容|
@@ -490,28 +490,28 @@ PINGを実行する画面です。
 
 応答時間のヒストグラムです。
 
-![h:400 center](./images/ja/2023-12-01_06-58-41.png)
+![h:400 center](./images/ja/map_ping_ping_2.png)
 
 ---
 ####  PING３D分析
 
 応答時間、サイズ、実施日時を３Dのグラフで表示したものです。
 
-![h:400 center](./images/ja/2023-12-01_06-36-33.png)
+![h:400 center](./images/ja/map_ping_ping_d.png)
 
 ---
 #### PING 回線予測
 サイズを変化させならが実施した場合に応答時間の変化から
 回線速度を予測するレポートです。
 
-![h:400 center](./images/ja/2023-12-01_06-36-19.png)
+![h:400 center](./images/ja/map_ping_ping.png)
 
 ---
 #### PING 経路分析
 
 位置情報を表示します。GeoIPのデータベースがないと表示できません。
 
-![h:400 center](./images/ja/2023-12-01_07-17-17.png)
+![h:400 center](./images/ja/map_ping_ping_3.png)
 
 ---
 ### MIBブラウザー
@@ -520,7 +520,7 @@ PINGを実行する画面です。
 ノードの設定でSNMPのアクセス情報を設定しておく必要があります。
 組み込み以外のMIBを利用したい場合は、データフォルダのextmibsにMIBファイルを保存してください。
 <!-- _class: tinytext -->
-![h:400 center](./images/ja/2023-11-30_05-54-30.png)
+![h:400 center](./images/ja/map_mib_browser.png)
 
 ---
 |項目|内容|
@@ -547,7 +547,7 @@ PINGを実行する画面です。
 また、AIによるオブジェクトの解説機能も利用可能です。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-11-30_05-48-12.png)
+![h:400 center](./images/ja/map_mib_browser_mib.png)
 
 ---
 #### Setダイアログ
@@ -555,7 +555,7 @@ PINGを実行する画面です。
 SNMP Setを実施するための画面です。オブジェクト名、タイプ、値を指定して＜SET＞ボタンをクリックするとSetリクエストを送信します。
 
 
-![h:400 center](./images/ja/2025-11-29_06-36-29.png)
+![h:400 center](./images/ja/map_mib_browser_set.png)
 
 ---
 ### gNMIツール
@@ -584,7 +584,7 @@ SNMP Setを実施するための画面です。オブジェクト名、タイプ
 ノードを地図上に表示する画面です。地図データは、位置情報サービスで利用されているOpenStreetMapなどが利用できます。ノードをクリックすると選択できます。ドラックすれば移動できます。複数選択はできません。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-11-30_05-01-48.png)
+![h:400 center](./images/ja/loc_map.png)
 
 
 ---
@@ -603,14 +603,14 @@ SNMP Setを実施するための画面です。オブジェクト名、タイプ
 
 地図上のノードを配置したい場所を右クリックすると追加するためのダイアログが表示されます。ノードを選択すれば追加できます。
 
-![h:400 center](./images/ja/2023-11-30_05-05-46.png)
+![h:400 center](./images/ja/loc_map_2.png)
 
 ---
 ## ノードリスト
 
 管理対象のノードの一覧です。
 
-![h:400 center](./images/ja/2023-12-01_05-31-32.png)
+![h:400 center](./images/ja/node_list.png)
 
 ---
 
@@ -643,7 +643,7 @@ SNMP Setを実施するための画面です。オブジェクト名、タイプ
 
 ノードに関連したポーリングのリストです。
 
-![h:400 center](./images/ja/2023-12-01_05-45-12.png)
+![h:400 center](./images/ja/node_list_2.png)
 
 ---
 |項目|内容|
@@ -673,21 +673,21 @@ SNMP Setを実施するための画面です。オブジェクト名、タイプ
 ### 基本情報レポート
 ノードに関する基本的な情報です。
 
-![h:400 center](./images/ja/2023-12-01_06-00-34.png)
+![h:400 center](./images/ja/node_list_basic_report.png)
 
 ---
 ### メモ
 
 ノードに関連するメモです。
 
-![h:400 center](./images/ja/2025-03-31_06-17-40.png)
+![h:400 center](./images/ja/node_list_memo.png)
 
 ---
 ### ログ
 
 ノードに関連するイベントログです。
 
-![h:400 center](./images/ja/2023-12-01_06-03-11.png)
+![h:400 center](./images/ja/node_list_3.png)
 
 ---
 ### パネル
@@ -695,27 +695,27 @@ SNMP Setを実施するための画面です。オブジェクト名、タイプ
 ノードの外観を表示します。SNMPによるinterface MIBの取得か、ライン接続の情報からポートを表示します。＜物理ポート＞スイッチで、物理ポートだけ表示できます。＜回転＞スイッチでパネルの表示を回転します。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-12-01_06-04-53.png)
+![h:400 center](./images/ja/node_list_4.png)
 
 ---
 ### ホスト情報
 SNMPのホストリソースMIBの情報を表示します。ホストリソースMIBに対応していない場合は表示できません。
 
-![h:400 center](./images/ja/2023-12-01_06-12-49.png)
+![h:400 center](./images/ja/node_list_5.png)
 
 ---
 ### ストレージ
 SNMPのホストリソースMIBのストレージ情報を表示します。選択するとポーリングの追加ボタンが表示されます。ホストリソースMIBに対応していない場合は表示できません。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-12-01_06-22-35.png)
+![h:400 center](./images/ja/node_list_7.png)
 
 ---
 ### デバイス
 
 SNMPのホストリソースMIBのデバイス情報を表示します。ホストリソースMIBに対応していない場合は表示できません。
 
-![h:400 center](./images/ja/2023-12-01_06-18-46.png)
+![h:400 center](./images/ja/node_list_6.png)
 
 ---
 ### File System
@@ -723,7 +723,7 @@ SNMPのホストリソースMIBのデバイス情報を表示します。ホス�
 SNMPのホストリソースMIBのFile System,情報を表示します。ホストリソースMIBに対応していない場合は表示できません。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-12-01_06-21-09.png)
+![h:400 center](./images/ja/node_list_file_system.png)
 
 ---
 ### プロセス
@@ -731,14 +731,14 @@ SNMPのホストリソースMIBのFile System,情報を表示します。ホス�
 SNMPのホストリソースMIBのプロセス情報を表示します。選択するとポーリングの追加ボタンが表示されます。ホストリソースMIBに対応していない場合は表示できません。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-12-01_06-22-55.png)
+![h:400 center](./images/ja/node_list_8.png)
 
 ---
 ## ポーリングリスト
 
 管理対象のポーリングの一覧です。
 
-![h:400 center](./images/ja/2023-12-02_06-03-31.png)
+![h:400 center](./images/ja/polling_list.png)
 
 ---
 |項目|内容|
@@ -768,7 +768,7 @@ SNMPのホストリソースMIBのプロセス情報を表示します。選択�
 ### ポーリングのテンプレート選択
 ポーリングを追加する時に表示されるテンプレートの選択画面です。
 
-![h:400 center](./images/ja/2023-12-02_06-21-01.png)
+![h:400 center](./images/ja/polling_list_2.png)
 
 ---
 |項目|内容|
@@ -787,79 +787,79 @@ SNMPのホストリソースMIBのプロセス情報を表示します。選択�
 ### ポーリング基本情報
 ポーリングに関する基本的な情報です。
 
-![h:400 center](./images/ja/2023-12-02_06-26-24.png)
+![h:400 center](./images/ja/polling_list_3.png)
 
 ---
 ### ポーリングログ
 ポーリング結果のログです。ログモードを出力しない以外に設定した場合のみ表示されます。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-12-02_06-28-19.png)
+![h:400 center](./images/ja/polling_list_polling_log.png)
 
 ---
 ### 時系列
 ポーリング結果のログの中で数値データを時系列のグラフで表示します。表示する項目は、グラフの上部で選択できます。ログモードを出力しない以外に設定した場合のみ表示されます。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-12-02_06-28-43.png)
+![h:400 center](./images/ja/polling_list_4.png)
 
 ---
 ### ヒストグラム
 ポーリング結果のログの中の数値データをヒストグラムで表示します。表示する項目は、グラフの上部で選択できます。ログモードを出力しない以外に設定した場合のみ表示されます。
 <!-- _class: tinytext -->
 
-![h:400](./images/ja/2023-12-02_06-29-02.png)
+![h:400](./images/ja/polling_list_5.png)
 
 ---
 ### AI分析
 ポーリング結果のログの中で数値データをAI分析した結果です。ログモードをAI分析に設定して十分なデータを取得した場合のみ表示されます。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-12-02_06-29-13.png)
+![h:400 center](./images/ja/ai_2.png)
 
 ---
 ## OpenTelemetry
 
 OpenTelemetryコレクターの画面です。メトリック、トレース、ログのタブで切り替えます。
 
-![h:400 center](./images/ja/2025-05-25_16-47-58.png)
+![h:400 center](./images/ja/otel.png)
 
 ---
 ### OpenTelemetry メトリック
 タイムチャートやヒストグラムによる視認化が可能です。
 
-![h:400 center](./images/ja/2025-05-25_16-49-50.png)
+![h:400 center](./images/ja/otel_2.png)
 
 ---
 ### OpenTelemetry トレース
 DAG（サービス間関係）やタイムラインのグラフ表示に対応しています。
 
-![h:400 center](./images/ja/2025-05-25_16-51-04.png)
+![h:400 center](./images/ja/otel_dag.png)
 
 ---
 ### OpenTelemetryの設定
 保存時間、送信元IP制限、受信のON/OFFを設定します。
 
-![h:400 center](./images/ja/2025-05-25_17-09-31.png)
+![h:400 center](./images/ja/otel_opentelemetry.png)
 
 ---
 ## MQTT
 受信したMQTTのトピック一覧、受信状態、クライアントID、回数などを表示します。選択したトピックの最新受信データ（JSON, TEXT, HEX等）の確認、受信統計レポート表示、トピックコピーやポーリング作成が可能です。
 
-![h:400 center](./images/ja/2025-11-22_04-56-15.png)
+![h:400 center](./images/ja/mqtt.png)
 
 ---
 ### MQTT設定
 有効無効の切り替えと、受信データのsyslog記録設定が可能です。
 
-![h:400 center](./images/ja/2025-11-22_04-56-29.png)
+![h:400 center](./images/ja/mqtt_mqtt.png)
 
 ---
 ## MCPサーバー
 
 AIがTWSNMP FKを利用するためのMCPサーバー機能を提供します。
 
-![h:400 center](./images/ja/2025-07-25_04-43-13.png)
+![h:400 center](./images/ja/mcp_mcp.png)
 
 ---
 ### MCPサーバーの機能
@@ -871,7 +871,7 @@ AIがネットワーク監視データを取得したり、MIB情報を検索し
 ### ポーリング編集
 ポーリング編集はポーリングリストでポーリングを選択してボタンから表示できます。新規追加時や編集時にAIアシスト機能を利用可能です。
 
-![h:400 center](./images/ja/2023-12-02_05-36-35.png)
+![h:400 center](./images/ja/ai.png)
 
 ---
 
@@ -902,7 +902,7 @@ AIがネットワーク監視データを取得したり、MIB情報を検索し
 TWSNMPが見つけたIPアドレスのリストです。ARP監視機能で見つけた同じセグメントにあるIPアドレスだけ表示されます。重複やアドレスが変化したことを検知できます。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-11-28_05-28-14.png)
+![h:400 center](./images/ja/address_list.png)
 
 ---
 
@@ -934,7 +934,7 @@ IPアドレス、MACアドレス、ドメイン名の詳細情報を表示する
 
 TWSNMPからモニターするサーバー証明書のリストです。監視対象の編集画面から、IPアドレスやホスト名、ポート番号を指定して追加できます。
 
-![h:400 center](./images/ja/2025-07-25_05-10-42.png)
+![h:400 center](./images/ja/cert_list.png)
 
 ---
 ### IPアドレス使用状況
@@ -959,7 +959,7 @@ TWSNMPからモニターするサーバー証明書のリストです。監視�
 <!-- _class: tinytext -->
 
 
-![h:400 center](./images/ja/2024-12-27_20-26-55.png)
+![h:400 center](./images/ja/address_list_ip.png)
 
 
 ---
@@ -968,13 +968,13 @@ TWSNMPからモニターするサーバー証明書のリストです。監視�
 IPアドレスとMACアドレスの関係を力学モデルで図示したレポートです。正常なアドレスはIPアドレスとMACアドレスが１対１になります。同じIPアドレスを複数のMACで使っていたり、複数のIPアドレスをもつ、MACアドレスを検知できます。
 <!-- _class: tinytext -->
 
-![h:400 center](./images/ja/2023-11-28_05-38-57.png)
+![h:400 center](./images/ja/address_list_ip_mac.png)
 
 ---
 ### IPとMACアドレスの関係（円形モデル）
 IPアドレスとMACアドレスの関係を円形モデルで図示したレポートです。正常なアドレスはIPアドレスとMACアドレスが１対１になります。同じIPアドレスを複数のMACで使っていたり、複数のIPアドレスをもつMACアドレスを検知できます。
 
-![h:400 center](./images/ja/2023-11-28_05-46-00.png)
+![h:400 center](./images/ja/address_list_ip_mac_2.png)
 
 ---
 ## PKI CA構築
@@ -982,7 +982,7 @@ IPアドレスとMACアドレスの関係を円形モデルで図示したレポ
 
 PKI機能のCAを構築する前の画面です。
 
-![h:400 center](./images/ja/2025-03-09_16-25-47.png)
+![h:400 center](./images/ja/pki_2.png)
 
 ---
 <!-- _class: tinytext -->
@@ -1011,7 +1011,7 @@ PKI機能のCAを構築する前の画面です。
 CA構築後は、証明書の一覧画面を表示します。発行した証明書の確認できます。
 
 <!-- _class: tinytext -->
-![h:400 center](./images/ja/2025-03-09_09-30-47.png)
+![h:400 center](./images/ja/pki.png)
 
 ---
 <!-- _class: tinytext -->
@@ -1047,7 +1047,7 @@ CA構築後は、証明書の一覧画面を表示します。発行した証明
 <!-- _class: tinytext -->
 証明書要求(CSR)を作成する画面です。
 
-![h:400 center](./images/ja/2025-03-09_15-47-20.png)
+![h:400 center](./images/ja/pki_csr.png)
 
 ---
 |項目|内容|
@@ -1066,7 +1066,7 @@ CA構築後は、証明書の一覧画面を表示します。発行した証明
 <!-- _class: tinytext -->
 PKIサーバーの動作を制御する画面です。
 
-![h:400 center](./images/ja/2025-03-09_16-45-55.png)
+![h:400 center](./images/ja/pki_3.png)
 
 ---
 |項目|内容|
@@ -1082,7 +1082,7 @@ PKIサーバーの動作を制御する画面です。
 <!-- _class: tinytext -->
 イベントログの画面です。上部にログの発生件数を時系列で示したグラフがあります。
 
-![h:400 center](./images/ja/2023-11-29_21-16-11.png)
+![h:400 center](./images/ja/eventlog.png)
 
 ---
 
@@ -1110,7 +1110,7 @@ PKIサーバーの動作を制御する画面です。
 
 イベントログの検索条件を指定するダイアログです。
 
-![h:400 center](./images/ja/2023-11-29_21-27-02.png)
+![h:400 center](./images/ja/eventlog_2.png)
 
 ---
 
@@ -1130,21 +1130,21 @@ PKIサーバーの動作を制御する画面です。
 ### イベントログの状態別グラフ
 イベントログの件数を状態（レベル）別に集計したレポートです。
 
-![h:400 center](./images/ja/2023-11-29_21-52-16.png)
+![h:400 center](./images/ja/eventlog_3.png)
 
 ---
 ### イベントログ ヒートマップ
 
 イベントログの時間毎の件数をヒートマップで集計したレポートです。
 
-![h:400 center](./images/ja/2023-11-29_21-54-38.png)
+![h:400 center](./images/ja/eventlog_4.png)
 
 ---
 ### イベントログ ノード別
 
 イベントログの件数をノード別に集計したレポートです。
 
-![h:400 center](./images/ja/2023-11-29_21-56-37.png)
+![h:400 center](./images/ja/eventlog_5.png)
 
 
 ---
@@ -1152,21 +1152,21 @@ PKIサーバーの動作を制御する画面です。
 
 イベントログの中の稼働率(oprate)の値を時系列グラフにしたレポートです。
 
-![h:400 center](./images/ja/2023-11-29_21-58-51.png)
+![h:400 center](./images/ja/eventlog_6.png)
 
 ---
 ### ARP監視
 
 イベントログの中のアドレス使用率(arpwatch)の値を時系列グラフにしたレポートです。
 
-![h:400 center](./images/ja/2023-11-29_22-01-21.png)
+![h:400 center](./images/ja/eventlog_arp.png)
 
 ---
 ## Syslog
 
 Syslogの画面です。上部にログの発生件数を時系列で示したグラフがあります。
 
-![h:400 center](./images/ja/2023-12-02_09-15-05.png)
+![h:400 center](./images/ja/syslog.png)
 
 ---
 
@@ -1197,7 +1197,7 @@ Syslogの画面です。上部にログの発生件数を時系列で示した�
 ### Syslog フィルター
 Syslogの検索条件を指定するダイアログです。
 
-![h:400 center](./images/ja/2023-12-02_13-39-17.png)
+![h:400 center](./images/ja/syslog_syslog.png)
 
 ---
 |項目|内容|
@@ -1214,21 +1214,21 @@ Syslogの検索条件を指定するダイアログです。
 
 Syslogの件数を状態別に集計したレポートです。
 
-![h:400 center](./images/ja/2023-12-02_13-43-23.png)
+![h:400 center](./images/ja/syslog_syslog_2.png)
 
 ---
 ### Syslog ヒートマップ
 
 Syslogの時間毎の件数をヒートマップで集計したレポートです。
 
-![h:400 center](./images/ja/2023-12-02_13-43-39.png)
+![h:400 center](./images/ja/syslog_syslog_3.png)
 
 ---
 ### Syslog ホスト別
 
 Syslogの件数を送信元ホスト別に集計したレポートです。
 
-![h:400 center](./images/ja/2023-12-02_13-43-51.png)
+![h:400 center](./images/ja/syslog_syslog_4.png)
 
 ---
 ### 正規化分析
@@ -1236,27 +1236,27 @@ Syslogの件数を送信元ホスト別に集計したレポートです。
 syslogを正規化して集計したレポートです。
 数値、IPアドレス、メールアドレスなどを共通の文字に置き換えてカウントするものです。
 
-![h:400 center](./images/ja/2025-07-25_06-05-57.png)
+![h:400 center](./images/ja/syslog_2.png)
 
 ---
 ### Syslog ホスト別(3D)
 
 Syslogを送信元ホスト、プライオリティー、時刻の３次元グラフで表示したレポートです。
 
-![h:400 center](./images/ja/2023-12-02_13-44-07.png)
+![h:400 center](./images/ja/syslog_syslog_3d.png)
 
 ---
 ### Syslog FFTによる周期分析
 
 Syslogをホスト毎にFFT分析して受信件数の周期を分析したレポートです。
 
-![h:400 center](./images/ja/2023-12-02_13-44-43.png)
+![h:400 center](./images/ja/syslog_syslog_fft.png)
 
 ---
 ## SNMP TRAP
 SNMP TRAPログの画面です。上部にログの発生件数を時系列で示したグラフがあります。
 
-![h:400 center](./images/ja/2023-12-02_14-35-34.png)
+![h:400 center](./images/ja/trap.png)
 
 ---
 |項目|内容|
@@ -1282,7 +1282,7 @@ SNMP TRAPログの画面です。上部にログの発生件数を時系列で�
 
 SNMP TRAPの検索条件を指定するダイアログです。
 
-![h:400 center](./images/ja/2023-12-02_14-38-44.png)
+![h:400 center](./images/ja/trap_snmp_trap.png)
 
 ---
 
@@ -1299,34 +1299,34 @@ SNMP TRAPの検索条件を指定するダイアログです。
 
  SNMP TRAPの件数を種類別に集計したレポートです。
 
-![h:400 center](./images/ja/2023-12-02_14-41-15.png)
+![h:400 center](./images/ja/trap_snmp_trap_2.png)
 
 ---
 ### SNMP TRAP ヒートマップ
 
 SNMP TRAPの時間毎の件数をヒートマップで集計したレポートです。
 
-![h:400 center](./images/ja/2023-12-02_14-42-06.png)
+![h:400 center](./images/ja/trap_snmp_trap_3.png)
 
 ---
 ### SNMP TRAP ホスト別
 SNMP TRAPの受信件数を送信元ホスト別に集計したレポートです。
 
-![h:400 center](./images/ja/2023-12-02_14-42-19.png)
+![h:400 center](./images/ja/trap_snmp_trap_4.png)
 
 ---
 ### SNMP TRAP 送信元と種別(3D)
 
 SNMP TRAPの受信ログを送信元ホスト、種別、時刻の３次元グラフで表示したレポートです。
 
-![h:400 center](./images/ja/2023-12-02_14-42-30.png)
+![h:400 center](./images/ja/trap_snmp_trap_3d.png)
 
 ---
 ### NetFlow
 
 NetFlowの分析画面です。
 
-![h:400 center](./images/ja/2024-05-02_17-03-50.png)
+![h:400 center](./images/ja/trap_netflow.png)
 
 ---
 #### テーブルの項目の説明
@@ -1378,7 +1378,7 @@ NetFlowの分析画面です。
 
 NetFlow検索のためのフィルターです。
 
-![center](./images/ja/2024-05-02_17-13-06.png)
+![center](./images/ja/trap_netflow_2.png)
 
 ---
 |項目|内容|
@@ -1423,7 +1423,7 @@ NetFlow検索のためのフィルターです。
 
 sFlowの分析画面です。
 
-![h:400 center](./images/ja/2024-06-30_09-19-36.png)
+![h:400 center](./images/ja/trap_netflow_sflow.png)
 
 ##### フローサンプル
 
@@ -1564,7 +1564,7 @@ ARP監視ログの画面です。
 上部にログの発生件数を時系列で示したグラフがあります。
 
 
-![h:400 center](./images/ja/2023-11-28_06-11-08.png)
+![h:400 center](./images/ja/arp.png)
 
 ---
 |項目|内容|
@@ -1592,7 +1592,7 @@ ARP監視ログの画面です。
 
 IPアドレス別にログの件数を集計したレポートです。変化が多いIPアドレスが一目瞭然です。
 
-![h:400 center](./images/ja/2023-11-28_06-12-16.png)
+![h:400 center](./images/ja/arp_arp_ip.png)
 
 ---
 ### ARP監視ログ IPアドレス別(3D)
@@ -1600,7 +1600,7 @@ IPアドレス別にログの件数を集計したレポートです。変化が
 IPアドレスと時系列の両面からARP監視ログを集計したレポートです。
 新規発見や変化の時期が一目瞭然です。
 
-![h:400 center](./images/ja/2023-11-28_06-12-29.png)
+![h:400 center](./images/ja/arp_arp_ip_3d.png)
 
 ---
 ## AI分析リスト
@@ -1608,7 +1608,7 @@ IPアドレスと時系列の両面からARP監視ログを集計したレポー
 AI分析リストの画面です。
 リストにはポーリングのログ設定でAIを選択して分析を実施したものだけ表示されます。
 
-![h:400 center](./images/ja/2023-11-28_04-32-55.png)
+![h:400 center](./images/ja/ai_list.png)
 
 ---
 |項目|内容|
@@ -1631,25 +1631,25 @@ AI分析リストの画面です。
 
 異常スコアを一日単位のヒートマップで示したレポートです。赤い色ほど異常が発生した時間帯であることを示しています。
 
-![h:400 center](./images/ja/2023-11-28_04-43-51.png)
+![h:400 center](./images/ja/ai_list_ai.png)
 
 ---
 ### AI異常スコアの割合
 異常スコアを全期間で集計した割合を円グラフで示しています。
 
-![h:400 center](./images/ja/2023-11-28_04-44-05.png)
+![h:400 center](./images/ja/ai_list_ai_2.png)
 
 ---
 ### AI異常スコアのタイムチャート
 異常スコアを時系列で表示したレポートです。
 
-![h:400 center](./images/ja/2023-11-28_04-44-27.png)
+![h:400 center](./images/ja/ai_list_ai_3.png)
 
 ---
 ## System
 System情報の画面です。上部にログのリソースと通信の情報を時系列で示したグラフがあります。
 
-![h:400 center](./images/ja/2023-12-02_14-59-49.png)
+![h:400 center](./images/ja/system.png)
 
 ---
 |項目|内容|
@@ -1675,13 +1675,13 @@ System情報の画面です。上部にログのリソースと通信の情報�
 ### System サイズ予測
 データベースサイズとディスク使用率の１年間の予測です。
 
-![h:400 center](./images/ja/2023-12-02_15-08-57.png)
+![h:400 center](./images/ja/system_system.png)
 
 ---
 ## マップ設定
 管理マップの設定をする画面です。
 
-![h:400 center](./images/ja/2023-11-29_04-48-42.png)
+![h:400 center](./images/ja/map_conf.png)
 
 ---
 |項目|内容|
@@ -1724,7 +1724,7 @@ System情報の画面です。上部にログのリソースと通信の情報�
 ## 通知設定
 通知の設定をする画面です。
 
-![h:400 center](./images/ja/2025-10-04_05-57-32.png)
+![h:400 center](./images/ja/notify_conf.png)
 
 ---
 |項目|内容|
@@ -1757,7 +1757,7 @@ System情報の画面です。上部にログのリソースと通信の情報�
 ## AI分析設定
 AI分析の設定をする画面です。
 
-![h:400 center](./images/ja/2023-11-29_05-32-20.png)
+![h:400 center](./images/ja/ai_conf.png)
 
 
 ---
@@ -1780,7 +1780,7 @@ AI分析の設定をする画面です。
 ## 地図設定
 地図の設定をする画面です。
 
-![h:400 center](./images/ja/2023-11-29_06-07-55.png)
+![h:400 center](./images/ja/loc_conf.png)
 
 ---
 |項目|内容|
@@ -1833,7 +1833,7 @@ https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json
 ## アイコン管理
 アイコンを管理する画面です。
 
-![h:400 center](./images/ja/2023-11-29_06-24-41.png)
+![h:400 center](./images/ja/icon_conf.png)
 
 ---
 |項目|内容|
@@ -1855,7 +1855,7 @@ https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json
 ---
 ### アイコン編集画面
 
-![h:400 center](./images/ja/2023-11-29_06-35-32.png)
+![h:400 center](./images/ja/icon_conf_2.png)
 
 
 
@@ -1868,7 +1868,7 @@ https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json
 ## MIB管理
 SNMPのMIBを管理する画面です。
 
-![h:400 center](./images/ja/2023-11-29_06-40-18.png)
+![h:400 center](./images/ja/mib_conf.png)
 
 ---
 |項目|内容|
@@ -1888,7 +1888,7 @@ SNMPのMIBを管理する画面です。
 ---
 ### MIBツリー画面
 
-![h:400 center](./images/ja/2023-11-29_06-45-29.png)
+![h:400 center](./images/ja/mib_conf_mib.png)
 
 ---
 ## データストア内のファイル
