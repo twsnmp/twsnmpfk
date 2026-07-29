@@ -201,11 +201,13 @@
   };
 </script>
 
-<div class="flex flex-col">
+<div class="flex flex-col max-h-[calc(100vh-130px)] overflow-y-auto pb-8">
   <div class="m-5 grow">
-    <table id="pollingListTable" class="display compact" style="width:99%"></table>
+    <div>
+      <table id="pollingListTable" class="display compact" style="width:99%"></table>
+    </div>
   </div>
-  <div class="flex justify-end space-x-2 mr-2">
+  <div class="flex justify-end space-x-2 mr-2 mb-6 pb-4">
     <GradientButton shadow color="blue" type="button" onclick={add} size="xs">
       <Icon path={icons.mdiPlus} size={1} />
       {$_("PollingList.Add")}
