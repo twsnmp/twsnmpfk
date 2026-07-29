@@ -3,7 +3,7 @@
   import { GradientButton } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import {
     GetMqttStatList,
     DeleteMqttStats,
@@ -63,10 +63,20 @@
     return `<div class="p-2 bg-gray-800 text-green-400 rounded font-mono text-xs overflow-x-auto max-h-96"><pre><code>${escaped}</code></pre></div>`;
   };
 
-  const showTable = () => {
+  const showTable = async () => {
+    await tick();
+    if (!document.getElementById("mqttStatTable")) return;
+
+    if (table && DataTable.isDataTable("#mqttStatTable")) {
+      selectedCount = 0;
+      table.clear();
+      table.rows.add(data);
+      table.draw();
+      return;
+    }
+
     selectedCount = 0;
     table = new DataTable("#mqttStatTable", {
-      destroy: true,
       columns: columns,
       data: data,
       stateSave: true,
@@ -247,11 +257,13 @@
   });
 </script>
 
-<div class="flex flex-col">
+<div class="flex flex-col max-h-[calc(100vh-130px)] overflow-y-auto pb-8">
   <div class="m-5 grow">
-    <table id="mqttStatTable" class="display compact" style="width:99%"></table>
+    <div>
+      <table id="mqttStatTable" class="display compact" style="width:99%"></table>
+    </div>
   </div>
-  <div class="flex justify-end space-x-2 mr-2">
+  <div class="flex justify-end space-x-2 mr-2 mb-6 pb-4">
     <GradientButton
       shadow
       color="purple"
