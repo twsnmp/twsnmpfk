@@ -100,7 +100,7 @@
     }
     version = await GetVersion();
     await tick();
-    mainHeight = window.innerHeight - 96;
+    mainHeight = window.innerHeight - 82;
     checkLatest();
   });
 
@@ -114,19 +114,19 @@
     }
 </script>
 
-<svelte:window onresize={() => (mainHeight = window.innerHeight - 96)} />
+<svelte:window onresize={() => (mainHeight = window.innerHeight - 82)} />
 
-<Navbar style="--wails-draggable:drag">
+<Navbar fluid={true} class="!px-3 !py-1.5 w-full flex-nowrap shrink-0 overflow-hidden items-center" style="--wails-draggable:drag">
   {#snippet children({ hidden, toggle })}
-  <NavBrand href="/">
-    <img src={logo} class="mr-2 h-12" alt="TWSNMP Logo" />
+  <NavBrand href="/" class="shrink-0 mr-2 md:mr-3.5 min-w-0 flex items-center">
+    <img src={logo} class="mr-1.5 h-8 w-auto shrink-0" alt="TWSNMP Logo" />
     <span
-      class="self-center whitespace-nowrap text-xl font-semibold dark:text-white"
+      class="self-center font-semibold dark:text-white whitespace-nowrap text-xs sm:text-sm md:text-base lg:text-lg truncate max-w-[130px] sm:max-w-[180px] md:max-w-[240px] lg:max-w-[320px] shrink min-w-0"
     >
-      TWSNMP FK <span class="text-xs font-normal text-gray-500 dark:text-gray-400 mx-1">{version}</span> - {mapConfig.MapName}
+      TWSNMP FK <span class="text-[10px] font-normal text-gray-500 dark:text-gray-400 mx-0.5">{version}</span> - {mapConfig.MapName}
     </span>
   </NavBrand>
-  <NavUl activeUrl={showConfig ? "config" : page} classes={{ ul: "flex flex-col p-2 mt-3 md:flex-row md:space-x-1 rtl:space-x-reverse md:mt-0 md:text-xs md:font-medium" }}>
+  <NavUl activeUrl={showConfig ? "config" : page} classes={{ ul: "flex flex-row items-center space-x-0 md:space-x-0.5 text-[10px] md:text-xs font-medium shrink-0 p-0 m-0" }}>
     {#if !lock}
       <NavLi
   href="map"
@@ -135,7 +135,7 @@
     page = "map";
   }}
 >
-        <Icon path={icons.mdiLan} size={1.8} />
+        <Icon path={icons.mdiLan} size={1.5} />
         {$_("Top.Map")}
       </NavLi>
       {#if locConf.Style}
@@ -146,7 +146,7 @@
     page = "loc";
   }}
 >
-          <Icon path={icons.mdiMap} size={1.8} />
+          <Icon path={icons.mdiMap} size={1.5} />
           {$_("Top.Loc")}
         </NavLi>
       {/if}
@@ -157,7 +157,7 @@
     page = "node";
   }}
 >
-        <Icon path={icons.mdiLaptop} size={1.8} />
+        <Icon path={icons.mdiLaptop} size={1.5} />
         {$_("Top.Node")}
       </NavLi>
       <NavLi
@@ -167,7 +167,7 @@
     page = "polling";
   }}
 >
-        <Icon path={icons.mdiLanCheck} size={1.8} />
+        <Icon path={icons.mdiLanCheck} size={1.5} />
         {$_("Top.Polling")}
       </NavLi>
       <NavLi
@@ -177,7 +177,7 @@
     page = "address";
   }}
 >
-        <Icon path={icons.mdiListStatus} size={1.8} />
+        <Icon path={icons.mdiListStatus} size={1.5} />
         {$_("Top.Address")}
       </NavLi>
       <NavLi
@@ -187,7 +187,7 @@
     page = "cert";
   }}
 >
-        <Icon path={icons.mdiInvoiceList} size={1.8} />
+        <Icon path={icons.mdiInvoiceList} size={1.5} />
         {$_('Top.Cert')}
       </NavLi>
       <NavLi
@@ -197,7 +197,7 @@
     page = "pki";
   }}
 >
-        <Icon path={icons.mdiCertificate} size={1.8} />
+        <Icon path={icons.mdiCertificate} size={1.5} />
         PKI
       </NavLi>
       <NavLi
@@ -207,7 +207,7 @@
     page = "eventlog";
   }}
 >
-        <Icon path={icons.mdiCalendarCheck} size={1.8} />
+        <Icon path={icons.mdiCalendarCheck} size={1.5} />
         {$_("Top.Log")}
       </NavLi>
     {#if mapConfig.EnableSyslogd}
@@ -218,7 +218,7 @@
     page = "syslog";
   }}
 >
-        <Icon path={icons.mdiCalendarText} size={1.8} />
+        <Icon path={icons.mdiCalendarText} size={1.5} />
         syslog
       </NavLi>
     {/if}
@@ -230,7 +230,7 @@
     page = "trap";
   }}
 >
-        <Icon path={icons.mdiAlert} size={1.8} />
+        <Icon path={icons.mdiAlert} size={1.5} />
         TRAP
       </NavLi>
     {/if}
@@ -242,7 +242,7 @@
     page = "netflow";
   }}
 >
-        <Icon path={icons.mdiCompareHorizontal} size={1.8} />
+        <Icon path={icons.mdiCompareHorizontal} size={1.5} />
         NetFlow
       </NavLi>
     {/if}
@@ -254,7 +254,7 @@
     page = "sflow";
   }}
 >
-        <Icon path={icons.mdiClockCheckOutline} size={1.8} />
+        <Icon path={icons.mdiClockCheckOutline} size={1.5} />
         sFlow
       </NavLi>
     {/if}
@@ -265,7 +265,7 @@
     page = "arp";
   }}
 >
-        <Icon path={icons.mdiCheckNetwork} size={1.8} />
+        <Icon path={icons.mdiCheckNetwork} size={1.5} />
         ARP
       </NavLi>
     {#if mapConfig.EnableOTel}
@@ -276,7 +276,7 @@
     page = "otel";
   }}
 >
-        <Icon path={icons.mdiTelescope} size={1.8} />
+        <Icon path={icons.mdiTelescope} size={1.5} />
         OTel
       </NavLi>
     {/if}
@@ -288,7 +288,7 @@
     page = "mqtt";
   }}
 >
-        <Icon path={icons.mdiQueueFirstInLastOut} size={1.8} />
+        <Icon path={icons.mdiQueueFirstInLastOut} size={1.5} />
         MQTT
       </NavLi>
     {/if}
@@ -299,7 +299,7 @@
     page = "ai";
   }}
 >
-        <Icon path={icons.mdiBrain} size={1.8} />
+        <Icon path={icons.mdiBrain} size={1.5} />
         {$_("Top.AI")}
       </NavLi>
       <NavLi
@@ -309,7 +309,7 @@
     page = "system";
   }}
 >
-        <Icon path={icons.mdiChartLine} size={1.8} />
+        <Icon path={icons.mdiChartLine} size={1.5} />
         {$_("Top.System")}
       </NavLi>
       <NavLi
@@ -321,16 +321,16 @@
     showConfig = true;
   }}
 >
-        <Icon path={icons.mdiCog} size={1.8} />
+        <Icon path={icons.mdiCog} size={1.5} />
         {$_("Top.Config")}
       </NavLi>
     {/if}
   </NavUl>
-  <div class="flex justify-end">
+  <div class="flex items-center shrink-0 ml-auto gap-1 md:gap-1.5 pl-2">
     {#if !latest}
-      <Badge class="mr-1 h-8" border color="red">{$_("Top.HasUpdate")}</Badge>
+      <Badge class="mr-0.5 h-8 text-xs px-2.5 py-1 whitespace-nowrap flex items-center justify-center border" color="red">{$_("Top.HasUpdate")}</Badge>
     {/if}
-    <Button class="!p-2" color="alternative" onclick={toggleDark}>
+    <Button class="!p-1.5 h-8 w-8 flex items-center justify-center shrink-0" color="alternative" onclick={toggleDark}>
       {#if dark}
         <Icon path={icons.mdiWeatherSunny} size={1} />
       {:else}
@@ -338,7 +338,7 @@
       {/if}
     </Button>
     <Button
-      class="!p-2 ml-1"
+      class="!p-1.5 h-8 w-8 flex items-center justify-center shrink-0"
       color="alternative"
       onclick={() => {
         oldPage = page;
@@ -414,3 +414,16 @@
     page = oldPage;
   }}
 />
+
+<style>
+  :global(nav ul li a),
+  :global(nav ul li button) {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+    padding-left: 0.35rem !important;
+    padding-right: 0.35rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+</style>
