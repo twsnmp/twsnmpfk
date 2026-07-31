@@ -10,6 +10,7 @@
     ExportNodes,
     CheckPolling,
     WakeOnLan,
+    GetMapConf,
   } from "../../wailsjs/go/main/App";
   import { getTableLang, renderNodeState, renderIP } from "./common";
   import Node from "./Node.svelte";
@@ -201,7 +202,11 @@
     },
   ];
 
-  onMount(() => {
+  let hasAI = false;
+
+  onMount(async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     refresh();
   });
 
@@ -256,16 +261,18 @@
         <Icon path={icons.mdiChartBar} size={1} />
         {$_("NodeList.Report")}
       </GradientButton>
-      <GradientButton
-        shadow
-        color="pink"
-        type="button"
-        onclick={aiDiagnose}
-        size="xs"
-      >
-        <Icon path={icons.mdiBrain} size={1} />
-        {$_("NodeList.AIDiagnose")}
-      </GradientButton>
+      {#if hasAI}
+        <GradientButton
+          shadow
+          color="pink"
+          type="button"
+          onclick={aiDiagnose}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("NodeList.AIDiagnose")}
+        </GradientButton>
+      {/if}
       <GradientButton
         >{$_("NodeList.Action")}<Icon
           path={icons.mdiChevronDown}

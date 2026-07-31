@@ -44,6 +44,7 @@
     DeleteNetwork,
     CheckNetwork,
     ExportMap,
+    GetMapConf,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL,WindowReloadApp } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
@@ -63,6 +64,7 @@
   let showEditNode: boolean = false;
   let selectedNode: string = "";
   let showAIDiagnose: boolean = false;
+  let hasAI: boolean = false;
   let showEditLine: boolean = false;
   let selectedLineNode1: string = "";
   let selectedLineNode2: string = "";
@@ -93,7 +95,13 @@
   let urls: any = [];
   let refreshCount = 0;
 
+  const checkAI = async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+  };
+
   onMount(async () => {
+    await checkAI();
     refreshCount = 0;
     await initMAP(map, callBack);
     refreshMap();
@@ -108,6 +116,7 @@
   });
 
   const showNodeMenuFunc = async (id: string) => {
+    await checkAI();
     selectedNode = id;
     urls = [];
     const n = await GetNode(id);
@@ -545,19 +554,21 @@
           {$_("Map.Report")}
         </div>
       </div>
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div
-        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
-        onclick={() => {
-          showNodeMenu = false;
-          showAIDiagnose = true;
-        }}
-      >
-        <span class="text-violet-400"><Icon path={icons.mdiBrain} size={0.7} /></span>
-        <div>
-          {$_("Map.AIDiagnose")}
+      {#if hasAI}
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div
+          class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
+          onclick={() => {
+            showNodeMenu = false;
+            showAIDiagnose = true;
+          }}
+        >
+          <span class="text-violet-400"><Icon path={icons.mdiBrain} size={0.7} /></span>
+          <div>
+            {$_("Map.AIDiagnose")}
+          </div>
         </div>
-      </div>
+      {/if}
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"

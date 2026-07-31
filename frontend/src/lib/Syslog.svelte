@@ -22,6 +22,7 @@
     DeleteAllSyslog,
     ExportAny,
     LLMAskLog,
+    GetMapConf,
   } from "../../wailsjs/go/main/App";
   import { renderState, renderTime, getTableLang, renderTimeMili } from "./common";
   import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
@@ -239,7 +240,11 @@
   ];
 
 
-  onMount(() => {
+  let hasAI = false;
+
+  onMount(async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     refresh();
   });
 
@@ -785,16 +790,18 @@
         {/if}
         Copy
       </GradientButton>
-      <GradientButton
-        shadow
-        color="pink"
-        type="button"
-        onclick={askLLM}
-        size="xs"
-      >
-        <Icon path={icons.mdiBrain} size={1} />
-        {$_('MIBBrowser.AIExplain')}
-      </GradientButton>
+      {#if hasAI}
+        <GradientButton
+          shadow
+          color="pink"
+          type="button"
+          onclick={askLLM}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_('MIBBrowser.AIExplain')}
+        </GradientButton>
+      {/if}
       <GradientButton>
         {$_('Address.AddressInfo')}
         <Icon path={icons.mdiChevronDown} size={1} />

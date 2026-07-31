@@ -10,7 +10,7 @@
     Input,
     Label,
   } from "flowbite-svelte";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
@@ -21,6 +21,7 @@
     SnmpSet,
     LLMMIBSearch,
     LLMAskMIB,
+    GetMapConf,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import { getTableLang } from "./common";
@@ -37,6 +38,20 @@
 
   export let show: boolean = false;
   export let nodeID = "";
+
+  let hasAI = false;
+  const checkAI = async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+  };
+
+  onMount(async () => {
+    await checkAI();
+  });
+
+  $: if (show) {
+    checkAI();
+  }
 
   let name = "";
   let raw = false;
@@ -759,16 +774,18 @@
             <Icon path={icons.mdiFileExcel} size={1} />
             Excel
           </GradientButton>
-          <GradientButton
-            shadow
-            color="pink"
-            type="button"
-            onclick={askLLM}
-            size="xs"
-          >
-            <Icon path={icons.mdiBrain} size={1} />
-            {$_('MIBBrowser.AIExplain')}
-          </GradientButton>
+          {#if hasAI}
+            <GradientButton
+              shadow
+              color="pink"
+              type="button"
+              onclick={askLLM}
+              size="xs"
+            >
+              <Icon path={icons.mdiBrain} size={1} />
+              {$_('MIBBrowser.AIExplain')}
+            </GradientButton>
+          {/if}
         {/if}
       {/if}
       <GradientButton
@@ -824,18 +841,20 @@
       {/if}
     </div>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton
-        shadow
-        type="button"
-        color="pink"
-        onclick={() => {
-          showLLMMIBSearch = true;
-        }}
-        size="xs"
-      >
-        <Icon path={icons.mdiBrain} size={1} />
-        {$_('MIBBrowser.AskAI')}
-      </GradientButton>
+      {#if hasAI}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => {
+            showLLMMIBSearch = true;
+          }}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_('MIBBrowser.AskAI')}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         type="button"

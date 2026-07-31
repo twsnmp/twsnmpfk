@@ -3,8 +3,8 @@
   import { Modal, GradientButton } from "flowbite-svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
-  import { tick, createEventDispatcher } from "svelte";
-  import { GetDefaultPolling, GetPollingTemplates,ImportPollingTemplate } from "../../wailsjs/go/main/App";
+  import { tick, createEventDispatcher, onMount } from "svelte";
+  import { GetDefaultPolling, GetPollingTemplates,ImportPollingTemplate, GetMapConf } from "../../wailsjs/go/main/App";
   import { getTableLang,renderPollingType } from "./common";
   import Polling from "./Polling.svelte";
   import AIPollingAssistDialog from "./AIPollingAssistDialog.svelte";
@@ -15,6 +15,19 @@
 
   export let nodeID = "";
   export let show = false;
+  let hasAI = false;
+  const checkAI = async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+  };
+
+  onMount(async () => {
+    await checkAI();
+  });
+
+  $: if (show) {
+    checkAI();
+  }
   const dispatch = createEventDispatcher();
 
   let tmpTable :any = undefined;
@@ -147,10 +160,12 @@
       <table id="tmpTable" class="display compact" style="width:99%"></table>
     </div>
     <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton shadow color="pink" type="button" onclick={() => (showAIAssist = true)} size="xs">
-        <Icon path={icons.mdiAutoFix} size={1} />
-        {$_('AIPollingAssist.AIAssist')}
-      </GradientButton>
+      {#if hasAI}
+        <GradientButton shadow color="pink" type="button" onclick={() => (showAIAssist = true)} size="xs">
+          <Icon path={icons.mdiAutoFix} size={1} />
+          {$_('AIPollingAssist.AIAssist')}
+        </GradientButton>
+      {/if}
       {#if selectedCount == 1}
         <GradientButton shadow color="blue" type="button" onclick={add} size="xs">
           <Icon path={icons.mdiPlus} size={1} />

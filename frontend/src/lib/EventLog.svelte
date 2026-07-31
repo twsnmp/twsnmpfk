@@ -16,6 +16,7 @@
     GetEventLogs,
     ExportEventLogs,
     DeleteAllEventLogs,
+    GetMapConf,
   } from "../../wailsjs/go/main/App";
   import { renderState, renderTime, getTableLang } from "./common";
   import { showLogLevelChart, resizeLogLevelChart } from "./chart/loglevel";
@@ -168,7 +169,11 @@
     },
   ];
 
-  onMount(() => {
+  let hasAI = false;
+
+  onMount(async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     refresh();
   });
 
@@ -204,17 +209,19 @@
     </div>
   </div>
   <div class="flex justify-end space-x-2 mr-2 mb-6 pb-4">
-    <GradientButton
-      shadow
-      color="pink"
-      type="button"
-      disabled={selectedCount !== 1}
-      onclick={() => (showAIDialog = true)}
-      size="xs"
-    >
-      <Icon path={icons.mdiBrain} size={1} />
-      {$_("EventLog.AIAnalyze")}
-    </GradientButton>
+    {#if hasAI}
+      <GradientButton
+        shadow
+        color="pink"
+        type="button"
+        disabled={selectedCount !== 1}
+        onclick={() => (showAIDialog = true)}
+        size="xs"
+      >
+        <Icon path={icons.mdiBrain} size={1} />
+        {$_("EventLog.AIAnalyze")}
+      </GradientButton>
+    {/if}
     <GradientButton
       shadow
       color="blue"

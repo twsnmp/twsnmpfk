@@ -17,6 +17,7 @@
     GetDefaultPolling,
     DeleteAllTraps,
     LLMAskLog,
+    GetMapConf,
   } from "../../wailsjs/go/main/App";
   import { renderTime, getTableLang } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
@@ -137,7 +138,11 @@
     },
   ];
 
-  onMount(() => {
+  let hasAI = false;
+
+  onMount(async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     refresh();
   });
 
@@ -323,16 +328,18 @@
           {/if}
           Copy
         </GradientButton>
-        <GradientButton
-          shadow
-          color="pink"
-          type="button"
-          onclick={askLLM}
-          size="xs"
-        >
-          <Icon path={icons.mdiBrain} size={1} />
-          {$_('MIBBrowser.AIExplain')}
-        </GradientButton>
+        {#if hasAI}
+          <GradientButton
+            shadow
+            color="pink"
+            type="button"
+            onclick={askLLM}
+            size="xs"
+          >
+            <Icon path={icons.mdiBrain} size={1} />
+            {$_('MIBBrowser.AIExplain')}
+          </GradientButton>
+        {/if}
       {/if}
     {/if}
     <GradientButton
