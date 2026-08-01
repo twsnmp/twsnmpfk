@@ -168,7 +168,13 @@
     "TagSyslogText": "SyslogでERRORまたはFAILメッセージが発生したらアラート",
     "TagPingLabel": "Ping応答遅延",
     "TagPingText": "Ping応答時間が100ms以上で警告",
-    "DefaultName": "推奨ポーリング設定"
+    "DefaultName": "推奨ポーリング設定",
+    "PromptSyslog": "Syslogログからポーリングを作成してください:\n送信元ホスト: {host}\nログ種別/タグ: {type} / {tag}\nメッセージ: {message}\n(注意: 送信元ポート番号やPID等の動的な可変数値はFilter正規表現でハードコードせず、port \\d+ や \\d+ に置換するか省略して汎用化してください)",
+    "PromptTrap": "SNMP TRAPログからポーリングを作成してください:\n送信元: {from}\nTRAP種別: {trapType}\n変数リスト: {variables}\n(注意: 可変数値やセッションID等の動的数値はFilter正規表現でハードコードせず、汎用パターンに置換するか省略してください)",
+    "PromptMqtt": "MQTTメッセージからポーリングを作成してください:\nTopic: {topic}\nClientID: {clientID}\n送信元: {remote}\n最終受信データ: {value}",
+    "PromptNetFlow": "NetFlowログからポーリングを作成してください:\n送信元: {src}\n送信先: {dst}\nプロトコル: {protocol}\nバイト数/パケット数: {bytes} bytes, {packets} packets",
+    "PromptSFlowCounter": "sFlow Counterログからポーリングを作成してください:\n送信元: {src}\nカウンタ種別: {type}\nデータ: {data}",
+    "PromptSFlowFlow": "sFlow Flowログからポーリングを作成してください:\n送信元: {src}\n送信先: {dst}\nプロトコル: {protocol}\nバイト数/パケット数: {bytes} bytes, {packets} packets"
   },
   "AIList": {
     "AnomaryScore": "異常スコア",

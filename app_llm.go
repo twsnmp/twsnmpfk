@@ -704,8 +704,18 @@ Select the best polling template and native parameters based on the user's inten
    - 'snmp': Mode: "get", "stats", etc. Params: OID or MIB name. Script: e.g. 'hrProcessorLoad < 90.0'.
    - 'http': Mode: "" or "status" or "https". Script: 'code == 200' or 'rtt < 2000 * 1000 * 1000'.
    - 'tls': Mode: "expire". Script: e.g. '30' (days remaining).
-   - 'syslog' / 'trap': Filter: Regex. Script: 'count == 0' (0 errors is normal).
-   - 'command': Use ONLY when native ping, snmp, http, tls, syslog cannot fulfill the goal.
+   - 'syslog' / 'trap': Filter: Regex pattern. Script: 'count == 0' (0 errors is normal). Params: "" (empty).
+   - 'mqtt': Mode: "subscribe". Params: MQTT Broker URL (e.g. "tcp://localhost:1883"). Filter: Topic path. Script: Evaluation script on payload data.
+   - 'netflow': Mode: "traffic" or "count". Filter: Address/Protocol filter (e.g. "SrcAddr = 'x.x.x.x' and DstAddr = 'y.y.y.y'"). Params: "" (empty).
+   - 'command': Use ONLY when native ping, snmp, http, tls, syslog, mqtt, netflow cannot fulfill the goal.
+
+4. **Log Filter Generalization Rule (CRITICAL)**:
+   - When generating Filter regex for syslog or trap, DO NOT hardcode exact dynamic values from a single sample log (such as ephemeral source port numbers, process PIDs, timestamps, or random session IDs).
+   - Replace variable parts with generic regex patterns (e.g. 'port \d+', '\[\d+\]', or omit them) so future logs with different ports/PIDs can be correctly matched.
+
+5. **Log Polling Params Rule (CRITICAL)**:
+   - For syslog, trap, netflow, and sflow log-based pollings, the target node is determined by NodeID binding and log criteria are defined in Filter.
+   - Do NOT set source IP addresses or hostnames into Params. Leave Params as an empty string "".
 
 Return ONLY a raw JSON object with the following structure:
 {
@@ -747,11 +757,20 @@ Return ONLY a raw JSON object with the following structure:
    - 'snmp': Mode: "get", "stats" 等。Params: OID/MIB名。Script: 'hrProcessorLoad < 90.0' 等。
    - 'http': Mode: "" や "status", "https"。Script: 'code == 200' や 'rtt < 2000 * 1000 * 1000'。
    - 'tls': Mode: "expire"。Script: '30' (残り30日以上で正常)。
-   - 'syslog' / 'trap': Filter: ログ正規表現。Script: 'count == 0' (0件で正常)。
-   - 'command': 組み込みの ping, snmp, http, tls 等で実現不可能な場合のみ使用。
+   - 'syslog' / 'trap': Filter: ログ正規表現。Script: 'count == 0' (0件で正常)。Params: "" (空文字)。
+   - 'mqtt': Mode: "subscribe"。Params: ブローカーURL (例: "tcp://localhost:1883")。Filter: Topic。Script: ペイロードデータの判定式。
+   - 'netflow': Mode: "traffic" や "count"。Filter: 送受信フィルタ条件 (例: "SrcAddr = 'x.x.x.x' and DstAddr = 'y.y.y.y'")。Params: "" (空文字)。
+   - 'command': 組み込みの ping, snmp, http, tls, syslog, mqtt, netflow 等で実現不可能な場合のみ使用。
+
+4. **ログフィルタ正規表現の汎化・抽象化ルール (最重要)**:
+   - SyslogやSNMP Trapのログから 'Filter' (正規表現) を作成する際、単一ログのサンプルに含まれる「送信元ポート番号 (例: port 56332)」、「プロセスPID (例: [1234])」、「タイムスタンプ」、「セッションID」等の動的・可変な数値をそのまま固定値(リテラル)としてハードコードしないでください！
+   - 送信元ポート番号やPID等は汎用パターン (例: 'port \\d+' や '\\d+') に置き換えるか、またはポート番号部分自体を省略して、次回以降に異なるポート番号等で発生する同一イベントログも確実に検知できるように汎用的な正規表現を生成してください。
+
+5. **ログ監視 (syslog, trap, netflow, sflow等) の Params 設定ルール (最重要)**:
+   - syslog, trap, netflow, sflow 等のログ監視ポーリングでは、対象ノードは紐付け先ノード (NodeID) で識別され、ログ絞り込みは Filter で行うため、Params (パラメータ) に送信元IPアドレスやホスト名を指定せず、空文字 "" に設定してください！
 
 【重要ルール】
-PingやHTTP等の計測で外部OSコマンド('command')を無理に使用せず、TWSNMP FKネイティブのポーリング種別('ping', 'http', 'snmp', 'tls')を優先選択してください。
+PingやHTTP等の計測で外部OSコマンド('command')を無理に使用せず、TWSNMP FKネイティブのポーリング種別('ping', 'http', 'snmp', 'tls', 'syslog', 'mqtt', 'netflow')を優先選択してください。
 
 必ず余計な説明を行わず、以下の構造のJSONオブジェクトのみを出力してください（Markdownのコードブロック枠線も不要）。
 

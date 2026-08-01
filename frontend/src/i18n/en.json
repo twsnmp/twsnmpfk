@@ -178,7 +178,13 @@
     "TagSyslogText": "Alert if ERROR or FAIL messages occur in Syslog",
     "TagPingLabel": "Ping Latency",
     "TagPingText": "Warn if Ping response time is 100ms or higher",
-    "DefaultName": "Recommended Polling Setting"
+    "DefaultName": "Recommended Polling Setting",
+    "PromptSyslog": "Create polling from Syslog log:\nSource Host: {host}\nLog Type/Tag: {type} / {tag}\nMessage: {message}\n(Note: Do not hardcode dynamic values like source ports or PIDs in Filter regex; generalize them with port \\d+ or \\d+ or omit them)",
+    "PromptTrap": "Create polling from SNMP TRAP log:\nSource: {from}\nTRAP Type: {trapType}\nVariables: {variables}\n(Note: Do not hardcode dynamic numbers or session IDs in Filter regex; replace with generic patterns or omit them)",
+    "PromptMqtt": "Create polling from MQTT message:\nTopic: {topic}\nClientID: {clientID}\nSource: {remote}\nLast Received Data: {value}",
+    "PromptNetFlow": "Create polling from NetFlow log:\nSource: {src}\nDestination: {dst}\nProtocol: {protocol}\nBytes/Packets: {bytes} bytes, {packets} packets",
+    "PromptSFlowCounter": "Create polling from sFlow Counter log:\nSource: {src}\nCounter Type: {type}\nData: {data}",
+    "PromptSFlowFlow": "Create polling from sFlow Flow log:\nSource: {src}\nDestination: {dst}\nProtocol: {protocol}\nBytes/Packets: {bytes} bytes, {packets} packets"
   },
   "AppPolling": {
     "Name": "Name"

@@ -18,6 +18,8 @@
 
   export let show = false;
   export let nodeID = "";
+  export let initialPrompt = "";
+  export let autoAnalyze = false;
 
   const dispatch = createEventDispatcher();
 
@@ -25,6 +27,21 @@
   let prompt = "";
   let error = "";
   let result: any = null;
+
+  let lastShow = false;
+  $: if (show && !lastShow) {
+    lastShow = true;
+    if (initialPrompt) {
+      prompt = initialPrompt;
+    }
+    result = null;
+    error = "";
+    if (autoAnalyze && prompt) {
+      analyze();
+    }
+  } else if (!show && lastShow) {
+    lastShow = false;
+  }
 
   const nekos = [neko1, neko2, neko3, neko4, neko5, neko6, neko7];
   let nekoNo = 0;
@@ -55,7 +72,7 @@
   ];
 
   const setQuickTag = (tagText: string) => {
-    prompt = tagText;
+    prompt = prompt ? prompt + "\n" + tagText : tagText;
   };
 
   const analyze = async () => {
@@ -109,18 +126,20 @@
         class="w-full text-xs"
         style="width: 100%; min-height: 90px;"
       />
-      <div class="flex flex-wrap gap-1 items-center mt-2">
-        <span class="text-[11px] text-gray-500 mr-1">{$_("AIPollingAssist.QuickTags")}:</span>
-        {#each quickTags as tag}
-          <button
-            type="button"
-            onclick={() => setQuickTag(tag.text)}
-            class="text-[11px] bg-pink-50 hover:bg-pink-100 text-pink-700 dark:bg-gray-700 dark:text-pink-300 px-2 py-0.5 rounded-full border border-pink-200 dark:border-gray-600 transition-colors"
-          >
-            {tag.label}
-          </button>
-        {/each}
-      </div>
+      {#if !initialPrompt && !prompt.trim()}
+        <div class="flex flex-wrap gap-1 items-center mt-2">
+          <span class="text-[11px] text-gray-500 mr-1">{$_("AIPollingAssist.QuickTags")}:</span>
+          {#each quickTags as tag}
+            <button
+              type="button"
+              onclick={() => setQuickTag(tag.text)}
+              class="text-[11px] bg-pink-50 hover:bg-pink-100 text-pink-700 dark:bg-gray-700 dark:text-pink-300 px-2 py-0.5 rounded-full border border-pink-200 dark:border-gray-600 transition-colors"
+            >
+              {tag.label}
+            </button>
+          {/each}
+        </div>
+      {/if}
     </div>
 
     <div class="flex justify-start mb-3">
@@ -132,7 +151,7 @@
         onclick={analyze}
         size="xs"
       >
-        <Icon path={icons.mdiSparkles} size={1} class="mr-1" />
+        <Icon path={icons.mdiAutoFix} size={1} class="mr-1" />
         {loading ? $_("AIPollingAssist.Analyzing") : $_("AIPollingAssist.Analyze")}
       </GradientButton>
     </div>

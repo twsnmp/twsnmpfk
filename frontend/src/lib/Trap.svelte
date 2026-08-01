@@ -23,10 +23,12 @@
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
   import TrapReport from "./TrapReport.svelte";
   import Polling from "./Polling.svelte";
+  import AIPollingAssistDialog from "./AIPollingAssistDialog.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import type { datastore, main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
+  import { get } from "svelte/store";
   import CodeJar from "./CodeJar.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
@@ -179,6 +181,10 @@
 
   let polling: datastore.PollingEnt;
 
+  let showAIAssist = false;
+  let aiPrompt = "";
+  let aiNodeID = "";
+
   const watch = async () => {
     const d = table.rows({ selected: true }).data();
     if (!d || d.length != 1) {
@@ -189,6 +195,18 @@
     if (a.length > 1) {
       ip = a[0];
     }
+    if (hasAI) {
+      aiNodeID = ip;
+      aiPrompt = get(_)("AIPollingAssist.PromptTrap", {
+        values: {
+          from: d[0].FromAddress,
+          trapType: d[0].TrapType,
+          variables: d[0].Variables || "",
+        },
+      });
+      showAIAssist = true;
+      return;
+    }
     polling = await GetDefaultPolling(ip);
     polling.Name = `${d[0].TrapType}`;
     polling.Type = "trap";
@@ -196,6 +214,25 @@
     polling.Script = "count < 1";
     polling.Params = d[0].FromAddress;
     polling.Filter = d[0].TrapType;
+    showPolling = true;
+  };
+
+  const onApplyAIAssist = async (e: CustomEvent) => {
+    const aiPolling = e.detail.polling;
+    if (!aiPolling) return;
+    const p = await GetDefaultPolling(aiNodeID);
+    p.Level = aiPolling.Level || p.Level;
+    p.Type = aiPolling.Type || p.Type;
+    p.Name = aiPolling.Name || p.Name;
+    p.Mode = aiPolling.Mode || p.Mode;
+    p.Params = aiPolling.Params || p.Params;
+    p.Filter = aiPolling.Filter || p.Filter;
+    p.Script = aiPolling.Script || p.Script;
+    p.Extractor = aiPolling.Extractor || p.Extractor;
+    if (aiPolling.PollInt) p.PollInt = aiPolling.PollInt;
+    if (aiPolling.Timeout) p.Timeout = aiPolling.Timeout;
+    if (aiPolling.Retry) p.Retry = aiPolling.Retry;
+    polling = p;
     showPolling = true;
   };
 
@@ -271,13 +308,13 @@
     {#if selectedCount == 1}
       <GradientButton
         shadow
-        color="blue"
+        color={hasAI ? "pink" : "blue"}
         type="button"
         onclick={watch}
         size="xs"
       >
-        <Icon path={icons.mdiEye} size={1} />
-        {$_("Trap.Polling")}
+        <Icon path={hasAI ? icons.mdiAutoFix : icons.mdiEye} size={1} />
+        {hasAI ? $_("AIPollingAssist.AIAssist") : $_("Trap.Polling")}
       </GradientButton>
     {/if}
     <GradientButton
@@ -378,6 +415,13 @@
 <TrapReport bind:show={showReport} {logs} />
 
 <Polling bind:show={showPolling} pollingTmp={polling} />
+<AIPollingAssistDialog
+  bind:show={showAIAssist}
+  nodeID={aiNodeID}
+  initialPrompt={aiPrompt}
+  autoAnalyze={false}
+  on:apply={onApplyAIAssist}
+/>
 
 <Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">

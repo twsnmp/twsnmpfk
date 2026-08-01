@@ -10,6 +10,7 @@
     DeleteAllMqttStat,
     GetDefaultPolling,
     GetNodes,
+    GetMapConf,
   } from "../../wailsjs/go/main/App";
   import {
     renderState,
@@ -21,9 +22,11 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { get } from "svelte/store";
   import { copyText } from "svelte-copy";
   import Polling from "./Polling.svelte";
   import MqttReport from "./MqttReport.svelte";
+  import AIPollingAssistDialog from "./AIPollingAssistDialog.svelte";
 
   let data: any = [];
   let table: any = undefined;
@@ -33,6 +36,16 @@
   let copied = false;
   let showReport = false;
   let reportStats: any = [];
+
+  let hasAI = false;
+  let showAIAssist = false;
+  let aiPrompt = "";
+  let aiNodeID = "";
+
+  const checkAI = async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+  };
 
   const openReport = () => {
     if (table) {
@@ -180,6 +193,21 @@
     }
     
     const nodeID = node ? node.ID : "";
+
+    if (hasAI) {
+      aiNodeID = nodeID;
+      aiPrompt = get(_)("AIPollingAssist.PromptMqtt", {
+        values: {
+          topic: selected[0].Topic,
+          clientID: selected[0].ClientID || "",
+          remote: selected[0].Remote || "",
+          value: selected[0].Value || "",
+        },
+      });
+      showAIAssist = true;
+      return;
+    }
+
     polling = await GetDefaultPolling(nodeID);
     
     polling.Name = `mqtt ${selected[0].Topic}`;
@@ -189,6 +217,25 @@
     polling.Filter = selected[0].Topic;
     polling.Extractor = "";
     polling.Script = "";
+    showPolling = true;
+  };
+
+  const onApplyAIAssist = async (e: CustomEvent) => {
+    const aiPolling = e.detail.polling;
+    if (!aiPolling) return;
+    const p = await GetDefaultPolling(aiNodeID);
+    p.Level = aiPolling.Level || p.Level;
+    p.Type = aiPolling.Type || p.Type;
+    p.Name = aiPolling.Name || p.Name;
+    p.Mode = aiPolling.Mode || p.Mode;
+    p.Params = aiPolling.Params || p.Params;
+    p.Filter = aiPolling.Filter || p.Filter;
+    p.Script = aiPolling.Script || p.Script;
+    p.Extractor = aiPolling.Extractor || p.Extractor;
+    if (aiPolling.PollInt) p.PollInt = aiPolling.PollInt;
+    if (aiPolling.Timeout) p.Timeout = aiPolling.Timeout;
+    if (aiPolling.Retry) p.Retry = aiPolling.Retry;
+    polling = p;
     showPolling = true;
   };
 
@@ -253,6 +300,7 @@
     },
   ];
   onMount(() => {
+    checkAI();
     refresh();
   });
 </script>
@@ -289,13 +337,13 @@
     {#if selectedCount === 1}
       <GradientButton
         shadow
-        color="blue"
+        color={hasAI ? "pink" : "blue"}
         type="button"
         onclick={makePolling}
         size="xs"
       >
-        <Icon path={icons.mdiEye} size={1} />
-        {$_('Mqtt.CreatePolling')}
+        <Icon path={hasAI ? icons.mdiAutoFix : icons.mdiEye} size={1} />
+        {hasAI ? $_("AIPollingAssist.AIAssist") : $_('Mqtt.CreatePolling')}
       </GradientButton>
     {/if}
     {#if selectedCount > 0}
@@ -361,4 +409,11 @@
 
 <Polling bind:show={showPolling} pollingTmp={polling} />
 <MqttReport bind:show={showReport} stats={reportStats} />
+<AIPollingAssistDialog
+  bind:show={showAIAssist}
+  nodeID={aiNodeID}
+  initialPrompt={aiPrompt}
+  autoAnalyze={false}
+  on:apply={onApplyAIAssist}
+/>
 

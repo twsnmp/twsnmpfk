@@ -36,11 +36,13 @@
   } from "./chart/logcount";
   import SyslogReport from "./SyslogReport.svelte";
   import Polling from "./Polling.svelte";
+  import AIPollingAssistDialog from "./AIPollingAssistDialog.svelte";
   import AddressInfo from "./AddressInfo.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import type { datastore, main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
+  import { get } from "svelte/store";
   import CodeJar from "./CodeJar.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
@@ -280,9 +282,31 @@
 
   let polling: datastore.PollingEnt | undefined = undefined;
 
+  let showAIAssist = false;
+  let aiPrompt = "";
+  let aiNodeID = "";
+
+  const checkAI = async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+  };
+
   const watch = async () => {
     const d = table.rows({ selected: true }).data();
     if (!d || d.length != 1) {
+      return;
+    }
+    if (hasAI) {
+      aiNodeID = d[0].Host;
+      aiPrompt = get(_)("AIPollingAssist.PromptSyslog", {
+        values: {
+          host: d[0].Host,
+          type: d[0].Type,
+          tag: d[0].Tag,
+          message: d[0].Message,
+        },
+      });
+      showAIAssist = true;
       return;
     }
     polling = await GetDefaultPolling(d[0].Host);
@@ -295,6 +319,25 @@
     polling.Type = "syslog";
     polling.Filter = d[0].Type + " " + d[0].Tag;
     polling.Params = d[0].Host;
+    showPolling = true;
+  };
+
+  const onApplyAIAssist = async (e: CustomEvent) => {
+    const aiPolling = e.detail.polling;
+    if (!aiPolling) return;
+    const p = await GetDefaultPolling(aiNodeID);
+    p.Level = aiPolling.Level || p.Level;
+    p.Type = aiPolling.Type || p.Type;
+    p.Name = aiPolling.Name || p.Name;
+    p.Mode = aiPolling.Mode || p.Mode;
+    p.Params = aiPolling.Params || p.Params;
+    p.Filter = aiPolling.Filter || p.Filter;
+    p.Script = aiPolling.Script || p.Script;
+    p.Extractor = aiPolling.Extractor || p.Extractor;
+    if (aiPolling.PollInt) p.PollInt = aiPolling.PollInt;
+    if (aiPolling.Timeout) p.Timeout = aiPolling.Timeout;
+    if (aiPolling.Retry) p.Retry = aiPolling.Retry;
+    polling = p;
     showPolling = true;
   };
 
@@ -756,13 +799,13 @@
     {#if selectedCount == 1}
       <GradientButton
         shadow
-        color="blue"
+        color={hasAI ? "pink" : "blue"}
         type="button"
         onclick={watch}
         size="xs"
       >
-        <Icon path={icons.mdiEye} size={1} />
-        {$_("Syslog.Polling")}
+        <Icon path={hasAI ? icons.mdiAutoFix : icons.mdiEye} size={1} />
+        {hasAI ? $_("AIPollingAssist.AIAssist") : $_("Syslog.Polling")}
       </GradientButton>
       <GradientButton
         shadow
@@ -882,6 +925,13 @@
 <SyslogReport bind:show={showReport} {logs} />
 
 <Polling bind:show={showPolling} pollingTmp={polling} />
+<AIPollingAssistDialog
+  bind:show={showAIAssist}
+  nodeID={aiNodeID}
+  initialPrompt={aiPrompt}
+  autoAnalyze={false}
+  on:apply={onApplyAIAssist}
+/>
 
 <Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">

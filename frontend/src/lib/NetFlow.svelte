@@ -20,15 +20,19 @@
     DeleteAllNetFlow,
     LLMAskLog,
     GetMapConf,
+    GetDefaultPolling,
   } from "../../wailsjs/go/main/App";
   import { renderTime, getTableLang, renderTimeMili,renderBytes,renderCount } from "./common";
   import { showLogCountChart, resizeLogCountChart } from "./chart/logcount";
   import NetFlowReport from "./NetFlowReport.svelte";
   import AddressInfo from "./AddressInfo.svelte";
+  import Polling from "./Polling.svelte";
+  import AIPollingAssistDialog from "./AIPollingAssistDialog.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import type { main } from "wailsjs/go/models";
+  import type { main, datastore } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
+  import { get } from "svelte/store";
   import CodeJar from "./CodeJar.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
@@ -42,6 +46,13 @@
   let table: any = undefined;
   let selectedCount = 0;
   let showFilter = false;
+  let showPolling = false;
+  let polling: datastore.PollingEnt | undefined = undefined;
+
+  let hasAI = false;
+  let showAIAssist = false;
+  let aiPrompt = "";
+  let aiNodeID = "";
   const filter: main.NetFlowFilterEnt = {
     Start: "",
     End: "",
@@ -235,8 +246,6 @@
     },
   ];
 
-  let hasAI = false;
-
   onMount(async () => {
     const conf = await GetMapConf();
     hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
@@ -272,6 +281,53 @@
     copyText(s.join("\n"));
     copied = true;
     setTimeout(() => (copied = false), 2000);
+  };
+
+  const watch = async () => {
+    const d = table.rows({ selected: true }).data();
+    if (!d || d.length != 1) {
+      return;
+    }
+    if (hasAI) {
+      aiNodeID = d[0].SrcAddr;
+      aiPrompt = get(_)("AIPollingAssist.PromptNetFlow", {
+        values: {
+          src: `${d[0].SrcAddr}:${d[0].SrcPort} (${d[0].SrcLoc || ""})`,
+          dst: `${d[0].DstAddr}:${d[0].DstPort} (${d[0].DstLoc || ""})`,
+          protocol: d[0].Protocol,
+          bytes: d[0].Bytes,
+          packets: d[0].Packets,
+        },
+      });
+      showAIAssist = true;
+      return;
+    }
+    polling = await GetDefaultPolling(d[0].SrcAddr);
+    polling.Name = `netflow ${d[0].SrcAddr}->${d[0].DstAddr}`;
+    polling.Type = "netflow";
+    polling.Mode = "traffic";
+    polling.Filter = `SrcAddr = '${d[0].SrcAddr}' and DstAddr = '${d[0].DstAddr}'`;
+    polling.Params = "";
+    showPolling = true;
+  };
+
+  const onApplyAIAssist = async (e: CustomEvent) => {
+    const aiPolling = e.detail.polling;
+    if (!aiPolling) return;
+    const p = await GetDefaultPolling(aiNodeID);
+    p.Level = aiPolling.Level || p.Level;
+    p.Type = aiPolling.Type || p.Type;
+    p.Name = aiPolling.Name || p.Name;
+    p.Mode = aiPolling.Mode || p.Mode;
+    p.Params = aiPolling.Params || p.Params;
+    p.Filter = aiPolling.Filter || p.Filter;
+    p.Script = aiPolling.Script || p.Script;
+    p.Extractor = aiPolling.Extractor || p.Extractor;
+    if (aiPolling.PollInt) p.PollInt = aiPolling.PollInt;
+    if (aiPolling.Timeout) p.Timeout = aiPolling.Timeout;
+    if (aiPolling.Retry) p.Retry = aiPolling.Retry;
+    polling = p;
+    showPolling = true;
   };
 
   const deleteAll = async () => {
@@ -378,6 +434,18 @@
         {$_("Trap.Report")}
       </GradientButton>
       {#if selectedCount > 0}
+        {#if selectedCount === 1}
+          <GradientButton
+            shadow
+            color={hasAI ? "pink" : "blue"}
+            type="button"
+            onclick={watch}
+            size="xs"
+          >
+            <Icon path={hasAI ? icons.mdiAutoFix : icons.mdiEye} size={1} />
+            {hasAI ? $_("AIPollingAssist.AIAssist") : $_("Trap.Watch")}
+          </GradientButton>
+        {/if}
         <GradientButton
           shadow
           color="cyan"
@@ -449,6 +517,15 @@
 </div>
 
 <NetFlowReport bind:show={showReport} {logs} />
+
+<Polling bind:show={showPolling} pollingTmp={polling} />
+<AIPollingAssistDialog
+  bind:show={showAIAssist}
+  nodeID={aiNodeID}
+  initialPrompt={aiPrompt}
+  autoAnalyze={false}
+  on:apply={onApplyAIAssist}
+/>
 
 <Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
