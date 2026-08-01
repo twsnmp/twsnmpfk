@@ -74,7 +74,7 @@
     if (!pt.Type) {
       return;
     }
-    const p = await GetDefaultPolling("")
+    const p = await GetDefaultPolling(nodeID);
     p.Level = pt.Level;
     p.Type = pt.Type;
     p.Name = pt.Name;
@@ -90,7 +90,7 @@
   const onApplyAIAssist = async (e: CustomEvent) => {
     const aiPolling = e.detail.polling;
     if (!aiPolling) return;
-    const p = await GetDefaultPolling("");
+    const p = await GetDefaultPolling(nodeID);
     p.Level = aiPolling.Level || p.Level;
     p.Type = aiPolling.Type || p.Type;
     p.Name = aiPolling.Name || p.Name;

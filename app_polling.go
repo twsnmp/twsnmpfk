@@ -59,6 +59,15 @@ func (a *App) UpdatePolling(up datastore.PollingEnt) bool {
 		polling.MqttStopSubscription(p.ID)
 		time.Sleep(time.Millisecond * 20)
 	}
+	if p.NodeID != up.NodeID {
+		if p.NodeID != "" {
+			datastore.SetNodeStateChanged(p.NodeID)
+		}
+		if up.NodeID != "" {
+			datastore.SetNodeStateChanged(up.NodeID)
+		}
+		p.NodeID = up.NodeID
+	}
 	p.Name = up.Name
 	p.Type = up.Type
 	p.Mode = up.Mode

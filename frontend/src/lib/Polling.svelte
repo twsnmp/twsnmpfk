@@ -62,6 +62,7 @@
 
   const onOpen = async () => {
     const nodes = await GetNodes();
+    nodeList.length = 0;
     for (const k in nodes) {
       nodeList.push({
         name: nodes[k].Name,
@@ -70,9 +71,11 @@
     }
     if (pollingID) {
       polling = await GetPolling(pollingID);
-      nodeID = polling.NodeID;
     } else if (pollingTmp) {
       polling = pollingTmp;
+      if (nodeID && !polling.NodeID) {
+        polling.NodeID = nodeID;
+      }
     } else if (pollingTmpID) {
       list = await GetAutoPollings(nodeID, pollingTmpID);
       if (!list) {
@@ -81,6 +84,9 @@
       }
       if (list.length == 1) {
         polling = list[0];
+        if (nodeID && !polling.NodeID) {
+          polling.NodeID = nodeID;
+        }
       } else {
         showPollingList();
         showList = true;
@@ -148,6 +154,9 @@
       return;
     }
     polling = p[0];
+    if (nodeID && !polling.NodeID) {
+      polling.NodeID = nodeID;
+    }
     selectedCount = 0;
     showList = false;
   };
@@ -160,10 +169,16 @@
 
   let paramsColor: any = undefined;
   let filterColor: any = undefined;
+  let nodeColor: any = undefined;
   const save = async () => {
     filterColor = undefined;
     paramsColor = undefined;
+    nodeColor = undefined;
     if (polling) {
+      if (!polling.NodeID) {
+        nodeColor = "red";
+        return;
+      }
       if (polling.Filter.startsWith("TODO:")) {
         filterColor = "red";
         return;
@@ -211,7 +226,7 @@
       </h3>
       <div class="grid gap-4 mb-4 grid-cols-2">
         {#if !nodeID}
-          <Label class="space-y-2 text-xs">
+          <Label class="space-y-2 text-xs" color={nodeColor}>
             <span> {$_("Polling.Node")} </span>
             <Select
               items={nodeList}

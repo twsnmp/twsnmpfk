@@ -46,6 +46,9 @@ type PollingLogEnt struct {
 
 // AddPolling : ポーリングを追加する
 func AddPolling(p *PollingEnt) error {
+	if p.NodeID == "" {
+		return fmt.Errorf("node id is required")
+	}
 	st := time.Now()
 	if db == nil {
 		return ErrDBNotOpen
