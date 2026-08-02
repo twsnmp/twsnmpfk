@@ -198,6 +198,9 @@ Usage of twsnmpfk:
 
 ### v2.2.0
 
+#### AI Explanation for Address Management
+* **Address Management AI Explanation**: Added an `[AI Explain]` button to the Address Management screen. Summarizes normal address counts and sends detailed entries of abnormal/changed addresses (duplicate/169.254 APIPA, IP changes, MAC changes) to AI (LLM) for detailed per-entry diagnosis, root-cause analysis, security/operational risk evaluation, and recommended action steps.
+
 #### AI-Assisted Polling Creation for Log Views
 * **AI-Assisted Polling Generation**: Added AI-assisted polling creation dialog (`AIPollingAssistDialog`) to log/flow views (Syslog, SNMP Trap, MQTT, NetFlow, sFlow). Automatically generates monitoring parameters, filter conditions, Grok extraction patterns, and JavaScript scripts based on selected log entry content.
 
@@ -206,7 +209,7 @@ Usage of twsnmpfk:
 * **Target Node Modification**: Enabled changing the assigned target node when editing existing polling configurations.
 
 #### Conditional AI Feature Display
-* **AI Feature Control**: AI-related action buttons and menu items (such as AI Diagnosis, AI Root Cause Analysis, AI Polling Assist, and AI Explain) across Map, Node List, Event Log, MIB Browser, Syslog, Trap, MQTT, NetFlow, and sFlow are now displayed only when AI integration is enabled.
+* **AI Feature Control**: AI-related action buttons and menu items (such as AI Diagnosis, AI Root Cause Analysis, AI Address Explanation, AI Polling Assist, and AI Explain) across Map, Node List, Address Management, Event Log, MIB Browser, Syslog, Trap, MQTT, NetFlow, and sFlow are now displayed only when AI integration is enabled.
 
 #### UI & Layout Optimizations
 * **Navigation Header & Spacing**: Improved top navigation header bar layout, component spacing, and vertical scrolling paddings across all main view components.

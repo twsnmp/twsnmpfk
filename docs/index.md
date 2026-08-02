@@ -120,8 +120,9 @@ Added support for setting the opacity (transparency) of drawing items and improv
 
 ### New Features in v2.2.0
 
+- **Address Management AI Explanation**: Added an `[AI Explain]` button to the Address Management view. Summarizes normal address counts and sends detailed entries of abnormal/changed addresses (duplicate/169.254 APIPA, IP changes, MAC changes) to AI (LLM) for detailed per-entry diagnosis, root-cause analysis, security/operational risk evaluation, and recommended action steps.
 - **AI-Assisted Polling Creation from Log Views**: When selecting a log entry in Syslog, SNMP Trap, MQTT, NetFlow, or sFlow log views with AI enabled, an `[AI Assist]` button appears. The AI automatically analyzes the selected log/data and suggests suitable polling types, parameters, filter expressions, Grok extraction patterns, and JavaScript scripts.
-- **Conditional AI Feature Controls**: AI-related action buttons (AI Diagnosis, AI Investigation, AI Assist, AI Explain) across all screens (Map, Node List, Event Log, MIB Browser, Syslog, Trap, MQTT, NetFlow, sFlow, Polling) are dynamically displayed only when AI integration is enabled.
+- **Conditional AI Feature Controls**: AI-related action buttons (AI Diagnosis, AI Investigation, AI Address Explanation, AI Assist, AI Explain) across all screens (Map, Node List, Address Management, Event Log, MIB Browser, Syslog, Trap, MQTT, NetFlow, sFlow, Polling) are dynamically displayed only when AI integration is enabled.
 - **Polling Target Node Selection & Editing**: Required target node selection upon creating new polling entries, and enabled changing the target node when editing existing polling entries.
 
 ### New Features in v2.1.0

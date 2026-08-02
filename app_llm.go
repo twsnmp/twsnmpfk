@@ -854,3 +854,127 @@ CRITICAL RULES:
 	return a.llmAsk(prompt, system)
 }
 
+func (a *App) LLMExplainAddress() *LLMResp {
+	nodes := make(map[string]string)
+	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+		nodes[n.ID] = n.Name
+		return true
+	})
+
+	changeIP := make(map[string]int64)
+	newIP := make(map[string]int64)
+	changeMAC := make(map[string]bool)
+	changeDetails := make(map[string]string)
+
+	arpLogs := a.GetArpLogs()
+	for i := len(arpLogs) - 1; i >= 0; i-- {
+		if arpLogs[i].State == "Change" {
+			changeIP[arpLogs[i].IP] = arpLogs[i].Time
+			changeMAC[arpLogs[i].NewMAC] = true
+			changeMAC[arpLogs[i].OldMAC] = true
+			changeDetails[arpLogs[i].IP] = fmt.Sprintf("OldMAC: %s -> NewMAC: %s", arpLogs[i].OldMAC, arpLogs[i].NewMAC)
+		} else {
+			newIP[arpLogs[i].IP] = arpLogs[i].Time
+		}
+	}
+
+	normalCount := 0
+	abnormalCount := 0
+	var abnormalSB strings.Builder
+
+	datastore.ForEachArp(func(l *datastore.ArpEnt) bool {
+		_, hasChangeIP := changeIP[l.IP]
+		isAPIPA := strings.HasPrefix(l.IP, "169.254.")
+		_, hasChangeMAC := changeMAC[l.MAC]
+
+		if !hasChangeIP && !isAPIPA && !hasChangeMAC {
+			normalCount++
+			return true
+		}
+
+		abnormalCount++
+		stateStr := "Normal"
+		if isAPIPA {
+			stateStr = "Duplicate / APIPA (169.254.x.x)"
+		} else if hasChangeIP {
+			stateStr = "IP Changed"
+		} else if hasChangeMAC {
+			stateStr = "MAC Changed"
+		}
+
+		nodeName := nodes[l.NodeID]
+		firstStr := time.Unix(l.FirstTime, 0).Format(time.RFC3339)
+		lastStr := time.Unix(l.LastTime, 0).Format(time.RFC3339)
+
+		var lastChange string
+		if t, ok := changeIP[l.IP]; ok && t > 0 {
+			lastChange = time.Unix(0, t).Format(time.RFC3339)
+		} else if t, ok := newIP[l.IP]; ok && t > 0 {
+			lastChange = time.Unix(0, t).Format(time.RFC3339)
+		}
+
+		abnormalSB.WriteString(fmt.Sprintf("- IP: %s | MAC: %s | State: %s", l.IP, l.MAC, stateStr))
+		if nodeName != "" {
+			abnormalSB.WriteString(fmt.Sprintf(" | Node: %s", nodeName))
+		}
+		if l.Vendor != "" {
+			abnormalSB.WriteString(fmt.Sprintf(" | Vendor: %s", l.Vendor))
+		}
+		if detail, ok := changeDetails[l.IP]; ok {
+			abnormalSB.WriteString(fmt.Sprintf(" | Change Detail: %s", detail))
+		}
+		if lastChange != "" {
+			abnormalSB.WriteString(fmt.Sprintf(" | Last Change Event: %s", lastChange))
+		}
+		abnormalSB.WriteString(fmt.Sprintf(" | First: %s | Last: %s\n", firstStr, lastStr))
+
+		return true
+	})
+
+	var sb strings.Builder
+	sb.WriteString("# Address Management Summary\n")
+	sb.WriteString(fmt.Sprintf("- Normal Addresses Count: %d\n", normalCount))
+	sb.WriteString(fmt.Sprintf("- Abnormal / Changed Addresses Count: %d\n", abnormalCount))
+
+	if abnormalCount > 0 {
+		sb.WriteString("\n# Abnormal / Changed Address Details\n")
+		sb.WriteString(abnormalSB.String())
+	} else {
+		sb.WriteString("\nNo abnormal or changed addresses detected.\n")
+	}
+
+	system := `You are an expert in network operations and IP address management (IPAM / ARP monitoring).
+Please analyze the provided address management summary and abnormal address details.
+
+### Output Formatting Instructions:
+1. Provide a brief overall summary of the address management status.
+2. For the abnormal/changed address entries, DO NOT group them into representative examples or summarize them collectively.
+3. Provide a detailed analysis for EACH individual abnormal address entry provided (or list all individual entries in a detailed markdown table).
+4. Include the following for each entry:
+   - Target Entry Info (IP address, MAC address, Node Name, Vendor)
+   - State / Category (e.g., MAC Changed, IP Changed, Duplicate / APIPA)
+   - Specific Issue Description
+   - Security & Operational Risks
+   - Estimated Root Cause
+   - Recommended Troubleshooting / Action Items`
+
+	if i18n.GetLang() == "ja" {
+		system = `あなたはネットワーク運用およびIPアドレス管理（IPAM/ARP監視）の専門家です。
+提示されたアドレス管理データ（正常アドレス件数、および正常以外のアドレスの詳細一覧）を分析し、解説を出力してください。
+
+### 【必須出力フォーマット・記述ルール】
+1. アドレス管理状況の全体概要を簡潔にまとめてください。
+2. 正常以外（重複/169.254, IP変更, MAC変更）のアドレスについて、「代表エントリ（例）」として一部を省略・共通要約するのではなく、提示された各アドレスエントリ（対象IP・MAC・ノード名・ベンダー等）ごとに具体的な個別解説を行ってください。
+3. 表形式（マークダウンテーブル）または個別詳細セクションにて、各エントリについて以下の項目を具体的に明記・解説してください：
+   - 対象エントリ（IPアドレス、MACアドレス、ノード名、ベンダー情報）
+   - 状態・種別（MAC変更、IP変更、重複/169.254等）
+   - 主な問題点（該当機器における具体現象）
+   - セキュリティ/運用リスク
+   - 想定原因
+   - 推奨される対策・確認手順`
+	}
+
+	return a.llmAsk(sb.String(), system)
+}
+
+

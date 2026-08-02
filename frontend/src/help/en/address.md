@@ -30,6 +30,7 @@ List of IP and MAC addresses detected on the local segment via the ARP watch fun
 * **[Delete]** : Delete the selected address entries.
 * **[Copy]** : Copy the selected address rows to the clipboard.
 * **[Report]** : Open the Address List statistical reports (IP usage heatmap and IP-MAC relationship charts).
+* **[AI Explain]** : Request an AI (LLM) explanation of the address management status, sending normal address count and detailed abnormal/changed address entries for diagnosis and recommendations (Displayed only when AI integration is enabled).
 * **[Clear]** : Clear all addresses from the ARP monitoring list.
 * **[CSV]** : Export the address list to a CSV file.
 * **[Excel]** : Export the address list to an Excel file.

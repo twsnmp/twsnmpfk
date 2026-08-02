@@ -550,6 +550,10 @@ export function LLMDiagnoseNode(arg1) {
   return window['go']['main']['App']['LLMDiagnoseNode'](arg1);
 }
 
+export function LLMExplainAddress() {
+  return window['go']['main']['App']['LLMExplainAddress']();
+}
+
 export function LLMGeneratePollingScript(arg1, arg2, arg3) {
   return window['go']['main']['App']['LLMGeneratePollingScript'](arg1, arg2, arg3);
 }

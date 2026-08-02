@@ -599,6 +599,15 @@
     "Copied": "Copied",
     "Export": "Export"
   },
+  "AddressAIDialog": {
+    "Title": "Address Management AI Explanation",
+    "Loading": "Analyzing address management data (normal & abnormal addresses) via AI...",
+    "Close": "Close",
+    "ReAnalyze": "Re-Analyze",
+    "Copy": "Copy",
+    "Copied": "Copied",
+    "Export": "Export"
+  },
   "NodePolling": {
     "Add": "Add",
     "Close": "Close",
@@ -901,6 +910,7 @@
     "LastTime": "Last",
     "Address": "Address",
     "AddressInfo": "Address Info",
+    "AIExplain": "AI Explain",
     "Location": "Location",
     "Name": "Name",
     "Search": "Search",

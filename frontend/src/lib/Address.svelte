@@ -12,6 +12,7 @@
     ResetArpTable,
     DeleteArpEnt,
     GetIPAM,
+    GetMapConf,
   } from "../../wailsjs/go/main/App";
   import {
     getTableLang,
@@ -22,6 +23,7 @@
   } from "./common";
   import AddressReport from "./AddressReport.svelte";
   import AddressInfo from "./AddressInfo.svelte";
+  import AddressAIDialog from "./AddressAIDialog.svelte";
   import Node from "./Node.svelte";
   import NodeReport from "./NodeReport.svelte";
   import DataTable from "datatables.net-dt";
@@ -45,6 +47,8 @@
   let showAddNode = false;
   let showNodeReport = false;
   let showAddressInfo = false;
+  let showAddressAI = false;
+  let hasAI = false;
 
   const showArpTable = () => {
     selectedIP = selectedNodeID = "";
@@ -256,7 +260,9 @@
     showArpTable();
   };
 
-  onMount(() => {
+  onMount(async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     refresh();
   });
 
@@ -399,6 +405,20 @@
         {$_("Address.Report")}
       </GradientButton>
       {/if}
+      {#if hasAI}
+      <GradientButton
+        type="button"
+        color="pink"
+        shadow
+        onclick={() => {
+          showAddressAI = true;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiBrain} size={1} />
+        {$_("Address.AIExplain")}
+      </GradientButton>
+      {/if}
       <GradientButton
         type="button"
         color="green"
@@ -480,5 +500,9 @@
 <NodeReport
   bind:show={showNodeReport}
   id={selectedNodeID}
+/>
+
+<AddressAIDialog
+  bind:show={showAddressAI}
 />
 
