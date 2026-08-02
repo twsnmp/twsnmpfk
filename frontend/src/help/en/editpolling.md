@@ -4,6 +4,8 @@ Screen for creating a new polling monitor or editing the settings of an existing
 
 ## Settings Parameters
 
+* **Node**
+  Target node associated with the polling monitor (mandatory when creating a new monitor, changeable when editing).
 * **Name**
   Name of the polling monitor.
 * **Level**
@@ -54,6 +56,6 @@ Screen for creating a new polling monitor or editing the settings of an existing
 ## Button Descriptions
 
 * **[Save]** : Saves the polling configuration.
-* **[AI Assist]** : AI (LLM) assistant that generates and suggests monitoring types, parameters, and JavaScript scripts based on prompt requests.
+* **[AI Assist]** : AI (LLM) assistant that generates and suggests monitoring types, parameters, and JavaScript scripts based on prompt requests (Displayed only when AI integration is enabled).
 * **[Help]** : Displays this help.
 * **[Cancel]** : Closes the window without saving.

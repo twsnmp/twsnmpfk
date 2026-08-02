@@ -18,9 +18,9 @@ Inspect and analyze received SNMP TRAP messages. Chronological log volume chart 
 * **[Filter]** : Open the search filter dialog.
 * **[Delete All Logs]** : Delete all SNMP TRAP logs from the database.
 * **[Report]** : Open statistical and analytical charts for SNMP TRAPs.
-* **[Polling]** : Register a new polling task to monitor for specific SNMP TRAP occurrences.
+* **[Polling] / [AI Assist]** : Register a new polling task for the selected SNMP TRAP. When AI integration is enabled, this changes to `[AI Assist]`, opening a dialog where AI automatically generates optimal monitoring settings and scripts based on the TRAP details.
 * **[Copy]** : Copy selected logs to the clipboard.
-* **[AI Explain]** : Request TRAP message explanation from the AI (LLM).
+* **[AI Explain]** : Request TRAP message explanation from the AI (LLM) (Displayed only when AI integration is enabled).
 * **[CSV]** : Export SNMP TRAPs to a CSV file.
 * **[Excel]** : Export SNMP TRAPs to an Excel file.
 * **[Reload]** : Refresh the SNMP TRAP list.

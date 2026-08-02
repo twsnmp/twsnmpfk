@@ -23,9 +23,9 @@ View, search, and analyze received Syslog messages. A chronological log volume c
 * **[Delete All Logs]** : Delete all Syslogs from the database.
 * **[Report]** : Open statistical and analytical charts for Syslog logs.
 * **[Magic]** (or Magic Analysis) : Automatically generate Grok patterns to extract and analyze structured information from the logs.
-* **[Polling]** : Register a new polling task to monitor log occurrences matching the selected pattern.
+* **[Polling] / [AI Assist]** : Register a new polling task for the selected Syslog. When AI integration is enabled, this changes to `[AI Assist]`, opening a dialog where AI automatically generates optimal monitoring parameters, filters, Grok patterns, and scripts based on the selected log text.
 * **[Copy]** : Copy selected logs to the clipboard.
-* **[AI Explain]** : Request log analysis explanation from the AI (LLM).
+* **[AI Explain]** : Request log analysis explanation from the AI (LLM) (Displayed only when AI integration is enabled).
 * **[IP/MAC Info]** : Dropdown button to view detailed information of detected IP or MAC addresses.
 * **[CSV]** : Export Syslogs to a CSV file.
 * **[Excel]** : Export Syslogs to an Excel file.

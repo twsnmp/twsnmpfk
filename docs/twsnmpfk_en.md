@@ -112,6 +112,12 @@ Added support for SHA256/AES128 and SHA512/AES256, providing stronger security f
 
 Added support for opacity (transparency) and improved UI for background images.
 
+### New Features in v2.2.0
+
+- **AI-Assisted Polling Creation from Log Views**: Displays an `[AI Assist]` button when selecting entries in Syslog, SNMP Trap, MQTT, NetFlow, or sFlow log views (when AI is enabled) to automatically generate polling configurations (types, parameters, filters, Grok patterns, scripts).
+- **Conditional AI Feature Controls**: AI action buttons across all views are dynamically displayed only when AI integration is enabled.
+- **Node Selection Enhancements in Polling**: Required target node selection during polling creation, and enabled changing target nodes when editing existing polling entries.
+
 ### New Features in v2.1.0
 
 - **Expanded Map Exporting**: Export maps to various formats (PNG, SVG, PDF, Draw.io XML/SVG, JSON, CSV, Excel XLSX).

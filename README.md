@@ -196,6 +196,22 @@ Usage of twsnmpfk:
 
 ## History
 
+### v2.2.0
+
+#### AI-Assisted Polling Creation for Log Views
+* **AI-Assisted Polling Generation**: Added AI-assisted polling creation dialog (`AIPollingAssistDialog`) to log/flow views (Syslog, SNMP Trap, MQTT, NetFlow, sFlow). Automatically generates monitoring parameters, filter conditions, Grok extraction patterns, and JavaScript scripts based on selected log entry content.
+
+#### Polling Node Selection Enhancements
+* **Mandatory Node Selection**: Required selecting a target node when registering new polling items.
+* **Target Node Modification**: Enabled changing the assigned target node when editing existing polling configurations.
+
+#### Conditional AI Feature Display
+* **AI Feature Control**: AI-related action buttons and menu items (such as AI Diagnosis, AI Root Cause Analysis, AI Polling Assist, and AI Explain) across Map, Node List, Event Log, MIB Browser, Syslog, Trap, MQTT, NetFlow, and sFlow are now displayed only when AI integration is enabled.
+
+#### UI & Layout Optimizations
+* **Navigation Header & Spacing**: Improved top navigation header bar layout, component spacing, and vertical scrolling paddings across all main view components.
+* **MQTT Table Enhancements**: Fixed table scrolling behavior and row detail expansion after table reloading.
+
 ### v2.1.0
 
 #### Expanded Map Image & Data Exporting

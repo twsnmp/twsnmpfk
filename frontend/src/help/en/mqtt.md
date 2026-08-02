@@ -28,7 +28,7 @@ List of received MQTT topics and their statistical statuses.
 * **[Delete]** : Delete statistical data for the selected topics.
 * **[Delete All]** : Delete all MQTT statistics.
 * **[Copy]** : Copy selected topic names to the clipboard.
-* **[Make Polling]** : Open the polling configuration screen to monitor the selected MQTT topic.
+* **[Make Polling] / [AI Assist]** : Open the polling configuration screen to monitor the selected MQTT topic. When AI integration is enabled, this changes to `[AI Assist]`, opening a dialog where AI suggests suitable polling settings based on topic and payload.
 * **[Reload]** : Refresh the MQTT stats list.
 
 *Note: You can select a range of rows in the table by holding the Shift key while clicking, or toggle select/deselect for all displayed rows.*

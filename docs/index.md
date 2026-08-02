@@ -118,6 +118,12 @@ New features to improve map usability and organization have been added:
 
 Added support for setting the opacity (transparency) of drawing items and improved the user interface for background image settings.
 
+### New Features in v2.2.0
+
+- **AI-Assisted Polling Creation from Log Views**: When selecting a log entry in Syslog, SNMP Trap, MQTT, NetFlow, or sFlow log views with AI enabled, an `[AI Assist]` button appears. The AI automatically analyzes the selected log/data and suggests suitable polling types, parameters, filter expressions, Grok extraction patterns, and JavaScript scripts.
+- **Conditional AI Feature Controls**: AI-related action buttons (AI Diagnosis, AI Investigation, AI Assist, AI Explain) across all screens (Map, Node List, Event Log, MIB Browser, Syslog, Trap, MQTT, NetFlow, sFlow, Polling) are dynamically displayed only when AI integration is enabled.
+- **Polling Target Node Selection & Editing**: Required target node selection upon creating new polling entries, and enabled changing the target node when editing existing polling entries.
+
 ### New Features in v2.1.0
 
 - **Expanded Map Exporting**: Export maps to various formats, including Images (PNG, SVG, PDF), Diagramming (Draw.io XML/SVG), and Structured Data (JSON, CSV, Excel XLSX).

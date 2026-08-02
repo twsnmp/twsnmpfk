@@ -47,6 +47,7 @@ Analyze flow samples (traffic data) and counter samples (performance metrics) re
 * **[Counter / Flow]** (Counter toggle) : Toggle between flow samples and counter samples views.
 * **[Filter]** : Open the search filter dialog.
 * **[Delete All Logs]** : Delete all sFlow logs.
+* **[Polling] / [AI Assist]** : Register a new polling task based on the selected sFlow sample. When AI integration is enabled, this changes to `[AI Assist]`, opening a dialog where AI automatically suggests monitoring parameters based on sample details.
 * **[Copy]** : Copy the selected log text to the clipboard.
 * **[Report]** : Open the sFlow traffic or counter metrics analysis reports.
 * **[IP/MAC Info]** : Dropdown button to view detailed IP/MAC address lookup information.

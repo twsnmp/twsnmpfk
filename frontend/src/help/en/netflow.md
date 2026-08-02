@@ -38,8 +38,9 @@ Inspect received NetFlow logs and analyze traffic.
 * **[Filter]** : Open the search filter dialog.
 * **[Delete All Logs]** : Delete all NetFlow logs from the database.
 * **[Report]** : Open the NetFlow traffic analysis reports.
+* **[Polling] / [AI Assist]** : Register a new polling task based on the selected NetFlow log. When AI integration is enabled, this changes to `[AI Assist]`, opening a dialog where AI automatically suggests monitoring parameters based on flow details.
 * **[Copy]** : Copy the selected log text to the clipboard.
-* **[AI Explain]** : Request an explanation of the selected logs from the AI (LLM).
+* **[AI Explain]** : Request an explanation of the selected logs from the AI (LLM) (Displayed only when AI integration is enabled).
 * **[IP/MAC Info]** : Dropdown button to view detailed IP/MAC address lookup information.
 * **[CSV]** : Export current logs to a CSV file.
 * **[Excel]** : Export current logs to an Excel file.
