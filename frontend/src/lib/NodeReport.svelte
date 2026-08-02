@@ -70,6 +70,7 @@
     selectedhrStorageCount = 0;
     selectedHrProcessCount = 0;
     showVPanelBtn = false;
+    showSaveMemoBtn = false;
     deleteVPanel();
     if (chart) {
       try {
