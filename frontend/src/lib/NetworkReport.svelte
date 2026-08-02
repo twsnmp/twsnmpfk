@@ -372,7 +372,10 @@
             {$_("NodeReport.PhysicalPort")}
           </Toggle>
           <Select
-            class="w-20 h-8 !p-0"
+            size="sm"
+            placeholder=""
+            class="w-20"
+            classes={{ select: "!py-1 !px-2 text-xs h-8" }}
             items={[
               { value: 16, name: "16" },
               { value: 24, name: "24" },
