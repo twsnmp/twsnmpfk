@@ -977,4 +977,112 @@ Please analyze the provided address management summary and abnormal address deta
 	return a.llmAsk(sb.String(), system)
 }
 
+func (a *App) LLMExplainCertMonitor() *LLMResp {
+	now := time.Now().Unix()
+	totalCount := 0
+	normalCount := 0
+	attentionCount := 0
+
+	var certDetailsSB strings.Builder
+
+	datastore.ForEachCertMonitors(func(c *datastore.CertMonitorEnt) bool {
+		totalCount++
+		isExpired := c.NotAfter > 0 && now > c.NotAfter
+		remainingSec := c.NotAfter - now
+		remainingDays := remainingSec / 86400
+		isExpiringSoon := !isExpired && c.NotAfter > 0 && remainingDays <= 30
+		hasError := c.State == "warn" || c.State == "error" || c.Error != ""
+
+		expStatus := "Normal"
+		if isExpired {
+			expStatus = "Expired"
+			attentionCount++
+		} else if isExpiringSoon {
+			expStatus = fmt.Sprintf("Expiring Soon (%d days remaining)", remainingDays)
+			attentionCount++
+		} else if hasError {
+			expStatus = "Warning / Error"
+			attentionCount++
+		} else {
+			normalCount++
+		}
+
+		tNotBefore := ""
+		if c.NotBefore > 0 {
+			tNotBefore = time.Unix(c.NotBefore, 0).Format(time.RFC3339)
+		}
+		tNotAfter := ""
+		if c.NotAfter > 0 {
+			tNotAfter = time.Unix(c.NotAfter, 0).Format(time.RFC3339)
+		}
+
+		certDetailsSB.WriteString(fmt.Sprintf("- Target: %s:%d | State: %s | Expiration Status: %s\n", c.Target, c.Port, c.State, expStatus))
+		if c.Subject != "" {
+			certDetailsSB.WriteString(fmt.Sprintf("  - Subject: %s\n", c.Subject))
+		}
+		if c.Issuer != "" {
+			certDetailsSB.WriteString(fmt.Sprintf("  - Issuer: %s\n", c.Issuer))
+		}
+		if tNotBefore != "" {
+			certDetailsSB.WriteString(fmt.Sprintf("  - Valid From: %s\n", tNotBefore))
+		}
+		if tNotAfter != "" {
+			certDetailsSB.WriteString(fmt.Sprintf("  - Valid Until: %s (%d days remaining)\n", tNotAfter, remainingDays))
+		}
+		if c.SerialNumber != "" {
+			certDetailsSB.WriteString(fmt.Sprintf("  - Serial Number: %s\n", c.SerialNumber))
+		}
+		certDetailsSB.WriteString(fmt.Sprintf("  - TLS Verification: %v\n", c.Verify))
+		if c.Error != "" {
+			certDetailsSB.WriteString(fmt.Sprintf("  - Error: %s\n", c.Error))
+		}
+
+		return true
+	})
+
+	var sb strings.Builder
+	sb.WriteString("# Certificate Management Summary\n")
+	sb.WriteString(fmt.Sprintf("- Total Certificates Monitored: %d\n", totalCount))
+	sb.WriteString(fmt.Sprintf("- Normal Status Count: %d\n", normalCount))
+	sb.WriteString(fmt.Sprintf("- Attention / Issue Count (Expired, Expiring Soon, Warning/Error): %d\n", attentionCount))
+
+	if totalCount > 0 {
+		sb.WriteString("\n# All Monitored Certificate Details\n")
+		sb.WriteString(certDetailsSB.String())
+	} else {
+		sb.WriteString("\nNo server certificates are currently registered for monitoring.\n")
+	}
+
+	system := `You are an expert in TLS/SSL security and server certificate management.
+Please analyze the provided certificate management data (all monitored server certificates including normal, expiring, expired, and errored entries).
+
+### Output Formatting Instructions:
+1. Provide a brief overall summary of the server certificate management status.
+2. Present a clear breakdown or table for ALL monitored certificate entries (including normal ones), summarizing their domain/target, port, issuer, validity period, and remaining days.
+3. Highlight any specific issues or risks (e.g., expired certificates, certificates expiring within 30 days, verification errors, hostname mismatches, connection errors).
+4. For certificates with issues or upcoming expiration, provide step-by-step actionable recommendations:
+   - Certificate renewal and re-issuance workflow (CSR generation, CA submission, certificate deployment)
+   - Web/SSL server or proxy binding instructions (including intermediate certificate chain setup)
+   - Recommendations for automated renewal solutions (e.g., Certbot / ACME protocol) if applicable
+   - Guidance on addressing verification failures, self-signed certificates, or hostname mismatches.`
+
+	if i18n.GetLang() == "ja" {
+		system = `あなたはTLS/SSLセキュリティおよびサーバー証明書管理の専門家です。
+提示されたサーバー証明書管理データ（正常な証明書を含む、登録されている全監視対象証明書の詳細情報、状態、有効期限、残日数、エラー内容等）を分析し、解説を出力してください。
+
+### 【必須出力フォーマット・記述ルール】
+1. サーバー証明書管理状況の全体概要を簡潔にまとめてください（総登録数、正常件数、期限切れ・期限切れ間近・エラー件数のサマリー）。
+2. 正常な証明書も含め、すべての証明書エントリについてリストまたは表形式（マークダウンテーブル）で現状・状態（対象ホスト:ポート、Subject、Issuer、有効期限、残り日数、検証状態等）を整理・解説してください。
+3. 期限切れ、期限切れ間近（30日以内等）、検証エラー（ホスト名不一致、自己署名、ルートCA非信頼等）、接続失敗などの問題点・リスクがあるエントリを明記し、セキュリティおよび運用上のリスク評価を行ってください。
+4. 問題点がある証明書や期限切れ間近の証明書について、具体的に推奨される対処方法・運用手順を分かりやすく解説してください：
+   - 証明書の更新・再発行手順（CSR作成、CA申請、証明書インポート）
+   - Web/SSLサーバーやリバースプロキシへの証明書・中間証明書のバインド／適用手順
+   - Let's Encrypt等の自動更新（certbot, ACME protocol）の活用および設定確認
+   - ホスト名ミスマッチや自己署名証明書の場合の運用上の留意点・対処法`
+	}
+
+	return a.llmAsk(sb.String(), system)
+}
+
+
 

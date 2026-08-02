@@ -282,6 +282,8 @@ export function LLMDiagnoseNode(arg1:string):Promise<main.LLMResp>;
 
 export function LLMExplainAddress():Promise<main.LLMResp>;
 
+export function LLMExplainCertMonitor():Promise<main.LLMResp>;
+
 export function LLMGeneratePollingScript(arg1:string,arg2:string,arg3:string):Promise<main.LLMResp>;
 
 export function LLMMIBSearch(arg1:string):Promise<main.LLMMIBSearchResp>;

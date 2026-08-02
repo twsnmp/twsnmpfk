@@ -608,6 +608,16 @@
     "Copied": "Copied",
     "Export": "Export"
   },
+  "CertAIDialog": {
+    "Title": "AI Certificate Explanation",
+    "Loading": "Analyzing monitored server certificate data (status, expiration, errors) via AI...",
+    "Close": "Close",
+    "ReAnalyze": "Re-Analyze",
+    "Copy": "Copy",
+    "Copied": "Copied",
+    "Export": "Export"
+  },
+
   "NodePolling": {
     "Add": "Add",
     "Close": "Close",
@@ -1131,8 +1141,10 @@
     "Save": "Save",
     "State": "State",
     "Target": "Target",
-    "TargetIPOrHost": "Target IP or host name"
+    "TargetIPOrHost": "Target IP or host name",
+    "AIExplain": "AI Explain"
   },
+
   "Mqtt": {
     "Bytes": "Bytes",
     "ClientID": "Client ID",

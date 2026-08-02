@@ -594,6 +594,16 @@
     "Copied": "コピーしました",
     "Export": "エクスポート"
   },
+  "CertAIDialog": {
+    "Title": "証明書管理のAI解説",
+    "Loading": "監視対象のサーバー証明書データ（状態・有効期限・エラー情報等）を分析し、AIが解説中...",
+    "Close": "閉じる",
+    "ReAnalyze": "再解析",
+    "Copy": "コピー",
+    "Copied": "コピーしました",
+    "Export": "エクスポート"
+  },
+
   "NodePolling": {
     "State": "状態",
     "Name": "名前",
@@ -1130,8 +1140,10 @@
     "EditTitle": "サーバー証明書モニター対象",
     "TargetIPOrHost": "対象IPまたはホスト名",
     "PortNumber": "ポート番号",
-    "Save": "保存"
+    "Save": "保存",
+    "AIExplain": "AI解説"
   },
+
   "Mqtt": {
     "ClientID": "クライアントID",
     "Remote": "送信元",

@@ -8,17 +8,22 @@
     GetCertMonitorList,
     DeleteCertMonitor,
     UpateCertMonitor,
+    GetMapConf,
   } from "../../wailsjs/go/main/App";
   import { renderTime, renderState, getTableLang,renderTimeUnix } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from 'svelte-i18n';
+  import CertAIDialog from "./CertAIDialog.svelte";
 
   let table :any = undefined;
   let data = [];
   let selectedCount = 0;
   let certMonitor: any = undefined;
   let showEditDialog = false;
+  let showCertAI = false;
+  let hasAI = false;
+
 
   const columns = [
     {
@@ -153,9 +158,12 @@
     });
   };
 
-  onMount(() => {
+  onMount(async () => {
+    const conf = await GetMapConf();
+    hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     refresh();
   });
+
 
   const add = () => {
     certMonitor = {
@@ -218,12 +226,26 @@
       {$_('CertMonitor.Del')}
     </GradientButton>
   {/if} 
+  {#if hasAI}
+    <GradientButton
+      shadow
+      color="pink"
+      type="button"
+      onclick={() => (showCertAI = true)}
+      size="xs"
+    >
+      <Icon path={icons.mdiBrain} size={1} />
+      {$_('CertMonitor.AIExplain')}
+    </GradientButton>
+  {/if}
+
     <GradientButton shadow type="button" color="teal" onclick={refresh} size="xs">
       <Icon path={icons.mdiRecycle} size={1} />
       { $_('AIList.Reload') }
     </GradientButton>
   </div>
 </div>
+
 
 <Modal
   bind:open={showEditDialog}
@@ -276,6 +298,9 @@
     </GradientButton>
   </div>
 </Modal>
+
+<CertAIDialog bind:show={showCertAI} />
+
 
 <style global>
   #certMonitorListTable  dt {

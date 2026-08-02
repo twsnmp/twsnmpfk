@@ -201,6 +201,9 @@ Usage of twsnmpfk:
 #### AI Explanation for Address Management
 * **Address Management AI Explanation**: Added an `[AI Explain]` button to the Address Management screen. Summarizes normal address counts and sends detailed entries of abnormal/changed addresses (duplicate/169.254 APIPA, IP changes, MAC changes) to AI (LLM) for detailed per-entry diagnosis, root-cause analysis, security/operational risk evaluation, and recommended action steps.
 
+#### AI Explanation for Certificate Management
+* **Certificate Management AI Explanation**: Added an `[AI Explain]` button to the Certificate Management (`Cert`) screen. Sends all monitored server certificate data (including normal entries, target host, port, Subject, Issuer, expiration dates, remaining days, TLS verification status, and error messages) to AI (LLM) for overall status summarization, complete certificate breakdown, risk evaluation of expired or near-expiring certificates (within 30 days), and step-by-step actionable remediation advice (CSR generation, CA renewal, web server/proxy binding, and automated renewal setup like Certbot).
+
 #### AI-Assisted Polling Creation for Log Views
 * **AI-Assisted Polling Generation**: Added AI-assisted polling creation dialog (`AIPollingAssistDialog`) to log/flow views (Syslog, SNMP Trap, MQTT, NetFlow, sFlow). Automatically generates monitoring parameters, filter conditions, Grok extraction patterns, and JavaScript scripts based on selected log entry content.
 
@@ -209,7 +212,8 @@ Usage of twsnmpfk:
 * **Target Node Modification**: Enabled changing the assigned target node when editing existing polling configurations.
 
 #### Conditional AI Feature Display
-* **AI Feature Control**: AI-related action buttons and menu items (such as AI Diagnosis, AI Root Cause Analysis, AI Address Explanation, AI Polling Assist, and AI Explain) across Map, Node List, Address Management, Event Log, MIB Browser, Syslog, Trap, MQTT, NetFlow, and sFlow are now displayed only when AI integration is enabled.
+* **AI Feature Control**: AI-related action buttons and menu items (such as AI Diagnosis, AI Root Cause Analysis, AI Address Explanation, AI Certificate Explanation, AI Polling Assist, and AI Explain) across Map, Node List, Address Management, Certificate Management, Event Log, MIB Browser, Syslog, Trap, MQTT, NetFlow, and sFlow are now displayed only when AI integration is enabled.
+
 
 #### UI & Layout Optimizations
 * **Navigation Header & Spacing**: Improved top navigation header bar layout, component spacing, and vertical scrolling paddings across all main view components.

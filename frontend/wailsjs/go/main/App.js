@@ -554,6 +554,10 @@ export function LLMExplainAddress() {
   return window['go']['main']['App']['LLMExplainAddress']();
 }
 
+export function LLMExplainCertMonitor() {
+  return window['go']['main']['App']['LLMExplainCertMonitor']();
+}
+
 export function LLMGeneratePollingScript(arg1, arg2, arg3) {
   return window['go']['main']['App']['LLMGeneratePollingScript'](arg1, arg2, arg3);
 }

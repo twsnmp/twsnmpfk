@@ -916,6 +916,29 @@ Monitor server certificates from TWSNMP. Add targets via the edit screen.
 
 ![h:400 center](./images/en/cert_list.png)
 
+<!-- _class: tinytext -->
+
+|Item|Content|
+|----|---|
+|>|Expand the server certificate details.|
+|Status|Status certificate state.|
+|Target|The IP address or host name of the server.|
+|Port number|The port number to monitor.|
+|Subject|This is the certificate content of the server certificate. Host name, etc.|
+|Issuer|Issuer of the server certificate.|
+|Start|The start date and time for the server certificate expiration date.|
+|End|The end date and time of the server certificate expiration date.|
+|Last Confirmation|The date and time of the last verification.|
+
+|Button|Content|
+|----|---|
+|Add|Add monitored targets.|
+|Edit|Edit the selected monitored object.|
+|Delete|Deletes the selected monitored object.|
+|AI Explain|Sends all server certificate data (including normal, expiring soon, and error status) to AI (LLM) to analyze operational status, risks, and recommended actions for certificate renewal or configuration fixes (displayed only when AI integration is enabled).|
+|Update|Refresh the list to the latest state.|
+
+
 ---
 ## PKI CA construction
 <!-- _class: tinytext -->

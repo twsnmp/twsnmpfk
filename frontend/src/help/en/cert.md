@@ -28,7 +28,9 @@ List for monitoring server certificate expiration and verification status.
 * **[Add]** : Displays the screen to add a monitoring target.
 * **[Edit]** : Displays the screen to edit the selected monitoring target.
 * **[Delete]** : Deletes the selected monitoring target.
+* **[AI Explain]** : Sends all server certificate data (including normal, expiring soon, and error status) to AI (LLM) to analyze operational status, risks, and recommended actions for certificate renewal or configuration fixes (displayed only when AI integration is enabled).
 * **[Reload]** : Reloads the monitor list.
+
 
 ## Settings Parameters
 

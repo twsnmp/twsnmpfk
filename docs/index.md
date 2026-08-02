@@ -891,7 +891,9 @@ A list of server certificates to monitor from TWSNMP.
 |Add|Add monitored targets.|
 |Edit|Edit the selected monitored object.|
 |Delete|Deletes the selected monitored object.|
+|AI Explain|Sends all server certificate data (including normal, expiring soon, and error status) to AI (LLM) to analyze operational status, risks, and recommended actions for certificate renewal or configuration fixes (displayed only when AI integration is enabled).|
 |Update|Refresh the list to the latest state.|
+
 
 ### Edit to monitor
 
