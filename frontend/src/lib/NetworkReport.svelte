@@ -149,18 +149,42 @@
   let vpanelPortWrap = 16;
   let pVPanel: any = [];
 
+  const safeInit = (selector: string, initFn: () => void) => {
+    let retries = 0;
+    const checkAndInit = () => {
+      if (document.querySelector(selector)) {
+        try {
+          initFn();
+        } catch (e) {
+          console.error("Failed to initialize: " + selector, e);
+        }
+      } else if (retries < 10) {
+        retries++;
+        setTimeout(checkAndInit, 50);
+      }
+    };
+    checkAndInit();
+  };
+
   const showVPanel = async () => {
     clear();
     showVPanelBtn = true;
-    initVPanel("vpanel");
     if (!ports) {
       waitVPanel = true;
       ports = await GetVPanelPorts("NET:" + id);
       power = await GetVPanelPowerInfo("NET:" + id);
       waitVPanel = false;
     }
-    pVPanel = physicalPort ? ports.filter((e: any) => e.Type == 6) : ports;
-    showPortTable(pVPanel);
+    const portsList = ports || [];
+    pVPanel = physicalPort ? portsList.filter((e: any) => e.Type == 6) : portsList;
+
+    safeInit("#vpanel", () => {
+      initVPanel("vpanel");
+    });
+
+    safeInit("#portTable", () => {
+      showPortTable(pVPanel);
+    });
   };
 
   $: setVPanel(pVPanel, power, rotateVPanel, vpanelZoom, vpanelPortWrap);
@@ -438,7 +462,7 @@
     width: 98%;
     min-height: 400px;
     height: 40vh;
-    overflow: scroll;
+    overflow: hidden;
     margin: 0 auto;
   }
 
