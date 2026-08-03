@@ -157,13 +157,11 @@
   };
 
   const check = async () => {
-    const selected = table.rows({ selected: true }).data().pluck("ID");
+    const selected = table.rows({ selected: true }).data().pluck("ID").toArray();
     if (selected.length < 1) {
       return;
     }
-    selected.array.forEach(async (n: any) => {
-      await CheckPolling(n);
-    });
+    await Promise.all(selected.map((n: any) => CheckPolling(n)));
     refresh();
   };
 
