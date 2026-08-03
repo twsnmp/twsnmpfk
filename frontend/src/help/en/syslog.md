@@ -56,3 +56,5 @@ Search options in the filter dialog (supports regular expressions).
   3D graph representing Host, Uptime/Time, and Priority distribution.
 * **Periodicity Analysis by FFT**
   Fast Fourier Transform analysis of host log generation cycles.
+* **[AI Explain]**
+  Sends current Syslog entries, top sender hosts, and severity trends to AI (LLM) for automated anomaly explanation and risk assessment (only visible when AI integration is enabled).

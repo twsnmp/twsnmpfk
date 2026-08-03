@@ -56,3 +56,5 @@ Screen displaying system and monitoring event logs. A time-series graph showing 
   Time-series chart of device availability metrics from "oprate" events.
 * **ARP Watch**
   Time-series chart of address usage rates from "arpwatch" events.
+* **[AI Explain]**
+  Sends current event log data, top problem nodes, and severity breakdowns to AI (LLM) for health diagnostics and remediation advice (only visible when AI integration is enabled).

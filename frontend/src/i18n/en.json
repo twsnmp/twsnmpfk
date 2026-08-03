@@ -617,6 +617,16 @@
     "Copied": "Copied",
     "Export": "Export"
   },
+  "ReportAI": {
+    "Title": "Report Data AI Explanation",
+    "Loading": "Analyzing data for selected tab via AI...",
+    "Close": "Close",
+    "ReAnalyze": "Re-Analyze",
+    "Copy": "Copy",
+    "Copied": "Copied",
+    "Export": "Export",
+    "AIExplain": "AI Explain"
+  },
 
   "NodePolling": {
     "Add": "Add",

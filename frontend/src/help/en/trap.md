@@ -44,3 +44,5 @@ Search options in the filter dialog (supports regular expressions).
   TRAP log count ranking by sending hosts.
 * **From and Type (3D)**
   3D graph representing Host, Uptime/Time, and TRAP Type distribution.
+* **[AI Explain]**
+  Sends current SNMP Trap entries to AI (LLM) for trap frequency analysis, affected device identification, and troubleshooting advice (only visible when AI integration is enabled).

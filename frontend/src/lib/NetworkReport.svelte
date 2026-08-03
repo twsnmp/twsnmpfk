@@ -39,10 +39,16 @@
   import { _ } from "svelte-i18n";
   import { copyText } from "svelte-copy";
   import Help from "./Help.svelte";
+  import { GetMapConf, LLMExplainNetworkReport } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let id = "";
   let network: any;
+
+  let hasAI = false;
+  let showAIReport = false;
+  let activeTab = "overview";
 
   let physicalPort = true;
   let showVPanelBtn = false;
@@ -260,6 +266,12 @@
     ports = undefined;
     power = undefined;
     fdbTable = undefined;
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     network = await GetNetwork(id);
   };
 
@@ -440,6 +452,18 @@
             {$_("Line.Help")}
           </span>
         </GradientButton>
+        {#if hasAI}
+          <GradientButton
+            shadow
+            type="button"
+            color="pink"
+            onclick={() => (showAIReport = true)}
+            size="xs"
+          >
+            <Icon path={icons.mdiBrain} size={1} />
+            {$_("ReportAI.AIExplain")}
+          </GradientButton>
+        {/if}
         <GradientButton
           shadow
           type="button"
@@ -456,6 +480,13 @@
 </Modal>
 
 <Help bind:show={showHelp} page="network_report" />
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`network_${id}_ai_explanation`}
+  analyzeFunc={() => LLMExplainNetworkReport(id)}
+/>
 
 <style>
   #vpanel {

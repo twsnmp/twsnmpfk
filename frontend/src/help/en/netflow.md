@@ -101,3 +101,5 @@ Available analysis report types.
   3D periodicity chart of FFT analysis.
 * **Map**
   Map visualizing the locations of IP addresses.
+* **[AI Explain]**
+  Sends current NetFlow data to AI (LLM) for bandwidth usage analysis, top communicating pairs, and traffic anomaly detection (only visible when AI integration is enabled).

@@ -34,10 +34,14 @@
   import { getTableLang } from "./common";
   import { _ } from "svelte-i18n";
   import { copyText } from "svelte-copy";
+  import { GetMapConf, LLMExplainSFlowReport } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let logs: any = undefined;
 
+  let hasAI = false;
+  let showAIReport = false;
   let chart: any = undefined;
   let topList: any = [];
   let fftMap: any = undefined;
@@ -47,7 +51,7 @@
   let tableFlow: any = undefined;
   let selectedCountFlow = 0;
 
-  const onOpen = () => {
+  const onOpen = async () => {
     chart = undefined;
     topList = [];
     fftMap = undefined;
@@ -57,6 +61,12 @@
     tableFlow = undefined;
     selectedCountFlow = 0;
     flowList = [];
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     showHeatmap();
   };
 
@@ -640,6 +650,18 @@
           }}
         />
       {/if}
+      {#if hasAI}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => (showAIReport = true)}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("ReportAI.AIExplain")}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         type="button"
@@ -653,6 +675,13 @@
     </div>
   </div>
 </Modal>
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`sflow_${tab}_ai_explanation`}
+  analyzeFunc={() => LLMExplainSFlowReport(tab)}
+/>
 
 <style>
   #heatmap,

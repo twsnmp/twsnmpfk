@@ -26,7 +26,10 @@
     GetDefaultPolling,
     GetNodeMemo,
     SaveNodeMemo,
+    GetMapConf,
+    LLMExplainNodeReport,
   } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
   import {
     getIcon,
     getStateColor,
@@ -51,6 +54,8 @@
   export let id = "";
   let node: any;
   let activeTab = "basic";
+  let hasAI = false;
+  let showAIReport = false;
 
   let selectedPortCount = 0;
   let selectedHrSystemCount = 0;
@@ -943,6 +948,12 @@
     activeTab = "basic";
     clearSelectedCount();
     try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
+    try {
       node = await GetNode(id);
       memo = await GetNodeMemo(id)
     } catch (e) {
@@ -1404,6 +1415,18 @@
           </span>
         </GradientButton>
         {/if}
+        {#if hasAI && activeTab !== 'basic' && activeTab !== 'memo'}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => (showAIReport = true)}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("ReportAI.AIExplain")}
+        </GradientButton>
+        {/if}
         <GradientButton
           shadow
           type="button"
@@ -1420,6 +1443,13 @@
 </Modal>
 
 <Polling bind:show={showPolling} {pollingTmp} />
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`node_${id}_${activeTab}_ai_explanation`}
+  analyzeFunc={() => LLMExplainNodeReport(id, activeTab)}
+/>
 
 <style>
   #vpanel {

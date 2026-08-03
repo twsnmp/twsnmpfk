@@ -17,6 +17,8 @@
   import * as icons from "@mdi/js";
   import { showArpGraph,showIPAMHeatmap } from "./chart/arp";
   import { _ } from 'svelte-i18n';
+  import { GetMapConf, LLMExplainAddressReport } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let arp : any = undefined;
@@ -24,15 +26,27 @@
   export let changeIP:any = undefined;
   export let ipam:any = undefined;
 
+  let hasAI = false;
+  let showAIReport = false;
+  let activeTab = "ipam";
+
   const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
     chart = undefined;
+    activeTab = "ipam";
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     showIPAM();
   };
 
   let chart :any  = undefined;
   const showChart = async (t: string) => {
+    activeTab = t;
     await tick();
     chart = undefined;
     switch (t) {
@@ -46,6 +60,7 @@
   };
 
   const showIPAM = async () => {
+    activeTab = "ipam";
     await tick();
     chart = undefined;
     chart = showIPAMHeatmap("ipam",ipam);
@@ -149,6 +164,18 @@
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
+      {#if hasAI}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => (showAIReport = true)}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("ReportAI.AIExplain")}
+        </GradientButton>
+      {/if}
       <GradientButton type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('ArpReport.Close') }
@@ -156,6 +183,13 @@
     </div>
   </div>
 </Modal>
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`address_${activeTab}_ai_explanation`}
+  analyzeFunc={() => LLMExplainAddressReport(activeTab)}
+/>
 
 <style>
   #graphForce,

@@ -54,3 +54,5 @@ Dialog for selecting a pre-defined monitoring template to add a new polling.
   Frequency distribution of measured metrics (only available if logs are recorded).
 * **AI Analysis**
   Anomalies and predictions analyzed by AI (only available when log mode is set to AI analysis and sufficient data has been collected).
+* **[AI Explain]**
+  Sends polling item health, error history, and latency trends to AI (LLM) for root cause analysis and remediation advice (only visible when AI integration is enabled).

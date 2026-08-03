@@ -282,7 +282,31 @@ export function LLMDiagnoseNode(arg1:string):Promise<main.LLMResp>;
 
 export function LLMExplainAddress():Promise<main.LLMResp>;
 
+export function LLMExplainAddressReport(arg1:string):Promise<main.LLMResp>;
+
+export function LLMExplainArpReport(arg1:string):Promise<main.LLMResp>;
+
 export function LLMExplainCertMonitor():Promise<main.LLMResp>;
+
+export function LLMExplainEventLogReport(arg1:string):Promise<main.LLMResp>;
+
+export function LLMExplainMqttReport(arg1:string):Promise<main.LLMResp>;
+
+export function LLMExplainNetFlowReport(arg1:string):Promise<main.LLMResp>;
+
+export function LLMExplainNetworkReport(arg1:string):Promise<main.LLMResp>;
+
+export function LLMExplainNodeReport(arg1:string,arg2:string):Promise<main.LLMResp>;
+
+export function LLMExplainPollingReport(arg1:string):Promise<main.LLMResp>;
+
+export function LLMExplainSFlowCounterReport(arg1:string):Promise<main.LLMResp>;
+
+export function LLMExplainSFlowReport(arg1:string):Promise<main.LLMResp>;
+
+export function LLMExplainSyslogReport(arg1:string):Promise<main.LLMResp>;
+
+export function LLMExplainTrapReport(arg1:string):Promise<main.LLMResp>;
 
 export function LLMGeneratePollingScript(arg1:string,arg2:string,arg3:string):Promise<main.LLMResp>;
 

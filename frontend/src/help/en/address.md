@@ -40,5 +40,5 @@ List of IP and MAC addresses detected on the local segment via the ARP watch fun
 
 * **IP Address Usage Status**
   Heatmap showing the distribution and usage pattern of IP addresses in the segment.
-* **IP-MAC Relationship (Force / Circular Model)**
-  Network topology graph visualizing the relationship between IP addresses and MAC addresses. Helps detect ARP spoofing, IP conflicts, or multihomed NICs (where one IP maps to multiple MACs or one MAC has multiple IPs).
+* **[AI Explain]** (Inside Report Dialog)
+  Sends current tab data (IPAM / IP-MAC relation) to AI (LLM) for subnet allocation efficiency, IP conflict risk analysis, and recommendations (only visible when AI integration is enabled).

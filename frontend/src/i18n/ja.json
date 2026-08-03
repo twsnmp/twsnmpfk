@@ -603,6 +603,16 @@
     "Copied": "コピーしました",
     "Export": "エクスポート"
   },
+  "ReportAI": {
+    "Title": "レポートデータのAI解説",
+    "Loading": "選択されたタブのデータを分析し、AIが解説中...",
+    "Close": "閉じる",
+    "ReAnalyze": "再解説",
+    "Copy": "コピー",
+    "Copied": "コピーしました",
+    "Export": "エクスポート",
+    "AIExplain": "AI解説"
+  },
 
   "NodePolling": {
     "State": "状態",

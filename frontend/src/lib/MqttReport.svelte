@@ -13,16 +13,27 @@
     showMqtt3DChart,
   } from "./chart/mqtt";
   import { _ } from "svelte-i18n";
+  import { GetMapConf, LLMExplainMqttReport } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let stats: any = undefined;
 
+  let hasAI = false;
+  let showAIReport = false;
   let chart: any = undefined;
   let heatmapMode: "time" | "client_topic" = "time";
   let activeTab: string = "client";
 
   const onOpen = async () => {
     chart = undefined;
+    activeTab = "client";
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     showChart("client");
   };
 
@@ -211,6 +222,18 @@
     </Tabs>
 
     <div class="flex justify-end space-x-2 mr-2">
+      {#if hasAI}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => (showAIReport = true)}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("ReportAI.AIExplain")}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         type="button"
@@ -224,6 +247,13 @@
     </div>
   </div>
 </Modal>
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`mqtt_${activeTab}_ai_explanation`}
+  analyzeFunc={() => LLMExplainMqttReport(activeTab)}
+/>
 
 <style>
   #mqttClientID,

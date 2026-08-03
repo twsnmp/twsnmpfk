@@ -34,3 +34,5 @@ ARP (Address Resolution Protocol) monitoring log for changes and new discoveries
   Aggregated log counts by IP address (useful for identifying IP addresses with frequent changes).
 * **By IP address (3D)**
   3D aggregated report of logs by IP address and time series (useful for identifying when new discoveries or changes occurred).
+* **[AI Explain]**
+  Sends current ARP log entries to AI (LLM) for automated security analysis, MAC address fluctuation analysis, and spoofing risk evaluation (only visible when AI integration is enabled).

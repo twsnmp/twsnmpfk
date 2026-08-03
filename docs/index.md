@@ -120,6 +120,7 @@ Added support for setting the opacity (transparency) of drawing items and improv
 
 ### New Features in v2.2.0
 
+- **AI Explanation for All Reports**: Added an `[AI Explain]` button to the footer (left of Close button) across all 12 report screens (Node, IPAM/Address, ARP, Event Log, Syslog, Trap, NetFlow, sFlow, sFlow Counter, MQTT, Polling, Network). Sends current tab data (system resources, storage, processes, traffic flows, log statistics, etc.) to AI (LLM) for automated health diagnostics, risk evaluation, anomaly detection, and actionable remediation advice (excluding basic info tab).
 - **Address Management AI Explanation**: Added an `[AI Explain]` button to the Address Management view. Summarizes normal address counts and sends detailed entries of abnormal/changed addresses (duplicate/169.254 APIPA, IP changes, MAC changes) to AI (LLM) for detailed per-entry diagnosis, root-cause analysis, security/operational risk evaluation, and recommended action steps.
 - **AI-Assisted Polling Creation from Log Views**: When selecting a log entry in Syslog, SNMP Trap, MQTT, NetFlow, or sFlow log views with AI enabled, an `[AI Assist]` button appears. The AI automatically analyzes the selected log/data and suggests suitable polling types, parameters, filter expressions, Grok extraction patterns, and JavaScript scripts.
 - **Conditional AI Feature Controls**: AI-related action buttons (AI Diagnosis, AI Investigation, AI Address Explanation, AI Assist, AI Explain) across all screens (Map, Node List, Address Management, Event Log, MIB Browser, Syslog, Trap, MQTT, NetFlow, sFlow, Polling) are dynamically displayed only when AI integration is enabled.
@@ -831,6 +832,7 @@ This is a list of IP address found by TWSNMP.Only the IP address in the same seg
 | Add node | Add the selected IP address to the map.It is displayed only when it is not registered.|
 | Delete| Delete the selected IP address.|
 | Report | Display the address list report.|
+| AI Explanation | Sends current tab data to AI (LLM) for subnet allocation efficiency, IP conflict risk analysis, and recommendations (only visible when AI integration is enabled).|
 | clear| Clear all address lists.|
 | CSV | Export the address list to the CSV file.|
 | Excel | Export the address list to the Excel file.|
@@ -1067,6 +1069,10 @@ This is a report of the value of the address usage rate (ARPWATCH) in the event 
 
 ![](./images/en/eventlog_arp_watch.png)
 
+### AI Explanation
+
+Sends current event log reports and display data to AI (LLM) for automated system health diagnostics, top problem node breakdown, and remediation advice (only visible when AI integration is enabled).
+
 ## Syslog
 
 Syslog screen.At the top, there is a graph showing the number of logs in chronological order.
@@ -1144,6 +1150,10 @@ This is a report that analyzes Syslog for each host and analyzes the number of r
 
 ![](./images/en/syslog_syslog_fft.png)
 
+### AI Explanation
+
+Sends current Syslog reports, severity distributions, and top sender host metrics to AI (LLM) for log spike analysis, anomaly explanation, and actionable remediation steps (only visible when AI integration is enabled).
+
 
 ## SNMP TRAP
 
@@ -1206,6 +1216,10 @@ This is a report of the number of SNMP Trap receiving cases by source host.
 This is a report displayed in the source host, type, and three -dimensional graph of the SNMP Trap receiving log.
 
 ![](./images/en/trap_snmp_trap_send_source_and_type_3d.png)
+
+### AI Explanation
+
+Sends current SNMP Trap report entries to AI (LLM) for trap frequency analysis, affected equipment identification, and remediation guidance (only visible when AI integration is enabled).
 
 
 ### NetFlow
@@ -1281,6 +1295,7 @@ It is a filter for netflow search.
 | FFT Analysis | Analyzing the communication cycle with FFT.|
 | FFT Analysis (3D) | Analyze the communication cycle with FFT and display it on the 3D graph.|
 | Map | Display the position of the IP address on the map.|
+| AI Explanation | Sends current NetFlow data to AI (LLM) for traffic volume, top communicating pairs, bandwidth analysis, and traffic anomaly explanations (only visible when AI integration is enabled).|
 
 
 #### sFlow
@@ -1372,6 +1387,7 @@ This is the analysis screen of sFLOW.
 | FFT Analysis | Analyzing the communication cycle with FFT.|
 | FFT Analysis (3D) | Analyze the communication cycle with FFT and display it on the 3D graph.|
 | Map | Display the position of the IP address on the map.|
+| AI Explanation | Sends current sFlow sample data to AI (LLM) for flow traffic analysis, heavy talker identification, and anomaly explanations (only visible when AI integration is enabled).|
 
 #### Counter sample report
 
@@ -1384,6 +1400,7 @@ This is the analysis screen of sFLOW.
 | Memory | Memory is a graph of memory usage and available capacity obtained from a sample.|
 | DISK | This is a graph of disk usage and access amount acquired from Disk sample.|
 | Network | Network is a graph of network usage obtained from sample.|
+| AI Explanation | Sends current sFlow counter data to AI (LLM) for port traffic load analysis, interface error diagnostics, and bottleneck detection (only visible when AI integration is enabled).|
 
 
 ## ARP warch log
@@ -1421,6 +1438,10 @@ This is a report of the number of logs by IP address.The IP address with many ch
 This is a report of ARP watch logs from both IP addresses and time series.The time of new discoveries and changes is obvious at a glance.
 
 ![](./images/en/arp_arp_watch_log_count_by_ip_address_3d.png)
+
+### AI Explanation
+
+Sends current ARP watch log entries to AI (LLM) for automated MAC address change analysis, potential spoofing risk evaluation, and recommendations (only visible when AI integration is enabled).
 
 
 ## OpenTelemetry

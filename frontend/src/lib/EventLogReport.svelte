@@ -10,18 +10,32 @@
     showEventLogNodeChart,
   } from "./chart/eventlog";
   import { _ } from "svelte-i18n";
+  import { GetMapConf, LLMExplainEventLogReport } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let logs: any = undefined;
 
+  let hasAI = false;
+  let showAIReport = false;
+  let activeTab = "state";
+
   const onOpen = async () => {
     chart = undefined;
+    activeTab = "state";
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     showChart("state");
   };
 
   let chart :any = undefined;
 
   const showChart = async (t: string) => {
+    activeTab = t;
     await tick();
     switch (t) {
       case "state":
@@ -138,6 +152,18 @@
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
+      {#if hasAI}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => (showAIReport = true)}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("ReportAI.AIExplain")}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         type="button"
@@ -151,6 +177,13 @@
     </div>
   </div>
 </Modal>
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`eventlog_${activeTab}_ai_explanation`}
+  analyzeFunc={() => LLMExplainEventLogReport(activeTab)}
+/>
 
 <style>
   #heatmap,

@@ -51,5 +51,6 @@ Inspect switch connection details, VPanel, and FDB (Forwarding Database) table i
 ## Button Descriptions
 
 * **[Copy]** : Copy target item fields (e.g., IP address) to the clipboard.
+* **[AI Explain]** : Sends network and subnet node distribution and connection status data to AI (LLM) for subnet health analysis, issue identification, and architectural recommendations (only visible when AI integration is enabled).
 * **[Help]** : Open this help document.
 * **[Close]** : Close the network report window.

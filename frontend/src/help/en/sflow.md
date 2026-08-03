@@ -91,3 +91,4 @@ Analyze flow samples (traffic data) and counter samples (performance metrics) re
 * **Memory** : Chart of host memory utilization and available capacity.
 * **Disk** : Chart of disk space utilization and disk I/O.
 * **Network** : Chart of host network statistics.
+* **[AI Explain]** : Sends current sFlow sample or counter data to AI (LLM) for traffic analysis, switch port error diagnostics, and bottleneck detection (only visible when AI integration is enabled).

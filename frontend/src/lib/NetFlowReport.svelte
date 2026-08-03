@@ -34,10 +34,14 @@
   import { getTableLang,renderBytes,renderCount,renderSpeed } from "./common";
   import { _ } from "svelte-i18n";
   import { copyText } from "svelte-copy";
+  import { GetMapConf, LLMExplainNetFlowReport } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let logs: any = undefined;
 
+  let hasAI = false;
+  let showAIReport = false;
   let chart: any = undefined;
   let topList: any = [];
   let fftMap: any = undefined;
@@ -59,6 +63,12 @@
     selectedCountFlow = 0;
     locConf = undefined;
     flowList = [];
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     locConf = await GetLocConf();
     showHeatmap();
   };
@@ -771,6 +781,18 @@
           }}
         />
       {/if}
+      {#if hasAI}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => (showAIReport = true)}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("ReportAI.AIExplain")}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         type="button"
@@ -784,6 +806,13 @@
     </div>
   </div>
 </Modal>
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`netflow_${tab}_ai_explanation`}
+  analyzeFunc={() => LLMExplainNetFlowReport(tab)}
+/>
 
 <style>
   #heatmap,

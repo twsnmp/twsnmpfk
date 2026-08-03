@@ -1084,5 +1084,357 @@ Please analyze the provided certificate management data (all monitored server ce
 	return a.llmAsk(sb.String(), system)
 }
 
+// --- Report AI Explanations ---
+
+func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
+	n := datastore.GetNode(nodeID)
+	if n == nil {
+		return &LLMResp{Error: "node not found"}
+	}
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# Node Report: %s (IP: %s, State: %s)\n", n.Name, n.IP, n.State))
+	sb.WriteString(fmt.Sprintf("Active Tab: %s\n\n", tab))
+
+	switch tab {
+	case "hostinfo":
+		hr := a.GetHostResource(nodeID)
+		if hr == nil || len(hr.System) == 0 {
+			return &LLMResp{Error: "host resource data not found"}
+		}
+		sb.WriteString("## Host Info & System Resource Data\n")
+		for _, sys := range hr.System {
+			sb.WriteString(fmt.Sprintf("- %s: %s\n", sys.Key, sys.Value))
+		}
+	case "storage":
+		hr := a.GetHostResource(nodeID)
+		if hr == nil || len(hr.Storage) == 0 {
+			return &LLMResp{Error: "storage data not found"}
+		}
+		sb.WriteString("## Storage Devices Data\n")
+		for _, s := range hr.Storage {
+			usage := 0.0
+			if s.Size > 0 {
+				usage = float64(s.Used) / float64(s.Size) * 100
+			}
+			sb.WriteString(fmt.Sprintf("- Storage: %s | Type: %s | Size: %d | Used: %d (%.2f%%)\n", s.Descr, s.Type, s.Size, s.Used, usage))
+		}
+	case "filesystem":
+		hr := a.GetHostResource(nodeID)
+		if hr == nil || len(hr.FileSystem) == 0 {
+			return &LLMResp{Error: "filesystem data not found"}
+		}
+		sb.WriteString("## Filesystem Data\n")
+		for _, fs := range hr.FileSystem {
+			sb.WriteString(fmt.Sprintf("- Mount: %s | Type: %s | Remote: %s | Access: %d\n", fs.Mount, fs.Type, fs.Remote, fs.Access))
+		}
+	case "process":
+		hr := a.GetHostResource(nodeID)
+		if hr == nil || len(hr.Process) == 0 {
+			return &LLMResp{Error: "process data not found"}
+		}
+		sb.WriteString("## Top Process List (by CPU/Mem)\n")
+		for i, p := range hr.Process {
+			if i >= 30 {
+				break
+			}
+			sb.WriteString(fmt.Sprintf("- PID: %d | Name: %s | Path: %s | CPU: %d | Mem: %d KB\n", p.PID, p.Name, p.Path, p.CPU, p.Mem))
+		}
+	case "panel":
+		ports := a.GetVPanelPorts(nodeID)
+		sb.WriteString("## VPanel Port States Data\n")
+		for _, p := range ports {
+			sb.WriteString(fmt.Sprintf("- Port: %d (%s) | State: %s | Speed: %d | InBytes: %d | OutBytes: %d | InError: %d | OutError: %d\n", p.Index, p.Name, p.State, p.Speed, p.InBytes, p.OutBytes, p.InError, p.OutError))
+		}
+	case "log":
+		sb.WriteString("## Node Event Logs Data\n")
+		logs := a.GetEventLogs(EventLogFilterEnt{NodeID: nodeID})
+		for i, l := range logs {
+			if i >= 30 {
+				break
+			}
+			sb.WriteString(fmt.Sprintf("- Time: %s | Level: %s | Type: %s | Event: %s\n", time.Unix(0, l.Time).Format(time.RFC3339), l.Level, l.Type, l.Event))
+		}
+	default:
+		return &LLMResp{Error: "invalid tab for AI explanation"}
+	}
+
+	system := "You are a network operations expert. Analyze the provided node report data and explain current status, risks, and recommended actions."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはネットワークインフラ運用の専門家です。提示されたノードレポートデータを分析し、現在の状態、過負荷・障害リスク、推奨される確認・対策手順について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainAddressReport(tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# IP Address / IPAM Report (Tab: %s)\n\n", tab))
+
+	if tab == "ipam" {
+		ipam := a.GetIPAM()
+		b, _ := json.MarshalIndent(ipam, "", "  ")
+		sb.WriteString("## IPAM Summary & Ranges Data\n")
+		sb.WriteString(string(b))
+	} else {
+		sb.WriteString("## IP to MAC Relationship Data\n")
+		count := 0
+		datastore.ForEachArp(func(l *datastore.ArpEnt) bool {
+			count++
+			if count <= 50 {
+				sb.WriteString(fmt.Sprintf("- IP: %s | MAC: %s | Vendor: %s\n", l.IP, l.MAC, l.Vendor))
+			}
+			return true
+		})
+	}
+
+	system := "You are an IPAM and network architecture expert. Analyze the provided IP address report data and explain IP usage efficiency, subnet allocation, duplicate IP risks, and recommendations."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはIPAMおよびネットワークの専門家です。提示されたIPアドレスレポートデータを分析し、IPアドレスの使用効率、枯渇リスク、サブネットの構成、および注意すべきIP/MACエントリについて分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainArpReport(tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# ARP Log Report (Tab: %s)\n\n", tab))
+
+	arpLogs := a.GetArpLogs()
+	sb.WriteString(fmt.Sprintf("Total Recent ARP Log Entries: %d\n", len(arpLogs)))
+	for i, l := range arpLogs {
+		if i >= 40 {
+			break
+		}
+		tStr := time.Unix(0, l.Time).Format(time.RFC3339)
+		sb.WriteString(fmt.Sprintf("- Time: %s | IP: %s | State: %s | NewMAC: %s | OldMAC: %s\n", tStr, l.IP, l.State, l.NewMAC, l.OldMAC))
+	}
+
+	system := "You are a network security analyst. Analyze the provided ARP log entries and explain ARP activity, MAC changes, potential spoofing risks, and recommended verification."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはネットワークセキュリティのアナリストです。提示されたARPログデータを分析し、MACアドレスの変更、新規IPの検出傾向、ARPスプーフィング等の潜在的リスク、および確認事項について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainEventLogReport(tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# Event Log Report (Tab: %s)\n\n", tab))
+
+	logs := a.GetEventLogs(EventLogFilterEnt{})
+	sb.WriteString(fmt.Sprintf("Total Event Log Entries Analyzed: %d\n", len(logs)))
+	stateMap := make(map[string]int)
+	nodeMap := make(map[string]int)
+
+	for i, l := range logs {
+		stateMap[l.Level]++
+		if l.NodeName != "" {
+			nodeMap[l.NodeName]++
+		}
+		if i < 30 {
+			tStr := time.Unix(0, l.Time).Format(time.RFC3339)
+			sb.WriteString(fmt.Sprintf("- Time: %s | Level: %s | Node: %s | Event: %s\n", tStr, l.Level, l.NodeName, l.Event))
+		}
+	}
+
+	sb.WriteString("\n## Summary Statistics\n")
+	sb.WriteString("Level Breakdown:\n")
+	for lvl, cnt := range stateMap {
+		sb.WriteString(fmt.Sprintf("  - %s: %d\n", lvl, cnt))
+	}
+	sb.WriteString("Top Node Event Count:\n")
+	for node, cnt := range nodeMap {
+		sb.WriteString(fmt.Sprintf("  - %s: %d\n", node, cnt))
+	}
+
+	system := "You are a log analysis and monitoring expert. Analyze the provided event log report data and explain system health, frequent issue nodes, error level trends, and recommendations."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはログ解析と障害監視の専門家です。提示されたイベントログデータを分析し、システム全体の障害傾向、頻発ノード、重要度別の発生状況、および改善策について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainSyslogReport(tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# Syslog Report (Tab: %s)\n\n", tab))
+
+	logs := a.GetSyslogs(SyslogFilterEnt{})
+	sb.WriteString(fmt.Sprintf("Total Syslog Entries: %d\n", len(logs)))
+	hostMap := make(map[string]int)
+	levelMap := make(map[string]int)
+
+	for i, l := range logs {
+		hostMap[l.Host]++
+		levelMap[fmt.Sprintf("%d", l.Severity)]++
+		if i < 30 {
+			tStr := time.Unix(0, l.Time).Format(time.RFC3339)
+			sb.WriteString(fmt.Sprintf("- Time: %s | Host: %s | Severity: %d | Tag: %s | Msg: %s\n", tStr, l.Host, l.Severity, l.Tag, l.Message))
+		}
+	}
+
+	sb.WriteString("\n## Summary Statistics\n")
+	sb.WriteString("Severity Breakdown:\n")
+	for sev, cnt := range levelMap {
+		sb.WriteString(fmt.Sprintf("  - Severity %s: %d\n", sev, cnt))
+	}
+	sb.WriteString("Top Syslog Sender Hosts:\n")
+	for h, cnt := range hostMap {
+		sb.WriteString(fmt.Sprintf("  - %s: %d\n", h, cnt))
+	}
+
+	system := "You are a Syslog and server operations expert. Analyze the Syslog report data and explain message severity trends, top logging hosts, anomalous log spikes, and recommended actions."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはSyslogおよびサーバー運用の専門家です。提示されたSyslogデータを分析し、重要度（Severity）別の発生傾向、主要送信ホスト、不審なログメッセージ、および運用上の推奨対策について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainTrapReport(tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# SNMP Trap Report (Tab: %s)\n\n", tab))
+
+	traps := a.GetTraps(TrapFilterEnt{})
+	sb.WriteString(fmt.Sprintf("Total SNMP Trap Entries: %d\n", len(traps)))
+	for i, tr := range traps {
+		if i >= 30 {
+			break
+		}
+		tStr := time.Unix(0, tr.Time).Format(time.RFC3339)
+		sb.WriteString(fmt.Sprintf("- Time: %s | From: %s | TrapType: %s | Vars: %s\n", tStr, tr.FromAddress, tr.TrapType, tr.Variables))
+	}
+
+	system := "You are an SNMP Trap monitoring expert. Analyze the SNMP Trap report data and explain alert frequency, affected network equipment, trap types, and remediation steps."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはSNMP Trap監視の専門家です。提示されたSNMP Trapデータを分析し、Trap発生頻度、影響を受けている機器、警告種別、および具体的な対処手順について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainNetFlowReport(tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# NetFlow / IPFIX Report (Tab: %s)\n\n", tab))
+
+	flows := a.GetNetFlow(NetFlowFilterEnt{})
+	sb.WriteString(fmt.Sprintf("Total Flow Records Analyzed: %d\n", len(flows)))
+	for i, f := range flows {
+		if i >= 30 {
+			break
+		}
+		tStr := time.Unix(0, f.Time).Format(time.RFC3339)
+		sb.WriteString(fmt.Sprintf("- Time: %s | Src: %s:%d -> Dst: %s:%d | Proto: %d | Bytes: %d | Packets: %d\n", tStr, f.SrcAddr, f.SrcPort, f.DstAddr, f.DstPort, f.Protocol, f.Bytes, f.Packets))
+	}
+
+	system := "You are a network traffic flow analyst. Analyze the NetFlow data and explain traffic volume trends, top communication pairs, bandwidth usage, and anomaly detection."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはネットワークトラフィックフローのアナリストです。提示されたNetFlowデータを分析し、トラフィック量、主要通信ペア、帯域占有傾向、および異常な通信パターンについて分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainSFlowReport(tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# sFlow Report (Tab: %s)\n\n", tab))
+
+	flows := a.GetSFlow(SFlowFilterEnt{})
+	sb.WriteString(fmt.Sprintf("Total sFlow Records Analyzed: %d\n", len(flows)))
+	for i, f := range flows {
+		if i >= 30 {
+			break
+		}
+		tStr := time.Unix(0, f.Time).Format(time.RFC3339)
+		sb.WriteString(fmt.Sprintf("- Time: %s | Src: %s:%d -> Dst: %s:%d | Proto: %s | Bytes: %d\n", tStr, f.SrcAddr, f.SrcPort, f.DstAddr, f.DstPort, f.Protocol, f.Bytes))
+	}
+
+	system := "You are an sFlow traffic analysis expert. Analyze the sFlow data and explain traffic flows, heavy talkers, bandwidth consumption, and potential security anomalies."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはsFlowトラフィック分析の専門家です。提示されたsFlowデータを分析し、主要な通信フロー、高トラフィック送信元、帯域影響、および異常通信の有無について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainSFlowCounterReport(tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# sFlow Counter Report (Tab: %s)\n\n", tab))
+
+	counters := a.GetSFlowCounter(SFlowCounterFilterEnt{})
+	sb.WriteString(fmt.Sprintf("Total sFlow Counter Entries: %d\n", len(counters)))
+	for i, c := range counters {
+		if i >= 30 {
+			break
+		}
+		tStr := time.Unix(0, c.Time).Format(time.RFC3339)
+		sb.WriteString(fmt.Sprintf("- Time: %s | Remote: %s | Type: %s | Data: %s\n", tStr, c.Remote, c.Type, c.Data))
+	}
+
+	system := "You are a switch port statistics expert. Analyze the sFlow counter data and explain port traffic loads, interface error rates, dropped packets, and switch bottleneck points."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはスイッチポート統計の専門家です。提示されたsFlowカウンターデータを分析し、ポート別トラフィック負荷、エラー/ドロップパケットの発生状況、およびスイッチのボトルネック箇所について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainMqttReport(tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# MQTT Report (Tab: %s)\n\n", tab))
+
+	stats := a.GetMqttStatList()
+	sb.WriteString(fmt.Sprintf("Total MQTT Stat Entries: %d\n", len(stats)))
+	for i, s := range stats {
+		if i >= 30 {
+			break
+		}
+		sb.WriteString(fmt.Sprintf("- ClientID: %s | Remote: %s | Topic: %s | Count: %d | State: %s\n", s.ClientID, s.Remote, s.Topic, s.Count, s.State))
+	}
+
+	system := "You are an MQTT broker and IoT operations expert. Analyze the MQTT statistics data and explain client message volumes, topic hierarchy distribution, connection issues, and anomalies."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはMQTTブローカーおよびIoT運用の専門家です。提示されたMQTT統計データを分析し、クライアント毎のメッセージ量、トピック階層の集中度、接続状態・切断エラー、および不審なクライアント動作について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainPollingReport(nodeID string) *LLMResp {
+	var sb strings.Builder
+	p := datastore.GetPolling(nodeID)
+	if p == nil {
+		return &LLMResp{Error: "polling item not found"}
+	}
+	sb.WriteString(fmt.Sprintf("# Polling Report: %s (Type: %s, State: %s)\n\n", p.Name, p.Type, p.State))
+	logs := a.GetPollingLogs(nodeID)
+	sb.WriteString(fmt.Sprintf("Total Recent Polling Logs: %d\n", len(logs)))
+	for i, l := range logs {
+		if i >= 30 {
+			break
+		}
+		tStr := time.Unix(0, l.Time).Format(time.RFC3339)
+		sb.WriteString(fmt.Sprintf("- Time: %s | State: %s | Result: %v\n", tStr, l.State, formatPollingResultForLLM(l.Result)))
+	}
+
+	system := "You are a polling monitoring expert. Analyze the polling report data and explain monitor item health, failure rates, latency issues, and recommended fixes."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはポーリング監視の専門家です。提示されたポーリングレポートデータを分析し、監視項目の健全性、エラー発生状況、応答遅延の傾向、および推奨される改善策について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+func (a *App) LLMExplainNetworkReport(id string) *LLMResp {
+	var sb strings.Builder
+	nw := a.GetNetwork(id)
+	sb.WriteString(fmt.Sprintf("# Network Report: %s (IP: %s)\n\n", nw.Name, nw.IP))
+
+	nodes := a.GetNodes()
+	count := 0
+	for _, n := range nodes {
+		count++
+		if count <= 30 {
+			sb.WriteString(fmt.Sprintf("- Node: %s | IP: %s | State: %s\n", n.Name, n.IP, n.State))
+		}
+	}
+
+	system := "You are a network subnet and topology analysis expert. Analyze the network report data and explain subnet distribution, network health status, and architecture recommendations."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはネットワークサブネットおよびトポロジーの専門家です。提示されたネットワークレポートデータを分析し、サブネットごとのノード分布、障害発生状況、およびネットワーク構成上の注意点について分かりやすく解説してください。"
+	}
+	return a.llmAsk(sb.String(), system)
+}
+
+
 
 

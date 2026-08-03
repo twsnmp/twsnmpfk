@@ -198,6 +198,9 @@ Usage of twsnmpfk:
 
 ### v2.2.0
 
+#### AI Explanation for All Reports
+* **Tab-based AI Explanation Across All Reports**: Added an `[AI Explain]` button to the footer (left of Close button) across all 12 report screens (Node, IPAM/Address, ARP, Event Log, Syslog, Trap, NetFlow, sFlow, sFlow Counter, MQTT, Polling, Network). Sends current tab data (system resources, storage, processes, traffic flows, log statistics, etc.) to AI (LLM) for automated health diagnostics, risk evaluation, anomaly detection, and actionable remediation advice (excluding basic info tab).
+
 #### AI Explanation for Address Management
 * **Address Management AI Explanation**: Added an `[AI Explain]` button to the Address Management screen. Summarizes normal address counts and sends detailed entries of abnormal/changed addresses (duplicate/169.254 APIPA, IP changes, MAC changes) to AI (LLM) for detailed per-entry diagnosis, root-cause analysis, security/operational risk evaluation, and recommended action steps.
 

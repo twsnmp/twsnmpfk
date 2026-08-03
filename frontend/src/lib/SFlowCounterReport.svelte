@@ -19,10 +19,14 @@
   } from "./chart/sflowCounter";
   import { showLogHeatmap } from "./chart/eventlog";
   import { _ } from "svelte-i18n";
+  import { GetMapConf, LLMExplainSFlowCounterReport } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let logs: any = undefined;
 
+  let hasAI = false;
+  let showAIReport = false;
   let chart: any = undefined;
   let tab: string = "heatmap";
   const ifCounters = new Map();
@@ -41,7 +45,13 @@
   let netCounterSrc = '';
   let netCounterSrcList = [] as any;
 
-  const onOpen = () => {
+  const onOpen = async () => {
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     ifCounters.clear();
     cpuCounters.clear();
     memCounters.clear();
@@ -397,6 +407,18 @@
           onchange={showNetCounter}
         />
       {/if}
+      {#if hasAI}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => (showAIReport = true)}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("ReportAI.AIExplain")}
+        </GradientButton>
+      {/if}
       <GradientButton
         shadow
         type="button"
@@ -410,6 +432,13 @@
     </div>
   </div>
 </Modal>
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`sflow_counter_${tab}_ai_explanation`}
+  analyzeFunc={() => LLMExplainSFlowCounterReport(tab)}
+/>
 
 <style>
   #heatmap,

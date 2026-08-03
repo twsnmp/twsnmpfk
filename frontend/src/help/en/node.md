@@ -64,3 +64,6 @@ Polling settings list screen for the selected node.
   Details of mounted file systems. Only available if the node supports Host Resources MIB.
 * **Process**
   List of running processes. Select a row to create a process monitoring polling. Only available if the node supports Host Resources MIB.
+
+* **[AI Explain]**
+  Sends current tab data (excluding basic info and memo tabs) to AI (LLM) for health diagnostics, resource analysis, and remediation advice (only visible when AI integration is enabled).

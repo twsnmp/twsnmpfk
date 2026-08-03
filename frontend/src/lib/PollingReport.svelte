@@ -42,9 +42,15 @@
   import "datatables.net-select-dt";
   import { showAIHeatMap } from "./chart/ai";
   import { _ } from "svelte-i18n";
+  import { GetMapConf, LLMExplainPollingReport } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let id = "";
+
+  let hasAI = false;
+  let showAIReport = false;
+  let activeTab = "state";
 
   let polling: any = undefined;
   let node: any = undefined;
@@ -73,6 +79,12 @@
     resultData = [];
     entList = [];
     selectedTab = "";
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     polling = await GetPolling(id);
     node = await GetNode(polling.NodeID);
     if (polling.LogMode > 0) {
@@ -483,6 +495,18 @@
             Excel
           </GradientButton>
         {/if}
+        {#if hasAI}
+          <GradientButton
+            shadow
+            type="button"
+            color="pink"
+            onclick={() => (showAIReport = true)}
+            size="xs"
+          >
+            <Icon path={icons.mdiBrain} size={1} />
+            {$_("ReportAI.AIExplain")}
+          </GradientButton>
+        {/if}
         <GradientButton
           shadow
           type="button"
@@ -497,6 +521,13 @@
     </div>
   {/if}
 </Modal>
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`polling_${id}_ai_explanation`}
+  analyzeFunc={() => LLMExplainPollingReport(id)}
+/>
 
 <style>
   #log {

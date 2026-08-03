@@ -6,16 +6,30 @@
   import type { main } from "wailsjs/go/models";
   import { showArpLogIP, showArpLogIP3D } from "./chart/arp";
   import { _ } from 'svelte-i18n';
+  import { GetMapConf, LLMExplainArpReport } from "../../wailsjs/go/main/App";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let logs: any = undefined;
 
+  let hasAI = false;
+  let showAIReport = false;
+  let activeTab = "ip";
+
   const onOpen = async () => {
+    activeTab = "ip";
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     showChart("ip");
   };
 
   let chart :any = undefined;
   const showChart = async (t: string) => {
+    activeTab = t;
     await tick();
     chart = undefined;
     switch (t) {
@@ -83,6 +97,18 @@
       </TabItem>
     </Tabs>
     <div class="flex justify-end space-x-2 mr-2">
+      {#if hasAI}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => (showAIReport = true)}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("ReportAI.AIExplain")}
+        </GradientButton>
+      {/if}
       <GradientButton type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
         { $_('ArpReport.Close') }
@@ -90,6 +116,13 @@
     </div>
   </div>
 </Modal>
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`arp_${activeTab}_ai_explanation`}
+  analyzeFunc={() => LLMExplainArpReport(activeTab)}
+/>
 
 <style>
  #ip,

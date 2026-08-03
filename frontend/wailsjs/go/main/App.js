@@ -554,8 +554,56 @@ export function LLMExplainAddress() {
   return window['go']['main']['App']['LLMExplainAddress']();
 }
 
+export function LLMExplainAddressReport(arg1) {
+  return window['go']['main']['App']['LLMExplainAddressReport'](arg1);
+}
+
+export function LLMExplainArpReport(arg1) {
+  return window['go']['main']['App']['LLMExplainArpReport'](arg1);
+}
+
 export function LLMExplainCertMonitor() {
   return window['go']['main']['App']['LLMExplainCertMonitor']();
+}
+
+export function LLMExplainEventLogReport(arg1) {
+  return window['go']['main']['App']['LLMExplainEventLogReport'](arg1);
+}
+
+export function LLMExplainMqttReport(arg1) {
+  return window['go']['main']['App']['LLMExplainMqttReport'](arg1);
+}
+
+export function LLMExplainNetFlowReport(arg1) {
+  return window['go']['main']['App']['LLMExplainNetFlowReport'](arg1);
+}
+
+export function LLMExplainNetworkReport(arg1) {
+  return window['go']['main']['App']['LLMExplainNetworkReport'](arg1);
+}
+
+export function LLMExplainNodeReport(arg1, arg2) {
+  return window['go']['main']['App']['LLMExplainNodeReport'](arg1, arg2);
+}
+
+export function LLMExplainPollingReport(arg1) {
+  return window['go']['main']['App']['LLMExplainPollingReport'](arg1);
+}
+
+export function LLMExplainSFlowCounterReport(arg1) {
+  return window['go']['main']['App']['LLMExplainSFlowCounterReport'](arg1);
+}
+
+export function LLMExplainSFlowReport(arg1) {
+  return window['go']['main']['App']['LLMExplainSFlowReport'](arg1);
+}
+
+export function LLMExplainSyslogReport(arg1) {
+  return window['go']['main']['App']['LLMExplainSyslogReport'](arg1);
+}
+
+export function LLMExplainTrapReport(arg1) {
+  return window['go']['main']['App']['LLMExplainTrapReport'](arg1);
 }
 
 export function LLMGeneratePollingScript(arg1, arg2, arg3) {

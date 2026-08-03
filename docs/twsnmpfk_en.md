@@ -114,6 +114,7 @@ Added support for opacity (transparency) and improved UI for background images.
 
 ### New Features in v2.2.0
 
+- **AI Explanation for All Reports**: Added an `[AI Explain]` button to the footer (left of Close button) across all 12 report screens (Node, IPAM/Address, ARP, Event Log, Syslog, Trap, NetFlow, sFlow, sFlow Counter, MQTT, Polling, Network). Sends current tab data (system resources, storage, processes, traffic flows, log statistics, etc.) to AI (LLM) for automated health diagnostics, risk evaluation, anomaly detection, and actionable remediation advice (excluding basic info tab).
 - **Address Management AI Explanation**: Added an `[AI Explain]` button to the Address Management screen. Summarizes normal address counts and sends detailed entries of abnormal/changed addresses (duplicate/169.254 APIPA, IP changes, MAC changes) to AI (LLM) for detailed per-entry diagnosis, root-cause analysis, security/operational risk evaluation, and recommended action steps.
 - **AI-Assisted Polling Creation from Log Views**: Displays an `[AI Assist]` button when selecting entries in Syslog, SNMP Trap, MQTT, NetFlow, or sFlow log views (when AI is enabled) to automatically generate polling configurations (types, parameters, filters, Grok patterns, scripts).
 - **Conditional AI Feature Controls**: AI action buttons across all views are dynamically displayed only when AI integration is enabled.
@@ -869,6 +870,7 @@ This is a list of IP address found by TWSNMP.Only the IP address in the same seg
 | Add node | Add the selected IP address to the map.It is displayed only when it is not registered.|
 | Delete| Delete the selected IP address.|
 | Report | Display the address list report.|
+| AI Explanation | Sends current tab data to AI (LLM) for subnet allocation efficiency, IP conflict risk analysis, and recommendations (only visible when AI integration is enabled).|
 | clear| Clear all address lists.|
 | CSV | Export the address list to the CSV file.|
 | Excel | Export the address list to the Excel file.|
@@ -1212,6 +1214,10 @@ This is a report that analyzes Syslog for each host and analyzes the number of r
 ![h:400 center](./images/en/syslog_syslog_fft.png)
 
 ---
+### AI Explanation
+Sends current Syslog reports, severity distributions, and top sender host metrics to AI (LLM) for log spike analysis, anomaly explanation, and actionable remediation steps (only visible when AI integration is enabled).
+
+---
 ## SNMP TRAP
 SNMP Trap log screen.At the top, there is a graph showing the number of logs in chronological order.
 
@@ -1281,6 +1287,10 @@ This is a report displayed in the source host, type, and three -dimensional grap
 <!-- _class: tinytext -->
 
 ![h:400 center](./images/en/trap_snmp_trap_send_source_and_type_3d.png)
+
+---
+### AI Explanation
+Sends current SNMP Trap report entries to AI (LLM) for trap frequency analysis, affected equipment identification, and remediation guidance (only visible when AI integration is enabled).
 
 
 ---
@@ -1373,6 +1383,7 @@ It is a filter for netflow search.
 | FFT Analysis | Analyzing the communication cycle with FFT.|
 | FFT Analysis (3D) | Analyze the communication cycle with FFT and display it on the 3D graph.|
 | Map | Display the position of the IP address on the map.|
+| AI Explanation | Sends current NetFlow data to AI (LLM) for traffic volume, top communicating pairs, bandwidth analysis, and traffic anomaly explanations (only visible when AI integration is enabled).|
 
 ---
 #### sFlow
@@ -1493,6 +1504,7 @@ This is the analysis screen of sFLOW.
 | FFT Analysis | Analyzing the communication cycle with FFT.|
 | FFT Analysis (3D) | Analyze the communication cycle with FFT and display it on the 3D graph.|
 | Map | Display the position of the IP address on the map.|
+| AI Explanation | Sends current sFlow sample data to AI (LLM) for flow traffic analysis, heavy talker identification, and anomaly explanations (only visible when AI integration is enabled).|
 
 ---
 #### Counter sample report
@@ -1513,6 +1525,7 @@ This is the analysis screen of sFLOW.
 | Memory | Memory is a graph of memory usage and available capacity obtained from a sample.|
 | DISK | This is a graph of disk usage and access amount acquired from Disk sample.|
 | Network | Network is a graph of network usage obtained from sample.|
+| AI Explanation | Sends current sFlow counter data to AI (LLM) for port traffic load analysis, interface error diagnostics, and bottleneck detection (only visible when AI integration is enabled).|
 ---
 ## ARP warch log
 
