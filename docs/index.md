@@ -618,7 +618,7 @@ A list of polling related to nodes.
 
 Uses AI (LLM) to comprehensively analyze the selected node's current status, supported protocols, polling responses, and related logs (Syslog / SNMP Trap / ARP), automatically summarizing health status and diagnosing potential issues or troubleshooting steps.
 
-![](./images/en/node_list_ai.png)
+![](./images/en/node_ai_diag.png)
 
 | Items | Contents |
 | ---- | ---- |
@@ -738,9 +738,13 @@ This is the selection screen of the template displayed when adding polling.
 
 ### AI Polling Setting Assistant
 
-An assistant feature that leverages AI (LLM) to automatically generate optimal polling types, threshold parameters, evaluation JavaScript scripts, and setup advice from natural language prompts describing monitoring goals and conditions.
+An assistant feature that leverages AI (LLM) to automatically generate optimal polling types, threshold parameters, evaluation JavaScript scripts, and setup advice from natural language prompts or received log messages.
 
-![](./images/en/polling_list_ai_assistant.png)
+#### Natural Language Prompting
+![](./images/en/polling_assist_modal.png)
+
+#### Creating Polling from Received Logs (Syslog/TRAP)
+![](./images/en/syslog_polling_ai.png)
 
 | Items | Contents |
 | ---- | ---- |
@@ -1767,6 +1771,25 @@ This is the screen to set the management map.
 | SNMP Trap | Receive SNMP Trap.|
 | SSH Seerver | SSH Server|
 | ARP Watch | Enable ARP monitoring function.|
+
+
+### LLM Settings (AI Provider Configuration)
+
+Configuration for setting up the LLM provider used by TWSNMP FK's AI integration features (Node AI Diagnosis, Log Explanation, AI Polling Assistant, and Report AI Summaries).
+
+![](./images/en/llm_setting.png)
+
+| Items | Contents |
+| ---- | ---- |
+| LLM provider | Select the AI provider to use (Ollama, OpenAI, Gemini, Claude, DeepSeek, etc.).|
+| LLM URL | Specify the provider API endpoint URL (Default for Ollama: `http://localhost:11434`).|
+| LLM API key | Enter the authentication API key for cloud providers (leave blank for local LLM).|
+| LLM model | Enter the model name to use (e.g., `gpt-oss`, `llama3`, `gpt-4o`, etc.).|
+
+> [!TIP]
+> **Recommended: Local LLM (Ollama)**
+> When using cloud LLMs (such as OpenAI or Gemini), network topology, hostnames, IP addresses, and Syslog log contents may be sent to external cloud servers.
+> Using a **Local LLM like Ollama (`ollama run gpt-oss`)** allows you to process all AI analysis completely on-premises with **zero external data transmission, full privacy compliance, and zero API usage cost**. Local LLM deployment is strongly recommended for secure network monitoring environments.
 
 
 ### When you want to change the receiving port of syslog, SNMP Trap

@@ -704,7 +704,7 @@ SNMP Setを実施するための画面です。オブジェクト名、タイプ
 
 AI（LLM）を活用して選択したノードの状態、ポーリング応答、関連ログ等を総合的に分析・診断します。
 
-![h:400 center](./images/ja/node_list_ai.png)
+![h:400 center](./images/ja/node_ai_diag.png)
 
 ---
 |項目|内容|
@@ -832,9 +832,13 @@ SNMPのホストリソースMIBのプロセス情報を表示します。選択�
 ---
 ### AIポーリング設定アシスタント
 
-AI（LLM）を活用して、自然言語のプロンプト（監視目的や判定条件の指示）から最適なポーリング種別、閾値パラメータ、判定用JavaScriptスクリプト、および設定アドバイスを自動生成するアシスタント機能です。
+AI（LLM）を活用して、自然言語のプロンプト（監視目的や判定条件の指示）や受信ログメッセージから最適なポーリング種別、閾値パラメータ、判定用JavaScriptスクリプト、および設定アドバイスを自動生成するアシスタント機能です。
 
-![h:400 center](./images/ja/polling_list_ai_assistant.png)
+#### 自然言語指示によるポーリング作成
+![h:400 center](./images/ja/polling_assist_modal.png)
+
+#### 受信ログ（Syslog/TRAP等）からのポーリング作成
+![h:400 center](./images/ja/syslog_polling_ai.png)
 
 ---
 |項目|内容|
@@ -1813,6 +1817,25 @@ System情報の画面です。上部にログのリソースと通信の情報�
 |ARP Watch|ARP監視機能を有効にします。|
 
 
+---
+### LLM設定 (AIプロバイダー設定)
+
+TWSNMP FK のAI連携機能（ノードAI総合診断、ログ解説、AIポーリング作成アシスト、各種レポートAI要約等）を利用するためのLLMプロバイダー設定項目です。
+
+![h:400 center](./images/ja/llm_setting.png)
+
+---
+|項目|内容|
+|----|----|
+|LLMプロバイダー|使用するAIプロバイダーを選択します（Ollama, OpenAI, Gemini, Claude, DeepSeek等）。|
+|LLM URL|AIプロバイダーのエンドポイントURLを指定します（Ollamaの場合はデフォルトで `http://localhost:11434`）。|
+|LLM APIキー|クラウドAPI利用時の認証キーを入力します（ローカルLLMの場合は空欄で可）。|
+|LLMモデル|使用するAIモデル名を入力します（例: `gpt-oss`, `llama3`, `gpt-4o` 等）。|
+
+> [!TIP]
+> **ローカルLLM（Ollama等）の利用推奨**
+> クラウドAI（OpenAIやGemini等）を利用する場合、ネットワーク構成情報やSyslog・IPアドレス等のログデータが外部クラウドへ送信される可能性があります。
+> **Ollama + `gpt-oss`** などのローカルLLM環境を利用することで、**ネットワーク構成やログ情報を外部に一切送信することなく、完全オンプレミス・オフライン環境で安全かつ無料**でAIアシスタント機能を運用できるため、ローカルLLMの活用を強くおすすめします。
 ---
 ### Syslog,SNMP TRAPの受信ポートを変えたい時
 
