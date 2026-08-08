@@ -1165,12 +1165,14 @@ func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
 	return a.llmAsk(sb.String(), system)
 }
 
-func (a *App) LLMExplainAddressReport(tab string) *LLMResp {
+func (a *App) LLMExplainAddressReport(ipam []*IPAMRangeEnt, tab string) *LLMResp {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("# IP Address / IPAM Report (Tab: %s)\n\n", tab))
 
 	if tab == "ipam" {
-		ipam := a.GetIPAM()
+		if len(ipam) == 0 {
+			ipam = a.GetIPAM()
+		}
 		b, _ := json.MarshalIndent(ipam, "", "  ")
 		sb.WriteString("## IPAM Summary & Ranges Data\n")
 		sb.WriteString(string(b))
@@ -1193,13 +1195,12 @@ func (a *App) LLMExplainAddressReport(tab string) *LLMResp {
 	return a.llmAsk(sb.String(), system)
 }
 
-func (a *App) LLMExplainArpReport(tab string) *LLMResp {
+func (a *App) LLMExplainArpReport(logs []*datastore.ArpLogEnt, tab string) *LLMResp {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("# ARP Log Report (Tab: %s)\n\n", tab))
 
-	arpLogs := a.GetArpLogs()
-	sb.WriteString(fmt.Sprintf("Total Recent ARP Log Entries: %d\n", len(arpLogs)))
-	for i, l := range arpLogs {
+	sb.WriteString(fmt.Sprintf("Total ARP Log Entries in Report: %d\n", len(logs)))
+	for i, l := range logs {
 		if i >= 40 {
 			break
 		}
@@ -1214,12 +1215,11 @@ func (a *App) LLMExplainArpReport(tab string) *LLMResp {
 	return a.llmAsk(sb.String(), system)
 }
 
-func (a *App) LLMExplainEventLogReport(tab string) *LLMResp {
+func (a *App) LLMExplainEventLogReport(logs []*datastore.EventLogEnt, tab string) *LLMResp {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("# Event Log Report (Tab: %s)\n\n", tab))
 
-	logs := a.GetEventLogs(EventLogFilterEnt{})
-	sb.WriteString(fmt.Sprintf("Total Event Log Entries Analyzed: %d\n", len(logs)))
+	sb.WriteString(fmt.Sprintf("Total Event Log Entries in Report: %d\n", len(logs)))
 	stateMap := make(map[string]int)
 	nodeMap := make(map[string]int)
 
@@ -1237,7 +1237,8 @@ func (a *App) LLMExplainEventLogReport(tab string) *LLMResp {
 	sb.WriteString("\n## Summary Statistics\n")
 	sb.WriteString("Level Breakdown:\n")
 	for lvl, cnt := range stateMap {
-		sb.WriteString(fmt.Sprintf("  - %s: %d\n", lvl, cnt))
+		pct := float64(cnt) / float64(len(logs)) * 100
+		sb.WriteString(fmt.Sprintf("  - %s: %d (%.1f%%)\n", lvl, cnt, pct))
 	}
 	sb.WriteString("Top Node Event Count:\n")
 	for node, cnt := range nodeMap {
@@ -1251,32 +1252,50 @@ func (a *App) LLMExplainEventLogReport(tab string) *LLMResp {
 	return a.llmAsk(sb.String(), system)
 }
 
-func (a *App) LLMExplainSyslogReport(tab string) *LLMResp {
+func (a *App) LLMExplainSyslogReport(logs []*datastore.SyslogEnt, tab string) *LLMResp {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("# Syslog Report (Tab: %s)\n\n", tab))
 
-	logs := a.GetSyslogs(SyslogFilterEnt{})
-	sb.WriteString(fmt.Sprintf("Total Syslog Entries: %d\n", len(logs)))
+	sb.WriteString(fmt.Sprintf("Total Syslog Entries in Report: %d\n", len(logs)))
 	hostMap := make(map[string]int)
 	levelMap := make(map[string]int)
+	severityMap := make(map[int]int)
 
 	for i, l := range logs {
-		hostMap[l.Host]++
-		levelMap[fmt.Sprintf("%d", l.Severity)]++
+		if l.Host != "" {
+			hostMap[l.Host]++
+		}
+		if l.Level != "" {
+			levelMap[l.Level]++
+		}
+		severityMap[l.Severity]++
+
 		if i < 30 {
 			tStr := time.Unix(0, l.Time).Format(time.RFC3339)
-			sb.WriteString(fmt.Sprintf("- Time: %s | Host: %s | Severity: %d | Tag: %s | Msg: %s\n", tStr, l.Host, l.Severity, l.Tag, l.Message))
+			sb.WriteString(fmt.Sprintf("- Time: %s | Host: %s | Level: %s | Severity: %d | Tag: %s | Msg: %s\n", tStr, l.Host, l.Level, l.Severity, l.Tag, l.Message))
 		}
 	}
 
 	sb.WriteString("\n## Summary Statistics\n")
-	sb.WriteString("Severity Breakdown:\n")
-	for sev, cnt := range levelMap {
-		sb.WriteString(fmt.Sprintf("  - Severity %s: %d\n", sev, cnt))
+	if len(levelMap) > 0 {
+		sb.WriteString("Level (State) Breakdown:\n")
+		for lvl, cnt := range levelMap {
+			pct := float64(cnt) / float64(len(logs)) * 100
+			sb.WriteString(fmt.Sprintf("  - %s: %d (%.1f%%)\n", lvl, cnt, pct))
+		}
 	}
-	sb.WriteString("Top Syslog Sender Hosts:\n")
-	for h, cnt := range hostMap {
-		sb.WriteString(fmt.Sprintf("  - %s: %d\n", h, cnt))
+	if len(severityMap) > 0 {
+		sb.WriteString("Severity Breakdown:\n")
+		for sev, cnt := range severityMap {
+			pct := float64(cnt) / float64(len(logs)) * 100
+			sb.WriteString(fmt.Sprintf("  - Severity %d: %d (%.1f%%)\n", sev, cnt, pct))
+		}
+	}
+	if len(hostMap) > 0 {
+		sb.WriteString("Top Syslog Sender Hosts:\n")
+		for h, cnt := range hostMap {
+			sb.WriteString(fmt.Sprintf("  - %s: %d\n", h, cnt))
+		}
 	}
 
 	system := "You are a Syslog and server operations expert. Analyze the Syslog report data and explain message severity trends, top logging hosts, anomalous log spikes, and recommended actions."
@@ -1286,18 +1305,35 @@ func (a *App) LLMExplainSyslogReport(tab string) *LLMResp {
 	return a.llmAsk(sb.String(), system)
 }
 
-func (a *App) LLMExplainTrapReport(tab string) *LLMResp {
+func (a *App) LLMExplainTrapReport(traps []*datastore.TrapEnt, tab string) *LLMResp {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("# SNMP Trap Report (Tab: %s)\n\n", tab))
 
-	traps := a.GetTraps(TrapFilterEnt{})
-	sb.WriteString(fmt.Sprintf("Total SNMP Trap Entries: %d\n", len(traps)))
+	sb.WriteString(fmt.Sprintf("Total SNMP Trap Entries in Report: %d\n", len(traps)))
+	fromMap := make(map[string]int)
+	typeMap := make(map[string]int)
+
 	for i, tr := range traps {
-		if i >= 30 {
-			break
+		if tr.FromAddress != "" {
+			fromMap[tr.FromAddress]++
 		}
-		tStr := time.Unix(0, tr.Time).Format(time.RFC3339)
-		sb.WriteString(fmt.Sprintf("- Time: %s | From: %s | TrapType: %s | Vars: %s\n", tStr, tr.FromAddress, tr.TrapType, tr.Variables))
+		if tr.TrapType != "" {
+			typeMap[tr.TrapType]++
+		}
+		if i < 30 {
+			tStr := time.Unix(0, tr.Time).Format(time.RFC3339)
+			sb.WriteString(fmt.Sprintf("- Time: %s | From: %s | TrapType: %s | Vars: %s\n", tStr, tr.FromAddress, tr.TrapType, tr.Variables))
+		}
+	}
+
+	sb.WriteString("\n## Summary Statistics\n")
+	sb.WriteString("Trap Type Breakdown:\n")
+	for tp, cnt := range typeMap {
+		sb.WriteString(fmt.Sprintf("  - %s: %d\n", tp, cnt))
+	}
+	sb.WriteString("Top Sender IP Addresses:\n")
+	for ip, cnt := range fromMap {
+		sb.WriteString(fmt.Sprintf("  - %s: %d\n", ip, cnt))
 	}
 
 	system := "You are an SNMP Trap monitoring expert. Analyze the SNMP Trap report data and explain alert frequency, affected network equipment, trap types, and remediation steps."
@@ -1307,12 +1343,11 @@ func (a *App) LLMExplainTrapReport(tab string) *LLMResp {
 	return a.llmAsk(sb.String(), system)
 }
 
-func (a *App) LLMExplainNetFlowReport(tab string) *LLMResp {
+func (a *App) LLMExplainNetFlowReport(flows []*datastore.NetFlowEnt, tab string) *LLMResp {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("# NetFlow / IPFIX Report (Tab: %s)\n\n", tab))
 
-	flows := a.GetNetFlow(NetFlowFilterEnt{})
-	sb.WriteString(fmt.Sprintf("Total Flow Records Analyzed: %d\n", len(flows)))
+	sb.WriteString(fmt.Sprintf("Total Flow Records in Report: %d\n", len(flows)))
 	for i, f := range flows {
 		if i >= 30 {
 			break
@@ -1328,12 +1363,11 @@ func (a *App) LLMExplainNetFlowReport(tab string) *LLMResp {
 	return a.llmAsk(sb.String(), system)
 }
 
-func (a *App) LLMExplainSFlowReport(tab string) *LLMResp {
+func (a *App) LLMExplainSFlowReport(flows []*datastore.SFlowEnt, tab string) *LLMResp {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("# sFlow Report (Tab: %s)\n\n", tab))
 
-	flows := a.GetSFlow(SFlowFilterEnt{})
-	sb.WriteString(fmt.Sprintf("Total sFlow Records Analyzed: %d\n", len(flows)))
+	sb.WriteString(fmt.Sprintf("Total sFlow Records in Report: %d\n", len(flows)))
 	for i, f := range flows {
 		if i >= 30 {
 			break
@@ -1349,12 +1383,11 @@ func (a *App) LLMExplainSFlowReport(tab string) *LLMResp {
 	return a.llmAsk(sb.String(), system)
 }
 
-func (a *App) LLMExplainSFlowCounterReport(tab string) *LLMResp {
+func (a *App) LLMExplainSFlowCounterReport(counters []*datastore.SFlowCounterEnt, tab string) *LLMResp {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("# sFlow Counter Report (Tab: %s)\n\n", tab))
 
-	counters := a.GetSFlowCounter(SFlowCounterFilterEnt{})
-	sb.WriteString(fmt.Sprintf("Total sFlow Counter Entries: %d\n", len(counters)))
+	sb.WriteString(fmt.Sprintf("Total sFlow Counter Entries in Report: %d\n", len(counters)))
 	for i, c := range counters {
 		if i >= 30 {
 			break
@@ -1370,12 +1403,11 @@ func (a *App) LLMExplainSFlowCounterReport(tab string) *LLMResp {
 	return a.llmAsk(sb.String(), system)
 }
 
-func (a *App) LLMExplainMqttReport(tab string) *LLMResp {
+func (a *App) LLMExplainMqttReport(stats []*datastore.MqttStatEnt, tab string) *LLMResp {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("# MQTT Report (Tab: %s)\n\n", tab))
 
-	stats := a.GetMqttStatList()
-	sb.WriteString(fmt.Sprintf("Total MQTT Stat Entries: %d\n", len(stats)))
+	sb.WriteString(fmt.Sprintf("Total MQTT Stat Entries in Report: %d\n", len(stats)))
 	for i, s := range stats {
 		if i >= 30 {
 			break

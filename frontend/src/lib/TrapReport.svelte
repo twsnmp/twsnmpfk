@@ -166,7 +166,7 @@
   bind:show={showAIReport}
   title={$_("ReportAI.Title")}
   exportFilename={`trap_${activeTab}_ai_explanation`}
-  analyzeFunc={() => LLMExplainTrapReport(activeTab)}
+  analyzeFunc={() => LLMExplainTrapReport(logs || [], activeTab)}
 />
 
 <style>

@@ -680,7 +680,7 @@
   bind:show={showAIReport}
   title={$_("ReportAI.Title")}
   exportFilename={`sflow_${tab}_ai_explanation`}
-  analyzeFunc={() => LLMExplainSFlowReport(tab)}
+  analyzeFunc={() => LLMExplainSFlowReport(logs || [], tab)}
 />
 
 <style>

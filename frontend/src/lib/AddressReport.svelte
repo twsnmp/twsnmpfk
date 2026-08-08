@@ -188,7 +188,7 @@
   bind:show={showAIReport}
   title={$_("ReportAI.Title")}
   exportFilename={`address_${activeTab}_ai_explanation`}
-  analyzeFunc={() => LLMExplainAddressReport(activeTab)}
+  analyzeFunc={() => LLMExplainAddressReport(ipam || [], activeTab)}
 />
 
 <style>

@@ -252,7 +252,7 @@
   bind:show={showAIReport}
   title={$_("ReportAI.Title")}
   exportFilename={`mqtt_${activeTab}_ai_explanation`}
-  analyzeFunc={() => LLMExplainMqttReport(activeTab)}
+  analyzeFunc={() => LLMExplainMqttReport(stats || [], activeTab)}
 />
 
 <style>

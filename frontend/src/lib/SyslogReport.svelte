@@ -218,7 +218,7 @@
   bind:show={showAIReport}
   title={$_("ReportAI.Title")}
   exportFilename={`syslog_${activeTab}_ai_explanation`}
-  analyzeFunc={() => LLMExplainSyslogReport(activeTab)}
+  analyzeFunc={() => LLMExplainSyslogReport(logs || [], activeTab)}
 />
 
 <style>

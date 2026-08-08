@@ -182,7 +182,7 @@
   bind:show={showAIReport}
   title={$_("ReportAI.Title")}
   exportFilename={`eventlog_${activeTab}_ai_explanation`}
-  analyzeFunc={() => LLMExplainEventLogReport(activeTab)}
+  analyzeFunc={() => LLMExplainEventLogReport(logs || [], activeTab)}
 />
 
 <style>

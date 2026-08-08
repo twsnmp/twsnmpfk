@@ -811,7 +811,7 @@
   bind:show={showAIReport}
   title={$_("ReportAI.Title")}
   exportFilename={`netflow_${tab}_ai_explanation`}
-  analyzeFunc={() => LLMExplainNetFlowReport(tab)}
+  analyzeFunc={() => LLMExplainNetFlowReport(logs || [], tab)}
 />
 
 <style>

@@ -346,6 +346,26 @@ export namespace datastore {
 	        this.LastTime = source["LastTime"];
 	    }
 	}
+	export class ArpLogEnt {
+	    Time: number;
+	    State: string;
+	    IP: string;
+	    NewMAC: string;
+	    OldMAC: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ArpLogEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.State = source["State"];
+	        this.IP = source["IP"];
+	        this.NewMAC = source["NewMAC"];
+	        this.OldMAC = source["OldMAC"];
+	    }
+	}
 	export class BackImageEnt {
 	    X: number;
 	    Y: number;

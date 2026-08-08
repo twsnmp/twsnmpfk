@@ -121,7 +121,7 @@
   bind:show={showAIReport}
   title={$_("ReportAI.Title")}
   exportFilename={`arp_${activeTab}_ai_explanation`}
-  analyzeFunc={() => LLMExplainArpReport(activeTab)}
+  analyzeFunc={() => LLMExplainArpReport(logs || [], activeTab)}
 />
 
 <style>
