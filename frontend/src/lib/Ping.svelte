@@ -444,9 +444,8 @@
           { $_('Ping.DoPing') }
         </div>
       {/snippet}
-        <div class="flex flex-row mb-2">
+        <div class="flex flex-row items-center gap-2 mb-2">
           <Input
-            class="h-8 mt-1"
             type="text"
             bind:value={ip}
             placeholder={ $_('Ping.IPOrHost') }
@@ -454,21 +453,18 @@
             size="sm"
           />
           <Select
-            class="ml-2"
             items={countList}
             bind:value={count}
             placeholder={ $_('Ping.Count') }
             size="sm"
           />
           <Select
-            class="ml-2"
             items={sizeList}
             bind:value={size}
             placeholder={ $_('Ping.Size') }
             size="sm"
           />
           <Select
-            class="ml-2"
             items={ttlList}
             bind:value={ttl}
             placeholder="TTL"
