@@ -135,14 +135,18 @@
         if (map) {
           const bcr = map.getBoundingClientRect();
           const menuWidth = 190;
-          let menuHeight = 260;
+          let menuHeight = 360;
           if (p.Node) {
-            menuHeight = 380;
-          } else if (!p.DrawItem && !p.Network) {
-            menuHeight = 360;
+            menuHeight = 400;
+          } else if (p.DrawItem) {
+            menuHeight = 110;
+          } else if (p.Network) {
+            menuHeight = 270;
           }
-          posX = p.x + menuWidth > bcr.width ? Math.max(10, p.x - menuWidth) : p.x;
-          posY = p.y + menuHeight > bcr.height ? Math.max(10, p.y - menuHeight) : p.y;
+          const relX = p.x - bcr.left;
+          const relY = p.y - bcr.top;
+          posX = relX + menuWidth > bcr.width ? Math.max(10, relX - menuWidth) : relX;
+          posY = relY + menuHeight > bcr.height ? Math.max(10, relY - menuHeight) : relY;
         } else {
           posX = p.x;
           posY = p.y;
@@ -158,12 +162,9 @@
           showNetworkMenu = true;
         } else {
           showMapMenu = true;
-          mapPosX = p.x;
-          mapPosY = p.y;
-          if (map) {
-            mapPosX = Math.trunc(mapPosX +map.scrollLeft);
-            mapPosY = Math.trunc(mapPosY +map.scrollTop);
-          }
+          const bcr = map ? map.getBoundingClientRect() : { left: 0, top: 0 };
+          mapPosX = Math.trunc(p.x - bcr.left + (map ? map.scrollLeft : 0));
+          mapPosY = Math.trunc(p.y - bcr.top + (map ? map.scrollTop : 0));
         }
         break;
       case "editLine":
@@ -197,8 +198,10 @@
           const bcr = map.getBoundingClientRect();
           const menuWidth = 180;
           const menuHeight = 140;
-          posX = p.x + menuWidth > bcr.width ? Math.max(10, p.x - menuWidth) : p.x;
-          posY = p.y + menuHeight > bcr.height ? Math.max(10, p.y - menuHeight) : p.y;
+          const relX = p.x - bcr.left;
+          const relY = p.y - bcr.top;
+          posX = relX + menuWidth > bcr.width ? Math.max(10, relX - menuWidth) : relX;
+          posY = relY + menuHeight > bcr.height ? Math.max(10, relY - menuHeight) : relY;
         } else {
           posX = p.x;
           posY = p.y;
