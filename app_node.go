@@ -8,6 +8,7 @@ import (
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
+	"github.com/twsnmp/twsnmpfk/logger"
 	"github.com/twsnmp/twsnmpfk/wol"
 )
 
@@ -33,6 +34,9 @@ func (a *App) addNode(n datastore.NodeEnt) bool {
 	if err := datastore.AddNode(&n); err != nil {
 		log.Println(err)
 		return false
+	}
+	if saved := datastore.GetNode(n.ID); saved != nil {
+		logger.CheckNodeAddr(saved)
 	}
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:     "user",
@@ -74,6 +78,7 @@ func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
 	n.AddrMode = nu.AddrMode
 	n.MAC = nu.MAC
 	n.AutoAck = nu.AutoAck
+	logger.CheckNodeAddr(n)
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:     "user",
 		Level:    "info",

@@ -320,42 +320,57 @@ func normMACAddr(m string) string {
 // ノードリストのMACアドレスをチェックする
 func checkNodeMAC() {
 	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
-		if n.AddrMode == "mac" {
-			checkFixMACMode(n)
-			return true
-		}
-		if n.AddrMode == "host" {
-			checkFixHostMode(n)
-			return true
-		}
-		if mac, ok := arpTable[n.IP]; ok {
-			if n.MAC != mac {
-				v := datastore.FindVendor(mac)
-				if v != "" {
-					n.Vendor = v
-				}
-				if n.MAC == "" {
-					datastore.AddEventLog(&datastore.EventLogEnt{
-						Type:     "arpwatch",
-						Level:    "info",
-						NodeID:   n.ID,
-						NodeName: n.Name,
-						Event:    fmt.Sprintf(i18n.Trans("Set MAC Address %s"), mac),
-					})
-				} else {
-					datastore.AddEventLog(&datastore.EventLogEnt{
-						Type:     "arpwatch",
-						Level:    "warn",
-						NodeID:   n.ID,
-						NodeName: n.Name,
-						Event:    fmt.Sprintf(i18n.Trans("Change MAC Address %s -> %s"), n.MAC, mac),
-					})
-				}
-				n.MAC = mac
-			}
-		}
+		CheckNodeAddr(n)
 		return true
 	})
+}
+
+// CheckNodeAddr : 単一ノードに対してアドレスモードに応じたIP/MACアドレスの検索・補完処理を実行する
+func CheckNodeAddr(n *datastore.NodeEnt) {
+	if n == nil {
+		return
+	}
+	if n.AddrMode == "mac" {
+		checkFixMACMode(n)
+		return
+	}
+	if n.AddrMode == "host" {
+		checkFixHostMode(n)
+		return
+	}
+	checkFixIPMode(n)
+}
+
+func checkFixIPMode(n *datastore.NodeEnt) {
+	if n.IP == "" {
+		return
+	}
+	if mac, ok := arpTable[n.IP]; ok {
+		if n.MAC != mac {
+			v := datastore.FindVendor(mac)
+			if v != "" {
+				n.Vendor = v
+			}
+			if n.MAC == "" {
+				datastore.AddEventLog(&datastore.EventLogEnt{
+					Type:     "arpwatch",
+					Level:    "info",
+					NodeID:   n.ID,
+					NodeName: n.Name,
+					Event:    fmt.Sprintf(i18n.Trans("Set MAC Address %s"), mac),
+				})
+			} else {
+				datastore.AddEventLog(&datastore.EventLogEnt{
+					Type:     "arpwatch",
+					Level:    "warn",
+					NodeID:   n.ID,
+					NodeName: n.Name,
+					Event:    fmt.Sprintf(i18n.Trans("Change MAC Address %s -> %s"), n.MAC, mac),
+				})
+			}
+			n.MAC = mac
+		}
+	}
 }
 
 func checkFixMACMode(n *datastore.NodeEnt) {
