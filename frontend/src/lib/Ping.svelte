@@ -12,6 +12,7 @@
     showPingHistgram,
     showPingLinearChart,
     showPingMapChart,
+    showPingSmokeChart,
   } from "./chart/ping";
   import { GetNode, Ping } from "../../wailsjs/go/main/App";
   import DataTable from "datatables.net-dt";
@@ -49,6 +50,7 @@
   let canShowLinear = false;
   let canShowWorld = false;
   let canShowHistogram = false;
+  let canShowSmoke = false;
   let beep = false;
   let sound_ok :any;
   let sound_ng :any;
@@ -80,6 +82,7 @@
   };
 
   const showPing = async () => {
+    activeTab = "ping";
     await tick();
     if (chart) {
       chart.dispose();
@@ -117,6 +120,9 @@
 
   const countList = [
     { name: $_('Ping.Cont'), value: -1 },
+    { name: $_('Ping.Smoke1m'), value: 2001 },
+    { name: $_('Ping.Smoke3m'), value: 2003 },
+    { name: $_('Ping.SmokeCont'), value: -100 },
     { name: $_('Ping.Coun1'), value: 1 },
     { name: $_('Ping.Count3'), value: 3 },
     { name: $_('Ping.Count5'), value: 5 },
@@ -240,26 +246,39 @@
   ];
 
   let reportChart :any  = undefined;
+  let activeTab = "ping";
 
   const showHistogram = async () => {
+    activeTab = "histogram";
     await tick();
     reportChart = showPingHistgram("histogram", results);
   };
 
   const show3D = async () => {
+    activeTab = "3d";
     await tick();
     reportChart = showPing3DChart("chart3d", results);
   };
 
   const showLinear = async () => {
+    activeTab = "linear";
     await tick();
     reportChart = showPingLinearChart("linear", results);
   };
 
   const showWorld = async () => {
+    activeTab = "world";
     await tick();
     reportChart = showPingMapChart("world", results);
   };
+
+  const showSmoke = async () => {
+    activeTab = "smoke";
+    await tick();
+    reportChart = showPingSmokeChart("smoke", results);
+  };
+
+  let startTime = 0;
 
   const start = () => {
     if (!ip) {
@@ -269,6 +288,7 @@
       ipColor = undefined;
     }
     stopFlag = false;
+    startTime = Date.now();
     if (chart) {
       chartOption.series[0].data = [];
       chartOption.series[1].data = [];
@@ -286,6 +306,7 @@
     }
     results = [];
     canShowWorld = false;
+    canShowSmoke = false;
     _doPing();
   };
 
@@ -304,6 +325,9 @@
     pingReq.count++;
     results.push(r);
     showTable();
+    if (activeTab === "smoke") {
+      showSmoke();
+    }
     if (chart && (r.Stat === 1 || r.Stat === 4)) {
       const t = new Date(r.TimeStamp * 1000);
       const ts = echarts.time.format(
@@ -336,7 +360,29 @@
         sound_ng.play();
       }
     }
-    if ((count === -1 || pingReq.count < count) && !stopFlag) {
+    let isSmokeMode = count >= 2001 || count === -100;
+    let maxDurationSec = 0;
+    if (count === 2001) maxDurationSec = 60;
+    if (count === 2003) maxDurationSec = 180;
+    if (count === 2005) maxDurationSec = 300;
+    if (count === 2010) maxDurationSec = 600;
+
+    let elapsedSec = (Date.now() - startTime) / 1000;
+    let isTimeOver = maxDurationSec > 0 && elapsedSec >= maxDurationSec;
+    let interval = isSmokeMode ? 200 : (beep ? 2000 : 1000);
+
+    let keepGoing = false;
+    if (!stopFlag && !isTimeOver) {
+      if (count === -1 || count === -100) {
+        keepGoing = true;
+      } else if (maxDurationSec > 0) {
+        keepGoing = true;
+      } else if (pingReq.count < count) {
+        keepGoing = true;
+      }
+    }
+
+    if (keepGoing) {
       if (size === -1) {
         if (r.Stat !== 1) {
           pingReq.size = 0;
@@ -350,14 +396,16 @@
           wait = false;
           canShowHistogram = false;
           canShowLinear = false;
+          canShowSmoke = false;
           return;
         }
       }
-      timer = setTimeout(() => _doPing(), beep ? 2000 : 1000);
+      timer = setTimeout(() => _doPing(), interval);
     } else {
       wait = false;
       canShowLinear = size == -1;
       canShowHistogram = !canShowLinear;
+      canShowSmoke = true;
     }
   };
 
@@ -431,45 +479,56 @@
         <div><table id="pingTable" class="display compact" style="width:99%"></table></div>
       </TabItem>
       {#if !wait && results.length > 0}
+        {#if canShowSmoke}
+          <TabItem onclick={showSmoke}>
+            {#snippet titleSlot()}
+              <div class="flex items-center gap-2">
+                <Icon path={icons.mdiWeatherCloudy} size={1} />
+                { $_('Ping.Smokeping') }
+              </div>
+            {/snippet}
+            <div id="smoke"></div>
+          </TabItem>
+        {/if}
         {#if canShowHistogram}
           <TabItem onclick={showHistogram}>
             {#snippet titleSlot()}
-        <div class="flex items-center gap-2">
-              <Icon path={icons.mdiChartHistogram} size={1} />
-              { $_('Ping.Histogram') }
-            </div>
-      {/snippet}
+              <div class="flex items-center gap-2">
+                <Icon path={icons.mdiChartHistogram} size={1} />
+                { $_('Ping.Histogram') }
+              </div>
+            {/snippet}
             <div id="histogram"></div>
           </TabItem>
         {/if}
         <TabItem onclick={show3D}>
           {#snippet titleSlot()}
-        <div class="flex items-center gap-2">
-            <Icon path={icons.mdiRotate3d} size={1} />
-            { $_('Ping.Chart3D') }
-          </div>
-      {/snippet}
+            <div class="flex items-center gap-2">
+              <Icon path={icons.mdiRotate3d} size={1} />
+              { $_('Ping.Chart3D') }
+            </div>
+          {/snippet}
           <div id="chart3d"></div>
         </TabItem>
         {#if canShowLinear}
           <TabItem onclick={showLinear}>
             {#snippet titleSlot()}
-        <div class="flex items-center gap-2">
-              <Icon path={icons.mdiChartScatterPlot} size={1} />
-              { $_('Ping.LineSpeed') }
-            </div>
-      {/snippet}
+              <div class="flex items-center gap-2">
+                <Icon path={icons.mdiChartScatterPlot} size={1} />
+                { $_('Ping.LineSpeed') }
+              </div>
+            {/snippet}
             <div id="linear"></div>
           </TabItem>
         {/if}
         {#if canShowWorld}
           <TabItem onclick={showWorld}>
             {#snippet titleSlot()}
-        <div class="flex items-center gap-2">
-              <Icon path={icons.mdiMapMarker} size={1} />
-              { $_('Ping.World') }
-            </div>
-      {/snippet}
+              <div class="flex items-center gap-2">
+                <Icon path={icons.mdiMapMarker} size={1} />
+                { $_('Ping.World') }
+              </div>
+            {/snippet}
             <div id="world"></div>
           </TabItem>
         {/if}
@@ -528,7 +587,8 @@
   #chart3d,
   #histogram,
   #linear,
-  #world {
+  #world,
+  #smoke {
     min-height: 500px;
     height: 70vh;
     width: 98%;

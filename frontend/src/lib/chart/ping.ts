@@ -558,3 +558,236 @@ export const showPingLinearChart = (div:string, results:any) => {
   chart.resize();
   return chart;
 }
+
+export const showPingSmokeChart = (div: string, results: any) => {
+  if (chart) {
+    chart.dispose();
+  }
+  if (!results || results.length === 0) {
+    return;
+  }
+
+  let windowSize = 5;
+  if (results.length >= 1000) {
+    windowSize = 25;
+  } else if (results.length >= 300) {
+    windowSize = 10;
+  } else if (results.length < 10) {
+    windowSize = Math.max(1, Math.floor(results.length / 2));
+  }
+
+  const times: string[] = [];
+  const minData: (number | null)[] = [];
+  const diffData: (number | null)[] = [];
+  const medianData: (number | null)[] = [];
+  const maxData: (number | null)[] = [];
+  const jitterData: (number | null)[] = [];
+  const lossData: number[] = [];
+  const lossDetails: string[] = [];
+
+  for (let i = 0; i < results.length; i += windowSize) {
+    const chunk = results.slice(i, i + windowSize);
+    const lastResult = chunk[chunk.length - 1];
+    const t = new Date(lastResult.TimeStamp * 1000);
+    const timeStr = echarts.time.format(t, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}', false);
+    times.push(timeStr);
+
+    const valids: number[] = [];
+    let lossCount = 0;
+
+    chunk.forEach((r: any) => {
+      if (r.Stat === 1 || r.Stat === 4) {
+        valids.push(r.Time / (1000 * 1000 * 1000));
+      } else {
+        lossCount++;
+      }
+    });
+
+    const lossRate = (lossCount / chunk.length) * 100;
+    lossData.push(Number(lossRate.toFixed(1)));
+    lossDetails.push(`${lossCount} / ${chunk.length} pkts (${lossRate.toFixed(1)}%)`);
+
+    if (valids.length > 0) {
+      valids.sort((a, b) => a - b);
+      const min = valids[0];
+      const max = valids[valids.length - 1];
+      const jitter = max - min;
+      const midIdx = Math.floor(valids.length / 2);
+      const median = valids.length % 2 === 0 ? (valids[midIdx - 1] + valids[midIdx]) / 2 : valids[midIdx];
+
+      minData.push(Number(min.toFixed(6)));
+      diffData.push(Number(jitter.toFixed(6)));
+      medianData.push(Number(median.toFixed(6)));
+      maxData.push(Number(max.toFixed(6)));
+      jitterData.push(Number(jitter.toFixed(6)));
+    } else {
+      minData.push(null);
+      diffData.push(null);
+      medianData.push(null);
+      maxData.push(null);
+      jitterData.push(null);
+    }
+  }
+
+  chart = echarts.init(document.getElementById(div), "dark");
+  const option: any = {
+    title: {
+      show: false,
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+      formatter(params: any) {
+        if (!params || params.length === 0) return '';
+        const idx = params[0].dataIndex;
+        const time = times[idx];
+        const minVal = minData[idx] !== null ? minData[idx] + ' s' : 'N/A';
+        const medVal = medianData[idx] !== null ? medianData[idx] + ' s' : 'N/A';
+        const maxVal = maxData[idx] !== null ? maxData[idx] + ' s' : 'N/A';
+        const jitVal = jitterData[idx] !== null ? jitterData[idx] + ' s' : 'N/A';
+        const lossVal = lossDetails[idx];
+
+        return `<div class="text-xs font-sans space-y-1">` +
+               `<div class="font-bold border-b border-gray-600 pb-1 mb-1">${time}</div>` +
+               `<div><span class="inline-block w-3 h-3 mr-1 bg-[#00fea8] rounded-full"></span>${$_("Ping.MedianRespTime") || "Median RTT"}: <strong>${medVal}</strong></div>` +
+               `<div><span class="inline-block w-3 h-3 mr-1 bg-[#38bdf8] rounded-sm"></span>Smoke (Min-Max): ${minVal} ~ ${maxVal}</div>` +
+               `<div>${$_("Ping.Jitter") || "Jitter"}: ${jitVal}</div>` +
+               `<div>${$_("Ping.LossRate") || "Loss Rate"}: <strong>${lossVal}</strong></div>` +
+               `</div>`;
+      },
+    },
+    grid: {
+      left: '7%',
+      right: '7%',
+      top: 45,
+      bottom: 60,
+    },
+    legend: {
+      top: 15,
+      data: [
+        $_("Ping.MedianRespTime") || "Median RTT",
+        "Smoke Range (Min-Max)",
+        $_("Ping.LossRate") || "Loss Rate (%)"
+      ],
+      textStyle: {
+        color: '#ccc',
+        fontSize: 10,
+      },
+    },
+    xAxis: {
+      type: 'category',
+      data: times,
+      axisLabel: {
+        color: '#ccc',
+        fontSize: 8,
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#ccc',
+        },
+      },
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: $_("Ts.RespTimeSec"),
+        nameTextStyle: {
+          color: '#ccc',
+          fontSize: 10,
+        },
+        axisLabel: {
+          color: '#ccc',
+          fontSize: 8,
+        },
+        axisLine: {
+          lineStyle: {
+            color: '#ccc',
+          },
+        },
+        splitLine: {
+          lineStyle: {
+            color: 'rgba(255, 255, 255, 0.1)',
+          },
+        },
+      },
+      {
+        type: 'value',
+        name: $_("Ping.LossRate") || 'Loss (%)',
+        min: 0,
+        max: 100,
+        nameTextStyle: {
+          color: '#ccc',
+          fontSize: 10,
+        },
+        axisLabel: {
+          color: '#ccc',
+          fontSize: 8,
+          formatter: '{value}%',
+        },
+        axisLine: {
+          lineStyle: {
+            color: '#ccc',
+          },
+        },
+        splitLine: {
+          show: false,
+        },
+      },
+    ],
+    series: [
+      {
+        name: 'Smoke Base',
+        type: 'line',
+        stack: 'smoke',
+        symbol: 'none',
+        lineStyle: { opacity: 0 },
+        data: minData,
+      },
+      {
+        name: 'Smoke Range (Min-Max)',
+        type: 'line',
+        stack: 'smoke',
+        symbol: 'none',
+        lineStyle: { opacity: 0 },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(56, 189, 248, 0.65)' },
+            { offset: 1, color: 'rgba(56, 189, 248, 0.12)' }
+          ])
+        },
+        data: diffData,
+      },
+      {
+        name: $_("Ping.MedianRespTime") || "Median RTT",
+        type: 'line',
+        showSymbol: true,
+        symbolSize: 6,
+        itemStyle: { color: '#00fea8' },
+        lineStyle: { width: 2, color: '#00fea8' },
+        data: medianData,
+      },
+      {
+        name: $_("Ping.LossRate") || "Loss Rate (%)",
+        type: 'bar',
+        yAxisIndex: 1,
+        barWidth: '40%',
+        itemStyle: {
+          color: (params: any) => {
+            const loss = params.value;
+            if (loss > 50) return '#ef4444';
+            if (loss > 0) return '#f59e0b';
+            return 'rgba(59, 130, 246, 0.3)';
+          }
+        },
+        data: lossData,
+      },
+    ],
+  };
+
+  chart.setOption(option);
+  chart.resize();
+  return chart;
+};
+
