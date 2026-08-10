@@ -12,6 +12,15 @@
     "Descr": "普通のPING"
   },
   {
+    "Name": "Smokeping監視",
+    "Type": "ping",
+    "Mode": "smoke",
+    "Params": "count=10,size=64",
+    "Script": "loss < 10.0 && avg < 100 * 1000 * 1000",
+    "Level": "low",
+    "Descr": "PINGを連続送信(count)して応答時間(min, max, avg, median, jitter)やパケットロス率(loss %)を測定するSmokepingモード監視。"
+  },
+  {
     "Name": "インターフェイス監視",
     "Type": "snmp",
     "Mode": "ifOperStatus",

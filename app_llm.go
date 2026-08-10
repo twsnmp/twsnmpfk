@@ -700,7 +700,7 @@ Select the best polling template and native parameters based on the user's inten
    - 100ms is written as '100 * 1000 * 1000' or '100000000' ns (or 'rtt / 1000000 < 100').
 
 3. **Native Polling Types**:
-   - 'ping': Mode: "" or "rtt". Script: 'rtt < 100 * 1000 * 1000' (or 'rtt / 1000000 < 100').
+   - 'ping': Mode: "", "rtt", or "smoke" (Smokeping mode). For "smoke" mode, Params specifies 'count=N,size=BYTES' (e.g. 'count=10,size=64'). Available script variables: 'rtt'/'avg' (mean response time in ns), 'min', 'max', 'median', 'jitter' (in ns), 'loss' (loss rate %, 0.0-100.0), 'fail', 'count', 'ttl'. Script example: 'loss < 10.0 && avg < 100 * 1000 * 1000'.
    - 'snmp': Mode: "get", "stats", etc. Params: OID or MIB name. Script: e.g. 'hrProcessorLoad < 90.0'.
    - 'http': Mode: "" or "status" or "https". Script: 'code == 200' or 'rtt < 2000 * 1000 * 1000'.
    - 'tls': Mode: "expire". Script: e.g. '30' (days remaining).
@@ -753,7 +753,7 @@ Return ONLY a raw JSON object with the following structure:
    - 100ms は '100 * 1000 * 1000' または '100000000' (または 'rtt / 1000000 < 100') と記述します。
 
 3. **ポーリング種別と設定例**:
-   - 'ping': Mode: "" または "rtt"。Script: 'rtt < 100 * 1000 * 1000' (または 'rtt / 1000000 < 100')。
+   - 'ping': Mode: "" , "rtt", または "smoke" (Smokepingモード)。"smoke" モード時、Params で 'count=回数,size=サイズ' (例: 'count=10,size=64') を指定可能。判定スクリプトで利用可能な変数: 'rtt' / 'avg' (平均応答時間 ナノ秒), 'min', 'max', 'median', 'jitter' (ナノ秒単位), 'loss' (パケットロス率 %, 0.0〜100.0), 'fail', 'count', 'ttl'。Script例: 'loss < 10.0 && avg < 100 * 1000 * 1000' (ロス率10%未満かつ平均応答時間100ms未満で正常)。
    - 'snmp': Mode: "get", "stats" 等。Params: OID/MIB名。Script: 'hrProcessorLoad < 90.0' 等。
    - 'http': Mode: "" や "status", "https"。Script: 'code == 200' や 'rtt < 2000 * 1000 * 1000'。
    - 'tls': Mode: "expire"。Script: '30' (残り30日以上で正常)。

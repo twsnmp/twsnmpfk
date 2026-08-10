@@ -12,6 +12,15 @@
     "Descr": "PING"
   },
   {
+    "Name": "Smokeping Monitoring",
+    "Type": "ping",
+    "Mode": "smoke",
+    "Params": "count=10,size=64",
+    "Script": "loss < 10.0 && avg < 100 * 1000 * 1000",
+    "Level": "low",
+    "Descr": "Smokeping mode ping monitoring sending continuous PINGs (count) to measure response times (min, max, avg, median, jitter) and packet loss rate (loss %)."
+  },
+  {
     "Name": "LAN port",
     "Type": "snmp",
     "Mode": "ifOperStatus",
