@@ -582,7 +582,7 @@ export const showPingSmokeChart = (div: string, results: any) => {
   const medianData: (number | null)[] = [];
   const maxData: (number | null)[] = [];
   const jitterData: (number | null)[] = [];
-  const lossData: number[] = [];
+  const lossData: any[] = [];
   const lossDetails: string[] = [];
 
   for (let i = 0; i < results.length; i += windowSize) {
@@ -603,9 +603,21 @@ export const showPingSmokeChart = (div: string, results: any) => {
       }
     });
 
-    const lossRate = (lossCount / chunk.length) * 100;
-    lossData.push(Number(lossRate.toFixed(1)));
-    lossDetails.push(`${lossCount} / ${chunk.length} pkts (${lossRate.toFixed(1)}%)`);
+    const lossRateRate = (lossCount / chunk.length) * 100;
+    const lossVal = Number(lossRateRate.toFixed(1));
+    let lossBarColor = 'rgba(239, 68, 68, 0.15)';
+    if (lossVal > 50) {
+      lossBarColor = '#ef4444';
+    } else if (lossVal > 0) {
+      lossBarColor = '#f59e0b';
+    }
+    lossData.push({
+      value: lossVal,
+      itemStyle: {
+        color: lossBarColor,
+      },
+    });
+    lossDetails.push(`${lossCount} / ${chunk.length} pkts (${lossVal}%)`);
 
     if (valids.length > 0) {
       valids.sort((a, b) => a - b);
@@ -750,6 +762,7 @@ export const showPingSmokeChart = (div: string, results: any) => {
         type: 'line',
         stack: 'smoke',
         symbol: 'none',
+        color: '#38bdf8',
         lineStyle: { opacity: 0 },
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -764,6 +777,7 @@ export const showPingSmokeChart = (div: string, results: any) => {
         type: 'line',
         showSymbol: true,
         symbolSize: 6,
+        color: '#00fea8',
         itemStyle: { color: '#00fea8' },
         lineStyle: { width: 2, color: '#00fea8' },
         data: medianData,
@@ -773,13 +787,9 @@ export const showPingSmokeChart = (div: string, results: any) => {
         type: 'bar',
         yAxisIndex: 1,
         barWidth: '40%',
+        color: '#ef4444',
         itemStyle: {
-          color: (params: any) => {
-            const loss = params.value;
-            if (loss > 50) return '#ef4444';
-            if (loss > 0) return '#f59e0b';
-            return 'rgba(59, 130, 246, 0.3)';
-          }
+          color: '#ef4444',
         },
         data: lossData,
       },
