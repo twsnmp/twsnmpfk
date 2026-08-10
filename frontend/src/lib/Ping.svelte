@@ -14,6 +14,7 @@
     showPingMapChart,
     showPingSmokeChart,
   } from "./chart/ping";
+  import { showMtrProfileChart, type MTRHopStat } from "./chart/mtr";
   import { GetNode, Ping, GetMapConf, LLMExplainPingReport } from "../../wailsjs/go/main/App";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -50,10 +51,14 @@
     ttl: 64,
   };
   let timer :any = undefined;
+  let startTime = 0;
   let canShowLinear = false;
   let canShowWorld = false;
   let canShowHistogram = false;
   let canShowSmoke = false;
+  let canShowMtr = false;
+  let mtrHops: (MTRHopStat & { history: number[]; lossCount: number })[] = [];
+  let mtrTable: any = undefined;
   let beep = false;
   let sound_ok :any;
   let sound_ng :any;
@@ -61,7 +66,25 @@
 
   const dispatch = createEventDispatcher();
 
+  const resetState = () => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
+    stopFlag = true;
+    wait = false;
+    results = [];
+    mtrHops = [];
+    canShowLinear = false;
+    canShowWorld = false;
+    canShowHistogram = false;
+    canShowSmoke = false;
+    canShowMtr = false;
+    pingTab = true;
+  };
+
   const onOpen = async () => {
+    resetState();
     try {
       const conf = await GetMapConf();
       hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
@@ -153,6 +176,7 @@
   ];
 
   const ttlList = [
+    { name: $_('Ping.MTR') || "MTR (My Traceroute)", value: -2 },
     { name: $_('Ping.TraceRoute'), value: -1 },
     { name: "1", value: 1 },
     { name: "2", value: 2 },
@@ -164,6 +188,55 @@
     { name: "128", value: 128 },
     { name: "254", value: 254 },
   ];
+
+  const renderMtrLossRate = (val: any, type: string) => {
+    if (type === "sort") return val;
+    const loss = Number(val || 0);
+    let colorClass = "text-emerald-400";
+    let bgClass = "bg-emerald-500";
+    if (loss > 20) {
+      colorClass = "text-red-400 font-bold";
+      bgClass = "bg-red-500";
+    } else if (loss > 0) {
+      colorClass = "text-amber-400";
+      bgClass = "bg-amber-500";
+    }
+    return `<div class="flex items-center gap-2"><div class="w-12 bg-gray-700 h-2 rounded overflow-hidden"><div class="${bgClass} h-full" style="width:${Math.min(100, loss)}%"></div></div><span class="${colorClass}">${loss.toFixed(1)}%</span></div>`;
+  };
+
+  const renderMtrMs = (val: any, type: string) => {
+    if (type === "sort") return val;
+    if (val === undefined || val === null || val < 0) return "-";
+    return val.toFixed(2);
+  };
+
+  const mtrColumns = [
+    { data: "ttl", title: $_('Ping.Hop') || "Hop", width: "8%" },
+    { data: "ip", title: $_('Ping.Host') || "Host / IP", width: "22%" },
+    { data: "loc", title: $_('Ping.Loc') || "Location", width: "18%" },
+    { data: "lossRate", title: $_('Ping.Loss') || "Loss %", width: "16%", render: renderMtrLossRate },
+    { data: "snt", title: $_('Ping.Snt') || "Snt", width: "8%" },
+    { data: "last", title: $_('Ping.Last') || "Last", width: "8%", render: renderMtrMs },
+    { data: "avg", title: $_('Ping.Avg') || "Avg", width: "8%", render: renderMtrMs },
+    { data: "best", title: $_('Ping.Best') || "Best", width: "8%", render: renderMtrMs },
+    { data: "wrst", title: $_('Ping.Wrst') || "Wrst", width: "8%", render: renderMtrMs },
+    { data: "stDev", title: $_('Ping.StDev') || "StDev", width: "8%", render: renderMtrMs },
+  ];
+
+  const showMtrTable = () => {
+    mtrTable = new DataTable("#mtrTable", {
+      destroy: true,
+      columns: mtrColumns,
+      paging: false,
+      searching: false,
+      info: false,
+      scrollY: "18vh",
+      scrollCollapse: true,
+      data: mtrHops,
+      order: [[0, "asc"]],
+      language: getTableLang(),
+    });
+  };
 
   const renderPingStat = (s:any, type:string) => {
     if (type == "sort") {
@@ -292,56 +365,15 @@
     reportChart = showPingSmokeChart("smoke", results);
   };
 
-  let startTime = 0;
-
-  const start = () => {
-    if (!ip) {
-      ipColor ="red";
-      return;
-    } else {
-      ipColor = undefined;
-    }
-    stopFlag = false;
-    startTime = Date.now();
-    if (chart) {
-      chartOption.series[0].data = [];
-      chartOption.series[1].data = [];
-      chartOption.series[2].data = [];
-    }
-    wait = true;
-    pingReq.count = 0;
-    pingReq.size = size < 0 ? 0 :size;
-    if (ttl === -1) {
-      pingReq.ttl = 1;
-      count = -1;
-      size = 64;
-    } else {
-      pingReq.ttl = ttl;
-    }
-    results = [];
-    canShowWorld = false;
-    canShowSmoke = false;
-    _doPing();
+  const showMTR = async () => {
+    activeTab = "mtr";
+    pingTab = false;
+    await tick();
+    showMtrTable();
+    reportChart = showMtrProfileChart("mtrChart", mtrHops);
   };
 
-  let stopFlag = true;
-
-  const stop = () => {
-    stopFlag = true;
-  };
-
-  const _doPing = async () => {
-    const r = await Ping({
-      IP: ip,
-      Size: pingReq.size,
-      TTL: pingReq.ttl,
-    });
-    pingReq.count++;
-    results.push(r);
-    showTable();
-    if (activeTab === "smoke") {
-      showSmoke();
-    }
+  const updatePingChart = (r: any) => {
     if (chart && (r.Stat === 1 || r.Stat === 4)) {
       const t = new Date(r.TimeStamp * 1000);
       const ts = echarts.time.format(
@@ -363,17 +395,214 @@
       });
       chart.setOption(chartOption);
       chart.resize();
-      if(beep && sound_ok) {
+      if (beep && sound_ok) {
         sound_ok.play();
       }
-      if(r.Loc && r.Loc.startsWith("LOCAL")) {
+      if (r.Loc && !r.Loc.startsWith("LOCAL")) {
         canShowWorld = true;
       }
     } else {
-      if(beep && sound_ng) {
+      if (beep && sound_ng) {
         sound_ng.play();
       }
     }
+  };
+
+  const start = () => {
+    if (!ip) {
+      ipColor ="red";
+      return;
+    } else {
+      ipColor = undefined;
+    }
+    stopFlag = false;
+    startTime = Date.now();
+    if (chart) {
+      chartOption.series[0].data = [];
+      chartOption.series[1].data = [];
+      chartOption.series[2].data = [];
+    }
+    wait = true;
+    pingReq.count = 0;
+    pingReq.size = size < 0 ? 0 : size;
+    results = [];
+    canShowWorld = false;
+    canShowSmoke = false;
+
+    if (ttl === -2) {
+      canShowMtr = false;
+      mtrHops = [];
+      _doMtrProcess();
+    } else {
+      if (ttl === -1) {
+        pingReq.ttl = 1;
+        count = -1;
+        size = 64;
+      } else {
+        pingReq.ttl = ttl;
+      }
+      _doPing();
+    }
+  };
+
+  let stopFlag = true;
+
+  const stop = () => {
+    stopFlag = true;
+  };
+
+  let mtrPhase: "discovery" | "sampling" = "discovery";
+  let mtrDiscoveryTTL = 1;
+  let mtrSampleRound = 0;
+
+  const _doMtrProcess = async () => {
+    if (stopFlag) {
+      wait = false;
+      if (mtrHops.length > 0) canShowMtr = true;
+      return;
+    }
+
+    if (mtrHops.length === 0) {
+      mtrPhase = "discovery";
+      mtrDiscoveryTTL = 1;
+    }
+
+    if (mtrPhase === "discovery") {
+      const r = await Ping({
+        IP: ip,
+        Size: pingReq.size > 0 ? pingReq.size : 64,
+        TTL: mtrDiscoveryTTL,
+      });
+      results.push(r);
+      showTable();
+      updatePingChart(r);
+
+      const recvIp = r.RecvSrc || "";
+      const loc = r.Loc || "";
+      const isTarget = r.Stat === 1 || recvIp === ip;
+
+      mtrHops.push({
+        ttl: mtrDiscoveryTTL,
+        ip: recvIp,
+        loc: loc,
+        snt: 0,
+        lossRate: 0,
+        last: -1,
+        avg: -1,
+        best: -1,
+        wrst: -1,
+        stDev: -1,
+        isTarget: isTarget,
+        history: [],
+        lossCount: 0,
+      });
+      mtrHops = [...mtrHops];
+
+      if (isTarget || mtrDiscoveryTTL >= 32) {
+        mtrPhase = "sampling";
+        mtrSampleRound = 0;
+      } else {
+        mtrDiscoveryTTL++;
+      }
+
+      if (!stopFlag) {
+        timer = setTimeout(() => _doMtrProcess(), 100);
+      } else {
+        wait = false;
+        canShowMtr = true;
+      }
+      return;
+    }
+
+    // Sampling Phase (Continuous MTR Ping)
+    for (let i = 0; i < mtrHops.length; i++) {
+      if (stopFlag) break;
+      const hop = mtrHops[i];
+      const r = await Ping({
+        IP: ip,
+        Size: pingReq.size > 0 ? pingReq.size : 64,
+        TTL: hop.ttl,
+      });
+      results.push(r);
+      pingReq.count++;
+      showTable();
+      updatePingChart(r);
+
+      hop.snt++;
+      if (r.Stat === 1 || r.Stat === 4) {
+        const rttMs = r.Time / (1000 * 1000);
+        hop.last = rttMs;
+        hop.history.push(rttMs);
+        if (hop.best < 0 || rttMs < hop.best) hop.best = rttMs;
+        if (rttMs > hop.wrst) hop.wrst = rttMs;
+
+        const sum = hop.history.reduce((a, b) => a + b, 0);
+        hop.avg = sum / hop.history.length;
+
+        if (hop.history.length > 1) {
+          const mean = hop.avg;
+          const variance = hop.history.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / hop.history.length;
+          hop.stDev = Math.sqrt(variance);
+        } else {
+          hop.stDev = 0;
+        }
+      } else {
+        hop.lossCount++;
+      }
+      hop.lossRate = (hop.lossCount / hop.snt) * 100;
+      if (r.RecvSrc && !hop.ip) {
+        hop.ip = r.RecvSrc;
+      }
+      if (r.Loc && !hop.loc) {
+        hop.loc = r.Loc;
+      }
+    }
+
+    mtrHops = [...mtrHops];
+    mtrSampleRound++;
+    if (activeTab === "mtr") {
+      showMTR();
+    }
+
+    let elapsedSec = (Date.now() - startTime) / 1000;
+    let maxDurationSec = 0;
+    if (count === 2001) maxDurationSec = 60;
+    if (count === 2003) maxDurationSec = 180;
+    if (count === 2005) maxDurationSec = 300;
+
+    let isTimeOver = maxDurationSec > 0 && elapsedSec >= maxDurationSec;
+    let keepGoing = false;
+    if (!stopFlag && !isTimeOver) {
+      if (count === -1 || count === -100) {
+        keepGoing = true;
+      } else if (maxDurationSec > 0) {
+        keepGoing = true;
+      } else if (mtrSampleRound < count) {
+        keepGoing = true;
+      }
+    }
+
+    if (keepGoing) {
+      timer = setTimeout(() => _doMtrProcess(), 500);
+    } else {
+      wait = false;
+      canShowMtr = true;
+    }
+  };
+
+  const _doPing = async () => {
+    const r = await Ping({
+      IP: ip,
+      Size: pingReq.size,
+      TTL: pingReq.ttl,
+    });
+    pingReq.count++;
+    results.push(r);
+    showTable();
+    if (activeTab === "smoke") {
+      showSmoke();
+    }
+    updatePingChart(r);
     let isSmokeMode = count >= 2001 || count === -100;
     let maxDurationSec = 0;
     if (count === 2001) maxDurationSec = 60;
@@ -424,10 +653,7 @@
   };
 
   const close = () => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = undefined;
-    }
+    resetState();
     show = false;
     dispatch("close", {});
   };
@@ -492,6 +718,70 @@
         <div id="pingChart" class="mb-2"></div>
         <div><table id="pingTable" class="display compact" style="width:99%"></table></div>
       </TabItem>
+      {#if canShowMtr}
+        <TabItem onclick={showMTR}>
+          {#snippet titleSlot()}
+            <div class="flex items-center gap-2">
+              <Icon path={icons.mdiRoutes} size={1} />
+              { $_('Ping.MTR') || "MTR" }
+            </div>
+          {/snippet}
+          <div class="flex flex-col space-y-4 max-h-[65vh] overflow-y-auto pr-1">
+            <!-- ① 経路トポロジー・フローマップ (Hop Flow Diagram) -->
+            <div class="bg-gray-800/80 p-3 rounded-lg border border-gray-700 overflow-x-auto">
+              <div class="text-xs font-bold text-gray-300 mb-2 flex items-center gap-2">
+                <Icon path={icons.mdiSourceBranch} size={0.8} />
+                {$_('Ping.MTRProfile') || "Route Hop Flow"}
+              </div>
+              <div class="flex items-center gap-3 min-w-max pb-1">
+                {#each mtrHops as hop, idx}
+                  <div class={`flex flex-col p-2.5 rounded-lg border text-xs min-w-[140px] shadow-sm transition-all ${
+                    hop.lossRate > 20
+                      ? 'bg-red-950/60 border-red-500/80 text-red-200'
+                      : hop.lossRate > 0
+                      ? 'bg-amber-950/60 border-amber-500/80 text-amber-200'
+                      : 'bg-gray-900/90 border-gray-700 text-gray-200'
+                  }`}>
+                    <div class="flex justify-between items-center mb-1 font-mono font-bold">
+                      <span class="px-1.5 py-0.5 rounded bg-gray-800 border border-gray-600 text-[10px]">
+                        Hop {hop.ttl}
+                      </span>
+                      {#if hop.isTarget}
+                        <span class="px-1.5 py-0.5 rounded bg-blue-600 text-white text-[10px]">
+                          Target
+                        </span>
+                      {/if}
+                    </div>
+                    <div class="font-bold truncate text-sm" title={hop.ip || 'No Response'}>
+                      {hop.ip || '* No Response *'}
+                    </div>
+                    {#if hop.loc}
+                      <div class="text-[10px] text-gray-400 truncate">{hop.loc}</div>
+                    {/if}
+                    <div class="mt-2 pt-1.5 border-t border-gray-700/60 flex justify-between items-center text-[11px]">
+                      <span>Loss: <strong class={hop.lossRate > 0 ? (hop.lossRate > 20 ? 'text-red-400' : 'text-amber-400') : 'text-emerald-400'}>{hop.lossRate.toFixed(1)}%</strong></span>
+                      <span>Avg: <strong>{hop.avg >= 0 ? hop.avg.toFixed(1) + 'ms' : 'N/A'}</strong></span>
+                    </div>
+                  </div>
+                  {#if idx < mtrHops.length - 1}
+                    <div class="flex flex-col items-center justify-center text-gray-500">
+                      <Icon path={icons.mdiArrowRight} size={1} />
+                    </div>
+                  {/if}
+                {/each}
+              </div>
+            </div>
+
+            <!-- ② MTR 統計 DataTables (プロジェクトルール: divで囲む) -->
+            <div>
+              <table id="mtrTable" class="display compact" style="width:99%"></table>
+            </div>
+
+            <!-- ③ MTR ホップ別プロファイルチャート -->
+            <div id="mtrChart" class="w-full"></div>
+          </div>
+        </TabItem>
+      {/if}
       {#if !wait && results.length > 0}
         {#if canShowSmoke}
           <TabItem onclick={showSmoke}>
@@ -623,6 +913,12 @@
   #smoke {
     min-height: 500px;
     height: 70vh;
+    width: 98%;
+    margin: 0 auto;
+  }
+  #mtrChart {
+    min-height: 240px;
+    height: 28vh;
     width: 98%;
     margin: 0 auto;
   }

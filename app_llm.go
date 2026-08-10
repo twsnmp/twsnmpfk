@@ -1547,6 +1547,66 @@ func (a *App) LLMExplainPingReport(targetIP string, results []PingRes, tab strin
 		}
 	}
 
+	if tab == "mtr" {
+		type hopSummary struct {
+			ttl       int
+			src       string
+			loc       string
+			snt       int
+			lossCount int
+			minRTT    float64
+			maxRTT    float64
+			totalRTT  float64
+			okCount   int
+		}
+		hopMap := make(map[int]*hopSummary)
+		for _, r := range results {
+			ttl := r.SendTTL
+			hs, ok := hopMap[ttl]
+			if !ok {
+				hs = &hopSummary{ttl: ttl, minRTT: -1}
+				hopMap[ttl] = hs
+			}
+			hs.snt++
+			if r.RecvSrc != "" {
+				hs.src = r.RecvSrc
+			}
+			if r.Loc != "" {
+				hs.loc = r.Loc
+			}
+			if r.Stat == 1 || r.Stat == 4 {
+				rttMs := float64(r.Time) / (1000 * 1000)
+				hs.okCount++
+				hs.totalRTT += rttMs
+				if hs.minRTT == -1 || rttMs < hs.minRTT {
+					hs.minRTT = rttMs
+				}
+				if rttMs > hs.maxRTT {
+					hs.maxRTT = rttMs
+				}
+			} else {
+				hs.lossCount++
+			}
+		}
+
+		sb.WriteString("\n## MTR Hop-by-Hop Breakdown:\n")
+		for ttl := 1; ttl <= 32; ttl++ {
+			if hs, ok := hopMap[ttl]; ok {
+				lossPct := float64(hs.lossCount) / float64(hs.snt) * 100
+				avgMs := 0.0
+				if hs.okCount > 0 {
+					avgMs = hs.totalRTT / float64(hs.okCount)
+				}
+				ipStr := hs.src
+				if ipStr == "" {
+					ipStr = "No Response (*)"
+				}
+				sb.WriteString(fmt.Sprintf("  - Hop %d [%s] Loc: %s | Snt: %d | Loss: %.1f%% (%d/%d) | Min: %.2f ms | Avg: %.2f ms | Max: %.2f ms\n",
+					hs.ttl, ipStr, hs.loc, hs.snt, lossPct, hs.lossCount, hs.snt, hs.minRTT, avgMs, hs.maxRTT))
+			}
+		}
+	}
+
 	if tab == "world" && len(locMap) > 0 {
 		sb.WriteString("\n## Response Locations / Hops:\n")
 		for loc, cnt := range locMap {
