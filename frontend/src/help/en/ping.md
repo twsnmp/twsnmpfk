@@ -19,6 +19,7 @@ Run ICMP PING diagnostics against a target IP address, measuring response times 
 
 * **[Start]** : Begin sending PING packets.
 * **[Stop]** : Stop sending PING packets.
+* **[AI Explain]** : Send the displayed chart/diagnostic data to the AI (LLM) for automated analysis on network quality, latency, packet loss, and potential issues (available on chart tabs when AI integration is enabled).
 * **[Help]** : Open this help document.
 * **[Close]** : Close the PING tool window.
 

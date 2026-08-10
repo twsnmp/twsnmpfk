@@ -298,6 +298,8 @@ export function LLMExplainNetworkReport(arg1:string):Promise<main.LLMResp>;
 
 export function LLMExplainNodeReport(arg1:string,arg2:string):Promise<main.LLMResp>;
 
+export function LLMExplainPingReport(arg1:string,arg2:Array<main.PingRes>,arg3:string):Promise<main.LLMResp>;
+
 export function LLMExplainPollingReport(arg1:string):Promise<main.LLMResp>;
 
 export function LLMExplainSFlowCounterReport(arg1:Array<datastore.SFlowCounterEnt>,arg2:string):Promise<main.LLMResp>;

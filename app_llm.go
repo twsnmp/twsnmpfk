@@ -1210,7 +1210,7 @@ func (a *App) LLMExplainArpReport(logs []*datastore.ArpLogEnt, tab string) *LLMR
 
 	system := "You are a network security analyst. Analyze the provided ARP log entries and explain ARP activity, MAC changes, potential spoofing risks, and recommended verification."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはネットワークセキュリティのアナリストです。提示されたARPログデータを分析し、MACアドレスの変更、新規IPの検出傾向、ARPスプーフィング等の潜在的リスク、および確認事項について分かりやすく解説してください。"
+		system = "あなたはネットワークセキュリティのアナリストです。提示されたARPログデータを分析し、MACアドレスの変更、新規IPの検出傾向、ARPスプーフィング等の潜在的リスク、および確認事項について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1247,7 +1247,7 @@ func (a *App) LLMExplainEventLogReport(logs []*datastore.EventLogEnt, tab string
 
 	system := "You are a log analysis and monitoring expert. Analyze the provided event log report data and explain system health, frequent issue nodes, error level trends, and recommendations."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはログ解析と障害監視の専門家です。提示されたイベントログデータを分析し、システム全体の障害傾向、頻発ノード、重要度別の発生状況、および改善策について分かりやすく解説してください。"
+		system = "あなたはログ解析と障害監視の専門家です。提示されたイベントログデータを分析し、システム全体の障害傾向、頻発ノード、重要度別の発生状況、および改善策について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1300,7 +1300,7 @@ func (a *App) LLMExplainSyslogReport(logs []*datastore.SyslogEnt, tab string) *L
 
 	system := "You are a Syslog and server operations expert. Analyze the Syslog report data and explain message severity trends, top logging hosts, anomalous log spikes, and recommended actions."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはSyslogおよびサーバー運用の専門家です。提示されたSyslogデータを分析し、重要度（Severity）別の発生傾向、主要送信ホスト、不審なログメッセージ、および運用上の推奨対策について分かりやすく解説してください。"
+		system = "あなたはSyslogおよびサーバー運用の専門家です。提示されたSyslogデータを分析し、重要度（Severity）別の発生傾向、主要送信ホスト、不審なログメッセージ、および運用上の推奨対策について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1338,7 +1338,7 @@ func (a *App) LLMExplainTrapReport(traps []*datastore.TrapEnt, tab string) *LLMR
 
 	system := "You are an SNMP Trap monitoring expert. Analyze the SNMP Trap report data and explain alert frequency, affected network equipment, trap types, and remediation steps."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはSNMP Trap監視の専門家です。提示されたSNMP Trapデータを分析し、Trap発生頻度、影響を受けている機器、警告種別、および具体的な対処手順について分かりやすく解説してください。"
+		system = "あなたはSNMP Trap監視の専門家です。提示されたSNMP Trapデータを分析し、Trap発生頻度、影響を受けている機器、警告種別、および具体的な対処手順について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1358,7 +1358,7 @@ func (a *App) LLMExplainNetFlowReport(flows []*datastore.NetFlowEnt, tab string)
 
 	system := "You are a network traffic flow analyst. Analyze the NetFlow data and explain traffic volume trends, top communication pairs, bandwidth usage, and anomaly detection."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはネットワークトラフィックフローのアナリストです。提示されたNetFlowデータを分析し、トラフィック量、主要通信ペア、帯域占有傾向、および異常な通信パターンについて分かりやすく解説してください。"
+		system = "あなたはネットワークトラフィックフローのアナリストです。提示されたNetFlowデータを分析し、トラフィック量、主要通信ペア、帯域占有傾向、および異常な通信パターンについて、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1378,7 +1378,7 @@ func (a *App) LLMExplainSFlowReport(flows []*datastore.SFlowEnt, tab string) *LL
 
 	system := "You are an sFlow traffic analysis expert. Analyze the sFlow data and explain traffic flows, heavy talkers, bandwidth consumption, and potential security anomalies."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはsFlowトラフィック分析の専門家です。提示されたsFlowデータを分析し、主要な通信フロー、高トラフィック送信元、帯域影響、および異常通信の有無について分かりやすく解説してください。"
+		system = "あなたはsFlowトラフィック分析の専門家です。提示されたsFlowデータを分析し、主要な通信フロー、高トラフィック送信元、帯域影響、および異常通信の有無について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1398,7 +1398,7 @@ func (a *App) LLMExplainSFlowCounterReport(counters []*datastore.SFlowCounterEnt
 
 	system := "You are a switch port statistics expert. Analyze the sFlow counter data and explain port traffic loads, interface error rates, dropped packets, and switch bottleneck points."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはスイッチポート統計の専門家です。提示されたsFlowカウンターデータを分析し、ポート別トラフィック負荷、エラー/ドロップパケットの発生状況、およびスイッチのボトルネック箇所について分かりやすく解説してください。"
+		system = "あなたはスイッチポート統計の専門家です。提示されたsFlowカウンターデータを分析し、ポート別トラフィック負荷、エラー/ドロップパケットの発生状況、およびスイッチのボトルネック箇所について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1417,7 +1417,7 @@ func (a *App) LLMExplainMqttReport(stats []*datastore.MqttStatEnt, tab string) *
 
 	system := "You are an MQTT broker and IoT operations expert. Analyze the MQTT statistics data and explain client message volumes, topic hierarchy distribution, connection issues, and anomalies."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはMQTTブローカーおよびIoT運用の専門家です。提示されたMQTT統計データを分析し、クライアント毎のメッセージ量、トピック階層の集中度、接続状態・切断エラー、および不審なクライアント動作について分かりやすく解説してください。"
+		system = "あなたはMQTTブローカーおよびIoT運用の専門家です。提示されたMQTT統計データを分析し、クライアント毎のメッセージ量、トピック階層の集中度、接続状態・切断エラー、および不審なクライアント動作について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1441,7 +1441,7 @@ func (a *App) LLMExplainPollingReport(nodeID string) *LLMResp {
 
 	system := "You are a polling monitoring expert. Analyze the polling report data and explain monitor item health, failure rates, latency issues, and recommended fixes."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはポーリング監視の専門家です。提示されたポーリングレポートデータを分析し、監視項目の健全性、エラー発生状況、応答遅延の傾向、および推奨される改善策について分かりやすく解説してください。"
+		system = "あなたはポーリング監視の専門家です。提示されたポーリングレポートデータを分析し、監視項目の健全性、エラー発生状況、応答遅延の傾向、および推奨される改善策について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1462,10 +1462,115 @@ func (a *App) LLMExplainNetworkReport(id string) *LLMResp {
 
 	system := "You are a network subnet and topology analysis expert. Analyze the network report data and explain subnet distribution, network health status, and architecture recommendations."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはネットワークサブネットおよびトポロジーの専門家です。提示されたネットワークレポートデータを分析し、サブネットごとのノード分布、障害発生状況、およびネットワーク構成上の注意点について分かりやすく解説してください。"
+		system = "あなたはネットワークサブネットおよびトポロジーの専門家です。提示されたネットワークレポートデータを分析し、サブネットごとのノード分布、障害発生状況、およびネットワーク構成上の注意点について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }
+
+func (a *App) LLMExplainPingReport(targetIP string, results []PingRes, tab string) *LLMResp {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("# Ping Test Report: Target=%s (Tab: %s)\n\n", targetIP, tab))
+
+	total := len(results)
+	if total == 0 {
+		return &LLMResp{Error: "no ping test results available"}
+	}
+
+	sb.WriteString(fmt.Sprintf("Total Ping Attempts: %d\n", total))
+
+	var successCount, timeoutCount, warnCount, gwCount int
+	var minRTT, maxRTT, totalRTT int64
+	minRTT = -1
+
+	type sizeStat struct {
+		count   int
+		totalMs float64
+	}
+	sizeMap := make(map[int]sizeStat)
+	ttlMap := make(map[int]int)
+	locMap := make(map[string]int)
+
+	for _, r := range results {
+		switch r.Stat {
+		case 1:
+			successCount++
+		case 2:
+			timeoutCount++
+		case 3:
+			warnCount++
+		case 4:
+			gwCount++
+		}
+
+		if r.Stat == 1 || r.Stat == 4 {
+			rttMs := float64(r.Time) / (1000 * 1000)
+			if minRTT == -1 || r.Time < minRTT {
+				minRTT = r.Time
+			}
+			if r.Time > maxRTT {
+				maxRTT = r.Time
+			}
+			totalRTT += r.Time
+
+			st := sizeMap[r.Size]
+			st.count++
+			st.totalMs += rttMs
+			sizeMap[r.Size] = st
+		}
+
+		if r.RecvTTL > 0 {
+			ttlMap[r.RecvTTL]++
+		}
+		if r.Loc != "" {
+			locMap[r.Loc]++
+		}
+	}
+
+	lossRate := float64(timeoutCount) / float64(total) * 100
+	sb.WriteString(fmt.Sprintf("Stat Breakdown: Success=%d, Timeout=%d, Warn=%d, GW=%d (Packet Loss Rate: %.1f%%)\n", successCount, timeoutCount, warnCount, gwCount, lossRate))
+
+	validCount := successCount + gwCount
+	if validCount > 0 {
+		avgRTTMs := (float64(totalRTT) / float64(validCount)) / (1000 * 1000)
+		minRTTMs := float64(minRTT) / (1000 * 1000)
+		maxRTTMs := float64(maxRTT) / (1000 * 1000)
+		sb.WriteString(fmt.Sprintf("RTT (Round Trip Time): Min=%.3f ms, Avg=%.3f ms, Max=%.3f ms\n", minRTTMs, avgRTTMs, maxRTTMs))
+	}
+
+	if tab == "linear" && len(sizeMap) > 0 {
+		sb.WriteString("\n## Packet Size vs Avg RTT:\n")
+		for sz, data := range sizeMap {
+			if data.count > 0 {
+				avg := data.totalMs / float64(data.count)
+				sb.WriteString(fmt.Sprintf("  - Size %d bytes: %d samples, Avg RTT = %.3f ms\n", sz, data.count, avg))
+			}
+		}
+	}
+
+	if tab == "world" && len(locMap) > 0 {
+		sb.WriteString("\n## Response Locations / Hops:\n")
+		for loc, cnt := range locMap {
+			sb.WriteString(fmt.Sprintf("  - %s: %d responses\n", loc, cnt))
+		}
+	}
+
+	sb.WriteString("\n## Sample Log Entries (Up to 40):\n")
+	for i, r := range results {
+		if i >= 40 {
+			break
+		}
+		tStr := time.Unix(r.TimeStamp, 0).Format(time.RFC3339)
+		rttMs := float64(r.Time) / (1000 * 1000)
+		sb.WriteString(fmt.Sprintf("- Time: %s | Stat: %d | RTT: %.3f ms | Size: %d | SendTTL: %d | RecvTTL: %d | RecvSrc: %s | Loc: %s\n", tStr, r.Stat, rttMs, r.Size, r.SendTTL, r.RecvTTL, r.RecvSrc, r.Loc))
+	}
+
+	system := "You are a network diagnostic and Ping/Smokeping performance analysis expert. Analyze the provided Ping report data (Tab: %s) and explain network responsiveness, packet loss rate, jitter/latency trends, route or packet size impacts, potential network issues, and recommended actions."
+	if i18n.GetLang() == "ja" {
+		system = "あなたはネットワーク診断およびPing/Smokeping品質解析の専門家です。提示されたPingテストデータ（表示タブ: %s）を分析し、ネットワーク応答性、パケットロス率、ジッター・レイテンシの傾向、経路やパケットサイズによる影響、および考えられる問題点と推奨対策について、必ず日本語で分かりやすく解説・回答してください。"
+	}
+	return a.llmAsk(sb.String(), fmt.Sprintf(system, tab))
+}
+
 
 
 

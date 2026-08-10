@@ -14,7 +14,7 @@
     showPingMapChart,
     showPingSmokeChart,
   } from "./chart/ping";
-  import { GetNode, Ping } from "../../wailsjs/go/main/App";
+  import { GetNode, Ping, GetMapConf, LLMExplainPingReport } from "../../wailsjs/go/main/App";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import {
@@ -26,12 +26,15 @@
   import * as echarts from "echarts";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
+  import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
   export let nodeID = "";
 
   let pingTab = true;
   let wait = false;
+  let hasAI = false;
+  let showAIReport = false;
   let table :any = undefined;
   let chart :any = undefined;
   let chartOption :any = undefined;
@@ -59,6 +62,12 @@
   const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
+    try {
+      const conf = await GetMapConf();
+      hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
+    } catch (e) {
+      hasAI = false;
+    }
     const node = await GetNode(nodeID);
     if (node && node.IP) {
       ip = node.IP;
@@ -250,30 +259,35 @@
 
   const showHistogram = async () => {
     activeTab = "histogram";
+    pingTab = false;
     await tick();
     reportChart = showPingHistgram("histogram", results);
   };
 
   const show3D = async () => {
     activeTab = "3d";
+    pingTab = false;
     await tick();
     reportChart = showPing3DChart("chart3d", results);
   };
 
   const showLinear = async () => {
     activeTab = "linear";
+    pingTab = false;
     await tick();
     reportChart = showPingLinearChart("linear", results);
   };
 
   const showWorld = async () => {
     activeTab = "world";
+    pingTab = false;
     await tick();
     reportChart = showPingMapChart("world", results);
   };
 
   const showSmoke = async () => {
     activeTab = "smoke";
+    pingTab = false;
     await tick();
     reportChart = showPingSmokeChart("smoke", results);
   };
@@ -563,6 +577,17 @@
             </span>
           </GradientButton>
         {/if}
+      {:else if hasAI}
+        <GradientButton
+          shadow
+          type="button"
+          color="pink"
+          onclick={() => (showAIReport = true)}
+          size="xs"
+        >
+          <Icon path={icons.mdiBrain} size={1} />
+          {$_("ReportAI.AIExplain")}
+        </GradientButton>
       {/if}
       <GradientButton shadow type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
@@ -576,6 +601,13 @@
 <audio src={ping_ng} bind:this={sound_ng}></audio>
 
 <Help bind:show={showHelp} page="ping" />
+
+<ReportAIDialog
+  bind:show={showAIReport}
+  title={$_("ReportAI.Title")}
+  exportFilename={`ping_${activeTab}_ai_explanation`}
+  analyzeFunc={() => LLMExplainPingReport(ip, results || [], activeTab)}
+/>
 
 <style>
   #pingChart {

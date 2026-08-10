@@ -586,6 +586,10 @@ export function LLMExplainNodeReport(arg1, arg2) {
   return window['go']['main']['App']['LLMExplainNodeReport'](arg1, arg2);
 }
 
+export function LLMExplainPingReport(arg1, arg2, arg3) {
+  return window['go']['main']['App']['LLMExplainPingReport'](arg1, arg2, arg3);
+}
+
 export function LLMExplainPollingReport(arg1) {
   return window['go']['main']['App']['LLMExplainPollingReport'](arg1);
 }
