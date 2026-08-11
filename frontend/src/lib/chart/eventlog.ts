@@ -548,3 +548,403 @@ export const showEventLogNodeChart = (div:any, logs:any) => {
   chart.resize();
   return chart;
 }
+
+export interface DowntimeIncident {
+  nodeID: string;
+  nodeName: string;
+  event: string;
+  level: string;
+  startTime: number;
+  endTime: number;
+  durationSec: number;
+  ongoing: boolean;
+  estimatedStart?: boolean;
+}
+
+export interface NodeDowntimeStat {
+  nodeID: string;
+  nodeName: string;
+  totalDowntimeSec: number;
+  maxDowntimeSec: number;
+  count: number;
+  ongoing: boolean;
+  currentLevel: string;
+  sla: number;
+  incidents: DowntimeIncident[];
+}
+
+interface TimeInterval {
+  start: number;
+  end: number;
+  ongoing: boolean;
+}
+
+// 時間区間のマージアルゴリズム（重複なしの総ダウンタイム計算）
+const mergeIntervals = (intervals: TimeInterval[]): { totalSec: number; maxSec: number } => {
+  if (intervals.length === 0) return { totalSec: 0, maxSec: 0 };
+
+  const sorted = [...intervals].sort((a, b) => a.start - b.start);
+  const merged: TimeInterval[] = [];
+
+  let current = { ...sorted[0] };
+
+  for (let i = 1; i < sorted.length; i++) {
+    const next = sorted[i];
+    if (next.start <= current.end) {
+      current.end = Math.max(current.end, next.end);
+      if (next.ongoing) current.ongoing = true;
+    } else {
+      merged.push(current);
+      current = { ...next };
+    }
+  }
+  merged.push(current);
+
+  let totalSec = 0;
+  let maxSec = 0;
+
+  merged.forEach((item) => {
+    const dur = Math.max(0, (item.end - item.start) / (1000 * 1000 * 1000));
+    totalSec += dur;
+    if (dur > maxSec) {
+      maxSec = dur;
+    }
+  });
+
+  return { totalSec, maxSec };
+};
+
+export const calcEventLogDowntimeAndSLA = (logs: any) => {
+  if (!logs || logs.length === 0) {
+    return {
+      totalIncidents: 0,
+      ongoingIncidents: 0,
+      totalDowntimeSec: 0,
+      maxDowntimeSec: 0,
+      mttrSec: 0,
+      overallSLA: 100,
+      nodeStats: [],
+      incidents: [],
+    };
+  }
+
+  // polling タイプのログのみに限定
+  const pollingLogs = logs.filter((l: any) => l.Type === 'polling');
+  if (pollingLogs.length === 0) {
+    return {
+      totalIncidents: 0,
+      ongoingIncidents: 0,
+      totalDowntimeSec: 0,
+      maxDowntimeSec: 0,
+      mttrSec: 0,
+      overallSLA: 100,
+      nodeStats: [],
+      incidents: [],
+    };
+  }
+
+  const sortedLogs = [...pollingLogs].sort((a: any, b: any) => a.Time - b.Time);
+  const minTime = sortedLogs[0].Time;
+  const maxTime = sortedLogs[sortedLogs.length - 1].Time;
+  let totalSpanSec = (maxTime - minTime) / (1000 * 1000 * 1000);
+  if (totalSpanSec <= 0) {
+    totalSpanSec = 1;
+  }
+
+  const isFailure = (lvl: string) => lvl === 'high' || lvl === 'low' || lvl === 'warn';
+  // 復旧は repair のみ (normal は通常ログ・初回ログ等のため含めない)
+  const isRepair = (lvl: string) => lvl === 'repair';
+
+  // ポーリング単位 (NodeID + Event または Event) でログをグループ化
+  const logsByPolling = new Map<string, { nodeID: string; nodeName: string; event: string; logs: any[] }>();
+
+  sortedLogs.forEach((l: any) => {
+    const pKey = (l.NodeID || l.NodeName || '') + '_' + l.Event;
+    let group = logsByPolling.get(pKey);
+    if (!group) {
+      group = {
+        nodeID: l.NodeID || '',
+        nodeName: l.NodeName || l.NodeID || 'unknown',
+        event: l.Event,
+        logs: [],
+      };
+      logsByPolling.set(pKey, group);
+    }
+    group.logs.push(l);
+  });
+
+  // ポーリング単位で障害・復旧ペアリングを処理
+  const nodeIntervalsMap = new Map<
+    string,
+    { nodeID: string; nodeName: string; lastLevel: string; intervals: TimeInterval[]; incidents: DowntimeIncident[] }
+  >();
+
+  let totalRecoveredSec = 0;
+  let recoveredCount = 0;
+  let allIncidentsCount = 0;
+
+  logsByPolling.forEach((group) => {
+    let isDown = false;
+    let downStart = 0;
+    let lastLevel = 'normal';
+
+    const nKey = group.nodeID || group.nodeName;
+    let nData = nodeIntervalsMap.get(nKey);
+    if (!nData) {
+      nData = {
+        nodeID: group.nodeID,
+        nodeName: group.nodeName,
+        lastLevel: 'normal',
+        intervals: [],
+        incidents: [],
+      };
+      nodeIntervalsMap.set(nKey, nData);
+    }
+
+    group.logs.forEach((l: any) => {
+      lastLevel = l.Level;
+      nData!.lastLevel = l.Level;
+
+      if (isFailure(l.Level)) {
+        if (!isDown) {
+          isDown = true;
+          downStart = l.Time;
+        }
+      } else if (isRepair(l.Level)) {
+        if (isDown) {
+          const durSec = Math.max(0, (l.Time - downStart) / (1000 * 1000 * 1000));
+          nData!.intervals.push({ start: downStart, end: l.Time, ongoing: false });
+          nData!.incidents.push({
+            nodeID: group.nodeID,
+            nodeName: group.nodeName,
+            event: group.event,
+            level: l.Level,
+            startTime: downStart,
+            endTime: l.Time,
+            durationSec: durSec,
+            ongoing: false,
+          });
+          totalRecoveredSec += durSec;
+          recoveredCount++;
+          allIncidentsCount++;
+          isDown = false;
+        } else {
+          // 復旧イベント(repair)のみ存在する場合 -> ログ開始時刻 minTime を仮の障害発生時刻とする
+          const durSec = Math.max(0, (l.Time - minTime) / (1000 * 1000 * 1000));
+          if (durSec > 0) {
+            nData!.intervals.push({ start: minTime, end: l.Time, ongoing: false });
+            nData!.incidents.push({
+              nodeID: group.nodeID,
+              nodeName: group.nodeName,
+              event: group.event,
+              level: l.Level,
+              startTime: minTime,
+              endTime: l.Time,
+              durationSec: durSec,
+              ongoing: false,
+              estimatedStart: true,
+            });
+            totalRecoveredSec += durSec;
+            recoveredCount++;
+            allIncidentsCount++;
+          }
+        }
+      }
+    });
+
+    // ログ終了時点で障害が継続しているポーリング -> min(maxTime) まで継続
+    if (isDown) {
+      const durSec = Math.max(0, (maxTime - downStart) / (1000 * 1000 * 1000));
+      nData!.intervals.push({ start: downStart, end: maxTime, ongoing: true });
+      nData!.incidents.push({
+        nodeID: group.nodeID,
+        nodeName: group.nodeName,
+        event: group.event,
+        level: lastLevel,
+        startTime: downStart,
+        endTime: maxTime,
+        durationSec: durSec,
+        ongoing: true,
+      });
+      allIncidentsCount++;
+    }
+  });
+
+  // ノード単位での統合（区間マージによる重複除去とノードSLA算出）
+  const nodeStats: NodeDowntimeStat[] = [];
+  let globalTotalDowntimeSec = 0;
+  let globalMaxDowntimeSec = 0;
+  let ongoingNodeCount = 0;
+  const allIncidentsList: DowntimeIncident[] = [];
+
+  nodeIntervalsMap.forEach((nData) => {
+    const { totalSec, maxSec } = mergeIntervals(nData.intervals);
+    const hasOngoing = nData.intervals.some((i) => i.ongoing);
+    if (hasOngoing) ongoingNodeCount++;
+
+    if (maxSec > globalMaxDowntimeSec) {
+      globalMaxDowntimeSec = maxSec;
+    }
+    globalTotalDowntimeSec += totalSec;
+
+    const sla = Math.max(0, Math.min(100, (1 - totalSec / totalSpanSec) * 100));
+
+    nodeStats.push({
+      nodeID: nData.nodeID,
+      nodeName: nData.nodeName,
+      totalDowntimeSec: totalSec,
+      maxDowntimeSec: maxSec,
+      count: nData.incidents.length,
+      ongoing: hasOngoing,
+      currentLevel: nData.lastLevel,
+      sla,
+      incidents: nData.incidents,
+    });
+
+    allIncidentsList.push(...nData.incidents);
+  });
+
+  const nodeCount = Math.max(1, nodeStats.length);
+  const overallSLA = nodeStats.reduce((acc, n) => acc + n.sla, 0) / nodeCount;
+  const mttrSec = recoveredCount > 0 ? totalRecoveredSec / recoveredCount : 0;
+
+  return {
+    totalIncidents: allIncidentsCount,
+    ongoingIncidents: ongoingNodeCount,
+    totalDowntimeSec: globalTotalDowntimeSec,
+    maxDowntimeSec: globalMaxDowntimeSec,
+    mttrSec,
+    overallSLA,
+    nodeStats,
+    incidents: allIncidentsList,
+  };
+};
+
+export const showEventLogDowntimeChart = (div: string, logs: any) => {
+  const stats = calcEventLogDowntimeAndSLA(logs);
+  const nodeStats = stats.nodeStats.sort((a, b) => b.totalDowntimeSec - a.totalDowntimeSec);
+
+  const categories: string[] = [];
+  const downtimeData: number[] = [];
+  const slaData: number[] = [];
+
+  // 上位 15 ノード
+  const topNodes = nodeStats.slice(0, 15).reverse();
+  topNodes.forEach((n) => {
+    let name = n.nodeName;
+    if (name.length > 15) {
+      name = name.substring(0, 13) + '...';
+    }
+    categories.push(name);
+    downtimeData.push(Number((n.totalDowntimeSec / 60).toFixed(1)));
+    slaData.push(Number(n.sla.toFixed(3)));
+  });
+
+  if (chart) {
+    chart.dispose();
+  }
+  chart = echarts.init(document.getElementById(div), 'dark');
+  chart.setOption({
+    title: {
+      show: false,
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+      formatter: (params: any) => {
+        let res = params[0].name + '<br/>';
+        params.forEach((p: any) => {
+          if (p.seriesName === 'SLA (%)') {
+            res += `${p.marker} ${p.seriesName}: ${p.value}%<br/>`;
+          } else {
+            res += `${p.marker} Downtime: ${p.value} m (${(p.value * 60).toFixed(0)} s)<br/>`;
+          }
+        });
+        return res;
+      },
+    },
+    legend: {
+      top: 5,
+      data: ['Downtime (min)', 'SLA (%)'],
+      textStyle: {
+        fontSize: 10,
+        color: '#ccc',
+      },
+    },
+    grid: {
+      left: '3%',
+      right: '12%',
+      top: '15%',
+      bottom: '12%',
+      containLabel: true,
+    },
+    xAxis: [
+      {
+        type: 'value',
+        name: 'Downtime (min)',
+        position: 'bottom',
+        axisLabel: {
+          color: '#ccc',
+          fontSize: 9,
+        },
+      },
+      {
+        type: 'value',
+        name: 'SLA (%)',
+        min: 0,
+        max: 100,
+        position: 'top',
+        axisLabel: {
+          color: '#ccc',
+          fontSize: 9,
+          formatter: '{value}%',
+        },
+        splitLine: {
+          show: false,
+        },
+      },
+    ],
+    yAxis: {
+      type: 'category',
+      data: categories,
+      axisLabel: {
+        color: '#ccc',
+        fontSize: 10,
+      },
+    },
+    series: [
+      {
+        name: 'Downtime (min)',
+        type: 'bar',
+        color: '#e31a1c',
+        data: downtimeData,
+      },
+      {
+        name: 'SLA (%)',
+        type: 'line',
+        xAxisIndex: 1,
+        color: '#33a02c',
+        data: slaData,
+        markLine: {
+          data: [{ xAxis: 99.9, name: 'Target 99.9%' }],
+          lineStyle: {
+            color: '#dfdf22',
+            type: 'dashed',
+          },
+          label: {
+            formatter: 'Target 99.9%',
+            color: '#dfdf22',
+            fontSize: 9,
+          },
+        },
+      },
+    ],
+  });
+  chart.resize();
+  return chart;
+};
+
+
+

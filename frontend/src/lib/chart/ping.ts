@@ -787,9 +787,9 @@ export const showPingSmokeChart = (div: string, results: any) => {
         type: 'bar',
         yAxisIndex: 1,
         barWidth: '40%',
-        color: '#ef4444',
+        color: '#f59e0b',
         itemStyle: {
-          color: '#ef4444',
+          color: '#f59e0b',
         },
         data: lossData,
       },

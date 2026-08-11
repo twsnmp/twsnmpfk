@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"sort"
 	"strings"
 	"time"
 
@@ -1245,9 +1246,215 @@ func (a *App) LLMExplainEventLogReport(logs []*datastore.EventLogEnt, tab string
 		sb.WriteString(fmt.Sprintf("  - %s: %d\n", node, cnt))
 	}
 
-	system := "You are a log analysis and monitoring expert. Analyze the provided event log report data and explain system health, frequent issue nodes, error level trends, and recommendations."
+	if tab == "downtime" {
+		sb.WriteString("\n## Downtime & SLA Analysis (Polling Events, Repair-Only Recovery, Interval Merged)\n")
+		var pollingLogs []*datastore.EventLogEnt
+		for _, l := range logs {
+			if l.Type == "polling" {
+				pollingLogs = append(pollingLogs, l)
+			}
+		}
+
+		if len(pollingLogs) > 0 {
+			minT := pollingLogs[0].Time
+			maxT := pollingLogs[len(pollingLogs)-1].Time
+			for _, l := range pollingLogs {
+				if l.Time < minT {
+					minT = l.Time
+				}
+				if l.Time > maxT {
+					maxT = l.Time
+				}
+			}
+			totalSpanSec := float64(maxT-minT) / 1e9
+			if totalSpanSec <= 0 {
+				totalSpanSec = 1
+			}
+
+			// ポーリング単位でグループ化
+			type pollingGroup struct {
+				nodeID   string
+				nodeName string
+				event    string
+				logs     []*datastore.EventLogEnt
+			}
+			pollingMap := make(map[string]*pollingGroup)
+			for _, l := range pollingLogs {
+				pKey := fmt.Sprintf("%s_%s_%s", l.NodeID, l.NodeName, l.Event)
+				g, ok := pollingMap[pKey]
+				if !ok {
+					nName := l.NodeName
+					if nName == "" {
+						nName = l.NodeID
+					}
+					if nName == "" {
+						nName = "unknown"
+					}
+					g = &pollingGroup{
+						nodeID:   l.NodeID,
+						nodeName: nName,
+						event:    l.Event,
+					}
+					pollingMap[pKey] = g
+				}
+				g.logs = append(g.logs, l)
+			}
+
+			type interval struct {
+				start   int64
+				end     int64
+				ongoing bool
+			}
+			nodeIntervals := make(map[string][]interval)
+			var totalRecoveredSec float64
+			var recoveredCount int
+			var allIncidentsCount int
+
+			for _, g := range pollingMap {
+				isDown := false
+				downStart := int64(0)
+				nKey := g.nodeName
+
+				for _, l := range g.logs {
+					if l.Level == "high" || l.Level == "low" || l.Level == "warn" {
+						if !isDown {
+							isDown = true
+							downStart = l.Time
+						}
+					} else if l.Level == "repair" {
+						if isDown {
+							dur := float64(l.Time-downStart) / 1e9
+							nodeIntervals[nKey] = append(nodeIntervals[nKey], interval{start: downStart, end: l.Time, ongoing: false})
+							totalRecoveredSec += dur
+							recoveredCount++
+							allIncidentsCount++
+							isDown = false
+						} else {
+							// 復旧のみ -> minT 開始
+							dur := float64(l.Time-minT) / 1e9
+							if dur > 0 {
+								nodeIntervals[nKey] = append(nodeIntervals[nKey], interval{start: minT, end: l.Time, ongoing: false})
+								totalRecoveredSec += dur
+								recoveredCount++
+								allIncidentsCount++
+							}
+						}
+					}
+				}
+				if isDown {
+					nodeIntervals[nKey] = append(nodeIntervals[nKey], interval{start: downStart, end: maxT, ongoing: true})
+					allIncidentsCount++
+				}
+			}
+
+			// ノード単位で区間マージ
+			type nodeRes struct {
+				name     string
+				downtime float64
+				maxSec   float64
+				count    int
+				sla      float64
+				ongoing  bool
+			}
+			var results []nodeRes
+			var globalTotalDowntime float64
+			var globalMaxDowntime float64
+			var ongoingNodeCount int
+
+			for nName, list := range nodeIntervals {
+				if len(list) == 0 {
+					continue
+				}
+				sort.Slice(list, func(i, j int) bool {
+					return list[i].start < list[j].start
+				})
+				var merged []interval
+				curr := list[0]
+				for i := 1; i < len(list); i++ {
+					nxt := list[i]
+					if nxt.start <= curr.end {
+						if nxt.end > curr.end {
+							curr.end = nxt.end
+						}
+						if nxt.ongoing {
+							curr.ongoing = true
+						}
+					} else {
+						merged = append(merged, curr)
+						curr = nxt
+					}
+				}
+				merged = append(merged, curr)
+
+				nTotal := float64(0)
+				nMax := float64(0)
+				hasOngoing := false
+				for _, m := range merged {
+					dur := float64(m.end-m.start) / 1e9
+					if dur > 0 {
+						nTotal += dur
+						if dur > nMax {
+							nMax = dur
+						}
+					}
+					if m.ongoing {
+						hasOngoing = true
+					}
+				}
+
+				if hasOngoing {
+					ongoingNodeCount++
+				}
+				if nMax > globalMaxDowntime {
+					globalMaxDowntime = nMax
+				}
+				globalTotalDowntime += nTotal
+
+				nSLA := (1.0 - nTotal/totalSpanSec) * 100.0
+				if nSLA < 0 {
+					nSLA = 0
+				}
+				results = append(results, nodeRes{
+					name:     nName,
+					downtime: nTotal,
+					maxSec:   nMax,
+					count:    len(list),
+					sla:      nSLA,
+					ongoing:  hasOngoing,
+				})
+			}
+
+			mttrSec := float64(0)
+			if recoveredCount > 0 {
+				mttrSec = totalRecoveredSec / float64(recoveredCount)
+			}
+			nodeCount := len(results)
+			if nodeCount == 0 {
+				nodeCount = 1
+			}
+			sumSLA := float64(0)
+			for _, r := range results {
+				sumSLA += r.sla
+			}
+			overallSLA := sumSLA / float64(nodeCount)
+
+			sb.WriteString(fmt.Sprintf("Monitored Nodes Count: %d\n", nodeCount))
+			sb.WriteString(fmt.Sprintf("Total Incidents (Polling Level): %d (Ongoing Nodes: %d)\n", allIncidentsCount, ongoingNodeCount))
+			sb.WriteString(fmt.Sprintf("Overall SLA (Availability): %.3f%%\n", overallSLA))
+			sb.WriteString(fmt.Sprintf("MTTR: %.1f sec (%.2f min)\n", mttrSec, mttrSec/60.0))
+			sb.WriteString(fmt.Sprintf("Max Downtime: %.1f sec (%.2f min)\n", globalMaxDowntime, globalMaxDowntime/60.0))
+			sb.WriteString(fmt.Sprintf("Total Downtime Sum: %.1f sec (%.2f min)\n", globalTotalDowntime, globalTotalDowntime/60.0))
+			sb.WriteString("Node SLA & Downtime Breakdown:\n")
+			for _, r := range results {
+				sb.WriteString(fmt.Sprintf("  - Node '%s': SLA = %.3f%%, Total Downtime = %.1f min, Max Downtime = %.1f min, Incidents = %d (Ongoing: %v)\n",
+					r.name, r.sla, r.downtime/60.0, r.maxSec/60.0, r.count, r.ongoing))
+			}
+		}
+	}
+
+	system := "You are a log analysis and monitoring expert. Analyze the provided event log report data and explain system health, SLA performance, downtime bottlenecks, frequent issue nodes, error level trends, and recommendations."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはログ解析と障害監視の専門家です。提示されたイベントログデータを分析し、システム全体の障害傾向、頻発ノード、重要度別の発生状況、および改善策について、必ず日本語で分かりやすく解説・回答してください。"
+		system = "あなたはログ解析と障害監視の専門家です。提示されたイベントログデータおよびダウンタイム・SLA集計結果を分析し、システム全体の障害傾向、SLA達成率、稼働率のボトルネック、頻発ノード、重要度別の発生状況、および改善策について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }

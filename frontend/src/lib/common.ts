@@ -432,3 +432,31 @@ export const keyTypeList = [
   { name: "ECDSA P384", value: 'ecdsa-384' },
   { name: "ECDSA P512", value: 'ecdsa-512' },
 ]
+
+export const renderDuration = (sec: number, type?: string) => {
+  if (type === "sort") {
+    return sec;
+  }
+  if (!sec || sec <= 0) return "0s";
+  const d = Math.floor(sec / 86400);
+  const h = Math.floor((sec % 86400) / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  let res = "";
+  if (d > 0) res += `${d}d `;
+  if (h > 0 || d > 0) res += `${h}h `;
+  if (m > 0 || h > 0 || d > 0) res += `${m}m `;
+  res += `${s}s`;
+  return res.trim();
+};
+
+export const renderSLA = (sla: number, type?: string) => {
+  if (type === "sort") {
+    return sla;
+  }
+  if (sla === undefined || sla === null || isNaN(sla)) {
+    return "-";
+  }
+  return sla.toFixed(3) + "%";
+};
+

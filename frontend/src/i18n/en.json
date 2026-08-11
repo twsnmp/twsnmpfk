@@ -444,8 +444,18 @@
     "Close": "Close",
     "CountByNode": "Count by node",
     "CountByState": "Count by level",
+    "Downtime": "Downtime & SLA",
+    "DowntimeRanking": "Downtime / SLA by Node",
     "Heatmap": "Heatmap",
-    "Oprate": "Operation rate"
+    "MaxDowntime": "Max Downtime",
+    "MTTR": "MTTR (Mean Time To Recovery)",
+    "Ongoing": "Ongoing",
+    "OngoingIncidents": "Ongoing",
+    "Oprate": "Operation rate",
+    "OverallSLA": "Overall SLA (Availability)",
+    "Status": "Status",
+    "TotalDowntime": "Total Downtime",
+    "TotalIncidents": "Total Incidents"
   },
   "Line": {
     "Cancel": "Cancel",
@@ -715,6 +725,17 @@
     "LastChanged": "Last changed"
   },
   "Ping": {
+    "Mode": "Mode",
+    "ModeNormal": "Normal Ping",
+    "ModeSmoke": "Smoke",
+    "ModeTrace": "Traceroute",
+    "ModeMTR": "MTR",
+    "Duration": "Duration",
+    "Duration1m": "1 min",
+    "Duration3m": "3 min",
+    "Duration5m": "5 min",
+    "Duration10m": "10 min",
+    "DurationCont": "Continuous",
     "Chart3D": "3D Chart",
     "Close": "Close",
     "Cont": "Continuous",

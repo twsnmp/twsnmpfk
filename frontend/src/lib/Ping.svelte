@@ -1,7 +1,7 @@
 <script lang="ts">
   import ping_ok from "../assets/sound/ping_ok.mp3";
   import ping_ng from "../assets/sound/ping_ng.mp3";
-  import { Modal, GradientButton, Tabs, TabItem, Input, Select,Toggle } from "flowbite-svelte";
+  import { Modal, GradientButton, Tabs, TabItem, Input, Select, Toggle, ButtonGroup, Button } from "flowbite-svelte";
   import { tick } from "svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -31,6 +31,9 @@
 
   export let show: boolean = false;
   export let nodeID = "";
+
+  type PingMode = "normal" | "smoke" | "trace" | "mtr";
+  let mode: PingMode = "normal";
 
   let pingTab = true;
   let wait = false;
@@ -64,6 +67,27 @@
   let sound_ng :any;
   let showHelp = false;
 
+  const changeMode = (m: PingMode) => {
+    mode = m;
+    if (mode === "normal") {
+      ttl = 64;
+      count = 10;
+      size = 64;
+    } else if (mode === "smoke") {
+      ttl = 64;
+      count = 2001;
+      size = 64;
+    } else if (mode === "trace") {
+      ttl = -1;
+      count = -1;
+      size = 64;
+    } else if (mode === "mtr") {
+      ttl = -2;
+      count = 2001;
+      size = 64;
+    }
+  };
+
   const dispatch = createEventDispatcher();
 
   const resetState = () => {
@@ -81,6 +105,10 @@
     canShowSmoke = false;
     canShowMtr = false;
     pingTab = true;
+    mode = "normal";
+    ttl = 64;
+    count = 10;
+    size = 64;
   };
 
   const onOpen = async () => {
@@ -150,23 +178,45 @@
     chart.resize();
   };
 
-  const countList = [
-    { name: $_('Ping.Cont'), value: -1 },
-    { name: $_('Ping.Smoke1m'), value: 2001 },
-    { name: $_('Ping.Smoke3m'), value: 2003 },
-    { name: $_('Ping.SmokeCont'), value: -100 },
+  const normalCountList = [
+    { name: $_('Ping.Count10'), value: 10 },
     { name: $_('Ping.Coun1'), value: 1 },
     { name: $_('Ping.Count3'), value: 3 },
     { name: $_('Ping.Count5'), value: 5 },
-    { name: $_('Ping.Count10'), value: 10 },
     { name: $_('Ping.Count20'), value: 20 },
     { name: $_('Ping.Count30'), value: 30 },
     { name: $_('Ping.Count50'), value: 50 },
     { name: $_('Ping.Count100'), value: 100 },
+    { name: $_('Ping.Cont'), value: -1 },
+  ];
+
+  const smokeDurationList = [
+    { name: $_('Ping.Duration1m') || "1分間", value: 2001 },
+    { name: $_('Ping.Duration3m') || "3分間", value: 2003 },
+    { name: $_('Ping.Duration5m') || "5分間", value: 2005 },
+    { name: $_('Ping.Duration10m') || "10分間", value: 2010 },
+    { name: $_('Ping.DurationCont') || "無制限 (連続)", value: -100 },
+  ];
+
+  const mtrDurationList = [
+    { name: $_('Ping.Duration1m') || "1分間", value: 2001 },
+    { name: $_('Ping.Duration3m') || "3分間", value: 2003 },
+    { name: $_('Ping.Duration5m') || "5分間", value: 2005 },
+    { name: $_('Ping.Duration10m') || "10分間", value: 2010 },
+    { name: $_('Ping.DurationCont') || "無制限 (連続)", value: -1 },
   ];
 
   const sizeList = [
+    { name: "64", value: 64 },
+    { name: "128", value: 128 },
+    { name: "256", value: 256 },
+    { name: "512", value: 512 },
+    { name: "1024", value: 1024 },
+    { name: "1500", value: 1500 },
     { name: $_('Ping.IncSize'), value: -1 },
+  ];
+
+  const fixedSizeList = [
     { name: "64", value: 64 },
     { name: "128", value: 128 },
     { name: "256", value: 256 },
@@ -176,17 +226,15 @@
   ];
 
   const ttlList = [
-    { name: $_('Ping.MTR') || "MTR (My Traceroute)", value: -2 },
-    { name: $_('Ping.TraceRoute'), value: -1 },
+    { name: "64", value: 64 },
+    { name: "128", value: 128 },
+    { name: "254", value: 254 },
     { name: "1", value: 1 },
     { name: "2", value: 2 },
     { name: "4", value: 4 },
     { name: "8", value: 8 },
     { name: "16", value: 16 },
     { name: "32", value: 32 },
-    { name: "64", value: 64 },
-    { name: "128", value: 128 },
-    { name: "254", value: 254 },
   ];
 
   const renderMtrLossRate = (val: any, type: string) => {
@@ -429,6 +477,17 @@
     canShowWorld = false;
     canShowSmoke = false;
 
+    if (mode === "trace") {
+      ttl = -1;
+      count = -1;
+    } else if (mode === "mtr") {
+      ttl = -2;
+    } else if (mode === "normal") {
+      if (ttl < 0) ttl = 64;
+    } else if (mode === "smoke") {
+      if (ttl < 0) ttl = 64;
+    }
+
     if (ttl === -2) {
       canShowMtr = false;
       mtrHops = [];
@@ -437,7 +496,7 @@
       if (ttl === -1) {
         pingReq.ttl = 1;
         count = -1;
-        size = 64;
+        if (size < 0) size = 64;
       } else {
         pingReq.ttl = ttl;
       }
@@ -676,7 +735,7 @@
 
 <Modal bind:open={show} size="xl" dismissable={false} class="w-full">
   <div class="flex flex-col space-y-4">
-    <Tabs style="underline">
+    <Tabs style="underline" contentClass="pt-2 bg-transparent">
       <TabItem bind:open={pingTab} onclick={showPing}>
         {#snippet titleSlot()}
         <div class="flex items-center gap-2">
@@ -684,36 +743,125 @@
           { $_('Ping.DoPing') }
         </div>
       {/snippet}
-        <div class="flex flex-row items-center gap-2 mb-2">
-          <Input
-            class="h-[38px]"
-            type="text"
-            bind:value={ip}
-            placeholder={ $_('Ping.IPOrHost') }
-            color={ipColor}
-            size="sm"
-          />
-          <Select
-            class="h-[38px]"
-            items={countList}
-            bind:value={count}
-            placeholder={ $_('Ping.Count') }
-            size="sm"
-          />
-          <Select
-            class="h-[38px]"
-            items={sizeList}
-            bind:value={size}
-            placeholder={ $_('Ping.Size') }
-            size="sm"
-          />
-          <Select
-            class="h-[38px]"
-            items={ttlList}
-            bind:value={ttl}
-            placeholder="TTL"
-            size="sm"
-          />
+        <div class="flex flex-col space-y-2 mb-2 bg-gray-800/40 p-2.5 rounded-lg border border-gray-700/60">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-gray-300">
+                {$_('Ping.Mode') || "動作モード"}:
+              </span>
+              <ButtonGroup>
+                <Button
+                  size="xs"
+                  class="!py-1 !px-2 text-[11px]"
+                  color={mode === 'normal' ? 'blue' : 'alternative'}
+                  onclick={() => changeMode('normal')}
+                >
+                  <Icon path={icons.mdiCheckNetwork} size={0.7} class="mr-1 inline" />
+                  {$_('Ping.ModeNormal') || "通常 Ping"}
+                </Button>
+                <Button
+                  size="xs"
+                  class="!py-1 !px-2 text-[11px]"
+                  color={mode === 'smoke' ? 'blue' : 'alternative'}
+                  onclick={() => changeMode('smoke')}
+                >
+                  <Icon path={icons.mdiWeatherCloudy} size={0.7} class="mr-1 inline" />
+                  {$_('Ping.ModeSmoke') || "Smoke"}
+                </Button>
+                <Button
+                  size="xs"
+                  class="!py-1 !px-2 text-[11px]"
+                  color={mode === 'trace' ? 'blue' : 'alternative'}
+                  onclick={() => changeMode('trace')}
+                >
+                  <Icon path={icons.mdiSourceBranch} size={0.7} class="mr-1 inline" />
+                  {$_('Ping.ModeTrace') || "トレースルート"}
+                </Button>
+                <Button
+                  size="xs"
+                  class="!py-1 !px-2 text-[11px]"
+                  color={mode === 'mtr' ? 'blue' : 'alternative'}
+                  onclick={() => changeMode('mtr')}
+                >
+                  <Icon path={icons.mdiRoutes} size={0.7} class="mr-1 inline" />
+                  {$_('Ping.ModeMTR') || "MTR"}
+                </Button>
+              </ButtonGroup>
+            </div>
+          </div>
+
+          <div class="flex flex-row items-center gap-2">
+            <Input
+              class="h-[38px] min-w-[140px] flex-1"
+              type="text"
+              bind:value={ip}
+              placeholder={ $_('Ping.IPOrHost') }
+              color={ipColor}
+              size="sm"
+            />
+
+            {#if mode === 'normal'}
+              <Select
+                class="h-[38px] w-28"
+                items={normalCountList}
+                bind:value={count}
+                placeholder={ $_('Ping.Count') }
+                size="sm"
+              />
+              <Select
+                class="h-[38px] w-28"
+                items={sizeList}
+                bind:value={size}
+                placeholder={ $_('Ping.Size') }
+                size="sm"
+              />
+              <Select
+                class="h-[38px] w-24"
+                items={ttlList}
+                bind:value={ttl}
+                placeholder="TTL"
+                size="sm"
+              />
+            {:else if mode === 'smoke'}
+              <Select
+                class="h-[38px] w-40"
+                items={smokeDurationList}
+                bind:value={count}
+                placeholder={ $_('Ping.Duration') || "測定期間" }
+                size="sm"
+              />
+              <Select
+                class="h-[38px] w-28"
+                items={fixedSizeList}
+                bind:value={size}
+                placeholder={ $_('Ping.Size') }
+                size="sm"
+              />
+            {:else if mode === 'trace'}
+              <Select
+                class="h-[38px] w-28"
+                items={fixedSizeList}
+                bind:value={size}
+                placeholder={ $_('Ping.Size') }
+                size="sm"
+              />
+            {:else if mode === 'mtr'}
+              <Select
+                class="h-[38px] w-40"
+                items={mtrDurationList}
+                bind:value={count}
+                placeholder={ $_('Ping.Duration') || "測定期間" }
+                size="sm"
+              />
+              <Select
+                class="h-[38px] w-28"
+                items={fixedSizeList}
+                bind:value={size}
+                placeholder={ $_('Ping.Size') }
+                size="sm"
+              />
+            {/if}
+          </div>
         </div>
         <div id="pingChart" class="mb-2"></div>
         <div><table id="pingTable" class="display compact" style="width:99%"></table></div>
