@@ -98,13 +98,13 @@ export const showMtrProfileChart = (div: string, mtrList: MTRHopStat[]) => {
       },
     },
     grid: {
-      left: '6%',
-      right: '6%',
-      top: 45,
-      bottom: 60,
+      left: '5%',
+      right: '5%',
+      top: 30,
+      bottom: 42,
     },
     legend: {
-      top: 15,
+      top: 5,
       data: [
         $_('Ping.Avg') || 'Avg RTT (ms)',
         'RTT Range (Best-Wrst)',
@@ -121,7 +121,7 @@ export const showMtrProfileChart = (div: string, mtrList: MTRHopStat[]) => {
       axisLabel: {
         color: '#ccc',
         fontSize: 9,
-        rotate: hops.length > 10 ? 30 : 0,
+        rotate: hops.length > 12 ? 25 : 0,
       },
       axisLine: {
         lineStyle: {

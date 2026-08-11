@@ -278,7 +278,7 @@
       paging: false,
       searching: false,
       info: false,
-      scrollY: "18vh",
+      scrollY: "90px",
       scrollCollapse: true,
       data: mtrHops,
       order: [[0, "asc"]],
@@ -874,16 +874,16 @@
               { $_('Ping.MTR') || "MTR" }
             </div>
           {/snippet}
-          <div class="flex flex-col space-y-4 max-h-[65vh] overflow-y-auto pr-1">
+          <div class="flex flex-col space-y-2.5 max-h-[60vh] overflow-y-auto pt-0 pb-1 pr-1">
             <!-- ① 経路トポロジー・フローマップ (Hop Flow Diagram) -->
-            <div class="bg-gray-800/80 p-3 rounded-lg border border-gray-700 overflow-x-auto">
-              <div class="text-xs font-bold text-gray-300 mb-2 flex items-center gap-2">
+            <div class="flex-shrink-0 bg-gray-800/80 p-2.5 rounded-lg border border-gray-700 overflow-x-auto">
+              <div class="text-xs font-bold text-gray-300 mb-1.5 flex items-center gap-2">
                 <Icon path={icons.mdiSourceBranch} size={0.8} />
                 {$_('Ping.MTRProfile') || "Route Hop Flow"}
               </div>
               <div class="flex items-center gap-3 min-w-max pb-1">
                 {#each mtrHops as hop, idx}
-                  <div class={`flex flex-col p-2.5 rounded-lg border text-xs min-w-[140px] shadow-sm transition-all ${
+                  <div class={`flex flex-col p-2 rounded-lg border text-xs min-w-[135px] shadow-sm transition-all ${
                     hop.lossRate > 20
                       ? 'bg-red-950/60 border-red-500/80 text-red-200'
                       : hop.lossRate > 0
@@ -906,7 +906,7 @@
                     {#if hop.loc}
                       <div class="text-[10px] text-gray-400 truncate">{hop.loc}</div>
                     {/if}
-                    <div class="mt-2 pt-1.5 border-t border-gray-700/60 flex justify-between items-center text-[11px]">
+                    <div class="mt-1.5 pt-1 border-t border-gray-700/60 flex justify-between items-center text-[11px]">
                       <span>Loss: <strong class={hop.lossRate > 0 ? (hop.lossRate > 20 ? 'text-red-400' : 'text-amber-400') : 'text-emerald-400'}>{hop.lossRate.toFixed(1)}%</strong></span>
                       <span>Avg: <strong>{hop.avg >= 0 ? hop.avg.toFixed(1) + 'ms' : 'N/A'}</strong></span>
                     </div>
@@ -921,12 +921,12 @@
             </div>
 
             <!-- ② MTR 統計 DataTables (プロジェクトルール: divで囲む) -->
-            <div>
-              <table id="mtrTable" class="display compact" style="width:99%"></table>
+            <div class="flex-shrink-0 block w-full border border-gray-700/60 rounded-lg overflow-hidden p-0.5 bg-gray-900/40">
+              <table id="mtrTable" class="display compact" style="width:100%"></table>
             </div>
 
             <!-- ③ MTR ホップ別プロファイルチャート -->
-            <div id="mtrChart" class="w-full"></div>
+            <div id="mtrChart" class="flex-shrink-0 block w-full" style="height: 180px; min-height: 180px;"></div>
           </div>
         </TabItem>
       {/if}
@@ -1065,8 +1065,8 @@
     margin: 0 auto;
   }
   #mtrChart {
-    min-height: 240px;
-    height: 28vh;
+    min-height: 180px;
+    height: 180px;
     width: 98%;
     margin: 0 auto;
   }
