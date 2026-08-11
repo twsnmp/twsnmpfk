@@ -424,28 +424,34 @@ To edit the line, press the two nodes while pressing the shift key on the map sc
 
 ### PING
 
-This is the screen to execute ping.
-To get a location information, you need a Geoip database file.
+This is the screen to execute ping diagnostics. Four operation modes are available: Normal Ping, Smoke (jitter analysis), Traceroute, and MTR (real-time per-hop metrics).
+To get location information, a GeoIP database file is required.
 
 ![](./images/en/map_ping.png)
 
 
 | Items | Contents |
 | ---- | ---- |
-| IP address | This is the IP address to run ping.|
-| Number of times | Ping is the number of execution times.|
-| Size | Ping packet size.<br> The change mode is executed while increasing the size.|
-| TTL | TTL value of ping packet.<br> The trace route runs while increasing the TTL value.|
-|Result Graph | Ping's execution result is a graph of the response time, TTL value.|
+| Operation Mode | Select the execution mode (Normal Ping, Smoke, Traceroute, MTR). |
+| IP address | The target IP address or hostname to run ping. |
+| Count / Duration | Number of execution times for Normal Ping, or duration (1 min, 3 min, 5 min, 10 min, Continuous) for Smoke and MTR modes. |
+| Size | Ping packet payload size.<br> Select "Inc Size" in Normal Ping to run pings with increasing packet size. |
+| TTL | TTL value of ping packets (configurable in Normal Ping mode). |
+| Result Graph | Time-series graph of ping response time and TTL values. |
+| Results | Ping execution log results.<br> Timestamp, response time, size, Tx/Rx TTL, source IP, location. |
+| Beep | Notify ping execution results with sound. |
+| Start | Start ping in the selected mode. |
+| Stop | Stop ping. |
+| AI Explain | Send displayed charts and report data to AI (LLM) for automated diagnostic analysis. |
+| Close | Close the ping window. |
 
-| Items | Contents |
-| ---- | ---- |
-| Results | Ping execution results.<br> As a result, the date and time of implementation, the response time, the size, the transmission reception TTL, the source IP, the location |
-| Beep | Ping will be informed by sound.|
-| Start | Start ping.|
-| Stop | Ping stops.|
-| Close | Ends ping.|
+#### MTR (My Traceroute)
 
+Automatically discovers all router hops along the path to the target, and performs continuous ping sampling to each hop. Displays per-hop metrics (Sent, Avg, Best, Worst, StDev, Loss %) and a hop latency profile chart.
+
+#### Smokeping
+
+Measures and visualizes latency variation (jitter), min/max/median response times, and packet loss intensity using high-frequency pings (200ms interval) with color gradient charts.
 
 ####  PING Histogram
 
@@ -471,7 +477,7 @@ This is a report that predicts the line speed.
 
 #### PING Route analysis
 
-Display location information.It cannot be displayed without a GEOIP database.
+Display location information. It cannot be displayed without a GEOIP database.
 
 ![](./images/en/map_ping_ping_route_analysis.png)
 
