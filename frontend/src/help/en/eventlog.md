@@ -46,6 +46,8 @@ Screen displaying system and monitoring event logs. A time-series graph showing 
 
 ## Report Descriptions
 
+* **Downtime & SLA**
+  Report displaying overall SLA (availability %), total incidents count, MTTR (Mean Time To Recovery), max/total downtime, and node-by-node SLA ranking chart and detail table based on polling failure and repair events.
 * **By State**
   Distribution chart of event logs by severity level.
 * **Heatmap**
@@ -57,4 +59,5 @@ Screen displaying system and monitoring event logs. A time-series graph showing 
 * **ARP Watch**
   Time-series chart of address usage rates from "arpwatch" events.
 * **[AI Explain]**
-  Sends current event log data, top problem nodes, and severity breakdowns to AI (LLM) for health diagnostics and remediation advice (only visible when AI integration is enabled).
+  Sends current event log data, top problem nodes, SLA performance, and severity breakdowns to AI (LLM) for health diagnostics and remediation advice (only visible when AI integration is enabled).
+

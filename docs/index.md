@@ -1043,6 +1043,10 @@ This is a dialog that specifies the search conditions for the event log.
 
 > The string can be searched by regular expression.
 
+### Event log downtime & SLA
+
+An aggregate report analyzing overall SLA (Availability %), total incidents count, MTTR (Mean Time To Recovery), max/total downtime, and node-by-node SLA/downtime ranking chart and detail table based on polling failure and repair events.
+
 ### Event log count by state
 
 This is a report of the number of event logs by state (level).
