@@ -628,8 +628,8 @@ export const calcEventLogDowntimeAndSLA = (logs: any) => {
     };
   }
 
-  // polling タイプのログのみに限定
-  const pollingLogs = logs.filter((l: any) => l.Type === 'polling');
+  // polling タイプのログのみに限定 (unknown レベルのログは除外)
+  const pollingLogs = logs.filter((l: any) => l.Type === 'polling' && l.Level !== 'unknown');
   if (pollingLogs.length === 0) {
     return {
       totalIncidents: 0,

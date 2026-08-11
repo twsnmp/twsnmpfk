@@ -1250,7 +1250,7 @@ func (a *App) LLMExplainEventLogReport(logs []*datastore.EventLogEnt, tab string
 		sb.WriteString("\n## Downtime & SLA Analysis (Polling Events, Repair-Only Recovery, Interval Merged)\n")
 		var pollingLogs []*datastore.EventLogEnt
 		for _, l := range logs {
-			if l.Type == "polling" {
+			if l.Type == "polling" && l.Level != "unknown" {
 				pollingLogs = append(pollingLogs, l)
 			}
 		}

@@ -449,9 +449,21 @@ To get location information, a GeoIP database file is required.
 
 Automatically discovers all router hops along the path to the target, and performs continuous ping sampling to each hop. Displays per-hop metrics (Sent, Avg, Best, Worst, StDev, Loss %) and a hop latency profile chart.
 
+![](./images/en/map_ping_mtr.png)
+
+##### MTR AI Explanation
+
+Sends the MTR path metrics, hop-by-hop latency, and packet loss statistics to AI (LLM) for automated path diagnostics, problem locus identification, and actionable network troubleshooting advice.
+
+![](./images/en/map_ping_mtr_ai.png)
+
+
 #### Smokeping
 
 Measures and visualizes latency variation (jitter), min/max/median response times, and packet loss intensity using high-frequency pings (200ms interval) with color gradient charts.
+
+![](./images/en/map_ping_smokeping.png)
+
 
 ####  PING Histogram
 
@@ -1052,6 +1064,8 @@ This is a dialog that specifies the search conditions for the event log.
 ### Event log downtime & SLA
 
 An aggregate report analyzing overall SLA (Availability %), total incidents count, MTTR (Mean Time To Recovery), max/total downtime, and node-by-node SLA/downtime ranking chart and detail table based on polling failure and repair events.
+
+![](./images/en/eventlog_downtime_sla.png)
 
 ### Event log count by state
 
