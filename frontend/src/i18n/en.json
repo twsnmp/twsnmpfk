@@ -775,6 +775,7 @@
     "Smoke10m": "Smoke (10 min)",
     "SmokeCont": "Smoke (Continuous)",
     "Jitter": "Jitter",
+    "Start": "Start",
     "Stop": "Stop",
     "TimeStamp": "Time",
     "Unknown": "Unknown",

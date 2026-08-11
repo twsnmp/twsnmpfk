@@ -769,7 +769,10 @@
     "StDev": "標準偏差(ms)",
     "Loss": "ロス率",
     "Bottleneck": "ボトルネック",
-    "Help": "ヘルプ"
+    "Help": "ヘルプ",
+    "Start": "開始",
+    "Stop": "停止",
+    "Close": "閉じる"
   },
   "Polling": {
     "Name": "名前",
