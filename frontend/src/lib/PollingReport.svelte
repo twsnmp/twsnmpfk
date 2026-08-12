@@ -37,7 +37,12 @@
     getTableLang,
     renderTime,
     renderState,
+    renderDuration,
   } from "./common";
+  import {
+    calcSinglePollingDowntimeAndSLA,
+    showSinglePollingDowntimeChart,
+  } from "./chart/eventlog";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { showAIHeatMap } from "./chart/ai";
@@ -62,15 +67,34 @@
   let pollingLogTable: any = undefined;
   let resultTable: any = undefined;
   let resultData: any = [];
+  let downtimeTable: any = undefined;
+  let downtimeStats = {
+    totalIncidents: 0,
+    ongoingIncidents: 0,
+    totalDowntimeSec: 0,
+    maxDowntimeSec: 0,
+    mttrSec: 0,
+    overallSLA: 100,
+    incidents: [] as any[],
+  };
 
   let chart: any = undefined;
   let selectedTab = "";
 
+  const clearDowntimeTable = () => {
+    if (downtimeTable) {
+      downtimeTable.destroy();
+      downtimeTable = undefined;
+    }
+  };
+
   const close = () => {
+    clearDowntimeTable();
     show = false;
   };
 
   const onOpen = async () => {
+    clearDowntimeTable();
     polling = undefined;
     node = undefined;
     logs = undefined;
@@ -229,6 +253,67 @@
     chart = showAIHeatMap("ai", aiResult.ScoreData);
   };
 
+  const showDowntime = async () => {
+    selectedTab = "downtime";
+    clearDowntimeTable();
+    downtimeStats = calcSinglePollingDowntimeAndSLA(logs);
+    await tick();
+    chart = showSinglePollingDowntimeChart("pollingDowntimeChart", logs);
+    await initDowntimeTable();
+  };
+
+  const initDowntimeTable = async () => {
+    if (!document.getElementById("pollingDowntimeTable")) {
+      return;
+    }
+    const data = downtimeStats.incidents.map((inc: any, idx: number) => {
+      const stStr = renderTime(inc.startTime, "");
+      const etStr = inc.ongoing
+        ? $_("EventLogReport.Ongoing") || "障害発生中"
+        : renderTime(inc.endTime, "");
+      const durStr = renderDuration(inc.durationSec, "");
+      return {
+        no: `#${downtimeStats.incidents.length - idx}`,
+        level: inc.level,
+        start: stStr,
+        end: etStr,
+        duration: durStr,
+      };
+    });
+    clearDowntimeTable();
+    downtimeTable = new DataTable("#pollingDowntimeTable", {
+      destroy: true,
+      data: data,
+      stateSave: true,
+      order: [[0, "desc"]],
+      language: getTableLang(),
+      columns: [
+        { data: "no", title: "#", width: "10%" },
+        {
+          data: "level",
+          title: $_("PollingReport.State") || "State",
+          width: "15%",
+          render: renderState,
+        },
+        {
+          data: "start",
+          title: $_("EventLogReport.StartTime") || "開始日時",
+          width: "25%",
+        },
+        {
+          data: "end",
+          title: $_("EventLogReport.EndTime") || "復旧日時",
+          width: "25%",
+        },
+        {
+          data: "duration",
+          title: $_("EventLogReport.TotalDowntime") || "障害時間",
+          width: "25%",
+        },
+      ],
+    });
+  };
+
   const resizeChart = () => {
     if (chart) {
       chart.resize();
@@ -379,6 +464,81 @@
           </div>
         </TabItem>
         {#if polling.LogMode > 0}
+          <TabItem onclick={showDowntime}>
+            {#snippet titleSlot()}
+              <div class="flex items-center gap-2">
+                <Icon path={icons.mdiClockAlertOutline} size={1} />
+                {$_("PollingReport.Downtime")}
+              </div>
+            {/snippet}
+            <div class="flex flex-col space-y-3 w-full p-1">
+              <!-- Compact Summary Cards -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-1">
+                <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+                  <div class="text-xs text-gray-400 font-semibold mb-0.5">
+                    {$_("EventLogReport.OverallSLA")}
+                  </div>
+                  <div
+                    class="text-lg font-bold {downtimeStats.overallSLA >= 99.9
+                      ? 'text-green-400'
+                      : downtimeStats.overallSLA >= 99.0
+                      ? 'text-yellow-400'
+                      : 'text-red-400'}"
+                  >
+                    {downtimeStats.overallSLA.toFixed(3)}%
+                  </div>
+                </div>
+                <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+                  <div class="text-xs text-gray-400 font-semibold mb-0.5">
+                    {$_("EventLogReport.TotalIncidents")}
+                  </div>
+                  <div class="text-lg font-bold text-blue-400">
+                    {downtimeStats.totalIncidents}
+                    <span class="text-xs font-normal text-gray-400">
+                      ({$_("EventLogReport.OngoingIncidents")}: {downtimeStats.ongoingIncidents})
+                    </span>
+                  </div>
+                </div>
+                <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+                  <div class="text-xs text-gray-400 font-semibold mb-0.5">
+                    {$_("EventLogReport.MTTR")}
+                  </div>
+                  <div class="text-lg font-bold text-teal-400">
+                    {renderDuration(downtimeStats.mttrSec)}
+                  </div>
+                </div>
+                <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+                  <div class="text-xs text-gray-400 font-semibold mb-0.5">
+                    {$_("EventLogReport.MaxDowntime")} / {$_("EventLogReport.TotalDowntime")}
+                  </div>
+                  <div class="text-xs font-bold text-red-400 mt-1">
+                    {renderDuration(downtimeStats.maxDowntimeSec)}
+                    <span class="text-xs font-normal text-gray-400">
+                      / {renderDuration(downtimeStats.totalDowntimeSec)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2 Columns Grid: Graph & Table -->
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 w-full items-start">
+                <!-- Left Column: ECharts Graph (5 cols) -->
+                <div class="lg:col-span-5 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 shadow-inner">
+                  <div id="pollingDowntimeChart" class="w-full h-[360px]"></div>
+                </div>
+
+                <!-- Right Column: Detailed Table (7 cols) wrapped in div (AGENTS.md Rule) -->
+                <div class="lg:col-span-7 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 overflow-x-auto shadow-inner">
+                  <div>
+                    <table
+                      id="pollingDowntimeTable"
+                      class="display compact w-full text-xs text-left text-gray-300"
+                    ></table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabItem>
           <TabItem onclick={showLog}>
             {#snippet titleSlot()}
         <div class="flex items-center gap-2">

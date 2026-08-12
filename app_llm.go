@@ -1872,6 +1872,89 @@ func (a *App) LLMExplainPollingReport(nodeID string) *LLMResp {
 	sb.WriteString(fmt.Sprintf("# Polling Report: %s (Type: %s, State: %s)\n\n", p.Name, p.Type, p.State))
 	logs := a.GetPollingLogs(nodeID)
 	sb.WriteString(fmt.Sprintf("Total Recent Polling Logs: %d\n", len(logs)))
+
+	if len(logs) > 0 {
+		var isDown bool
+		var downStart int64
+		var totalDowntimeSec, maxDowntimeSec, totalRecoveredSec float64
+		var incidents, ongoing, recoveredCount int
+
+		sorted := make([]datastore.PollingLogEnt, len(logs))
+		copy(sorted, logs)
+		sort.Slice(sorted, func(i, j int) bool {
+			return sorted[i].Time < sorted[j].Time
+		})
+		minTime := sorted[0].Time
+		maxTime := sorted[len(sorted)-1].Time
+		totalSpanSec := float64(maxTime-minTime) / 1e9
+		if totalSpanSec <= 0 {
+			totalSpanSec = 1
+		}
+
+		isFailure := func(st string) bool {
+			return st == "high" || st == "low" || st == "warn" || st == "error" || st == "down"
+		}
+
+		for idx, l := range sorted {
+			if isFailure(l.State) {
+				if !isDown {
+					isDown = true
+					downStart = l.Time
+				}
+			} else if l.State == "repair" || l.State == "normal" || l.State == "up" || l.State == "info" {
+				if isDown {
+					durSec := float64(l.Time-downStart) / 1e9
+					totalDowntimeSec += durSec
+					if durSec > maxDowntimeSec {
+						maxDowntimeSec = durSec
+					}
+					totalRecoveredSec += durSec
+					recoveredCount++
+					incidents++
+					isDown = false
+				} else if idx == 0 && l.State == "repair" {
+					durSec := float64(l.Time-minTime) / 1e9
+					if durSec > 0 {
+						totalDowntimeSec += durSec
+						if durSec > maxDowntimeSec {
+							maxDowntimeSec = durSec
+						}
+						totalRecoveredSec += durSec
+						recoveredCount++
+						incidents++
+					}
+				}
+			}
+		}
+		if isDown {
+			durSec := float64(maxTime-downStart) / 1e9
+			totalDowntimeSec += durSec
+			if durSec > maxDowntimeSec {
+				maxDowntimeSec = durSec
+			}
+			incidents++
+			ongoing++
+		}
+
+		sla := (1.0 - totalDowntimeSec/totalSpanSec) * 100.0
+		if sla < 0 {
+			sla = 0
+		} else if sla > 100 {
+			sla = 100
+		}
+		var mttr float64
+		if recoveredCount > 0 {
+			mttr = totalRecoveredSec / float64(recoveredCount)
+		}
+
+		sb.WriteString("\n## Downtime & SLA Analysis (Polling Logs)\n")
+		sb.WriteString(fmt.Sprintf("- SLA (Availability): %.3f%%\n", sla))
+		sb.WriteString(fmt.Sprintf("- Total Incidents: %d (Ongoing: %d)\n", incidents, ongoing))
+		sb.WriteString(fmt.Sprintf("- MTTR: %.1f sec (%.2f min)\n", mttr, mttr/60.0))
+		sb.WriteString(fmt.Sprintf("- Total Downtime: %.1f sec (%.2f min)\n", totalDowntimeSec, totalDowntimeSec/60.0))
+		sb.WriteString(fmt.Sprintf("- Max Downtime: %.1f sec (%.2f min)\n\n", maxDowntimeSec, maxDowntimeSec/60.0))
+	}
+
 	for i, l := range logs {
 		if i >= 30 {
 			break
@@ -1880,9 +1963,9 @@ func (a *App) LLMExplainPollingReport(nodeID string) *LLMResp {
 		sb.WriteString(fmt.Sprintf("- Time: %s | State: %s | Result: %v\n", tStr, l.State, formatPollingResultForLLM(l.Result)))
 	}
 
-	system := "You are a polling monitoring expert. Analyze the polling report data and explain monitor item health, failure rates, latency issues, and recommended fixes."
+	system := "You are a polling monitoring expert. Analyze the polling report data and explain monitor item health, failure rates, latency issues, SLA performance, and recommended fixes."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはポーリング監視の専門家です。提示されたポーリングレポートデータを分析し、監視項目の健全性、エラー発生状況、応答遅延の傾向、および推奨される改善策について、必ず日本語で分かりやすく解説・回答してください。"
+		system = "あなたはポーリング監視の専門家です。提示されたポーリングレポートデータ（ダウンタイムとSLA指標含む）を分析し、監視項目の健全性、エラー発生状況、SLA/ダウンタイム、応答遅延の傾向、および推奨される改善策について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }

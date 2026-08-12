@@ -436,23 +436,24 @@
     "Start": "Start",
     "AIAnalyze": "AI Investigation"
   },
-  "EventLogREport": {
-    "Oprate": "Oparation rate"
-  },
   "EventLogReport": {
     "ArpWatch": "Arp watch",
     "Close": "Close",
     "CountByNode": "Count by node",
     "CountByState": "Count by level",
     "Downtime": "Downtime & SLA",
+    "DowntimeMin": "Downtime (min)",
     "DowntimeRanking": "Downtime / SLA by Node",
+    "EndTime": "End Time",
     "Heatmap": "Heatmap",
+    "Incident": "Incident",
     "MaxDowntime": "Max Downtime",
     "MTTR": "MTTR (Mean Time To Recovery)",
     "Ongoing": "Ongoing",
     "OngoingIncidents": "Ongoing",
     "Oprate": "Operation rate",
     "OverallSLA": "Overall SLA (Availability)",
+    "StartTime": "Start Time",
     "Status": "Status",
     "TotalDowntime": "Total Downtime",
     "TotalIncidents": "Total Incidents"
@@ -864,7 +865,8 @@
     "State": "State",
     "Time": "Time",
     "TimeChart": "Time chart",
-    "QQPlot": "QQ Plot"
+    "QQPlot": "QQ Plot",
+    "Downtime": "Downtime & SLA"
   },
   "Syslog": {
     "Host": "Host",

@@ -740,7 +740,7 @@ func (a *App) ExportMap(format string, pngBase64 string) (string, error) {
 				Title:   i18n.Trans("Export MAP"),
 				Message: errStr,
 			})
-			return "", fmt.Errorf(errStr)
+			return "", fmt.Errorf("%s", errStr)
 		}
 		pngBytes = decoded
 	}
@@ -754,7 +754,7 @@ func (a *App) ExportMap(format string, pngBase64 string) (string, error) {
 				Title:   i18n.Trans("Export MAP"),
 				Message: errStr,
 			})
-			return "", fmt.Errorf(errStr)
+			return "", fmt.Errorf("%s", errStr)
 		}
 		if err := os.WriteFile(selectedFile, pngBytes, 0600); err != nil {
 			wails.MessageDialog(a.ctx, wails.MessageDialogOptions{
@@ -943,7 +943,7 @@ func (a *App) ExportMap(format string, pngBase64 string) (string, error) {
 				Title:   i18n.Trans("Export MAP"),
 				Message: errStr,
 			})
-			return "", fmt.Errorf(errStr)
+			return "", fmt.Errorf("%s", errStr)
 		}
 		tmpFile, err := os.CreateTemp("", "twsnmpfk-*.png")
 		if err != nil {
@@ -977,7 +977,7 @@ func (a *App) ExportMap(format string, pngBase64 string) (string, error) {
 				Title:   i18n.Trans("Export MAP"),
 				Message: errStr,
 			})
-			return "", fmt.Errorf(errStr)
+			return "", fmt.Errorf("%s", errStr)
 		}
 
 		if err := pdf.WritePdf(selectedFile); err != nil {

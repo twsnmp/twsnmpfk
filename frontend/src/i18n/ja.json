@@ -438,10 +438,12 @@
     "DowntimeRanking": "ノード別ダウンタイム / SLA Ranking",
     "Status": "ステータス",
     "Ongoing": "障害発生中",
-    "Close": "閉じる"
-  },
-  "EventLogREport": {
-    "Oprate": "稼働率"
+    "Close": "閉じる",
+    "Oprate": "稼働率",
+    "StartTime": "開始日時",
+    "EndTime": "復旧日時",
+    "Incident": "インシデント",
+    "DowntimeMin": "ダウンタイム (分)"
   },
   "Line": {
     "EditLine": "ラインの編集",
@@ -843,7 +845,8 @@
     "SelectVal": "変数を選択",
     "AI": "AI分析",
     "Close": "閉じる",
-    "QQPlot": "QQプロット"
+    "QQPlot": "QQプロット",
+    "Downtime": "ダウンタイム・SLA"
   },
   "Syslog": {
     "Level": "レベル",

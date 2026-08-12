@@ -882,24 +882,30 @@ export const showEventLogDowntimeChart = (div: string, logs: any) => {
     },
     legend: {
       top: 5,
-      data: ['Downtime (min)', 'SLA (%)'],
+      data: [$_('EventLogReport.DowntimeMin') || 'ダウンタイム (分)', 'SLA (%)'],
       textStyle: {
         fontSize: 10,
         color: '#ccc',
       },
     },
     grid: {
-      left: '3%',
-      right: '12%',
-      top: '15%',
-      bottom: '12%',
+      left: 15,
+      right: 35,
+      top: 45,
+      bottom: 45,
       containLabel: true,
     },
     xAxis: [
       {
         type: 'value',
-        name: 'Downtime (min)',
+        name: $_('EventLogReport.DowntimeMin') || 'ダウンタイム (分)',
         position: 'bottom',
+        nameLocation: 'center',
+        nameGap: 25,
+        nameTextStyle: {
+          color: '#ccc',
+          fontSize: 9,
+        },
         axisLabel: {
           color: '#ccc',
           fontSize: 9,
@@ -911,6 +917,12 @@ export const showEventLogDowntimeChart = (div: string, logs: any) => {
         min: 0,
         max: 100,
         position: 'top',
+        nameLocation: 'center',
+        nameGap: 25,
+        nameTextStyle: {
+          color: '#ccc',
+          fontSize: 9,
+        },
         axisLabel: {
           color: '#ccc',
           fontSize: 9,
@@ -931,7 +943,7 @@ export const showEventLogDowntimeChart = (div: string, logs: any) => {
     },
     series: [
       {
-        name: 'Downtime (min)',
+        name: $_('EventLogReport.DowntimeMin') || 'ダウンタイム (分)',
         type: 'bar',
         color: '#e31a1c',
         data: downtimeData,
@@ -1192,24 +1204,30 @@ export const showNodeDowntimeChart = (div: string, logs: any) => {
     },
     legend: {
       top: 5,
-      data: ['Downtime (min)', 'SLA (%)'],
+      data: [$_('EventLogReport.DowntimeMin') || 'ダウンタイム (分)', 'SLA (%)'],
       textStyle: {
         fontSize: 10,
         color: '#ccc',
       },
     },
     grid: {
-      left: '3%',
-      right: '12%',
-      top: '15%',
-      bottom: '12%',
+      left: 15,
+      right: 35,
+      top: 45,
+      bottom: 45,
       containLabel: true,
     },
     xAxis: [
       {
         type: 'value',
-        name: 'Downtime (min)',
+        name: $_('EventLogReport.DowntimeMin') || 'ダウンタイム (分)',
         position: 'bottom',
+        nameLocation: 'center',
+        nameGap: 25,
+        nameTextStyle: {
+          color: '#ccc',
+          fontSize: 9,
+        },
         axisLabel: {
           color: '#ccc',
           fontSize: 9,
@@ -1221,6 +1239,12 @@ export const showNodeDowntimeChart = (div: string, logs: any) => {
         min: 0,
         max: 100,
         position: 'top',
+        nameLocation: 'center',
+        nameGap: 25,
+        nameTextStyle: {
+          color: '#ccc',
+          fontSize: 9,
+        },
         axisLabel: {
           color: '#ccc',
           fontSize: 9,
@@ -1241,7 +1265,7 @@ export const showNodeDowntimeChart = (div: string, logs: any) => {
     },
     series: [
       {
-        name: 'Downtime (min)',
+        name: $_('EventLogReport.DowntimeMin') || 'ダウンタイム (分)',
         type: 'bar',
         color: '#e31a1c',
         data: downtimeData,
@@ -1270,6 +1294,230 @@ export const showNodeDowntimeChart = (div: string, logs: any) => {
   chart.resize();
   return chart;
 };
+
+export const calcSinglePollingDowntimeAndSLA = (logs: any) => {
+  if (!logs || logs.length === 0) {
+    return {
+      totalIncidents: 0,
+      ongoingIncidents: 0,
+      totalDowntimeSec: 0,
+      maxDowntimeSec: 0,
+      mttrSec: 0,
+      overallSLA: 100,
+      incidents: [] as DowntimeIncident[],
+    };
+  }
+
+  const sortedLogs = [...logs].sort((a: any, b: any) => a.Time - b.Time);
+  const minTime = sortedLogs[0].Time;
+  const maxTime = sortedLogs[sortedLogs.length - 1].Time;
+  let totalSpanSec = (maxTime - minTime) / (1000 * 1000 * 1000);
+  if (totalSpanSec <= 0) {
+    totalSpanSec = 1;
+  }
+
+  const isFailure = (state: string) =>
+    state === 'high' || state === 'low' || state === 'warn' || state === 'error' || state === 'down';
+
+  let isDown = false;
+  let downStart = 0;
+  let downLevel = 'high';
+  let lastState = 'normal';
+  const intervals: TimeInterval[] = [];
+  const incidents: DowntimeIncident[] = [];
+  let totalRecoveredSec = 0;
+  let recoveredCount = 0;
+
+  sortedLogs.forEach((l: any, idx: number) => {
+    lastState = l.State || 'normal';
+
+    if (isFailure(l.State)) {
+      if (!isDown) {
+        isDown = true;
+        downStart = l.Time;
+        downLevel = l.State;
+      }
+    } else if (l.State === 'repair' || l.State === 'normal' || l.State === 'up' || l.State === 'info') {
+      if (isDown) {
+        const durSec = Math.max(0, (l.Time - downStart) / (1000 * 1000 * 1000));
+        intervals.push({ start: downStart, end: l.Time, ongoing: false });
+        incidents.push({
+          nodeID: '',
+          nodeName: '',
+          event: '',
+          level: downLevel,
+          startTime: downStart,
+          endTime: l.Time,
+          durationSec: durSec,
+          ongoing: false,
+        });
+        totalRecoveredSec += durSec;
+        recoveredCount++;
+        isDown = false;
+      } else if (idx === 0 && l.State === 'repair') {
+        // ログの先頭（idx === 0）のみ、ログ記録前からの復旧として1回だけ判定
+        const durSec = Math.max(0, (l.Time - minTime) / (1000 * 1000 * 1000));
+        if (durSec > 0) {
+          intervals.push({ start: minTime, end: l.Time, ongoing: false });
+          incidents.push({
+            nodeID: '',
+            nodeName: '',
+            event: '',
+            level: 'repair',
+            startTime: minTime,
+            endTime: l.Time,
+            durationSec: durSec,
+            ongoing: false,
+            estimatedStart: true,
+          });
+          totalRecoveredSec += durSec;
+          recoveredCount++;
+        }
+      }
+    }
+  });
+
+  if (isDown) {
+    const durSec = Math.max(0, (maxTime - downStart) / (1000 * 1000 * 1000));
+    intervals.push({ start: downStart, end: maxTime, ongoing: true });
+    incidents.push({
+      nodeID: '',
+      nodeName: '',
+      event: '',
+      level: downLevel,
+      startTime: downStart,
+      endTime: maxTime,
+      durationSec: durSec,
+      ongoing: true,
+    });
+  }
+
+  const { totalSec, maxSec } = mergeIntervals(intervals);
+  const overallSLA = Math.max(0, Math.min(100, (1 - totalSec / totalSpanSec) * 100));
+  const mttrSec = recoveredCount > 0 ? totalRecoveredSec / recoveredCount : 0;
+  const ongoingCount = intervals.filter((i) => i.ongoing).length;
+
+  return {
+    totalIncidents: incidents.length,
+    ongoingIncidents: ongoingCount,
+    totalDowntimeSec: totalSec,
+    maxDowntimeSec: maxSec,
+    mttrSec,
+    overallSLA,
+    incidents: [...incidents].reverse(),
+  };
+};
+
+export const showSinglePollingDowntimeChart = (div: string, logs: any) => {
+  const stats = calcSinglePollingDowntimeAndSLA(logs);
+  const incidents = [...stats.incidents].reverse();
+
+  const categories: string[] = [];
+  const downtimeData: number[] = [];
+
+  incidents.forEach((_, idx) => {
+    categories.push(`#${idx + 1}`);
+    downtimeData.push(Number((incidents[idx].durationSec / 60).toFixed(1)));
+  });
+
+  if (chart) {
+    chart.dispose();
+  }
+  const el = document.getElementById(div);
+  if (!el) return null;
+
+  const dtMinTitle = $_('EventLogReport.DowntimeMin') || 'ダウンタイム (分)';
+  const incidentTitle = $_('EventLogReport.Incident') || 'インシデント';
+  const ongoingTitle = $_('EventLogReport.Ongoing') || '障害発生中';
+
+  chart = echarts.init(el, 'dark');
+  chart.setOption({
+    title: {
+      show: false,
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+      formatter: (params: any) => {
+        if (!params || params.length === 0) return '';
+        const idx = params[0].dataIndex;
+        const inc = incidents[idx];
+        if (!inc) return '';
+        const stDate = new Date(Math.floor(inc.startTime / (1000 * 1000)));
+        const stStr = echarts.time.format(stDate, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}', false);
+        let etStr = ongoingTitle;
+        if (!inc.ongoing) {
+          const etDate = new Date(Math.floor(inc.endTime / (1000 * 1000)));
+          etStr = echarts.time.format(etDate, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}', false);
+        }
+        const durMin = (inc.durationSec / 60).toFixed(1);
+        const stTitle = $_('EventLogReport.StartTime') || '開始日時';
+        const etTitle = $_('EventLogReport.EndTime') || '復旧日時';
+        const dtTitle = $_('EventLogReport.TotalDowntime') || '障害時間';
+        const statusTitle = $_('EventLogReport.Status') || 'ステータス';
+        return `<b>${incidentTitle} #${idx + 1}</b><br/>` +
+               `${statusTitle}: ${inc.level}<br/>` +
+               `${stTitle}: ${stStr}<br/>` +
+               `${etTitle}: ${etStr}<br/>` +
+               `${dtTitle}: ${durMin} m (${inc.durationSec.toFixed(0)} s)`;
+      },
+    },
+    grid: {
+      left: 45,
+      right: 40,
+      top: 40,
+      bottom: 30,
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'category',
+      data: categories,
+      name: incidentTitle,
+      nameLocation: 'center',
+      nameGap: 20,
+      nameTextStyle: {
+        color: '#ccc',
+        fontSize: 10,
+        fontWeight: 'bold',
+      },
+      axisLabel: {
+        color: '#ccc',
+        fontSize: 9,
+        rotate: 0,
+        interval: categories.length > 25 ? 'auto' : 0,
+      },
+    },
+    yAxis: {
+      type: 'value',
+      name: dtMinTitle,
+      nameLocation: 'end',
+      nameGap: 15,
+      nameTextStyle: {
+        color: '#ccc',
+        fontSize: 9,
+        align: 'left',
+        padding: [0, 0, 0, -25],
+      },
+      axisLabel: {
+        color: '#ccc',
+        fontSize: 9,
+      },
+    },
+    series: [
+      {
+        name: dtMinTitle,
+        type: 'bar',
+        color: '#e31a1c',
+        data: downtimeData,
+      },
+    ],
+  });
+  chart.resize();
+  return chart;
+};
+
 
 
 

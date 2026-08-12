@@ -46,6 +46,8 @@ Dialog for selecting a pre-defined monitoring template to add a new polling.
 
 * **Basic Info**
   Configuration details and summary of recent executions.
+* **Downtime & SLA**
+  Summary metrics including availability (SLA %), incident count (ongoing status), MTTR, max/total downtime calculated from polling logs, along with an incident timeline chart and detailed incident list table. Only displayed when log mode is enabled.
 * **Polling Log**
   Historical list of polling logs (only available if log mode is enabled).
 * **Time Chart**
