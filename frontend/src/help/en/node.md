@@ -48,10 +48,12 @@ Polling settings list screen for the selected node.
 
 * **Basic Info**
   Displays basic node profiles, overall statuses, and quick action buttons.
-* **Log**
-  Event logs related to the selected node.
+* **Downtime & SLA**
+  Displays overall node SLA (availability %), incident counts (with ongoing status), MTTR (mean time to recovery), max/total downtime summary cards, downtime & SLA ranking chart per polling item, and a detailed polling breakdown table.
 * **Memo**
   Free-text area for writing local notes or memos about the node.
+* **Log**
+  Event logs related to the selected node.
 * **Panel**
   Visual representation of the node's port layout (VPanel). Ports can be filtered to physical only, and the panel orientation can be rotated.
 * **Host Info**

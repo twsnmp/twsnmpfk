@@ -659,6 +659,14 @@ Memo about the node.
 ![](./images/en/node_list_memo.png)
 
 
+### Downtime & SLA
+
+An aggregate report analyzing overall node SLA (Availability %), total incidents count (with ongoing status), MTTR (Mean Time To Recovery), and max/total downtime based on the node's polling failure and recovery logs.
+Displays a dual-axis ranking chart of downtime (min) and SLA (%) per polling item on the left, alongside a detailed breakdown table on the right. Clicking `[AI Explain]` in the footer generates AI-powered availability analysis and operational recommendations.
+
+![](./images/en/node_list_downtime.png)
+
+
 ### node event log
 This is an event log related to the node.
 
