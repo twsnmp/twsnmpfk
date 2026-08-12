@@ -818,6 +818,13 @@ Basic information about polling.
 ![h:400 center](./images/en/polling_list_basic_information.png)
 
 ---
+### Downtime & SLA
+Calculates and displays overall SLA (Availability %), total incidents count (with ongoing status), MTTR (Mean Time To Recovery), and max/total downtime based on polling logs. Only displayed when log mode is enabled.
+<!-- _class: tinytext -->
+
+![h:400 center](./images/en/polling_report_downtime.png)
+
+---
 ### Polling log
 This is a log of the polling result.It is displayed only when the log mode is not output.
 <!-- _class: tinytext -->
