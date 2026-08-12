@@ -1288,7 +1288,7 @@ func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
 							isDown = true
 							downStart = l.Time
 						}
-					} else if l.Level == "repair" {
+					} else if l.Level == "repair" || l.Level == "normal" {
 						if isDown {
 							durSec := float64(l.Time-downStart) / 1e9
 							if durSec < 0 {
@@ -1300,7 +1300,7 @@ func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
 							incidentsCount++
 							allIncidentsCount++
 							isDown = false
-						} else {
+						} else if l.Level == "repair" {
 							durSec := float64(l.Time-minT) / 1e9
 							if durSec > 0 {
 								intervals = append(intervals, interval{start: minT, end: l.Time, ongoing: false})
@@ -1555,7 +1555,7 @@ func (a *App) LLMExplainEventLogReport(logs []*datastore.EventLogEnt, tab string
 							isDown = true
 							downStart = l.Time
 						}
-					} else if l.Level == "repair" {
+					} else if l.Level == "repair" || l.Level == "normal" {
 						if isDown {
 							dur := float64(l.Time-downStart) / 1e9
 							nodeIntervals[nKey] = append(nodeIntervals[nKey], interval{start: downStart, end: l.Time, ongoing: false})
@@ -1563,7 +1563,7 @@ func (a *App) LLMExplainEventLogReport(logs []*datastore.EventLogEnt, tab string
 							recoveredCount++
 							allIncidentsCount++
 							isDown = false
-						} else {
+						} else if l.Level == "repair" {
 							// 復旧のみ -> minT 開始
 							dur := float64(l.Time-minT) / 1e9
 							if dur > 0 {

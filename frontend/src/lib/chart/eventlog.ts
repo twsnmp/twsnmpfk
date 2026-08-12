@@ -725,7 +725,7 @@ export const calcEventLogDowntimeAndSLA = (logs: any) => {
           isDown = true;
           downStart = l.Time;
         }
-      } else if (isRepair(l.Level)) {
+      } else if (l.Level === 'repair' || l.Level === 'normal') {
         if (isDown) {
           const durSec = Math.max(0, (l.Time - downStart) / (1000 * 1000 * 1000));
           nData!.intervals.push({ start: downStart, end: l.Time, ongoing: false });
@@ -743,7 +743,7 @@ export const calcEventLogDowntimeAndSLA = (logs: any) => {
           recoveredCount++;
           allIncidentsCount++;
           isDown = false;
-        } else {
+        } else if (l.Level === 'repair') {
           // 復旧イベント(repair)のみ存在する場合 -> ログ開始時刻 minTime を仮の障害発生時刻とする
           const durSec = Math.max(0, (l.Time - minTime) / (1000 * 1000 * 1000));
           if (durSec > 0) {
@@ -1052,7 +1052,7 @@ export const calcNodeDowntimeAndSLA = (logs: any) => {
           isDown = true;
           downStart = l.Time;
         }
-      } else if (isRepair(l.Level)) {
+      } else if (l.Level === 'repair' || l.Level === 'normal') {
         if (isDown) {
           const durSec = Math.max(0, (l.Time - downStart) / (1000 * 1000 * 1000));
           intervals.push({ start: downStart, end: l.Time, ongoing: false });
@@ -1070,7 +1070,7 @@ export const calcNodeDowntimeAndSLA = (logs: any) => {
           recoveredCount++;
           allIncidentsCount++;
           isDown = false;
-        } else {
+        } else if (l.Level === 'repair') {
           const durSec = Math.max(0, (l.Time - minTime) / (1000 * 1000 * 1000));
           if (durSec > 0) {
             intervals.push({ start: minTime, end: l.Time, ongoing: false });
