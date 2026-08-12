@@ -1090,6 +1090,9 @@ func cleanPollingName(event string) string {
 		return ""
 	}
 	name := event
+	if idx := strings.Index(name, "["); idx >= 0 {
+		name = strings.TrimSpace(name[:idx])
+	}
 	if idx := strings.Index(name, ":"); idx >= 0 {
 		name = strings.TrimSpace(name[idx+1:])
 	}

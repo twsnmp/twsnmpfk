@@ -254,6 +254,7 @@ func doPolling(pe *datastore.PollingEnt) {
 func setPollingState(pe *datastore.PollingEnt, newState string) {
 	sendEvent := false
 	oldState := pe.State
+	var downtimeSec int64 = 0
 	if v, ok := pe.Result["_level"]; ok {
 		if l, ok := v.(string); ok {
 			log.Printf("setPollingState set level from JavaScript %s to %s", newState, l)
@@ -271,6 +272,13 @@ func setPollingState(pe *datastore.PollingEnt, newState string) {
 				pe.State = "normal"
 			} else {
 				pe.State = "repair"
+				if pe.FailTime > 0 {
+					downtimeSec = (time.Now().UnixNano() - pe.FailTime) / (1000 * 1000 * 1000)
+					if downtimeSec < 0 {
+						downtimeSec = 0
+					}
+					pe.FailTime = 0
+				}
 			}
 			sendEvent = true
 		}
@@ -281,6 +289,9 @@ func setPollingState(pe *datastore.PollingEnt, newState string) {
 		}
 	default:
 		if pe.State != newState {
+			if pe.State == "normal" || pe.State == "repair" || pe.State == "unknown" || pe.FailTime == 0 {
+				pe.FailTime = time.Now().UnixNano()
+			}
 			pe.State = newState
 			sendEvent = true
 		}
@@ -291,17 +302,50 @@ func setPollingState(pe *datastore.PollingEnt, newState string) {
 			nodeName = n.Name
 		}
 		datastore.SetNodeStateChanged(pe.NodeID)
+		eventMsg := fmt.Sprintf(i18n.Trans("Change polling state:%s(%s)"), pe.Name, pe.Type)
+		if pe.State == "repair" && downtimeSec > 0 {
+			eventMsg += fmt.Sprintf(" [%s: %s]", i18n.Trans("Downtime"), formatDowntime(downtimeSec))
+		}
 		l := &datastore.EventLogEnt{
 			Type:      "polling",
 			Level:     pe.State,
 			NodeID:    pe.NodeID,
 			NodeName:  nodeName,
 			LastLevel: oldState,
-			Event:     fmt.Sprintf(i18n.Trans("Change polling state:%s(%s)"), pe.Name, pe.Type),
+			Event:     eventMsg,
+			Downtime:  downtimeSec,
 		}
 		datastore.AddEventLog(l)
 		go doAction(pe)
 	}
+}
+
+func formatDowntime(sec int64) string {
+	if sec < 60 {
+		return fmt.Sprintf("%ds", sec)
+	}
+	m := sec / 60
+	s := sec % 60
+	if m < 60 {
+		if s > 0 {
+			return fmt.Sprintf("%dm %ds", m, s)
+		}
+		return fmt.Sprintf("%dm", m)
+	}
+	h := m / 60
+	m = m % 60
+	if h < 24 {
+		if m > 0 {
+			return fmt.Sprintf("%dh %dm", h, m)
+		}
+		return fmt.Sprintf("%dh", h)
+	}
+	d := h / 24
+	h = h % 24
+	if h > 0 {
+		return fmt.Sprintf("%dd %dh", d, h)
+	}
+	return fmt.Sprintf("%dd", d)
 }
 
 func doAction(pe *datastore.PollingEnt) {

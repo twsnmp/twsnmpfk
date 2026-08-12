@@ -63,10 +63,10 @@ func init() {
 	flag.StringVar(&datastore.MqttKey, "mqttKey", "", "MQTT server key path")
 	flag.StringVar(&datastore.MqttFrom, "mqttFrom", "", "MQTT client IP")
 	flag.StringVar(&datastore.MqttUsers, "mqttUsers", "", "MQTT user and password")
-	flag.Parse()
 }
 
 func main() {
+	flag.Parse()
 	args := flag.Args()
 	if len(args) == 3 && args[0] == "compact" {
 		log.Println("start compact DB")

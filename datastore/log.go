@@ -31,6 +31,7 @@ type EventLogEnt struct {
 	NodeID    string `json:"NodeID"`
 	Event     string `json:"Event"`
 	LastLevel string `json:"LastLevel"`
+	Downtime  int64  `json:"Downtime,omitempty"`
 }
 
 type LogEnt struct {

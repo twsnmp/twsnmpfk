@@ -35,6 +35,7 @@ type PollingEnt struct {
 	MqttURL      string                 `json:"MqttURL"`
 	MqttTopic    string                 `json:"MqttTopic"`
 	MqttCols     string                 `json:"MqttCols"`
+	FailTime     int64                  `json:"FailTime"`
 }
 
 type PollingLogEnt struct {

@@ -534,6 +534,7 @@ export namespace datastore {
 	    NodeID: string;
 	    Event: string;
 	    LastLevel: string;
+	    Downtime?: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new EventLogEnt(source);
@@ -548,6 +549,7 @@ export namespace datastore {
 	        this.NodeID = source["NodeID"];
 	        this.Event = source["Event"];
 	        this.LastLevel = source["LastLevel"];
+	        this.Downtime = source["Downtime"];
 	    }
 	}
 	export class IconEnt {
@@ -1275,6 +1277,7 @@ export namespace datastore {
 	    MqttURL: string;
 	    MqttTopic: string;
 	    MqttCols: string;
+	    FailTime: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new PollingEnt(source);
@@ -1307,6 +1310,7 @@ export namespace datastore {
 	        this.MqttURL = source["MqttURL"];
 	        this.MqttTopic = source["MqttTopic"];
 	        this.MqttCols = source["MqttCols"];
+	        this.FailTime = source["FailTime"];
 	    }
 	}
 	export class PollingLogEnt {

@@ -12,6 +12,9 @@ var lang = ""
 
 // 翻訳マップ
 var transMap = map[string]map[string]string{
+	"Downtime": {
+		"ja": "ダウンタイム",
+	},
 	"Start TWSNMP": {
 		"ja": "TWSNMP起動",
 	},

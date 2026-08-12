@@ -617,6 +617,8 @@ const mergeIntervals = (intervals: TimeInterval[]): { totalSec: number; maxSec: 
 export const getPollingName = (event: string): string => {
   if (!event) return '';
   let name = event;
+  // ダウンタイム表記 [...] や (...) を事前に除去
+  name = name.replace(/\s*[\(\[]ダウンタイム:.*[\)\]]/i, '').replace(/\s*[\(\[]Downtime:.*[\)\]]/i, '');
   const colonIdx = name.indexOf(':');
   if (colonIdx >= 0) {
     name = name.substring(colonIdx + 1).trim();
