@@ -689,6 +689,7 @@
     "Name": "Name",
     "NetworkDIsk": "Network",
     "NoHRMIB": "Host resource MIB is not supported.",
+    "NoVPanel": "Panel is not supported.",
     "NotRunnable": "Not runnable",
     "Other": "Other",
     "OutBytes": "Out bytes",

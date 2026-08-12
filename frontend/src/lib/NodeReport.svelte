@@ -430,13 +430,15 @@
     const portsList = ports || [];
     pVPanel = physicalPort ? portsList.filter((e: any) => e.Type == 6) : portsList;
 
-    safeInit("#vpanel", () => {
-      initVPanel("vpanel");
-    });
+    if (ports && ports.length > 0) {
+      safeInit("#vpanel", () => {
+        initVPanel("vpanel");
+      });
 
-    safeInit("#portTable", () => {
-      showPortTable(pVPanel);
-    });
+      safeInit("#portTable", () => {
+        showPortTable(pVPanel);
+      });
+    }
   };
 
   $: setVPanel(pVPanel, power, rotateVPanel, vpanelZoom, vpanelPortWrap);
@@ -1434,11 +1436,17 @@
         {:else if activeTab === 'log'}
           <table id="nodeReportLogTable" class="display compact" style="width:99%"></table>
         {:else if activeTab === 'panel'}
-          <div id="vpanel"></div>
-          <table
-            id="portTable"
-            class="display compact mt-5"
-            style="width:99%"></table>
+          {#if ports && ports.length > 0}
+            <div id="vpanel"></div>
+            <div>
+              <table
+                id="portTable"
+                class="display compact mt-5"
+                style="width:99%"></table>
+            </div>
+          {:else if !waitVPanel}
+            <div>{$_("NodeReport.NoVPanel")}</div>
+          {/if}
         {:else if activeTab === 'hostinfo'}
           {#if hostResource}
             <div class="grid grid-cols-2 gap-1">
@@ -1539,7 +1547,7 @@
             {$_("NodeReport.Polling")}
           </GradientButton>
         {/if}
-        {#if showVPanelBtn}
+        {#if showVPanelBtn && ports && ports.length > 0}
           <Toggle bind:checked={physicalPort} onchange={showVPanel}>
             {$_("NodeReport.PhysicalPort")}
           </Toggle>

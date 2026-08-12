@@ -695,6 +695,7 @@
     "IPAddress": "IPアドレス",
     "Log": "ログ",
     "Panel": "パネル",
+    "NoVPanel": "パネル表示に対応していません。",
     "HostInfo": "ホスト情報",
     "NoHRMIB": "ホストリソースMIBに対応していません。",
     "Storage": "ストレージ",
