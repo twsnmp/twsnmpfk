@@ -1085,6 +1085,23 @@ Please analyze the provided certificate management data (all monitored server ce
 	return a.llmAsk(sb.String(), system)
 }
 
+func cleanPollingName(event string) string {
+	if event == "" {
+		return ""
+	}
+	name := event
+	if idx := strings.Index(name, ":"); idx >= 0 {
+		name = strings.TrimSpace(name[idx+1:])
+	}
+	if idx := strings.LastIndex(name, "("); idx > 0 && strings.HasSuffix(name, ")") {
+		name = strings.TrimSpace(name[:idx])
+	}
+	if name == "" {
+		return event
+	}
+	return name
+}
+
 // --- Report AI Explanations ---
 
 func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
@@ -1138,7 +1155,7 @@ func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
 			if i >= 30 {
 				break
 			}
-			sb.WriteString(fmt.Sprintf("- PID: %d | Name: %s | Path: %s | CPU: %d | Mem: %d KB\n", p.PID, p.Name, p.Path, p.CPU, p.Mem))
+			sb.WriteString(fmt.Sprintf("- PID: %v | Name: %s | Path: %s | CPU: %v | Mem: %v KB\n", p.PID, p.Name, p.Path, p.CPU, p.Mem))
 		}
 	case "panel":
 		ports := a.GetVPanelPorts(nodeID)
@@ -1155,6 +1172,216 @@ func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
 			}
 			sb.WriteString(fmt.Sprintf("- Time: %s | Level: %s | Type: %s | Event: %s\n", time.Unix(0, l.Time).Format(time.RFC3339), l.Level, l.Type, l.Event))
 		}
+	case "downtime":
+		sb.WriteString("## Node Downtime & SLA Analysis (Polling Events)\n")
+		logs := a.GetEventLogs(EventLogFilterEnt{NodeID: nodeID})
+		var pollingLogs []*datastore.EventLogEnt
+		for _, l := range logs {
+			if l.Type == "polling" && l.Level != "unknown" {
+				pollingLogs = append(pollingLogs, l)
+			}
+		}
+
+		if len(pollingLogs) > 0 {
+			minT := pollingLogs[0].Time
+			maxT := pollingLogs[len(pollingLogs)-1].Time
+			for _, l := range pollingLogs {
+				if l.Time < minT {
+					minT = l.Time
+				}
+				if l.Time > maxT {
+					maxT = l.Time
+				}
+			}
+			totalSpanSec := float64(maxT-minT) / 1e9
+			if totalSpanSec <= 0 {
+				totalSpanSec = 1
+			}
+
+			type pollingGroup struct {
+				event string
+				logs  []*datastore.EventLogEnt
+			}
+			pollingMap := make(map[string]*pollingGroup)
+			for _, l := range pollingLogs {
+				pName := cleanPollingName(l.Event)
+				if pName == "" {
+					pName = "default"
+				}
+				g, ok := pollingMap[pName]
+				if !ok {
+					g = &pollingGroup{event: pName}
+					pollingMap[pName] = g
+				}
+				g.logs = append(g.logs, l)
+			}
+
+			type interval struct {
+				start   int64
+				end     int64
+				ongoing bool
+			}
+			type pollingResult struct {
+				event    string
+				sla      float64
+				downtime float64
+				maxSec   float64
+				count    int
+				ongoing  bool
+			}
+
+			mergeIntervals := func(list []interval) (float64, float64) {
+				if len(list) == 0 {
+					return 0, 0
+				}
+				sort.Slice(list, func(i, j int) bool {
+					return list[i].start < list[j].start
+				})
+				var merged []interval
+				curr := list[0]
+				for i := 1; i < len(list); i++ {
+					nxt := list[i]
+					if nxt.start <= curr.end {
+						if nxt.end > curr.end {
+							curr.end = nxt.end
+						}
+						if nxt.ongoing {
+							curr.ongoing = true
+						}
+					} else {
+						merged = append(merged, curr)
+						curr = nxt
+					}
+				}
+				merged = append(merged, curr)
+
+				tot := float64(0)
+				maxDur := float64(0)
+				for _, m := range merged {
+					dur := float64(m.end-m.start) / 1e9
+					if dur > 0 {
+						tot += dur
+						if dur > maxDur {
+							maxDur = dur
+						}
+					}
+				}
+				return tot, maxDur
+			}
+
+			var pollingResults []pollingResult
+			var nodeAllIntervals []interval
+			var totalRecoveredSec float64
+			var recoveredCount int
+			var allIncidentsCount int
+			var ongoingPollingCount int
+
+			for _, g := range pollingMap {
+				isDown := false
+				downStart := int64(0)
+				var intervals []interval
+				var incidentsCount int
+
+				for _, l := range g.logs {
+					if l.Level == "high" || l.Level == "low" || l.Level == "warn" {
+						if !isDown {
+							isDown = true
+							downStart = l.Time
+						}
+					} else if l.Level == "repair" {
+						if isDown {
+							durSec := float64(l.Time-downStart) / 1e9
+							if durSec < 0 {
+								durSec = 0
+							}
+							intervals = append(intervals, interval{start: downStart, end: l.Time, ongoing: false})
+							totalRecoveredSec += durSec
+							recoveredCount++
+							incidentsCount++
+							allIncidentsCount++
+							isDown = false
+						} else {
+							durSec := float64(l.Time-minT) / 1e9
+							if durSec > 0 {
+								intervals = append(intervals, interval{start: minT, end: l.Time, ongoing: false})
+								totalRecoveredSec += durSec
+								recoveredCount++
+								incidentsCount++
+								allIncidentsCount++
+							}
+						}
+					}
+				}
+
+				if isDown {
+					durSec := float64(maxT-downStart) / 1e9
+					if durSec < 0 {
+						durSec = 0
+					}
+					intervals = append(intervals, interval{start: downStart, end: maxT, ongoing: true})
+					incidentsCount++
+					allIncidentsCount++
+				}
+
+				mergedTotal, mergedMax := mergeIntervals(intervals)
+				hasOngoing := false
+				for _, inv := range intervals {
+					if inv.ongoing {
+						hasOngoing = true
+						break
+					}
+				}
+				if hasOngoing {
+					ongoingPollingCount++
+				}
+
+				pSLA := (1.0 - mergedTotal/totalSpanSec) * 100.0
+				if pSLA < 0 {
+					pSLA = 0
+				}
+				if pSLA > 100 {
+					pSLA = 100
+				}
+
+				pollingResults = append(pollingResults, pollingResult{
+					event:    g.event,
+					sla:      pSLA,
+					downtime: mergedTotal,
+					maxSec:   mergedMax,
+					count:    incidentsCount,
+					ongoing:  hasOngoing,
+				})
+
+				nodeAllIntervals = append(nodeAllIntervals, intervals...)
+			}
+
+			nodeTotalDowntime, nodeMaxDowntime := mergeIntervals(nodeAllIntervals)
+			nodeSLA := (1.0 - nodeTotalDowntime/totalSpanSec) * 100.0
+			if nodeSLA < 0 {
+				nodeSLA = 0
+			}
+			if nodeSLA > 100 {
+				nodeSLA = 100
+			}
+			mttrSec := float64(0)
+			if recoveredCount > 0 {
+				mttrSec = totalRecoveredSec / float64(recoveredCount)
+			}
+
+			sb.WriteString(fmt.Sprintf("Node Overall SLA (Availability): %.3f%%\n", nodeSLA))
+			sb.WriteString(fmt.Sprintf("Node Total Downtime: %.1f sec (%.2f min)\n", nodeTotalDowntime, nodeTotalDowntime/60.0))
+			sb.WriteString(fmt.Sprintf("Node Max Downtime: %.1f sec (%.2f min)\n", nodeMaxDowntime, nodeMaxDowntime/60.0))
+			sb.WriteString(fmt.Sprintf("Total Incidents: %d (Ongoing Polling Items: %d)\n", allIncidentsCount, ongoingPollingCount))
+			sb.WriteString(fmt.Sprintf("MTTR (Mean Time To Recovery): %.1f sec (%.2f min)\n\n", mttrSec, mttrSec/60.0))
+
+			sb.WriteString("Polling Item SLA & Downtime Breakdown:\n")
+			for _, r := range pollingResults {
+				sb.WriteString(fmt.Sprintf("  - Polling '%s': SLA = %.3f%%, Total Downtime = %.1f min, Max Downtime = %.1f min, Incidents = %d (Ongoing: %v)\n",
+					r.event, r.sla, r.downtime/60.0, r.maxSec/60.0, r.count, r.ongoing))
+			}
+		} else {
+			sb.WriteString("No polling logs found for downtime analysis.\n")
+		}
 	default:
 		return &LLMResp{Error: "invalid tab for AI explanation"}
 	}
@@ -1162,6 +1389,12 @@ func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
 	system := "You are a network operations expert. Analyze the provided node report data and explain current status, risks, and recommended actions."
 	if i18n.GetLang() == "ja" {
 		system = "あなたはネットワークインフラ運用の専門家です。提示されたノードレポートデータを分析し、現在の状態、過負荷・障害リスク、推奨される確認・対策手順について分かりやすく解説してください。"
+	}
+	if tab == "downtime" {
+		system = "You are a network reliability engineer. Analyze the provided node downtime & SLA data, explain availability performance, bottleneck polling items, and recommend operational improvements."
+		if i18n.GetLang() == "ja" {
+			system = "あなたはネットワーク障害監視とSLAの専門家です。提示されたノードの障害ログ、ポーリング別ダウンタイムおよびSLA（稼働率）集計結果を分析し、ノードの稼働状態、障害発生傾向、ボトルネックとなっている監視項目、および改善策について、必ず日本語で分かりやすく解説・回答してください。"
+		}
 	}
 	return a.llmAsk(sb.String(), system)
 }
@@ -1280,7 +1513,8 @@ func (a *App) LLMExplainEventLogReport(logs []*datastore.EventLogEnt, tab string
 			}
 			pollingMap := make(map[string]*pollingGroup)
 			for _, l := range pollingLogs {
-				pKey := fmt.Sprintf("%s_%s_%s", l.NodeID, l.NodeName, l.Event)
+				pName := cleanPollingName(l.Event)
+				pKey := fmt.Sprintf("%s_%s_%s", l.NodeID, l.NodeName, pName)
 				g, ok := pollingMap[pKey]
 				if !ok {
 					nName := l.NodeName
@@ -1293,7 +1527,7 @@ func (a *App) LLMExplainEventLogReport(logs []*datastore.EventLogEnt, tab string
 					g = &pollingGroup{
 						nodeID:   l.NodeID,
 						nodeName: nName,
-						event:    l.Event,
+						event:    pName,
 					}
 					pollingMap[pKey] = g
 				}
@@ -1560,7 +1794,7 @@ func (a *App) LLMExplainNetFlowReport(flows []*datastore.NetFlowEnt, tab string)
 			break
 		}
 		tStr := time.Unix(0, f.Time).Format(time.RFC3339)
-		sb.WriteString(fmt.Sprintf("- Time: %s | Src: %s:%d -> Dst: %s:%d | Proto: %d | Bytes: %d | Packets: %d\n", tStr, f.SrcAddr, f.SrcPort, f.DstAddr, f.DstPort, f.Protocol, f.Bytes, f.Packets))
+		sb.WriteString(fmt.Sprintf("- Time: %s | Src: %s:%d -> Dst: %s:%d | Proto: %v | Bytes: %d | Packets: %d\n", tStr, f.SrcAddr, f.SrcPort, f.DstAddr, f.DstPort, f.Protocol, f.Bytes, f.Packets))
 	}
 
 	system := "You are a network traffic flow analyst. Analyze the NetFlow data and explain traffic volume trends, top communication pairs, bandwidth usage, and anomaly detection."

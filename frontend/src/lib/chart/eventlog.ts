@@ -614,6 +614,20 @@ const mergeIntervals = (intervals: TimeInterval[]): { totalSec: number; maxSec: 
   return { totalSec, maxSec };
 };
 
+export const getPollingName = (event: string): string => {
+  if (!event) return '';
+  let name = event;
+  const colonIdx = name.indexOf(':');
+  if (colonIdx >= 0) {
+    name = name.substring(colonIdx + 1).trim();
+  }
+  const parenIdx = name.lastIndexOf('(');
+  if (parenIdx > 0 && name.endsWith(')')) {
+    name = name.substring(0, parenIdx).trim();
+  }
+  return name || event;
+};
+
 export const calcEventLogDowntimeAndSLA = (logs: any) => {
   if (!logs || logs.length === 0) {
     return {
@@ -659,13 +673,14 @@ export const calcEventLogDowntimeAndSLA = (logs: any) => {
   const logsByPolling = new Map<string, { nodeID: string; nodeName: string; event: string; logs: any[] }>();
 
   sortedLogs.forEach((l: any) => {
-    const pKey = (l.NodeID || l.NodeName || '') + '_' + l.Event;
+    const pName = getPollingName(l.Event);
+    const pKey = (l.NodeID || l.NodeName || '') + '_' + pName;
     let group = logsByPolling.get(pKey);
     if (!group) {
       group = {
         nodeID: l.NodeID || '',
         nodeName: l.NodeName || l.NodeID || 'unknown',
-        event: l.Event,
+        event: pName,
         logs: [],
       };
       logsByPolling.set(pKey, group);
@@ -945,6 +960,317 @@ export const showEventLogDowntimeChart = (div: string, logs: any) => {
   chart.resize();
   return chart;
 };
+
+export interface PollingDowntimeStat {
+  event: string;
+  totalDowntimeSec: number;
+  maxDowntimeSec: number;
+  count: number;
+  ongoing: boolean;
+  currentLevel: string;
+  sla: number;
+  incidents: DowntimeIncident[];
+}
+
+export const calcNodeDowntimeAndSLA = (logs: any) => {
+  if (!logs || logs.length === 0) {
+    return {
+      totalIncidents: 0,
+      ongoingIncidents: 0,
+      totalDowntimeSec: 0,
+      maxDowntimeSec: 0,
+      mttrSec: 0,
+      overallSLA: 100,
+      pollingStats: [] as PollingDowntimeStat[],
+      incidents: [] as DowntimeIncident[],
+    };
+  }
+
+  // polling タイプのログのみに限定 (unknown レベルのログは除外)
+  const pollingLogs = logs.filter((l: any) => l.Type === 'polling' && l.Level !== 'unknown');
+  if (pollingLogs.length === 0) {
+    return {
+      totalIncidents: 0,
+      ongoingIncidents: 0,
+      totalDowntimeSec: 0,
+      maxDowntimeSec: 0,
+      mttrSec: 0,
+      overallSLA: 100,
+      pollingStats: [] as PollingDowntimeStat[],
+      incidents: [] as DowntimeIncident[],
+    };
+  }
+
+  const sortedLogs = [...pollingLogs].sort((a: any, b: any) => a.Time - b.Time);
+  const minTime = sortedLogs[0].Time;
+  const maxTime = sortedLogs[sortedLogs.length - 1].Time;
+  let totalSpanSec = (maxTime - minTime) / (1000 * 1000 * 1000);
+  if (totalSpanSec <= 0) {
+    totalSpanSec = 1;
+  }
+
+  const isFailure = (lvl: string) => lvl === 'high' || lvl === 'low' || lvl === 'warn';
+  const isRepair = (lvl: string) => lvl === 'repair';
+
+  // ポーリング項目 (Event) でログをグループ化
+  const logsByPolling = new Map<string, { event: string; logs: any[] }>();
+
+  sortedLogs.forEach((l: any) => {
+    const pName = getPollingName(l.Event) || 'default';
+    const pKey = pName;
+    let group = logsByPolling.get(pKey);
+    if (!group) {
+      group = {
+        event: pName,
+        logs: [],
+      };
+      logsByPolling.set(pKey, group);
+    }
+    group.logs.push(l);
+  });
+
+  const pollingStats: PollingDowntimeStat[] = [];
+  const nodeAllIntervals: TimeInterval[] = [];
+  let totalRecoveredSec = 0;
+  let recoveredCount = 0;
+  let allIncidentsCount = 0;
+  let ongoingPollingCount = 0;
+  const allIncidentsList: DowntimeIncident[] = [];
+
+  logsByPolling.forEach((group) => {
+    let isDown = false;
+    let downStart = 0;
+    let lastLevel = 'normal';
+    const intervals: TimeInterval[] = [];
+    const incidents: DowntimeIncident[] = [];
+
+    group.logs.forEach((l: any) => {
+      lastLevel = l.Level;
+
+      if (isFailure(l.Level)) {
+        if (!isDown) {
+          isDown = true;
+          downStart = l.Time;
+        }
+      } else if (isRepair(l.Level)) {
+        if (isDown) {
+          const durSec = Math.max(0, (l.Time - downStart) / (1000 * 1000 * 1000));
+          intervals.push({ start: downStart, end: l.Time, ongoing: false });
+          incidents.push({
+            nodeID: l.NodeID || '',
+            nodeName: l.NodeName || '',
+            event: group.event,
+            level: l.Level,
+            startTime: downStart,
+            endTime: l.Time,
+            durationSec: durSec,
+            ongoing: false,
+          });
+          totalRecoveredSec += durSec;
+          recoveredCount++;
+          allIncidentsCount++;
+          isDown = false;
+        } else {
+          const durSec = Math.max(0, (l.Time - minTime) / (1000 * 1000 * 1000));
+          if (durSec > 0) {
+            intervals.push({ start: minTime, end: l.Time, ongoing: false });
+            incidents.push({
+              nodeID: l.NodeID || '',
+              nodeName: l.NodeName || '',
+              event: group.event,
+              level: l.Level,
+              startTime: minTime,
+              endTime: l.Time,
+              durationSec: durSec,
+              ongoing: false,
+              estimatedStart: true,
+            });
+            totalRecoveredSec += durSec;
+            recoveredCount++;
+            allIncidentsCount++;
+          }
+        }
+      }
+    });
+
+    if (isDown) {
+      const durSec = Math.max(0, (maxTime - downStart) / (1000 * 1000 * 1000));
+      intervals.push({ start: downStart, end: maxTime, ongoing: true });
+      incidents.push({
+        nodeID: group.logs[0]?.NodeID || '',
+        nodeName: group.logs[0]?.NodeName || '',
+        event: group.event,
+        level: lastLevel,
+        startTime: downStart,
+        endTime: maxTime,
+        durationSec: durSec,
+        ongoing: true,
+      });
+      allIncidentsCount++;
+    }
+
+    const { totalSec, maxSec } = mergeIntervals(intervals);
+    const hasOngoing = intervals.some((i) => i.ongoing);
+    if (hasOngoing) ongoingPollingCount++;
+
+    const sla = Math.max(0, Math.min(100, (1 - totalSec / totalSpanSec) * 100));
+
+    pollingStats.push({
+      event: group.event,
+      totalDowntimeSec: totalSec,
+      maxDowntimeSec: maxSec,
+      count: incidents.length,
+      ongoing: hasOngoing,
+      currentLevel: lastLevel,
+      sla,
+      incidents,
+    });
+
+    nodeAllIntervals.push(...intervals);
+    allIncidentsList.push(...incidents);
+  });
+
+  const { totalSec: nodeTotalDowntimeSec, maxSec: nodeMaxDowntimeSec } = mergeIntervals(nodeAllIntervals);
+  const overallSLA = Math.max(0, Math.min(100, (1 - nodeTotalDowntimeSec / totalSpanSec) * 100));
+  const mttrSec = recoveredCount > 0 ? totalRecoveredSec / recoveredCount : 0;
+
+  return {
+    totalIncidents: allIncidentsCount,
+    ongoingIncidents: ongoingPollingCount,
+    totalDowntimeSec: nodeTotalDowntimeSec,
+    maxDowntimeSec: nodeMaxDowntimeSec,
+    mttrSec,
+    overallSLA,
+    pollingStats,
+    incidents: allIncidentsList,
+  };
+};
+
+export const showNodeDowntimeChart = (div: string, logs: any) => {
+  const stats = calcNodeDowntimeAndSLA(logs);
+  const pollingStats = stats.pollingStats.sort((a, b) => b.totalDowntimeSec - a.totalDowntimeSec);
+
+  const categories: string[] = [];
+  const downtimeData: number[] = [];
+  const slaData: number[] = [];
+
+  const topItems = pollingStats.slice(0, 15).reverse();
+  topItems.forEach((p) => {
+    let name = p.event;
+    if (name.length > 20) {
+      name = name.substring(0, 18) + '...';
+    }
+    categories.push(name);
+    downtimeData.push(Number((p.totalDowntimeSec / 60).toFixed(1)));
+    slaData.push(Number(p.sla.toFixed(3)));
+  });
+
+  if (chart) {
+    chart.dispose();
+  }
+  chart = echarts.init(document.getElementById(div), 'dark');
+  chart.setOption({
+    title: {
+      show: false,
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+      formatter: (params: any) => {
+        let res = params[0].name + '<br/>';
+        params.forEach((p: any) => {
+          if (p.seriesName === 'SLA (%)') {
+            res += `${p.marker} ${p.seriesName}: ${p.value}%<br/>`;
+          } else {
+            res += `${p.marker} Downtime: ${p.value} m (${(p.value * 60).toFixed(0)} s)<br/>`;
+          }
+        });
+        return res;
+      },
+    },
+    legend: {
+      top: 5,
+      data: ['Downtime (min)', 'SLA (%)'],
+      textStyle: {
+        fontSize: 10,
+        color: '#ccc',
+      },
+    },
+    grid: {
+      left: '3%',
+      right: '12%',
+      top: '15%',
+      bottom: '12%',
+      containLabel: true,
+    },
+    xAxis: [
+      {
+        type: 'value',
+        name: 'Downtime (min)',
+        position: 'bottom',
+        axisLabel: {
+          color: '#ccc',
+          fontSize: 9,
+        },
+      },
+      {
+        type: 'value',
+        name: 'SLA (%)',
+        min: 0,
+        max: 100,
+        position: 'top',
+        axisLabel: {
+          color: '#ccc',
+          fontSize: 9,
+          formatter: '{value}%',
+        },
+        splitLine: {
+          show: false,
+        },
+      },
+    ],
+    yAxis: {
+      type: 'category',
+      data: categories,
+      axisLabel: {
+        color: '#ccc',
+        fontSize: 10,
+      },
+    },
+    series: [
+      {
+        name: 'Downtime (min)',
+        type: 'bar',
+        color: '#e31a1c',
+        data: downtimeData,
+      },
+      {
+        name: 'SLA (%)',
+        type: 'line',
+        xAxisIndex: 1,
+        color: '#33a02c',
+        data: slaData,
+        markLine: {
+          data: [{ xAxis: 99.9, name: 'Target 99.9%' }],
+          lineStyle: {
+            color: '#dfdf22',
+            type: 'dashed',
+          },
+          label: {
+            formatter: 'Target 99.9%',
+            color: '#dfdf22',
+            fontSize: 9,
+          },
+        },
+      },
+    ],
+  });
+  chart.resize();
+  return chart;
+};
+
 
 
 

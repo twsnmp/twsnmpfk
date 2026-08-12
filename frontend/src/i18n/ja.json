@@ -647,6 +647,7 @@
     "Type": "種別",
     "Event": "イベント",
     "Name": "名前",
+    "PollingName": "ポーリング名",
     "MACAddress": "MACアドレス",
     "Speed": "スピード",
     "OutPacktes": "送信パケット",

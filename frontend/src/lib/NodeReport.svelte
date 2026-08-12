@@ -41,7 +41,13 @@
     renderCount,
     renderSpeed,
     renderHrSystemName,
+    renderDuration,
+    renderSLA,
   } from "./common";
+  import {
+    calcNodeDowntimeAndSLA,
+    showNodeDowntimeChart,
+  } from "./chart/eventlog";
   import { deleteVPanel, initVPanel, setVPanel } from "./vpanel";
   import Polling from "./Polling.svelte";
   import DataTable from "datatables.net-dt";
@@ -67,6 +73,17 @@
   let chart: any = undefined;
   let chartMem: any = undefined;
   let logTable: any = undefined;
+  let downtimeTable: any = undefined;
+  let downtimeStats = {
+    totalIncidents: 0,
+    ongoingIncidents: 0,
+    totalDowntimeSec: 0,
+    maxDowntimeSec: 0,
+    mttrSec: 0,
+    overallSLA: 100,
+    pollingStats: [] as any[],
+    incidents: [] as any[],
+  };
 
 
   const clearSelectedCount = () => {
@@ -100,6 +117,14 @@
         // ignore
       }
       logTable = undefined;
+    }
+    if (downtimeTable) {
+      try {
+        downtimeTable.destroy();
+      } catch (e) {
+        // ignore
+      }
+      downtimeTable = undefined;
     }
     if (portTable) {
       try {
@@ -211,6 +236,75 @@
           },
         ],
       });
+    });
+  };
+
+  const showDowntime = async () => {
+    clearSelectedCount();
+    const logs = await GetEventLogs({
+      NodeID: id,
+      Start: "",
+      End: "",
+      Event: "",
+      NodeName: "",
+      EventType: "",
+      Level: 0,
+    });
+    if (activeTab !== "downtime") return;
+    downtimeStats = calcNodeDowntimeAndSLA(logs);
+    await tick();
+    chart = showNodeDowntimeChart("nodeDowntimeChart", logs);
+    await initDowntimeTable();
+  };
+
+  const initDowntimeTable = async () => {
+    await tick();
+    if (!document.getElementById("nodeDowntimeTable")) {
+      return;
+    }
+
+    const sortedStats = [...downtimeStats.pollingStats].sort(
+      (a, b) => b.totalDowntimeSec - a.totalDowntimeSec
+    );
+
+    const ongoingLabel = $_("EventLogReport.Ongoing") || "障害発生中";
+
+    const tableData = sortedStats.map((p: any) => {
+      const slaStr = renderSLA(p.sla, "");
+      const totalDurationStr = renderDuration(p.totalDowntimeSec, "");
+      const maxDurationStr = renderDuration(p.maxDowntimeSec, "");
+      const statusHtml = p.ongoing
+        ? `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-red-900 text-red-200">${ongoingLabel}</span>`
+        : renderState(p.currentLevel);
+
+      return [
+        p.event,
+        slaStr,
+        p.count,
+        totalDurationStr,
+        maxDurationStr,
+        statusHtml,
+      ];
+    });
+
+    downtimeTable = new DataTable("#nodeDowntimeTable", {
+      destroy: true,
+      paging: false,
+      searching: true,
+      info: false,
+      scrollY: "300px",
+      scrollCollapse: true,
+      language: getTableLang(),
+      data: tableData,
+      order: [[3, "desc"]],
+      columns: [
+        { title: $_("NodeReport.PollingName") || "ポーリング名" },
+        { title: $_("EventLogReport.OverallSLA") || "SLA (Availability)" },
+        { title: $_("EventLogReport.TotalIncidents") || "Incidents" },
+        { title: $_("EventLogReport.TotalDowntime") || "Total Downtime" },
+        { title: $_("EventLogReport.MaxDowntime") || "Max Downtime" },
+        { title: $_("EventLogReport.Status") || "Status" },
+      ],
     });
   };
 
@@ -978,6 +1072,10 @@
         clearSelectedCount();
         showMemo();
         break;
+      case "downtime":
+        clearSelectedCount();
+        showDowntime();
+        break;
       case "log":
         clearSelectedCount();
         showLog();
@@ -1087,6 +1185,16 @@
           >
             <Icon path={icons.mdiNote} size={1} />
             {$_('NodeReport.Memo')}
+          </button>
+        </li>
+        <li class="mr-2">
+          <button
+            type="button"
+            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'downtime' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            onclick={() => activeTab = 'downtime'}
+          >
+            <Icon path={icons.mdiTimerAlertOutline} size={1} />
+            {$_("EventLogReport.Downtime")}
           </button>
         </li>
         <li class="mr-2">
@@ -1255,6 +1363,74 @@
           </Table>
         {:else if activeTab === 'memo'}
           <Textarea placeholder={$_('NodeReport.MemoPlaceHolder')} class="w-full h-[55vh]" bind:value={memo} />
+        {:else if activeTab === 'downtime'}
+          <div class="flex flex-col space-y-3 w-full p-1">
+            <!-- Summary Cards (Compact) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-1">
+              <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+                <div class="text-xs text-gray-400 font-semibold mb-0.5">
+                  {$_("EventLogReport.OverallSLA")}
+                </div>
+                <div
+                  class="text-lg font-bold {downtimeStats.overallSLA >= 99.9
+                    ? 'text-green-400'
+                    : downtimeStats.overallSLA >= 99.0
+                    ? 'text-yellow-400'
+                    : 'text-red-400'}"
+                >
+                  {downtimeStats.overallSLA.toFixed(3)}%
+                </div>
+              </div>
+              <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+                <div class="text-xs text-gray-400 font-semibold mb-0.5">
+                  {$_("EventLogReport.TotalIncidents")}
+                </div>
+                <div class="text-lg font-bold text-blue-400">
+                  {downtimeStats.totalIncidents}
+                  <span class="text-xs font-normal text-gray-400">
+                    ({$_("EventLogReport.OngoingIncidents")}: {downtimeStats.ongoingIncidents})
+                  </span>
+                </div>
+              </div>
+              <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+                <div class="text-xs text-gray-400 font-semibold mb-0.5">
+                  {$_("EventLogReport.MTTR")}
+                </div>
+                <div class="text-lg font-bold text-teal-400">
+                  {renderDuration(downtimeStats.mttrSec)}
+                </div>
+              </div>
+              <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+                <div class="text-xs text-gray-400 font-semibold mb-0.5">
+                  {$_("EventLogReport.MaxDowntime")} / {$_("EventLogReport.TotalDowntime")}
+                </div>
+                <div class="text-xs font-bold text-red-400 mt-1">
+                  {renderDuration(downtimeStats.maxDowntimeSec)}
+                  <span class="text-xs font-normal text-gray-400">
+                    / {renderDuration(downtimeStats.totalDowntimeSec)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2 Columns Grid: Graph & Table -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 w-full items-start">
+              <!-- Left Column: ECharts Graph (5 cols) -->
+              <div class="lg:col-span-5 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 shadow-inner">
+                <div id="nodeDowntimeChart" class="w-full h-[360px]"></div>
+              </div>
+
+              <!-- Right Column: Detailed Table (7 cols) wrapped in div (AGENTS.md Rule) -->
+              <div class="lg:col-span-7 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 overflow-x-auto shadow-inner">
+                <div>
+                  <table
+                    id="nodeDowntimeTable"
+                    class="display compact w-full text-xs text-left text-gray-300"
+                  ></table>
+                </div>
+              </div>
+            </div>
+          </div>
         {:else if activeTab === 'log'}
           <table id="nodeReportLogTable" class="display compact" style="width:99%"></table>
         {:else if activeTab === 'panel'}
