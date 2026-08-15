@@ -99,12 +99,12 @@ func doPollingDNS(pe *datastore.PollingEnt) {
 func doLookup(mode, target string) ([]string, error) {
 	ret := []string{}
 	r := &net.Resolver{}
-	ctx, cancel := context.WithTimeout(context.TODO(), time.Millisecond*50)
+	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*2)
 	defer cancel()
 	switch mode {
 	case "ipaddr":
-		if addr, err := net.ResolveIPAddr("ip", target); err == nil {
-			return []string{addr.String()}, nil
+		if ips, err := r.LookupHost(ctx, target); err == nil && len(ips) > 0 {
+			return ips, nil
 		} else {
 			return ret, err
 		}

@@ -94,7 +94,7 @@ func (a *App) getIPInfo(ip string) []AddrInfoEnt {
 		ret = append(ret, AddrInfoEnt{Level: "warn", Title: i18n.Trans("Managed Node"), Value: i18n.Trans("No")})
 	}
 	r := &net.Resolver{}
-	ctx, cancel := context.WithTimeout(context.TODO(), time.Millisecond*500)
+	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*2)
 	defer cancel()
 	if names, err := r.LookupAddr(ctx, ip); err == nil && len(names) > 0 {
 		for _, n := range names {
@@ -127,9 +127,11 @@ func (a *App) getDomainInfo(domain string) []AddrInfoEnt {
 	ret := []AddrInfoEnt{}
 	ret = append(ret, AddrInfoEnt{Level: "info", Title: i18n.Trans("Domain"), Value: domain})
 	r := &net.Resolver{}
-	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*3)
-	defer cancel()
-	if ips, err := r.LookupHost(ctx, domain); err == nil && len(ips) > 0 {
+
+	ctx1, cancel1 := context.WithTimeout(context.TODO(), time.Second*2)
+	ips, err := r.LookupHost(ctx1, domain)
+	cancel1()
+	if err == nil && len(ips) > 0 {
 		for _, ip := range ips {
 			ret = append(ret, AddrInfoEnt{Level: "info", Title: i18n.Trans("IP Address"), Value: ip})
 			loc := datastore.GetLoc(ip)
@@ -138,30 +140,46 @@ func (a *App) getDomainInfo(domain string) []AddrInfoEnt {
 	} else {
 		ret = append(ret, AddrInfoEnt{Level: "warn", Title: i18n.Trans("IP Address"), Value: i18n.Trans("Unknown")})
 	}
-	if list, err := r.LookupNS(ctx, domain); err == nil && len(list) > 0 {
-		for _, e := range list {
+
+	ctx2, cancel2 := context.WithTimeout(context.TODO(), time.Second*2)
+	listNS, err := r.LookupNS(ctx2, domain)
+	cancel2()
+	if err == nil && len(listNS) > 0 {
+		for _, e := range listNS {
 			ret = append(ret, AddrInfoEnt{Level: "info", Title: i18n.Trans("Name server"), Value: e.Host})
 		}
 	} else {
 		ret = append(ret, AddrInfoEnt{Level: "warn", Title: i18n.Trans("Name server"), Value: i18n.Trans("Unknown")})
 	}
-	if list, err := r.LookupMX(ctx, domain); err == nil && len(list) > 0 {
-		for _, e := range list {
+
+	ctx3, cancel3 := context.WithTimeout(context.TODO(), time.Second*2)
+	listMX, err := r.LookupMX(ctx3, domain)
+	cancel3()
+	if err == nil && len(listMX) > 0 {
+		for _, e := range listMX {
 			ret = append(ret, AddrInfoEnt{Level: "info", Title: i18n.Trans("Mail server"), Value: e.Host})
 		}
 	} else {
 		ret = append(ret, AddrInfoEnt{Level: "warn", Title: i18n.Trans("Mail server"), Value: i18n.Trans("Unknown")})
 	}
-	if list, err := r.LookupTXT(ctx, domain); err == nil && len(list) > 0 {
-		for _, e := range list {
+
+	ctx4, cancel4 := context.WithTimeout(context.TODO(), time.Second*2)
+	listTXT, err := r.LookupTXT(ctx4, domain)
+	cancel4()
+	if err == nil && len(listTXT) > 0 {
+		for _, e := range listTXT {
 			ret = append(ret, AddrInfoEnt{Level: "info", Title: i18n.Trans("TXT record"), Value: e})
 		}
 	} else {
 		ret = append(ret, AddrInfoEnt{Level: "warn", Title: i18n.Trans("TXT record"), Value: i18n.Trans("Unknown")})
 	}
-	if cname, list, err := r.LookupSRV(ctx, "https", "tcp", domain); err == nil && len(list) > 0 {
+
+	ctx5, cancel5 := context.WithTimeout(context.TODO(), time.Second*2)
+	cname, listSRV, err := r.LookupSRV(ctx5, "https", "tcp", domain)
+	cancel5()
+	if err == nil && len(listSRV) > 0 {
 		ret = append(ret, AddrInfoEnt{Level: "info", Title: "SRV(CNAME)", Value: cname})
-		for _, e := range list {
+		for _, e := range listSRV {
 			ret = append(ret, AddrInfoEnt{Level: "info", Title: i18n.Trans("SRV record"), Value: fmt.Sprintf("%s:%d %d %d", e.Target, e.Port, e.Priority, e.Weight)})
 		}
 	} else {

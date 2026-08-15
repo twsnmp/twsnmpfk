@@ -1427,7 +1427,7 @@ func getIPInfo(ctx context.Context, req *mcp.CallToolRequest, args getIPInfoPara
 		info.Node = n.Name
 	}
 	r := &net.Resolver{}
-	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*50)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*2)
 	defer cancel()
 	if names, err := r.LookupAddr(ctx, ip); err == nil && len(names) > 0 {
 		info.DNSNames = names

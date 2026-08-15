@@ -132,7 +132,7 @@ func Discover() error {
 						ServerList: make(map[string]bool),
 					}
 					r := &net.Resolver{}
-					ctx, cancel := context.WithTimeout(context.TODO(), time.Millisecond*500)
+					ctx, cancel := context.WithTimeout(context.TODO(), time.Second*2)
 					defer cancel()
 					if names, err := r.LookupAddr(ctx, ipstr); err == nil && len(names) > 0 {
 						dent.HostName = names[0]
