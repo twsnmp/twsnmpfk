@@ -982,7 +982,20 @@
     "Location": "Location",
     "Name": "Name",
     "Search": "Search",
-    "Value": "Value"
+    "Value": "Value",
+    "StunInfo": "STUN"
+  },
+  "Stun": {
+    "Title": "STUN Global IP Information",
+    "Server": "STUN Server",
+    "Protocol": "Protocol",
+    "Timeout": "Timeout (sec)",
+    "GlobalIP": "Global IP",
+    "ReverseDNS": "Reverse DNS",
+    "MappedPort": "Mapped Port",
+    "RTT": "Response Time",
+    "Fetch": "Fetch",
+    "Copy": "Copy"
   },
   "Location": {
     "Add": "Add",

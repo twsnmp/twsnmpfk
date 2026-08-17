@@ -237,7 +237,7 @@ type mcpPollingEnt struct {
 }
 
 type getPollingListParams struct {
-	TypeFilter     string `json:"type_filter" jsonschema:"type_filter uses a regular expression to specify search criteria for polling type names.If blank, all pollings are searched.Type names can be ping,tcp,http,dns,twsnmp,syslog"`
+	TypeFilter     string `json:"type_filter" jsonschema:"type_filter uses a regular expression to specify search criteria for polling type names.If blank, all pollings are searched.Type names can be ping,tcp,http,dns,twsnmp,syslog,stun"`
 	NameFilter     string `json:"name_filter" jsonschema:"name_filter specifies the search criteria for polling names using regular expressions.If blank, all pollings are searched."`
 	NodeNameFilter string `json:"node_name_filter" jsonschema:"node_name_filter specifies the search criteria for node names of polling using regular expressions.If blank, all pollings are searched."`
 	StateFilter    string `json:"state_filter" jsonschema:"state_filter uses a regular expression to specify search criteria for polling state names.If blank, all pollings are searched.State names can be normal,warn,low,high,repair,unknown"`

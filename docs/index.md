@@ -118,6 +118,10 @@ New features to improve map usability and organization have been added:
 
 Added support for setting the opacity (transparency) of drawing items and improved the user interface for background image settings.
 
+### New Features in v2.3.0
+
+- **STUN Global IP Inspection & Monitoring**: Added a `[STUN]` button to the Address Management view to query public external IP, mapped port, reverse DNS, local address, RTT, and GeoIP via STUN servers (IPv4/IPv6, copy/maps/VirusTotal links). Also introduced a native `stun` polling type to automatically monitor public IP changes, complete with built-in templates and AI assist support.
+
 ### New Features in v2.2.0
 
 - **AI Explanation for All Reports**: Added an `[AI Explain]` button to the footer (left of Close button) across all 12 report screens (Node, IPAM/Address, ARP, Event Log, Syslog, Trap, NetFlow, sFlow, sFlow Counter, MQTT, Polling, Network). Sends current tab data (system resources, storage, processes, traffic flows, log statistics, etc.) to AI (LLM) for automated health diagnostics, risk evaluation, anomaly detection, and actionable remediation advice (excluding basic info tab).

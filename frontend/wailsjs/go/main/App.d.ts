@@ -240,6 +240,8 @@ export function GetSettings():Promise<main.Settings>;
 
 export function GetSshdPublicKeys():Promise<string>;
 
+export function GetStunInfo(arg1:string,arg2:string,arg3:number):Promise<main.StunInfoResult>;
+
 export function GetSyslogs(arg1:main.SyslogFilterEnt):Promise<Array<datastore.SyslogEnt>>;
 
 export function GetTraps(arg1:main.TrapFilterEnt):Promise<Array<datastore.TrapEnt>>;

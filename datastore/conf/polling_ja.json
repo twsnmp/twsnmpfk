@@ -521,5 +521,23 @@
     "Script": "!newMsg",
     "Level": "off",
     "Descr": "IMAPまたはPOP3サーバーの新規メールの受信確認"
+  },
+  {
+    "Name": "STUNグローバルIP監視",
+    "Type": "stun",
+    "Mode": "ipv4",
+    "Params": "stun.cloudflare.com:3478",
+    "Script": "oldip == '' || oldip == ip",
+    "Level": "warn",
+    "Descr": "STUNサーバーを利用して外部公開グローバルIPv4アドレスの変化を監視"
+  },
+  {
+    "Name": "STUNグローバルIPv6監視",
+    "Type": "stun",
+    "Mode": "ipv6",
+    "Params": "stun.cloudflare.com:3478",
+    "Script": "oldip == '' || oldip == ip",
+    "Level": "warn",
+    "Descr": "STUNサーバーを利用して外部公開グローバルIPv6アドレスの変化を監視"
   }
 ]

@@ -56,6 +56,7 @@ The following functions will work
 - OpenTelemetry collector
 - MCP Server
 - MQTT Server and Polling
+- STUN global IP inspection and monitoring
 
 ## Build 
 
@@ -195,6 +196,13 @@ Usage of twsnmpfk:
 | notifyOAuth2Port |OAuth2 redirect port (default 8180)|
 
 ## History
+
+### v2.3.0
+
+#### STUN Global IP Inspection & Monitoring
+* **STUN Information in Address Management**: Added a `[STUN]` button to the Address Management (`Address`) screen. Uses STUN servers (RFC 5389 / RFC 3489 compliant) to query the external public global IP address, mapped public port, reverse DNS hostname, local source address, round trip time (RTT), and GeoIP location for traffic heading to the internet. Supports both IPv4 and IPv6, clipboard copying, and direct links to Google Maps and VirusTotal.
+* **STUN Polling Type**: Added a new native polling type `stun` to monitor public internet access IP changes. Automatically detects IP modifications, records event logs, transitions to configured alert levels, and supports custom JavaScript evaluation scripts (Otto VM).
+* **Predefined Templates & AI Assist Support**: Added built-in polling templates for STUN (IPv4 and IPv6), and enhanced the AI Polling Assist feature to generate STUN polling parameters and scripts.
 
 ### v2.2.0
 

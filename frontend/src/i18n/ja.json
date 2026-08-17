@@ -975,7 +975,20 @@
     "Address": "アドレス",
     "Name": "項目",
     "Value": "値",
-    "Search": "調査"
+    "Search": "調査",
+    "StunInfo": "STUN情報"
+  },
+  "Stun": {
+    "Title": "STUN グローバルIP情報",
+    "Server": "STUNサーバー",
+    "Protocol": "プロトコル",
+    "Timeout": "タイムアウト(秒)",
+    "GlobalIP": "グローバルIP",
+    "ReverseDNS": "逆引きホスト名",
+    "MappedPort": "外側ポート",
+    "RTT": "応答時間",
+    "Fetch": "取得",
+    "Copy": "コピー"
   },
   "Location": {
     "Edit": "編集",

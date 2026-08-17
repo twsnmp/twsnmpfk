@@ -470,6 +470,10 @@ export function GetSshdPublicKeys() {
   return window['go']['main']['App']['GetSshdPublicKeys']();
 }
 
+export function GetStunInfo(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetStunInfo'](arg1, arg2, arg3);
+}
+
 export function GetSyslogs(arg1) {
   return window['go']['main']['App']['GetSyslogs'](arg1);
 }

@@ -397,5 +397,23 @@
     "Script": "!newMsg",
     "Level": "off",
     "Descr": "Confirm receipt of new mail from IMAP or POP3 server"
+  },
+  {
+    "Name": "STUN Global IPv4 Monitor",
+    "Type": "stun",
+    "Mode": "ipv4",
+    "Params": "stun.cloudflare.com:3478",
+    "Script": "oldip == '' || oldip == ip",
+    "Level": "warn",
+    "Descr": "Monitor changes in the public global IPv4 address via STUN server"
+  },
+  {
+    "Name": "STUN Global IPv6 Monitor",
+    "Type": "stun",
+    "Mode": "ipv6",
+    "Params": "stun.cloudflare.com:3478",
+    "Script": "oldip == '' || oldip == ip",
+    "Level": "warn",
+    "Descr": "Monitor changes in the public global IPv6 address via STUN server"
   }
 ]

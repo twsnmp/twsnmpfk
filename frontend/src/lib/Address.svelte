@@ -23,6 +23,7 @@
   } from "./common";
   import AddressReport from "./AddressReport.svelte";
   import AddressInfo from "./AddressInfo.svelte";
+  import StunInfo from "./StunInfo.svelte";
   import AddressAIDialog from "./AddressAIDialog.svelte";
   import Node from "./Node.svelte";
   import NodeReport from "./NodeReport.svelte";
@@ -47,6 +48,7 @@
   let showAddNode = false;
   let showNodeReport = false;
   let showAddressInfo = false;
+  let showStunInfo = false;
   let showAddressAI = false;
   let hasAI = false;
 
@@ -430,6 +432,17 @@
         <Icon path={icons.mdiInbox} size={1} />
         {$_('Address.AddressInfo')}
       </GradientButton>
+      <GradientButton
+        type="button"
+        color="blue"
+        onclick={() => {
+          showStunInfo = true;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiWan} size={1} />
+        {$_('Address.StunInfo') || 'STUN'}
+      </GradientButton>
     <GradientButton shadow color="red" type="button" onclick={reset} size="xs">
       <Icon path={icons.mdiTrashCan} size={1} />
       {$_("Address.Clear")}
@@ -477,6 +490,10 @@
 
 <AddressInfo
   bind:show = {showAddressInfo}
+/>
+
+<StunInfo
+  bind:show = {showStunInfo}
 />
 
 <Node

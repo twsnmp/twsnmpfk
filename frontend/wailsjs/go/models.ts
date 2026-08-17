@@ -2125,6 +2125,58 @@ export namespace main {
 	        this.Lock = source["Lock"];
 	    }
 	}
+	export class StunInfoResult {
+	    IP: string;
+	    Port: number;
+	    Hostname: string;
+	    LocalIP: string;
+	    LocalPort: number;
+	    RTT: string;
+	    RTTNano: number;
+	    Location: string;
+	    Server: string;
+	    Protocol: string;
+	    Error: string;
+	    Entries: AddrInfoEnt[];
+	
+	    static createFrom(source: any = {}) {
+	        return new StunInfoResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.IP = source["IP"];
+	        this.Port = source["Port"];
+	        this.Hostname = source["Hostname"];
+	        this.LocalIP = source["LocalIP"];
+	        this.LocalPort = source["LocalPort"];
+	        this.RTT = source["RTT"];
+	        this.RTTNano = source["RTTNano"];
+	        this.Location = source["Location"];
+	        this.Server = source["Server"];
+	        this.Protocol = source["Protocol"];
+	        this.Error = source["Error"];
+	        this.Entries = this.convertValues(source["Entries"], AddrInfoEnt);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class SyslogFilterEnt {
 	    Start: string;
 	    End: string;

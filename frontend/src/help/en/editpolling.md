@@ -38,6 +38,9 @@ Screen for creating a new polling monitor or editing the settings of an existing
     * **Protocol**: IMAP or POP3.
     * **Secure Connection**: Enables SSL/TLS.
     * **Keyword**: Search keyword filter for subjects or bodies (optional).
+  * **Example: STUN Monitoring**
+    * **Parameter**: STUN server (e.g. `stun.cloudflare.com:3478`, default: `stun.cloudflare.com:3478`)
+    * **Mode**: `ipv4` (default) or `ipv6`
 * **Filter**
   Regex or search filter condition depending on type and mode.
 * **Extract pattern**
@@ -55,6 +58,14 @@ Screen for creating a new polling monitor or editing the settings of an existing
     * `count`: Total count of pings sent
     * `ttl`: RecvTTL
     * Example: `loss < 10.0 && avg < 100 * 1000 * 1000` (Normal if packet loss < 10% and avg response time < 100ms)
+  * **Variables available in STUN Monitoring**:
+    * `ip`: Mapped global IP address
+    * `oldip`: Previously observed global IP address
+    * `port`: Mapped port number
+    * `host`: Reverse DNS hostname
+    * `local`: Local source IP address
+    * `rtt`: Response time in nanoseconds
+    * Example (Default behavior without script triggers failure state when IP changes): `oldip == '' || oldip == ip` (IP change detection), `rtt < 500 * 1000 * 1000` (RTT under 500ms)
 * **Polling interval**
   Time interval in seconds between execution checks.
 * **Timeout**
