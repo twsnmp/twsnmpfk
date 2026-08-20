@@ -120,7 +120,26 @@ Added support for setting the opacity (transparency) of drawing items and improv
 
 ### New Features in v2.3.0
 
-- **STUN Global IP Inspection & Monitoring**: Added a `[STUN]` button to the Address Management view to query public external IP, mapped port, reverse DNS, local address, RTT, and GeoIP via STUN servers (IPv4/IPv6, copy/maps/VirusTotal links). Also introduced a native `stun` polling type to automatically monitor public IP changes, complete with built-in templates and AI assist support.
+#### STUN Global IP Inspection & Monitoring
+- **STUN Information in Address Management**: Added a `[STUN]` button to the Address Management view to inspect external public IP, mapped port, reverse DNS, local address, RTT, and GeoIP via STUN servers (supports IPv4/IPv6, copy to clipboard, and direct links to Google Maps/VirusTotal).
+- **STUN Polling Monitor**: Added a new native polling type `stun` to monitor public internet IP changes, automatically detecting modifications, logging events, triggering alerts, and executing Otto JavaScript evaluation scripts with predefined templates.
+
+#### PING Diagnostics Expansion (Smokeping, MTR, AI Explanation)
+- **Four Operation Modes**: Easily switch between Normal Ping, Smoke (high-frequency jitter & packet loss measurement), Traceroute, and MTR (My Traceroute with continuous per-hop sampling) at the top of the PING window.
+- **Smokeping Visualization**: Measures response times and packet loss via 200ms burst pinging, visualizing median RTT, latency spread, and loss intensity with color gradations.
+- **MTR (My Traceroute)**: Automatically detects all intermediate hops along the path to the target, sampling each hop in real-time to display the Hop Flow Diagram, per-hop latency statistics (Sent, Avg, Best, Worst, StDev, Loss %), and hop latency profile chart.
+- **PING AI Explanation**: Added an `[AI Explain]` button to send active PING, Smoke, and MTR measurement data to AI (LLM) for automated path bottleneck analysis, packet loss diagnosis, and remediation advice.
+
+#### Smokeping Polling Monitor
+- **Smokeping Polling Mode**: Added `smoke` mode to PING polling with configurable continuous burst ping count (`count=10,size=64,ttl=64`).
+- **Rich Evaluation Variables**: Provides JavaScript evaluation variables including mean (`rtt`/`avg`/`mean`), minimum (`min`), maximum (`max`), median (`median`), jitter (`jitter`), packet loss rate (`loss`), loss count (`fail`), and total count (`count`). Includes built-in templates and AI Polling Assist support.
+
+#### Downtime & SLA Aggregation & AI Explanation
+- **Downtime & SLA Tabs across Reports**: Added "Downtime & SLA" tabs to Event Log, Node, and Polling reports. Displays overall availability %, incident counts, MTTR, max/total downtime, ranking charts, and detailed incident breakdown tables, with AI explanation support.
+- **Downtime in Recovery Logs**: Event log recovery entries now explicitly record the elapsed downtime duration.
+
+#### Node Address Auto-Resolution
+- **Immediate IP/MAC Resolution**: Automatically resolves and populates IP or MAC addresses according to the node's address mode immediately after saving node configurations.
 
 ### New Features in v2.2.0
 
@@ -841,7 +860,7 @@ Polling edit can be displayed by clicking the button on the polling list. The AI
 | ---- | ---- |
 | Name | Polling name.|
 | Level | Pauling disability level.|
-| Type | Polling type.<br> Ping, SNMP, TCP, Email(IMAP/POP3) etc. |
+| Type | Polling type.<br> Ping, SNMP, TCP, STUN, Email(IMAP/POP3) etc. |
 | Mode | Operation mode depends on the type of polling.|
 | Log mode | How to save the polling result log ("None", "Always", "On change", "AI analysis").|
 | AI mode | Anomaly detection algorithm used when Log mode is "AI analysis" ("Isolation Forest", "Hotelling's T2", "k-NN").|
@@ -875,6 +894,7 @@ This is a list of IP address found by TWSNMP.Only the IP address in the same seg
 | Delete| Delete the selected IP address.|
 | Report | Display the address list report.|
 | AI Explanation | Sends current tab data to AI (LLM) for subnet allocation efficiency, IP conflict risk analysis, and recommendations (only visible when AI integration is enabled).|
+| STUN | Open the STUN dialog to query external public IP, mapped port, reverse DNS, local address, RTT, and GeoIP via STUN servers (IPv4/IPv6, copy/maps/VirusTotal links).|
 | clear| Clear all address lists.|
 | CSV | Export the address list to the CSV file.|
 | Excel | Export the address list to the Excel file.|
@@ -898,6 +918,23 @@ This is a report that shows the relationship between IP address and MAC address 
 This is a report that shows the relationship between IP address and MAC address with a circular model.The normal address is one -on -one for the IP address and the MAC address.You can detect MAC addresses with the same IP address on multiple Macs or have multiple IP addresses.
 
 ![](./images/en/address_list_relationship_between_ip_and_mac_address_circular_model.png)
+
+
+### STUN Global IP Information
+
+Inspects and verifies the external public global IP address, mapped port, reverse DNS hostname, local source address, round trip time (RTT), and GeoIP location using STUN servers (RFC 5389 / RFC 3489 compliant). Supports IPv4 and IPv6 protocols, copying information to clipboard, and direct links to Google Maps and VirusTotal.
+
+![](./images/en/address_stun.png)
+
+
+| Items | Contents |
+| ---- | ---- |
+| STUN Server | Address of the STUN server to query (default: `stun.cloudflare.com:3478`). |
+| Protocol | Communication protocol (`IPv4 (UDP)` or `IPv6 (UDP)`). |
+| Timeout (sec) | Query timeout in seconds. |
+| Fetch | Query the STUN server and fetch current global IP information. |
+| Copy | Copy the retrieved global IP information table to the clipboard. |
+| Close | Close the STUN Global IP Information dialog. |
 
 ### Address Analysis
 

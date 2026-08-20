@@ -13,7 +13,7 @@ List of available tools:
   - `ip_filter` (string, optional): Filters by IP address (regular expression).
 
 - `get_polling_list`: Retrieves a list of polling settings.
-  - `type_filter` (string, optional): Filters by polling type (regular expression: ping, tcp, http, dns, twsnmp, syslog).
+  - `type_filter` (string, optional): Filters by polling type (regular expression: ping, tcp, http, dns, twsnmp, syslog, stun).
   - `name_filter` (string, optional): Filters by polling name (regular expression).
   - `node_name_filter` (string, optional): Filters by node name (regular expression).
   - `state_filter` (string, optional): Filters by state (regular expression: normal, warn, low, high, repair, unknown).

@@ -35,7 +35,7 @@ The following functions will work
 
 - Network map
 - Node list
-- Polling (PING/TCP/HTTP/NTP/DNS/SNMP/gNMI)
+- Polling (PING/TCP/HTTP/NTP/DNS/SNMP/gNMI/STUN)
 - Event log
 - Syslog reception
 - SNMP TRAP reception
@@ -203,6 +203,29 @@ Usage of twsnmpfk:
 * **STUN Information in Address Management**: Added a `[STUN]` button to the Address Management (`Address`) screen. Uses STUN servers (RFC 5389 / RFC 3489 compliant) to query the external public global IP address, mapped public port, reverse DNS hostname, local source address, round trip time (RTT), and GeoIP location for traffic heading to the internet. Supports both IPv4 and IPv6, clipboard copying, and direct links to Google Maps and VirusTotal.
 * **STUN Polling Type**: Added a new native polling type `stun` to monitor public internet access IP changes. Automatically detects IP modifications, records event logs, transitions to configured alert levels, and supports custom JavaScript evaluation scripts (Otto VM).
 * **Predefined Templates & AI Assist Support**: Added built-in polling templates for STUN (IPv4 and IPv6), and enhanced the AI Polling Assist feature to generate STUN polling parameters and scripts.
+
+#### PING Diagnostics Expansion (Smokeping, MTR, and AI Explanation)
+* **Four PING Modes**: Added mode switching at the top of the PING screen for Normal Ping, Smoke (high-frequency jitter & packet loss measurement), Traceroute, and MTR (My Traceroute with continuous per-hop sampling).
+* **Smokeping Visualization**: Pings at 200ms burst intervals to visualize median response time, latency jitter (spread), and packet loss rate using a color-graded Smokeping chart.
+* **MTR (My Traceroute)**: Automatically detects all intermediate network hops to the target, sampling each hop in real-time to display the Hop Flow Diagram, per-hop latency statistics (Sent, Avg, Best, Worst, StDev, Loss %), and hop latency profile chart.
+* **PING AI Explanation**: Added an `[AI Explain]` button to send active PING, Smoke, and MTR measurement data to AI (LLM) for automated path bottleneck analysis, packet loss diagnosis, and remediation advice.
+
+#### Smokeping Polling Monitor
+* **Smokeping Polling Mode**: Added `smoke` mode to PING polling with configurable continuous burst ping count (`count=10,size=64,ttl=64`).
+* **Rich Evaluation Variables**: Provides JavaScript evaluation variables including mean (`rtt`/`avg`/`mean`), minimum (`min`), maximum (`max`), median (`median`), jitter (`jitter`), packet loss rate (`loss`), loss count (`fail`), and total count (`count`). Includes built-in templates and AI Polling Assist support.
+
+#### Downtime & SLA Aggregation & AI Explanation
+* **Event Log Report Downtime & SLA Tab**: Aggregates polling failure and recovery logs to calculate overall SLA availability %, total incident count, MTTR (Mean Time To Recovery), max/total downtime, and node-by-node SLA ranking charts and incident list tables, with AI explanation support.
+* **Node Report Downtime & SLA Tab**: Displays node availability %, active failure status, MTTR, max/total downtime summary KPI cards, polling item breakdown graph & table, with AI explanation support.
+* **Polling Report Downtime & SLA Tab**: Calculates single polling SLA availability %, MTTR, max/total downtime, failure timeline chart, and incident list, with AI explanation support.
+* **Downtime in Recovery Logs**: Event log recovery entries now explicitly record the elapsed downtime duration.
+
+#### Node Address Auto-Resolution
+* **Immediate IP/MAC Resolution**: Automatically resolves and populates IP or MAC addresses according to the node's address mode immediately after saving node configurations.
+
+#### Security & Reliability Enhancements
+* **DNS Lookup Timeout**: Standardized DNS lookup timeouts to 2 seconds across the codebase to prevent UI hangs.
+* **Dependency Upgrades**: Audited and upgraded frontend and backend dependencies to address security vulnerabilities.
 
 ### v2.2.0
 

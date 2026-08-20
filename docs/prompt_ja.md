@@ -13,7 +13,7 @@
   - `ip_filter` (string, optional): IPアドレスでフィルタリングします（正規表現）。
 
 - `get_polling_list`: ポーリング設定のリストを取得します。
-  - `type_filter` (string, optional): ポーリング種別でフィルタリングします（正規表現: ping, tcp, http, dns, twsnmp, syslog）。
+  - `type_filter` (string, optional): ポーリング種別でフィルタリングします（正規表現: ping, tcp, http, dns, twsnmp, syslog, stun）。
   - `name_filter` (string, optional): ポーリング名でフィルタリングします（正規表現）。
   - `node_name_filter` (string, optional): ノード名でフィルタリングします（正規表現）。
   - `state_filter` (string, optional): 状態でフィルタリングします（正規表現: normal, warn, low, high, repair, unknown）。

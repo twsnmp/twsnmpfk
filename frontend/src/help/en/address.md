@@ -31,6 +31,7 @@ List of IP and MAC addresses detected on the local segment via the ARP watch fun
 * **[Copy]** : Copy the selected address rows to the clipboard.
 * **[Report]** : Open the Address List statistical reports (IP usage heatmap and IP-MAC relationship charts).
 * **[AI Explain]** : Request an AI (LLM) explanation of the address management status, sending normal address count and detailed abnormal/changed address entries for diagnosis and recommendations (Displayed only when AI integration is enabled).
+* **[STUN]** : Open the STUN information dialog to inspect the external public IP address, mapped port, reverse DNS, local address, RTT, and GeoIP via STUN servers (supports IPv4/IPv6, copying, and links to Google Maps/VirusTotal).
 * **[Clear]** : Clear all addresses from the ARP monitoring list.
 * **[CSV]** : Export the address list to a CSV file.
 * **[Excel]** : Export the address list to an Excel file.

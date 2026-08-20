@@ -58,7 +58,7 @@ The server exposes the following tools for agents.
 ### `get_polling_list`
 - **Description**: Get a list of pollings from TWSNMP.
 - **Parameters**:
-  - `type_filter` (string, optional): Regex to filter by polling type (`ping`, `tcp`, `http`, `dns`, `twsnmp`, `syslog`, etc.).
+  - `type_filter` (string, optional): Regex to filter by polling type (`ping`, `tcp`, `http`, `dns`, `twsnmp`, `syslog`, `stun`, etc.).
   - `name_filter` (string, optional): Regex to filter by polling name.
   - `node_name_filter` (string, optional): Regex to filter by the node name associated with the polling.
   - `state_filter` (string, optional): Regex to filter by polling state (`normal`, `warn`, `low`, `high`, `repair`, `unknown`).

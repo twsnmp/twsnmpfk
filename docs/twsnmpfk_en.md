@@ -115,6 +115,10 @@ Added support for opacity (transparency) and improved UI for background images.
 ### New Features in v2.3.0
 
 - **STUN Global IP Inspection & Monitoring**: Added a `[STUN]` button to Address Management to inspect external global IP, mapped port, reverse DNS, local address, RTT, and GeoIP via STUN (IPv4/IPv6, copy/maps/VirusTotal links). Also added a native `stun` polling type with templates and AI assist support to monitor public IP modifications.
+- **PING Diagnostics Expansion (Smokeping, MTR, AI Explanation)**: Added mode switching for Normal Ping, Smoke (high-frequency jitter & packet loss measurement), Traceroute, and MTR (My Traceroute with continuous per-hop sampling), with Smokeping gradation chart, MTR Hop Flow & stats, and AI explanation support.
+- **Smokeping Polling Monitor**: Added `smoke` mode to PING polling with configurable continuous burst ping count, rich evaluation variables, templates, and AI assist support.
+- **Downtime & SLA Aggregation & AI Explanation**: Added "Downtime & SLA" tabs to Event Log, Node, and Polling reports (availability %, incident counts, MTTR, max/total downtime, AI explanation). Recovery logs record downtime duration.
+- **Immediate Node Address Resolution**: Automatically resolves and populates IP or MAC addresses according to the node's address mode immediately after saving node configurations.
 
 ### New Features in v2.2.0
 
@@ -868,7 +872,7 @@ Polling edit can be displayed by clicking the button on the polling list. The AI
 | ---- | ---- |
 | Name | Polling name.|
 | Level | Pauling disability level.|
-| Type | Polling type.<br> Ping, SNMP, TCP, etc. |
+| Type | Polling type.<br> Ping, SNMP, TCP, STUN, etc. |
 | Mode | Operation mode depends on the type of polling.|
 | Log mode | How to save the polling result log ("None", "Always", "On change", "AI analysis").|
 | AI mode | Anomaly detection algorithm used when Log mode is "AI analysis" ("Isolation Forest", "Hotelling's T2", "k-NN").|
@@ -939,6 +943,13 @@ This is a report that shows the relationship between IP address and MAC address 
 <!-- _class: tinytext -->
 
 ![h:400 center](./images/en/address_list_relationship_between_ip_and_mac_address_circular_model.png)
+
+---
+### STUN Global IP Information
+
+Inspects external public global IP address, mapped port, reverse DNS, local address, RTT, and GeoIP location using STUN servers.
+
+![h:380 center](./images/en/address_stun.png)
 
 ---
 ### Address Analysis

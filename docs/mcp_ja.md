@@ -58,7 +58,7 @@ MCPサーバーへのアクセスは、以下の2つのメカニズムによっ�
 ### `get_polling_list`
 - **説明**: TWSNMPからポーリングのリストを取得します。
 - **パラメータ**:
-  - `type_filter` (string, 任意): ポーリング種別でフィルタリングするための正規表現 (`ping`, `tcp`, `http`, `dns`, `twsnmp`, `syslog` など)。
+  - `type_filter` (string, 任意): ポーリング種別でフィルタリングするための正規表現 (`ping`, `tcp`, `http`, `dns`, `twsnmp`, `syslog`, `stun` など)。
   - `name_filter` (string, 任意): ポーリング名でフィルタリングするための正規表現。
   - `node_name_filter` (string, 任意): ポーリングに関連付けられたノード名でフィルタリングするための正規表現。
   - `state_filter` (string, 任意): ポーリングの状態でフィルタリングするための正規表現 (`normal`, `warn`, `low`, `high`, `repair`, `unknown`)。
