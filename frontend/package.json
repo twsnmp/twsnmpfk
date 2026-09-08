@@ -63,6 +63,7 @@
   "overrides": {
     "esbuild": "^0.28.1",
     "svelte": "^5.56.3",
+    "postcss-selector-parser": "^6.1.4",
     "flowbite-svelte": {
       "tailwindcss": "$tailwindcss"
     }

@@ -41,7 +41,7 @@ require (
 	github.com/twsnmp/rdap v0.9.1
 	github.com/twsnmp/twlogeye/api v0.4.0
 	github.com/vjeantet/grok v1.0.1
-	github.com/wailsapp/wails/v2 v2.12.0
+	github.com/wailsapp/wails/v2 v2.15.0
 	github.com/wneessen/go-mail v0.7.2
 	github.com/xhit/go-str2duration/v2 v2.1.0
 	github.com/xuri/excelize/v2 v2.11.0
@@ -59,20 +59,20 @@ require (
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/text v0.40.0
 	gonum.org/v1/gonum v0.17.0
-	google.golang.org/grpc v1.82.1
+	google.golang.org/grpc v1.83.1
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/mcuadros/go-syslog.v2 v2.3.0
 )
 
 require (
-	cloud.google.com/go v0.116.0 // indirect
+	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/ai v0.7.0 // indirect
-	cloud.google.com/go/aiplatform v1.69.0 // indirect
-	cloud.google.com/go/auth v0.14.0 // indirect
-	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
+	cloud.google.com/go/aiplatform v1.114.0 // indirect
+	cloud.google.com/go/auth v0.18.2 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
-	cloud.google.com/go/iam v1.2.2 // indirect
-	cloud.google.com/go/longrunning v0.6.2 // indirect
+	cloud.google.com/go/iam v1.5.3 // indirect
+	cloud.google.com/go/longrunning v0.8.0 // indirect
 	cloud.google.com/go/vertexai v0.12.0 // indirect
 	git.sr.ht/~jackmordaunt/go-toast/v2 v2.0.3 // indirect
 	github.com/AlekSi/pointer v1.2.0 // indirect
@@ -106,8 +106,8 @@ require (
 	github.com/google/jsonschema-go v0.4.2 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
-	github.com/googleapis/gax-go/v2 v2.14.1 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.11 // indirect
+	github.com/googleapis/gax-go/v2 v2.17.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
@@ -184,23 +184,23 @@ require (
 	go.opentelemetry.io/collector/receiver/receiverhelper v0.126.0 // indirect
 	go.opentelemetry.io/collector/receiver/xreceiver v0.126.0 // indirect
 	go.opentelemetry.io/contrib/bridges/otelzap v0.10.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.60.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.61.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0 // indirect
 	go.opentelemetry.io/otel v1.44.0 // indirect
 	go.opentelemetry.io/otel/log v0.11.0 // indirect
 	go.opentelemetry.io/otel/metric v1.44.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.43.0 // indirect
-	go.opentelemetry.io/otel/sdk/metric v1.43.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.44.0 // indirect
+	go.opentelemetry.io/otel/sdk/metric v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	google.golang.org/api v0.218.0 // indirect
-	google.golang.org/genproto v0.0.0-20241118233622-e639e219e697 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20260414002931-afd174a4e478 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260414002931-afd174a4e478 // indirect
+	google.golang.org/api v0.264.0 // indirect
+	google.golang.org/genproto v0.0.0-20260128011058-8636f8732409 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260526163538-3dc84a4a5aaa // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
