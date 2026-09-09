@@ -25,6 +25,15 @@
         <string>{{.Info.Copyright}}</string>
         <key>LSApplicationCategoryType</key>
         <string>public.app-category.developer-tools</string>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsLocalNetworking</key>
+            <true/>
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+        </dict>
+        <key>NSLocalNetworkUsageDescription</key>
+        <string>ネットワーク機器の監視および管理（SNMP、Ping、Syslog等）のためにローカルネットワークへのアクセスが必要です。</string>
         <key>CFBundleDevelopmentRegion</key>
         <string>ja</string>
         <key>CFBundleLocalizations</key>
