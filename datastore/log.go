@@ -389,9 +389,6 @@ func compressLog(s []byte) []byte {
 	if _, err := f.Write(s); err != nil {
 		return s
 	}
-	if err := f.Flush(); err != nil {
-		return s
-	}
 	if err := f.Close(); err != nil {
 		return s
 	}
@@ -399,6 +396,9 @@ func compressLog(s []byte) []byte {
 }
 
 func deCompressLog(s []byte) []byte {
+	if len(s) == 0 || (s[0] == '{' && s[len(s)-1] == '}') {
+		return s
+	}
 	r := flate.NewReader(bytes.NewBuffer(s))
 	d, err := io.ReadAll(r)
 	if err != nil {
@@ -501,9 +501,7 @@ func ForEachLastSyslog(f func(*SyslogEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.Last(); k != nil; k, v = c.Prev() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
+			v = deCompressLog(v)
 			var l LogEnt
 			err := json.Unmarshal(v, &l)
 			if err != nil {
@@ -571,9 +569,7 @@ func ForEachSyslog(st, et int64, f func(*SyslogEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
+			v = deCompressLog(v)
 			var l LogEnt
 			err := json.Unmarshal(v, &l)
 			if err != nil {
@@ -655,9 +651,7 @@ func ForEachLastTraps(f func(*TrapEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.Last(); k != nil; k, v = c.Prev() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
+			v = deCompressLog(v)
 			var l LogEnt
 			err := json.Unmarshal(v, &l)
 			if err != nil {
@@ -728,9 +722,7 @@ func ForEachTraps(st, et int64, f func(*TrapEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
+			v = deCompressLog(v)
 			var l LogEnt
 			err := json.Unmarshal(v, &l)
 			if err != nil {
@@ -833,9 +825,7 @@ func ForEachLastArpLogs(f func(*ArpLogEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.Last(); k != nil; k, v = c.Prev() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
+			v = deCompressLog(v)
 			var l LogEnt
 			err := json.Unmarshal(v, &l)
 			if err != nil {
@@ -877,9 +867,7 @@ func ForEachLogs(st, et int64, lt string, f func(*LogEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
+			v = deCompressLog(v)
 			var l LogEnt
 			err := json.Unmarshal(v, &l)
 			if err != nil {
@@ -933,9 +921,7 @@ func ForEachNetFlow(st, et int64, f func(*NetFlowEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
+			v = deCompressLog(v)
 			var l LogEnt
 			err := json.Unmarshal(v, &l)
 			if err != nil {
@@ -991,9 +977,7 @@ func ForEachSFlow(st, et int64, f func(*SFlowEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
+			v = deCompressLog(v)
 			var l LogEnt
 			err := json.Unmarshal(v, &l)
 			if err != nil {
@@ -1040,9 +1024,7 @@ func ForEachSFlowCounter(st, et int64, f func(*SFlowCounterEnt) bool) error {
 		}
 		c := b.Cursor()
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
-			if bytes.HasSuffix(v, []byte{0, 0, 255, 255}) {
-				v = deCompressLog(v)
-			}
+			v = deCompressLog(v)
 			var l LogEnt
 			err := json.Unmarshal(v, &l)
 			if err != nil {
