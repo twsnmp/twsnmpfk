@@ -66,6 +66,7 @@ func doPollingTLS(pe *datastore.PollingEnt) {
 		conf.InsecureSkipVerify = false
 	case "version":
 		if strings.Contains(script, "1.0") {
+			conf.MinVersion = tls.VersionTLS10
 			conf.MaxVersion = tls.VersionTLS10
 		} else if strings.Contains(script, "1.1") {
 			conf.MinVersion = tls.VersionTLS11
