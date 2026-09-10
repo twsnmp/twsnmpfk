@@ -208,8 +208,9 @@
     refresh();
   });
 
-  const checkAll = () => {
-    CheckPolling("all");
+  const checkAll = async () => {
+    await CheckPolling("all");
+    refresh();
   };
 
   const saveCSV = () => {

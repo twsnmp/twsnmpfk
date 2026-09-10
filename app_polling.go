@@ -102,6 +102,7 @@ func (a *App) CheckPolling(node string) bool {
 	} else {
 		polling.PollNowNode(node)
 	}
+	backend.UpdateLineState()
 	return true
 }
 

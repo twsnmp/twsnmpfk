@@ -26,6 +26,7 @@ func (a *App) GetNodes() map[string]datastore.NodeEnt {
 
 // GetLines retunrs map lines
 func (a *App) GetLines() []datastore.LineEnt {
+	backend.UpdateLineState()
 	ret := []datastore.LineEnt{}
 	datastore.ForEachLines(func(l *datastore.LineEnt) bool {
 		ret = append(ret, *l)
@@ -264,15 +265,49 @@ func (a *App) UpdateNetworkPos(pe UpdatePosEnt) {
 
 func setLineState(l *datastore.LineEnt) {
 	l.State1 = "unknown"
-	if l.PollingID1 != "" {
-		if p := datastore.GetPolling(l.PollingID1); p != nil {
-			l.State1 = p.State
+	if strings.HasPrefix(l.NodeID1, "NET:") {
+		if n := datastore.GetNetwork(l.NodeID1); n != nil {
+			for _, p := range n.Ports {
+				if p.ID == l.PollingID1 {
+					l.State1 = p.State
+					break
+				}
+			}
+		}
+	} else if node := datastore.GetNode(l.NodeID1); node != nil {
+		if node.State == "unknown" {
+			l.State1 = "unknown"
+		} else if l.PollingID1 != "" {
+			if p := datastore.GetPolling(l.PollingID1); p != nil {
+				l.State1 = p.State
+			} else {
+				l.State1 = node.State
+			}
+		} else {
+			l.State1 = node.State
 		}
 	}
-	l.State2 = l.State1
-	if l.PollingID2 != "" {
-		if p := datastore.GetPolling(l.PollingID2); p != nil {
-			l.State2 = p.State
+	l.State2 = "unknown"
+	if strings.HasPrefix(l.NodeID2, "NET:") {
+		if n := datastore.GetNetwork(l.NodeID2); n != nil {
+			for _, p := range n.Ports {
+				if p.ID == l.PollingID2 {
+					l.State2 = p.State
+					break
+				}
+			}
+		}
+	} else if node := datastore.GetNode(l.NodeID2); node != nil {
+		if node.State == "unknown" {
+			l.State2 = "unknown"
+		} else if l.PollingID2 != "" {
+			if p := datastore.GetPolling(l.PollingID2); p != nil {
+				l.State2 = p.State
+			} else {
+				l.State2 = node.State
+			}
+		} else {
+			l.State2 = node.State
 		}
 	}
 }

@@ -413,9 +413,9 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
-        onclick={() => {
+        onclick={async () => {
           showMapMenu = false;
-          CheckPolling("all");
+          await CheckPolling("all");
           refreshMap();
         }}
       >
@@ -656,9 +656,9 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
-        onclick={() => {
+        onclick={async () => {
           showNodeMenu = false;
-          CheckPolling(selectedNode);
+          await CheckPolling(selectedNode);
           refreshMap();
         }}
       >

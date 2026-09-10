@@ -24,7 +24,7 @@ func mapBackend(ctx context.Context, wg *sync.WaitGroup) {
 		updateNodeState(n)
 		return true
 	})
-	updateLineState()
+	UpdateLineState()
 	go checkNewVersion()
 	timer := time.NewTicker(time.Second * 10)
 	newVersionTimer := time.NewTicker(time.Hour * 24)
@@ -51,7 +51,7 @@ func mapBackend(ctx context.Context, wg *sync.WaitGroup) {
 			})
 			i++
 			if change > 0 || i > 5 {
-				updateLineState()
+				UpdateLineState()
 			}
 			if change > 0 && i > 5 {
 				checkOperationRate()
@@ -140,53 +140,48 @@ func updateNodeState(n *datastore.NodeEnt) {
 	})
 }
 
-func updateLineState() {
+func getLineEndState(nodeID, pollingID string) (string, bool) {
+	if strings.HasPrefix(nodeID, "NET:") {
+		n := datastore.GetNetwork(nodeID)
+		if n != nil {
+			for _, p := range n.Ports {
+				if p.ID == pollingID {
+					return p.State, true
+				}
+			}
+		}
+		return "unknown", false
+	}
+	node := datastore.GetNode(nodeID)
+	if node == nil {
+		return "unknown", true
+	}
+	if node.State == "unknown" {
+		return "unknown", true
+	}
+	if pollingID != "" {
+		if p := datastore.GetPolling(pollingID); p != nil {
+			return p.State, true
+		}
+	}
+	return node.State, true
+}
+
+// UpdateLineState updates state of all lines.
+func UpdateLineState() {
 	datastore.ForEachLines(func(l *datastore.LineEnt) bool {
-		l.State1 = "unknown"
-		if strings.HasPrefix(l.NodeID1, "NET:") {
-			n := datastore.GetNetwork(l.NodeID1)
-			hit := false
-			if n != nil {
-				for _, p := range n.Ports {
-					if p.ID == l.PollingID1 {
-						l.State1 = p.State
-						hit = true
-					}
-				}
-			}
-			if !hit {
-				datastore.DeleteLine(l.ID)
-				return true
-			}
-		} else {
-			if p := datastore.GetPolling(l.PollingID1); p != nil {
-				l.State1 = p.State
-			}
+		s1, ok1 := getLineEndState(l.NodeID1, l.PollingID1)
+		if !ok1 {
+			datastore.DeleteLine(l.ID)
+			return true
 		}
-		l.State2 = l.State1
-		if strings.HasPrefix(l.NodeID2, "NET:") {
-			n := datastore.GetNetwork(l.NodeID2)
-			hit := false
-			if n != nil {
-				for _, p := range n.Ports {
-					if p.ID == l.PollingID2 {
-						l.State2 = p.State
-						hit = true
-					}
-				}
-			}
-			if !hit {
-				datastore.DeleteLine(l.ID)
-				return true
-			}
-		} else {
-			if p := datastore.GetPolling(l.PollingID2); p != nil {
-				l.State2 = p.State
-				if l.PollingID1 == "" {
-					l.State1 = l.State2
-				}
-			}
+		s2, ok2 := getLineEndState(l.NodeID2, l.PollingID2)
+		if !ok2 {
+			datastore.DeleteLine(l.ID)
+			return true
 		}
+		l.State1 = s1
+		l.State2 = s2
 		if l.PollingID != "" {
 			if p := datastore.GetPolling(l.PollingID); p != nil {
 				l.State = p.State
