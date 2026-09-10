@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -30,7 +31,9 @@ func mqttd(stopCh chan bool) {
 
 func startMqttServer() *mqtt.Server {
 	// Create the new MQTT Server.
-	server := mqtt.New(nil)
+	server := mqtt.New(&mqtt.Options{
+		Logger: slog.New(slog.DiscardHandler),
+	})
 	err := server.AddHook(new(mqttHook), nil)
 	if err != nil {
 		log.Println(err)
@@ -128,15 +131,13 @@ func (h *mqttHook) Provides(b byte) bool {
 }
 
 func (h *mqttHook) Init(config any) error {
-	log.Println("mqtt hook initialised")
 	return nil
 }
 
 func (h *mqttHook) OnConnect(cl *mqtt.Client, pk packets.Packet) error {
-	log.Printf("mqtt client connected client=%s", cl.ID)
 	if datastore.MapConf.MqttToSyslog && datastore.MapConf.EnableSyslogd {
 		logMap := make(map[string]any)
-		logMap["content"] = fmt.Sprintf("mqtt clinet connected client=%s remote=%s", cl.ID, cl.Net.Remote)
+		logMap["content"] = fmt.Sprintf("mqtt client connected client=%s remote=%s", cl.ID, cl.Net.Remote)
 		logMap["tag"] = "mqtt:connect"
 		logMap["severity"] = 6
 		logMap["facility"] = float64(17)
@@ -153,10 +154,9 @@ func (h *mqttHook) OnConnect(cl *mqtt.Client, pk packets.Packet) error {
 }
 
 func (h *mqttHook) OnDisconnect(cl *mqtt.Client, err error, expire bool) {
-	log.Printf("mqtt client disconnected client=%s,expire=%v,err=%v", cl.ID, expire, err)
 	if datastore.MapConf.MqttToSyslog && datastore.MapConf.EnableSyslogd {
 		logMap := make(map[string]any)
-		logMap["content"] = fmt.Sprintf("mqtt clinet disconnected client=%s remote=%s exire=%v err=%v",
+		logMap["content"] = fmt.Sprintf("mqtt client disconnected client=%s remote=%s expire=%v err=%v",
 			cl.ID, cl.Net.Remote, expire, err)
 		logMap["tag"] = "mqtt:disconnect"
 		logMap["severity"] = 6
@@ -176,11 +176,9 @@ func (h *mqttHook) OnDisconnect(cl *mqtt.Client, err error, expire bool) {
 }
 
 func (h *mqttHook) OnSubscribed(cl *mqtt.Client, pk packets.Packet, reasonCodes []byte) {
-	log.Printf("mqtt subscribed client=%s qos=%v", cl.ID, reasonCodes)
 }
 
 func (h *mqttHook) OnUnsubscribed(cl *mqtt.Client, pk packets.Packet) {
-	log.Printf("mqtt unsubscribed client=%s", cl.ID)
 }
 
 func (h *mqttHook) OnPublished(cl *mqtt.Client, pk packets.Packet) {
