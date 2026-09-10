@@ -47,7 +47,7 @@
     "fft-js": "^0.0.12",
     "flowbite": "^2.2.1",
     "flowbite-svelte": "^1.33.1",
-    "maplibre-gl": "^4.0.0",
+    "maplibre-gl": "^6.9.0",
     "marked": "^17.0.3",
     "mdi-svelte": "^1.1.2",
     "numeral": "^2.0.6",
