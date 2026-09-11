@@ -1715,8 +1715,8 @@ Provides tools for network monitoring and management.
 - [MCP server prompt specifications](./mcp_prompt.html)
 
 ---
-## AI analysis
-The screen of the AI analysis list.Only the list is displayed in the polling log settings and the analysis is performed.
+## Anomaly
+The screen of the anomaly detection list (Menu: "Anomaly"). Displays items for which analysis is performed in the polling log settings.
 <!-- _class: tinytext -->
 
 ![h:400 center](./images/en/ai.png)
@@ -1724,18 +1724,18 @@ The screen of the AI analysis list.Only the list is displayed in the polling log
 ---
 | Items | Contents |
 | ---- | ---- |
-| anomaly score | A deviation value that indicates the degree of anomaly of AI analysis results.<br> 50 is average.Large values are highly anomaly.|
+| anomaly score | A deviation value that indicates the degree of anomaly of analysis results.<br> 50 is average. Large values indicate a high degree of anomaly.|
 | Node name | The name of the node to be analyzed.|
-| Polling | Polling for AI analysis.|
-| Data count | The number of data to be analyzed AI.If you are small, the accuracy will be low.|
-| Last time | The last date and time of AI analysis.|
+| Polling | Polling for anomaly detection.|
+| Data count | The number of data points analyzed. If small, the accuracy will be lower.|
+| Last time | The last date and time of analysis.|
 
 ---
 | Items | Contents |
 | ---- | ---- |
-| Report | Displays reports on the selected AI analysis results.|
-| clear| Clear the selected AI analysis results.|
-| Reload | Update the AI analysis list to the latest state.|
+| Report | Displays reports on the selected anomaly detection results.|
+| clear| Clear the selected anomaly detection results.|
+| Reload | Update the anomaly list to the latest state.|
 
 ---
 ### AI anomaly score heatmap

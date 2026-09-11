@@ -128,7 +128,7 @@
     "SampleQuantile": "Sample Quantiles"
   },
   "Top": {
-    "AI": "AI",
+    "AI": "Anomaly",
     "Config": "setting",
     "Log": "Log",
     "Map": "Map",

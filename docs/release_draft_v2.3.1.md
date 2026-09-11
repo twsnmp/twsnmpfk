@@ -30,6 +30,10 @@ Go 1.27環境およびmacOS環境下において、ARP WatchおよびPINGバッ�
   - `AddPollingLog` において結果マップ（`Result`）を複製してログキューに投入することで、非同期更新とシリアライズのデータ競合を防止。
 - **macOS App Nap 無効化設定の追加 (`Info.plist`, `Info.dev.plist`)**:
   - `<key>NSAppSleepDisabled</key><true/>` を追加し、無操作時やスクリーンセーバー時にOSがアプリのタイマーや通信をスロットリングするのを防止。
+- **機械学習による異常検知メニューの名称・アイコン刷新 (`Top.svelte`, 各言語リソース, ヘルプ)**:
+  - ナビゲーションバーのボタン表示を「**AI**」から「**異常検知**」（英語: **Anomaly**）に変更。
+  - アイコンを `mdiBrain` から正規分布と外れ値検知を象徴する `mdiChartBellCurveCumulative` に変更。
+  - **背景・理由**: LLM連携（Syslog/TRAP等のAI解説機能）の拡充に伴い、対話型・生成AIと、従来のポーリング数値データに対する機械学習モデル（Isolation Forest、ホテリングのT2等）による異常スコア算出機能が混同されるのを防止し、機能の役割（メトリック異常・外れ値検知）を明確化しました。
 
 ### ドキュメント（Documentation）
 - **macOS環境での常時監視に関する推奨設定の追記**:
@@ -38,6 +42,8 @@ Go 1.27環境およびmacOS環境下において、ARP WatchおよびPINGバッ�
   - マニュアル日本語版スライド (`docs/twsnmpfk_ja.md`)
   - マニュアル英語版スライド (`docs/twsnmpfk_en.md`)
   - ※ 画面ロック、スクリーンセーバー、ディスプレイオフ、ハードディスクスリープ、自動ログアウトの無効化手順を明文化。
+- **異常検知（Anomaly）への表記更新**:
+  - Webページ・マニュアルおよびアプリ内ヘルプにおける「AI分析リスト」を「異常検知リスト（Anomaly）」に更新。
 
 ---
 
@@ -48,6 +54,11 @@ Go 1.27環境およびmacOS環境下において、ARP WatchおよびPINGバッ�
 - `datastore/polling.go`
 - `build/darwin/Info.plist`
 - `build/darwin/Info.dev.plist`
+- `frontend/src/lib/Top.svelte`
+- `frontend/src/i18n/ja.json`
+- `frontend/src/i18n/en.json`
+- `frontend/src/help/ja/ai.md`
+- `frontend/src/help/en/ai.md`
 - `docs/index_ja.md`
 - `docs/index.md`
 - `docs/twsnmpfk_ja.md`

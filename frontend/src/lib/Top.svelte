@@ -299,7 +299,7 @@
     page = "ai";
   }}
 >
-        <Icon path={icons.mdiBrain} size={1.5} />
+        <Icon path={icons.mdiChartBellCurveCumulative} size={1.5} />
         {$_("Top.AI")}
       </NavLi>
       <NavLi
