@@ -214,11 +214,11 @@
   });
 </script>
 
-<div class="flex flex-col max-h-[calc(100vh-130px)] overflow-y-auto pb-8">
-  <div class="m-5 grow">
+<div class="flex flex-col max-h-[calc(100vh-50px)] overflow-y-auto pb-2">
+  <div class="mx-2 mt-2">
     <div id="map"></div>
   </div>
-  <div class="flex justify-end space-x-2 mr-2 mb-6 pb-4">
+  <div class="flex justify-end space-x-2 mr-2 py-2">
     {#if selectedNode != ""}
       {#if !lock}
         <GradientButton
@@ -342,6 +342,7 @@
 <style>
   #map {
     height: 80vh;
+    max-height: calc(100vh - 120px);
     width: 95vw;
     margin: 0 auto;
   }

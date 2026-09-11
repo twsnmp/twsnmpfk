@@ -428,12 +428,12 @@
 
 <svelte:window onresize={resizeLogCountChart} />
 
-<div class="flex flex-col max-h-[calc(100vh-130px)] overflow-y-auto pb-8">
+<div class="flex flex-col max-h-[calc(100vh-50px)] overflow-y-auto pb-2">
   <div id="chart"></div>
-  <div id="tableBase" class="m-5 grow">
+  <div id="tableBase" class="mx-2 mt-2">
     <table id="sFlowTable" class="display compact" style="width:99%"></table>
   </div>
-  <div class="flex justify-end space-x-2 mr-2 mb-6 pb-4">
+  <div class="flex justify-end space-x-2 mr-2 py-2">
     <Toggle bind:checked={counter} onchange={refresh}>
       {$_("SFlow.Counter")}
     </Toggle>

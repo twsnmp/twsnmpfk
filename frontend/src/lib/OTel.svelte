@@ -350,7 +350,7 @@
 
 <svelte:window onresize={resizeChart} />
 
-<div class="flex flex-col max-h-[calc(100vh-130px)] overflow-y-auto pb-8">
+<div class="flex flex-col max-h-[calc(100vh-50px)] overflow-y-auto pb-2">
   <Tabs style="underline">
     <TabItem
       open
@@ -365,7 +365,7 @@
         {$_("OTel.Metric")}
       </div>
       {/snippet}
-      <div class="m-5 grow">
+      <div class="mx-2 mt-2">
         <div><table id="otelMetricTable" class="display compact" style="width:99%"></table></div>
       </div>
     </TabItem>
@@ -382,7 +382,7 @@
       </div>
       {/snippet}
       <div id="otelTraceChart"></div>
-      <div class="m-5 grow">
+      <div class="mx-2 mt-2">
         <div><table id="otelTraceTable" class="display compact" style="width:99%"></table></div>
       </div>
     </TabItem>
@@ -399,14 +399,14 @@
       </div>
       {/snippet}
       <div id="otelSyslogChart"></div>
-      <div class="m-5 grow">
+      <div class="mx-2 mt-2">
         <div><table id="otelLogTable" class="display compact" style="width:99%"></table></div>
       </div>
     </TabItem>
 
   </Tabs>
 
-  <div class="flex items-center justify-end space-x-2 mr-2 mb-6 pb-4">
+  <div class="flex items-center justify-end space-x-2 mr-2 py-2">
     {#if selectedCount == 1 && tab != "log"}
       {#if tab == "metric"}
         <GradientButton
