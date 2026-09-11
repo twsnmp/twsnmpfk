@@ -41,6 +41,26 @@ You can buy it.
 ![](./images/en/store_app_store.png){: width="95%"}
 
 
+### Notes for 24/7 Monitoring on macOS
+
+macOS enforces aggressive power-saving and background throttling policies (screen saver, display sleep, lock screen). To ensure stable and continuous 24/7 network monitoring, configure the following macOS settings (especially important when sharing a display between multiple PCs using input switching):
+
+1. **"Lock Screen" Settings**:
+   - **Turn display off when inactive**: **[Never]**
+   - **Start Screen Saver when inactive**: **[Never]**
+   - **Require password after screen saver begins or display is turned off**: **[Never]**
+   > *Note: When the screen is locked or the screen saver starts, macOS suspends background socket communication and timer interrupts, causing false polling timeouts.*
+
+2. **"Energy Saver" Settings**:
+   - **Prevent automatic sleeping when the display is off**: **[Enabled]**
+   - **Put hard disks to sleep when possible**: **[Disabled]**
+   - **Wake for network access**: **[Enabled]**
+   > *Note: Hard disk sleep may cause I/O stalls during spin-up, temporarily pausing database write operations.*
+
+3. **"Privacy & Security" > "Advanced..." Settings**:
+   - **Log out automatically after inactivity**: **[Disabled]**
+
+
 ## Linux Version
 
 You can download the package (`.tar.gz` format) from the GitHub Releases.

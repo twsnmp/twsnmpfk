@@ -40,6 +40,23 @@ You can buy it.
 ![h:400 center](./images/en/store_app_store.png)
 ---
 
+## Notes for 24/7 Monitoring on macOS
+
+To prevent macOS power-saving features from suspending network communication during screen lock or screen saver, configure the following settings:
+
+1. **"Lock Screen"**:
+   - "Turn display off when inactive": **Never**
+   - "Start Screen Saver when inactive": **Never**
+   - "Require password": **Never**
+2. **"Energy Saver"**:
+   - "Prevent automatic sleeping when the display is off": **Enabled**
+   - "Put hard disks to sleep when possible": **Disabled**
+3. **"Privacy & Security" > "Advanced..."**:
+   - "Log out automatically after inactivity": **Disabled**
+<!-- _class: tinytext -->
+
+---
+
 ## Linux Version
 
 You can download the package (`.tar.gz` format) from the GitHub Releases.

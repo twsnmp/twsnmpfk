@@ -61,6 +61,7 @@ type PingEnt struct {
 	lastSend int64
 	Error    error
 	RecvSrc  string
+	NoWait   bool
 	done     chan bool
 }
 
@@ -68,6 +69,13 @@ type packet struct {
 	bytes  []byte
 	nbytes int
 	ttl    int
+}
+
+type recvPacket struct {
+	bytes []byte
+	n     int
+	ttl   int
+	src   net.Addr
 }
 
 func (s PingStat) String() string {
@@ -116,6 +124,21 @@ func DoPing(ip string, timeout, retry, size, ttl int) *PingEnt {
 	pingSendCh <- pe
 	<-pe.done
 	return pe
+}
+
+// SendPing : 応答待ちをせず、PINGパケットを1発送信する（ARP解決等の用途向け）
+func SendPing(ip string, size, ttl int) {
+	var err error
+	var pe = newPingEnt(ip, 0, 0, size, ttl)
+	pe.NoWait = true
+	if pe.ipaddr, err = net.ResolveIPAddr("ip", ip); err != nil {
+		return
+	}
+	select {
+	case pingSendCh <- pe:
+	default:
+		// 送信キューが満杯の場合は無理にブロックせずドロップ
+	}
 }
 
 func newPingEnt(ip string, timeout, retry, size, ttl int) *PingEnt {
@@ -185,6 +208,7 @@ func pingBackend(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	log.Println("start ping")
 	timer := time.NewTicker(time.Millisecond * 500)
+	defer timer.Stop()
 	pingMap := make(map[int64]*PingEnt)
 	netProto := "ip4:icmp"
 	if pingMode == "udp" {
@@ -197,17 +221,50 @@ func pingBackend(ctx context.Context, wg *sync.WaitGroup) {
 	}
 	defer conn.Close()
 	conn.IPv4PacketConn().SetControlMessage(ipv4.FlagTTL, true)
+
+	recvCh := make(chan *recvPacket, 100)
+	go func() {
+		for {
+			bytes := make([]byte, 2048)
+			_ = conn.SetReadDeadline(time.Now().Add(time.Second))
+			var n, ttl int
+			var err error
+			var cm *ipv4.ControlMessage
+			var src net.Addr
+			n, cm, src, err = conn.IPv4PacketConn().ReadFrom(bytes)
+			if err != nil {
+				if ctx.Err() != nil {
+					return
+				}
+				continue
+			}
+			if cm != nil {
+				ttl = cm.TTL
+			}
+			select {
+			case recvCh <- &recvPacket{bytes: bytes[:n], n: n, ttl: ttl, src: src}:
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+
 	for {
 		select {
 		case <-ctx.Done():
-			timer.Stop()
 			for _, p := range pingMap {
-				close(p.done)
+				if p.done != nil {
+					close(p.done)
+				}
 			}
 			log.Println("stop ping")
 			return
 		case p := <-pingSendCh:
 			if p != nil {
+				if p.NoWait {
+					_ = p.sendICMP(conn)
+					continue
+				}
 				_, ok := pingMap[p.Tracker]
 				for ok {
 					p.Tracker++
@@ -229,7 +286,9 @@ func pingBackend(ctx context.Context, wg *sync.WaitGroup) {
 							p.Error = fmt.Errorf("Timeout")
 						}
 						p.Stat = PingTimeout
-						p.done <- true
+						if p.done != nil {
+							p.done <- true
+						}
 						continue
 					}
 					if err := p.sendICMP(conn); err != nil {
@@ -238,31 +297,12 @@ func pingBackend(ctx context.Context, wg *sync.WaitGroup) {
 					}
 				}
 			}
-		default:
-			bytes := make([]byte, 2048)
-			_ = conn.SetReadDeadline(time.Now().Add(time.Millisecond * 100))
-			var n, ttl int
-			var err error
-			var cm *ipv4.ControlMessage
-			var src net.Addr
-			n, cm, src, err = conn.IPv4PacketConn().ReadFrom(bytes)
-			if cm != nil {
-				ttl = cm.TTL
-			}
-			if err != nil {
-				if neterr, ok := err.(*net.OpError); ok {
-					if neterr.Timeout() {
-						// Read timeout
-						continue
-					}
-				}
-				continue
-			}
-			if tracker, tm, te, err := processPacket(&packet{bytes: bytes, nbytes: n, ttl: ttl}); err == nil {
+		case rp := <-recvCh:
+			if tracker, tm, te, err := processPacket(&packet{bytes: rp.bytes, nbytes: rp.n, ttl: rp.ttl}); err == nil {
 				if p, ok := pingMap[tracker]; ok {
-					sa := strings.Split(src.String(), ":")
+					sa := strings.Split(rp.src.String(), ":")
 					if p.Target != sa[0] && !te {
-						log.Printf("ping target=%s src=%s", p.Target, src.String())
+						log.Printf("ping target=%s src=%s", p.Target, rp.src.String())
 						continue
 					}
 					delete(pingMap, tracker)
@@ -272,10 +312,12 @@ func pingBackend(ctx context.Context, wg *sync.WaitGroup) {
 						p.Stat = PingOK
 					}
 					p.Time = tm
-					p.RecvTTL = ttl
+					p.RecvTTL = rp.ttl
 					p.RecvSrc = sa[0]
 					p.Error = nil
-					p.done <- true
+					if p.done != nil {
+						p.done <- true
+					}
 				}
 			}
 		}

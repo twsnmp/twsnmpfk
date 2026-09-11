@@ -34,6 +34,8 @@
         </dict>
         <key>NSLocalNetworkUsageDescription</key>
         <string>ネットワーク機器の監視および管理（SNMP、Ping、Syslog等）のためにローカルネットワークへのアクセスが必要です。</string>
+        <key>NSAppSleepDisabled</key>
+        <true/>
         <key>CFBundleDevelopmentRegion</key>
         <string>ja</string>
         <key>CFBundleLocalizations</key>
