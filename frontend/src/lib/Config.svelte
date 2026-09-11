@@ -298,9 +298,256 @@
     });
   };
 
+  const locStylePresets = [
+    {
+      key: "LocStyleNone",
+      style: "",
+    },
+    {
+      key: "LocStyleGSIPale",
+      style: JSON.stringify(
+        {
+          version: 8,
+          sources: {
+            "gsi-pale": {
+              type: "raster",
+              tiles: [
+                "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+              ],
+              tileSize: 256,
+              attribution: "国土地理院 (地理院タイル 淡色地図)",
+            },
+          },
+          layers: [
+            {
+              id: "gsi-pale",
+              type: "raster",
+              source: "gsi-pale",
+              minzoom: 2,
+              maxzoom: 18,
+            },
+          ],
+        },
+        null,
+        2
+      ),
+    },
+    {
+      key: "LocStyleCartoDark",
+      style: JSON.stringify(
+        {
+          version: 8,
+          sources: {
+            "carto-dark": {
+              type: "raster",
+              tiles: [
+                "https://a.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png",
+                "https://b.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png",
+                "https://c.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png",
+              ],
+              tileSize: 256,
+              attribution: "© OpenStreetMap contributors, © CARTO",
+            },
+          },
+          layers: [
+            {
+              id: "carto-dark",
+              type: "raster",
+              source: "carto-dark",
+              minzoom: 0,
+              maxzoom: 19,
+            },
+          ],
+        },
+        null,
+        2
+      ),
+    },
+    {
+      key: "LocStyleOSMBright",
+      style: "https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json",
+    },
+    {
+      key: "LocStyleMieruneMono",
+      style: JSON.stringify(
+        {
+          version: 8,
+          sources: {
+            MIERUNEMAP: {
+              type: "raster",
+              tiles: [
+                "https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png",
+              ],
+              tileSize: 256,
+              attribution:
+                "Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.",
+            },
+          },
+          layers: [
+            {
+              id: "MIERUNEMAP",
+              type: "raster",
+              source: "MIERUNEMAP",
+              minzoom: 0,
+              maxzoom: 18,
+            },
+          ],
+        },
+        null,
+        2
+      ),
+    },
+    {
+      key: "LocStyleGSIStd",
+      style: JSON.stringify(
+        {
+          version: 8,
+          sources: {
+            "gsi-std": {
+              type: "raster",
+              tiles: [
+                "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
+              ],
+              tileSize: 256,
+              attribution: "国土地理院 (地理院タイル 標準地図)",
+            },
+          },
+          layers: [
+            {
+              id: "gsi-std",
+              type: "raster",
+              source: "gsi-std",
+              minzoom: 2,
+              maxzoom: 18,
+            },
+          ],
+        },
+        null,
+        2
+      ),
+    },
+    {
+      key: "LocStyleGSIPhoto",
+      style: JSON.stringify(
+        {
+          version: 8,
+          sources: {
+            "gsi-photo": {
+              type: "raster",
+              tiles: [
+                "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
+              ],
+              tileSize: 256,
+              attribution: "国土地理院 (地理院タイル 写真)",
+            },
+          },
+          layers: [
+            {
+              id: "gsi-photo",
+              type: "raster",
+              source: "gsi-photo",
+              minzoom: 2,
+              maxzoom: 18,
+            },
+          ],
+        },
+        null,
+        2
+      ),
+    },
+    {
+      key: "LocStyleCartoLight",
+      style: JSON.stringify(
+        {
+          version: 8,
+          sources: {
+            "carto-light": {
+              type: "raster",
+              tiles: [
+                "https://a.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png",
+                "https://b.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png",
+                "https://c.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png",
+              ],
+              tileSize: 256,
+              attribution: "© OpenStreetMap contributors, © CARTO",
+            },
+          },
+          layers: [
+            {
+              id: "carto-light",
+              type: "raster",
+              source: "carto-light",
+              minzoom: 0,
+              maxzoom: 19,
+            },
+          ],
+        },
+        null,
+        2
+      ),
+    },
+    {
+      key: "LocStyleOSMStd",
+      style: JSON.stringify(
+        {
+          version: 8,
+          sources: {
+            osm: {
+              type: "raster",
+              tiles: [
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+              ],
+              tileSize: 256,
+              attribution: "© OpenStreetMap contributors",
+            },
+          },
+          layers: [
+            {
+              id: "osm",
+              type: "raster",
+              source: "osm",
+              minzoom: 0,
+              maxzoom: 19,
+            },
+          ],
+        },
+        null,
+        2
+      ),
+    },
+  ];
+
+  let locStylePresetList: { name: string; value: string }[] = [];
+  $: {
+    locStylePresetList = locStylePresets.map((p, i) => ({
+      name: $_(`Config.${p.key}`),
+      value: i.toString(),
+    }));
+  }
+  let selectedLocPreset = "";
+
+  const baseIconSizes = [16, 24, 32, 48, 64];
+  let iconSizeList: { name: string; value: number }[] = [];
+  $: {
+    iconSizeList = [
+      { name: $_("Config.IconSizeXS"), value: 16 },
+      { name: $_("Config.IconSizeS"), value: 24 },
+      { name: $_("Config.IconSizeM"), value: 32 },
+      { name: $_("Config.IconSizeL"), value: 48 },
+      { name: $_("Config.IconSizeXL"), value: 64 },
+    ];
+    if (locConf && locConf.IconSize && !baseIconSizes.includes(Number(locConf.IconSize))) {
+      iconSizeList.push({
+        name: `${locConf.IconSize} px`,
+        value: Number(locConf.IconSize),
+      });
+      iconSizeList.sort((a, b) => a.value - b.value);
+    }
+  }
+
   const saveLocConf = async () => {
     showLocStyleError = false;
-    locConf.Style.trim();
+    locConf.Style = (locConf.Style || "").trim();
     if (locConf.Style.startsWith("{")) {
       try {
         const s = JSON.parse(locConf.Style);
@@ -1403,15 +1650,38 @@
               </div>
             </Alert>
           {/if}
-          <Label class="space-y-2 text-xs">
-            <span>{$_("Config.LocStyle")}</span>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-medium text-gray-900 dark:text-gray-300">
+                {$_("Config.LocStyle")}
+              </span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-500 dark:text-gray-400">
+                  {$_("Config.LocStylePreset")}
+                </span>
+                <Select
+                  items={locStylePresetList}
+                  bind:value={selectedLocPreset}
+                  onchange={() => {
+                    const idx = parseInt(selectedLocPreset, 10);
+                    if (!isNaN(idx) && locStylePresets[idx]) {
+                      locConf.Style = locStylePresets[idx].style;
+                      selectedLocPreset = "";
+                    }
+                  }}
+                  placeholder={$_("Config.SelectLocStylePreset")}
+                  size="sm"
+                  class="w-72"
+                />
+              </div>
+            </div>
             <CodeJar
               syntax="javascript"
               {highlight}
               catchTab={true}
               bind:value={locConf.Style}
             />
-          </Label>
+          </div>
           <div class="grid gap-4 md:grid-cols-3">
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.LocCenter")}</span>
@@ -1420,22 +1690,19 @@
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.LocZoom")}</span>
               <Input
-                class="h-8 w-24 text-right"
                 type="number"
                 min="2"
-                max="12"
+                max="18"
                 bind:value={locConf.Zoom}
                 size="sm"
               />
             </Label>
             <Label class="space-y-2 text-xs">
-              {$_("Config.IconSize")}
-              <Range
-                class="h-8"
-                size="sm"
-                min="16"
-                max="64"
+              <span>{$_("Config.IconSize")}</span>
+              <Select
+                items={iconSizeList}
                 bind:value={locConf.IconSize}
+                size="sm"
               />
             </Label>
           </div>

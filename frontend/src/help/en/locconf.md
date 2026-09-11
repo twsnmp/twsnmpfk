@@ -5,13 +5,13 @@ Settings tab to configure the location map display style and default view.
 ## Settings Parameters
 
 * **Style**
-  Style configuration for the map (MapLibre GL style URL or JSON object).
+  Style configuration for the map (MapLibre GL style URL or JSON object). You can select and apply recommended styles from the "Style Preset" dropdown at the top right.
 * **Central coordinates**
   Default center coordinates of the map specified as "longitude,latitude" (e.g., `135.338,39.614`).
 * **Zoom**
   Initial zoom level of the map.
 * **Icon size**
-  Display size of the node icons in pixels (configurable between 16 and 64 pixels via slider).
+  Display size of the node icons in pixels (selectable from 16px, 24px, 32px, 48px, 64px).
 
 ## Button Descriptions
 

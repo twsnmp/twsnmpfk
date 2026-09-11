@@ -398,11 +398,12 @@
 <Config
   bind:show={showConfig}
   on:close={async () => {
-    page = oldPage;
-    mapConfig = await GetMapConf()
+    mapConfig = await GetMapConf();
     locConf = await GetLocConf();
-    if (page == "loc" && !locConf.Style) {
+    if (oldPage == "loc" && !locConf.Style) {
       page = "map";
+    } else {
+      page = oldPage;
     }
   }}
 />

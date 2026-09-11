@@ -24,13 +24,13 @@
   let selectedNode = "";
   let nodes = undefined;
   let map :any= undefined;
-  let markers :any = undefined;
-  let locConf :any = undefined;
-  let nodeList :any = undefined;
+  let markers: any = [];
+  let locConf: any = undefined;
+  let nodeList: any = undefined;
   let showAddNode = false;
   let addNodeID = "";
   let lastLoc = "";
-  let timer :any = undefined;
+  let timer: any = undefined;
   let lock = false;
 
   const refresh = async () => {
@@ -41,9 +41,14 @@
     if (!map) {
       await makeMap();
     }
-    if (markers) {
+    if (!map) {
+      return;
+    }
+    if (markers && Array.isArray(markers)) {
       for (const m of markers) {
-        m.remove();
+        if (m && typeof m.remove === "function") {
+          m.remove();
+        }
       }
     }
     markers = [];
@@ -71,18 +76,22 @@
   };
 
   const addNodeMarker = (n:any) => {
+    if (!map) {
+      return;
+    }
     const icon = getIcon(n.Icon);
     const color = getStateColor(n.State);
-    const divSize = locConf.IconSize + 8;
+    const divSize = (locConf?.IconSize || 24) + 8;
+    const iconSize = locConf?.IconSize || 24;
     const nodeDiv = document.createElement("div");
     nodeDiv.classList.add("node");
     nodeDiv.innerHTML = `
     <div class="icon" style="height: ${divSize}px;width: ${divSize}px;background-color: ${color}; color: white;font-size: ${
-      locConf.IconSize
+      iconSize
     }px;text-align: center;line-height: ${divSize}px;">
 			<span class="mdi ${icon}"></span>
 		</div>
-		<div style="font-size: ${locConf.IconSize / 2}px;text-align: center;">${
+		<div style="font-size: ${iconSize / 2}px;text-align: center;">${
       n.Name
     }</div>`;
     nodeDiv.onclick = () => {
@@ -103,41 +112,58 @@
 
     const marker = new Marker({ draggable: true, element: nodeDiv })
       .setLngLat(getLngLat(n.Loc))
-      .addTo(map)
-      .on("dragend", (e) => {
-        if (lock) {
-          return;
-        }
-        const loc = e.target.getLngLat();
-        UpdateNodeLoc(n.ID, loc.lng + "," + loc.lat);
-      });
+      .addTo(map);
+    marker.on("dragend", (e: any) => {
+      if (lock) {
+        return;
+      }
+      const loc = e.target.getLngLat();
+      UpdateNodeLoc(n.ID, loc.lng + "," + loc.lat);
+    });
     markers.push(marker);
   };
 
   const makeMap = async () => {
     // style: "https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json",
     locConf = await GetLocConf();
-    const s = locConf.Style.startsWith("{") ? JSON.parse(locConf.Style) : locConf.Style;
-    map = new Map({
-      container: "map",
-      style: s,
-      center: getLngLat(locConf.Center),
-      zoom: locConf.Zoom,
-    });
-    map.on("contextmenu", (e: any) => {
-      if(lock) {
+    if (!locConf || !locConf.Style || !locConf.Style.trim()) {
+      return;
+    }
+    let s = locConf.Style;
+    if (locConf.Style && locConf.Style.trim().startsWith("{")) {
+      try {
+        s = JSON.parse(locConf.Style);
+      } catch (e) {
+        console.error("Failed to parse map style JSON", e);
         return;
       }
-      lastLoc = e.lngLat.lng + "," + e.lngLat.lat;
-      if (lastLoc != "") {
-        showAddNode = true;
-      }
-    });
-    map.addControl(
-      new NavigationControl({
-        visualizePitch: true,
-      })
-    );
+    }
+    try {
+      map = new Map({
+        container: "map",
+        style: s,
+        center: getLngLat(locConf.Center),
+        zoom: locConf.Zoom,
+      });
+      map.on("contextmenu", (e: any) => {
+        if(lock) {
+          return;
+        }
+        lastLoc = e.lngLat.lng + "," + e.lngLat.lat;
+        if (lastLoc != "") {
+          showAddNode = true;
+        }
+      });
+      map.addControl(
+        new NavigationControl({
+          visualizePitch: true,
+        })
+      );
+    } catch (e) {
+      console.error("Failed to initialize map", e);
+      map = undefined;
+      return;
+    }
     const setting = await GetSettings();
     lock = setting.Lock != "";
   };
@@ -198,11 +224,14 @@
   });
 
   onDestroy(() => {
-    if(markers) {
-      for(const m of markers) {
-        m.remove();
+    if (markers && Array.isArray(markers)) {
+      for (const m of markers) {
+        if (m && typeof m.remove === "function") {
+          m.remove();
+        }
       }
     }
+    markers = [];
     if (map) {
       map.remove();
       map = undefined;
