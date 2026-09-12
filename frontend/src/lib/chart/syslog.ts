@@ -604,11 +604,6 @@ export const showSyslogSummary = (div:string, list:any) => {
     title: {
       show: false,
     },
-    toolbox: {
-      feature: {
-        saveAsImage: { name: 'twsnmp_' + div },
-      },
-    },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
