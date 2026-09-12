@@ -13,6 +13,9 @@ tasks:
   dev:
     cmds:
       - wails dev -appargs "-datastore ./tmp/"
+  dev_discover:
+    cmds:
+      - wails dev -appargs "-datastore /tmp/twsnmpfk/"
   deven:
     cmds:
       - wails dev -appargs "-datastore ./tmp/ -lang en"
