@@ -539,5 +539,185 @@
     "Script": "oldip == '' || oldip == ip",
     "Level": "warn",
     "Descr": "STUNサーバーを利用して外部公開グローバルIPv6アドレスの変化を監視"
+  },
+  {
+    "Name": "Yamaha CPU使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "yamahaRTCPUUtil5sec.0",
+    "Script": "yamahaRTCPUUtil5sec < 90.0",
+    "Level": "low",
+    "Descr": "YamahaルーターのCPU使用率(5秒平均)"
+  },
+  {
+    "Name": "Yamaha メモリ使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "yamahaRTMemoryUtil.0",
+    "Script": "yamahaRTMemoryUtil < 90.0",
+    "Level": "low",
+    "Descr": "Yamahaルーターのメモリ使用率(%)"
+  },
+  {
+    "Name": "Yamaha 内部温度",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "yamahaRTFirmwareEnvTemperature.0",
+    "Script": "yamahaRTFirmwareEnvTemperature < 55",
+    "Level": "low",
+    "Descr": "Yamahaルーターの内部温度(℃)"
+  },
+  {
+    "Name": "Cisco CPU使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "cpmCPUTotal5minRev.1",
+    "Script": "cpmCPUTotal5minRev < 90.0",
+    "Level": "low",
+    "Descr": "Cisco機器のCPU使用率(5分平均)"
+  },
+  {
+    "Name": "Cisco 温度状態",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "ciscoEnvMonTemperatureStatusValue.1",
+    "Script": "ciscoEnvMonTemperatureStatusValue < 60",
+    "Level": "low",
+    "Descr": "Cisco機器の温度センサー(℃)"
+  },
+  {
+    "Name": "Cisco ファン状態",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "ciscoEnvMonFanState.1",
+    "Script": "ciscoEnvMonFanState == 1",
+    "Level": "low",
+    "Descr": "Cisco機器のファン状態(1: normal)"
+  },
+  {
+    "Name": "Cisco 電源状態",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "ciscoEnvMonSupplyState.1",
+    "Script": "ciscoEnvMonSupplyState == 1",
+    "Level": "low",
+    "Descr": "Cisco機器の電源状態(1: normal)"
+  },
+  {
+    "Name": "Juniper CPU使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "jnxOperatingCPU.9.1.0.0",
+    "Script": "jnxOperatingCPU < 90.0",
+    "Level": "low",
+    "Descr": "Juniper機器のCPU使用率(%)"
+  },
+  {
+    "Name": "Juniper メモリ使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "jnxOperatingBuffer.9.1.0.0",
+    "Script": "jnxOperatingBuffer < 90.0",
+    "Level": "low",
+    "Descr": "Juniper機器のメモリ使用率(%)"
+  },
+  {
+    "Name": "Juniper 内部温度",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "jnxOperatingTemp.9.1.0.0",
+    "Script": "jnxOperatingTemp < 65",
+    "Level": "low",
+    "Descr": "Juniper機器の内部温度(℃)"
+  },
+  {
+    "Name": "FortiGate CPU使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "fgSysCpuUsage.0",
+    "Script": "fgSysCpuUsage < 90.0",
+    "Level": "low",
+    "Descr": "FortiGateのCPU使用率(%)"
+  },
+  {
+    "Name": "FortiGate メモリ使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "fgSysMemUsage.0",
+    "Script": "fgSysMemUsage < 90.0",
+    "Level": "low",
+    "Descr": "FortiGateのメモリ使用率(%)"
+  },
+  {
+    "Name": "Allied CPU使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "atpSysCpuUtil.0",
+    "Script": "atpSysCpuUtil < 90.0",
+    "Level": "low",
+    "Descr": "Allied TelesisスイッチのCPU使用率"
+  },
+  {
+    "Name": "Allied メモリ使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "atpSysMemoryUtil.0",
+    "Script": "atpSysMemoryUtil < 90.0",
+    "Level": "low",
+    "Descr": "Allied Telesisスイッチのメモリ使用率"
+  },
+  {
+    "Name": "Synology CPU使用率",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "synoCpuSystemLoad.0",
+    "Script": "synoCpuSystemLoad < 90.0",
+    "Level": "low",
+    "Descr": "Synology NASのCPU使用率(%)"
+  },
+  {
+    "Name": "Synology システム温度",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "synoTemperature.0",
+    "Script": "synoTemperature < 60",
+    "Level": "low",
+    "Descr": "Synology NASのシステム温度(℃)"
+  },
+  {
+    "Name": "Synology ファン状態",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "synoSystemFanStatus.0",
+    "Script": "synoSystemFanStatus == 1",
+    "Level": "low",
+    "Descr": "Synology NASのファン状態(1: Normal)"
+  },
+  {
+    "Name": "APC バッテリ残量",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "upsAdvBatteryCapacity.0",
+    "Script": "upsAdvBatteryCapacity > 20",
+    "Level": "high",
+    "Descr": "APC UPSのバッテリ残量(%)"
+  },
+  {
+    "Name": "APC バッテリ温度",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "upsAdvBatteryTemperature.0",
+    "Script": "upsAdvBatteryTemperature < 40",
+    "Level": "warn",
+    "Descr": "APC UPSのバッテリ温度(℃)"
+  },
+  {
+    "Name": "Net-SNMP CPU Idle",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "ssCpuIdle.0",
+    "Script": "ssCpuIdle > 10.0",
+    "Level": "low",
+    "Descr": "Net-SNMP CPUアイドル率(%)"
   }
 ]

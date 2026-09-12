@@ -6,6 +6,8 @@ import {main} from '../models';
 import {backend} from '../models';
 import {discover} from '../models';
 
+export function ApplyNodeDetection(arg1:string,arg2:boolean,arg3:boolean):Promise<boolean>;
+
 export function AutoGrok(arg1:string):Promise<string>;
 
 export function Backup():Promise<boolean>;
@@ -65,6 +67,8 @@ export function DeletePollingLogs(arg1:Array<string>):Promise<void>;
 export function DeletePollings(arg1:Array<string>):Promise<void>;
 
 export function DestroyCA():Promise<void>;
+
+export function DetectNodeType(arg1:string):Promise<datastore.DetectResult>;
 
 export function ExportAIData(arg1:string):Promise<void>;
 

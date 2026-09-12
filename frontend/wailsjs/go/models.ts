@@ -452,6 +452,72 @@ export namespace datastore {
 	        this.CertTerm = source["CertTerm"];
 	    }
 	}
+	export class SensorPollingDef {
+	    Name: string;
+	    Type: string;
+	    Mode: string;
+	    Params: string;
+	    Script: string;
+	    Level: string;
+	    Descr: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SensorPollingDef(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Name = source["Name"];
+	        this.Type = source["Type"];
+	        this.Mode = source["Mode"];
+	        this.Params = source["Params"];
+	        this.Script = source["Script"];
+	        this.Level = source["Level"];
+	        this.Descr = source["Descr"];
+	    }
+	}
+	export class DetectResult {
+	    RuleID: string;
+	    Name: string;
+	    Category: string;
+	    SubType: string;
+	    Icon: string;
+	    Confidence: number;
+	    SensorPollings: SensorPollingDef[];
+	
+	    static createFrom(source: any = {}) {
+	        return new DetectResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.RuleID = source["RuleID"];
+	        this.Name = source["Name"];
+	        this.Category = source["Category"];
+	        this.SubType = source["SubType"];
+	        this.Icon = source["Icon"];
+	        this.Confidence = source["Confidence"];
+	        this.SensorPollings = this.convertValues(source["SensorPollings"], SensorPollingDef);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class DiscoverConfEnt {
 	    StartIP: string;
 	    EndIP: string;
@@ -463,6 +529,8 @@ export namespace datastore {
 	    PortScan: boolean;
 	    ReCheck: boolean;
 	    AddNetwork: boolean;
+	    AutoDetect: boolean;
+	    AutoDetectAI: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new DiscoverConfEnt(source);
@@ -480,6 +548,8 @@ export namespace datastore {
 	        this.PortScan = source["PortScan"];
 	        this.ReCheck = source["ReCheck"];
 	        this.AddNetwork = source["AddNetwork"];
+	        this.AutoDetect = source["AutoDetect"];
+	        this.AutoDetectAI = source["AutoDetectAI"];
 	    }
 	}
 	export class DrawItemEnt {
@@ -1418,6 +1488,7 @@ export namespace datastore {
 	        this.Reason = source["Reason"];
 	    }
 	}
+	
 	export class SyslogEnt {
 	    Time: number;
 	    Level: string;

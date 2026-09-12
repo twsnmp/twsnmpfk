@@ -166,6 +166,10 @@ export const iconList = [
   { name: 'Google', icon: 'mdi-google', value: 'mdi-google' ,code: 0xF02AD},
   { name: 'CD Player', icon: 'mdi-disc-player', value: 'mdi-disc-player' ,code: 0xF0960},
   { name: 'TWSNMP', icon: 'mdi-layers-search', value: 'mdi-layers-search' ,code: 0xF1206},
+  { name: 'Switch', icon: 'mdi-switch', value: 'mdi-switch', code: 0xF05D2 },
+  { name: 'NAS', icon: 'mdi-nas', value: 'mdi-nas', code: 0xF08E5 },
+  { name: 'Camera', icon: 'mdi-cctv', value: 'mdi-cctv', code: 0xF07AE },
+  { name: 'UPS', icon: 'mdi-battery-charging', value: 'mdi-battery-charging', code: 0xF0084 },
 ]
 
 const iconCodeMap = new Map();

@@ -415,5 +415,185 @@
     "Script": "oldip == '' || oldip == ip",
     "Level": "warn",
     "Descr": "Monitor changes in the public global IPv6 address via STUN server"
+  },
+  {
+    "Name": "Yamaha CPU Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "yamahaRTCPUUtil5sec.0",
+    "Script": "yamahaRTCPUUtil5sec < 90.0",
+    "Level": "low",
+    "Descr": "Yamaha router CPU utilization (5s avg)"
+  },
+  {
+    "Name": "Yamaha Memory Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "yamahaRTMemoryUtil.0",
+    "Script": "yamahaRTMemoryUtil < 90.0",
+    "Level": "low",
+    "Descr": "Yamaha router memory utilization (%)"
+  },
+  {
+    "Name": "Yamaha Temperature",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "yamahaRTFirmwareEnvTemperature.0",
+    "Script": "yamahaRTFirmwareEnvTemperature < 55",
+    "Level": "low",
+    "Descr": "Yamaha router internal temperature (deg C)"
+  },
+  {
+    "Name": "Cisco CPU Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "cpmCPUTotal5minRev.1",
+    "Script": "cpmCPUTotal5minRev < 90.0",
+    "Level": "low",
+    "Descr": "Cisco device CPU utilization (5m avg)"
+  },
+  {
+    "Name": "Cisco Temperature Status",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "ciscoEnvMonTemperatureStatusValue.1",
+    "Script": "ciscoEnvMonTemperatureStatusValue < 60",
+    "Level": "low",
+    "Descr": "Cisco device temperature sensor (deg C)"
+  },
+  {
+    "Name": "Cisco Fan Status",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "ciscoEnvMonFanState.1",
+    "Script": "ciscoEnvMonFanState == 1",
+    "Level": "low",
+    "Descr": "Cisco device fan state (1: normal)"
+  },
+  {
+    "Name": "Cisco Power Supply Status",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "ciscoEnvMonSupplyState.1",
+    "Script": "ciscoEnvMonSupplyState == 1",
+    "Level": "low",
+    "Descr": "Cisco device power supply state (1: normal)"
+  },
+  {
+    "Name": "Juniper CPU Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "jnxOperatingCPU.9.1.0.0",
+    "Script": "jnxOperatingCPU < 90.0",
+    "Level": "low",
+    "Descr": "Juniper device CPU utilization (%)"
+  },
+  {
+    "Name": "Juniper Memory Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "jnxOperatingBuffer.9.1.0.0",
+    "Script": "jnxOperatingBuffer < 90.0",
+    "Level": "low",
+    "Descr": "Juniper device memory utilization (%)"
+  },
+  {
+    "Name": "Juniper Temperature",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "jnxOperatingTemp.9.1.0.0",
+    "Script": "jnxOperatingTemp < 65",
+    "Level": "low",
+    "Descr": "Juniper device temperature (deg C)"
+  },
+  {
+    "Name": "FortiGate CPU Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "fgSysCpuUsage.0",
+    "Script": "fgSysCpuUsage < 90.0",
+    "Level": "low",
+    "Descr": "FortiGate CPU utilization (%)"
+  },
+  {
+    "Name": "FortiGate Memory Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "fgSysMemUsage.0",
+    "Script": "fgSysMemUsage < 90.0",
+    "Level": "low",
+    "Descr": "FortiGate memory utilization (%)"
+  },
+  {
+    "Name": "Allied CPU Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "atpSysCpuUtil.0",
+    "Script": "atpSysCpuUtil < 90.0",
+    "Level": "low",
+    "Descr": "Allied Telesis switch CPU utilization"
+  },
+  {
+    "Name": "Allied Memory Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "atpSysMemoryUtil.0",
+    "Script": "atpSysMemoryUtil < 90.0",
+    "Level": "low",
+    "Descr": "Allied Telesis switch memory utilization"
+  },
+  {
+    "Name": "Synology CPU Utilization",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "synoCpuSystemLoad.0",
+    "Script": "synoCpuSystemLoad < 90.0",
+    "Level": "low",
+    "Descr": "Synology NAS CPU utilization (%)"
+  },
+  {
+    "Name": "Synology System Temperature",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "synoTemperature.0",
+    "Script": "synoTemperature < 60",
+    "Level": "low",
+    "Descr": "Synology NAS system temperature (deg C)"
+  },
+  {
+    "Name": "Synology Fan Status",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "synoSystemFanStatus.0",
+    "Script": "synoSystemFanStatus == 1",
+    "Level": "low",
+    "Descr": "Synology NAS fan status (1: Normal)"
+  },
+  {
+    "Name": "APC Battery Capacity",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "upsAdvBatteryCapacity.0",
+    "Script": "upsAdvBatteryCapacity > 20",
+    "Level": "high",
+    "Descr": "APC UPS battery capacity (%)"
+  },
+  {
+    "Name": "APC Battery Temperature",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "upsAdvBatteryTemperature.0",
+    "Script": "upsAdvBatteryTemperature < 40",
+    "Level": "warn",
+    "Descr": "APC UPS battery temperature (deg C)"
+  },
+  {
+    "Name": "Net-SNMP CPU Idle",
+    "Type": "snmp",
+    "Mode": "get",
+    "Params": "ssCpuIdle.0",
+    "Script": "ssCpuIdle > 10.0",
+    "Level": "low",
+    "Descr": "Net-SNMP CPU idle percentage (%)"
   }
 ]

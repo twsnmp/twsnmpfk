@@ -1,0 +1,640 @@
+[
+  {
+    "ID": "yamaha_rtx",
+    "Name": "Yamaha RTX/NVR Router",
+    "Category": "router",
+    "Icon": "router",
+    "SysObjectIDs": ["yamahaRTX", "rtx1210", "rtx1220", "rtx830", "nvr510", "nvr700w"],
+    "SysDescrPattern": "(?i)yamaha.*(rtx|nvr)|rtx\\d+|nvr\\d+",
+    "HTTPTitlePattern": "(?i)rtx\\d+|nvr\\d+|yamaha router",
+    "VendorPattern": "(?i)yamaha",
+    "SensorPollings": [
+      {
+        "Name": "Yamaha CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "yamahaRTCPUUtil5sec.0",
+        "Script": "yamahaRTCPUUtil5sec < 90.0",
+        "Level": "low",
+        "Descr": "YamahaルーターのCPU使用率(5秒平均)"
+      },
+      {
+        "Name": "Yamaha メモリ使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "yamahaRTMemoryUtil.0",
+        "Script": "yamahaRTMemoryUtil < 90.0",
+        "Level": "low",
+        "Descr": "Yamahaルーターのメモリ使用率(%)"
+      },
+      {
+        "Name": "Yamaha 内部温度",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "yamahaRTFirmwareEnvTemperature.0",
+        "Script": "yamahaRTFirmwareEnvTemperature < 55",
+        "Level": "low",
+        "Descr": "Yamahaルーターの内部温度(℃)"
+      }
+    ]
+  },
+  {
+    "ID": "yamaha_swx",
+    "Name": "Yamaha SWX Switch",
+    "Category": "switch",
+    "Icon": "mdi-switch",
+    "SysObjectIDs": ["yamahaSWX"],
+    "SysDescrPattern": "(?i)swx\\d+|yamaha.*switch",
+    "HTTPTitlePattern": "(?i)swx\\d+",
+    "VendorPattern": "(?i)yamaha",
+    "SensorPollings": [
+      {
+        "Name": "Yamaha SWX CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "yamahaRTCPUUtil5sec.0",
+        "Script": "yamahaRTCPUUtil5sec < 90.0",
+        "Level": "low",
+        "Descr": "Yamaha SWXスイッチのCPU使用率"
+      },
+      {
+        "Name": "Yamaha SWX メモリ使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "yamahaRTMemoryUtil.0",
+        "Script": "yamahaRTMemoryUtil < 90.0",
+        "Level": "low",
+        "Descr": "Yamaha SWXスイッチのメモリ使用率"
+      }
+    ]
+  },
+  {
+    "ID": "yamaha_wlx",
+    "Name": "Yamaha WLX AP",
+    "Category": "wifi",
+    "Icon": "mdi-router-wireless",
+    "SysObjectIDs": ["yamahaWLX"],
+    "SysDescrPattern": "(?i)wlx\\d+|yamaha.*wireless",
+    "HTTPTitlePattern": "(?i)wlx\\d+",
+    "VendorPattern": "(?i)yamaha",
+    "SensorPollings": [
+      {
+        "Name": "Yamaha CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "yamahaRTCPUUtil5sec.0",
+        "Script": "yamahaRTCPUUtil5sec < 90.0",
+        "Level": "low",
+        "Descr": "Yamaha WLXのCPU使用率"
+      },
+      {
+        "Name": "Yamaha メモリ使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "yamahaRTMemoryUtil.0",
+        "Script": "yamahaRTMemoryUtil < 90.0",
+        "Level": "low",
+        "Descr": "Yamaha WLXのメモリ使用率"
+      }
+    ]
+  },
+  {
+    "ID": "cisco_catalyst",
+    "Name": "Cisco Catalyst Switch",
+    "Category": "switch",
+    "Icon": "mdi-switch",
+    "SysObjectIDs": ["catalyst2960", "catalyst2960X", "catalyst9200", "catalyst9300", "ciscoProducts"],
+    "SysDescrPattern": "(?i)catalyst|c2960|c9200|c9300|c3750|c3850",
+    "HTTPTitlePattern": "(?i)cisco.*switch",
+    "VendorPattern": "(?i)cisco",
+    "SensorPollings": [
+      {
+        "Name": "Cisco CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "cpmCPUTotal5minRev.1",
+        "Script": "cpmCPUTotal5minRev < 90.0",
+        "Level": "low",
+        "Descr": "Cisco機器のCPU使用率(5分平均)"
+      },
+      {
+        "Name": "Cisco 温度状態",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "ciscoEnvMonTemperatureStatusValue.1",
+        "Script": "ciscoEnvMonTemperatureStatusValue < 60",
+        "Level": "low",
+        "Descr": "Cisco機器の温度センサー(℃)"
+      },
+      {
+        "Name": "Cisco ファン状態",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "ciscoEnvMonFanState.1",
+        "Script": "ciscoEnvMonFanState == 1",
+        "Level": "low",
+        "Descr": "Cisco機器のファン状態(1: normal)"
+      },
+      {
+        "Name": "Cisco 電源状態",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "ciscoEnvMonSupplyState.1",
+        "Script": "ciscoEnvMonSupplyState == 1",
+        "Level": "low",
+        "Descr": "Cisco機器の電源状態(1: normal)"
+      }
+    ]
+  },
+  {
+    "ID": "cisco_router",
+    "Name": "Cisco IOS Router",
+    "Category": "router",
+    "Icon": "router",
+    "SysObjectIDs": ["ciscoProducts", "cisco"],
+    "SysDescrPattern": "(?i)cisco.*(router|ios|isr|asr)",
+    "HTTPTitlePattern": "(?i)cisco.*router",
+    "VendorPattern": "(?i)cisco",
+    "SensorPollings": [
+      {
+        "Name": "Cisco CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "cpmCPUTotal5minRev.1",
+        "Script": "cpmCPUTotal5minRev < 90.0",
+        "Level": "low",
+        "Descr": "CiscoルーターのCPU使用率(5分平均)"
+      },
+      {
+        "Name": "Cisco 温度状態",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "ciscoEnvMonTemperatureStatusValue.1",
+        "Script": "ciscoEnvMonTemperatureStatusValue < 60",
+        "Level": "low",
+        "Descr": "Ciscoルーターの温度センサー(℃)"
+      },
+      {
+        "Name": "Cisco ファン状態",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "ciscoEnvMonFanState.1",
+        "Script": "ciscoEnvMonFanState == 1",
+        "Level": "low",
+        "Descr": "Ciscoルーターのファン状態(1: normal)"
+      }
+    ]
+  },
+  {
+    "ID": "juniper_switch",
+    "Name": "Juniper EX Switch",
+    "Category": "switch",
+    "Icon": "mdi-switch",
+    "SysObjectIDs": ["ex2200", "ex2300", "ex3300", "jnxProduct"],
+    "SysDescrPattern": "(?i)junos.*ex\\d+",
+    "VendorPattern": "(?i)juniper",
+    "SensorPollings": [
+      {
+        "Name": "Juniper CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "jnxOperatingCPU.9.1.0.0",
+        "Script": "jnxOperatingCPU < 90.0",
+        "Level": "low",
+        "Descr": "JuniperスイッチのCPU使用率(%)"
+      },
+      {
+        "Name": "Juniper メモリ使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "jnxOperatingBuffer.9.1.0.0",
+        "Script": "jnxOperatingBuffer < 90.0",
+        "Level": "low",
+        "Descr": "Juniperスイッチのメモリ使用率(%)"
+      },
+      {
+        "Name": "Juniper 内部温度",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "jnxOperatingTemp.9.1.0.0",
+        "Script": "jnxOperatingTemp < 65",
+        "Level": "low",
+        "Descr": "Juniperスイッチの内部温度(℃)"
+      }
+    ]
+  },
+  {
+    "ID": "juniper_router",
+    "Name": "Juniper SRX/MX Router",
+    "Category": "router",
+    "Icon": "router",
+    "SysObjectIDs": ["srx300", "srx320", "jnxProduct"],
+    "SysDescrPattern": "(?i)junos|srx\\d+|mx\\d+",
+    "VendorPattern": "(?i)juniper",
+    "SensorPollings": [
+      {
+        "Name": "Juniper CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "jnxOperatingCPU.9.1.0.0",
+        "Script": "jnxOperatingCPU < 90.0",
+        "Level": "low",
+        "Descr": "JuniperルーターのCPU使用率(%)"
+      },
+      {
+        "Name": "Juniper メモリ使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "jnxOperatingBuffer.9.1.0.0",
+        "Script": "jnxOperatingBuffer < 90.0",
+        "Level": "low",
+        "Descr": "Juniperルーターのメモリ使用率(%)"
+      },
+      {
+        "Name": "Juniper 内部温度",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "jnxOperatingTemp.9.1.0.0",
+        "Script": "jnxOperatingTemp < 65",
+        "Level": "low",
+        "Descr": "Juniperルーターの内部温度(℃)"
+      }
+    ]
+  },
+  {
+    "ID": "fortinet_fortigate",
+    "Name": "Fortinet FortiGate",
+    "Category": "appliance",
+    "SubType": "security",
+    "Icon": "mdi-security",
+    "SysObjectIDs": ["fnFortiGateModel", "fortinet"],
+    "SysDescrPattern": "(?i)fortigate|fortios",
+    "HTTPTitlePattern": "(?i)fortigate",
+    "VendorPattern": "(?i)fortinet",
+    "SensorPollings": [
+      {
+        "Name": "FortiGate CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "fgSysCpuUsage.0",
+        "Script": "fgSysCpuUsage < 90.0",
+        "Level": "low",
+        "Descr": "FortiGateのCPU使用率(%)"
+      },
+      {
+        "Name": "FortiGate メモリ使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "fgSysMemUsage.0",
+        "Script": "fgSysMemUsage < 90.0",
+        "Level": "low",
+        "Descr": "FortiGateのメモリ使用率(%)"
+      },
+      {
+        "Name": "FortiGate セッション数",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "fgSysSesCount.0",
+        "Script": "fgSysSesCount > 0",
+        "Level": "info",
+        "Descr": "FortiGateの現在アクティブセッション数"
+      }
+    ]
+  },
+  {
+    "ID": "allied_telesis_switch",
+    "Name": "Allied Telesis Switch",
+    "Category": "switch",
+    "Icon": "mdi-switch",
+    "SysObjectIDs": ["centreCOM", "atiProduct", "alliedTelesis"],
+    "SysDescrPattern": "(?i)centrecom|alliedware|allied telesis",
+    "HTTPTitlePattern": "(?i)centrecom|allied telesis",
+    "VendorPattern": "(?i)allied telesis",
+    "SensorPollings": [
+      {
+        "Name": "Allied CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "atpSysCpuUtil.0",
+        "Script": "atpSysCpuUtil < 90.0",
+        "Level": "low",
+        "Descr": "Allied TelesisスイッチのCPU使用率"
+      },
+      {
+        "Name": "Allied メモリ使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "atpSysMemoryUtil.0",
+        "Script": "atpSysMemoryUtil < 90.0",
+        "Level": "low",
+        "Descr": "Allied Telesisスイッチのメモリ使用率"
+      }
+    ]
+  },
+  {
+    "ID": "ubiquiti_unifi",
+    "Name": "Ubiquiti UniFi AP",
+    "Category": "wifi",
+    "Icon": "mdi-router-wireless",
+    "SysObjectIDs": ["unifiAP"],
+    "SysDescrPattern": "(?i)unifi|uap",
+    "HTTPTitlePattern": "(?i)unifi",
+    "VendorPattern": "(?i)ubiquiti",
+    "SensorPollings": []
+  },
+  {
+    "ID": "ubiquiti_edgerouter",
+    "Name": "Ubiquiti EdgeRouter",
+    "Category": "router",
+    "Icon": "router",
+    "SysObjectIDs": ["edgeRouter"],
+    "SysDescrPattern": "(?i)edgerouter|edgeos",
+    "HTTPTitlePattern": "(?i)edgeos",
+    "VendorPattern": "(?i)ubiquiti",
+    "SensorPollings": []
+  },
+  {
+    "ID": "mikrotik_router",
+    "Name": "MikroTik RouterOS",
+    "Category": "router",
+    "Icon": "router",
+    "SysObjectIDs": ["routerOS", "mikroTik"],
+    "SysDescrPattern": "(?i)routeros|mikrotik",
+    "HTTPTitlePattern": "(?i)routeros",
+    "VendorPattern": "(?i)routerboard|mikrotik",
+    "SensorPollings": [
+      {
+        "Name": "MikroTik 温度",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "mtxrHlTemperature.0",
+        "Script": "mtxrHlTemperature < 65",
+        "Level": "low",
+        "Descr": "MikroTikルーターの内部温度(℃)"
+      }
+    ]
+  },
+  {
+    "ID": "nec_ix",
+    "Name": "NEC UNIVERGE IX Router",
+    "Category": "router",
+    "Icon": "router",
+    "SysObjectIDs": ["necIXRouter"],
+    "SysDescrPattern": "(?i)univerge ix|ix\\d{4}",
+    "VendorPattern": "(?i)nec platforms|nec corporation",
+    "SensorPollings": []
+  },
+  {
+    "ID": "synology_nas",
+    "Name": "Synology DiskStation",
+    "Category": "appliance",
+    "SubType": "nas",
+    "Icon": "mdi-nas",
+    "SysObjectIDs": ["synoDS", "synology"],
+    "SysDescrPattern": "(?i)synology|diskstation",
+    "HTTPTitlePattern": "(?i)synology|diskstation",
+    "VendorPattern": "(?i)synology",
+    "SensorPollings": [
+      {
+        "Name": "Synology CPU使用率",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "synoCpuSystemLoad.0",
+        "Script": "synoCpuSystemLoad < 90.0",
+        "Level": "low",
+        "Descr": "Synology NASのCPU使用率(%)"
+      },
+      {
+        "Name": "Synology システム温度",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "synoTemperature.0",
+        "Script": "synoTemperature < 60",
+        "Level": "low",
+        "Descr": "Synology NASのシステム温度(℃)"
+      },
+      {
+        "Name": "Synology ファン状態",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "synoSystemFanStatus.0",
+        "Script": "synoSystemFanStatus == 1",
+        "Level": "low",
+        "Descr": "Synology NASのファン状態(1: Normal)"
+      }
+    ]
+  },
+  {
+    "ID": "qnap_nas",
+    "Name": "QNAP Turbo NAS",
+    "Category": "appliance",
+    "SubType": "nas",
+    "Icon": "mdi-nas",
+    "SysObjectIDs": ["qnapNAS", "qnap"],
+    "SysDescrPattern": "(?i)qnap|qts",
+    "HTTPTitlePattern": "(?i)qnap",
+    "VendorPattern": "(?i)qnap",
+    "SensorPollings": []
+  },
+  {
+    "ID": "apc_ups",
+    "Name": "APC Smart-UPS",
+    "Category": "appliance",
+    "SubType": "ups",
+    "Icon": "mdi-battery-charging",
+    "SysObjectIDs": ["apcSmartUPS", "apc"],
+    "SysDescrPattern": "(?i)smart-ups|apc",
+    "HTTPTitlePattern": "(?i)network management card|apc",
+    "VendorPattern": "(?i)american power conversion",
+    "SensorPollings": [
+      {
+        "Name": "APC バッテリ残量",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "upsAdvBatteryCapacity.0",
+        "Script": "upsAdvBatteryCapacity > 20",
+        "Level": "high",
+        "Descr": "APC UPSのバッテリ残量(%)"
+      },
+      {
+        "Name": "APC バッテリ温度",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "upsAdvBatteryTemperature.0",
+        "Script": "upsAdvBatteryTemperature < 40",
+        "Level": "warn",
+        "Descr": "APC UPSのバッテリ温度(℃)"
+      },
+      {
+        "Name": "APC 出力状態",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "upsBasicOutputStatus.0",
+        "Script": "upsBasicOutputStatus == 2",
+        "Level": "high",
+        "Descr": "APC UPSの電源出力状態(2: onLine)"
+      }
+    ]
+  },
+  {
+    "ID": "printer_canon",
+    "Name": "Canon Printer/MFD",
+    "Category": "appliance",
+    "SubType": "printer",
+    "Icon": "printer",
+    "SysObjectIDs": ["canonPrinter", "canon"],
+    "SysDescrPattern": "(?i)canon.*(printer|image|copier)",
+    "HTTPTitlePattern": "(?i)canon|remote ui",
+    "VendorPattern": "(?i)canon",
+    "SensorPollings": []
+  },
+  {
+    "ID": "printer_epson",
+    "Name": "Epson Printer/MFD",
+    "Category": "appliance",
+    "SubType": "printer",
+    "Icon": "printer",
+    "SysObjectIDs": ["epsonPrinter", "epson"],
+    "SysDescrPattern": "(?i)epson",
+    "HTTPTitlePattern": "(?i)epson",
+    "VendorPattern": "(?i)seiko epson|epson",
+    "SensorPollings": []
+  },
+  {
+    "ID": "printer_ricoh",
+    "Name": "Ricoh Printer/MFD",
+    "Category": "appliance",
+    "SubType": "printer",
+    "Icon": "printer",
+    "SysObjectIDs": ["ricohPrinter", "ricoh"],
+    "SysDescrPattern": "(?i)ricoh",
+    "HTTPTitlePattern": "(?i)web image monitor|ricoh",
+    "VendorPattern": "(?i)ricoh",
+    "SensorPollings": []
+  },
+  {
+    "ID": "printer_fuji_xerox",
+    "Name": "Fujifilm / Fuji Xerox Printer/MFD",
+    "Category": "appliance",
+    "SubType": "printer",
+    "Icon": "printer",
+    "SysObjectIDs": ["fxPrinter", "fujiXerox"],
+    "SysDescrPattern": "(?i)fuji xerox|fujifilm|apeos",
+    "HTTPTitlePattern": "(?i)centreware|apeos",
+    "VendorPattern": "(?i)fuji xerox|fujifilm",
+    "SensorPollings": []
+  },
+  {
+    "ID": "printer_brother",
+    "Name": "Brother Printer/MFD",
+    "Category": "appliance",
+    "SubType": "printer",
+    "Icon": "printer",
+    "SysObjectIDs": ["brotherPrinter", "brother"],
+    "SysDescrPattern": "(?i)brother",
+    "HTTPTitlePattern": "(?i)brother",
+    "VendorPattern": "(?i)brother",
+    "SensorPollings": []
+  },
+  {
+    "ID": "printer_hp",
+    "Name": "HP LaserJet / OfficeJet",
+    "Category": "appliance",
+    "SubType": "printer",
+    "Icon": "printer",
+    "SysObjectIDs": ["hpLaserJet"],
+    "SysDescrPattern": "(?i)hp.*(laserjet|officejet|page投ワイド|printer)",
+    "HTTPTitlePattern": "(?i)hp.*(laserjet|officejet)|embedded web server",
+    "VendorPattern": "(?i)hewlett packard|hp inc",
+    "SensorPollings": []
+  },
+  {
+    "ID": "windows_server",
+    "Name": "Windows Server",
+    "Category": "server_windows",
+    "Icon": "mdi-microsoft-windows",
+    "SysObjectIDs": ["windowsServer", "windowsDC"],
+    "SysDescrPattern": "(?i)windows.*(server|2016|2019|2022|2025|build 20348|build 17763|build 14393|build 26100)",
+    "VendorPattern": "(?i)microsoft",
+    "SensorPollings": [
+      {
+        "Name": "CPU平均使用率",
+        "Type": "snmp",
+        "Mode": "stats",
+        "Params": "hrProcessorLoad",
+        "Script": "avg < 90.0",
+        "Level": "low",
+        "Descr": "WindowsサーバーのCPU平均使用率"
+      }
+    ]
+  },
+  {
+    "ID": "windows_client",
+    "Name": "Windows Client PC",
+    "Category": "pc_mobile",
+    "SubType": "pc",
+    "Icon": "desktop",
+    "SysObjectIDs": ["windowsWorkstation"],
+    "SysDescrPattern": "(?i)windows.*(10\\.0|11\\.|workstation)",
+    "VendorPattern": "(?i)microsoft",
+    "SensorPollings": []
+  },
+  {
+    "ID": "linux_server",
+    "Name": "Linux Server",
+    "Category": "server_linux",
+    "Icon": "mdi-linux",
+    "SysObjectIDs": ["linux", "netSnmpAgentOIDs", "netSnmp"],
+    "SysDescrPattern": "(?i)linux",
+    "SensorPollings": [
+      {
+        "Name": "CPU平均使用率",
+        "Type": "snmp",
+        "Mode": "stats",
+        "Params": "hrProcessorLoad",
+        "Script": "avg < 90.0",
+        "Level": "low",
+        "Descr": "LinuxサーバーのCPU平均使用率"
+      },
+      {
+        "Name": "Net-SNMP CPU Idle",
+        "Type": "snmp",
+        "Mode": "get",
+        "Params": "ssCpuIdle.0",
+        "Script": "ssCpuIdle > 10.0",
+        "Level": "low",
+        "Descr": "Net-SNMP CPUアイドル率(%)"
+      }
+    ]
+  },
+  {
+    "ID": "apple_device",
+    "Name": "Apple Device (Mac/iPhone/iPad)",
+    "Category": "pc_mobile",
+    "SubType": "mobile",
+    "Icon": "mdi-apple",
+    "SysDescrPattern": "(?i)darwin|mac os|apple",
+    "VendorPattern": "(?i)apple",
+    "SensorPollings": []
+  },
+  {
+    "ID": "raspberry_pi",
+    "Name": "Raspberry Pi",
+    "Category": "pc_mobile",
+    "SubType": "pc",
+    "Icon": "mdi-raspberry-pi",
+    "SysDescrPattern": "(?i)raspberry",
+    "VendorPattern": "(?i)raspberry pi",
+    "SensorPollings": [
+      {
+        "Name": "CPU平均使用率",
+        "Type": "snmp",
+        "Mode": "stats",
+        "Params": "hrProcessorLoad",
+        "Script": "avg < 90.0",
+        "Level": "low",
+        "Descr": "Raspberry PiのCPU平均使用率"
+      }
+    ]
+  }
+]

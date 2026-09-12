@@ -549,6 +549,10 @@ func getSysUpTime(agent *gosnmp.GoSNMP) (uint64, error) {
 	return gosnmp.ToBigInt(r.Variables[0].Value).Uint64(), nil
 }
 
+func GetSNMPAgent(n *datastore.NodeEnt) *gosnmp.GoSNMP {
+	return getSNMPAgent(n)
+}
+
 func getSNMPAgent(n *datastore.NodeEnt) *gosnmp.GoSNMP {
 	if strings.HasPrefix(n.SnmpMode, "v3") && n.User == "" {
 		return nil

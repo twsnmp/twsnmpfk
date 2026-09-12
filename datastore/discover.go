@@ -18,8 +18,10 @@ type DiscoverConfEnt struct {
 	Y          int    `json:"Y"`
 	AddPolling bool   `json:"AddPolling"`
 	PortScan   bool   `json:"PortScan"`
-	ReCheck    bool   `json:"ReCheck"`
-	AddNetwork bool   `json:"AddNetwork"`
+	ReCheck      bool   `json:"ReCheck"`
+	AddNetwork   bool   `json:"AddNetwork"`
+	AutoDetect   bool   `json:"AutoDetect"`
+	AutoDetectAI bool   `json:"AutoDetectAI"`
 }
 
 func SaveDiscoverConf() error {

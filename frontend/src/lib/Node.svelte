@@ -20,6 +20,7 @@
   import { addrModeList, getIcon, iconList, snmpModeList } from "./common";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
+  import NodeAutoDetectDialog from "./NodeAutoDetectDialog.svelte";
 
   export let show: boolean = false;
   export let nodeID: string = "";
@@ -29,6 +30,7 @@
 
   let node: any = undefined;
   let showHelp = false;
+  let showAutoDetect = false;
   let imageIcon : any  = undefined;
   const imageIconList: any = [];
 
@@ -272,6 +274,20 @@
         <Input class="h-8" bind:value={node.Descr} size="sm" />
       </Label>
       <div class="flex justify-end space-x-2 mr-2">
+        {#if node && node.ID}
+          <GradientButton
+            shadow
+            type="button"
+            color="pink"
+            onclick={() => {
+              showAutoDetect = true;
+            }}
+            size="xs"
+          >
+            <Icon path={icons.mdiAutoFix} size={1} />
+            <span>{$_("Node.AutoDetect") || "種別自動判定"}</span>
+          </GradientButton>
+        {/if}
         <GradientButton
           shadow
           color="blue"
@@ -313,3 +329,14 @@
 </Modal>
 
 <Help bind:show={showHelp} page="editnode" />
+
+<NodeAutoDetectDialog
+  bind:show={showAutoDetect}
+  nodeID={node ? node.ID : ""}
+  on:applied={async () => {
+    if (node && node.ID) {
+      node = await GetNode(node.ID);
+      filterIconList();
+    }
+  }}
+/>

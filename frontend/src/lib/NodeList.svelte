@@ -20,6 +20,7 @@
   import MIBBrowser from "./MIBBrowser.svelte";
   import GNMITool from "./GNMITool.svelte";
   import NodeDiagnoseDialog from "./NodeDiagnoseDialog.svelte";
+  import NodeAutoDetectDialog from "./NodeAutoDetectDialog.svelte";
   import MapList from "./MapList.svelte";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -31,6 +32,7 @@
   let showPolling = false;
   let showMapList = false;
   let showAIDiagnose = false;
+  let showAutoDetect = false;
   let selectedNode = "";
   let table: any = undefined;
   let selectedCount = 0;
@@ -144,6 +146,16 @@
     }
     selectedNode = selected[0];
     WakeOnLan(selectedNode);
+    actionOpen = false;
+  };
+
+  const autoDetect = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length != 1) {
+      return;
+    }
+    selectedNode = selected[0];
+    showAutoDetect = true;
     actionOpen = false;
   };
 
@@ -285,6 +297,7 @@
           >{$_("GNMITool.gNMITool")}</DropdownItem
         >
         <DropdownItem class="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600" onclick={doWakeOnLan}>Wake On Lan</DropdownItem>
+        <DropdownItem class="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600" onclick={autoDetect}>{$_("Node.AutoDetect") || "種別自動判定"}</DropdownItem>
       </Dropdown>
     {/if}
     {#if selectedCount > 0}
@@ -385,4 +398,12 @@
 <GNMITool bind:show={showGNMITool} nodeID={selectedNode} />
 
 <MapList bind:show={showMapList} />
+
+<NodeAutoDetectDialog
+  bind:show={showAutoDetect}
+  nodeID={selectedNode}
+  on:applied={() => {
+    refresh();
+  }}
+/>
 

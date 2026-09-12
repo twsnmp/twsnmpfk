@@ -170,6 +170,12 @@
         <Checkbox bind:checked={conf.AddNetwork}
           >{$_('Discover.AddNetwork')}</Checkbox
         >
+        <Checkbox bind:checked={conf.AutoDetect}
+          >{$_('Discover.AutoDetect')}</Checkbox
+        >
+        <Checkbox bind:checked={conf.AutoDetectAI}
+          >{$_('Discover.AutoDetectAI')}</Checkbox
+        >
       </div>
       <div class="flex justify-end space-x-2 mr-2">
         <GradientButton

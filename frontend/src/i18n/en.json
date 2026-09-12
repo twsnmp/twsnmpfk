@@ -428,7 +428,9 @@
     "Found": "Found:",
     "Total": "Wait/Sent/Total:",
     "AddNetwork": "Add network",
-    "ReChek": "Re-check"
+    "ReChek": "Re-check",
+    "AutoDetect": "Auto Detect Node Type",
+    "AutoDetectAI": "Use AI Detection"
   },
   "EventLog": {
     "Event": "Event",
@@ -588,7 +590,17 @@
     "GNMIUser": "gNMI User",
     "MAC": "MAC",
     "Password": "Password",
-    "User": "User"
+    "User": "User",
+    "AutoDetect": "Auto Detect Type",
+    "Detecting": "Collecting signatures and detecting...",
+    "RuleID": "Rule ID",
+    "DetectedSensors": "Detected Sensor Pollings",
+    "NoSensorsDetected": "No hardware sensors (CPU/Mem/Temp) detected for this device.",
+    "ApplyDetectIcon": "Apply detected icon & description",
+    "ApplyDetectPolling": "Add recommended sensor pollings",
+    "DetectFailed": "Failed to detect node type.",
+    "Apply": "Apply",
+    "ReDetect": "Re-Detect"
   },
   "NodeList": {
     "CheckAll": "Check all",

@@ -7,15 +7,21 @@ package discover
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
+	"io"
 	"log"
+	"math/rand"
 	"net"
+	"net/http"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gosnmp/gosnmp"
 	"github.com/signalsciences/ipv4"
+	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/ping"
@@ -53,6 +59,12 @@ type discoverInfoEnt struct {
 	HostName    string
 	SysName     string
 	SysObjectID string
+	SysDescr    string
+	MAC         string
+	Vendor      string
+	HTTPTitle   string
+	HTTPServer  string
+	HTTPBody    string
 	IfMap       map[string]string
 	ServerList  map[string]bool
 	X           int
@@ -108,9 +120,18 @@ func Discover() error {
 	X = (1 + datastore.DiscoverConf.X/GRID) * GRID
 	Y = (1 + datastore.DiscoverConf.Y/GRID) * GRID
 	var mu sync.Mutex
-	sem := make(chan bool, 256)
+	sem := make(chan bool, 16)
+	portScanSem := make(chan bool, 2)
+	pacer := time.NewTicker(time.Millisecond * 80)
 	go func() {
+		defer pacer.Stop()
 		for ; sip <= eip && !Stop; sip++ {
+			select {
+			case <-pacer.C:
+			}
+			if Stop {
+				break
+			}
 			sem <- true
 			Stat.Sent++
 			Stat.Now = time.Now().Unix()
@@ -131,6 +152,13 @@ func Discover() error {
 						IfMap:      make(map[string]string),
 						ServerList: make(map[string]bool),
 					}
+					if arp := datastore.GetArpEnt(ipstr); arp != nil {
+						dent.MAC = arp.MAC
+						dent.Vendor = arp.Vendor
+						if dent.Vendor == "" && dent.MAC != "" {
+							dent.Vendor = datastore.FindVendor(dent.MAC)
+						}
+					}
 					r := &net.Resolver{}
 					ctx, cancel := context.WithTimeout(context.TODO(), time.Second*2)
 					defer cancel()
@@ -139,7 +167,9 @@ func Discover() error {
 					}
 					getSnmpInfo(ipstr, &dent)
 					if datastore.DiscoverConf.PortScan {
+						portScanSem <- true
 						checkServer(&dent)
+						<-portScanSem
 					}
 					mu.Lock()
 					dent.X = X
@@ -294,17 +324,24 @@ func getSnmpInfo(t string, dent *discoverInfoEnt) {
 		return
 	}
 	defer agent.Conn.Close()
-	oids := []string{datastore.MIBDB.NameToOID("sysName"), datastore.MIBDB.NameToOID("sysObjectID")}
+	oids := []string{
+		datastore.MIBDB.NameToOID("sysName"),
+		datastore.MIBDB.NameToOID("sysObjectID"),
+		datastore.MIBDB.NameToOID("sysDescr"),
+	}
 	result, err := agent.GetNext(oids)
 	if err != nil {
 		log.Printf("discover err=%v", err)
 		return
 	}
 	for _, variable := range result.Variables {
-		if datastore.MIBDB.OIDToName(variable.Name) == "sysName.0" {
+		name := datastore.MIBDB.OIDToName(variable.Name)
+		if name == "sysName.0" {
 			dent.SysName = getMIBStringVal(variable.Value)
-		} else if datastore.MIBDB.OIDToName(variable.Name) == "sysObjectID.0" {
+		} else if name == "sysObjectID.0" {
 			dent.SysObjectID = getMIBStringVal(variable.Value)
+		} else if name == "sysDescr.0" {
+			dent.SysDescr = getMIBStringVal(variable.Value)
 		}
 	}
 	agent.Walk(datastore.MIBDB.NameToOID("ifType"), func(variable gosnmp.SnmpPDU) error {
@@ -337,12 +374,14 @@ func getSnmpInfo(t string, dent *discoverInfoEnt) {
 func addFoundNode(dent *discoverInfoEnt) {
 	funcList := []string{}
 	n := datastore.NodeEnt{
-		Name:  dent.HostName,
-		IP:    dent.IP,
-		Icon:  "desktop",
-		X:     dent.X,
-		Y:     dent.Y,
-		Descr: fmt.Sprintf(i18n.Trans("Found at %s"), time.Now().Format("2006/01/02")),
+		Name:   dent.HostName,
+		IP:     dent.IP,
+		MAC:    dent.MAC,
+		Vendor: dent.Vendor,
+		Icon:   "desktop",
+		X:      dent.X,
+		Y:      dent.Y,
+		Descr:  fmt.Sprintf(i18n.Trans("Found at %s"), time.Now().Format("2006/01/02")),
 	}
 	if n.Name == "" {
 		if dent.SysName != "" {
@@ -358,6 +397,24 @@ func addFoundNode(dent *discoverInfoEnt) {
 		n.Community = datastore.MapConf.Community
 		n.Icon = "hdd"
 		funcList = append(funcList, "snmp")
+	}
+	var detectRes *datastore.DetectResult
+	if datastore.DiscoverConf.AutoDetect {
+		input := &datastore.DetectInput{
+			SysObjectID: dent.SysObjectID,
+			SysDescr:    dent.SysDescr,
+			HTTPTitle:   dent.HTTPTitle,
+			HTTPServer:  dent.HTTPServer,
+			HTTPBody:    dent.HTTPBody,
+			Vendor:      dent.Vendor,
+		}
+		detectRes = datastore.DetectNode(input)
+		if detectRes != nil && detectRes.Icon != "" {
+			n.Icon = detectRes.Icon
+			if detectRes.Name != "" && detectRes.RuleID != "unknown" {
+				n.Descr += fmt.Sprintf(" [%s]", detectRes.Name)
+			}
+		}
 	}
 	if len(dent.ServerList) > 0 {
 		for _, s := range []string{
@@ -403,13 +460,20 @@ func addFoundNode(dent *discoverInfoEnt) {
 	if !datastore.DiscoverConf.AddPolling {
 		return
 	}
-	addPolling(dent, &n)
+	addPolling(dent, &n, detectRes)
 }
+
 func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 	if n.Name == n.IP {
 		if dent.SysName != "" {
 			n.Name = dent.SysName
 		}
+	}
+	if n.MAC == "" && dent.MAC != "" {
+		n.MAC = dent.MAC
+	}
+	if n.Vendor == "" && dent.Vendor != "" {
+		n.Vendor = dent.Vendor
 	}
 	if dent.SysObjectID != "" && n.User == "" && n.Community == "" {
 		n.SnmpMode = datastore.MapConf.SnmpMode
@@ -419,6 +483,28 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 		if n.Icon == "desktop" {
 			n.Icon = "hdd"
 			n.Descr += " / snmp対応"
+		}
+	}
+	var detectRes *datastore.DetectResult
+	if datastore.DiscoverConf.AutoDetect {
+		input := &datastore.DetectInput{
+			SysObjectID: dent.SysObjectID,
+			SysDescr:    dent.SysDescr,
+			HTTPTitle:   dent.HTTPTitle,
+			HTTPServer:  dent.HTTPServer,
+			HTTPBody:    dent.HTTPBody,
+			Vendor:      dent.Vendor,
+		}
+		detectRes = datastore.DetectNode(input)
+		if detectRes != nil && detectRes.Icon != "" {
+			if n.Icon == "desktop" || n.Icon == "hdd" || n.Icon == "" {
+				n.Icon = detectRes.Icon
+			}
+			if detectRes.Name != "" && detectRes.RuleID != "unknown" {
+				if !strings.Contains(n.Descr, detectRes.Name) {
+					n.Descr += fmt.Sprintf(" [%s]", detectRes.Name)
+				}
+			}
 		}
 	}
 	datastore.AddEventLog(&datastore.EventLogEnt{
@@ -447,20 +533,28 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 	if !datastore.DiscoverConf.AddPolling {
 		return
 	}
-	addPolling(dent, n)
-
+	addPolling(dent, n, detectRes)
 }
 
-func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
+func getStaggeredNextTime(pollInt int) int64 {
+	if pollInt < 10 {
+		pollInt = 10
+	}
+	offset := 5 + rand.Intn(pollInt-4)
+	return time.Now().UnixNano() + int64(offset)*1e9
+}
+
+func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt, detectRes *datastore.DetectResult) {
 	p := &datastore.PollingEnt{
-		NodeID:  n.ID,
-		Name:    "PING",
-		Type:    "ping",
-		Level:   "low",
-		State:   "unknown",
-		PollInt: datastore.MapConf.PollInt,
-		Timeout: datastore.MapConf.Timeout,
-		Retry:   datastore.MapConf.Retry,
+		NodeID:   n.ID,
+		Name:     "PING",
+		Type:     "ping",
+		Level:    "low",
+		State:    "unknown",
+		PollInt:  datastore.MapConf.PollInt,
+		Timeout:  datastore.MapConf.Timeout,
+		Retry:    datastore.MapConf.Retry,
+		NextTime: getStaggeredNextTime(datastore.MapConf.PollInt),
 	}
 	if err := datastore.AddPollingWithDupCheck(p); err != nil {
 		log.Printf("discover err=%v", err)
@@ -532,16 +626,17 @@ func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 			continue
 		}
 		p = &datastore.PollingEnt{
-			NodeID:  n.ID,
-			Name:    name,
-			Type:    ptype,
-			Mode:    mode,
-			Params:  params,
-			Level:   level,
-			State:   "unknown",
-			PollInt: datastore.MapConf.PollInt,
-			Timeout: datastore.MapConf.Timeout,
-			Retry:   datastore.MapConf.Retry,
+			NodeID:   n.ID,
+			Name:     name,
+			Type:     ptype,
+			Mode:     mode,
+			Params:   params,
+			Level:    level,
+			State:    "unknown",
+			PollInt:  datastore.MapConf.PollInt,
+			Timeout:  datastore.MapConf.Timeout,
+			Retry:    datastore.MapConf.Retry,
+			NextTime: getStaggeredNextTime(datastore.MapConf.PollInt),
 		}
 		if err := datastore.AddPollingWithDupCheck(p); err != nil {
 			log.Printf("discover err=%v", err)
@@ -552,15 +647,16 @@ func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 		return
 	}
 	p = &datastore.PollingEnt{
-		NodeID:  n.ID,
-		Name:    "sysUptime",
-		Type:    "snmp",
-		Mode:    "sysUpTime",
-		Level:   "off",
-		State:   "unknown",
-		PollInt: datastore.MapConf.PollInt,
-		Timeout: datastore.MapConf.Timeout,
-		Retry:   datastore.MapConf.Retry,
+		NodeID:   n.ID,
+		Name:     "sysUptime",
+		Type:     "snmp",
+		Mode:     "sysUpTime",
+		Level:    "off",
+		State:    "unknown",
+		PollInt:  datastore.MapConf.PollInt,
+		Timeout:  datastore.MapConf.Timeout,
+		Retry:    datastore.MapConf.Retry,
+		NextTime: getStaggeredNextTime(datastore.MapConf.PollInt),
 	}
 	if err := datastore.AddPollingWithDupCheck(p); err != nil {
 		log.Printf("discover err=%v", err)
@@ -568,20 +664,58 @@ func addPolling(dent *discoverInfoEnt, n *datastore.NodeEnt) {
 	}
 	for i, name := range dent.IfMap {
 		p = &datastore.PollingEnt{
-			NodeID:  n.ID,
-			Type:    "snmp",
-			Name:    fmt.Sprintf("%s(%s)", name, i),
-			Mode:    "ifOperStatus",
-			Params:  i,
-			Level:   "off",
-			State:   "unknown",
-			PollInt: datastore.MapConf.PollInt,
-			Timeout: datastore.MapConf.Timeout,
-			Retry:   datastore.MapConf.Retry,
+			NodeID:   n.ID,
+			Type:     "snmp",
+			Name:     fmt.Sprintf("%s(%s)", name, i),
+			Mode:     "ifOperStatus",
+			Params:   i,
+			Level:    "off",
+			State:    "unknown",
+			PollInt:  datastore.MapConf.PollInt,
+			Timeout:  datastore.MapConf.Timeout,
+			Retry:    datastore.MapConf.Retry,
+			NextTime: getStaggeredNextTime(datastore.MapConf.PollInt),
 		}
 		if err := datastore.AddPollingWithDupCheck(p); err != nil {
 			log.Printf("discover err=%v", err)
 			return
+		}
+	}
+	if detectRes != nil && len(detectRes.SensorPollings) > 0 {
+		agent := backend.GetSNMPAgent(n)
+		if agent != nil {
+			if err := agent.Connect(); err == nil {
+				defer agent.Conn.Close()
+				for _, sp := range detectRes.SensorPollings {
+					if datastore.CheckSensorSupport(agent, sp.Params) {
+						level := sp.Level
+						if level == "" {
+							level = "off"
+						}
+						mode := sp.Mode
+						if mode == "" {
+							mode = "get"
+						}
+						p := &datastore.PollingEnt{
+							NodeID:   n.ID,
+							Name:     sp.Name,
+							Type:     sp.Type,
+							Mode:     mode,
+							Params:   sp.Params,
+							Script:   sp.Script,
+							Level:    level,
+							State:    "unknown",
+							PollInt:  datastore.MapConf.PollInt,
+							Timeout:  datastore.MapConf.Timeout,
+							Retry:    datastore.MapConf.Retry,
+							NextTime: getStaggeredNextTime(datastore.MapConf.PollInt),
+						}
+						if err := datastore.AddPollingWithDupCheck(p); err != nil {
+							log.Printf("discover add sensor polling err=%v", err)
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -604,19 +738,78 @@ func checkServer(dent *discoverInfoEnt) {
 		"kerberos": "88",
 	}
 	for s, p := range checkList {
-		time.Sleep(time.Second)
+		if Stop {
+			return
+		}
+		time.Sleep(time.Millisecond * 100)
 		if doTCPConnect(dent.IP + ":" + p) {
 			dent.ServerList[s] = true
+		}
+	}
+	if dent.ServerList["http"] || dent.ServerList["https"] {
+		checkWebInfo(dent)
+	}
+}
+
+func checkWebInfo(dent *discoverInfoEnt) {
+	schemes := []string{}
+	if dent.ServerList["http"] {
+		schemes = append(schemes, "http")
+	}
+	if dent.ServerList["https"] {
+		schemes = append(schemes, "https")
+	}
+	if len(schemes) == 0 {
+		return
+	}
+	client := &http.Client{
+		Timeout: time.Duration(datastore.DiscoverConf.Timeout) * time.Second,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	for _, scheme := range schemes {
+		if Stop {
+			return
+		}
+		url := fmt.Sprintf("%s://%s", scheme, dent.IP)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			continue
+		}
+		req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; TWSNMP-FK/1.0)")
+		resp, err := client.Do(req)
+		if err != nil {
+			continue
+		}
+		dent.HTTPServer = resp.Header.Get("Server")
+		doc, err := goquery.NewDocumentFromReader(io.LimitReader(resp.Body, 1024*1024))
+		_ = resp.Body.Close()
+		if err == nil {
+			dent.HTTPTitle = strings.TrimSpace(doc.Find("title").First().Text())
+			text := strings.TrimSpace(doc.Find("body").Text())
+			text = strings.Join(strings.Fields(text), " ")
+			if len(text) > 500 {
+				text = text[:500]
+			}
+			dent.HTTPBody = text
+		}
+		if dent.HTTPTitle != "" || dent.HTTPServer != "" {
+			break
 		}
 	}
 }
 
 func doTCPConnect(dst string) bool {
-	conn, err := net.DialTimeout("tcp", dst, time.Duration(datastore.DiscoverConf.Timeout)*time.Second)
+	timeout := time.Duration(datastore.DiscoverConf.Timeout) * time.Second
+	if timeout <= 0 || timeout > time.Second {
+		timeout = time.Second
+	}
+	conn, err := net.DialTimeout("tcp", dst, timeout)
 	if err != nil {
 		return false
 	}
-	defer conn.Close()
+	_ = conn.Close()
 	return true
 }
 
@@ -631,3 +824,4 @@ func getMIBStringVal(i interface{}) string {
 	}
 	return ""
 }
+

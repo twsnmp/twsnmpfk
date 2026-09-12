@@ -1,10 +1,15 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"strings"
+	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
@@ -198,3 +203,180 @@ func (a *App) SaveNodeMemo(nodeID, memo string) bool {
 func (a *App) GetNodeMemo(nodeID string) string {
 	return datastore.GetNodeMemo(nodeID)
 }
+
+func fetchWebSignatures(ip string, urlStr string) (title, server, body string) {
+	targets := []string{}
+	if urlStr != "" {
+		targets = append(targets, urlStr)
+	} else if ip != "" {
+		targets = append(targets, "http://"+ip, "https://"+ip)
+	}
+	client := &http.Client{
+		Timeout: 2 * time.Second,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	for _, target := range targets {
+		req, err := http.NewRequest("GET", target, nil)
+		if err != nil {
+			continue
+		}
+		req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; TWSNMP-FK/1.0)")
+		resp, err := client.Do(req)
+		if err != nil {
+			continue
+		}
+		server = resp.Header.Get("Server")
+		doc, err := goquery.NewDocumentFromReader(io.LimitReader(resp.Body, 1024*1024))
+		_ = resp.Body.Close()
+		if err == nil {
+			title = strings.TrimSpace(doc.Find("title").First().Text())
+			text := strings.TrimSpace(doc.Find("body").Text())
+			text = strings.Join(strings.Fields(text), " ")
+			if len(text) > 500 {
+				text = text[:500]
+			}
+			body = text
+		}
+		if title != "" || server != "" {
+			break
+		}
+	}
+	return
+}
+
+// DetectNodeType auto-detects the device category, OS, icon, and recommended sensor pollings for a node.
+func (a *App) DetectNodeType(id string) *datastore.DetectResult {
+	n := datastore.GetNode(id)
+	if n == nil {
+		return nil
+	}
+	input := &datastore.DetectInput{
+		Vendor: n.Vendor,
+	}
+	if input.Vendor == "" && n.MAC != "" {
+		input.Vendor = datastore.FindVendor(n.MAC)
+	}
+	if arp := datastore.GetArpEnt(n.IP); arp != nil {
+		if input.Vendor == "" {
+			input.Vendor = arp.Vendor
+			if input.Vendor == "" && arp.MAC != "" {
+				input.Vendor = datastore.FindVendor(arp.MAC)
+			}
+		}
+	}
+
+	agent := backend.GetSNMPAgent(n)
+	if agent != nil {
+		if err := agent.Connect(); err == nil {
+			defer agent.Conn.Close()
+			oids := []string{
+				datastore.MIBDB.NameToOID("sysObjectID"),
+				datastore.MIBDB.NameToOID("sysDescr"),
+			}
+			if res, err := agent.GetNext(oids); err == nil {
+				for _, v := range res.Variables {
+					name := datastore.MIBDB.OIDToName(v.Name)
+					if strings.HasPrefix(name, "sysObjectID") {
+						input.SysObjectID = fmt.Sprintf("%v", v.Value)
+					} else if strings.HasPrefix(name, "sysDescr") {
+						switch val := v.Value.(type) {
+						case string:
+							input.SysDescr = val
+						case []byte:
+							input.SysDescr = string(val)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	title, server, body := fetchWebSignatures(n.IP, n.URL)
+	input.HTTPTitle = title
+	input.HTTPServer = server
+	input.HTTPBody = body
+
+	res := datastore.DetectNode(input)
+	if res == nil {
+		return nil
+	}
+
+	// Verify sensor pollings with agent if connected
+	if agent != nil && len(res.SensorPollings) > 0 {
+		var verified []datastore.SensorPollingDef
+		for _, sp := range res.SensorPollings {
+			if datastore.CheckSensorSupport(agent, sp.Params) {
+				verified = append(verified, sp)
+			}
+		}
+		res.SensorPollings = verified
+	}
+
+	return res
+}
+
+// ApplyNodeDetection applies auto-detected icon and sensor pollings to the node.
+func (a *App) ApplyNodeDetection(id string, applyIcon bool, applyPolling bool) bool {
+	res := a.DetectNodeType(id)
+	if res == nil {
+		return false
+	}
+	n := datastore.GetNode(id)
+	if n == nil {
+		return false
+	}
+
+	updated := false
+	if applyIcon && res.Icon != "" {
+		n.Icon = res.Icon
+		if res.Name != "" && res.RuleID != "unknown" {
+			if !strings.Contains(n.Descr, res.Name) {
+				n.Descr += fmt.Sprintf(" [%s]", res.Name)
+			}
+		}
+		updated = true
+	}
+
+	if applyPolling && len(res.SensorPollings) > 0 {
+		for _, sp := range res.SensorPollings {
+			level := sp.Level
+			if level == "" {
+				level = "low"
+			}
+			mode := sp.Mode
+			if mode == "" {
+				mode = "get"
+			}
+			p := &datastore.PollingEnt{
+				NodeID:  n.ID,
+				Name:    sp.Name,
+				Type:    sp.Type,
+				Mode:    mode,
+				Params:  sp.Params,
+				Script:  sp.Script,
+				Level:   level,
+				State:   "unknown",
+				PollInt: datastore.MapConf.PollInt,
+				Timeout: datastore.MapConf.Timeout,
+				Retry:   datastore.MapConf.Retry,
+			}
+			if err := datastore.AddPollingWithDupCheck(p); err != nil {
+				log.Printf("apply detection add polling err=%v", err)
+			}
+		}
+	}
+
+	if updated {
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:     "user",
+			Level:    "info",
+			NodeName: n.Name,
+			NodeID:   n.ID,
+			Event:    fmt.Sprintf(i18n.Trans("Auto detected as %s"), res.Name),
+		})
+	}
+	return true
+}
+

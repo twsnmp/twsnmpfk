@@ -415,7 +415,9 @@
     "Total": "待ち/送信/トータル:",
     "Found": "発見済み:",
     "ReChek": "再チェック",
-    "AddNetwork": "ネットワーク追加"
+    "AddNetwork": "ネットワーク追加",
+    "AutoDetect": "ノード種別自動判定",
+    "AutoDetectAI": "AI判定を利用"
   },
   "EventLog": {
     "Level": "レベル",
@@ -575,7 +577,17 @@
     "MAC": "MACアドレス",
     "SnmpPassword": "パスワード",
     "SnmpPort": "SNMPポート",
-    "SnmpUser": "ユーザー"
+    "SnmpUser": "ユーザー",
+    "AutoDetect": "種別自動判定",
+    "Detecting": "ノード情報を収集・判定中...",
+    "RuleID": "判定ルール",
+    "DetectedSensors": "検出された推奨センサーポーリング",
+    "NoSensorsDetected": "ハードウェア固有のセンサー（CPU/メモリ/温度等）は検出されませんでした（またはSNMP未設定です）。",
+    "ApplyDetectIcon": "アイコンと説明文を反映する",
+    "ApplyDetectPolling": "センサーポーリングを追加する",
+    "DetectFailed": "ノード種別の検出に失敗しました。",
+    "Apply": "反映する",
+    "ReDetect": "再判定"
   },
   "NodeList": {
     "State": "状態",
