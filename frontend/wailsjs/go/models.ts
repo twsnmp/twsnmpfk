@@ -22,9 +22,47 @@ export namespace backend {
 	        this.Vendor = source["Vendor"];
 	    }
 	}
+	export class NeighborLineEnt {
+	    ID: string;
+	    NodeID1: string;
+	    PollingID1: string;
+	    State1: string;
+	    NodeID2: string;
+	    PollingID2: string;
+	    State2: string;
+	    PollingID: string;
+	    Width: number;
+	    State: string;
+	    Info: string;
+	    Port: string;
+	    Confidence: string;
+	    Reason: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new NeighborLineEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.NodeID1 = source["NodeID1"];
+	        this.PollingID1 = source["PollingID1"];
+	        this.State1 = source["State1"];
+	        this.NodeID2 = source["NodeID2"];
+	        this.PollingID2 = source["PollingID2"];
+	        this.State2 = source["State2"];
+	        this.PollingID = source["PollingID"];
+	        this.Width = source["Width"];
+	        this.State = source["State"];
+	        this.Info = source["Info"];
+	        this.Port = source["Port"];
+	        this.Confidence = source["Confidence"];
+	        this.Reason = source["Reason"];
+	    }
+	}
 	export class FindNeighborNetworksAndLinesResp {
 	    Networks: datastore.NetworkEnt[];
-	    Lines: datastore.LineEnt[];
+	    Lines: NeighborLineEnt[];
 	
 	    static createFrom(source: any = {}) {
 	        return new FindNeighborNetworksAndLinesResp(source);
@@ -33,7 +71,7 @@ export namespace backend {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Networks = this.convertValues(source["Networks"], datastore.NetworkEnt);
-	        this.Lines = this.convertValues(source["Lines"], datastore.LineEnt);
+	        this.Lines = this.convertValues(source["Lines"], NeighborLineEnt);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -247,6 +285,7 @@ export namespace backend {
 	        this.NumGoroutine = source["NumGoroutine"];
 	    }
 	}
+	
 	export class VPanelPortEnt {
 	    Index: number;
 	    State: string;
@@ -531,6 +570,7 @@ export namespace datastore {
 	    AddNetwork: boolean;
 	    AutoDetect: boolean;
 	    AutoDetectAI: boolean;
+	    AutoLine: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new DiscoverConfEnt(source);
@@ -550,6 +590,7 @@ export namespace datastore {
 	        this.AddNetwork = source["AddNetwork"];
 	        this.AutoDetect = source["AutoDetect"];
 	        this.AutoDetectAI = source["AutoDetectAI"];
+	        this.AutoLine = source["AutoLine"];
 	    }
 	}
 	export class DrawItemEnt {

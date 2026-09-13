@@ -417,7 +417,11 @@
     "ReChek": "再チェック",
     "AddNetwork": "ネットワーク追加",
     "AutoDetect": "ノード種別自動判定",
-    "AutoDetectAI": "AI判定を利用"
+    "AutoDetectAI": "AI判定を利用",
+    "AutoLine": "ライン自動接続",
+    "AutoLineNone": "接続しない",
+    "AutoLineStrict": "確実な場合のみ",
+    "AutoLineSpeculative": "推測でも接続"
   },
   "EventLog": {
     "Level": "レベル",
@@ -1102,8 +1106,16 @@
   "NeighborNetworksAndLines": {
     "Descr": "説明",
     "Title": "ネットワークの接続先を探す",
+    "NodeTitle": "ノードの接続先を探す",
     "AddNetwork": "ネットワーク追加",
-    "ConnectLine": "ライン接続"
+    "ConnectLine": "ライン接続",
+    "ConnectAllStrict": "確実なラインを一括接続",
+    "ConnectAll": "全ライン接続",
+    "InferAI": "AI推測",
+    "Confidence": "確信度",
+    "Reason": "判定理由",
+    "Strict": "確実",
+    "Speculative": "推測"
   },
   "Network": {
     "EditNetwork": "ネットワークの編集",

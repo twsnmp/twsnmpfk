@@ -6,6 +6,10 @@ export function ApplyNodeDetection(arg1, arg2, arg3) {
   return window['go']['main']['App']['ApplyNodeDetection'](arg1, arg2, arg3);
 }
 
+export function AutoConnectLines(arg1) {
+  return window['go']['main']['App']['AutoConnectLines'](arg1);
+}
+
 export function AutoGrok(arg1) {
   return window['go']['main']['App']['AutoGrok'](arg1);
 }
@@ -20,6 +24,10 @@ export function CheckNetwork(arg1) {
 
 export function CheckPolling(arg1) {
   return window['go']['main']['App']['CheckPolling'](arg1);
+}
+
+export function ConnectLines(arg1) {
+  return window['go']['main']['App']['ConnectLines'](arg1);
 }
 
 export function CopyDrawItem(arg1) {
@@ -204,6 +212,14 @@ export function ExportTraps(arg1, arg2, arg3) {
 
 export function FindNeighborNetworksAndLines(arg1) {
   return window['go']['main']['App']['FindNeighborNetworksAndLines'](arg1);
+}
+
+export function FindNeighborNetworksAndLinesWithAI(arg1) {
+  return window['go']['main']['App']['FindNeighborNetworksAndLinesWithAI'](arg1);
+}
+
+export function FindNodeConnection(arg1) {
+  return window['go']['main']['App']['FindNodeConnection'](arg1);
 }
 
 export function GNMICapabilities(arg1, arg2) {

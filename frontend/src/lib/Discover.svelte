@@ -5,6 +5,7 @@
     Label,
     Input,
     Checkbox,
+    Select,
     GradientButton,
     Spinner,
   } from "flowbite-svelte";
@@ -72,6 +73,7 @@
   const start = async () => {
     conf.Retry *= 1;
     conf.Timeout *= 1;
+    conf.AutoLine = Number(conf.AutoLine) || 0;
     const r = await StartDiscover(conf);
     if (r) {
       showStats = true;
@@ -176,6 +178,22 @@
         <Checkbox bind:checked={conf.AutoDetectAI}
           >{$_('Discover.AutoDetectAI')}</Checkbox
         >
+      </div>
+      <div class="grid gap-4 mb-4 md:grid-cols-2">
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Discover.AutoLine")}</span>
+          <Select
+            class="h-8 text-xs"
+            items={[
+              { value: 0, name: $_("Discover.AutoLineNone") },
+              { value: 1, name: $_("Discover.AutoLineStrict") },
+              { value: 2, name: $_("Discover.AutoLineSpeculative") },
+            ]}
+            bind:value={conf.AutoLine}
+            size="sm"
+          />
+        </Label>
+        <div></div>
       </div>
       <div class="flex justify-end space-x-2 mr-2">
         <GradientButton

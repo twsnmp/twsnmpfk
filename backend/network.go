@@ -232,226 +232,19 @@ func getNetworkPorts(n *datastore.NetworkEnt) {
 
 type FindNeighborNetworksAndLinesResp struct {
 	Networks []datastore.NetworkEnt `json:"Networks"`
-	Lines    []datastore.LineEnt    `json:"Lines"`
+	Lines    []NeighborLineEnt      `json:"Lines"`
 }
 
 // FindNeighborNetworksAndLines 接続可能なLineと隣接する未登録のネットワークを検索する
 func FindNeighborNetworksAndLines(n *datastore.NetworkEnt) FindNeighborNetworksAndLinesResp {
-	ret := FindNeighborNetworksAndLinesResp{
-		Networks: []datastore.NetworkEnt{},
-		Lines:    []datastore.LineEnt{},
-	}
-	agent := getSNMPAgentForNetwork(n)
-	if agent == nil {
-		n.Error = "Invalid SNMP config"
-		return ret
-	}
-	err := agent.Connect()
-	if err != nil {
-		n.Error = fmt.Sprintf("SNMP connect err=%s", err)
-		return ret
-	}
-	defer agent.Conn.Close()
-	remoteMap := make(map[string]*datastore.NetworkEnt)
-	// LLDP-MIBのlldpRemoteSystemsDataから隣接するNetworkを探す
-	agent.Walk(datastore.MIBDB.NameToOID("lldpRemoteSystemsData"), func(variable gosnmp.SnmpPDU) error {
-		a := strings.SplitN(datastore.MIBDB.OIDToName(variable.Name), ".", 2)
-		if len(a) != 2 {
-			return nil
-		}
-		switch a[0] {
-		case "lldpRemChassisId":
-			remoteMap[a[1]] = &datastore.NetworkEnt{
-				SystemID: datastore.GetMIBValueString(a[0], &variable, false),
-			}
-		case "lldpRemPortId":
-			if rn, ok := remoteMap[a[1]]; ok {
-				b := strings.Split(a[1], ".")
-				if len(b) < 2 {
-					return nil
-				}
-				id := datastore.GetMIBValueString(a[0], &variable, false)
-				rn.Ports = append(rn.Ports, datastore.PortEnt{
-					ID:    id,
-					Index: b[1],
-					Name:  id,
-					X:     len(n.Ports),
-				})
-			}
-		case "lldpRemSysName":
-			if rn, ok := remoteMap[a[1]]; ok {
-				rn.Name = datastore.GetMIBValueString(a[0], &variable, false)
-			}
-		case "lldpRemSysDesc":
-			if rn, ok := remoteMap[a[1]]; ok {
-				rn.Descr = datastore.GetMIBValueString(a[0], &variable, false)
-			}
-		case "lldpRemSysCapEnabled":
-			if rn, ok := remoteMap[a[1]]; ok {
-				rn.Descr += " " + datastore.GetMIBValueString(a[0], &variable, false)
-			}
-		case "lldpRemManAddrIfId":
-			b := strings.Split(a[1], ".")
-			if len(b) == 3+2+4 {
-				if rn, ok := remoteMap[strings.Join(b[:3], ".")]; ok {
-					rn.IP = strings.Join(b[5:], ".")
-				}
-			}
-		}
-		return nil
-	})
-	// 見つけた隣接ネットワークを確認する
-	for _, rn := range remoteMap {
-		rnr := datastore.FindNetwork(rn.SystemID, rn.IP)
-		if rnr == nil {
-			// 未登録
-			rn.SnmpMode = n.SnmpMode
-			rn.Community = n.Community
-			rn.Password = n.Password
-			rn.User = n.User
-			rn.HPorts = n.HPorts
-			rn.Ports = []datastore.PortEnt{}
-			rn.Y = n.Y + n.H
-			rn.X = n.X
-			ret.Networks = append(ret.Networks, *rn)
-		} else {
-			// 登録済みならラインの候補に
-			for _, rp := range rnr.Ports {
-				for _, frp := range rn.Ports {
-					if frp.ID == rp.ID {
-						for _, lp := range n.Ports {
-							if lp.Index == frp.Index {
-								l := datastore.LineEnt{
-									NodeID1:    fmt.Sprintf("NET:%s", n.ID),
-									PollingID1: lp.ID,
-									NodeID2:    fmt.Sprintf("NET:%s", rnr.ID),
-									PollingID2: rp.ID,
-									Width:      2,
-								}
-								if !datastore.HasLine(&l, true) {
-									ret.Lines = append(ret.Lines, l)
-								}
-							}
-						}
-					}
-				}
-			}
+	res, err := FindTopologyForNetwork(n)
+	if err != nil || res == nil {
+		return FindNeighborNetworksAndLinesResp{
+			Networks: []datastore.NetworkEnt{},
+			Lines:    []NeighborLineEnt{},
 		}
 	}
-	// ARPテーブルから接続先を探す
-	arpMap := make(map[string]string)
-	err = agent.Walk(datastore.MIBDB.NameToOID("ipNetToMediaPhysAddress"), func(variable gosnmp.SnmpPDU) error {
-		a := strings.SplitN(datastore.MIBDB.OIDToName(variable.Name), ".", 2)
-		if len(a) != 2 {
-			return nil
-		}
-		switch a[0] {
-		case "ipNetToMediaPhysAddress":
-			arpMap[a[1]] = datastore.GetMIBValueString(a[0], &variable, false)
-		}
-		return nil
-	})
-	if err != nil {
-		// ipNetToMediaPhysAddress 未対応
-		agent.Walk(datastore.MIBDB.NameToOID("atPhysAddress"), func(variable gosnmp.SnmpPDU) error {
-			a := strings.SplitN(datastore.MIBDB.OIDToName(variable.Name), ".", 2)
-			if len(a) != 2 {
-				return nil
-			}
-			switch a[0] {
-			case "atPhysAddress":
-				arpMap[a[1]] = datastore.GetMIBValueString(a[0], &variable, false)
-			}
-			return nil
-		})
-	}
-	for index, mac := range arpMap {
-		a := strings.Split(index, ".")
-		if len(a) < 1+4 {
-			continue
-		}
-		ip := strings.Join(a[len(a)-4:], ".")
-		node := datastore.FindNodeFromIP(ip)
-		if node == nil {
-			node = datastore.FindNodeFromMAC(mac)
-		}
-		if node == nil {
-			continue
-		}
-		pid := ""
-		pcmp := fmt.Sprintf("ifOperStatus.%s", a[0])
-		datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
-			if p.NodeID == node.ID {
-				if p.Type == "snmp" && p.Params == pcmp {
-					pid = p.ID
-					return false
-				}
-				if pid == "" {
-					pid = p.ID
-				} else if p.Type == "ping" {
-					pid = p.ID
-				}
-			}
-			return true
-		})
-		for _, lp := range n.Ports {
-			if lp.Index == a[0] {
-				l := datastore.LineEnt{
-					NodeID1:    fmt.Sprintf("NET:%s", n.ID),
-					PollingID1: lp.ID,
-					NodeID2:    node.ID,
-					PollingID2: pid,
-					Width:      2,
-				}
-				if !datastore.HasLine(&l, false) {
-					ret.Lines = append(ret.Lines, l)
-				}
-			}
-		}
-	}
-	findLineFromFDB(n, &ret)
-	return ret
-}
-
-func findLineFromFDB(n *datastore.NetworkEnt, ret *FindNeighborNetworksAndLinesResp) {
-	list := GetFDBTable(n.ID)
-	for _, e := range list {
-		node := datastore.FindNodeFromMAC(e.MAC)
-		if node == nil {
-			continue
-		}
-		pid := ""
-		pcmp := fmt.Sprintf("ifOperStatus.%d", e.IfIndex)
-		datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
-			if p.NodeID == node.ID {
-				if p.Type == "snmp" && p.Params == pcmp {
-					pid = p.ID
-					return false
-				}
-				if pid == "" {
-					pid = p.ID
-				} else if p.Type == "ping" {
-					pid = p.ID
-				}
-			}
-			return true
-		})
-		idx := fmt.Sprintf("%d", e.IfIndex)
-		for _, lp := range n.Ports {
-			if lp.Index == idx {
-				l := datastore.LineEnt{
-					NodeID1:    fmt.Sprintf("NET:%s", n.ID),
-					PollingID1: lp.ID,
-					NodeID2:    node.ID,
-					PollingID2: pid,
-					Width:      2,
-				}
-				if !datastore.HasLine(&l, true) {
-					ret.Lines = append(ret.Lines, l)
-				}
-			}
-		}
-	}
+	return *res
 }
 
 func checkNetworkPortState(n *datastore.NetworkEnt) {
@@ -838,63 +631,17 @@ func GetFDBTable(id string) []*FDBTableEnt {
 	defer agent.Conn.Close()
 	// ブリッジのポートからifIndexに変換するテーブルの作成
 	portToIFIndexMap := make(map[int]int)
-	err = agent.Walk(datastore.MIBDB.NameToOID("dot1dBasePortIfIndex"), func(variable gosnmp.SnmpPDU) error {
+	_ = agent.Walk(datastore.MIBDB.NameToOID("dot1dBasePortIfIndex"), func(variable gosnmp.SnmpPDU) error {
 		a := strings.SplitN(datastore.MIBDB.OIDToName(variable.Name), ".", 2)
 		if len(a) != 2 {
 			return nil
 		}
-		idx, err := strconv.Atoi(a[1])
-		if err != nil {
-			return nil
-		}
-		switch a[0] {
-		case "dot1dBasePortIfIndex":
+		if idx, err := strconv.Atoi(a[1]); err == nil {
 			portToIFIndexMap[idx] = int(gosnmp.ToBigInt(variable.Value).Int64())
 		}
 		return nil
 	})
-	if err != nil {
-		log.Printf("get dot1dBasePortIfIndex err=%v", err)
-		return ret
-	}
-	err = agent.Walk(datastore.MIBDB.NameToOID("dot1qTpFdbPort"), func(variable gosnmp.SnmpPDU) error {
-		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
-		if len(a) != 1+1+6 {
-			return nil
-		}
-		vlan, err := strconv.Atoi(a[1])
-		if err != nil {
-			return nil
-		}
-		mac, err := indexToMacAddress(a[2:])
-		if err != nil {
-			log.Println(err)
-			return nil
-		}
-		switch a[0] {
-		case "dot1qTpFdbPort":
-			port := int(gosnmp.ToBigInt(variable.Value).Int64())
-			if idx, ok := portToIFIndexMap[port]; ok {
-				node := ""
-				if nn := datastore.FindNodeFromMAC(mac); nn != nil {
-					node = nn.Name
-				}
-				ret = append(ret, &FDBTableEnt{
-					MAC:     mac,
-					VLanID:  vlan,
-					Port:    port,
-					IfIndex: idx,
-					Node:    node,
-					Vendor:  datastore.FindVendor(mac),
-				})
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		log.Printf("get dot1qTpFdbPort err=%v", err)
-	}
-	return ret
+	return getEnhancedFDB(agent, portToIFIndexMap)
 }
 
 func indexToMacAddress(a []string) (string, error) {

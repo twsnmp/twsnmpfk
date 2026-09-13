@@ -73,6 +73,7 @@
   let selectedDrawItem: string = "";
   let showEditNetwork: boolean = false;
   let selectedNetwork: string = "";
+  let selectedNeighborTarget: string = "";
   let networkTemplate: any = undefined;
   let showNetworkLines: boolean = false;
   let showNeighborNetworksAndLines: boolean = false;
@@ -670,6 +671,21 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
+        onclick={() => {
+          showNodeMenu = false;
+          selectedNeighborTarget = "NODE:" + selectedNode;
+          showNeighborNetworksAndLines = true;
+          setMapReadOnly(true);
+        }}
+      >
+        <span class="text-indigo-400"><Icon path={icons.mdiLanConnect} size={0.7} /></span>
+        <div>
+          {$_('Map.FindNeighbor')}
+        </div>
+      </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div
+        class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={async () => {
           showNodeMenu = false;
           await CopyNode(selectedNode);
@@ -845,6 +861,7 @@
         class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
         onclick={() => {
           showNetworkMenu = false;
+          selectedNeighborTarget = "NET:" + selectedNetwork;
           showNeighborNetworksAndLines = true;
           setMapReadOnly(true);
         }}
@@ -1040,7 +1057,7 @@
 
 <NeighborNetworksAndLines
   bind:show={showNeighborNetworksAndLines}
-  id={selectedNetwork}
+  id={selectedNeighborTarget}
   on:close={(e) => {
     setMapReadOnly(false);
     refreshMap();

@@ -9,6 +9,12 @@ import (
 	"go.etcd.io/bbolt"
 )
 
+const (
+	AutoLineNone        = 0
+	AutoLineStrict      = 1
+	AutoLineSpeculative = 2
+)
+
 type DiscoverConfEnt struct {
 	StartIP    string `json:"StartIP"`
 	EndIP      string `json:"EndIP"`
@@ -22,6 +28,7 @@ type DiscoverConfEnt struct {
 	AddNetwork   bool   `json:"AddNetwork"`
 	AutoDetect   bool   `json:"AutoDetect"`
 	AutoDetectAI bool   `json:"AutoDetectAI"`
+	AutoLine     int    `json:"AutoLine"`
 }
 
 func SaveDiscoverConf() error {

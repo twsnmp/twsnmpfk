@@ -234,6 +234,11 @@ func Discover() error {
 			Stat.Now = time.Now().Unix()
 			Stat.Wait = len(sem)
 		}
+		if datastore.DiscoverConf.AutoLine > datastore.AutoLineNone {
+			if _, _, err := backend.AutoConnectLines(datastore.DiscoverConf.AutoLine); err != nil {
+				log.Printf("auto connect lines err=%v", err)
+			}
+		}
 		Stat.Running = false
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",

@@ -8,6 +8,8 @@ import {discover} from '../models';
 
 export function ApplyNodeDetection(arg1:string,arg2:boolean,arg3:boolean):Promise<boolean>;
 
+export function AutoConnectLines(arg1:number):Promise<Record<string, number>>;
+
 export function AutoGrok(arg1:string):Promise<string>;
 
 export function Backup():Promise<boolean>;
@@ -15,6 +17,8 @@ export function Backup():Promise<boolean>;
 export function CheckNetwork(arg1:string):Promise<void>;
 
 export function CheckPolling(arg1:string):Promise<boolean>;
+
+export function ConnectLines(arg1:Array<datastore.LineEnt>):Promise<number>;
 
 export function CopyDrawItem(arg1:string):Promise<boolean>;
 
@@ -107,6 +111,10 @@ export function ExportSyslogs(arg1:string,arg2:main.SyslogFilterEnt,arg3:string)
 export function ExportTraps(arg1:string,arg2:main.TrapFilterEnt,arg3:string):Promise<string>;
 
 export function FindNeighborNetworksAndLines(arg1:string):Promise<backend.FindNeighborNetworksAndLinesResp>;
+
+export function FindNeighborNetworksAndLinesWithAI(arg1:string):Promise<backend.FindNeighborNetworksAndLinesResp>;
+
+export function FindNodeConnection(arg1:string):Promise<Array<backend.NeighborLineEnt>>;
 
 export function GNMICapabilities(arg1:string,arg2:string):Promise<main.GNMICapEnt>;
 

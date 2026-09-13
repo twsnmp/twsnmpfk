@@ -359,16 +359,116 @@ func (a *App) GetLinesByNode(id string) []datastore.LineEnt {
 	return ret
 }
 
-// FindNeighborNetworksAndLines returns neighbor networks and lines connected node
+// FindNeighborNetworksAndLines returns neighbor networks and lines
 func (a *App) FindNeighborNetworksAndLines(id string) backend.FindNeighborNetworksAndLinesResp {
-	n := datastore.GetNetwork(id)
-	if n == nil {
+	if strings.HasPrefix(id, "NODE:") {
+		nodeID := strings.TrimPrefix(id, "NODE:")
+		lines, err := backend.FindNodeConnection(nodeID)
+		if err != nil {
+			log.Printf("FindNodeConnection err=%v", err)
+			return backend.FindNeighborNetworksAndLinesResp{
+				Networks: []datastore.NetworkEnt{},
+				Lines:    []backend.NeighborLineEnt{},
+			}
+		}
 		return backend.FindNeighborNetworksAndLinesResp{
 			Networks: []datastore.NetworkEnt{},
-			Lines:    []datastore.LineEnt{},
+			Lines:    lines,
+		}
+	}
+
+	netID := strings.TrimPrefix(id, "NET:")
+	n := datastore.GetNetwork(netID)
+	if n == nil {
+		// Fallback: Check if it's a regular node
+		if node := datastore.GetNode(netID); node != nil {
+			lines, _ := backend.FindNodeConnection(node.ID)
+			return backend.FindNeighborNetworksAndLinesResp{
+				Networks: []datastore.NetworkEnt{},
+				Lines:    lines,
+			}
+		}
+		return backend.FindNeighborNetworksAndLinesResp{
+			Networks: []datastore.NetworkEnt{},
+			Lines:    []backend.NeighborLineEnt{},
 		}
 	}
 	return backend.FindNeighborNetworksAndLines(n)
+}
+
+// FindNeighborNetworksAndLinesWithAI returns neighbor networks and lines including AI inference
+func (a *App) FindNeighborNetworksAndLinesWithAI(id string) backend.FindNeighborNetworksAndLinesResp {
+	isNode := strings.HasPrefix(id, "NODE:")
+	cleanID := id
+	if isNode {
+		cleanID = strings.TrimPrefix(id, "NODE:")
+	} else {
+		cleanID = strings.TrimPrefix(id, "NET:")
+	}
+
+	if isNode || datastore.GetNode(cleanID) != nil {
+		lines, _ := backend.FindNodeConnection(cleanID)
+		aiLines, err := backend.InferRemainingLinesWithAI()
+		if err == nil {
+			for _, l := range aiLines {
+				if l.NodeID1 == cleanID || l.NodeID2 == cleanID {
+					lines = append(lines, l)
+				}
+			}
+		}
+		return backend.FindNeighborNetworksAndLinesResp{
+			Networks: []datastore.NetworkEnt{},
+			Lines:    lines,
+		}
+	}
+
+	res := a.FindNeighborNetworksAndLines(cleanID)
+	aiLines, err := backend.InferRemainingLinesWithAI()
+	if err == nil {
+		for _, l := range aiLines {
+			if l.NodeID1 == fmt.Sprintf("NET:%s", cleanID) || l.NodeID2 == fmt.Sprintf("NET:%s", cleanID) {
+				res.Lines = append(res.Lines, l)
+			}
+		}
+	}
+	return res
+}
+
+// FindNodeConnection searches candidate switch connections for a specific regular node
+func (a *App) FindNodeConnection(nodeID string) []backend.NeighborLineEnt {
+	nodeID = strings.TrimPrefix(nodeID, "NODE:")
+	lines, err := backend.FindNodeConnection(nodeID)
+	if err != nil {
+		log.Printf("FindNodeConnection err=%v", err)
+		return []backend.NeighborLineEnt{}
+	}
+	return lines
+}
+
+// AutoConnectLines automatically connects lines across the entire network
+func (a *App) AutoConnectLines(mode int) map[string]int {
+	strict, speculative, err := backend.AutoConnectLines(mode)
+	if err != nil {
+		log.Printf("AutoConnectLines err=%v", err)
+	}
+	return map[string]int{
+		"strict":      strict,
+		"speculative": speculative,
+	}
+}
+
+// ConnectLines connects multiple lines at once
+func (a *App) ConnectLines(lines []datastore.LineEnt) int {
+	count := 0
+	for i := range lines {
+		l := lines[i]
+		if !datastore.HasLine(&l, false) && !datastore.HasLine(&l, true) {
+			if err := datastore.AddLine(&l); err == nil {
+				count++
+			}
+		}
+	}
+	return count
 }
 
 // addLine add line

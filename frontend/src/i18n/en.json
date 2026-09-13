@@ -430,7 +430,11 @@
     "AddNetwork": "Add network",
     "ReChek": "Re-check",
     "AutoDetect": "Auto Detect Node Type",
-    "AutoDetectAI": "Use AI Detection"
+    "AutoDetectAI": "Use AI Detection",
+    "AutoLine": "Auto Connect Lines",
+    "AutoLineNone": "Do not connect",
+    "AutoLineStrict": "Strict only",
+    "AutoLineSpeculative": "Speculative"
   },
   "EventLog": {
     "Event": "Event",
@@ -1109,8 +1113,16 @@
   "NeighborNetworksAndLines": {
     "AddNetwork": "Add network",
     "ConnectLine": "Connect line",
+    "ConnectAllStrict": "Connect All Strict",
+    "ConnectAll": "Connect All",
+    "InferAI": "AI Inference",
     "Descr": "Description",
-    "Title": "Find neighbor"
+    "Title": "Find neighbor",
+    "NodeTitle": "Find node connection",
+    "Confidence": "Confidence",
+    "Reason": "Reason",
+    "Strict": "Strict",
+    "Speculative": "Speculative"
   },
   "Network": {
     "ArpWatch": "Arp watch",
