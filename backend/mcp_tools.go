@@ -897,6 +897,9 @@ func updateNode(ctx context.Context, req *mcp.CallToolRequest, args updateNodePa
 	if name != "" {
 		n.Name = name
 	}
+	if err := datastore.UpdateNode(n); err != nil {
+		return nil, nil, err
+	}
 	j, err := json.Marshal(&mcpNodeEnt{
 		ID:          n.ID,
 		Name:        n.Name,

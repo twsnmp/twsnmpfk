@@ -1,15 +1,13 @@
 package main
 
 import (
-	"crypto/tls"
+	"context"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
+	"net"
 	"strings"
 	"time"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
@@ -84,6 +82,9 @@ func (a *App) UpdateNode(nu datastore.NodeEnt) bool {
 	n.MAC = nu.MAC
 	n.AutoAck = nu.AutoAck
 	logger.CheckNodeAddr(n)
+	if err := datastore.UpdateNode(n); err != nil {
+		log.Printf("UpdateNode save err=%v", err)
+	}
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:     "user",
 		Level:    "info",
@@ -204,48 +205,6 @@ func (a *App) GetNodeMemo(nodeID string) string {
 	return datastore.GetNodeMemo(nodeID)
 }
 
-func fetchWebSignatures(ip string, urlStr string) (title, server, body string) {
-	targets := []string{}
-	if urlStr != "" {
-		targets = append(targets, urlStr)
-	} else if ip != "" {
-		targets = append(targets, "http://"+ip, "https://"+ip)
-	}
-	client := &http.Client{
-		Timeout: 2 * time.Second,
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		},
-	}
-	for _, target := range targets {
-		req, err := http.NewRequest("GET", target, nil)
-		if err != nil {
-			continue
-		}
-		req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; TWSNMP-FK/1.0)")
-		resp, err := client.Do(req)
-		if err != nil {
-			continue
-		}
-		server = resp.Header.Get("Server")
-		doc, err := goquery.NewDocumentFromReader(io.LimitReader(resp.Body, 1024*1024))
-		_ = resp.Body.Close()
-		if err == nil {
-			title = strings.TrimSpace(doc.Find("title").First().Text())
-			text := strings.TrimSpace(doc.Find("body").Text())
-			text = strings.Join(strings.Fields(text), " ")
-			if len(text) > 500 {
-				text = text[:500]
-			}
-			body = text
-		}
-		if title != "" || server != "" {
-			break
-		}
-	}
-	return
-}
-
 // DetectNodeType auto-detects the device category, OS, icon, and recommended sensor pollings for a node.
 func (a *App) DetectNodeType(id string) *datastore.DetectResult {
 	n := datastore.GetNode(id)
@@ -253,17 +212,34 @@ func (a *App) DetectNodeType(id string) *datastore.DetectResult {
 		return nil
 	}
 	input := &datastore.DetectInput{
+		IP:     n.IP,
+		Name:   n.Name,
 		Vendor: n.Vendor,
 	}
-	if input.Vendor == "" && n.MAC != "" {
-		input.Vendor = datastore.FindVendor(n.MAC)
+	if (input.Vendor == "" || input.Vendor == "Unknown") && n.MAC != "" {
+		v := datastore.FindVendor(n.MAC)
+		if v != "" && v != "Unknown" {
+			input.Vendor = v
+		}
 	}
-	if arp := datastore.GetArpEnt(n.IP); arp != nil {
-		if input.Vendor == "" {
-			input.Vendor = arp.Vendor
-			if input.Vendor == "" && arp.MAC != "" {
-				input.Vendor = datastore.FindVendor(arp.MAC)
+	if input.Vendor == "" || input.Vendor == "Unknown" {
+		if arp := datastore.GetArpEnt(n.IP); arp != nil {
+			if arp.Vendor != "" && arp.Vendor != "Unknown" {
+				input.Vendor = arp.Vendor
+			} else if arp.MAC != "" {
+				v := datastore.FindVendor(arp.MAC)
+				if v != "" && v != "Unknown" {
+					input.Vendor = v
+				}
 			}
+		}
+	}
+	if n.IP != "" {
+		r := &net.Resolver{}
+		ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*500)
+		defer cancel()
+		if names, err := r.LookupAddr(ctx, n.IP); err == nil && len(names) > 0 {
+			input.HostName = names[0]
 		}
 	}
 
@@ -293,7 +269,7 @@ func (a *App) DetectNodeType(id string) *datastore.DetectResult {
 		}
 	}
 
-	title, server, body := fetchWebSignatures(n.IP, n.URL)
+	title, server, body := backend.FetchWebSignatures(n.IP, n.URL)
 	input.HTTPTitle = title
 	input.HTTPServer = server
 	input.HTTPBody = body
@@ -336,6 +312,12 @@ func (a *App) ApplyNodeDetection(id string, applyIcon bool, applyPolling bool) b
 				n.Descr += fmt.Sprintf(" [%s]", res.Name)
 			}
 		}
+		if (n.Vendor == "" || n.Vendor == "Unknown") && n.MAC != "" {
+			v := datastore.FindVendor(n.MAC)
+			if v != "" && v != "Unknown" {
+				n.Vendor = v
+			}
+		}
 		updated = true
 	}
 
@@ -369,6 +351,9 @@ func (a *App) ApplyNodeDetection(id string, applyIcon bool, applyPolling bool) b
 	}
 
 	if updated {
+		if err := datastore.UpdateNode(n); err != nil {
+			log.Printf("ApplyNodeDetection save err=%v", err)
+		}
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:     "user",
 			Level:    "info",

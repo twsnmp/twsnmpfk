@@ -227,12 +227,17 @@ type UpdatePosEnt struct {
 
 // UpdateNodePos update node positons
 func (a *App) UpdateNodePos(list []UpdatePosEnt) {
+	var updated []*datastore.NodeEnt
 	for _, e := range list {
 		n := datastore.GetNode(e.ID)
 		if n != nil {
 			n.X = e.X
 			n.Y = e.Y
+			updated = append(updated, n)
 		}
+	}
+	if len(updated) > 0 {
+		_ = datastore.SaveNodes(updated)
 	}
 }
 
@@ -241,6 +246,7 @@ func (a *App) UpdateNodeLoc(id, loc string) {
 	n := datastore.GetNode(id)
 	if n != nil {
 		n.Loc = loc
+		_ = datastore.UpdateNode(n)
 	}
 }
 
@@ -481,6 +487,7 @@ func (a *App) UpdateDrawItem(di datastore.DrawItemEnt) bool {
 	odi.PollingID = di.PollingID
 	odi.Scale = di.Scale
 	odi.Cond = di.Cond
+	_ = datastore.UpdateDrawItem(odi)
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "user",
 		Level: "info",

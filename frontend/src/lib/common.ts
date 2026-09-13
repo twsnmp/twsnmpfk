@@ -166,10 +166,14 @@ export const iconList = [
   { name: 'Google', icon: 'mdi-google', value: 'mdi-google' ,code: 0xF02AD},
   { name: 'CD Player', icon: 'mdi-disc-player', value: 'mdi-disc-player' ,code: 0xF0960},
   { name: 'TWSNMP', icon: 'mdi-layers-search', value: 'mdi-layers-search' ,code: 0xF1206},
-  { name: 'Switch', icon: 'mdi-switch', value: 'mdi-switch', code: 0xF05D2 },
-  { name: 'NAS', icon: 'mdi-nas', value: 'mdi-nas', code: 0xF08E5 },
+  { name: 'Switch', icon: 'mdi-switch', value: 'mdi-switch', code: 0xF04E4 },
+  { name: 'NAS', icon: 'mdi-nas', value: 'mdi-nas', code: 0xF08F3 },
   { name: 'Camera', icon: 'mdi-cctv', value: 'mdi-cctv', code: 0xF07AE },
   { name: 'UPS', icon: 'mdi-battery-charging', value: 'mdi-battery-charging', code: 0xF0084 },
+  { name: 'TV', icon: 'mdi-television', value: 'mdi-television', code: 0xF0502 },
+  { name: 'IoT / Board', icon: 'mdi-developer-board', value: 'mdi-developer-board', code: 0xF0697 },
+  { name: 'Chip', icon: 'mdi-chip', value: 'mdi-chip', code: 0xF061A },
+  { name: 'Audio / Receiver', icon: 'mdi-amplifier', value: 'mdi-amplifier', code: 0xF0030 },
 ]
 
 const iconCodeMap = new Map();

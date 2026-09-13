@@ -142,7 +142,7 @@
           </div>
         {:else}
           <div class="text-xs text-gray-500 dark:text-gray-400 p-3 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-            {$_("Node.NoSensorsDetected") || "ハードウェア固有のセンサー（CPU/メモリ/温度等）は検出されませんでした（またはSNMP未設定です）。"}
+            {$_("Node.NoSensorsDetected") || "この機種向けの推奨センサーポーリング（CPU/メモリ/温度等）はありません。"}
           </div>
         {/if}
       </div>

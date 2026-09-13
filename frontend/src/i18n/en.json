@@ -595,7 +595,7 @@
     "Detecting": "Collecting signatures and detecting...",
     "RuleID": "Rule ID",
     "DetectedSensors": "Detected Sensor Pollings",
-    "NoSensorsDetected": "No hardware sensors (CPU/Mem/Temp) detected for this device.",
+    "NoSensorsDetected": "No recommended hardware sensors (CPU/Mem/Temp) for this device.",
     "ApplyDetectIcon": "Apply detected icon & description",
     "ApplyDetectPolling": "Add recommended sensor pollings",
     "DetectFailed": "Failed to detect node type.",

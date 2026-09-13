@@ -66,6 +66,27 @@ func AddDrawItem(di *DrawItemEnt) error {
 	return nil
 }
 
+func UpdateDrawItem(di *DrawItemEnt) error {
+	st := time.Now()
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	s, err := json.Marshal(di)
+	if err != nil {
+		return err
+	}
+	items.Store(di.ID, di)
+	err = db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("items"))
+		if b == nil {
+			return nil
+		}
+		return b.Put([]byte(di.ID), s)
+	})
+	log.Printf("UpdateDrawItem dur=%v", time.Since(st))
+	return err
+}
+
 func DeleteDrawItem(id string) error {
 	st := time.Now()
 	if db == nil {

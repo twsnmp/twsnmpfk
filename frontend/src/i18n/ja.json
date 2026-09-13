@@ -582,7 +582,7 @@
     "Detecting": "ノード情報を収集・判定中...",
     "RuleID": "判定ルール",
     "DetectedSensors": "検出された推奨センサーポーリング",
-    "NoSensorsDetected": "ハードウェア固有のセンサー（CPU/メモリ/温度等）は検出されませんでした（またはSNMP未設定です）。",
+    "NoSensorsDetected": "この機種向けの推奨センサーポーリング（CPU/メモリ/温度等）はありません。",
     "ApplyDetectIcon": "アイコンと説明文を反映する",
     "ApplyDetectPolling": "センサーポーリングを追加する",
     "DetectFailed": "ノード種別の検出に失敗しました。",

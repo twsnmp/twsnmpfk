@@ -44,12 +44,16 @@ type NodeDetectRule struct {
 
 // DetectInput holds signatures collected from a node for classification.
 type DetectInput struct {
+	IP          string
+	Name        string
+	HostName    string
 	SysObjectID string
 	SysDescr    string
 	HTTPTitle   string
 	HTTPServer  string
 	HTTPBody    string
 	Vendor      string
+	IsGateway   bool
 }
 
 // DetectResult contains the classified node type, icon, and recommended pollings.
@@ -149,6 +153,13 @@ func DetectNode(input *DetectInput) *DetectResult {
 		sysObjName = MIBDB.OIDToName(normInputOID)
 	}
 
+	isGateway := input.IsGateway
+	if !isGateway && input.IP != "" {
+		if gw := GetDefaultGateway(); gw != "" && gw == input.IP {
+			isGateway = true
+		}
+	}
+
 	for _, rule := range rules {
 		score := 0
 
@@ -177,10 +188,14 @@ func DetectNode(input *DetectInput) *DetectResult {
 			}
 		}
 
-		// 2. sysDescr check
-		if input.SysDescr != "" && rule.sysDescrReg != nil {
-			if rule.sysDescrReg.MatchString(input.SysDescr) {
+		// 2. sysDescr / HostName / Name check
+		if rule.sysDescrReg != nil {
+			if input.SysDescr != "" && rule.sysDescrReg.MatchString(input.SysDescr) {
 				score += 50
+			} else if input.HostName != "" && rule.sysDescrReg.MatchString(input.HostName) {
+				score += 40
+			} else if input.Name != "" && rule.sysDescrReg.MatchString(input.Name) {
+				score += 40
 			}
 		}
 
@@ -202,8 +217,17 @@ func DetectNode(input *DetectInput) *DetectResult {
 		// 4. MAC Vendor check
 		if input.Vendor != "" && rule.vendorReg != nil {
 			if rule.vendorReg.MatchString(input.Vendor) {
-				score += 20
+				score += 30
+				// Bonus when physical hardware vendor matches alongside SNMP/agent OID
+				if normInputOID != "" && len(rule.SysObjectIDs) > 0 {
+					score += 30
+				}
 			}
+		}
+
+		// 5. Gateway check (bonus for router rules that already matched vendor/HTTP/SNMP)
+		if isGateway && rule.Category == "router" && score > 0 {
+			score += 40
 		}
 
 		if score > highestScore {
@@ -221,6 +245,18 @@ func DetectNode(input *DetectInput) *DetectResult {
 			Icon:           bestRule.Icon,
 			Confidence:     highestScore,
 			SensorPollings: bestRule.SensorPollings,
+		}
+	}
+
+	// Fallback to Gateway Router if it is the host's default gateway
+	if isGateway {
+		return &DetectResult{
+			RuleID:         "default_gateway_router",
+			Name:           "Gateway Router",
+			Category:       "router",
+			Icon:           "router",
+			Confidence:     80,
+			SensorPollings: nil,
 		}
 	}
 

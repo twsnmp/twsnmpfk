@@ -72,7 +72,7 @@
     "ID": "yamaha_wlx",
     "Name": "Yamaha WLX AP",
     "Category": "wifi",
-    "Icon": "mdi-router-wireless",
+    "Icon": "wifi",
     "SysObjectIDs": ["yamahaWLX"],
     "SysDescrPattern": "(?i)wlx\\d+|yamaha.*wireless",
     "HTTPTitlePattern": "(?i)wlx\\d+",
@@ -335,7 +335,7 @@
     "ID": "ubiquiti_unifi",
     "Name": "Ubiquiti UniFi AP",
     "Category": "wifi",
-    "Icon": "mdi-router-wireless",
+    "Icon": "wifi",
     "SysObjectIDs": ["unifiAP"],
     "SysDescrPattern": "(?i)unifi|uap",
     "HTTPTitlePattern": "(?i)unifi",
@@ -385,12 +385,125 @@
     "SensorPollings": []
   },
   {
+    "ID": "ntt_hgw",
+    "Name": "NTT Home Gateway / Router",
+    "Category": "router",
+    "Icon": "router",
+    "HTTPTitlePattern": "(?i)ホームゲートウェイ|ひかり電話|pr-\\d{3}|rt-\\d{3}|rv-\\d{3}|rs-\\d{3}|ge-\\d{3}|web caster|hgw",
+    "VendorPattern": "(?i)oki electric|sumitomo electric|mitsubishi electric",
+    "SensorPollings": []
+  },
+  {
+    "ID": "broadband_router_buffalo",
+    "Name": "BUFFALO AirStation Wi-Fi Router / AP",
+    "Category": "wifi",
+    "Icon": "wifi",
+    "HTTPTitlePattern": "(?i)airstation|wsr-|wxr-|bhr-",
+    "VendorPattern": "(?i)buffalo",
+    "SensorPollings": []
+  },
+  {
+    "ID": "broadband_router_aterm",
+    "Name": "NEC Aterm Wi-Fi Router / AP",
+    "Category": "wifi",
+    "Icon": "wifi",
+    "HTTPTitlePattern": "(?i)aterm",
+    "VendorPattern": "(?i)nec platforms|nec corporation",
+    "SensorPollings": []
+  },
+  {
+    "ID": "tv_tuner_iodata",
+    "Name": "I-O DATA TV Tuner (REC-ON)",
+    "Category": "appliance",
+    "SubType": "tv",
+    "Icon": "mdi-television",
+    "HTTPTitlePattern": "(?i)hvtr|rec-on|テレキング|tv.*tuner|テレビチューナー",
+    "VendorPattern": "(?i)i-o data",
+    "SensorPollings": []
+  },
+  {
+    "ID": "tv_tuner_sony",
+    "Name": "Sony TV / Tuner (nasne / BRAVIA)",
+    "Category": "appliance",
+    "SubType": "tv",
+    "Icon": "mdi-television",
+    "HTTPTitlePattern": "(?i)nasne|bravia",
+    "VendorPattern": "(?i)sony",
+    "SensorPollings": []
+  },
+  {
+    "ID": "tv_tuner_generic",
+    "Name": "Smart TV / TV Tuner",
+    "Category": "appliance",
+    "SubType": "tv",
+    "Icon": "mdi-television",
+    "HTTPTitlePattern": "(?i)tv.*tuner|テレビチューナー|aquos|regza|viera",
+    "SensorPollings": []
+  },
+  {
+    "ID": "broadband_router_iodata",
+    "Name": "I-O DATA Wi-Fi Router / AP",
+    "Category": "wifi",
+    "Icon": "wifi",
+    "HTTPTitlePattern": "(?i)wn-|wi-fiルータ",
+    "VendorPattern": "(?i)i-o data",
+    "SensorPollings": []
+  },
+  {
+    "ID": "tplink_switch",
+    "Name": "TP-Link Switch",
+    "Category": "switch",
+    "Icon": "mdi-switch",
+    "SysDescrPattern": "(?i)tp-link.*switch|jetstream|tl-sg|tl-sf|tl-sx",
+    "HTTPTitlePattern": "(?i)switch|easy smart|jetstream|tl-sg|tl-sf|tl-sx",
+    "VendorPattern": "(?i)tp-link",
+    "SensorPollings": []
+  },
+  {
+    "ID": "netgear_switch",
+    "Name": "NETGEAR Switch",
+    "Category": "switch",
+    "Icon": "mdi-switch",
+    "SysDescrPattern": "(?i)prosafe|smart switch|gs\\d{3}",
+    "HTTPTitlePattern": "(?i)prosafe|smart switch|plus switch|gs\\d{3}",
+    "VendorPattern": "(?i)netgear",
+    "SensorPollings": []
+  },
+  {
+    "ID": "buffalo_switch",
+    "Name": "BUFFALO Switch",
+    "Category": "switch",
+    "Icon": "mdi-switch",
+    "SysDescrPattern": "(?i)bs-gs|bs-mp|bs-g",
+    "HTTPTitlePattern": "(?i)bs-gs|bs-mp|bs-g|smart switch",
+    "VendorPattern": "(?i)buffalo",
+    "SensorPollings": []
+  },
+  {
+    "ID": "broadband_router_tplink",
+    "Name": "TP-Link Wi-Fi Router / AP",
+    "Category": "wifi",
+    "Icon": "wifi",
+    "HTTPTitlePattern": "(?i)archer|deco|router|wi-fi|wireless",
+    "VendorPattern": "(?i)tp-link",
+    "SensorPollings": []
+  },
+  {
+    "ID": "broadband_router_elecom",
+    "Name": "ELECOM Wi-Fi Router / AP",
+    "Category": "wifi",
+    "Icon": "wifi",
+    "HTTPTitlePattern": "(?i)elecom|wrc-",
+    "VendorPattern": "(?i)elecom",
+    "SensorPollings": []
+  },
+  {
     "ID": "synology_nas",
     "Name": "Synology DiskStation",
     "Category": "appliance",
     "SubType": "nas",
     "Icon": "mdi-nas",
-    "SysObjectIDs": ["synoDS", "synology"],
+    "SysObjectIDs": ["synoDS", "synology", "linux", "netSnmpAgentOIDs", "netSnmp"],
     "SysDescrPattern": "(?i)synology|diskstation",
     "HTTPTitlePattern": "(?i)synology|diskstation",
     "VendorPattern": "(?i)synology",
@@ -430,10 +543,34 @@
     "Category": "appliance",
     "SubType": "nas",
     "Icon": "mdi-nas",
-    "SysObjectIDs": ["qnapNAS", "qnap"],
+    "SysObjectIDs": ["qnapNAS", "qnap", "linux", "netSnmpAgentOIDs", "netSnmp"],
     "SysDescrPattern": "(?i)qnap|qts",
     "HTTPTitlePattern": "(?i)qnap",
     "VendorPattern": "(?i)qnap",
+    "SensorPollings": []
+  },
+  {
+    "ID": "buffalo_nas",
+    "Name": "BUFFALO TeraStation / LinkStation",
+    "Category": "appliance",
+    "SubType": "nas",
+    "Icon": "mdi-nas",
+    "SysObjectIDs": ["buffalo", "linux", "netSnmpAgentOIDs", "netSnmp"],
+    "SysDescrPattern": "(?i)terastation|linkstation|ts\\d+|ls\\d+",
+    "HTTPTitlePattern": "(?i)terastation|linkstation",
+    "VendorPattern": "(?i)buffalo",
+    "SensorPollings": []
+  },
+  {
+    "ID": "generic_nas",
+    "Name": "NAS (Network Attached Storage)",
+    "Category": "appliance",
+    "SubType": "nas",
+    "Icon": "mdi-nas",
+    "SysObjectIDs": ["linux", "netSnmpAgentOIDs", "netSnmp"],
+    "SysDescrPattern": "(?i)truenas|freenas|openmediavault|asustor|terramaster",
+    "HTTPTitlePattern": "(?i)truenas|freenas|openmediavault|asustor|terramaster|synology|qnap",
+    "VendorPattern": "(?i)asustor|terramaster",
     "SensorPollings": []
   },
   {
@@ -573,11 +710,21 @@
     "Name": "Windows Client PC",
     "Category": "pc_mobile",
     "SubType": "pc",
-    "Icon": "desktop",
+    "Icon": "mdi-microsoft-windows",
     "SysObjectIDs": ["windowsWorkstation"],
     "SysDescrPattern": "(?i)windows.*(10\\.0|11\\.|workstation)",
     "VendorPattern": "(?i)microsoft",
-    "SensorPollings": []
+    "SensorPollings": [
+      {
+        "Name": "CPU平均使用率",
+        "Type": "snmp",
+        "Mode": "stats",
+        "Params": "hrProcessorLoad",
+        "Script": "avg < 90.0",
+        "Level": "low",
+        "Descr": "Windows PCのCPU平均使用率"
+      }
+    ]
   },
   {
     "ID": "linux_server",
@@ -613,7 +760,7 @@
     "Category": "pc_mobile",
     "SubType": "mobile",
     "Icon": "mdi-apple",
-    "SysDescrPattern": "(?i)darwin|mac os|apple",
+    "SysDescrPattern": "(?i)darwin|mac.*os|iphone|ipad|macbook",
     "VendorPattern": "(?i)apple",
     "SensorPollings": []
   },
@@ -623,6 +770,7 @@
     "Category": "pc_mobile",
     "SubType": "pc",
     "Icon": "mdi-raspberry-pi",
+    "SysObjectIDs": ["linux", "netSnmpAgentOIDs", "netSnmp"],
     "SysDescrPattern": "(?i)raspberry",
     "VendorPattern": "(?i)raspberry pi",
     "SensorPollings": [
@@ -636,5 +784,81 @@
         "Descr": "Raspberry PiのCPU平均使用率"
       }
     ]
+  },
+  {
+    "ID": "amazon_firetv",
+    "Name": "Amazon Fire TV / Stick",
+    "Category": "appliance",
+    "SubType": "tv",
+    "Icon": "mdi-amazon",
+    "SysDescrPattern": "(?i)fire.*tv|aft|firestick|stick.*tv",
+    "HTTPTitlePattern": "(?i)fire.*tv|aft|amazon",
+    "VendorPattern": "(?i)amazon",
+    "SensorPollings": []
+  },
+  {
+    "ID": "amazon_echo",
+    "Name": "Amazon Echo (Alexa)",
+    "Category": "appliance",
+    "SubType": "smart_speaker",
+    "Icon": "mdi-amazon",
+    "SysDescrPattern": "(?i)echo|alexa",
+    "HTTPTitlePattern": "(?i)echo|alexa",
+    "SensorPollings": []
+  },
+  {
+    "ID": "apple_tv",
+    "Name": "Apple TV",
+    "Category": "appliance",
+    "SubType": "tv",
+    "Icon": "mdi-apple",
+    "SysDescrPattern": "(?i)appletv|apple.*tv",
+    "HTTPTitlePattern": "(?i)appletv|apple.*tv",
+    "VendorPattern": "(?i)apple",
+    "SensorPollings": []
+  },
+  {
+    "ID": "google_device",
+    "Name": "Google Device (Chromecast/Nest)",
+    "Category": "appliance",
+    "SubType": "streaming",
+    "Icon": "mdi-google",
+    "SysDescrPattern": "(?i)chromecast|google.*home|nest",
+    "HTTPTitlePattern": "(?i)chromecast|google",
+    "VendorPattern": "(?i)google",
+    "SensorPollings": []
+  },
+  {
+    "ID": "esp32_iot",
+    "Name": "ESP32 / ESP8266 (IoT Board)",
+    "Category": "appliance",
+    "SubType": "iot",
+    "Icon": "mdi-developer-board",
+    "SysDescrPattern": "(?i)esp32|esp8266|m5stack|tasmota|esphome|wled|nodemcu",
+    "HTTPTitlePattern": "(?i)esp32|esp8266|m5stack|tasmota|esphome|wled|nodemcu",
+    "VendorPattern": "(?i)espressif",
+    "SensorPollings": []
+  },
+  {
+    "ID": "arduino_iot",
+    "Name": "Arduino (IoT Board)",
+    "Category": "appliance",
+    "SubType": "iot",
+    "Icon": "mdi-developer-board",
+    "SysDescrPattern": "(?i)arduino",
+    "HTTPTitlePattern": "(?i)arduino",
+    "VendorPattern": "(?i)arduino",
+    "SensorPollings": []
+  },
+  {
+    "ID": "network_receiver",
+    "Name": "Network Audio / AV Receiver",
+    "Category": "appliance",
+    "SubType": "audio",
+    "Icon": "mdi-amplifier",
+    "SysDescrPattern": "(?i)denon|marantz|d&m|heos|receiver|avr-|ampli|musiccast|onkyo|integra",
+    "HTTPTitlePattern": "(?i)denon|marantz|heos|receiver|avr-|amplifier|musiccast|onkyo|integra",
+    "VendorPattern": "(?i)D&M Holdings|denon|marantz|onkyo|integra",
+    "SensorPollings": []
   }
 ]

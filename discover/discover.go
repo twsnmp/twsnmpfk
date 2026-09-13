@@ -14,6 +14,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -157,6 +158,14 @@ func Discover() error {
 						dent.Vendor = arp.Vendor
 						if dent.Vendor == "" && dent.MAC != "" {
 							dent.Vendor = datastore.FindVendor(dent.MAC)
+						}
+					}
+					if node != nil {
+						if dent.MAC == "" && node.MAC != "" {
+							dent.MAC = node.MAC
+						}
+						if (dent.Vendor == "" || dent.Vendor == "Unknown") && node.Vendor != "" {
+							dent.Vendor = node.Vendor
 						}
 					}
 					r := &net.Resolver{}
@@ -373,6 +382,9 @@ func getSnmpInfo(t string, dent *discoverInfoEnt) {
 
 func addFoundNode(dent *discoverInfoEnt) {
 	funcList := []string{}
+	if (dent.Vendor == "" || dent.Vendor == "Unknown") && dent.MAC != "" {
+		dent.Vendor = datastore.FindVendor(dent.MAC)
+	}
 	n := datastore.NodeEnt{
 		Name:   dent.HostName,
 		IP:     dent.IP,
@@ -400,7 +412,13 @@ func addFoundNode(dent *discoverInfoEnt) {
 	}
 	var detectRes *datastore.DetectResult
 	if datastore.DiscoverConf.AutoDetect {
+		if dent.HTTPTitle == "" && dent.HTTPServer == "" && dent.HTTPBody == "" {
+			dent.HTTPTitle, dent.HTTPServer, dent.HTTPBody = backend.FetchWebSignatures(dent.IP, "")
+		}
 		input := &datastore.DetectInput{
+			IP:          dent.IP,
+			Name:        dent.SysName,
+			HostName:    dent.HostName,
 			SysObjectID: dent.SysObjectID,
 			SysDescr:    dent.SysDescr,
 			HTTPTitle:   dent.HTTPTitle,
@@ -409,9 +427,9 @@ func addFoundNode(dent *discoverInfoEnt) {
 			Vendor:      dent.Vendor,
 		}
 		detectRes = datastore.DetectNode(input)
-		if detectRes != nil && detectRes.Icon != "" {
+		if detectRes != nil && detectRes.Icon != "" && detectRes.RuleID != "unknown" {
 			n.Icon = detectRes.Icon
-			if detectRes.Name != "" && detectRes.RuleID != "unknown" {
+			if detectRes.Name != "" {
 				n.Descr += fmt.Sprintf(" [%s]", detectRes.Name)
 			}
 		}
@@ -469,12 +487,30 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 			n.Name = dent.SysName
 		}
 	}
+	// Synchronize MAC
 	if n.MAC == "" && dent.MAC != "" {
 		n.MAC = dent.MAC
+	} else if dent.MAC == "" && n.MAC != "" {
+		dent.MAC = n.MAC
 	}
-	if n.Vendor == "" && dent.Vendor != "" {
+	// Synchronize Vendor
+	if dent.Vendor == "" || dent.Vendor == "Unknown" {
+		if n.Vendor != "" && n.Vendor != "Unknown" {
+			dent.Vendor = n.Vendor
+		} else if dent.MAC != "" {
+			dent.Vendor = datastore.FindVendor(dent.MAC)
+		} else if arp := datastore.GetArpEnt(n.IP); arp != nil {
+			if arp.Vendor != "" && arp.Vendor != "Unknown" {
+				dent.Vendor = arp.Vendor
+			} else if arp.MAC != "" {
+				dent.Vendor = datastore.FindVendor(arp.MAC)
+			}
+		}
+	}
+	if n.Vendor == "" || n.Vendor == "Unknown" {
 		n.Vendor = dent.Vendor
 	}
+
 	if dent.SysObjectID != "" && n.User == "" && n.Community == "" {
 		n.SnmpMode = datastore.MapConf.SnmpMode
 		n.User = datastore.MapConf.SnmpUser
@@ -485,9 +521,50 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 			n.Descr += " / snmp対応"
 		}
 	}
+
+	// If SNMP info was not captured in dent, try existing node's SNMP config
+	if dent.SysObjectID == "" && n.SnmpMode != "" && n.SnmpMode != "none" {
+		agent := backend.GetSNMPAgent(n)
+		if agent != nil {
+			if err := agent.Connect(); err == nil {
+				defer agent.Conn.Close()
+				oids := []string{
+					datastore.MIBDB.NameToOID("sysObjectID"),
+					datastore.MIBDB.NameToOID("sysDescr"),
+					datastore.MIBDB.NameToOID("sysName"),
+				}
+				if res, err := agent.GetNext(oids); err == nil {
+					for _, v := range res.Variables {
+						name := datastore.MIBDB.OIDToName(v.Name)
+						if strings.HasPrefix(name, "sysObjectID") {
+							dent.SysObjectID = fmt.Sprintf("%v", v.Value)
+						} else if strings.HasPrefix(name, "sysDescr") {
+							switch val := v.Value.(type) {
+							case string:
+								dent.SysDescr = val
+							case []byte:
+								dent.SysDescr = string(val)
+							}
+						} else if strings.HasPrefix(name, "sysName") {
+							dent.SysName = getMIBStringVal(v.Value)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// If HTTP info was not captured in dent, try fetching web signatures
+	if dent.HTTPTitle == "" && dent.HTTPServer == "" && dent.HTTPBody == "" {
+		dent.HTTPTitle, dent.HTTPServer, dent.HTTPBody = backend.FetchWebSignatures(n.IP, n.URL)
+	}
+
 	var detectRes *datastore.DetectResult
 	if datastore.DiscoverConf.AutoDetect {
 		input := &datastore.DetectInput{
+			IP:          dent.IP,
+			Name:        n.Name,
+			HostName:    dent.HostName,
 			SysObjectID: dent.SysObjectID,
 			SysDescr:    dent.SysDescr,
 			HTTPTitle:   dent.HTTPTitle,
@@ -496,13 +573,18 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 			Vendor:      dent.Vendor,
 		}
 		detectRes = datastore.DetectNode(input)
-		if detectRes != nil && detectRes.Icon != "" {
-			if n.Icon == "desktop" || n.Icon == "hdd" || n.Icon == "" {
+		if detectRes != nil && detectRes.Icon != "" && detectRes.RuleID != "unknown" {
+			isAutoTagged := strings.Contains(n.Descr, "[") && strings.Contains(n.Descr, "]")
+			if n.Icon == "desktop" || n.Icon == "hdd" || n.Icon == "" || datastore.DiscoverConf.ReCheck || isAutoTagged {
 				n.Icon = detectRes.Icon
 			}
-			if detectRes.Name != "" && detectRes.RuleID != "unknown" {
-				if !strings.Contains(n.Descr, detectRes.Name) {
-					n.Descr += fmt.Sprintf(" [%s]", detectRes.Name)
+			if detectRes.Name != "" {
+				reTag := regexp.MustCompile(`\s*\[[^\]]+\]`)
+				cleanDescr := strings.TrimSpace(reTag.ReplaceAllString(n.Descr, ""))
+				if cleanDescr != "" {
+					n.Descr = cleanDescr + fmt.Sprintf(" [%s]", detectRes.Name)
+				} else {
+					n.Descr = fmt.Sprintf("[%s]", detectRes.Name)
 				}
 			}
 		}
@@ -529,6 +611,9 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 				Ports:     []datastore.PortEnt{},
 			})
 		}
+	}
+	if err := datastore.UpdateNode(n); err != nil {
+		log.Printf("discover updateNode save err=%v", err)
 	}
 	if !datastore.DiscoverConf.AddPolling {
 		return
@@ -782,19 +867,26 @@ func checkWebInfo(dent *discoverInfoEnt) {
 		if err != nil {
 			continue
 		}
-		dent.HTTPServer = resp.Header.Get("Server")
-		doc, err := goquery.NewDocumentFromReader(io.LimitReader(resp.Body, 1024*1024))
+		rawBytes, _ := io.ReadAll(io.LimitReader(resp.Body, 64*1024))
 		_ = resp.Body.Close()
-		if err == nil {
-			dent.HTTPTitle = strings.TrimSpace(doc.Find("title").First().Text())
-			text := strings.TrimSpace(doc.Find("body").Text())
-			text = strings.Join(strings.Fields(text), " ")
-			if len(text) > 500 {
-				text = text[:500]
+		rawStr := string(rawBytes)
+		dent.HTTPServer = resp.Header.Get("Server")
+		if realm := resp.Header.Get("WWW-Authenticate"); realm != "" {
+			if dent.HTTPServer != "" {
+				dent.HTTPServer += " " + realm
+			} else {
+				dent.HTTPServer = realm
 			}
-			dent.HTTPBody = text
 		}
-		if dent.HTTPTitle != "" || dent.HTTPServer != "" {
+		if doc, err := goquery.NewDocumentFromReader(strings.NewReader(rawStr)); err == nil {
+			dent.HTTPTitle = strings.TrimSpace(doc.Find("title").First().Text())
+		}
+		cleanText := strings.Join(strings.Fields(rawStr), " ")
+		if len(cleanText) > 8192 {
+			cleanText = cleanText[:8192]
+		}
+		dent.HTTPBody = cleanText
+		if dent.HTTPTitle != "" || dent.HTTPServer != "" || dent.HTTPBody != "" {
 			break
 		}
 	}

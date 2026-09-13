@@ -132,6 +132,52 @@ func AddNode(n *NodeEnt) error {
 	return nil
 }
 
+// UpdateNode updates and persists an existing node to bbolt and memory.
+func UpdateNode(n *NodeEnt) error {
+	st := time.Now()
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	s, err := json.Marshal(n)
+	if err != nil {
+		return err
+	}
+	err = db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("nodes"))
+		if b == nil {
+			return nil
+		}
+		return b.Put([]byte(n.ID), s)
+	})
+	if err != nil {
+		return err
+	}
+	nodes.Store(n.ID, n)
+	log.Printf("UpdateNode name=%s dur=%v", n.Name, time.Since(st))
+	return nil
+}
+
+// SaveNodes persists multiple nodes in a single bbolt batch.
+func SaveNodes(list []*NodeEnt) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("nodes"))
+		if b == nil {
+			return nil
+		}
+		for _, n := range list {
+			s, err := json.Marshal(n)
+			if err == nil {
+				_ = b.Put([]byte(n.ID), s)
+				nodes.Store(n.ID, n)
+			}
+		}
+		return nil
+	})
+}
+
 func DeleteNode(nodeID string) error {
 	st := time.Now()
 	if db == nil {
