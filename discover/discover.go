@@ -70,6 +70,7 @@ type discoverInfoEnt struct {
 	ServerList  map[string]bool
 	X           int
 	Y           int
+	SnmpConf    *datastore.SnmpConfEnt
 }
 
 // StopDiscover : 自動発見を停止する
@@ -192,7 +193,7 @@ func Discover() error {
 						}
 					}
 					if datastore.DiscoverConf.AddNetwork {
-						if _, ok := dent.ServerList["lldp"]; ok {
+						if dent.ServerList["lldp"] || dent.ServerList["bridge"] {
 							if datastore.FindNetworkByIP(ipstr) == nil {
 								X = GRID
 								Y += GRID
@@ -266,76 +267,76 @@ func ClearStat() {
 	Stat.Now = 0
 }
 
-func getSnmpInfo(t string, dent *discoverInfoEnt) {
+func trySnmp(t string, snmpConf *datastore.SnmpConfEnt, dent *discoverInfoEnt) bool {
 	agent := &gosnmp.GoSNMP{
 		Target:    t,
 		Port:      161,
 		Transport: "udp",
-		Community: datastore.MapConf.Community,
+		Community: snmpConf.Community,
 		Version:   gosnmp.Version2c,
 		Timeout:   time.Duration(datastore.DiscoverConf.Timeout) * time.Second,
 		Retries:   datastore.DiscoverConf.Retry,
 		MaxOids:   gosnmp.MaxOids,
 	}
-	switch datastore.MapConf.SnmpMode {
+	switch snmpConf.SnmpMode {
 	case "v3auth":
 		agent.Version = gosnmp.Version3
 		agent.SecurityModel = gosnmp.UserSecurityModel
 		agent.MsgFlags = gosnmp.AuthNoPriv
 		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
-			UserName:                 datastore.MapConf.SnmpUser,
+			UserName:                 snmpConf.SnmpUser,
 			AuthenticationProtocol:   gosnmp.SHA,
-			AuthenticationPassphrase: datastore.MapConf.SnmpPassword,
+			AuthenticationPassphrase: snmpConf.SnmpPassword,
 		}
 	case "v3authpriv":
 		agent.Version = gosnmp.Version3
 		agent.SecurityModel = gosnmp.UserSecurityModel
 		agent.MsgFlags = gosnmp.AuthPriv
 		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
-			UserName:                 datastore.MapConf.SnmpUser,
+			UserName:                 snmpConf.SnmpUser,
 			AuthenticationProtocol:   gosnmp.SHA,
-			AuthenticationPassphrase: datastore.MapConf.SnmpPassword,
+			AuthenticationPassphrase: snmpConf.SnmpPassword,
 			PrivacyProtocol:          gosnmp.AES,
-			PrivacyPassphrase:        datastore.MapConf.SnmpPassword,
+			PrivacyPassphrase:        snmpConf.SnmpPassword,
 		}
 	case "v3authprivex":
 		agent.Version = gosnmp.Version3
 		agent.SecurityModel = gosnmp.UserSecurityModel
 		agent.MsgFlags = gosnmp.AuthPriv
 		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
-			UserName:                 datastore.MapConf.SnmpUser,
+			UserName:                 snmpConf.SnmpUser,
 			AuthenticationProtocol:   gosnmp.SHA256,
-			AuthenticationPassphrase: datastore.MapConf.SnmpPassword,
+			AuthenticationPassphrase: snmpConf.SnmpPassword,
 			PrivacyProtocol:          gosnmp.AES256,
-			PrivacyPassphrase:        datastore.MapConf.SnmpPassword,
+			PrivacyPassphrase:        snmpConf.SnmpPassword,
 		}
 	case "v3sha256aes128":
 		agent.Version = gosnmp.Version3
 		agent.SecurityModel = gosnmp.UserSecurityModel
 		agent.MsgFlags = gosnmp.AuthPriv
 		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
-			UserName:                 datastore.MapConf.SnmpUser,
+			UserName:                 snmpConf.SnmpUser,
 			AuthenticationProtocol:   gosnmp.SHA256,
-			AuthenticationPassphrase: datastore.MapConf.SnmpPassword,
+			AuthenticationPassphrase: snmpConf.SnmpPassword,
 			PrivacyProtocol:          gosnmp.AES,
-			PrivacyPassphrase:        datastore.MapConf.SnmpPassword,
+			PrivacyPassphrase:        snmpConf.SnmpPassword,
 		}
 	case "v3sha512aes256":
 		agent.Version = gosnmp.Version3
 		agent.SecurityModel = gosnmp.UserSecurityModel
 		agent.MsgFlags = gosnmp.AuthPriv
 		agent.SecurityParameters = &gosnmp.UsmSecurityParameters{
-			UserName:                 datastore.MapConf.SnmpUser,
+			UserName:                 snmpConf.SnmpUser,
 			AuthenticationProtocol:   gosnmp.SHA512,
-			AuthenticationPassphrase: datastore.MapConf.SnmpPassword,
+			AuthenticationPassphrase: snmpConf.SnmpPassword,
 			PrivacyProtocol:          gosnmp.AES256,
-			PrivacyPassphrase:        datastore.MapConf.SnmpPassword,
+			PrivacyPassphrase:        snmpConf.SnmpPassword,
 		}
 	}
 	err := agent.Connect()
 	if err != nil {
-		log.Printf("discover err=%v", err)
-		return
+		log.Printf("discover snmp connect err=%v", err)
+		return false
 	}
 	defer agent.Conn.Close()
 	oids := []string{
@@ -345,19 +346,26 @@ func getSnmpInfo(t string, dent *discoverInfoEnt) {
 	}
 	result, err := agent.GetNext(oids)
 	if err != nil {
-		log.Printf("discover err=%v", err)
-		return
+		return false
 	}
+	hasInfo := false
 	for _, variable := range result.Variables {
 		name := datastore.MIBDB.OIDToName(variable.Name)
 		if name == "sysName.0" {
 			dent.SysName = getMIBStringVal(variable.Value)
+			hasInfo = true
 		} else if name == "sysObjectID.0" {
 			dent.SysObjectID = getMIBStringVal(variable.Value)
+			hasInfo = true
 		} else if name == "sysDescr.0" {
 			dent.SysDescr = getMIBStringVal(variable.Value)
+			hasInfo = true
 		}
 	}
+	if !hasInfo {
+		return false
+	}
+	dent.SnmpConf = snmpConf
 	agent.Walk(datastore.MIBDB.NameToOID("ifType"), func(variable gosnmp.SnmpPDU) error {
 		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
 		if len(a) == 2 &&
@@ -377,12 +385,25 @@ func getSnmpInfo(t string, dent *discoverInfoEnt) {
 		return nil
 	})
 	agent.Walk(datastore.MIBDB.NameToOID("lldpLocalSystemData"), func(variable gosnmp.SnmpPDU) error {
-		a := strings.Split(datastore.MIBDB.OIDToName(variable.Name), ".")
-		if len(a) == 2 {
-			dent.ServerList["lldp"] = true
-		}
+		dent.ServerList["lldp"] = true
 		return fmt.Errorf("checkend")
 	})
+	if !dent.ServerList["lldp"] {
+		agent.Walk(datastore.MIBDB.NameToOID("dot1dBaseBridgeAddress"), func(variable gosnmp.SnmpPDU) error {
+			dent.ServerList["bridge"] = true
+			return fmt.Errorf("checkend")
+		})
+	}
+	return true
+}
+
+func getSnmpInfo(t string, dent *discoverInfoEnt) {
+	for _, sc := range datastore.GetDiscoverSnmpConfigs() {
+		confCopy := sc
+		if trySnmp(t, &confCopy, dent) {
+			break
+		}
+	}
 }
 
 func addFoundNode(dent *discoverInfoEnt) {
@@ -408,10 +429,17 @@ func addFoundNode(dent *discoverInfoEnt) {
 		}
 	}
 	if dent.SysObjectID != "" {
-		n.SnmpMode = datastore.MapConf.SnmpMode
-		n.User = datastore.MapConf.SnmpUser
-		n.Password = datastore.MapConf.SnmpPassword
-		n.Community = datastore.MapConf.Community
+		if dent.SnmpConf != nil {
+			n.SnmpMode = dent.SnmpConf.SnmpMode
+			n.User = dent.SnmpConf.SnmpUser
+			n.Password = dent.SnmpConf.SnmpPassword
+			n.Community = dent.SnmpConf.Community
+		} else {
+			n.SnmpMode = datastore.MapConf.SnmpMode
+			n.User = datastore.MapConf.SnmpUser
+			n.Password = datastore.MapConf.SnmpPassword
+			n.Community = datastore.MapConf.Community
+		}
 		n.Icon = "hdd"
 		funcList = append(funcList, "snmp")
 	}
@@ -464,21 +492,29 @@ func addFoundNode(dent *discoverInfoEnt) {
 		NodeName: n.Name,
 		Event:    i18n.Trans("Add by discover"),
 	})
-	if datastore.DiscoverConf.AddNetwork && datastore.FindNetworkByIP(n.IP) == nil {
-		if _, ok := dent.ServerList["lldp"]; ok {
-			datastore.AddNetwork(&datastore.NetworkEnt{
-				Name:      n.Name,
-				IP:        n.IP,
-				X:         n.X + GRID,
-				Y:         n.Y,
-				SnmpMode:  n.SnmpMode,
-				Community: n.Community,
-				User:      n.User,
-				Password:  n.Password,
-				HPorts:    24,
-				Ports:     []datastore.PortEnt{},
-			})
+	hasSnmp := dent.SysObjectID != ""
+	isNetwork := hasSnmp && (dent.ServerList["lldp"] || dent.ServerList["bridge"] ||
+		(detectRes != nil && (detectRes.Category == "switch" || detectRes.Icon == "switch")))
+	if datastore.DiscoverConf.AddNetwork && isNetwork && datastore.FindNetworkByIP(n.IP) == nil {
+		net := &datastore.NetworkEnt{
+			Name:      n.Name,
+			IP:        n.IP,
+			X:         n.X + GRID,
+			Y:         n.Y,
+			SnmpMode:  n.SnmpMode,
+			Community: n.Community,
+			User:      n.User,
+			Password:  n.Password,
+			HPorts:    24,
+			Ports:     []datastore.PortEnt{},
 		}
+		if dent.SnmpConf != nil {
+			net.SnmpMode = dent.SnmpConf.SnmpMode
+			net.Community = dent.SnmpConf.Community
+			net.User = dent.SnmpConf.SnmpUser
+			net.Password = dent.SnmpConf.SnmpPassword
+		}
+		datastore.AddNetwork(net)
 	}
 	if !datastore.DiscoverConf.AddPolling {
 		return
@@ -516,14 +552,25 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 		n.Vendor = dent.Vendor
 	}
 
-	if dent.SysObjectID != "" && n.User == "" && n.Community == "" {
-		n.SnmpMode = datastore.MapConf.SnmpMode
-		n.User = datastore.MapConf.SnmpUser
-		n.Password = datastore.MapConf.SnmpPassword
-		n.Community = datastore.MapConf.Community
-		if n.Icon == "desktop" {
-			n.Icon = "hdd"
-			n.Descr += " / snmp対応"
+	if dent.SysObjectID != "" {
+		if dent.SnmpConf != nil {
+			n.SnmpMode = dent.SnmpConf.SnmpMode
+			n.User = dent.SnmpConf.SnmpUser
+			n.Password = dent.SnmpConf.SnmpPassword
+			n.Community = dent.SnmpConf.Community
+			if n.Icon == "desktop" {
+				n.Icon = "hdd"
+				n.Descr += " / snmp対応"
+			}
+		} else if n.User == "" && n.Community == "" {
+			n.SnmpMode = datastore.MapConf.SnmpMode
+			n.User = datastore.MapConf.SnmpUser
+			n.Password = datastore.MapConf.SnmpPassword
+			n.Community = datastore.MapConf.Community
+			if n.Icon == "desktop" {
+				n.Icon = "hdd"
+				n.Descr += " / snmp対応"
+			}
 		}
 	}
 
@@ -601,9 +648,13 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 		NodeName: n.Name,
 		Event:    i18n.Trans("Update by discover"),
 	})
-	if datastore.DiscoverConf.AddNetwork && datastore.FindNetworkByIP(n.IP) == nil {
-		if _, ok := dent.ServerList["lldp"]; ok {
-			datastore.AddNetwork(&datastore.NetworkEnt{
+	hasSnmp := dent.SysObjectID != ""
+	isNetwork := hasSnmp && (dent.ServerList["lldp"] || dent.ServerList["bridge"] ||
+		(detectRes != nil && (detectRes.Category == "switch" || detectRes.Icon == "switch")))
+	if datastore.DiscoverConf.AddNetwork && isNetwork {
+		net := datastore.FindNetworkByIP(n.IP)
+		if net == nil {
+			newNet := &datastore.NetworkEnt{
 				Name:      n.Name,
 				IP:        n.IP,
 				X:         n.X + GRID,
@@ -614,7 +665,21 @@ func updateNode(n *datastore.NodeEnt, dent *discoverInfoEnt) {
 				Password:  n.Password,
 				HPorts:    24,
 				Ports:     []datastore.PortEnt{},
-			})
+			}
+			if dent.SnmpConf != nil {
+				newNet.SnmpMode = dent.SnmpConf.SnmpMode
+				newNet.Community = dent.SnmpConf.Community
+				newNet.User = dent.SnmpConf.SnmpUser
+				newNet.Password = dent.SnmpConf.SnmpPassword
+			}
+			datastore.AddNetwork(newNet)
+		} else if dent.SnmpConf != nil && (len(net.Ports) < 1 || net.Error != "") {
+			net.SnmpMode = dent.SnmpConf.SnmpMode
+			net.Community = dent.SnmpConf.Community
+			net.User = dent.SnmpConf.SnmpUser
+			net.Password = dent.SnmpConf.SnmpPassword
+			net.Error = ""
+			_ = datastore.UpdateNetwork(net)
 		}
 	}
 	if err := datastore.UpdateNode(n); err != nil {

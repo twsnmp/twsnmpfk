@@ -434,7 +434,18 @@
     "AutoLine": "Auto Connect Lines",
     "AutoLineNone": "Do not connect",
     "AutoLineStrict": "Strict only",
-    "AutoLineSpeculative": "Speculative"
+    "AutoLineSpeculative": "Speculative",
+    "SnmpConfigs": "Additional SNMP Settings",
+    "MapSnmpConfig": "Base Map Settings",
+    "NoAdditionalSnmp": "No additional SNMP settings (Map settings will be used)",
+    "AddSnmp": "Add SNMP Setting",
+    "Community": "Community String",
+    "SnmpUser": "User Name",
+    "SnmpPassword": "Password",
+    "SnmpMode": "SNMP Mode",
+    "Delete": "Delete",
+    "MoveUp": "Move Up",
+    "MoveDown": "Move Down"
   },
   "EventLog": {
     "Event": "Event",

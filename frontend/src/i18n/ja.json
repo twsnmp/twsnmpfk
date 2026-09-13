@@ -421,7 +421,18 @@
     "AutoLine": "ライン自動接続",
     "AutoLineNone": "接続しない",
     "AutoLineStrict": "確実な場合のみ",
-    "AutoLineSpeculative": "推測でも接続"
+    "AutoLineSpeculative": "推測でも接続",
+    "SnmpConfigs": "追加SNMP設定",
+    "MapSnmpConfig": "基本マップ設定",
+    "NoAdditionalSnmp": "追加のSNMP設定はありません（マップ設定を利用）",
+    "AddSnmp": "SNMP設定を追加",
+    "Community": "コミュニティ名",
+    "SnmpUser": "ユーザー名",
+    "SnmpPassword": "パスワード",
+    "SnmpMode": "SNMPモード",
+    "Delete": "削除",
+    "MoveUp": "上へ",
+    "MoveDown": "下へ"
   },
   "EventLog": {
     "Level": "レベル",

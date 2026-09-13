@@ -95,3 +95,133 @@ func TestUpdateNodeOnRecheck(t *testing.T) {
 	}
 }
 
+func TestSnmpConfigs(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	td, err := os.MkdirTemp("", "twsnmpfk_snmp_test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(td)
+	datastore.Init(ctx, td, &sync.WaitGroup{})
+	datastore.MapConf.MapName = "SnmpConfigTest"
+	datastore.MapConf.SnmpMode = "v2c"
+	datastore.MapConf.Community = "public"
+	_ = datastore.SaveMapConf()
+
+	// 1. When DiscoverConf.SnmpConfigs is empty, GetDiscoverSnmpConfigs returns MapConf setting
+	datastore.DiscoverConf.SnmpConfigs = []datastore.SnmpConfEnt{}
+	configs := datastore.GetDiscoverSnmpConfigs()
+	if len(configs) != 1 {
+		t.Fatalf("expected 1 config, got %d", len(configs))
+	}
+	if configs[0].SnmpMode != "v2c" || configs[0].Community != "public" {
+		t.Errorf("unexpected default config: %+v", configs[0])
+	}
+
+	// 2. When DiscoverConf.SnmpConfigs has additional entries, MapConf is first, followed by additions
+	datastore.DiscoverConf.SnmpConfigs = []datastore.SnmpConfEnt{
+		{SnmpMode: "v2c", Community: "public"}, // duplicate of MapConf, should be ignored
+		{SnmpMode: "v2c", Community: "private"},
+		{SnmpMode: "v3auth", SnmpUser: "admin", SnmpPassword: "password123"},
+	}
+	configs = datastore.GetDiscoverSnmpConfigs()
+	if len(configs) != 3 {
+		t.Fatalf("expected 3 configs, got %d", len(configs))
+	}
+	if configs[0].Community != "public" {
+		t.Errorf("expected configs[0] to be public, got %s", configs[0].Community)
+	}
+	if configs[1].Community != "private" {
+		t.Errorf("expected configs[1] to be private, got %s", configs[1].Community)
+	}
+	if configs[2].SnmpMode != "v3auth" || configs[2].SnmpUser != "admin" {
+		t.Errorf("expected configs[2] to be v3auth admin, got %+v", configs[2])
+	}
+
+	// 3. Test addFoundNode with custom SnmpConf and AddNetwork
+	datastore.DiscoverConf.AddNetwork = true
+	customDent := &discoverInfoEnt{
+		IP:          "192.168.1.50",
+		SysName:     "switch-50",
+		SysObjectID: "1.3.6.1.4.1.9.1.1",
+		IfMap:       make(map[string]string),
+		ServerList:  map[string]bool{"lldp": true},
+		SnmpConf: &datastore.SnmpConfEnt{
+			SnmpMode:     "v3auth",
+			SnmpUser:     "admin",
+			SnmpPassword: "password123",
+		},
+	}
+	addFoundNode(customDent)
+	node := datastore.FindNodeFromIP("192.168.1.50")
+	if node == nil {
+		t.Fatal("node 192.168.1.50 not found after addFoundNode")
+	}
+	if node.SnmpMode != "v3auth" || node.User != "admin" || node.Password != "password123" {
+		t.Errorf("node SNMP settings mismatch: Mode=%s, User=%s, Pass=%s", node.SnmpMode, node.User, node.Password)
+	}
+	net := datastore.FindNetworkByIP("192.168.1.50")
+	if net == nil {
+		t.Fatal("network node 192.168.1.50 not found after addFoundNode with AddNetwork=true")
+	}
+	if net.SnmpMode != "v3auth" || net.User != "admin" || net.Password != "password123" {
+		t.Errorf("network SNMP settings mismatch: Mode=%s, User=%s, Pass=%s", net.SnmpMode, net.User, net.Password)
+	}
+
+	// 4. Test updateNode with bridge MIB and custom SnmpConf
+	customDentBridge := &discoverInfoEnt{
+		IP:          "192.168.1.51",
+		SysName:     "switch-51",
+		SysObjectID: "1.3.6.1.4.1.9.1.2",
+		IfMap:       make(map[string]string),
+		ServerList:  map[string]bool{"bridge": true},
+		SnmpConf: &datastore.SnmpConfEnt{
+			SnmpMode:     "v3authpriv",
+			SnmpUser:     "privuser",
+			SnmpPassword: "privpassword",
+		},
+	}
+	// Add node initially with wrong/empty credentials
+	initialNode := &datastore.NodeEnt{
+		Name:      "switch-51",
+		IP:        "192.168.1.51",
+		Community: "public",
+		SnmpMode:  "v2c",
+	}
+	_ = datastore.AddNode(initialNode)
+	updateNode(initialNode, customDentBridge)
+
+	updatedNode := datastore.FindNodeFromIP("192.168.1.51")
+	if updatedNode.SnmpMode != "v3authpriv" || updatedNode.User != "privuser" {
+		t.Errorf("updatedNode SNMP settings mismatch: Mode=%s, User=%s", updatedNode.SnmpMode, updatedNode.User)
+	}
+	bridgeNet := datastore.FindNetworkByIP("192.168.1.51")
+	if bridgeNet == nil {
+		t.Fatal("network node 192.168.1.51 not found after updateNode with bridge MIB")
+	}
+	if bridgeNet.SnmpMode != "v3authpriv" || bridgeNet.User != "privuser" {
+		t.Errorf("bridgeNet SNMP settings mismatch: Mode=%s, User=%s", bridgeNet.SnmpMode, bridgeNet.User)
+	}
+
+	// 5. Test that a device without SNMP support (SysObjectID == "") is NOT added as network node
+	datastore.DiscoverConf.AutoDetect = true
+	unmanagedDent := &discoverInfoEnt{
+		IP:          "192.168.1.52",
+		HostName:    "unmanaged-switch",
+		SysObjectID: "", // No SNMP response!
+		IfMap:       make(map[string]string),
+		ServerList:  make(map[string]bool),
+		Vendor:      "Allied Telesis",
+	}
+	addFoundNode(unmanagedDent)
+	unmanagedNode := datastore.FindNodeFromIP("192.168.1.52")
+	if unmanagedNode == nil {
+		t.Fatal("node 192.168.1.52 should be added as normal node")
+	}
+	unmanagedNet := datastore.FindNetworkByIP("192.168.1.52")
+	if unmanagedNet != nil {
+		t.Errorf("network node should NOT be added for device without SNMP support, got %+v", unmanagedNet)
+	}
+}
+

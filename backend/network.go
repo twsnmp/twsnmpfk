@@ -323,8 +323,10 @@ func checkNetworkPortState(n *datastore.NetworkEnt) {
 }
 
 func getSNMPAgentForNetwork(n *datastore.NetworkEnt) *gosnmp.GoSNMP {
-	if strings.HasPrefix(n.SnmpMode, "v3") && n.User == "" {
-		return nil
+	if strings.HasPrefix(n.SnmpMode, "v3") {
+		if n.User == "" {
+			return nil
+		}
 	} else if n.Community == "" {
 		return nil
 	}
