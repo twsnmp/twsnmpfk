@@ -260,7 +260,7 @@
     "NoCheckCert": "Don't check server certificate",
     "None": "Disable",
     "Notify": "Notify",
-    "NotifyIntSec": "Notification interval (seconds)",
+    "NotifyIntMin": "Notification interval (minutes)",
     "NotifyLevel": "Notify Level",
     "NotifyRepair": "Notify repair",
     "CheckDependency": "Analyze root cause from topology",

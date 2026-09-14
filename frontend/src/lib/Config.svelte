@@ -1375,13 +1375,13 @@
               />
             </Label>
             <Label class="space-y-2 text-xs">
-              <span> {$_("Config.NotifyIntSec")} </span>
+              <span> {$_("Config.NotifyIntMin")} </span>
               <Input
                 class="h-8 w-24 text-right"
                 type="number"
-                min={60}
-                max={3600 * 24}
-                step={10}
+                min={1}
+                max={1440}
+                step={1}
                 bind:value={notifyConf.Interval}
                 size="sm"
               />

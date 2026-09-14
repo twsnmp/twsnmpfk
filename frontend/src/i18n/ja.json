@@ -257,7 +257,7 @@
     "Subject": "件名",
     "NotifyLevel": "通知レベル",
     "SelectNotifyLevel": "通知レベルを選択",
-    "NotifyIntSec": "通知間隔(秒)",
+    "NotifyIntMin": "通知間隔(分)",
     "MailReport": "定期レポート",
     "NotifyRepair": "復帰通知",
     "CheckDependency": "依存関係から主原因を判定",
