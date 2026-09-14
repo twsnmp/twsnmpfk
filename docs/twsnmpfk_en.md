@@ -1862,7 +1862,7 @@ This is the screen to set the notification.
 ---
 | Items | Contents |
 | ---- | ---- |
-|Provider|Select from smtp/Google/Microsoft.|
+|Provider|Select from smtp/Google/Microsoft/Microsoft (Custom Server).|
 |OAuth2|Client ID, Secret, Tenant Name (Microsoft).|
 | Mail server | Host name or IP address: port number |
 | Certificate | Check when the mail server is self-signed.|

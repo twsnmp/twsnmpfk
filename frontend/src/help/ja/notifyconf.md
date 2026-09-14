@@ -5,7 +5,7 @@
 ## パラメータの説明
 
 * **プロバイダー**
-  メール送信サービス。smtp（直接送信）/ Google / Microsoft（OAuth2認証を利用した送信）から選択する。
+  メール送信サービス。smtp（直接送信）/ Google / Microsoft / Microsoft (サーバー指定)（OAuth2認証を利用した送信）から選択する。
 * **クライアントID**
   OAuth2認証（Google / Microsoft）時に使用するクライアントID。
 * **クライアントシークレット**

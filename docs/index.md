@@ -1917,7 +1917,7 @@ This is the screen to set the notification.
 
 | Items | Contents |
 | ---- | ---- |
-|Provider|Select from smtp/Google/Microsoft.|
+|Provider|Select from smtp/Google/Microsoft/Microsoft (Custom Server).|
 |Client ID|The OAuth2 (Google/Microsoft) client ID.|
 |Client Secret|The OAuth2 (Google/Microsoft) client secret.|
 |Tenant Name|The OAuth2 (Microsoft) tenant name.|

@@ -147,6 +147,7 @@
     { name: "", value: "smtp" },
     { name: "Google", value: "google" },
     { name: "Microsoft", value: "microsoft" },
+    { name: $_("Config.MSCustom"), value: "mscustom" },
   ];
 
   const saveNotifyConf = async () => {
@@ -1293,6 +1294,54 @@
                 size="sm"
               />
             </Label>
+          {:else if notifyConf.Provider == "mscustom"}
+            <Label class="space-y-2 text-xs">
+              <span>{$_("Config.MailServer")}</span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.MailServer}
+                placeholder="host|ip:port"
+                required
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.MSTenant')}</span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.MSTenant}
+                placeholder={$_('Config.MSTenant')}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.ClientID')}</span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.ClientID}
+                placeholder={$_('Config.ClientID')}
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_('Config.ClientSecret')}</span>
+              <Input
+                class="h-8"
+                type="password"
+                bind:value={notifyConf.ClientSecret}
+                placeholder="•••••"
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_("Config.SmtpUser")}</span>
+              <Input
+                class="h-8"
+                bind:value={notifyConf.User}
+                placeholder="smtp user"
+                size="sm"
+              />
+            </Label>
           {:else}
             <Label class="space-y-2 text-xs">
               <span>{$_("Config.MailServer")}</span>
@@ -1500,7 +1549,7 @@
               <Icon path={icons.mdiContentSave} size={1} />
               {$_("Config.Save")}
             </GradientButton>
-            {#if notifyHasValidToken}
+            {#if notifyHasValidToken && (notifyConf.Provider != "mscustom" || notifyConf.MailServer != "")}
             <GradientButton
               shadow
               type="button"
@@ -1511,7 +1560,7 @@
               <Icon path={icons.mdiEmail} size={1} />
               {$_("Config.Test")}
             </GradientButton>
-            {:else if savedProvider == "google" || savedProvider == "microsoft" }
+            {:else if savedProvider == "google" || savedProvider == "microsoft" || savedProvider == "mscustom" }
             <GradientButton
               shadow
               type="button"

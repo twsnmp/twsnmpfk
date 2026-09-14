@@ -346,6 +346,7 @@
     "ClientID": "クライアントID",
     "ClientSecret": "クライアントシークレット",
     "MSTenant": "テナント名",
+    "MSCustom": "Microsoft (サーバー指定)",
     "GetTokenBtn": "トークンの取得",
     "AccessToken": "アクセストークン:",
     "RefreshToken": "更新トークン",

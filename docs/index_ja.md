@@ -1954,7 +1954,7 @@ TWSNMP FK のAI連携機能（ノードAI総合診断、ログ解説、AIポー�
 
 |項目|内容|
 |----|----|
-|プロバイダー|smtp/Google/Microsoftから選択します。|
+|プロバイダー|smtp/Google/Microsoft/Microsoft(サーバー指定)から選択します。|
 |クライアントID|OAuth2(Google/Microsoft)のクライアントIDです。|
 |クライアントシークレット|OAuth2(Google/Microsoft)のクライアントシークレットです。|
 |テナント名|OAuth2(Microsoft)のテナント名です。|

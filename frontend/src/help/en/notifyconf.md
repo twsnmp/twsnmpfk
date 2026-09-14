@@ -5,7 +5,7 @@ Configure alert notifications, periodic report schedules, external integrations,
 ## Settings Parameters
 
 * **Provider**
-  The mail service to use (smtp / google / microsoft).
+  The mail service to use (smtp / google / microsoft / Microsoft (Custom Server)).
 * **Client ID**
   OAuth2 client ID for Google or Microsoft mail services.
 * **Client Secret**
