@@ -72,6 +72,7 @@ type webhookNotifyLog struct {
 	NodeID    string `json:"NodeID"`
 	Event     string `json:"Event"`
 	LastLevel string `json:"LastLevel"`
+	RootCause string `json:"RootCause,omitempty"`
 }
 
 func webhookNotify(list []*datastore.EventLogEnt) {
@@ -84,6 +85,10 @@ func webhookNotify(list []*datastore.EventLogEnt) {
 	}
 	payload := webhookNotifyPayload{}
 	ti := time.Now().Add(time.Duration(-datastore.NotifyConf.Interval) * time.Minute).UnixNano()
+	var dep *DependencyAnalysisResult
+	if datastore.NotifyConf.CheckDependency {
+		dep = AnalyzeFailureDependencies(list)
+	}
 	for _, l := range list {
 		if ti > l.Time {
 			continue
@@ -91,6 +96,14 @@ func webhookNotify(list []*datastore.EventLogEnt) {
 		np := getLevelNum(l.Level)
 		if np > nl {
 			continue
+		}
+		rootCause := ""
+		if dep != nil && l.Type == "polling" && l.NodeID != "" {
+			if rcid, ok := dep.ImpactedBy[l.NodeID]; ok {
+				rootCause = GetNodeOrNetworkName(rcid)
+			} else if len(dep.ImpactedMap[l.NodeID]) > 0 {
+				rootCause = "self"
+			}
 		}
 		payload.Log = append(payload.Log, webhookNotifyLog{
 			Time:      time.Unix(0, l.Time).Format(time.RFC3339),
@@ -100,6 +113,7 @@ func webhookNotify(list []*datastore.EventLogEnt) {
 			Event:     l.Event,
 			Level:     l.Level,
 			LastLevel: l.LastLevel,
+			RootCause: rootCause,
 		})
 	}
 	payload.Count = len(payload.Log)

@@ -468,6 +468,21 @@ var transMap = map[string]map[string]string{
 	"No answer from AI.": {
 		"ja": "AIから応答がありません。",
 	},
+	"Root Cause": {
+		"ja": "主原因",
+	},
+	"Impacted by": {
+		"ja": "影響元",
+	},
+	"other %d impacted": {
+		"ja": "他%d台影響",
+	},
+	"Cause": {
+		"ja": "原因",
+	},
+	"Impacted": {
+		"ja": "影響",
+	},
 }
 
 func init() {

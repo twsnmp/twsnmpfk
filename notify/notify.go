@@ -135,9 +135,79 @@ func getNotifyData(list []*datastore.EventLogEnt, nl int) notifyData {
 	f, r := "", ""
 	fs, rs := "", ""
 	if len(failure) > 0 {
-		f = eventLogListToString(false, failure)
+		var failureLogs []*datastore.EventLogEnt = failure
+		subjectNodes := getNodes(fNodeMap)
+
+		if datastore.NotifyConf.CheckDependency {
+			dep := AnalyzeFailureDependencies(failure)
+			modifiedLogs := make([]*datastore.EventLogEnt, 0, len(failure))
+
+			// 1. Root causes (polling only) first
+			for _, l := range failure {
+				if l.Type != "polling" || l.NodeID == "" {
+					continue
+				}
+				if _, isImpacted := dep.ImpactedBy[l.NodeID]; !isImpacted {
+					copyLog := *l
+					if impactedCount := len(dep.ImpactedMap[l.NodeID]); impactedCount > 0 {
+						copyLog.Event = fmt.Sprintf("[%s (%s)] %s",
+							i18n.Trans("Root Cause"),
+							fmt.Sprintf(i18n.Trans("other %d impacted"), impactedCount),
+							l.Event)
+					} else {
+						copyLog.Event = fmt.Sprintf("[%s] %s", i18n.Trans("Root Cause"), l.Event)
+					}
+					modifiedLogs = append(modifiedLogs, &copyLog)
+				}
+			}
+
+			// 2. Impacted nodes (polling only) with annotations
+			for _, l := range failure {
+				if l.Type != "polling" || l.NodeID == "" {
+					continue
+				}
+				if rootCauseID, isImpacted := dep.ImpactedBy[l.NodeID]; isImpacted {
+					rcName := GetNodeOrNetworkName(rootCauseID)
+					copyLog := *l
+					copyLog.Event = fmt.Sprintf("[%s: %s] %s", i18n.Trans("Impacted by"), rcName, l.Event)
+					modifiedLogs = append(modifiedLogs, &copyLog)
+				}
+			}
+
+			// 3. Non-polling events (system, syslog, trap, etc.) kept as-is
+			for _, l := range failure {
+				if l.Type != "polling" || l.NodeID == "" {
+					modifiedLogs = append(modifiedLogs, l)
+				}
+			}
+			failureLogs = modifiedLogs
+
+			// Format subject with root causes
+			var parts []string
+			for _, rcid := range dep.RootCauses {
+				name := GetNodeOrNetworkName(rcid)
+				if impactedCount := len(dep.ImpactedMap[rcid]); impactedCount > 0 {
+					parts = append(parts, fmt.Sprintf("%s (%s)", name, fmt.Sprintf(i18n.Trans("other %d impacted"), impactedCount)))
+				} else {
+					parts = append(parts, name)
+				}
+			}
+			if len(parts) == 0 && len(dep.ImpactedBy) > 0 {
+				for nid, rcid := range dep.ImpactedBy {
+					parts = append(parts, fmt.Sprintf("%s (%s: %s)",
+						GetNodeOrNetworkName(nid),
+						i18n.Trans("Cause"),
+						GetNodeOrNetworkName(rcid)))
+				}
+			}
+			if len(parts) > 0 {
+				subjectNodes = fmt.Sprintf("[%s: %s]", i18n.Trans("Root Cause"), strings.Join(parts, ", "))
+			}
+		}
+
+		f = eventLogListToString(false, failureLogs)
 		fs = datastore.NotifyConf.Subject + i18n.Trans("(Failure)")
-		fs += ":" + getNodes(fNodeMap)
+		fs += ":" + subjectNodes
 	}
 	if len(repair) > 0 {
 		r = eventLogListToString(true, repair)

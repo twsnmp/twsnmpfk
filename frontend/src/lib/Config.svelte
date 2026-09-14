@@ -1395,6 +1395,9 @@
             <Checkbox bind:checked={notifyConf.NotifyRepair}
               >{$_("Config.NotifyRepair")}</Checkbox
             >
+            <Checkbox bind:checked={notifyConf.CheckDependency}
+              >{$_("Config.CheckDependency")}</Checkbox
+            >
           </div>
           <div class="grid gap-4 grid-cols-2">
             <Label class="space-y-2 text-xs">

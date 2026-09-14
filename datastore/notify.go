@@ -27,6 +27,7 @@ type NotifyConfEnt struct {
 	Report             bool   `json:"Report"`
 	LLMSummary         bool   `json:"LLMSummary"`
 	NotifyRepair       bool   `json:"NotifyRepair"`
+	CheckDependency    bool   `json:"CheckDependency"`
 	ExecCmd            string `json:"ExecCmd"`
 	BeepHigh           string `json:"BeepHigh"`
 	BeepLow            string `json:"BeepLow"`

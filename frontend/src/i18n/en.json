@@ -263,6 +263,7 @@
     "NotifyIntSec": "Notification interval (seconds)",
     "NotifyLevel": "Notify Level",
     "NotifyRepair": "Notify repair",
+    "CheckDependency": "Analyze root cause from topology",
     "PollingIntSec": "Polling interval (seconds)",
     "Retry": "Retry (times)",
     "SNMPMode": "SNMP mode",

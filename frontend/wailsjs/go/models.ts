@@ -1175,6 +1175,7 @@ export namespace datastore {
 	    Report: boolean;
 	    LLMSummary: boolean;
 	    NotifyRepair: boolean;
+	    CheckDependency: boolean;
 	    ExecCmd: string;
 	    BeepHigh: string;
 	    BeepLow: string;
@@ -1203,6 +1204,7 @@ export namespace datastore {
 	        this.Report = source["Report"];
 	        this.LLMSummary = source["LLMSummary"];
 	        this.NotifyRepair = source["NotifyRepair"];
+	        this.CheckDependency = source["CheckDependency"];
 	        this.ExecCmd = source["ExecCmd"];
 	        this.BeepHigh = source["BeepHigh"];
 	        this.BeepLow = source["BeepLow"];

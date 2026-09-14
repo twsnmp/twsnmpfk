@@ -260,6 +260,7 @@
     "NotifyIntSec": "通知間隔(秒)",
     "MailReport": "定期レポート",
     "NotifyRepair": "復帰通知",
+    "CheckDependency": "依存関係から主原因を判定",
     "ExecCommand": "コマンド実行",
     "Test": "テスト",
     "AI": "AI分析",
