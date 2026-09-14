@@ -131,6 +131,7 @@
     conf.Retry *= 1;
     conf.Timeout *= 1;
     conf.AutoLine = Number(conf.AutoLine) || 0;
+    conf.AutoLayout = Number(conf.AutoLayout) || 0;
     if (!conf.SnmpConfigs) {
       conf.SnmpConfigs = [];
     }
@@ -253,7 +254,20 @@
             size="sm"
           />
         </Label>
-        <div></div>
+        <Label class="space-y-2 text-xs">
+          <span>{$_("Discover.AutoLayout")}</span>
+          <Select
+            class="h-8 text-xs"
+            items={[
+              { value: 0, name: $_("Discover.AutoLayoutNone") },
+              { value: 1, name: $_("Discover.AutoLayoutHierarchical") },
+              { value: 2, name: $_("Discover.AutoLayoutCluster") },
+              { value: 3, name: $_("Discover.AutoLayoutCategorized") },
+            ]}
+            bind:value={conf.AutoLayout}
+            size="sm"
+          />
+        </Label>
       </div>
       <!-- Additional SNMP Configurations -->
       <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 space-y-3 bg-gray-50/50 dark:bg-gray-800/50">

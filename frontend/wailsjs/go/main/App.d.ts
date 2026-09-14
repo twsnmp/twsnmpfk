@@ -12,6 +12,8 @@ export function AutoConnectLines(arg1:number):Promise<Record<string, number>>;
 
 export function AutoGrok(arg1:string):Promise<string>;
 
+export function AutoLayout(arg1:number):Promise<boolean>;
+
 export function Backup():Promise<boolean>;
 
 export function CheckNetwork(arg1:string):Promise<void>;
@@ -266,6 +268,8 @@ export function GetVersion():Promise<string>;
 
 export function HasDatastore():Promise<boolean>;
 
+export function HasUndoAutoLayout():Promise<boolean>;
+
 export function HasValidNotifyOAuth2Token(arg1:datastore.NotifyConfEnt):Promise<boolean>;
 
 export function ImportIcon(arg1:Array<datastore.IconEnt>):Promise<main.ImportIconEnt>;
@@ -365,6 +369,8 @@ export function StopDiscover():Promise<void>;
 export function TestNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
 
 export function TestWebhook(arg1:datastore.NotifyConfEnt):Promise<boolean>;
+
+export function UndoAutoLayout():Promise<boolean>;
 
 export function UpateCertMonitor(arg1:main.EditCertMonitorEnt):Promise<boolean>;
 

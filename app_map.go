@@ -457,6 +457,31 @@ func (a *App) AutoConnectLines(mode int) map[string]int {
 	}
 }
 
+// AutoLayout optimizes the layout of nodes and networks on the map
+func (a *App) AutoLayout(mode int) bool {
+	count, err := backend.OptimizeLayout(mode)
+	if err != nil {
+		log.Printf("AutoLayout err=%v", err)
+		return false
+	}
+	return count > 0
+}
+
+// UndoAutoLayout restores the previous positions of nodes and networks
+func (a *App) UndoAutoLayout() bool {
+	count, err := backend.UndoLayout()
+	if err != nil {
+		log.Printf("UndoAutoLayout err=%v", err)
+		return false
+	}
+	return count > 0
+}
+
+// HasUndoAutoLayout checks if an undo snapshot is available
+func (a *App) HasUndoAutoLayout() bool {
+	return backend.HasUndoLayout()
+}
+
 // ConnectLines connects multiple lines at once
 func (a *App) ConnectLines(lines []datastore.LineEnt) int {
 	count := 0

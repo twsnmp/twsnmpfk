@@ -240,6 +240,11 @@ func Discover() error {
 				log.Printf("auto connect lines err=%v", err)
 			}
 		}
+		if datastore.DiscoverConf.AutoLayout > datastore.AutoLayoutNone {
+			if _, err := backend.OptimizeLayout(datastore.DiscoverConf.AutoLayout); err != nil {
+				log.Printf("auto layout err=%v", err)
+			}
+		}
 		Stat.Running = false
 		datastore.AddEventLog(&datastore.EventLogEnt{
 			Type:  "system",

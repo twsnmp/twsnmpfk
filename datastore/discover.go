@@ -15,6 +15,13 @@ const (
 	AutoLineSpeculative = 2
 )
 
+const (
+	AutoLayoutNone         = 0 // 順次グリッド配置 (標準)
+	AutoLayoutHierarchical = 1 // 階層型 (ツリー)
+	AutoLayoutCluster      = 2 // クラスタ型 (ハブ＆スポーク)
+	AutoLayoutCategorized  = 3 // デバイス種別型 (カテゴリ別)
+)
+
 // SnmpConfEnt : 自動発見用SNMP設定
 type SnmpConfEnt struct {
 	SnmpMode     string `json:"SnmpMode"`
@@ -37,6 +44,7 @@ type DiscoverConfEnt struct {
 	AutoDetect   bool          `json:"AutoDetect"`
 	AutoDetectAI bool          `json:"AutoDetectAI"`
 	AutoLine     int           `json:"AutoLine"`
+	AutoLayout   int           `json:"AutoLayout"`
 	SnmpConfigs  []SnmpConfEnt `json:"SnmpConfigs"`
 }
 

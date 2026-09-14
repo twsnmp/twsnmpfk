@@ -589,6 +589,7 @@ export namespace datastore {
 	    AutoDetect: boolean;
 	    AutoDetectAI: boolean;
 	    AutoLine: number;
+	    AutoLayout: number;
 	    SnmpConfigs: SnmpConfEnt[];
 	
 	    static createFrom(source: any = {}) {
@@ -610,6 +611,7 @@ export namespace datastore {
 	        this.AutoDetect = source["AutoDetect"];
 	        this.AutoDetectAI = source["AutoDetectAI"];
 	        this.AutoLine = source["AutoLine"];
+	        this.AutoLayout = source["AutoLayout"];
 	        this.SnmpConfigs = this.convertValues(source["SnmpConfigs"], SnmpConfEnt);
 	    }
 	

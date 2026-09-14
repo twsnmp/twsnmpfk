@@ -14,6 +14,10 @@ export function AutoGrok(arg1) {
   return window['go']['main']['App']['AutoGrok'](arg1);
 }
 
+export function AutoLayout(arg1) {
+  return window['go']['main']['App']['AutoLayout'](arg1);
+}
+
 export function Backup() {
   return window['go']['main']['App']['Backup']();
 }
@@ -522,6 +526,10 @@ export function HasDatastore() {
   return window['go']['main']['App']['HasDatastore']();
 }
 
+export function HasUndoAutoLayout() {
+  return window['go']['main']['App']['HasUndoAutoLayout']();
+}
+
 export function HasValidNotifyOAuth2Token(arg1) {
   return window['go']['main']['App']['HasValidNotifyOAuth2Token'](arg1);
 }
@@ -720,6 +728,10 @@ export function TestNotifyConf(arg1) {
 
 export function TestWebhook(arg1) {
   return window['go']['main']['App']['TestWebhook'](arg1);
+}
+
+export function UndoAutoLayout() {
+  return window['go']['main']['App']['UndoAutoLayout']();
 }
 
 export function UpateCertMonitor(arg1) {

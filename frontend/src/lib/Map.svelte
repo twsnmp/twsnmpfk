@@ -45,6 +45,9 @@
     CheckNetwork,
     ExportMap,
     GetMapConf,
+    AutoLayout,
+    UndoAutoLayout,
+    HasUndoAutoLayout,
   } from "../../wailsjs/go/main/App";
   import { BrowserOpenURL,WindowReloadApp } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
@@ -95,6 +98,40 @@
   let timer: any = undefined;
   let urls: any = [];
   let refreshCount = 0;
+
+  let hasUndo: boolean = false;
+  let showToast: boolean = false;
+  let toastMessage: string = "";
+  let toastTimer: any = undefined;
+
+  const checkUndo = async () => {
+    hasUndo = await HasUndoAutoLayout();
+  };
+
+  const applyAutoLayout = async (mode: number) => {
+    showMapMenu = false;
+    const ok = await AutoLayout(mode);
+    if (ok) {
+      await refreshMap();
+      hasUndo = true;
+      toastMessage = $_("Map.LayoutApplied");
+      showToast = true;
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        showToast = false;
+      }, 6000);
+    }
+  };
+
+  const doUndoAutoLayout = async () => {
+    showMapMenu = false;
+    showToast = false;
+    const ok = await UndoAutoLayout();
+    if (ok) {
+      await refreshMap();
+      hasUndo = false;
+    }
+  };
 
   const checkAI = async () => {
     const conf = await GetMapConf();
@@ -162,6 +199,7 @@
           networkTemplate = undefined;
           showNetworkMenu = true;
         } else {
+          checkUndo();
           showMapMenu = true;
           const bcr = map ? map.getBoundingClientRect() : { left: 0, top: 0 };
           mapPosX = Math.trunc(p.x - bcr.left + (map ? map.scrollLeft : 0));
@@ -438,6 +476,54 @@
           {$_("Map.Discover")}
         </div>
       </div>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="relative group">
+        <div
+          class="flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
+        >
+          <div class="flex items-center space-x-2.5">
+            <span class="text-cyan-400"><Icon path={icons.mdiAutoFix} size={0.7} /></span>
+            <div>{$_("Map.AutoLayout")}</div>
+          </div>
+          <span class="text-slate-400"><Icon path={icons.mdiChevronRight} size={0.7} /></span>
+        </div>
+
+        <div
+          class="hidden group-hover:block absolute left-full top-0 ml-1 bg-slate-800/95 text-slate-200 border border-slate-700/80 shadow-2xl backdrop-blur-md rounded-xl p-1.5 min-w-[190px] space-y-0.5 select-none text-xs z-50"
+        >
+          <div
+            class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
+            onclick={() => applyAutoLayout(1)}
+          >
+            <span class="text-emerald-400"><Icon path={icons.mdiFileTree} size={0.7} /></span>
+            <div>{$_("Map.AutoLayoutHierarchical")}</div>
+          </div>
+          <div
+            class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
+            onclick={() => applyAutoLayout(2)}
+          >
+            <span class="text-indigo-400"><Icon path={icons.mdiHubspot} size={0.7} /></span>
+            <div>{$_("Map.AutoLayoutCluster")}</div>
+          </div>
+          <div
+            class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
+            onclick={() => applyAutoLayout(3)}
+          >
+            <span class="text-amber-400"><Icon path={icons.mdiViewGridOutline} size={0.7} /></span>
+            <div>{$_("Map.AutoLayoutCategorized")}</div>
+          </div>
+        </div>
+      </div>
+      {#if hasUndo}
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div
+          class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-amber-300"
+          onclick={doUndoAutoLayout}
+        >
+          <span class="text-amber-400"><Icon path={icons.mdiUndo} size={0.7} /></span>
+          <div>{$_("Map.UndoAutoLayout")}</div>
+        </div>
+      {/if}
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors duration-150 hover:bg-slate-700/80 hover:text-white text-slate-300"
@@ -1336,6 +1422,23 @@
     </div>
   </div>
 </Modal>
+
+{#if showToast}
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center space-x-3 bg-slate-900/95 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700/80 backdrop-blur-md text-xs select-none"
+  >
+    <span class="text-emerald-400"><Icon path={icons.mdiCheckCircleOutline} size={0.8} /></span>
+    <span class="font-medium text-slate-200">{toastMessage}</span>
+    <button
+      type="button"
+      class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded font-semibold border border-amber-500/30 transition duration-150"
+      onclick={doUndoAutoLayout}
+    >
+      {$_("Map.Undo")}
+    </button>
+  </div>
+{/if}
 
 <svelte:window
   onclick={() => {

@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/ping"
 )
@@ -222,6 +223,41 @@ func TestSnmpConfigs(t *testing.T) {
 	unmanagedNet := datastore.FindNetworkByIP("192.168.1.52")
 	if unmanagedNet != nil {
 		t.Errorf("network node should NOT be added for device without SNMP support, got %+v", unmanagedNet)
+	}
+}
+
+func TestDiscoverWithAutoLayout(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	td, err := os.MkdirTemp("", "twsnmpfk_discover_layout_test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(td)
+
+	datastore.Init(ctx, td, &sync.WaitGroup{})
+	datastore.DiscoverConf.AutoLayout = datastore.AutoLayoutHierarchical
+
+	node := &datastore.NodeEnt{
+		Name: "Router",
+		IP:   "192.168.1.1",
+		Icon: "router",
+		X:    50,
+		Y:    50,
+	}
+	_ = datastore.AddNode(node)
+
+	// Trigger layout directly as in discover completion
+	if datastore.DiscoverConf.AutoLayout > datastore.AutoLayoutNone {
+		_, err := backend.OptimizeLayout(datastore.DiscoverConf.AutoLayout)
+		if err != nil {
+			t.Fatalf("OptimizeLayout err=%v", err)
+		}
+	}
+
+	saved := datastore.GetNode(node.ID)
+	if saved == nil || saved.Y != 100 {
+		t.Errorf("expected router to be placed at Y=100, got %+v", saved)
 	}
 }
 
