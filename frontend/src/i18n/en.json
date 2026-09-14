@@ -412,7 +412,21 @@
     "Line": "Polling result (line)",
     "GroupFrame": "Group(Frame)",
     "GroupFill": "Group(Background)",
-    "KPI": "Polling result (KPI Card)"
+    "KPI": "Polling result (KPI Card)",
+    "CategoryPolling": "Polling Results",
+    "CategoryShape": "Shapes & Labels",
+    "CategoryGroup": "Grouping",
+    "Preset": "Recommended Sizes",
+    "PresetCompact": "Compact",
+    "PresetSmall": "Small",
+    "PresetNormal": "Normal",
+    "PresetLarge": "Large",
+    "PresetWide": "Wide",
+    "AvailableVars": "Available Variables (click to set format & scale)",
+    "Preview": "Preview",
+    "PreviewDark": "Dark",
+    "PreviewLight": "Light",
+    "Recommended": "Recommended"
   },
   "Discover": {
     "AutoAddPolling": "Automatic Polling Setup",

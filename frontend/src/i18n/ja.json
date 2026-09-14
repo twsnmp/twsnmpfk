@@ -399,7 +399,21 @@
     "Line": "ポーリング結果(ライン)",
     "GroupFrame": "グループ(枠)",
     "GroupFill": "グループ(背景)",
-    "KPI": "ポーリング結果(KPIカード)"
+    "KPI": "ポーリング結果(KPIカード)",
+    "CategoryPolling": "ポーリング結果",
+    "CategoryShape": "基本図形・装飾",
+    "CategoryGroup": "グループ化",
+    "Preset": "推奨サイズ",
+    "PresetCompact": "コンパクト",
+    "PresetSmall": "小",
+    "PresetNormal": "標準",
+    "PresetLarge": "大",
+    "PresetWide": "ワイド",
+    "AvailableVars": "利用可能な変数（クリックで書式・倍率も自動設定）",
+    "Preview": "プレビュー",
+    "PreviewDark": "ダーク",
+    "PreviewLight": "ライト",
+    "Recommended": "推奨"
   },
   "Discover": {
     "Discover": "自動発見",
