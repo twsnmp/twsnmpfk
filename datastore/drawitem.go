@@ -3,6 +3,7 @@ package datastore
 import (
 	"encoding/json"
 	"log"
+	"strings"
 	"time"
 
 	"go.etcd.io/bbolt"
@@ -20,6 +21,9 @@ const (
 	DrawItemTypePollingNewGauge
 	DrawItemTypePollingBar
 	DrawItemTypePollingLine
+	DrawItemTypeGroupFrame
+	DrawItemTypeGroupFill
+	DrawItemTypePollingKPI
 )
 
 type DrawItemEnt struct {
@@ -38,8 +42,9 @@ type DrawItemEnt struct {
 	Format    string       `json:"Format"`
 	Value     float64      `json:"Value"`
 	Scale     float64      `json:"Scale"`
-	Cond      int          `json:"Cond"`
-	Values    []float64    `json:"Values"`
+	Cond          int          `json:"Cond"`
+	Values        []float64    `json:"Values"`
+	FormattedText string       `json:"FormattedText,omitempty"`
 }
 
 func AddDrawItem(di *DrawItemEnt) error {
@@ -109,7 +114,11 @@ func GetDrawItem(id string) *DrawItemEnt {
 		return nil
 	}
 	if di, ok := items.Load(id); ok {
-		return di.(*DrawItemEnt)
+		ent := di.(*DrawItemEnt)
+		if strings.Contains(ent.Text, "\t") {
+			ent.Text = strings.Split(ent.Text, "\t")[0]
+		}
+		return ent
 	}
 	return nil
 }

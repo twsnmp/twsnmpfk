@@ -651,6 +651,7 @@ export namespace datastore {
 	    Scale: number;
 	    Cond: number;
 	    Values: number[];
+	    FormattedText?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new DrawItemEnt(source);
@@ -675,6 +676,7 @@ export namespace datastore {
 	        this.Scale = source["Scale"];
 	        this.Cond = source["Cond"];
 	        this.Values = source["Values"];
+	        this.FormattedText = source["FormattedText"];
 	    }
 	}
 	export class EventLogEnt {

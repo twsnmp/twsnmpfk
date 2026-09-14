@@ -34,7 +34,9 @@ Edit screen for items used to draw backgrounds or additional information on the 
     Height of the displayed image.
   * **Image**
     Image file path (specified using the **[Select]** button).
-* **Polling Results (Text, Gauge, New Gauge, Bar, Line)**
+* **Polling Results (Text, Gauge, New Gauge, Bar, Line, KPI Card)**
+  * **Width / Height**
+    (KPI Card only) Width and height of the card (default is 220x84 if blank).
   * **Size**
     Font size or display size of the gauge, bar, or line.
   * **Node**
@@ -44,9 +46,9 @@ Edit screen for items used to draw backgrounds or additional information on the 
   * **Variable name**
     Name of the variable to extract and display from the polling results (blank for automatic setting).
   * **Display format**
-    (Text only) Format specifier for displaying data (blank for automatic setting).
+    (Text and KPI Card) Format specifier for displaying data (blank for automatic setting).
   * **Gauge label**
-    (Gauge and New Gauge only) Label string displayed below the gauge.
+    (Gauge, New Gauge, and KPI Card) Label string displayed on or below the item (blank for automatic polling name).
 
 ## Button Descriptions
 

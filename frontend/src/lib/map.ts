@@ -16,8 +16,7 @@ import {
   UpdateNetworkPos,
   GetImageIcon,
 } from "../../wailsjs/go/main/App";
-import type { datastore } from "wailsjs/go/models";
-import { gauge, line, bar } from "./chart/drawitem";
+import { gauge, line, bar, kpi } from "./chart/drawitem";
 import port from "../assets/images/port.png";
 
 let mapSizeX = window.screen.width > 4000 ? 5000 : 2500;
@@ -171,40 +170,90 @@ export const updateMAP = async () => {
         break;
       case 6: { // New Gauge
         items[k].W = items[k].H;
+        const dataUrl = gauge(items[k].Text || "", items[k].Value || 0, backColor);
         const img = _mapP5.loadImage(
-          gauge(items[k].Text || "", items[k].Value || 0, backColor)
+          dataUrl,
+          (loaded) => {
+            imageMap.set(k, loaded);
+            mapRedraw = true;
+          }
         );
-        if (img) {
+        if (!imageMap.has(k)) {
           imageMap.set(k, img);
         }
         break;
       }
       case 7: { // Bar
         items[k].W = items[k].H * 4;
-        const img = _mapP5.loadImage(
-          bar(
-            items[k].Text || "",
-            items[k].Color || "white",
-            items[k].Value || 0,
-            backColor
-          )
+        const dataUrl = bar(
+          items[k].Text || "",
+          items[k].Color || "white",
+          items[k].Value || 0,
+          backColor
         );
-        if (img) {
+        const img = _mapP5.loadImage(
+          dataUrl,
+          (loaded) => {
+            imageMap.set(k, loaded);
+            mapRedraw = true;
+          }
+        );
+        if (!imageMap.has(k)) {
           imageMap.set(k, img);
         }
         break;
       }
       case 8: { // Line
         items[k].W = items[k].H * 4;
-        const img = _mapP5.loadImage(
-          line(
-            items[k].Text || "",
-            items[k].Color || "white",
-            items[k].Values || [],
-            backColor
-          )
+        const dataUrl = line(
+          items[k].Text || "",
+          items[k].Color || "white",
+          items[k].Values || [],
+          backColor
         );
-        if (img) {
+        const img = _mapP5.loadImage(
+          dataUrl,
+          (loaded) => {
+            imageMap.set(k, loaded);
+            mapRedraw = true;
+          }
+        );
+        if (!imageMap.has(k)) {
+          imageMap.set(k, img);
+        }
+        break;
+      }
+      case 11: { // KPI Card
+        const kpiW = items[k].W > 0 ? items[k].W : (items[k].Size ? items[k].Size * 16 : 220);
+        const kpiH = items[k].H > 0 ? items[k].H : (items[k].Size ? items[k].Size * 6 : 84);
+        items[k].W = kpiW;
+        items[k].H = kpiH;
+        let title = items[k].Text || "";
+        if (title.includes("\t")) {
+          title = title.split("\t")[0];
+        }
+        let text = (items[k] as any).FormattedText || "";
+        if (!text && items[k].Value !== undefined) {
+          text = items[k].Value.toFixed(1);
+        }
+        const dataUrl = kpi(
+          title,
+          text,
+          items[k].Value || 0,
+          items[k].Color || "#00d2ff",
+          items[k].Values || [],
+          dark,
+          items[k].W,
+          items[k].H
+        );
+        const img = _mapP5.loadImage(
+          dataUrl,
+          (loaded) => {
+            imageMap.set(k, loaded);
+            mapRedraw = true;
+          }
+        );
+        if (!imageMap.has(k)) {
           imageMap.set(k, img);
         }
         break;
@@ -601,18 +650,21 @@ const drawDrawItems = (p5: P5, dark: boolean) => {
     switch (items[k].Type) {
       case 0: // rect
         p5.fill(items[k].Color);
-        p5.stroke("rgba(23,23,23,0.9)");
-        p5.rect(0, 0, items[k].W, items[k].H);
+        p5.stroke(dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)");
+        p5.strokeWeight(1);
+        p5.rect(0, 0, items[k].W, items[k].H, 6);
         break;
       case 1: // ellipse
         p5.fill(items[k].Color);
-        p5.stroke("rgba(23,23,23,0.9)");
+        p5.stroke(dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)");
+        p5.strokeWeight(1);
         p5.ellipse(items[k].W / 2, items[k].H / 2, items[k].W, items[k].H);
         break;
       case 2: // text
       case 4: // Polling
         p5.textSize(items[k].Size || 12);
         p5.fill(items[k].Color);
+        p5.noStroke();
         p5.text(
           items[k].Text,
           0,
@@ -669,36 +721,46 @@ const drawDrawItems = (p5: P5, dark: boolean) => {
         const y3 = y - (r2 / 2) * p5.cos(angle) - 5 * p5.sin(angle);
         p5.triangle(x1, y1, x2, y2, x3, y3);
       }
-      case 6: // New Gauge,Line,Bar
+      case 6: // New Gauge,Line,Bar,KPI
       case 7:
       case 8:
+      case 11:
         if (imageMap.has(k)) {
-          p5.image(imageMap.get(k), 0, 0, items[k].W, items[k].H);
+          const img = imageMap.get(k);
+          if (img && img.width > 0) {
+            p5.image(img, 0, 0, items[k].W, items[k].H);
+          } else {
+            p5.fill(dark ? "rgba(15, 23, 42, 0.4)" : "rgba(248, 250, 252, 0.4)");
+            p5.stroke(dark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.08)");
+            p5.strokeWeight(1);
+            p5.rect(0, 0, items[k].W, items[k].H, 8);
+          }
         }
         break;
       case 9: // Group(枠)
-        p5.fill('rgba(23,23,23,0.01)');
+        p5.fill('rgba(23,23,23,0.02)');
         p5.strokeWeight(2);
         p5.stroke(items[k].Color);
-        p5.rect(0, 0, items[k].W, items[k].H);
+        p5.rect(0, 0, items[k].W, items[k].H, 8);
         if (items[k].Text) {
           p5.textSize(items[k].Size || 12);
           p5.fill(dark ? "#eee" : "#333");
           p5.noStroke();
           p5.textAlign(p5.RIGHT, p5.BOTTOM);
-          p5.text(items[k].Text, items[k].W - 5, items[k].H - 5);
+          p5.text(items[k].Text, items[k].W - 8, items[k].H - 8);
         }
         break;
       case 10: // Group(塗りつぶし)
         p5.fill(items[k].Color);
-        p5.noStroke();
-        p5.rect(0, 0, items[k].W, items[k].H);
+        p5.stroke(dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)");
+        p5.strokeWeight(1);
+        p5.rect(0, 0, items[k].W, items[k].H, 8);
         if (items[k].Text) {
           p5.textSize(items[k].Size || 12);
           p5.fill(dark ? "#eee" : "#333");
           p5.noStroke();
           p5.textAlign(p5.RIGHT, p5.BOTTOM);
-          p5.text(items[k].Text, items[k].W - 5, items[k].H - 5);
+          p5.text(items[k].Text, items[k].W - 8, items[k].H - 8);
         }
         break
     }

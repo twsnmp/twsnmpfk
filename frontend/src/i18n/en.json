@@ -411,7 +411,8 @@
     "Bar": "Polling result (bar)",
     "Line": "Polling result (line)",
     "GroupFrame": "Group(Frame)",
-    "GroupFill": "Group(Background)"
+    "GroupFill": "Group(Background)",
+    "KPI": "Polling result (KPI Card)"
   },
   "Discover": {
     "AutoAddPolling": "Automatic Polling Setup",

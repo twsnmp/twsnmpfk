@@ -398,7 +398,8 @@
     "Bar": "ポーリング結果(バー)",
     "Line": "ポーリング結果(ライン)",
     "GroupFrame": "グループ(枠)",
-    "GroupFill": "グループ(背景)"
+    "GroupFill": "グループ(背景)",
+    "KPI": "ポーリング結果(KPIカード)"
   },
   "Discover": {
     "Discover": "自動発見",

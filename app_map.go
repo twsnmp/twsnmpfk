@@ -39,8 +39,12 @@ func (a *App) GetLines() []datastore.LineEnt {
 func (a *App) GetDrawItems() map[string]datastore.DrawItemEnt {
 	ret := make(map[string]datastore.DrawItemEnt)
 	datastore.ForEachItems(func(i *datastore.DrawItemEnt) bool {
-		checkDrawItem(i)
-		ret[i.ID] = *i
+		if strings.Contains(i.Text, "\t") {
+			i.Text = strings.Split(i.Text, "\t")[0]
+		}
+		item := *i
+		checkDrawItem(&item)
+		ret[item.ID] = item
 		return true
 	})
 	return ret
@@ -86,32 +90,31 @@ func checkDrawItem(di *datastore.DrawItemEnt) {
 	}
 	varName, format, scale := autoGetPollingSetting(di, p)
 	i, ok := p.Result[varName]
-	if !ok {
-		return
-	}
 	text := ""
 	val := 0.0
-	switch v := i.(type) {
-	case string:
-		if format == "" {
-			text = v
-		} else {
-			text = fmt.Sprintf(format, v)
+	if ok {
+		switch v := i.(type) {
+		case string:
+			if format == "" {
+				text = v
+			} else {
+				text = fmt.Sprintf(format, v)
+			}
+		case float64:
+			v *= scale
+			if format == "" {
+				text = fmt.Sprintf("%f", v)
+			} else if strings.Contains(format, "BPS") {
+				bps := humanize.Bytes(uint64(v)) + "PS"
+				text = strings.Replace(format, "BPS", bps, 1)
+			} else if strings.Contains(format, "PPS") {
+				pps := humanize.Commaf(v) + "PPS"
+				text = strings.Replace(format, "PPS", pps, 1)
+			} else {
+				text = fmt.Sprintf(format, v)
+			}
+			val = v
 		}
-	case float64:
-		v *= scale
-		if format == "" {
-			text = fmt.Sprintf("%f", v)
-		} else if strings.Contains(format, "BPS") {
-			bps := humanize.Bytes(uint64(v)) + "PS"
-			text = strings.Replace(format, "BPS", bps, 1)
-		} else if strings.Contains(format, "PPS") {
-			pps := humanize.Commaf(v) + "PPS"
-			text = strings.Replace(format, "PPS", pps, 1)
-		} else {
-			text = fmt.Sprintf(format, v)
-		}
-		val = v
 	}
 	if text == "" {
 		text = "No Value"
@@ -142,6 +145,32 @@ func checkDrawItem(di *datastore.DrawItemEnt) {
 			di.Color = "#eee"
 		}
 		di.Value = val
+	case datastore.DrawItemTypePollingKPI:
+		title := di.Text
+		if strings.Contains(title, "\t") {
+			title = strings.Split(title, "\t")[0]
+		}
+		if title == "" {
+			if di.VarName != "" {
+				title = fmt.Sprintf("%s (%s)", p.Name, di.VarName)
+			} else {
+				title = p.Name
+			}
+		}
+		di.Text = title
+		di.FormattedText = text
+		di.Value = val
+		switch p.State {
+		case "high":
+			di.Color = "#ef4444"
+		case "low":
+			di.Color = "#f87171"
+		case "warn":
+			di.Color = "#f59e0b"
+		default:
+			di.Color = "#00d2ff"
+		}
+		setPollingLogValuesForLine(di)
 	}
 }
 
@@ -166,6 +195,14 @@ func autoGetPollingSetting(di *datastore.DrawItemEnt, p *datastore.PollingEnt) (
 	}
 	// ポーリングだけ選択して変数が空欄なら自動で設定する
 	if varName != "" {
+		if format == "" && varName == "rtt" {
+			if v, ok := p.Result["rtt"].(float64); ok && v > 1000 {
+				format = "%.2f ms"
+				if scale == 1.0 {
+					scale = 0.000001
+				}
+			}
+		}
 		return
 	}
 	// 値があるものを優先的に返す

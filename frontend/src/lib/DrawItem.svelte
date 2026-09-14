@@ -48,6 +48,7 @@
     { name: $_('DrawItem.Line'), value: 8 },
     { name: $_("DrawItem.GroupFrame"), value: 9 },
     { name: $_("DrawItem.GroupFill"), value: 10 },
+    { name: $_("DrawItem.KPI"), value: 11 },
   ];
 
   const condList = [
@@ -77,6 +78,9 @@
         drawItem.Color = drawItem.Color.substring(0, 7);
       } else {
         alpha = 255;
+      }
+      if (drawItem.Text && drawItem.Text.includes("\t")) {
+        drawItem.Text = drawItem.Text.split("\t")[0];
       }
       if (drawItem.PollingID) {
         nodeID = "";
@@ -302,9 +306,36 @@
           {/if}
         </Label>
       {/if}
-      {#if drawItem.Type >= 4 && drawItem.Type < 9}
+      {#if (drawItem.Type >= 4 && drawItem.Type < 9) || drawItem.Type == 11}
         <div class="grid gap-4 mb-4 grid-cols-4">
-          {#if drawItem.Type < 6}
+          {#if drawItem.Type == 11}
+            <Label class="space-y-2 text-xs">
+              <span>{$_("DrawItem.Width")}</span>
+              <Input
+                class="h-8 w-24 text-right"
+                type="number"
+                min={0}
+                max={1000}
+                bind:value={drawItem.W}
+                placeholder="220"
+                size="sm"
+              />
+            </Label>
+            <Label class="space-y-2 text-xs">
+              <span>{$_("DrawItem.Height")}</span>
+              <Input
+                class="h-8 w-24 text-right"
+                type="number"
+                min={0}
+                max={1000}
+                bind:value={drawItem.H}
+                placeholder="84"
+                size="sm"
+              />
+            </Label>
+            <div></div>
+            <div></div>
+          {:else if drawItem.Type < 6}
             <Label class="space-y-2 text-xs">
               <span>{$_("DrawItem.Size")}</span>
               <Input
@@ -316,6 +347,9 @@
                 size="sm"
               />
             </Label>
+            <div></div>
+            <div></div>
+            <div></div>
           {:else}
             <Label class="space-y-2 text-xs">
               <span>{$_("DrawItem.Height")}</span>
@@ -328,10 +362,10 @@
                 size="sm"
               />
             </Label>
+            <div></div>
+            <div></div>
+            <div></div>
           {/if}
-          <div></div>
-          <div></div>
-          <div></div>
         </div>
         <div class="grid gap-4 mb-4 grid-cols-2">
           <Label class="space-y-2 text-xs">
@@ -363,7 +397,7 @@
             size="sm"
           />
         </Label>
-        {#if drawItem.Type == 4}
+        {#if drawItem.Type == 4 || drawItem.Type == 11}
           <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.TextFormat")}</span>
             <Input
@@ -374,7 +408,7 @@
             />
           </Label>
         {/if}
-        {#if drawItem.Type >= 5 && drawItem.Type < 9}
+        {#if (drawItem.Type >= 5 && drawItem.Type < 9) || drawItem.Type == 11}
           <Label class="space-y-2 text-xs">
             <span>{$_("DrawItem.GaugeLabel")}</span>
             <Input class="h-8" bind:value={drawItem.Text} size="sm" />
