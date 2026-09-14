@@ -20,7 +20,7 @@
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
-  import { gauge, bar, line, kpi } from "./chart/drawitem";
+  import { gauge, bar, line, kpi, classicGauge } from "./chart/drawitem";
 
   export let show: boolean = false;
   export let id: string = "";
@@ -165,7 +165,77 @@
     }
   };
 
-  const applyPreset = (preset: any) => {
+  interface SizePreset {
+    label: string;
+    w?: number;
+    h?: number;
+    size?: number;
+  }
+
+  $: currentPresets = ((): SizePreset[] => {
+    if (!drawItem) return [];
+    switch (drawItem.Type) {
+      case 11: // KPI Card
+        return [
+          { label: `${$_("DrawItem.PresetCompact") || "コンパクト"} (180×70)`, w: 180, h: 70 },
+          { label: `${$_("DrawItem.PresetNormal") || "標準"} (220×84)`, w: 220, h: 84 },
+          { label: `${$_("DrawItem.PresetLarge") || "大"} (280×100)`, w: 280, h: 100 },
+          { label: `${$_("DrawItem.PresetWide") || "ワイド"} (340×90)`, w: 340, h: 90 },
+        ];
+      case 6: // New Gauge
+        return [
+          { label: `${$_("DrawItem.PresetSmall") || "小"} (64px)`, h: 64, w: 64 },
+          { label: `${$_("DrawItem.PresetNormal") || "標準"} (120px)`, h: 120, w: 120 },
+          { label: `${$_("DrawItem.PresetLarge") || "大"} (180px)`, h: 180, w: 180 },
+          { label: "特大 (240px)", h: 240, w: 240 },
+        ];
+      case 7: // Bar
+      case 8: // Line
+        return [
+          { label: `${$_("DrawItem.PresetSmall") || "小"} (200×50)`, h: 50, w: 200 },
+          { label: `${$_("DrawItem.PresetNormal") || "標準"} (320×80)`, h: 80, w: 320 },
+          { label: `${$_("DrawItem.PresetLarge") || "大"} (440×110)`, h: 110, w: 440 },
+        ];
+      case 5: // Polling Gauge (Classic)
+        return [
+          { label: "12 (120px)", size: 12 },
+          { label: "16 (160px)", size: 16 },
+          { label: "20 (200px)", size: 20 },
+          { label: "24 (240px)", size: 24 },
+        ];
+      case 2: // Label
+      case 4: // Polling Text
+        return [
+          { label: "12px", size: 12 },
+          { label: "16px", size: 16 },
+          { label: "20px", size: 20 },
+          { label: "24px", size: 24 },
+          { label: "32px", size: 32 },
+        ];
+      default: // Rect, Ellipse, Image, GroupFrame, GroupFill
+        return [
+          { label: `${$_("DrawItem.PresetSmall") || "小"} (160×100)`, w: 160, h: 100 },
+          { label: `${$_("DrawItem.PresetNormal") || "中"} (300×180)`, w: 300, h: 180 },
+          { label: `${$_("DrawItem.PresetLarge") || "大"} (500×300)`, w: 500, h: 300 },
+        ];
+    }
+  })();
+
+  const isPresetActive = (preset: SizePreset): boolean => {
+    if (!drawItem) return false;
+    if (preset.size !== undefined) {
+      return Number(drawItem.Size) === preset.size;
+    }
+    if (preset.w !== undefined && preset.h !== undefined) {
+      return Number(drawItem.W) === preset.w && Number(drawItem.H) === preset.h;
+    }
+    if (preset.h !== undefined) {
+      return Number(drawItem.H) === preset.h;
+    }
+    return false;
+  };
+
+  const applyPreset = (preset: SizePreset) => {
     if (!drawItem) return;
     if (preset.w !== undefined) drawItem.W = preset.w;
     if (preset.h !== undefined) drawItem.H = preset.h;
@@ -265,6 +335,8 @@
 
     try {
       switch (drawItem.Type) {
+        case 5: // Classic Polling Gauge
+          return classicGauge(title, color, previewValue, drawItem.Size || 16, previewDark);
         case 6: // New Gauge
           return gauge(title, previewValue, bg);
         case 7: // Bar
@@ -360,131 +432,21 @@
 
             <!-- Size Preset Quick Buttons -->
             <div class="flex flex-wrap gap-1.5">
-              {#if drawItem.Type === 11}
+              {#each currentPresets as p}
+                {@const active = isPresetActive(p)}
                 <button
                   type="button"
-                  class="px-2.5 py-1 text-xs font-medium rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500 text-gray-700 dark:text-gray-200"
-                  onclick={() => applyPreset({ w: 180, h: 70 })}
+                  class="px-2.5 py-1 text-xs rounded transition-all flex items-center gap-1.5 {active
+                    ? 'bg-blue-600 text-white font-bold border border-blue-600 shadow-sm ring-2 ring-blue-300 dark:ring-blue-800'
+                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-300 font-medium'}"
+                  onclick={() => applyPreset(p)}
                 >
-                  {$_("DrawItem.PresetCompact") || "コンパクト"} (180×70)
+                  {#if active}
+                    <span class="text-white text-[11px] font-bold">✓</span>
+                  {/if}
+                  <span>{p.label}</span>
                 </button>
-                <button
-                  type="button"
-                  class="px-2.5 py-1 text-xs font-semibold rounded bg-blue-50 dark:bg-blue-900/40 border border-blue-400 text-blue-600 dark:text-blue-300"
-                  onclick={() => applyPreset({ w: 220, h: 84 })}
-                >
-                  ★ {$_("DrawItem.PresetNormal") || "標準"} (220×84)
-                </button>
-                <button
-                  type="button"
-                  class="px-2.5 py-1 text-xs font-medium rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500 text-gray-700 dark:text-gray-200"
-                  onclick={() => applyPreset({ w: 280, h: 100 })}
-                >
-                  {$_("DrawItem.PresetLarge") || "大"} (280×100)
-                </button>
-                <button
-                  type="button"
-                  class="px-2.5 py-1 text-xs font-medium rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500 text-gray-700 dark:text-gray-200"
-                  onclick={() => applyPreset({ w: 340, h: 90 })}
-                >
-                  {$_("DrawItem.PresetWide") || "ワイド"} (340×90)
-                </button>
-              {:else if drawItem.Type === 6}
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500"
-                  onclick={() => applyPreset({ h: 64, w: 64 })}
-                >
-                  {$_("DrawItem.PresetSmall") || "小"} (64px)
-                </button>
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs font-semibold rounded bg-blue-50 dark:bg-blue-900/40 border border-blue-400 text-blue-600 dark:text-blue-300"
-                  onclick={() => applyPreset({ h: 120, w: 120 })}
-                >
-                  ★ {$_("DrawItem.PresetNormal") || "標準"} (120px)
-                </button>
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500"
-                  onclick={() => applyPreset({ h: 180, w: 180 })}
-                >
-                  {$_("DrawItem.PresetLarge") || "大"} (180px)
-                </button>
-              {:else if drawItem.Type === 7 || drawItem.Type === 8}
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500"
-                  onclick={() => applyPreset({ h: 50, w: 200 })}
-                >
-                  {$_("DrawItem.PresetSmall") || "小"} (200×50)
-                </button>
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs font-semibold rounded bg-blue-50 dark:bg-blue-900/40 border border-blue-400 text-blue-600 dark:text-blue-300"
-                  onclick={() => applyPreset({ h: 80, w: 320 })}
-                >
-                  ★ {$_("DrawItem.PresetNormal") || "標準"} (320×80)
-                </button>
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500"
-                  onclick={() => applyPreset({ h: 110, w: 440 })}
-                >
-                  {$_("DrawItem.PresetLarge") || "大"} (440×110)
-                </button>
-              {:else if drawItem.Type === 2 || drawItem.Type === 4 || drawItem.Type === 5}
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500"
-                  onclick={() => applyPreset({ size: 12 })}
-                >
-                  12px
-                </button>
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs font-semibold rounded bg-blue-50 dark:bg-blue-900/40 border border-blue-400 text-blue-600 dark:text-blue-300"
-                  onclick={() => applyPreset({ size: 16 })}
-                >
-                  ★ 16px
-                </button>
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500"
-                  onclick={() => applyPreset({ size: 24 })}
-                >
-                  24px
-                </button>
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500"
-                  onclick={() => applyPreset({ size: 32 })}
-                >
-                  32px
-                </button>
-              {:else}
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500"
-                  onclick={() => applyPreset({ w: 160, h: 100 })}
-                >
-                  {$_("DrawItem.PresetSmall") || "小"} (160×100)
-                </button>
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs font-semibold rounded bg-blue-50 dark:bg-blue-900/40 border border-blue-400 text-blue-600 dark:text-blue-300"
-                  onclick={() => applyPreset({ w: 300, h: 180 })}
-                >
-                  ★ {$_("DrawItem.PresetNormal") || "中"} (300×180)
-                </button>
-                <button
-                  type="button"
-                  class="px-2 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-500"
-                  onclick={() => applyPreset({ w: 500, h: 300 })}
-                >
-                  {$_("DrawItem.PresetLarge") || "大"} (500×300)
-                </button>
-              {/if}
+              {/each}
             </div>
 
             <!-- Manual Fine-tuning Inputs -->
@@ -526,7 +488,13 @@
                 </Label>
               {:else}
                 <Label class="space-y-1 text-xs col-span-2">
-                  <span>{$_("DrawItem.FontSize") || "文字サイズ"} (px)</span>
+                  <span>
+                    {#if drawItem.Type === 5}
+                      {$_("DrawItem.GaugeSize") || "サイズ (直径 = 設定値 × 10 px)"}
+                    {:else}
+                      {$_("DrawItem.FontSize") || "文字サイズ"} (px)
+                    {/if}
+                  </span>
                   <Input
                     class="h-8 text-right"
                     type="number"
@@ -815,8 +783,10 @@
 
             <!-- Size / Dimension Badge -->
             <div class="absolute bottom-2 left-3 text-[11px] text-gray-400 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded">
-              {#if drawItem.Type === 2 || drawItem.Type === 4 || drawItem.Type === 5}
+              {#if drawItem.Type === 2 || drawItem.Type === 4}
                 サイズ: {drawItem.Size || 16} px
+              {:else if drawItem.Type === 5}
+                サイズ: {(drawItem.Size || 16) * 10} × {(drawItem.Size || 16) * 10} px (設定値: {drawItem.Size || 16})
               {:else if drawItem.Type === 6}
                 サイズ: {drawItem.H || 120} × {drawItem.H || 120} px
               {:else if drawItem.Type === 7 || drawItem.Type === 8}

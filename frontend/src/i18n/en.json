@@ -426,7 +426,8 @@
     "Preview": "Preview",
     "PreviewDark": "Dark",
     "PreviewLight": "Light",
-    "Recommended": "Recommended"
+    "Recommended": "Recommended",
+    "GaugeSize": "Size (Diameter = Value × 10 px)"
   },
   "Discover": {
     "AutoAddPolling": "Automatic Polling Setup",

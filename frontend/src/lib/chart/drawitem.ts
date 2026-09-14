@@ -372,6 +372,76 @@ export const kpi = (
   return toSvgDataUrl(svg)
 }
 
+/**
+ * Classic Gauge (Type 5 - Polling Gauge)
+ * Matches the p5.js arc meter in map.ts
+ */
+export const classicGauge = (
+  title: string,
+  color: string,
+  val: number,
+  size: number,
+  dark: boolean
+): string => {
+  const safeSize = Math.max(8, size || 16)
+  const w = safeSize * 10
+  const h = safeSize * 10
+  const x = w / 2
+  const y = h / 2
+  const r0 = w / 2
+  const r1 = Math.max(10, (w - safeSize) / 2)
+  const r2 = Math.max(5, (w - safeSize * 4) / 2)
+
+  const v = Math.min(100, Math.max(0, val || 0))
+  const textColor = dark ? '#eee' : '#333'
+  const trackColor = dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)'
+  const arcColor = color || '#00d2ff'
+
+  const angleRad = -Math.PI / 4 + (Math.PI / 2 * v) / 100
+  const needleTipX = x + r1 * Math.sin(angleRad)
+  const needleTipY = y - r1 * Math.cos(angleRad)
+  const cosA = Math.cos(angleRad)
+  const sinA = Math.sin(angleRad)
+  const baseR = r2
+  const n2x = x + baseR * sinA + 5 * cosA
+  const n2y = y - baseR * cosA + 5 * sinA
+  const n3x = x + baseR * sinA - 5 * cosA
+  const n3y = y - baseR * cosA - 5 * sinA
+
+  const toRad = (deg: number) => (deg * Math.PI) / 180
+  const getArcPoint = (cx: number, cy: number, r: number, deg: number) => ({
+    x: cx + r * Math.sin(toRad(deg)),
+    y: cy - r * Math.cos(toRad(deg)),
+  })
+
+  const makeDonutArc = (startDeg: number, endDeg: number, ro: number, ri: number) => {
+    const p1 = getArcPoint(x, y, ro, startDeg)
+    const p2 = getArcPoint(x, y, ro, endDeg)
+    const p3 = getArcPoint(x, y, ri, endDeg)
+    const p4 = getArcPoint(x, y, ri, startDeg)
+    const largeArc = Math.abs(endDeg - startDeg) > 180 ? 1 : 0
+    return `M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} A ${ro.toFixed(1)} ${ro.toFixed(1)} 0 ${largeArc} 1 ${p2.x.toFixed(1)} ${p2.y.toFixed(1)} L ${p3.x.toFixed(1)} ${p3.y.toFixed(1)} A ${ri.toFixed(1)} ${ri.toFixed(1)} 0 ${largeArc} 0 ${p4.x.toFixed(1)} ${p4.y.toFixed(1)} Z`
+  }
+
+  const trackPath = makeDonutArc(-45, 45, r0, r1)
+  const valueEndDeg = -45 + (90 * v) / 100
+  const valuePath = v > 0 ? makeDonutArc(-45, valueEndDeg, r0, r1) : ''
+
+  const fontSize = safeSize
+  const valFontSize = Math.max(9, Math.round(safeSize * 0.65))
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
+    <path d="${trackPath}" fill="${trackColor}" />
+    ${valuePath ? `<path d="${valuePath}" fill="${arcColor}" />` : ''}
+    <text x="${x.toFixed(1)}" y="${(y - 10).toFixed(1)}" fill="${textColor}" font-family="sans-serif" font-size="${valFontSize}" font-weight="bold" text-anchor="middle">${v.toFixed(1)}%</text>
+    <text x="${x.toFixed(1)}" y="${(y + fontSize).toFixed(1)}" fill="${textColor}" font-family="sans-serif" font-size="${fontSize}" font-weight="600" text-anchor="middle">${escapeXml(title || '')}</text>
+    <polygon points="${needleTipX.toFixed(1)},${needleTipY.toFixed(1)} ${n2x.toFixed(1)},${n2y.toFixed(1)} ${n3x.toFixed(1)},${n3y.toFixed(1)}" fill="#e31a1c" />
+    <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="#e31a1c" />
+  </svg>`
+
+  return toSvgDataUrl(svg)
+}
+
 function toSvgDataUrl(svg: string): string {
   try {
     return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)))

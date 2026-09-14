@@ -413,7 +413,8 @@
     "Preview": "プレビュー",
     "PreviewDark": "ダーク",
     "PreviewLight": "ライト",
-    "Recommended": "推奨"
+    "Recommended": "推奨",
+    "GaugeSize": "サイズ (直径 = 設定値 × 10 px)"
   },
   "Discover": {
     "Discover": "自動発見",
