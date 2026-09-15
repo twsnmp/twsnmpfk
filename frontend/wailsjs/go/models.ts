@@ -425,6 +425,36 @@ export namespace datastore {
 	        this.Path = source["Path"];
 	    }
 	}
+	export class BboltLogStats {
+	    syslogCount: number;
+	    trapCount: number;
+	    netflowCount: number;
+	    sFlowCount: number;
+	    sFlowCounterCount: number;
+	    arpLogCount: number;
+	    pollingLogCount: number;
+	    totalCount: number;
+	    bboltSize: number;
+	    parquetSize: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new BboltLogStats(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.syslogCount = source["syslogCount"];
+	        this.trapCount = source["trapCount"];
+	        this.netflowCount = source["netflowCount"];
+	        this.sFlowCount = source["sFlowCount"];
+	        this.sFlowCounterCount = source["sFlowCounterCount"];
+	        this.arpLogCount = source["arpLogCount"];
+	        this.pollingLogCount = source["pollingLogCount"];
+	        this.totalCount = source["totalCount"];
+	        this.bboltSize = source["bboltSize"];
+	        this.parquetSize = source["parquetSize"];
+	    }
+	}
 	export class CertMonitorEnt {
 	    ID: string;
 	    State: string;
@@ -891,6 +921,7 @@ export namespace datastore {
 	    LLMBaseURL: string;
 	    LLMAPIKey: string;
 	    LLMModel: string;
+	    LogFormat: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new MapConfEnt(source);
@@ -931,6 +962,7 @@ export namespace datastore {
 	        this.LLMBaseURL = source["LLMBaseURL"];
 	        this.LLMAPIKey = source["LLMAPIKey"];
 	        this.LLMModel = source["LLMModel"];
+	        this.LogFormat = source["LogFormat"];
 	    }
 	}
 	export class MqttStatEnt {
@@ -2000,6 +2032,40 @@ export namespace main {
 	        this.Results = source["Results"];
 	        this.Error = source["Error"];
 	    }
+	}
+	export class LogStoreInfo {
+	    format: string;
+	    canMigrate: boolean;
+	    stats: datastore.BboltLogStats;
+	
+	    static createFrom(source: any = {}) {
+	        return new LogStoreInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.format = source["format"];
+	        this.canMigrate = source["canMigrate"];
+	        this.stats = this.convertValues(source["stats"], datastore.BboltLogStats);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class MibEnt {
 	    Name: string;

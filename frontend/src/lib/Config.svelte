@@ -54,7 +54,9 @@
     HasValidNotifyOAuth2Token,
     GetNotifyOAuth2Token,
     GetNotifyOAuth2Info,
+    GetLogStoreInfo,
   } from "../../wailsjs/go/main/App";
+  import LogMigrationDialog from "./LogMigrationDialog.svelte";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -94,10 +96,28 @@
   let sshHostPublicKey = "";
   let sshMyPublicKey = "";
 
+  let logStoreInfo: any = undefined;
+  let showMigrationDialog = false;
+
+  const onMigrationDone = async () => {
+    showMigrationDialog = false;
+    mapConf = await GetMapConf();
+    logStoreInfo = await GetLogStoreInfo();
+    if (logStoreInfo?.format) {
+      mapConf = { ...mapConf, LogFormat: logStoreInfo.format };
+    } else if (mapConf) {
+      mapConf = { ...mapConf, LogFormat: "parquet" };
+    }
+  };
+
   const dispatch = createEventDispatcher();
 
   const onOpen = async () => {
     mapConf = await GetMapConf();
+    logStoreInfo = await GetLogStoreInfo();
+    if (logStoreInfo && logStoreInfo.format && mapConf) {
+      mapConf.LogFormat = logStoreInfo.format;
+    }
     notifyConf = await GetNotifyConf();
     savedProvider = notifyConf.Provider;
     notifyHasValidToken = await HasValidNotifyOAuth2Token(notifyConf);
@@ -1091,6 +1111,34 @@
               </Label>
             </div>
           {/if}
+          <div class="border-t pt-3 dark:border-gray-700 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300">
+              <span class="font-medium">{$_("Config.LogFormat")}:</span>
+              {#if mapConf?.LogFormat === "parquet"}
+                <span class="px-2 py-0.5 rounded bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 font-semibold">
+                  {$_("Config.LogFormatParquet")}
+                </span>
+              {:else}
+                <span class="px-2 py-0.5 rounded bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 font-semibold">
+                  {$_("Config.LogFormatBbolt")}
+                </span>
+              {/if}
+            </div>
+            {#if mapConf?.LogFormat !== "parquet"}
+              <GradientButton
+                shadow
+                type="button"
+                size="xs"
+                color="red"
+                onclick={() => {
+                  showMigrationDialog = true;
+                }}
+              >
+                <Icon path={icons.mdiDatabaseArrowRight} size={1} />
+                {$_("Config.MigrateToParquet")}
+              </GradientButton>
+            {/if}
+          </div>
           <div class="flex justify-end space-x-2 mr-2">
             <GradientButton
               shadow
@@ -2120,6 +2168,12 @@
     </div>
   </form>
 </Modal>
+
+<LogMigrationDialog
+  bind:show={showMigrationDialog}
+  on:close={onMigrationDone}
+  on:done={onMigrationDone}
+/>
 
 <Help bind:show={showHelp} page={helpPage} />
 

@@ -17,6 +17,43 @@ import (
 
 var version string
 var logCh = make(chan *datastore.LogEnt, 5000)
+var flushReqCh = make(chan chan struct{})
+var paused = false
+var pauseMu sync.RWMutex
+
+// Pause pauses log reception and flushes buffered logs.
+func Pause() {
+	pauseMu.Lock()
+	paused = true
+	pauseMu.Unlock()
+	Flush()
+	log.Println("logger paused")
+}
+
+// Resume resumes log reception.
+func Resume() {
+	pauseMu.Lock()
+	defer pauseMu.Unlock()
+	paused = false
+	log.Println("logger resumed")
+}
+
+// IsPaused returns whether logger is paused.
+func IsPaused() bool {
+	pauseMu.RLock()
+	defer pauseMu.RUnlock()
+	return paused
+}
+
+// Flush flushes buffered logs to datastore.
+func Flush() {
+	req := make(chan struct{})
+	select {
+	case flushReqCh <- req:
+		<-req
+	case <-time.After(2 * time.Second):
+	}
+}
 
 func Start(ctx context.Context, v string, wg *sync.WaitGroup) error {
 	version = v
@@ -88,7 +125,16 @@ func logger(ctx context.Context, wg *sync.WaitGroup) {
 				log.Printf("stop logger")
 				return
 			}
+		case req := <-flushReqCh:
+			if len(logBuffer) > 0 {
+				datastore.SaveLogBuffer(logBuffer)
+				logBuffer = []*datastore.LogEnt{}
+			}
+			close(req)
 		case l := <-logCh:
+			if IsPaused() {
+				continue
+			}
 			logBuffer = append(logBuffer, l)
 		case <-timer1.C:
 			if len(logBuffer) > 0 {

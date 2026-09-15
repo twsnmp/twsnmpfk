@@ -188,6 +188,8 @@ export function GetLinesByNode(arg1:string):Promise<Array<datastore.LineEnt>>;
 
 export function GetLocConf():Promise<datastore.LocConfEnt>;
 
+export function GetLogStoreInfo():Promise<main.LogStoreInfo>;
+
 export function GetMIBModules():Promise<Array<datastore.MIBModuleEnt>>;
 
 export function GetMIBTree():Promise<Array<datastore.MIBTreeEnt>>;
@@ -333,6 +335,8 @@ export function LLMGeneratePollingScript(arg1:string,arg2:string,arg3:string):Pr
 export function LLMMIBSearch(arg1:string):Promise<main.LLMMIBSearchResp>;
 
 export function LogFromJS(arg1:string):Promise<void>;
+
+export function MigrateLogStoreToParquet():Promise<void>;
 
 export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 

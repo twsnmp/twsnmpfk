@@ -236,6 +236,11 @@
     "TimeoutSec": "タイムアウト(秒)",
     "Retry": "リトライ(回)",
     "LogDays": "ログ保存日数(日)",
+    "LogFormat": "ログ保存形式",
+    "LogFormatParquet": "Parquet形式",
+    "LogFormatBbolt": "bbolt形式（従来）",
+    "MigrateToParquet": "Parquetに移行",
+    "MigrateConfirm": "bbolt内のログ（syslog, trap, netflow, sflow, arp, ポーリングログ）をParquetファイルに移行します。移行中はログ受信とポーリングが一時停止します。移行を開始しますか？",
     "LLMSummary": "AIによる要約",
     "SNMPMode": "SNMPモード",
     "SelectSnmpMode": "SNMPのモードを選択",
@@ -1325,5 +1330,17 @@
     "Error": "エラー",
     "FDBTable": "FDBテーブル",
     "FDBTableNotSupported": "FDBテーブルに対応していません。"
+  },
+  "Migration": {
+    "Title": "ログ保存先の移行 (bbolt → Parquet)",
+    "ConfirmDescription": "bboltに保存されているログ（syslog, SNMPトラップ, ポーリングログ, NetFlow, sFlow等）をParquetファイルに移行します。移行中はログの受信およびポーリングが一時停止します。",
+    "TotalRecords": "移行対象ログ件数",
+    "Start": "移行開始",
+    "Cancel": "キャンセル",
+    "Starting": "移行を開始しています...",
+    "Processing": "ログ移行処理中...",
+    "CurrentBucket": "移行対象",
+    "DoneDescription": "bboltからParquetへのログ移行が正常に完了しました。ログ受信およびポーリングを再開しました。",
+    "Close": "閉じる"
   }
 }

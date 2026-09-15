@@ -49,6 +49,7 @@ var (
 	MIBDB        *gomibdb.MIBDB
 	eventLogCh   chan *EventLogEnt
 	pollingLogCh chan *PollingLogEnt
+	logStore     *ParquetLogDataStore
 
 	protMap    map[int]string
 	serviceMap map[string]string
@@ -185,6 +186,10 @@ func loadDataFromFS() error {
 	loadMailTemplateToMap("report", lang)
 	log.Println("loadArpTable")
 	loadArpTable()
+	logStore = NewParquetLogDataStore()
+	if err := logStore.Open(filepath.Join(dspath, "logs")); err != nil {
+		log.Printf("open parquet log store err=%v", err)
+	}
 	return nil
 }
 
@@ -268,6 +273,10 @@ func initDB() error {
 // CloseDB : DBをクローズする
 func CloseDB() {
 	closeGeoIP()
+	if logStore != nil {
+		logStore.Close()
+		logStore = nil
+	}
 	if db == nil {
 		return
 	}
@@ -283,15 +292,27 @@ func CloseDB() {
 }
 
 func GetDBSize() int64 {
-	if db == nil {
-		return 0
-	}
 	var dbSize int64
-	db.View(func(tx *bbolt.Tx) error {
-		dbSize = tx.Size()
-		return nil
-	})
+	if db != nil {
+		db.View(func(tx *bbolt.Tx) error {
+			dbSize = tx.Size()
+			return nil
+		})
+	}
+	if UseParquetLog() {
+		dbSize += logStore.Size()
+	}
 	return dbSize
+}
+
+// GetLogStore returns the ParquetLogDataStore instance.
+func GetLogStore() *ParquetLogDataStore {
+	return logStore
+}
+
+// UseParquetLog returns true if Parquet is configured and available for log storage.
+func UseParquetLog() bool {
+	return MapConf.LogFormat == "parquet" && logStore != nil
 }
 
 // SaveMapData saves the map data to the DB every 24 hours.

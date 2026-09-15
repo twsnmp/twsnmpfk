@@ -62,6 +62,7 @@ type MapConfEnt struct {
 	LLMBaseURL     string `json:"LLMBaseURL"`
 	LLMAPIKey      string `json:"LLMAPIKey"`
 	LLMModel       string `json:"LLMModel"`
+	LogFormat      string `json:"LogFormat"`
 }
 
 // LocConfEnt : 地図設定
@@ -84,6 +85,7 @@ func initConf() {
 	MapConf.IconSize = 2
 	MapConf.MCPEndpoint = "127.0.0.1:8089"
 	MapConf.MCPTransport = "off"
+	MapConf.LogFormat = "parquet"
 	DiscoverConf.AddPolling = true
 	DiscoverConf.Retry = 1
 	DiscoverConf.Timeout = 1
@@ -109,12 +111,30 @@ func loadConf() error {
 		b := tx.Bucket([]byte("config"))
 		v := b.Get([]byte("mapConf"))
 		if v == nil {
+			// 新規フォルダー: mapConf がまだ存在しない
+			MapConf.LogFormat = "parquet"
 			bSaveConf = true
 			return nil
 		}
+		var raw struct {
+			LogFormat *string `json:"LogFormat"`
+		}
+		_ = json.Unmarshal(v, &raw)
 		if err := json.Unmarshal(v, &MapConf); err != nil {
 			bSaveConf = true
 			return err
+		}
+		if hasBboltLogs(tx) {
+			// bboltにログが保存されている場合は必ずbbolt形式と判定
+			MapConf.LogFormat = "bbolt"
+			if raw.LogFormat != nil && *raw.LogFormat != "bbolt" {
+				bSaveConf = true
+			}
+		} else if raw.LogFormat != nil && *raw.LogFormat != "" {
+			MapConf.LogFormat = *raw.LogFormat
+		} else {
+			// 既存マップでログフォーマット未設定の場合はbbolt形式
+			MapConf.LogFormat = "bbolt"
 		}
 		v = b.Get([]byte("backImage"))
 		if v != nil {
@@ -439,3 +459,50 @@ func checkArpWatchRange() bool {
 	MapConf.ArpWatchRange = strings.Join(cidrs, ",")
 	return MapConf.ArpWatchRange != ""
 }
+
+func hasBboltLogs(tx *bbolt.Tx) bool {
+	checkBucket := func(name string) bool {
+		b := tx.Bucket([]byte(name))
+		if b == nil {
+			return false
+		}
+		k, _ := b.Cursor().First()
+		return k != nil
+	}
+	if checkBucket("syslog") || checkBucket("trap") || checkBucket("netflow") ||
+		checkBucket("sflow") || checkBucket("sflowCounter") || checkBucket("arplog") {
+		return true
+	}
+	pb := tx.Bucket([]byte("pollingLogs"))
+	if pb != nil {
+		hasLogs := false
+		_ = pb.ForEachBucket(func(k []byte) error {
+			sub := pb.Bucket(k)
+			if sub != nil {
+				sk, _ := sub.Cursor().First()
+				if sk != nil {
+					hasLogs = true
+				}
+			}
+			return nil
+		})
+		if hasLogs {
+			return true
+		}
+	}
+	return false
+}
+
+// HasBboltLogs returns true if there are any log records in bbolt log buckets.
+func HasBboltLogs() bool {
+	if db == nil {
+		return false
+	}
+	has := false
+	_ = db.View(func(tx *bbolt.Tx) error {
+		has = hasBboltLogs(tx)
+		return nil
+	})
+	return has
+}
+

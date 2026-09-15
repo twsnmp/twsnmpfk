@@ -248,6 +248,11 @@
     "FailedSendMail": "Notification email sending test failed",
     "High": "High",
     "LogDays": "Log retention days",
+    "LogFormat": "Log Storage Format",
+    "LogFormatParquet": "Parquet format",
+    "LogFormatBbolt": "bbolt format (legacy)",
+    "MigrateToParquet": "Migrate to Parquet",
+    "MigrateConfirm": "Migrate logs in bbolt (syslog, trap, netflow, sflow, arp, polling logs) to Parquet files. During migration, log receiving and polling will be paused. Do you want to start?",
     "Low": "Low",
     "MailFrom": "Mail from",
     "MailFromAddress": "Mail from address",
@@ -1332,5 +1337,17 @@
     "Port": "Port",
     "PortNum": "Number of ports",
     "Vendor": "Vendor"
+  },
+  "Migration": {
+    "Title": "Log Storage Migration (bbolt → Parquet)",
+    "ConfirmDescription": "Migrate logs stored in bbolt (syslog, SNMP traps, polling logs, NetFlow, sFlow, etc.) to Parquet files. Log receiving and polling will pause during migration.",
+    "TotalRecords": "Total records to migrate",
+    "Start": "Start Migration",
+    "Cancel": "Cancel",
+    "Starting": "Starting migration...",
+    "Processing": "Migrating logs...",
+    "CurrentBucket": "Current Bucket",
+    "DoneDescription": "Log migration from bbolt to Parquet completed successfully. Log receiving and polling have resumed.",
+    "Close": "Close"
   }
 }

@@ -185,6 +185,15 @@ func deleteOldLogs() {
 		log.Println("mapConf.LogDays < 1 ")
 		return
 	}
+	if UseParquetLog() {
+		done, c := deleteOldLog("logs")
+		_ = logStore.Cleanup(MapConf.LogDays)
+		if time.Now().Minute() == 0 {
+			_ = logStore.Compact("")
+		}
+		log.Printf("deleteOldLogs (parquet) eventLogDel=%d done=%v dur=%s", c, done, time.Since(s))
+		return
+	}
 	buckets := []string{"logs", "pollingLogs", "syslog", "arplog", "trap", "netflow", "sflow", "sflowCounter"}
 	doneMap := make(map[string]bool)
 	doneCount := 0
@@ -212,6 +221,18 @@ func deleteOldLogs() {
 }
 
 func DeleteAllLogs(b string) error {
+	if UseParquetLog() {
+		if b != "logs" {
+			target := b
+			if b == "pollingLogs" {
+				target = "polling"
+			}
+			logStore.ClearLog(target)
+		}
+	}
+	if db == nil {
+		return ErrDBNotOpen
+	}
 	return db.Batch(func(tx *bbolt.Tx) error {
 		if err := tx.DeleteBucket([]byte(b)); err != nil {
 			return err
@@ -298,6 +319,13 @@ func saveLogList(list []*EventLogEnt) {
 }
 
 func savePollingLogList(list []*PollingLogEnt) {
+	if len(list) == 0 {
+		return
+	}
+	if UseParquetLog() {
+		_ = logStore.SavePollingLogs(list)
+		return
+	}
 	if db == nil {
 		return
 	}
@@ -324,6 +352,19 @@ func savePollingLogList(list []*PollingLogEnt) {
 }
 
 func SaveLogBuffer(logBuffer []*LogEnt) {
+	if len(logBuffer) == 0 {
+		return
+	}
+	if UseParquetLog() {
+		grouped := make(map[string][]*LogEnt)
+		for _, l := range logBuffer {
+			grouped[l.Type] = append(grouped[l.Type], l)
+		}
+		for t, logs := range grouped {
+			_ = logStore.SaveLogs(t, logs)
+		}
+		return
+	}
 	if db == nil {
 		return
 	}
@@ -489,8 +530,18 @@ func getLevelFromSeverity(sv int) string {
 	return "info"
 }
 
-// ForEachLastSyslog  get syslogs
+// ForEachLastSyslog get syslogs
 func ForEachLastSyslog(f func(*SyslogEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLastLog("syslog", func(l *LogEnt) bool {
+			re := parseSyslogEnt(l)
+			if re == nil {
+				return true
+			}
+			return f(re)
+		})
+		return nil
+	}
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -503,51 +554,13 @@ func ForEachLastSyslog(f func(*SyslogEnt) bool) error {
 		for k, v := c.Last(); k != nil; k, v = c.Prev() {
 			v = deCompressLog(v)
 			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
+			if err := json.Unmarshal(v, &l); err != nil {
 				continue
 			}
-			var sl = make(map[string]interface{})
-			if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+			re := parseSyslogEnt(&l)
+			if re == nil {
 				continue
 			}
-			var ok bool
-			re := new(SyslogEnt)
-			var sv float64
-			if sv, ok = sl["severity"].(float64); !ok {
-				continue
-			}
-			var fac float64
-			if fac, ok = sl["facility"].(float64); !ok {
-				continue
-			}
-			if re.Host, ok = sl["hostname"].(string); !ok {
-				continue
-			}
-			if re.Tag, ok = sl["tag"].(string); !ok {
-				if re.Tag, ok = sl["app_name"].(string); !ok {
-					continue
-				}
-				re.Message = ""
-				for i, k := range []string{"proc_id", "msg_id", "message", "structured_data"} {
-					if m, ok := sl[k].(string); ok && m != "" {
-						if i > 0 {
-							re.Message += " "
-						}
-						re.Message += m
-					}
-				}
-			} else {
-				if re.Message, ok = sl["content"].(string); !ok {
-					continue
-				}
-			}
-			re.Time = l.Time
-			re.Level = getLevelFromSeverity(int(sv))
-			re.Type = getSyslogType(int(sv), int(fac))
-			re.Facility = int(fac)
-			re.Severity = int(sv)
 			if !f(re) {
 				break
 			}
@@ -556,8 +569,62 @@ func ForEachLastSyslog(f func(*SyslogEnt) bool) error {
 	})
 }
 
-// ForEachSyslog  get syslogs
+func parseSyslogEnt(l *LogEnt) *SyslogEnt {
+	var sl = make(map[string]interface{})
+	if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+		return nil
+	}
+	var ok bool
+	re := new(SyslogEnt)
+	var sv float64
+	if sv, ok = sl["severity"].(float64); !ok {
+		return nil
+	}
+	var fac float64
+	if fac, ok = sl["facility"].(float64); !ok {
+		return nil
+	}
+	if re.Host, ok = sl["hostname"].(string); !ok {
+		return nil
+	}
+	if re.Tag, ok = sl["tag"].(string); !ok {
+		if re.Tag, ok = sl["app_name"].(string); !ok {
+			return nil
+		}
+		re.Message = ""
+		for i, k := range []string{"proc_id", "msg_id", "message", "structured_data"} {
+			if m, ok := sl[k].(string); ok && m != "" {
+				if i > 0 {
+					re.Message += " "
+				}
+				re.Message += m
+			}
+		}
+	} else {
+		if re.Message, ok = sl["content"].(string); !ok {
+			return nil
+		}
+	}
+	re.Time = l.Time
+	re.Level = getLevelFromSeverity(int(sv))
+	re.Type = getSyslogType(int(sv), int(fac))
+	re.Facility = int(fac)
+	re.Severity = int(sv)
+	return re
+}
+
+// ForEachSyslog get syslogs
 func ForEachSyslog(st, et int64, f func(*SyslogEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLog("syslog", st, et, func(l *LogEnt) bool {
+			re := parseSyslogEnt(l)
+			if re == nil {
+				return true
+			}
+			return f(re)
+		})
+		return nil
+	}
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -571,9 +638,7 @@ func ForEachSyslog(st, et int64, f func(*SyslogEnt) bool) error {
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
 			v = deCompressLog(v)
 			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
+			if err := json.Unmarshal(v, &l); err != nil {
 				continue
 			}
 			if l.Time < st {
@@ -582,46 +647,10 @@ func ForEachSyslog(st, et int64, f func(*SyslogEnt) bool) error {
 			if l.Time > et {
 				break
 			}
-			var sl = make(map[string]interface{})
-			if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+			re := parseSyslogEnt(&l)
+			if re == nil {
 				continue
 			}
-			var ok bool
-			re := new(SyslogEnt)
-			var sv float64
-			if sv, ok = sl["severity"].(float64); !ok {
-				continue
-			}
-			var fac float64
-			if fac, ok = sl["facility"].(float64); !ok {
-				continue
-			}
-			if re.Host, ok = sl["hostname"].(string); !ok {
-				continue
-			}
-			if re.Tag, ok = sl["tag"].(string); !ok {
-				if re.Tag, ok = sl["app_name"].(string); !ok {
-					continue
-				}
-				re.Message = ""
-				for i, k := range []string{"proc_id", "msg_id", "message", "structured_data"} {
-					if m, ok := sl[k].(string); ok && m != "" {
-						if i > 0 {
-							re.Message += " "
-						}
-						re.Message += m
-					}
-				}
-			} else {
-				if re.Message, ok = sl["content"].(string); !ok {
-					continue
-				}
-			}
-			re.Time = l.Time
-			re.Level = getLevelFromSeverity(int(sv))
-			re.Type = getSyslogType(int(sv), int(fac))
-			re.Facility = int(fac)
-			re.Severity = int(sv)
 			if !f(re) {
 				break
 			}
@@ -639,8 +668,84 @@ type TrapEnt struct {
 
 var trapOidRegexp = regexp.MustCompile(`snmpTrapOID.0=(\S+)`)
 
-// ForEachLastTraps  get TRAP
+func parseTrapEnt(l *LogEnt) *TrapEnt {
+	var sl = make(map[string]interface{})
+	if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+		return nil
+	}
+	var ok bool
+	re := new(TrapEnt)
+	if fa, ok := sl["FromAddress"].(string); !ok {
+		return nil
+	} else {
+		a := strings.SplitN(fa, ":", 2)
+		if len(a) == 2 {
+			re.FromAddress = a[0]
+			n := FindNodeFromIP(a[0])
+			if n != nil {
+				re.FromAddress += "(" + n.Name + ")"
+			}
+		} else {
+			re.FromAddress = fa
+		}
+	}
+	if re.Variables, ok = sl["Variables"].(string); !ok {
+		return nil
+	}
+	var ent string
+	if ent, ok = sl["Enterprise"].(string); !ok || ent == "" {
+		a := trapOidRegexp.FindStringSubmatch(re.Variables)
+		if len(a) > 1 {
+			re.TrapType = a[1]
+		} else {
+			re.TrapType = ""
+		}
+	} else {
+		var gen float64
+		if gen, ok = sl["GenericTrap"].(float64); !ok {
+			return nil
+		}
+		var spe float64
+		if spe, ok = sl["SpecificTrap"].(float64); !ok {
+			return nil
+		}
+		switch int(gen) {
+		case 0:
+			re.TrapType = "coldStart(v1)"
+		case 1:
+			re.TrapType = "warmStart(v1)"
+		case 2:
+			re.TrapType = "linkDown(v1)"
+		case 3:
+			re.TrapType = "linkUp(v1)"
+		case 4:
+			re.TrapType = "authenticationFailure(v1)"
+		case 5:
+			re.TrapType = "egpNeighborLoss(v1)"
+		default:
+			re.TrapType = fmt.Sprintf("enterpriseSpecific(%d)", int(spe))
+		}
+		if re.Variables != "" {
+			re.Variables += ","
+		}
+		re.Variables += "Enterprise=" + ent
+	}
+	re.Time = l.Time
+	return re
+}
+
+// ForEachLastTraps get TRAP
 func ForEachLastTraps(f func(*TrapEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLastLog("trap", func(l *LogEnt) bool {
+			re := parseTrapEnt(l)
+			if re == nil {
+				return true
+			}
+			return f(re)
+		})
+		return nil
+	}
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -653,54 +758,13 @@ func ForEachLastTraps(f func(*TrapEnt) bool) error {
 		for k, v := c.Last(); k != nil; k, v = c.Prev() {
 			v = deCompressLog(v)
 			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
+			if err := json.Unmarshal(v, &l); err != nil {
 				continue
 			}
-			var sl = make(map[string]interface{})
-			if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+			re := parseTrapEnt(&l)
+			if re == nil {
 				continue
 			}
-			var ok bool
-			re := new(TrapEnt)
-			if fa, ok := sl["FromAddress"].(string); !ok {
-				continue
-			} else {
-				a := strings.SplitN(fa, ":", 2)
-				if len(a) == 2 {
-					re.FromAddress = a[0]
-					n := FindNodeFromIP(a[0])
-					if n != nil {
-						re.FromAddress += "(" + n.Name + ")"
-					}
-				} else {
-					re.FromAddress = fa
-				}
-			}
-			if re.Variables, ok = sl["Variables"].(string); !ok {
-				continue
-			}
-			var ent string
-			if ent, ok = sl["Enterprise"].(string); !ok || ent == "" {
-				a := trapOidRegexp.FindStringSubmatch(re.Variables)
-				if len(a) > 1 {
-					re.TrapType = a[1]
-				} else {
-					re.TrapType = ""
-				}
-			} else {
-				var gen float64
-				if gen, ok = sl["GenericTrap"].(float64); !ok {
-					continue
-				}
-				var spe float64
-				if spe, ok = sl["SpecificTrap"].(float64); !ok {
-					continue
-				}
-				re.TrapType = fmt.Sprintf("%s:%d:%d", ent, int(gen), int(spe))
-			}
-			re.Time = l.Time
 			if !f(re) {
 				break
 			}
@@ -709,8 +773,18 @@ func ForEachLastTraps(f func(*TrapEnt) bool) error {
 	})
 }
 
-// ForEachTraps  get TRAP
+// ForEachTraps get TRAP
 func ForEachTraps(st, et int64, f func(*TrapEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLog("trap", st, et, func(l *LogEnt) bool {
+			re := parseTrapEnt(l)
+			if re == nil {
+				return true
+			}
+			return f(re)
+		})
+		return nil
+	}
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -724,9 +798,7 @@ func ForEachTraps(st, et int64, f func(*TrapEnt) bool) error {
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
 			v = deCompressLog(v)
 			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
+			if err := json.Unmarshal(v, &l); err != nil {
 				continue
 			}
 			if l.Time < st {
@@ -735,68 +807,10 @@ func ForEachTraps(st, et int64, f func(*TrapEnt) bool) error {
 			if l.Time > et {
 				break
 			}
-			var sl = make(map[string]interface{})
-			if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {
+			re := parseTrapEnt(&l)
+			if re == nil {
 				continue
 			}
-			var ok bool
-			re := new(TrapEnt)
-			if fa, ok := sl["FromAddress"].(string); !ok {
-				continue
-			} else {
-				a := strings.SplitN(fa, ":", 2)
-				if len(a) == 2 {
-					re.FromAddress = a[0]
-					n := FindNodeFromIP(a[0])
-					if n != nil {
-						re.FromAddress += "(" + n.Name + ")"
-					}
-				} else {
-					re.FromAddress = fa
-				}
-			}
-			if re.Variables, ok = sl["Variables"].(string); !ok {
-				continue
-			}
-			var ent string
-			if ent, ok = sl["Enterprise"].(string); !ok || ent == "" {
-				a := trapOidRegexp.FindStringSubmatch(re.Variables)
-				if len(a) > 1 {
-					re.TrapType = a[1]
-				} else {
-					re.TrapType = ""
-				}
-			} else {
-				var gen float64
-				if gen, ok = sl["GenericTrap"].(float64); !ok {
-					continue
-				}
-				var spe float64
-				if spe, ok = sl["SpecificTrap"].(float64); !ok {
-					continue
-				}
-				switch int(gen) {
-				case 0:
-					re.TrapType = "coldStart(v1)"
-				case 1:
-					re.TrapType = "warmStart(v1)"
-				case 2:
-					re.TrapType = "linkDown(v1)"
-				case 3:
-					re.TrapType = "linkUp(v1)"
-				case 4:
-					re.TrapType = "authenticationFailure(v1)"
-				case 5:
-					re.TrapType = "egpNeighborLoss(v1)"
-				default:
-					re.TrapType = fmt.Sprintf("enterpriseSpecific(%d)", int(spe))
-				}
-				if re.Variables != "" {
-					re.Variables += ","
-				}
-				re.Variables += "Enterprise=" + ent
-			}
-			re.Time = l.Time
 			if !f(re) {
 				break
 			}
@@ -813,8 +827,39 @@ type ArpLogEnt struct {
 	OldMAC string `json:"OldMAC"`
 }
 
+func parseArpLogEnt(l *LogEnt) *ArpLogEnt {
+	a := strings.Split(l.Log, ",")
+	if len(a) < 3 {
+		return nil
+	}
+	st := a[0]
+	ip := a[1]
+	newMac := a[2]
+	oldMac := ""
+	if len(a) > 3 {
+		oldMac = a[3]
+	}
+	return &ArpLogEnt{
+		Time:   l.Time,
+		State:  st,
+		IP:     ip,
+		NewMAC: newMac,
+		OldMAC: oldMac,
+	}
+}
+
 // ForEachLastArpLogs は最新のARP Logを返します。
 func ForEachLastArpLogs(f func(*ArpLogEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLastLog("arplog", func(l *LogEnt) bool {
+			re := parseArpLogEnt(l)
+			if re == nil {
+				return true
+			}
+			return f(re)
+		})
+		return nil
+	}
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -827,29 +872,14 @@ func ForEachLastArpLogs(f func(*ArpLogEnt) bool) error {
 		for k, v := c.Last(); k != nil; k, v = c.Prev() {
 			v = deCompressLog(v)
 			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
+			if err := json.Unmarshal(v, &l); err != nil {
 				continue
 			}
-			a := strings.Split(l.Log, ",")
-			if len(a) < 3 {
+			re := parseArpLogEnt(&l)
+			if re == nil {
 				continue
 			}
-			st := a[0]
-			ip := a[1]
-			newMac := a[2]
-			oldMac := ""
-			if len(a) > 3 {
-				oldMac = a[3]
-			}
-			if !f(&ArpLogEnt{
-				Time:   l.Time,
-				State:  st,
-				IP:     ip,
-				NewMAC: newMac,
-				OldMAC: oldMac,
-			}) {
+			if !f(re) {
 				break
 			}
 		}
@@ -859,6 +889,10 @@ func ForEachLastArpLogs(f func(*ArpLogEnt) bool) error {
 
 // ForEachLogs returns logs that match the specified conditions.
 func ForEachLogs(st, et int64, lt string, f func(*LogEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLog(lt, st, et, f)
+		return nil
+	}
 	sk := fmt.Sprintf("%016x", st)
 	return db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(lt))
@@ -869,9 +903,7 @@ func ForEachLogs(st, et int64, lt string, f func(*LogEnt) bool) error {
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
 			v = deCompressLog(v)
 			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
+			if err := json.Unmarshal(v, &l); err != nil {
 				continue
 			}
 			if l.Time < st {
@@ -908,8 +940,27 @@ type NetFlowEnt struct {
 	Dur      float64 `json:"Dur"`
 }
 
-// ForEachNetFlow  get NetFlow log
+func parseNetFlowEnt(l *LogEnt) *NetFlowEnt {
+	var nf = new(NetFlowEnt)
+	if err := json.Unmarshal([]byte(l.Log), nf); err != nil {
+		return nil
+	}
+	nf.Time = l.Time
+	return nf
+}
+
+// ForEachNetFlow get NetFlow log
 func ForEachNetFlow(st, et int64, f func(*NetFlowEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLog("netflow", st, et, func(l *LogEnt) bool {
+			re := parseNetFlowEnt(l)
+			if re == nil {
+				return true
+			}
+			return f(re)
+		})
+		return nil
+	}
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -923,9 +974,7 @@ func ForEachNetFlow(st, et int64, f func(*NetFlowEnt) bool) error {
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
 			v = deCompressLog(v)
 			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
+			if err := json.Unmarshal(v, &l); err != nil {
 				continue
 			}
 			if l.Time < st {
@@ -934,13 +983,11 @@ func ForEachNetFlow(st, et int64, f func(*NetFlowEnt) bool) error {
 			if l.Time > et {
 				break
 			}
-			var nf = new(NetFlowEnt)
-			if err := json.Unmarshal([]byte(l.Log), nf); err != nil {
-				log.Println(err)
+			re := parseNetFlowEnt(&l)
+			if re == nil {
 				continue
 			}
-			nf.Time = l.Time
-			if !f(nf) {
+			if !f(re) {
 				break
 			}
 		}
@@ -964,8 +1011,27 @@ type SFlowEnt struct {
 	Reason   int    `json:"Reason"`
 }
 
-// ForEachSFlow  get sFlow log
+func parseSFlowEnt(l *LogEnt) *SFlowEnt {
+	var sf = new(SFlowEnt)
+	if err := json.Unmarshal([]byte(l.Log), sf); err != nil {
+		return nil
+	}
+	sf.Time = l.Time
+	return sf
+}
+
+// ForEachSFlow get sFlow log
 func ForEachSFlow(st, et int64, f func(*SFlowEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLog("sflow", st, et, func(l *LogEnt) bool {
+			re := parseSFlowEnt(l)
+			if re == nil {
+				return true
+			}
+			return f(re)
+		})
+		return nil
+	}
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -979,9 +1045,7 @@ func ForEachSFlow(st, et int64, f func(*SFlowEnt) bool) error {
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
 			v = deCompressLog(v)
 			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
+			if err := json.Unmarshal(v, &l); err != nil {
 				continue
 			}
 			if l.Time < st {
@@ -990,13 +1054,11 @@ func ForEachSFlow(st, et int64, f func(*SFlowEnt) bool) error {
 			if l.Time > et {
 				break
 			}
-			var sf = new(SFlowEnt)
-			if err := json.Unmarshal([]byte(l.Log), sf); err != nil {
-				log.Println(err)
+			re := parseSFlowEnt(&l)
+			if re == nil {
 				continue
 			}
-			sf.Time = l.Time
-			if !f(sf) {
+			if !f(re) {
 				break
 			}
 		}
@@ -1011,8 +1073,27 @@ type SFlowCounterEnt struct {
 	Data   string `json:"Data"`
 }
 
+func parseSFlowCounterEnt(l *LogEnt) *SFlowCounterEnt {
+	var sfc = new(SFlowCounterEnt)
+	if err := json.Unmarshal([]byte(l.Log), sfc); err != nil {
+		return nil
+	}
+	sfc.Time = l.Time
+	return sfc
+}
+
 // ForEachSFlowCounter gets sFlow counter logs.
 func ForEachSFlowCounter(st, et int64, f func(*SFlowCounterEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLog("sflowCounter", st, et, func(l *LogEnt) bool {
+			re := parseSFlowCounterEnt(l)
+			if re == nil {
+				return true
+			}
+			return f(re)
+		})
+		return nil
+	}
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -1026,9 +1107,7 @@ func ForEachSFlowCounter(st, et int64, f func(*SFlowCounterEnt) bool) error {
 		for k, v := c.Seek([]byte(sk)); k != nil; k, v = c.Next() {
 			v = deCompressLog(v)
 			var l LogEnt
-			err := json.Unmarshal(v, &l)
-			if err != nil {
-				log.Println(err)
+			if err := json.Unmarshal(v, &l); err != nil {
 				continue
 			}
 			if l.Time < st {
@@ -1037,13 +1116,11 @@ func ForEachSFlowCounter(st, et int64, f func(*SFlowCounterEnt) bool) error {
 			if l.Time > et {
 				break
 			}
-			var sfc = new(SFlowCounterEnt)
-			if err := json.Unmarshal([]byte(l.Log), sfc); err != nil {
-				log.Println(err)
+			re := parseSFlowCounterEnt(&l)
+			if re == nil {
 				continue
 			}
-			sfc.Time = l.Time
-			if !f(sfc) {
+			if !f(re) {
 				break
 			}
 		}

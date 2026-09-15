@@ -205,6 +205,10 @@ func AddPollingLog(p *PollingEnt) error {
 }
 
 func ForEachLastPollingLog(pollingID string, f func(*PollingLogEnt) bool) error {
+	if UseParquetLog() {
+		logStore.ForEachLastPollingLog(pollingID, f)
+		return nil
+	}
 	if db == nil {
 		return ErrDBNotOpen
 	}
@@ -236,21 +240,27 @@ func ForEachLastPollingLog(pollingID string, f func(*PollingLogEnt) bool) error 
 // ClearPollingLogs : ポーリングログの削除をまとめて行う
 func ClearPollingLogs(ids []string) error {
 	st := time.Now()
-	return db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("pollingLogs"))
-		if b == nil {
-			return fmt.Errorf("bucket pollingLogs not found")
-		}
-		for _, id := range ids {
-			b.DeleteBucket([]byte(id))
-		}
-		log.Printf("ClearPollingLogs dur=%v", time.Since(st))
-		return nil
-	})
+	if db != nil {
+		_ = db.Batch(func(tx *bbolt.Tx) error {
+			b := tx.Bucket([]byte("pollingLogs"))
+			if b == nil {
+				return nil
+			}
+			for _, id := range ids {
+				b.DeleteBucket([]byte(id))
+			}
+			return nil
+		})
+	}
+	log.Printf("ClearPollingLogs dur=%v", time.Since(st))
+	return nil
 }
 
 // GetAllPollingLog :全てのポーリングログを取得する
 func GetAllPollingLog(pollingID string) []*PollingLogEnt {
+	if UseParquetLog() {
+		return logStore.GetAllPollingLog(pollingID)
+	}
 	ret := []*PollingLogEnt{}
 	if db == nil {
 		return ret

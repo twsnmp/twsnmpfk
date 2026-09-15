@@ -366,6 +366,10 @@ export function GetLocConf() {
   return window['go']['main']['App']['GetLocConf']();
 }
 
+export function GetLogStoreInfo() {
+  return window['go']['main']['App']['GetLogStoreInfo']();
+}
+
 export function GetMIBModules() {
   return window['go']['main']['App']['GetMIBModules']();
 }
@@ -656,6 +660,10 @@ export function LLMMIBSearch(arg1) {
 
 export function LogFromJS(arg1) {
   return window['go']['main']['App']['LogFromJS'](arg1);
+}
+
+export function MigrateLogStoreToParquet() {
+  return window['go']['main']['App']['MigrateLogStoreToParquet']();
 }
 
 export function Ping(arg1) {

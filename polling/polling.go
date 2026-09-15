@@ -33,6 +33,31 @@ var (
 )
 var stopPolling = false
 var checkingPolling = false
+var paused = false
+var pauseMu sync.RWMutex
+
+// Pause pauses polling execution.
+func Pause() {
+	pauseMu.Lock()
+	defer pauseMu.Unlock()
+	paused = true
+	log.Println("polling paused")
+}
+
+// Resume resumes polling execution.
+func Resume() {
+	pauseMu.Lock()
+	defer pauseMu.Unlock()
+	paused = false
+	log.Println("polling resumed")
+}
+
+// IsPaused returns whether polling is paused.
+func IsPaused() bool {
+	pauseMu.RLock()
+	defer pauseMu.RUnlock()
+	return paused
+}
 
 func Start(ctx context.Context, wg *sync.WaitGroup) error {
 	doPollingCh = make(chan string, maxPolling)
@@ -135,12 +160,18 @@ func pollingBackend(ctx context.Context, wg *sync.WaitGroup) {
 			log.Println("stop polling")
 			return
 		case <-timer.C:
+			if IsPaused() {
+				continue
+			}
 			if !checkingPolling {
 				go checkPolling()
 			} else {
 				log.Println("skip polling check")
 			}
 		case id := <-doPollingCh:
+			if IsPaused() {
+				continue
+			}
 			pe := datastore.GetPolling(id)
 			if pe != nil && pe.NextTime <= time.Now().UnixNano() {
 				if _, busy := busyPollings.Load(id); !busy {
