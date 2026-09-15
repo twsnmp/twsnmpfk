@@ -865,9 +865,10 @@
           {$_("Config.Map")}
         </div>
       {/snippet}
-        <form class="flex flex-col space-y-4" action="#">
-          <div class="grid gap-2 grid-cols-4">
-            <Label class="col-span-3 space-y-2 text-xs">
+        <form class="flex flex-col gap-2" action="#">
+          <!-- 行1: マップ名 / マップサイズ / アイコンサイズ -->
+          <div class="grid gap-2 grid-cols-5">
+            <Label class="col-span-3 space-y-1 text-xs">
               <span>{$_("Config.MapName")}</span>
               <Input
                 class="h-8"
@@ -877,7 +878,7 @@
                 size="sm"
               />
             </Label>
-            <Label>
+            <Label class="space-y-1 text-xs">
               {$_("Config.MapSize")}
               <Select
                 items={mapSizeList}
@@ -886,16 +887,17 @@
                 size="sm"
               />
             </Label>
-            <Label>
+            <Label class="space-y-1 text-xs">
               {$_("Config.IconSize")}
               <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} />
             </Label>
           </div>
-          <div class="grid gap-3 mb-4 md:grid-cols-4">
-            <Label class="space-y-2 text-xs">
-              <span> {$_("Config.PollingIntSec")} </span>
+          <!-- 行2: ポーリング設定 + OTel設定を1行に -->
+          <div class="grid gap-2 md:grid-cols-6">
+            <Label class="space-y-1 text-xs">
+              <span>{$_("Config.PollingIntSec")}</span>
               <Input
-                class="h-8 w-24 text-right"
+                class="h-8 text-right"
                 type="number"
                 min={5}
                 max={3600 * 24}
@@ -904,10 +906,10 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2 text-xs">
-              <span> {$_("Config.TimeoutSec")} </span>
+            <Label class="space-y-1 text-xs">
+              <span>{$_("Config.TimeoutSec")}</span>
               <Input
-                class="h-8 w-24 text-right"
+                class="h-8 text-right"
                 type="number"
                 min={1}
                 max={120}
@@ -916,10 +918,10 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2 text-xs">
-              <span> {$_("Config.Retry")} </span>
+            <Label class="space-y-1 text-xs">
+              <span>{$_("Config.Retry")}</span>
               <Input
-                class="h-8 w-24 text-right"
+                class="h-8 text-right"
                 type="number"
                 min={0}
                 max={100}
@@ -928,10 +930,10 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2 text-xs">
-              <span> {$_("Config.LogDays")} </span>
+            <Label class="space-y-1 text-xs">
+              <span>{$_("Config.LogDays")}</span>
               <Input
-                class="h-8 w-24 text-right"
+                class="h-8 text-right"
                 type="number"
                 min={1}
                 max={365 * 5}
@@ -940,12 +942,10 @@
                 size="sm"
               />
             </Label>
-          </div>
-          <div class="grid gap-4 md:grid-cols-4">
-            <Label class="space-y-2 text-xs">
-              <span> {$_("Config.OTelRetention")} </span>
+            <Label class="space-y-1 text-xs">
+              <span>{$_("Config.OTelRetention")}</span>
               <Input
-                class="h-8 w-24 text-right"
+                class="h-8 text-right"
                 type="number"
                 min={1}
                 max={24 * 30}
@@ -954,21 +954,22 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2 text-xs">
-              <span> {$_("Config.OTelFrom")} </span>
+            <Label class="space-y-1 text-xs">
+              <span>{$_("Config.OTelFrom")}</span>
               <Input class="h-8" bind:value={mapConf.OTelFrom} size="sm" />
             </Label>
           </div>
-          <div class="grid gap-4 md:grid-cols-5">
-            <Label class="space-y-2 text-xs">
-              <span> {$_("Config.MCPTransport")} </span>
+          <!-- 行3: MCP設定 -->
+          <div class="grid gap-2 md:grid-cols-5">
+            <Label class="space-y-1 text-xs">
+              <span>{$_("Config.MCPTransport")}</span>
               <Select
                 items={mcpTransportList}
                 bind:value={mapConf.MCPTransport}
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2 text-xs">
+            <Label class="space-y-1 text-xs">
               <span>{$_("Config.MCPEndpoint")}</span>
               <Input
                 class="h-8"
@@ -977,7 +978,7 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2 text-xs">
+            <Label class="space-y-1 text-xs">
               <span>{$_('Config.MCPFrom')}</span>
               <Input
                 class="h-8"
@@ -986,7 +987,7 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2 text-xs">
+            <Label class="space-y-1 text-xs">
               <span>{$_('Config.MCPToken')}</span>
               <Input
                 class="h-8"
@@ -994,11 +995,11 @@
                 size="sm"
               />
             </Label>
-            <div class="mt-5">
+            <div class="mt-4 flex items-center gap-1">
               <Button
                 color="alternative"
                 type="button"
-                class="ml-2 !p-2"
+                class="!p-2"
                 onclick={copyMCPToken}
                 size="xs"
               >
@@ -1011,7 +1012,7 @@
               <Button
                 color="red"
                 type="button"
-                class="ml-2 !p-2"
+                class="!p-2"
                 onclick={refreshMCPToken}
                 size="xs"
               >
@@ -1019,9 +1020,10 @@
               </Button>
             </div>
           </div>
-          <div class="grid gap-4 md:grid-cols-4">
-            <Label class="space-y-2 text-xs">
-              <span> {$_('Config.LLMProvider')} </span>
+          <!-- 行4: LLM設定 -->
+          <div class="grid gap-2 md:grid-cols-4">
+            <Label class="space-y-1 text-xs">
+              <span>{$_('Config.LLMProvider')}</span>
               <Select
                 items={llmProvidertList}
                 bind:value={mapConf.LLMProvider}
@@ -1030,7 +1032,7 @@
               />
             </Label>
             {#if mapConf.LLMProvider === 'tensai'}
-              <Label class="space-y-2 text-xs md:col-span-2">
+              <Label class="space-y-1 text-xs md:col-span-2">
                 <span>{$_('Config.LLMModelSelect')}</span>
                 {#if localModels.length > 0}
                   <Select
@@ -1061,7 +1063,7 @@
                 </Button>
               </div>
             {:else if mapConf.LLMProvider && mapConf.LLMProvider !== 'none'}
-              <Label class="space-y-2 text-xs">
+              <Label class="space-y-1 text-xs">
                 <span>LLM URL</span>
                 <Input
                   class="h-8"
@@ -1070,7 +1072,7 @@
                   size="sm"
                 />
               </Label>
-              <Label class="space-y-2 text-xs">
+              <Label class="space-y-1 text-xs">
                 <span>{$_('Config.LLMAPIKey')}</span>
                 <Input
                   class="h-8"
@@ -1079,7 +1081,7 @@
                   size="sm"
                 />
               </Label>
-              <Label class="space-y-2 text-xs">
+              <Label class="space-y-1 text-xs">
                 <span>{$_('Config.LLMModel')}</span>
                 <Input
                   class="h-8"
@@ -1090,7 +1092,7 @@
             {/if}
           </div>
           {#if mapConf.LLMProvider === 'tensai' && hardwareStatus}
-            <div class="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded border dark:border-gray-700 text-xs">
+            <div class="flex items-center gap-2 px-2 py-1 bg-gray-50 dark:bg-gray-800 rounded border dark:border-gray-700 text-xs">
               <span class="font-medium text-gray-700 dark:text-gray-300">{$_('Config.LLMAcceleration')}:</span>
               {#if hardwareStatus.acceleration === 'GPU'}
                 <Badge color="green">GPU</Badge>
@@ -1102,9 +1104,10 @@
               <span class="text-gray-500 dark:text-gray-400">{hardwareStatus.detail}</span>
             </div>
           {/if}
-          <div class="grid gap-4 md:grid-cols-3">
-            <Label class="space-y-2 text-xs">
-              <span> {$_("Config.SNMPMode")} </span>
+          <!-- 行5: SNMPモード -->
+          <div class="grid gap-2 md:grid-cols-3">
+            <Label class="space-y-1 text-xs">
+              <span>{$_("Config.SNMPMode")}</span>
               <Select
                 items={snmpModeList}
                 bind:value={mapConf.SnmpMode}
@@ -1113,7 +1116,7 @@
               />
             </Label>
             {#if mapConf.SnmpMode == "v1" || mapConf.SnmpMode == "v2c"}
-              <Label class="space-y-2 text-xs">
+              <Label class="space-y-1 text-xs">
                 <span>SNMP Community</span>
                 <Input
                   class="h-8"
@@ -1123,7 +1126,7 @@
                 />
               </Label>
             {:else}
-              <Label class="space-y-2 text-xs">
+              <Label class="space-y-1 text-xs">
                 <span>{$_("Config.SnmpUser")}</span>
                 <Input
                   class="h-8"
@@ -1132,7 +1135,7 @@
                   size="sm"
                 />
               </Label>
-              <Label class="space-y-2 text-xs">
+              <Label class="space-y-1 text-xs">
                 <span>{$_("Config.SnmpPassword")}</span>
                 <Input
                   class="h-8"
@@ -1144,7 +1147,8 @@
               </Label>
             {/if}
           </div>
-          <div class="flex flex-wrap gap-x-4 gap-y-2 mb-4">
+          <!-- 行6: サービス有効/無効チェックボックス -->
+          <div class="flex flex-wrap gap-x-4 gap-y-1">
             <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableSyslogd}>Syslog</Checkbox></div>
             <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableNetflowd}>NetFlow</Checkbox></div>
             <div class="whitespace-nowrap"><Checkbox bind:checked={mapConf.EnableSFlowd}>sFlow</Checkbox></div>
@@ -1159,19 +1163,19 @@
             {/if}
           </div>
           {#if mapConf.EnableArpWatch}
-            <div class="grid gap-4 mb-4 md:grid-cols-3">
-              <Label class="space-y-2 text-xs col-span-2">
-                <span> {$_("Config.ArpIPRange")} </span>
+            <div class="grid gap-2 md:grid-cols-3">
+              <Label class="space-y-1 text-xs col-span-2">
+                <span>{$_("Config.ArpIPRange")}</span>
                 <Input
                   class="h-8"
                   bind:value={mapConf.ArpWatchRange}
                   size="sm"
                 />
               </Label>
-              <Label class="space-y-2 text-xs">
-                <span> {$_("Config.ArpTimeout")} </span>
+              <Label class="space-y-1 text-xs">
+                <span>{$_("Config.ArpTimeout")}</span>
                 <Input
-                  class="h-8 w-24 text-right"
+                  class="h-8 text-right"
                   type="number"
                   min={1}
                   max={24 * 7}
@@ -1182,7 +1186,8 @@
               </Label>
             </div>
           {/if}
-          <div class="border-t pt-3 dark:border-gray-700 flex items-center justify-between">
+          <!-- フッター: ログ形式 + アクションボタン -->
+          <div class="border-t pt-2 dark:border-gray-700 flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300">
               <span class="font-medium">{$_("Config.LogFormat")}:</span>
               {#if mapConf?.LogFormat === "parquet"}
@@ -1194,82 +1199,82 @@
                   {$_("Config.LogFormatBbolt")}
                 </span>
               {/if}
+              {#if mapConf?.LogFormat !== "parquet"}
+                <GradientButton
+                  shadow
+                  type="button"
+                  size="xs"
+                  color="red"
+                  onclick={() => {
+                    showMigrationDialog = true;
+                  }}
+                >
+                  <Icon path={icons.mdiDatabaseArrowRight} size={1} />
+                  {$_("Config.MigrateToParquet")}
+                </GradientButton>
+              {/if}
             </div>
-            {#if mapConf?.LogFormat !== "parquet"}
+            <div class="flex gap-1 flex-wrap justify-end">
+              <GradientButton
+                shadow
+                color="lime"
+                type="button"
+                onclick={importMap}
+                size="xs"
+              >
+                <Icon path={icons.mdiKeyChain} size={1} />
+                {$_("Config.Import")}
+              </GradientButton>
+              <GradientButton
+                shadow
+                color="blue"
+                type="button"
+                onclick={() => (showSSHPublicKey = true)}
+                size="xs"
+              >
+                <Icon path={icons.mdiKeyChain} size={1} />
+                {$_("Config.SSHPublicKey")}
+              </GradientButton>
+              <GradientButton
+                shadow
+                color="blue"
+                type="button"
+                onclick={saveMapConf}
+                size="xs"
+              >
+                <Icon path={icons.mdiContentSave} size={1} />
+                {$_("Config.Save")}
+              </GradientButton>
               <GradientButton
                 shadow
                 type="button"
                 size="xs"
-                color="red"
+                color="lime"
                 onclick={() => {
-                  showMigrationDialog = true;
+                  helpPage = "mapconf";
+                  showHelp = true;
                 }}
               >
-                <Icon path={icons.mdiDatabaseArrowRight} size={1} />
-                {$_("Config.MigrateToParquet")}
+                <Icon path={icons.mdiHelp} size={1} />
+                <span>
+                  {$_("Config.Help")}
+                </span>
               </GradientButton>
-            {/if}
-          </div>
-          <div class="flex justify-end space-x-2 mr-2">
-            <GradientButton
-              shadow
-              color="lime"
-              type="button"
-              onclick={importMap}
-              size="xs"
-            >
-              <Icon path={icons.mdiKeyChain} size={1} />
-              {$_("Config.Import")}
-            </GradientButton>
-            <GradientButton
-              shadow
-              color="blue"
-              type="button"
-              onclick={() => (showSSHPublicKey = true)}
-              size="xs"
-            >
-              <Icon path={icons.mdiKeyChain} size={1} />
-              {$_("Config.SSHPublicKey")}
-            </GradientButton>
-            <GradientButton
-              shadow
-              color="blue"
-              type="button"
-              onclick={saveMapConf}
-              size="xs"
-            >
-              <Icon path={icons.mdiContentSave} size={1} />
-              {$_("Config.Save")}
-            </GradientButton>
-            <GradientButton
-              shadow
-              type="button"
-              size="xs"
-              color="lime"
-              class="ml-2"
-              onclick={() => {
-                helpPage = "mapconf";
-                showHelp = true;
-              }}
-            >
-              <Icon path={icons.mdiHelp} size={1} />
-              <span>
-                {$_("Config.Help")}
-              </span>
-            </GradientButton>
-            <GradientButton
-              shadow
-              type="button"
-              color="teal"
-              onclick={close}
-              size="xs"
-            >
-              <Icon path={icons.mdiCancel} size={1} />
-              {$_("Config.Cancel")}
-            </GradientButton>
+              <GradientButton
+                shadow
+                type="button"
+                color="teal"
+                onclick={close}
+                size="xs"
+              >
+                <Icon path={icons.mdiCancel} size={1} />
+                {$_("Config.Cancel")}
+              </GradientButton>
+            </div>
           </div>
         </form>
       </TabItem>
+
       <TabItem>
         {#snippet titleSlot()}
         <div class="flex items-center gap-2">
