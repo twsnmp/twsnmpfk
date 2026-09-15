@@ -23,6 +23,7 @@ require (
 	github.com/knadh/go-pop3 v1.0.0
 	github.com/labstack/echo/v4 v4.15.3
 	github.com/labstack/gommon v0.5.0
+	github.com/mattn/tensai v0.0.26
 	github.com/mochi-mqtt/server/v2 v2.7.9
 	github.com/modelcontextprotocol/go-sdk v1.5.0
 	github.com/montanaflynn/stats v0.7.1
@@ -58,6 +59,7 @@ require (
 	golang.org/x/crypto v0.55.0
 	golang.org/x/net v0.58.0
 	golang.org/x/oauth2 v0.36.0
+	golang.org/x/sys v0.47.0
 	golang.org/x/text v0.41.0
 	gonum.org/v1/gonum v0.17.0
 	google.golang.org/grpc v1.83.2
@@ -89,6 +91,7 @@ require (
 	github.com/bufbuild/protocompile v0.14.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dlclark/regexp2 v1.11.0 // indirect
+	github.com/ebitengine/purego v0.10.2 // indirect
 	github.com/emersion/go-message v0.18.1 // indirect
 	github.com/emersion/go-sasl v0.0.0-20231106173351-e73c9f7bad43 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -200,7 +203,6 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	google.golang.org/api v0.264.0 // indirect
 	google.golang.org/genproto v0.0.0-20260128011058-8636f8732409 // indirect

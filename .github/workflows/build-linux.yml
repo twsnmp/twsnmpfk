@@ -13,6 +13,9 @@ jobs:
     permissions:
       contents: write
 
+    env:
+      GOEXPERIMENT: simd
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -41,7 +44,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install Wails CLI
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.12.0
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.15.0
 
       - name: Build Frontend Dependencies
         run: |
@@ -51,13 +54,13 @@ jobs:
 
       - name: Build Wails App for Linux
         run: |
-          # Gitタグをバージョンとして使用。手動実行時のフォールバックとしてv1.33.0を使用
+          # Gitタグをバージョンとして使用。手動実行時のフォールバックとしてv2.3.0を使用
           VERSION="${{ github.ref_name }}"
           if [[ ! "$VERSION" =~ ^v[0-9] ]]; then
-            VERSION="v1.33.0"
+            VERSION="v2.3.0"
           fi
           COMMIT=$(git rev-parse --short HEAD)
-          wails build -clean -platform linux/amd64 -tags webkit2_41 -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${COMMIT}"
+          wails build -clean -platform linux/amd64 -tags "webkit2_41,wgpu24" -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${COMMIT}"
 
       - name: Package Binary
         run: |

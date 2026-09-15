@@ -1699,6 +1699,28 @@ export namespace discover {
 
 export namespace main {
 	
+	export class AIHardwareStatus {
+	    acceleration: string;
+	    detail: string;
+	    model_dir: string;
+	    lib_dir: string;
+	    wgpu_lib_path: string;
+	    has_gpu_lib: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new AIHardwareStatus(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.acceleration = source["acceleration"];
+	        this.detail = source["detail"];
+	        this.model_dir = source["model_dir"];
+	        this.lib_dir = source["lib_dir"];
+	        this.wgpu_lib_path = source["wgpu_lib_path"];
+	        this.has_gpu_lib = source["has_gpu_lib"];
+	    }
+	}
 	export class AIList {
 	    ID: string;
 	    Node: string;
@@ -2472,6 +2494,72 @@ export namespace main {
 	        this.HasRefreshToken = source["HasRefreshToken"];
 	        this.Expiry = source["Expiry"];
 	        this.RedirectURL = source["RedirectURL"];
+	    }
+	}
+
+}
+
+export namespace model {
+	
+	export class ModelInfo {
+	    name: string;
+	    path: string;
+	    size: number;
+	    size_human: string;
+	    // Go type: time
+	    mod_time: any;
+	    type: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ModelInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.path = source["path"];
+	        this.size = source["size"];
+	        this.size_human = source["size_human"];
+	        this.mod_time = this.convertValues(source["mod_time"], null);
+	        this.type = source["type"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class PresetModelInfo {
+	    name: string;
+	    url: string;
+	    description: string;
+	    size: string;
+	    params: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PresetModelInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.url = source["url"];
+	        this.description = source["description"];
+	        this.size = source["size"];
+	        this.params = source["params"];
 	    }
 	}
 

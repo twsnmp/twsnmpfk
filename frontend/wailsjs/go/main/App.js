@@ -22,6 +22,14 @@ export function Backup() {
   return window['go']['main']['App']['Backup']();
 }
 
+export function CancelGPUDownload() {
+  return window['go']['main']['App']['CancelGPUDownload']();
+}
+
+export function CancelModelDownload() {
+  return window['go']['main']['App']['CancelModelDownload']();
+}
+
 export function CheckNetwork(arg1) {
   return window['go']['main']['App']['CheckNetwork'](arg1);
 }
@@ -110,6 +118,10 @@ export function DeleteLine(arg1) {
   return window['go']['main']['App']['DeleteLine'](arg1);
 }
 
+export function DeleteLocalModel(arg1) {
+  return window['go']['main']['App']['DeleteLocalModel'](arg1);
+}
+
 export function DeleteMqttStats(arg1) {
   return window['go']['main']['App']['DeleteMqttStats'](arg1);
 }
@@ -140,6 +152,14 @@ export function DestroyCA() {
 
 export function DetectNodeType(arg1) {
   return window['go']['main']['App']['DetectNodeType'](arg1);
+}
+
+export function DownloadGPULibrary() {
+  return window['go']['main']['App']['DownloadGPULibrary']();
+}
+
+export function DownloadModel(arg1) {
+  return window['go']['main']['App']['DownloadModel'](arg1);
 }
 
 export function ExportAIData(arg1) {
@@ -236,6 +256,10 @@ export function GNMIGet(arg1, arg2, arg3, arg4) {
 
 export function GetAIConf() {
   return window['go']['main']['App']['GetAIConf']();
+}
+
+export function GetAIHardwareStatus() {
+  return window['go']['main']['App']['GetAIHardwareStatus']();
 }
 
 export function GetAIList() {
@@ -366,6 +390,10 @@ export function GetLocConf() {
   return window['go']['main']['App']['GetLocConf']();
 }
 
+export function GetLocalModels() {
+  return window['go']['main']['App']['GetLocalModels']();
+}
+
 export function GetLogStoreInfo() {
   return window['go']['main']['App']['GetLogStoreInfo']();
 }
@@ -388,6 +416,10 @@ export function GetMapEventLogs() {
 
 export function GetMapName() {
   return window['go']['main']['App']['GetMapName']();
+}
+
+export function GetModelPresets() {
+  return window['go']['main']['App']['GetModelPresets']();
 }
 
 export function GetMonitorDatas() {

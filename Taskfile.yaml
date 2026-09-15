@@ -4,6 +4,10 @@ vars:
   VERSION: v2.3.0
   COMMIT:
     sh: git rev-parse --short HEAD
+  TAGS: wgpu24
+
+env:
+  GOEXPERIMENT: simd
 
 tasks:
   default:
@@ -12,31 +16,31 @@ tasks:
       - task: mac
   dev:
     cmds:
-      - wails dev -appargs "-datastore ./tmp/"
+      - wails dev -tags {{.TAGS}} -appargs "-datastore ./tmp/"
   dev_discover:
     cmds:
-      - wails dev -appargs "-datastore /tmp/twsnmpfk/"
+      - wails dev -tags {{.TAGS}} -appargs "-datastore /tmp/twsnmpfk/"
   deven:
     cmds:
-      - wails dev -appargs "-datastore ./tmp/ -lang en"
+      - wails dev -tags {{.TAGS}} -appargs "-datastore ./tmp/ -lang en"
   devens:
     cmds:
-      - wails dev -appargs "-lang en"
+      - wails dev -tags {{.TAGS}} -appargs "-lang en"
   mac:
     cmds:
-      - wails build  -platform darwin/universal -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+      - wails build  -platform darwin/universal -tags {{.TAGS}} -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   macdebug:
     cmds:
-      - wails build  -platform darwin -debug -clean -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+      - wails build  -platform darwin -debug -clean -tags {{.TAGS}} -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   linux:
     cmds:
-      - wails build -clean -platform linux/amd64 -tags webkit2_41 -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+      - wails build -clean -platform linux/amd64 -tags "webkit2_41,{{.TAGS}}" -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   windows:
     cmds:
-      - wails build -clean -webview2 Browser -platform windows/amd64 -nsis -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+      - wails build -clean -webview2 Browser -platform windows/amd64 -nsis -tags {{.TAGS}} -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   windebug:
     cmds:
-      - wails build  -platform windows/amd64 -debug -clean -windowsconsole -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
+      - wails build  -platform windows/amd64 -debug -clean -windowsconsole -tags {{.TAGS}} -ldflags "-s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}"
   clean:
     cmds:
       - rm -rf build/bin/twsnmpfk*

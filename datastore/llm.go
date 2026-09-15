@@ -9,10 +9,19 @@ import (
 	"github.com/tmc/langchaingo/llms/googleai"
 	"github.com/tmc/langchaingo/llms/ollama"
 	"github.com/tmc/langchaingo/llms/openai"
+
+	"github.com/twsnmp/twsnmpfk/pkg/ai/tensai"
+	"github.com/twsnmp/twsnmpfk/pkg/model"
 )
 
 func GetLLM(ctx context.Context) (llms.Model, error) {
 	switch MapConf.LLMProvider {
+	case "tensai", "embedded", "local":
+		modelPath, err := model.FindModel("", MapConf.LLMModel)
+		if err != nil {
+			return nil, fmt.Errorf("local model not found: %w", err)
+		}
+		return tensai.NewWithOptions(modelPath, false)
 	case "ollama":
 		baseURL := "http://localhost:11434"
 		if MapConf.LLMBaseURL != "" {

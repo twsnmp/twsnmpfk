@@ -13,6 +13,7 @@
     Spinner,
     Textarea,
     Button,
+    Badge,
   } from "flowbite-svelte";
   import { createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -55,8 +56,11 @@
     GetNotifyOAuth2Token,
     GetNotifyOAuth2Info,
     GetLogStoreInfo,
+    GetLocalModels,
+    GetAIHardwareStatus,
   } from "../../wailsjs/go/main/App";
   import LogMigrationDialog from "./LogMigrationDialog.svelte";
+  import ModelManagerDialog from "./ModelManagerDialog.svelte";
   import { _ } from "svelte-i18n";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -133,6 +137,7 @@
     locConf = await GetLocConf();
     sshHostPublicKey = await GetSshdPublicKeys();
     sshMyPublicKey = await GetMySSHPublicKey();
+    await loadLocalAIInfo();
   };
 
   const close = () => {
@@ -762,8 +767,27 @@
     mapConf.MCPToken = generateMCPToken();
   };
 
-   const llmProvidertList = [
+  let showModelManager = false;
+  let localModels: any[] = [];
+  let hardwareStatus: any = null;
+
+  const loadLocalAIInfo = async () => {
+    try {
+      localModels = (await GetLocalModels()) || [];
+      hardwareStatus = await GetAIHardwareStatus();
+      if (mapConf.LLMProvider === 'tensai') {
+        if (localModels.length > 0 && (!mapConf.LLMModel || !localModels.some((m) => m.name === mapConf.LLMModel))) {
+          mapConf.LLMModel = localModels[0].name;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const llmProvidertList = [
     { name: $_('Config.LLMProviderNone'), value: 'none' },
+    { name: 'tensai (Local LLM)', value: 'tensai' },
     { name: 'ollama', value: 'ollama' },
     { name: 'Open AI', value: 'openai' },
     { name: 'Google(Gemini)', value: 'gemini' },
@@ -1001,36 +1025,83 @@
               <Select
                 items={llmProvidertList}
                 bind:value={mapConf.LLMProvider}
+                onchange={() => { if (mapConf.LLMProvider === 'tensai') loadLocalAIInfo(); }}
                 size="sm"
               />
             </Label>
-            <Label class="space-y-2 text-xs">
-              <span>LLM URL</span>
-              <Input
-                class="h-8"
-                bind:value={mapConf.LLMBaseURL}
-                placeholder="http://127.0.0.1:11434"
-                size="sm"
-              />
-            </Label>
-            <Label class="space-y-2 text-xs">
-              <span>{$_('Config.LLMAPIKey')}</span>
-              <Input
-                class="h-8"
-                type="password"
-                bind:value={mapConf.LLMAPIKey}
-                size="sm"
-              />
-            </Label>
-            <Label class="space-y-2 text-xs">
-              <span>{$_('Config.LLMModel')}</span>
-              <Input
-                class="h-8"
-                bind:value={mapConf.LLMModel}
-                size="sm"
-              />
-            </Label>
+            {#if mapConf.LLMProvider === 'tensai'}
+              <Label class="space-y-2 text-xs md:col-span-2">
+                <span>{$_('Config.LLMModelSelect')}</span>
+                {#if localModels.length > 0}
+                  <Select
+                    items={localModels.map((m) => ({ value: m.name, name: `${m.name} (${m.size_human})` }))}
+                    bind:value={mapConf.LLMModel}
+                    size="sm"
+                  />
+                {:else}
+                  <Button
+                    size="xs"
+                    color="yellow"
+                    class="w-full h-8"
+                    onclick={() => (showModelManager = true)}
+                  >
+                    {$_('Config.LLMNoLocalModel')}
+                  </Button>
+                {/if}
+              </Label>
+              <div class="space-y-1 text-xs flex flex-col justify-end">
+                <Button
+                  size="xs"
+                  color="blue"
+                  class="h-8 flex items-center justify-center gap-1"
+                  onclick={() => (showModelManager = true)}
+                >
+                  <Icon path={icons.mdiChip} size={0.8} />
+                  <span>{$_('Config.LLMManageModels')}</span>
+                </Button>
+              </div>
+            {:else if mapConf.LLMProvider && mapConf.LLMProvider !== 'none'}
+              <Label class="space-y-2 text-xs">
+                <span>LLM URL</span>
+                <Input
+                  class="h-8"
+                  bind:value={mapConf.LLMBaseURL}
+                  placeholder="http://127.0.0.1:11434"
+                  size="sm"
+                />
+              </Label>
+              <Label class="space-y-2 text-xs">
+                <span>{$_('Config.LLMAPIKey')}</span>
+                <Input
+                  class="h-8"
+                  type="password"
+                  bind:value={mapConf.LLMAPIKey}
+                  size="sm"
+                />
+              </Label>
+              <Label class="space-y-2 text-xs">
+                <span>{$_('Config.LLMModel')}</span>
+                <Input
+                  class="h-8"
+                  bind:value={mapConf.LLMModel}
+                  size="sm"
+                />
+              </Label>
+            {/if}
           </div>
+          {#if mapConf.LLMProvider === 'tensai' && hardwareStatus}
+            <div class="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded border dark:border-gray-700 text-xs">
+              <span class="font-medium text-gray-700 dark:text-gray-300">{$_('Config.LLMAcceleration')}:</span>
+              {#if hardwareStatus.acceleration === 'GPU'}
+                <Badge color="green">GPU</Badge>
+              {:else if hardwareStatus.acceleration && hardwareStatus.acceleration.includes('SIMD')}
+                <Badge color="blue">SIMD</Badge>
+              {:else}
+                <Badge color="gray">CPU</Badge>
+              {/if}
+              <span class="text-gray-500 dark:text-gray-400">{hardwareStatus.detail}</span>
+            </div>
+          {/if}
           <div class="grid gap-4 md:grid-cols-3">
             <Label class="space-y-2 text-xs">
               <span> {$_("Config.SNMPMode")} </span>
@@ -2173,6 +2244,12 @@
   bind:show={showMigrationDialog}
   on:close={onMigrationDone}
   on:done={onMigrationDone}
+/>
+
+<ModelManagerDialog
+  bind:show={showModelManager}
+  on:close={loadLocalAIInfo}
+  on:modelsChanged={loadLocalAIInfo}
 />
 
 <Help bind:show={showHelp} page={helpPage} />

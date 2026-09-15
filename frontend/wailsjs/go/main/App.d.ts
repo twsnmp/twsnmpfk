@@ -5,6 +5,7 @@ import {pki} from '../models';
 import {main} from '../models';
 import {backend} from '../models';
 import {discover} from '../models';
+import {model} from '../models';
 
 export function ApplyNodeDetection(arg1:string,arg2:boolean,arg3:boolean):Promise<boolean>;
 
@@ -15,6 +16,10 @@ export function AutoGrok(arg1:string):Promise<string>;
 export function AutoLayout(arg1:number):Promise<boolean>;
 
 export function Backup():Promise<boolean>;
+
+export function CancelGPUDownload():Promise<string>;
+
+export function CancelModelDownload():Promise<string>;
 
 export function CheckNetwork(arg1:string):Promise<void>;
 
@@ -60,6 +65,8 @@ export function DeleteIcon(arg1:string):Promise<boolean>;
 
 export function DeleteLine(arg1:string):Promise<boolean>;
 
+export function DeleteLocalModel(arg1:string):Promise<string>;
+
 export function DeleteMqttStats(arg1:Array<string>):Promise<void>;
 
 export function DeleteNetwork(arg1:string):Promise<void>;
@@ -75,6 +82,10 @@ export function DeletePollings(arg1:Array<string>):Promise<void>;
 export function DestroyCA():Promise<void>;
 
 export function DetectNodeType(arg1:string):Promise<datastore.DetectResult>;
+
+export function DownloadGPULibrary():Promise<string>;
+
+export function DownloadModel(arg1:string):Promise<string>;
 
 export function ExportAIData(arg1:string):Promise<void>;
 
@@ -123,6 +134,8 @@ export function GNMICapabilities(arg1:string,arg2:string):Promise<main.GNMICapEn
 export function GNMIGet(arg1:string,arg2:string,arg3:string,arg4:string):Promise<Array<main.GNMIGetEnt>>;
 
 export function GetAIConf():Promise<datastore.AIConfEnt>;
+
+export function GetAIHardwareStatus():Promise<main.AIHardwareStatus>;
 
 export function GetAIList():Promise<Array<main.AIList>>;
 
@@ -188,6 +201,8 @@ export function GetLinesByNode(arg1:string):Promise<Array<datastore.LineEnt>>;
 
 export function GetLocConf():Promise<datastore.LocConfEnt>;
 
+export function GetLocalModels():Promise<Array<model.ModelInfo>>;
+
 export function GetLogStoreInfo():Promise<main.LogStoreInfo>;
 
 export function GetMIBModules():Promise<Array<datastore.MIBModuleEnt>>;
@@ -199,6 +214,8 @@ export function GetMapConf():Promise<datastore.MapConfEnt>;
 export function GetMapEventLogs():Promise<Array<datastore.EventLogEnt>>;
 
 export function GetMapName():Promise<string>;
+
+export function GetModelPresets():Promise<Array<model.PresetModelInfo>>;
 
 export function GetMonitorDatas():Promise<Array<backend.MonitorDataEnt>>;
 
