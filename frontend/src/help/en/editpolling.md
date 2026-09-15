@@ -16,17 +16,17 @@ Screen for creating a new polling monitor or editing the settings of an existing
   Operation mode based on the selected type.
   * **PING Smokeping Mode (`smoke`)**: Measures statistical metrics (min, max, mean/avg, median response time, packet loss rate %, jitter) by sending continuous PING packets in short intervals.
 * **Log mode**
-  Method to save and process the results log ("None", "Always", "On change", "AI analysis").
+  Method to save and process the results log ("None", "Always", "On change", "Anomaly").
 * **MQTT server URL**
   Broker URL for sending polling results via MQTT (e.g., `tcp://localhost:1883`).
 * **Topic**
   MQTT topic to publish to (default: `twsnmpfk/polling`).
 * **Sent data columns**
   Comma-separated list of variable names to publish via MQTT.
-* **AI mode**
-  (Visible only when Log mode is "AI analysis") AI algorithm type (e.g., "Isolation Forest", "Hotelling's Theory", "k-NN").
+* **Anomaly mode**
+  (Visible only when Log mode is "Anomaly") Anomaly detection algorithm type (e.g., "Isolation Forest", "Hotelling's Theory", "k-NN").
 * **Variables to vectorize**
-  (Visible only when Log mode is "AI analysis") Comma-separated variable names of numerical data to analyze.
+  (Visible only when Log mode is "Anomaly") Comma-separated variable names of numerical data to analyze.
 * **Parameter**
   Configuration parameters depending on type and mode.
   * **PING Smokeping Mode Example**: `count=10,size=64,ttl=64` (`count`: continuous ping count, `size`: packet size, `ttl`: TTL)

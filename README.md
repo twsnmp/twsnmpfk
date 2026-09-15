@@ -46,7 +46,7 @@ The following functions will work
 - Host resource MIB display
 - Wake On LAN support
 - HTML e-mail notification, periodic report
-- AI Analysis
+- Anomaly Detection
 - NetFlow/IPFIX
 - sFlow
 - gNMI

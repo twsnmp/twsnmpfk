@@ -2,7 +2,7 @@
   "Ts": {
     "Date": "Date",
     "Stratum": "Stratum",
-    "AI": "AI",
+    "AI": "Anomaly",
     "Anamary": "Anomaly",
     "AnmaryScore": "Anomaly Score",
     "ArpWatch": "Arp Watch",
@@ -229,7 +229,7 @@
     "Used": "Used"
   },
   "Config": {
-    "AI": "AI analysis",
+    "AI": "Anomaly",
     "AIHighLevel": "Level to be judged as High",
     "AILevel0": "None",
     "AILevel101": "1 in 10 million chance",
@@ -933,9 +933,9 @@
     "Help": "Help",
     "FailAction": "Fail Action",
     "RepairAction": "Repair Action",
-    "AIMode": "AI mode",
+    "AIMode": "Anomaly mode",
     "Default": "Default",
-    "SelectAIMode": "Select AI mode",
+    "SelectAIMode": "Select anomaly mode",
     "VectorCols": "Variable name to vectorize",
     "VectorColsHelp": "Specify variable names to be vectorized separated by commas.",
     "MqttCols": "Data name",
@@ -961,7 +961,7 @@
     "DeleteLogs": "Delete logs"
   },
   "PollingReport": {
-    "AI": "AI",
+    "AI": "Anomaly",
     "BasicInfo": "Basic Info",
     "Close": "Close",
     "Content": "Content",

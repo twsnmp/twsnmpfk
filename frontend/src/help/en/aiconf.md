@@ -1,6 +1,6 @@
-# AI Analysis Settings
+# Anomaly Detection Settings
 
-Settings for AI analysis anomaly detection thresholds.
+Settings for anomaly detection thresholds.
 
 ## Settings Parameters
 
@@ -16,10 +16,10 @@ Settings for AI analysis anomaly detection thresholds.
 * **[Save]** : Saves the settings.
 * **[Cancel]** : Closes the settings window without saving.
 
-## About AI Analysis
+## About Anomaly Detection
 
 * **Execution**
-  Triggered when the log mode is set to "AI Analysis" in the polling settings.
+  Triggered when the log mode is set to "Anomaly" in the polling settings.
 * **Methodology**
   Detects anomalies in numeric polling results using algorithms like "Isolation Forest", "Hotelling's Theory", and "k-NN", and calculates a deviation score.
 * **Interpretation of Score**

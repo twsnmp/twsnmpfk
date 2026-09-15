@@ -15,7 +15,7 @@ Manage active polling tasks (status monitoring and performance data collection) 
 * **Type**
   The monitoring protocol/type (e.g., ping, tcp, http, dns, gNMI, syslog, mail).
 * **Log**
-  Log recording mode (None, normal only, error only, always, AI analysis, etc.).
+  Log recording mode (None, normal only, error only, always, Anomaly, etc.).
 * **Last Checked**
   The date and time when the polling was last executed.
 
@@ -25,7 +25,7 @@ Manage active polling tasks (status monitoring and performance data collection) 
 * **[Edit]** : Edit the settings of the selected polling.
 * **[Copy]** : Duplicate the selected polling.
 * **[Export]** : Export the selected polling configuration as a template JSON file.
-* **[Report]** : Open performance reports, history graphs, and AI analysis for the selected polling.
+* **[Report]** : Open performance reports, history graphs, and anomaly detection report for the selected polling.
 * **[Delete Logs]** : Delete execution logs of the selected polling.
 * **[Delete]** : Delete the selected polling configuration and its logs.
 * **[CSV]** : Export the polling list to a CSV file.
@@ -54,7 +54,7 @@ Dialog for selecting a pre-defined monitoring template to add a new polling.
   Time-series line chart of measured numerical metrics (only available if logs are recorded).
 * **Histogram**
   Frequency distribution of measured metrics (only available if logs are recorded).
-* **AI Analysis**
-  Anomalies and predictions analyzed by AI (only available when log mode is set to AI analysis and sufficient data has been collected).
+* **Anomaly**
+  Anomaly detection results (heatmap) (only available when log mode is set to Anomaly and sufficient data has been collected).
 * **[AI Explain]**
   Sends polling item health, error history, and latency trends to AI (LLM) for root cause analysis and remediation advice (only visible when AI integration is enabled).

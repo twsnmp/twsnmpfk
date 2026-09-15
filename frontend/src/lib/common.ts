@@ -344,7 +344,7 @@ export const getLogModeName = (m:any) => {
     case 2:
       return 'diff'
     case 3:
-      return 'ai'
+      return 'anomaly'
   }
   return ''
 } 

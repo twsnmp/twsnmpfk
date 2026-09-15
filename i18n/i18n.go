@@ -22,7 +22,7 @@ var transMap = map[string]map[string]string{
 		"ja": "TWSNMP停止",
 	},
 	"Delete AI Result(%s)": {
-		"ja": "AI分析結果を削除(%s)",
+		"ja": "異常検知結果を削除(%s)",
 	},
 	"Add line to %s": {
 		"ja": "ラインを%sに接続",
@@ -73,7 +73,7 @@ var transMap = map[string]map[string]string{
 		"ja": "ポーリングログを削除(%d件)",
 	},
 	"AI report:%s(%s):%f": {
-		"ja": "AI分析レポート:%s(%s):%f",
+		"ja": "異常検知レポート:%s(%s):%f",
 	},
 	"node=%d,down=%d,rate=%.2f%%": {
 		"ja": "ノード数=%d,障害ノード=%d,稼働率=%.2f%%",

@@ -46,7 +46,7 @@ Windowsのキオスクモードでの利用を想定しています。
 - ホストリソースMIB表示
 - Wake On LAN対応
 - HTMLメール通知、定期レポート
-- AI分析
+- 異常検知
 - NetFlow/IPFIX
 - sFlow
 - gNMI
