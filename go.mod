@@ -39,8 +39,10 @@ require (
 	github.com/tehmaze/netflow v0.0.0-20170921210347-852af103667f
 	github.com/tmc/langchaingo v0.1.14
 	github.com/twsnmp/go-mibdb v0.0.0-20210104220414-91387072cee7
+	github.com/twsnmp/golof v1.0.0
 	github.com/twsnmp/lxi v0.3.2
 	github.com/twsnmp/rdap v0.9.1
+	github.com/twsnmp/tfidf v1.1.0
 	github.com/twsnmp/twlogeye/api v0.4.0
 	github.com/vjeantet/grok v1.0.1
 	github.com/wailsapp/wails/v2 v2.15.0
@@ -114,7 +116,9 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.11 // indirect
 	github.com/googleapis/gax-go/v2 v2.17.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
+	github.com/gravwell/gravwell/v3 v3.8.20 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
+	github.com/ikawaha/kagome v1.11.2 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/jhump/protoreflect v1.17.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

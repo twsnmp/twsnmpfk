@@ -33,7 +33,6 @@ export const showSyslogHost = (div:string, logs:any) => {
     color: ['#e31a1c', '#fb9a99', '#dfdf22', '#1f78b4'],
     legend: {
       top: 15,
-      top: 15,
       textStyle: {
         fontSize: 10,
         color: '#ccc',
@@ -652,3 +651,120 @@ const truncateString = (str:string, maxLength:number) => {
   }
   return str
 }
+
+export const showSyslogAnomalyChart = (div: string, anomalyLogs: any[]) => {
+  if (chart) {
+    chart.dispose();
+  }
+  const el = document.getElementById(div);
+  if (!el) return undefined;
+  chart = echarts.init(el, "dark");
+
+  const data = anomalyLogs.map((l: any) => {
+    const t = l.Time > 1e12 ? Math.floor(l.Time / 1e6) : l.Time * 1000;
+    return [
+      t,
+      l.Score,
+      l.Host,
+      l.Tag,
+      truncateString(l.Message || "", 80),
+      l.Severity,
+    ];
+  });
+
+  chart.setOption({
+    title: {
+      show: false,
+    },
+    tooltip: {
+      trigger: "item",
+      formatter: (param: any) => {
+        const val = param.value;
+        const d = new Date(val[0]);
+        const timeStr = d.toLocaleString();
+        return `
+          <div style="font-size:12px;">
+            <b>${$_("SyslogReport.Time") || "Time"}:</b> ${timeStr}<br/>
+            <b>${$_("SyslogReport.Score") || "Score"}:</b> ${val[1]}<br/>
+            <b>${$_("SyslogReport.Host") || "Host"}:</b> ${val[2]}<br/>
+            <b>${$_("SyslogReport.Tag") || "Tag"}:</b> ${val[3]}<br/>
+            <b>${$_("SyslogReport.Message") || "Message"}:</b> ${val[4]}
+          </div>
+        `;
+      },
+    },
+    grid: {
+      left: "5%",
+      right: "5%",
+      top: 55,
+      bottom: "12%",
+      containLabel: true,
+    },
+    xAxis: {
+      type: "time",
+      splitLine: {
+        show: false,
+      },
+      axisLabel: {
+        fontSize: 10,
+        color: "#ccc",
+      },
+    },
+    yAxis: {
+      type: "value",
+      name: $_("SyslogReport.Score") || "Score",
+      nameTextStyle: {
+        color: "#ccc",
+        fontSize: 11,
+        padding: [0, 0, 8, 0],
+      },
+      splitLine: {
+        lineStyle: {
+          color: "#333",
+        },
+      },
+      axisLabel: {
+        fontSize: 10,
+        color: "#ccc",
+      },
+    },
+    visualMap: {
+      min: 40,
+      max: 80,
+      dimension: 1,
+      orient: "horizontal",
+      right: 20,
+      top: 8,
+      text: [$_("SyslogReport.HighAnomaly") || "High", $_("SyslogReport.Normal") || "Normal"],
+      textStyle: {
+        color: "#ccc",
+        fontSize: 10,
+      },
+      inRange: {
+        color: ["#3b82f6", "#eab308", "#ef4444"],
+        symbolSize: [6, 14],
+      },
+    },
+    series: [
+      {
+        name: "Anomaly Score",
+        type: "scatter",
+        data: data,
+        markLine: {
+          silent: true,
+          lineStyle: {
+            color: "#f59e0b",
+            type: "dashed",
+          },
+          data: [
+            { yAxis: 60, name: "Warning (60)" },
+            { yAxis: 70, lineStyle: { color: "#ef4444" }, name: "Critical (70)" },
+          ],
+        },
+      },
+    ],
+  });
+
+  chart.resize();
+  return chart;
+};

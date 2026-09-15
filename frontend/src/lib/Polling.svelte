@@ -201,8 +201,13 @@
   const aiModeList = [
     { name: $_('Polling.Default'), value: "default" },
     { name: "Isolation Forest", value: "iforest" },
-    { name: "Hotelling's Theory", value: "hotelling" },
+    { name: "Z-Score", value: "zscore" },
+    { name: "Local Outlier Factor", value: "lof" },
     { name: "k-NN", value: "knn" },
+    { name: "Mahalanobis", value: "mahalanobis" },
+    { name: "Hotelling's Theory", value: "hotelling" },
+    { name: "Auto Encoder", value: "autoencoder" },
+    { name: "LSTM", value: "lstm" },
   ];
 
 

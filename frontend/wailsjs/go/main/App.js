@@ -22,6 +22,10 @@ export function Backup() {
   return window['go']['main']['App']['Backup']();
 }
 
+export function CalculateSyslogAnomaly(arg1, arg2, arg3) {
+  return window['go']['main']['App']['CalculateSyslogAnomaly'](arg1, arg2, arg3);
+}
+
 export function CancelGPUDownload() {
   return window['go']['main']['App']['CancelGPUDownload']();
 }

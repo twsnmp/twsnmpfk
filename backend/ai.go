@@ -15,6 +15,7 @@ import (
 	"gonum.org/v1/gonum/mat"
 
 	go_iforest "github.com/codegaudi/go-iforest"
+	"github.com/twsnmp/golof/lof"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 )
@@ -268,6 +269,16 @@ func calcAIScore(req *AIReq, aiMode string) {
 	switch aiMode {
 	case "hotelling":
 		res = calcHotelling(req)
+	case "mahalanobis":
+		res = calcMahalanobis(req)
+	case "zscore", "stat":
+		res = calcStat(req)
+	case "lof":
+		res = calcLOF(req)
+	case "autoencoder", "ae":
+		res = calcAutoencoder(req)
+	case "lstm":
+		res = calcLSTM(req)
 	case "knn":
 		res = calcKNN(req)
 	default:
@@ -490,5 +501,98 @@ func calcKNN(req *AIReq) *datastore.AIResult {
 		r[i] = sumDist / float64(k)
 	}
 
+	return makeDeviationScore(req, r)
+}
+
+func calcStat(req *AIReq) *datastore.AIResult {
+	data := getSampleData(req)
+	if len(data) < 10 {
+		return &datastore.AIResult{}
+	}
+	detector := NewStatDetector()
+	if err := detector.Fit(data); err != nil {
+		log.Printf("Stat Fit err=%v", err)
+		return &datastore.AIResult{}
+	}
+	r := make([]float64, len(data))
+	for i, v := range data {
+		r[i] = detector.Score(v)
+	}
+	return makeDeviationScore(req, r)
+}
+
+func calcMahalanobis(req *AIReq) *datastore.AIResult {
+	data := getSampleData(req)
+	if len(data) < 10 {
+		return &datastore.AIResult{}
+	}
+	detector := NewMahalanobisDetector()
+	if err := detector.Fit(data); err != nil {
+		log.Printf("Mahalanobis Fit err=%v", err)
+		return &datastore.AIResult{}
+	}
+	r := make([]float64, len(data))
+	for i, v := range data {
+		r[i] = detector.Score(v)
+	}
+	return makeDeviationScore(req, r)
+}
+
+func calcLOF(req *AIReq) *datastore.AIResult {
+	data := getSampleData(req)
+	if len(data) < 10 {
+		return &datastore.AIResult{}
+	}
+	samples := lof.GetSamplesFromFloat64s(data)
+	k := 5
+	if k >= len(samples) {
+		k = len(samples) - 1
+	}
+	if k < 1 {
+		k = 1
+	}
+	lofGetter := lof.NewLOF(k)
+	if err := lofGetter.Train(samples); err != nil {
+		log.Printf("LOF Train err=%v", err)
+		return &datastore.AIResult{}
+	}
+	r := make([]float64, len(samples))
+	for i, s := range samples {
+		r[i] = lofGetter.GetLOF(s, "fast")
+	}
+	return makeDeviationScore(req, r)
+}
+
+func calcAutoencoder(req *AIReq) *datastore.AIResult {
+	data := getSampleData(req)
+	if len(data) < 10 {
+		return &datastore.AIResult{}
+	}
+	detector := NewAutoencoderDetector()
+	if err := detector.Fit(data); err != nil {
+		log.Printf("Autoencoder Fit err=%v", err)
+		return &datastore.AIResult{}
+	}
+	r := make([]float64, len(data))
+	for i, v := range data {
+		r[i] = detector.Score(v)
+	}
+	return makeDeviationScore(req, r)
+}
+
+func calcLSTM(req *AIReq) *datastore.AIResult {
+	data := getSampleData(req)
+	if len(data) < 10 {
+		return &datastore.AIResult{}
+	}
+	detector := NewLSTMDetector()
+	if err := detector.Fit(data); err != nil {
+		log.Printf("LSTM Fit err=%v", err)
+		return &datastore.AIResult{}
+	}
+	r := make([]float64, len(data))
+	for i, v := range data {
+		r[i] = detector.Score(v)
+	}
 	return makeDeviationScore(req, r)
 }

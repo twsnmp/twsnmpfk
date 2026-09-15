@@ -11,6 +11,7 @@ import (
 
 	wails "github.com/wailsapp/wails/v2/pkg/runtime"
 
+	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/logger"
@@ -115,6 +116,11 @@ func (a *App) GetSyslogs(filter SyslogFilterEnt) []*datastore.SyslogEnt {
 		return len(ret) < maxDispLog
 	})
 	return ret
+}
+
+// CalculateSyslogAnomaly calculates anomaly score for syslogs
+func (a *App) CalculateSyslogAnomaly(logs []*datastore.SyslogEnt, algo, vmode string) *backend.SyslogAnomalyResponse {
+	return backend.CalculateSyslogAnomaly(logs, algo, vmode)
 }
 
 type TrapFilterEnt struct {

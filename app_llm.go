@@ -1744,6 +1744,10 @@ func (a *App) LLMExplainSyslogReport(logs []*datastore.SyslogEnt, tab string) *L
 		}
 	}
 
+	if tab == "anomaly" {
+		sb.WriteString("\nNote: The user is analyzing the Anomaly Detection tab. Focus on identifying rare/unusual log patterns, suspicious security keywords, unusual hosts/tags, and high anomaly score causes.\n")
+	}
+
 	system := "You are a Syslog and server operations expert. Analyze the Syslog report data and explain message severity trends, top logging hosts, anomalous log spikes, and recommended actions."
 	if i18n.GetLang() == "ja" {
 		system = "あなたはSyslogおよびサーバー運用の専門家です。提示されたSyslogデータを分析し、重要度（Severity）別の発生傾向、主要送信ホスト、不審なログメッセージ、および運用上の推奨対策について、必ず日本語で分かりやすく解説・回答してください。"
