@@ -1,0 +1,25 @@
+title: Certutil Remote File Download
+id: e0183ff9-153b-425c-a5d8-7d6d3771ff88
+status: stable
+description: Detects suspicious use of certutil.exe to download files from remote URLs.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.defense_evasion
+    - attack.command_and_control
+    - attack.t1105
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        EventID: 4688
+        CommandLine|contains:
+            - 'certutil'
+        CommandLine|contains|all:
+            - 'urlcache'
+            - 'split'
+    condition: selection
+falsepositives:
+    - Highly unlikely in legitimate environments
+level: high

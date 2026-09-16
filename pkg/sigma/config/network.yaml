@@ -1,0 +1,8 @@
+title: Sigma config for network devices
+backends:
+  - github.com/bradleyjkemp/sigma-go
+
+fieldmappings:
+  message: content
+  c-ip: client
+  src_ip: client

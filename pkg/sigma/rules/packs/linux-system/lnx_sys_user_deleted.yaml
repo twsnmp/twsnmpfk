@@ -1,0 +1,22 @@
+title: Linux User Account Deleted
+id: ef394b91-628a-4411-9a7c-61cb4f19ae02
+status: stable
+description: Detects deletion of a local Linux user account.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.impact
+    - attack.t1531
+logsource:
+    product: linux
+    category: account_management
+detection:
+    selection:
+        content|contains:
+            - 'delete user'
+            - 'userdel['
+            - 'removed user'
+    condition: selection
+falsepositives:
+    - Normal system maintenance or user deprovisioning
+level: low

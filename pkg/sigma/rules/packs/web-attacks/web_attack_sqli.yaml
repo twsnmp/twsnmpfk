@@ -1,0 +1,26 @@
+title: SQL Injection Attempt
+id: b9b16ea2-df94-4322-83b3-f0fae1bc9842
+status: stable
+description: Detects common SQL injection syntax patterns in web access logs.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.initial_access
+    - attack.t1190
+logsource:
+    category: webserver
+detection:
+    selection:
+        content|contains:
+            - 'UNION SELECT'
+            - 'union all select'
+            - "' OR 1=1"
+            - "' OR '1'='1"
+            - '" OR ""="'
+            - 'WAITFOR DELAY'
+            - 'BENCHMARK('
+            - 'SLEEP('
+    condition: selection
+falsepositives:
+    - Queries from legitimate development or database administration tools
+level: high

@@ -1,0 +1,25 @@
+title: 'fortigate: VPN multiple login failures'
+id: wazuh-40501
+status: stable
+description: 'Fortinet FortiGate SSL VPN multiple authentication failures from same source'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1110
+    - wazuh
+    - group.authentication_failures
+logsource:
+    product: network
+    service: fortigate
+detection:
+    selection:
+        content|contains:
+            - 'SSL VPN login fail'
+            - 'action=ssl-login-fail'
+    condition: selection
+level: high
+correlation:
+    frequency: 5
+    timeframe: 180s
+    group_by:
+        - client

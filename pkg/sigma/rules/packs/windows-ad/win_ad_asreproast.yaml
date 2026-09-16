@@ -1,0 +1,20 @@
+title: Potential AS-REP Roasting Attack
+id: 981ecf42-4f73-455b-8692-0b701235b372
+status: stable
+description: Detects Kerberos TGT requests for accounts that do not require pre-authentication (PreAuthType 0), vulnerable to offline password cracking.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.credential_access
+    - attack.t1558.004
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4768
+        PreAuthType: '0'
+    condition: selection
+falsepositives:
+    - Accounts configured intentionally with DONT_REQ_PREAUTH
+level: medium

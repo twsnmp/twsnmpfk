@@ -1,0 +1,23 @@
+title: Systemd Service Installed or Started
+id: b3416ca2-8419-482c-b472-35dbf0412890
+status: stable
+description: Detects new systemd service installation or creation of symlinks for autostart persistence.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.privilege_escalation
+    - attack.t1543.002
+logsource:
+    product: linux
+    service: systemd
+detection:
+    selection:
+        content|contains:
+            - 'Created symlink /etc/systemd/system/'
+            - 'systemd: Started'
+            - 'Reloading systemd: done'
+    condition: selection
+falsepositives:
+    - Legitimate software installation via package manager
+level: low

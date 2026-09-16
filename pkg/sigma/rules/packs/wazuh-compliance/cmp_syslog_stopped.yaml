@@ -1,0 +1,29 @@
+title: 'syslog: Syslog daemon stopped or terminating'
+id: wazuh-cmp-syslog-stopped
+status: stable
+description: 'Detects the termination or stopping of the syslog daemon (PCI-DSS 10.2.6, NIST AU-12, CIS 8.5 audit trail suppression)'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1562.001
+    - wazuh
+    - pci_dss.10.2.6
+    - nist_800_53.au_12
+    - cis.control_8_5
+    - gdpr.iv_32_2
+logsource:
+    product: linux
+    service: syslog
+detection:
+    selection:
+        content|contains:
+            - 'exiting on signal'
+            - 'systemd-journald: Stopped'
+            - 'syslog-ng: Exiting'
+            - 'rsyslogd: [origin software="rsyslogd"'
+    filter:
+        content|contains:
+            - 'start'
+            - 'Started'
+    condition: selection and not filter
+level: high

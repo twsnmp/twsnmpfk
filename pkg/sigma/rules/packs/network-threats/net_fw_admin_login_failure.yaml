@@ -1,0 +1,22 @@
+title: Firewall Admin Console Login Failure
+id: 54cf7530-58be-4395-9b2a-7e04f05476a0
+status: stable
+description: Detects failed administrator login attempts to firewall web management interfaces or console.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.credential_access
+    - attack.t1110
+logsource:
+    category: firewall
+detection:
+    selection:
+        content|contains:
+            - 'admin login failed'
+            - 'Administrator authentication failed'
+            - 'WebUI login failed'
+            - 'GUI login failed'
+    condition: selection
+falsepositives:
+    - Administrator typo
+level: medium

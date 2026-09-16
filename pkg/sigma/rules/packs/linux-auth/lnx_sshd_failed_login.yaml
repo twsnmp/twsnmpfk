@@ -1,0 +1,19 @@
+title: SSH Failed Password Authentication
+id: 591cb457-3f82-45e7-9d78-b1933f7c4e51
+status: stable
+description: Detects failed SSH password authentication attempts which may indicate a brute force attack.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.credential_access
+    - attack.t1110
+logsource:
+    product: linux
+    service: sshd
+detection:
+    selection:
+        content|contains: 'Failed password for'
+    condition: selection
+falsepositives:
+    - User password mistype
+level: low

@@ -1,0 +1,19 @@
+title: Special Privileges Assigned to New Logon
+id: 75ffefbb-ad78-4333-875f-fb63f2780e1b
+status: stable
+description: Detects when special administrative privileges are assigned to a new logon session.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.privilege_escalation
+    - attack.t1078
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4672
+    condition: selection
+falsepositives:
+    - Normal administrator or SYSTEM account logons
+level: low

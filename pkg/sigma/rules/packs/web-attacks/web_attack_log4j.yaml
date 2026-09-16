@@ -1,0 +1,25 @@
+title: Log4j JNDI Exploit Attempt (Log4Shell)
+id: 56934c95-b049-4179-8a48-433e53664ec5
+status: stable
+description: Detects JNDI lookup patterns in web requests typical for Log4Shell exploitation attempts (CVE-2021-44228).
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.initial_access
+    - attack.execution
+    - attack.t1190
+logsource:
+    category: webserver
+detection:
+    selection:
+        content|contains:
+            - '${jndi:ldap:'
+            - '${jndi:rmi:'
+            - '${jndi:dns:'
+            - '${jndi:corba:'
+            - '${jndi:nis:'
+            - '${jndi:iiop:'
+    condition: selection
+falsepositives:
+    - Highly unlikely
+level: critical

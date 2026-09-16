@@ -1,0 +1,21 @@
+title: 'sshd: Successful login as root'
+id: wazuh-5715-root
+status: stable
+description: 'SSH authentication succeeded for root user (requires NamedCapture user field extraction)'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1078
+    - wazuh
+    - group.authentication_success
+logsource:
+    product: linux
+    service: sshd
+detection:
+    selection:
+        content|contains: 'Accepted'
+        user: 'root'
+    condition: selection
+falsepositives:
+    - Legitimate administrative login
+level: high

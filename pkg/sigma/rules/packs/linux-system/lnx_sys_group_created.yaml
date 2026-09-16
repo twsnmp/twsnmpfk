@@ -1,0 +1,21 @@
+title: New Linux Group Created
+id: da847291-a831-419b-bc91-2374be891044
+status: stable
+description: Detects when a new group is created on a Linux system.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.t1136.001
+logsource:
+    product: linux
+    category: account_management
+detection:
+    selection:
+        content|contains:
+            - 'new group: name='
+            - 'groupadd['
+    condition: selection
+falsepositives:
+    - Normal user or service package installation
+level: low

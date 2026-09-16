@@ -1,0 +1,26 @@
+title: 'sudo: successful sudo to root'
+id: wazuh-5402
+status: stable
+description: 'sudo: successful sudo execution with root privileges'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1548
+    - attack.t1548.003
+    - wazuh
+    - group.privilege_escalation
+logsource:
+    product: linux
+    service: sudo
+detection:
+    selection:
+        content|contains:
+            - 'COMMAND='
+        content|re: 'USER=root'
+    filter:
+        content|contains:
+            - 'NOT in sudoers'
+            - 'incorrect password'
+            - 'authentication failure'
+    condition: selection and not filter
+level: low

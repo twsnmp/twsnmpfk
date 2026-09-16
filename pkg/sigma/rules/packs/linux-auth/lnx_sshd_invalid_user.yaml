@@ -1,0 +1,19 @@
+title: SSH Login Attempt With Invalid User
+id: a82d3e14-257a-4bc2-81e0-c116d41829e0
+status: stable
+description: Detects SSH authentication attempts using non-existent usernames.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.credential_access
+    - attack.t1110
+logsource:
+    product: linux
+    service: sshd
+detection:
+    selection:
+        content|contains: 'Failed password for invalid user'
+    condition: selection
+falsepositives:
+    - Typo in username
+level: medium

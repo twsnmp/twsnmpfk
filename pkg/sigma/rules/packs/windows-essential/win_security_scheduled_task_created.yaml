@@ -1,0 +1,20 @@
+title: Scheduled Task Created
+id: a882b545-3db3-435e-beec-dfc40ae906ab
+status: stable
+description: Detects the creation of a scheduled task on the system.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.persistence
+    - attack.execution
+    - attack.t1053.005
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4698
+    condition: selection
+falsepositives:
+    - Legitimate administration scripts or software installation
+level: medium

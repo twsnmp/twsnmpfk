@@ -1,0 +1,19 @@
+title: Computer Account Created in Domain
+id: f38b97ce-87e2-4be1-9b48-ec8d538e1690
+status: stable
+description: Detects the creation of a new computer account in Active Directory.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.t1136.002
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4741
+    condition: selection
+falsepositives:
+    - Domain join operations of legitimate new endpoints
+level: low

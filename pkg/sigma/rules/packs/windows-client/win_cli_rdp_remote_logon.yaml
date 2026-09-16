@@ -1,0 +1,20 @@
+title: Remote Desktop (RDP) Logon Detected
+id: b449ca2e-335e-4bb5-a392-5b9679f228b1
+status: stable
+description: Detects successful Remote Desktop (RDP) interactive network logons (LogonType 10).
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.lateral_movement
+    - attack.t1021.001
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    condition: selection
+falsepositives:
+    - Normal administrative remote desktop sessions
+level: low

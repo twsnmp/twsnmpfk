@@ -1,0 +1,24 @@
+title: Linux Host Firewall Stopped or Flushed
+id: a017e829-411a-4d45-98ea-0174ca9b1011
+status: stable
+description: Detects stopping or flushing of Linux firewall rules (ufw, firewalld, iptables) which may weaken host security.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.defense_evasion
+    - attack.t1562.004
+logsource:
+    product: linux
+    service: firewall
+detection:
+    selection:
+        content|contains:
+            - 'ufw stop'
+            - '[UFW BLOCK]'
+            - 'Stopping Firewall'
+            - 'firewalld: stopped'
+            - 'iptables -F'
+    condition: selection
+falsepositives:
+    - Administrator troubleshooting network connectivity
+level: medium

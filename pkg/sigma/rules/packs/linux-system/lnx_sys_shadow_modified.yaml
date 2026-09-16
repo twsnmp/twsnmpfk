@@ -1,0 +1,23 @@
+title: Password File Modified or Password Changed
+id: d761b0c0-1094-469b-9c31-7ab6495ee812
+status: stable
+description: Detects modification of local user password or changes to sensitive password files (/etc/shadow).
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.credential_access
+    - attack.t1098
+logsource:
+    product: linux
+    category: account_management
+detection:
+    selection:
+        content|contains:
+            - 'password changed for'
+            - 'passwd['
+            - '/etc/shadow'
+    condition: selection
+falsepositives:
+    - Normal user password changes
+level: low

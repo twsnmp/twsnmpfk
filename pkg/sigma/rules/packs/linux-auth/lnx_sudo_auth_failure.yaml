@@ -1,0 +1,22 @@
+title: Sudo Authentication Failure
+id: 3c59a35e-c023-41bb-98da-b6fae2b17f8b
+status: stable
+description: Detects authentication failures when running sudo commands.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.privilege_escalation
+    - attack.t1548.003
+logsource:
+    product: linux
+    service: sudo
+detection:
+    selection:
+        content|contains:
+            - 'sudo: 1 incorrect password attempt'
+            - 'sudo: 3 incorrect password attempts'
+            - 'authentication failure'
+    condition: selection
+falsepositives:
+    - User password typo
+level: medium

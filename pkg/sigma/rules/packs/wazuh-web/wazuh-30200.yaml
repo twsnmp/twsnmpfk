@@ -1,0 +1,23 @@
+title: 'apache/nginx: Attempt to access sensitive hidden files'
+id: wazuh-30200
+status: stable
+description: 'Access attempt to sensitive system files, configuration files, or hidden git directories'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1083
+    - wazuh
+    - group.information_disclosure
+logsource:
+    product: web
+    service: http
+detection:
+    selection:
+        content|contains:
+            - '/.git'
+            - '/.env'
+            - '/.htaccess'
+            - '/.htpasswd'
+            - '/web.config'
+    condition: selection
+level: medium

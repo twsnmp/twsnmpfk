@@ -1,0 +1,22 @@
+title: Sudoers Configuration File Modified
+id: b32a8296-6e5a-4b95-a827-0243d7890b01
+status: stable
+description: Detects modifications to the sudoers configuration file via visudo or direct edits.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.privilege_escalation
+    - attack.persistence
+    - attack.t1548.003
+logsource:
+    product: linux
+    category: file_event
+detection:
+    selection:
+        content|contains:
+            - 'etc/sudoers'
+            - 'visudo'
+    condition: selection
+falsepositives:
+    - Legitimate administrator modifying sudoers
+level: high

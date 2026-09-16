@@ -1,0 +1,21 @@
+title: Cisco Device Authentication Failure
+id: 38da85bb-04e3-46ea-9d84-a82869502b40
+status: stable
+description: Detects login failure events on Cisco IOS or ASA network devices.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.credential_access
+    - attack.t1110
+logsource:
+    product: cisco
+detection:
+    selection:
+        content|contains:
+            - '%SEC_LOGIN-4-LOGIN_FAILED'
+            - '%AAA-3-BADAUTH'
+            - '%ASA-6-605005'
+    condition: selection
+falsepositives:
+    - Misconfigured administrative credentials
+level: medium

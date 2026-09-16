@@ -1,0 +1,23 @@
+title: 'system: System time changed or significant clock skew'
+id: wazuh-cmp-clock-changed
+status: stable
+description: 'System time was manually altered or significant clock skew detected (PCI-DSS 10.4, NIST AU-8)'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1070.006
+    - wazuh
+    - pci_dss.10.4
+    - nist_800_53.au_8
+logsource:
+    product: linux
+    service: system
+detection:
+    selection:
+        content|contains:
+            - 'System time changed'
+            - 'Time has been changed'
+            - 'Clock: ... skew'
+            - 'timedatectl set-time'
+    condition: selection
+level: medium

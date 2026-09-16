@@ -1,0 +1,22 @@
+title: 'sshd: Attempt to login using a non-existent user'
+id: wazuh-5710
+status: stable
+description: 'sshd: Attempt to login using a non-existent user'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1110
+    - wazuh
+    - group.authentication_failed
+logsource:
+    product: linux
+    service: sshd
+detection:
+    selection:
+        content|contains:
+            - 'illegal user'
+            - 'invalid user'
+    condition: selection
+falsepositives:
+    - Typo in username
+level: medium

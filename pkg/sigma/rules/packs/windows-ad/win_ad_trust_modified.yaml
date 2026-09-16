@@ -1,0 +1,21 @@
+title: Domain Trust Relationship Modified
+id: e4b25688-6625-4c07-b31c-72081f9a0c41
+status: stable
+description: Detects when an Active Directory domain trust relationship is created, modified, or deleted.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.t1484
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID:
+            - 4706
+            - 4716
+    condition: selection
+falsepositives:
+    - Planned domain migration or forest trust reconfiguration
+level: high

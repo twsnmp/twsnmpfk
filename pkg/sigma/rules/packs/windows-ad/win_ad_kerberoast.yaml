@@ -1,0 +1,20 @@
+title: Potential Kerberoasting Attack (RC4 Ticket Requested)
+id: 5cb638a1-e01d-407a-9a99-4d64ea1c8c88
+status: stable
+description: Detects Kerberos service ticket requests using weak RC4-HMAC encryption (0x17) which is typical for Kerberoasting attacks.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.credential_access
+    - attack.t1558.003
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4769
+        TicketEncryptionType: '0x17'
+    condition: selection
+falsepositives:
+    - Legacy service accounts or applications that do not support AES
+level: high

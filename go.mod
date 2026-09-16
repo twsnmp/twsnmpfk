@@ -10,10 +10,12 @@ require (
 	github.com/Xuanwo/go-locale v1.1.3
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/beevik/ntp v1.4.3
+	github.com/bradleyjkemp/sigma-go v0.6.6
 	github.com/codegaudi/go-iforest v0.0.1
 	github.com/davidebianchi/go-jsonclient v1.5.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/eclipse/paho.mqtt.golang v1.5.1
+	github.com/elastic/go-grok v0.3.1
 	github.com/emersion/go-imap/v2 v2.0.0-beta.7
 	github.com/fatih/color v1.18.0
 	github.com/gliderlabs/ssh v0.3.8
@@ -67,6 +69,7 @@ require (
 	google.golang.org/grpc v1.83.2
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/mcuadros/go-syslog.v2 v2.3.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -81,9 +84,10 @@ require (
 	cloud.google.com/go/vertexai v0.12.0 // indirect
 	git.sr.ht/~jackmordaunt/go-toast/v2 v2.0.3 // indirect
 	github.com/AlekSi/pointer v1.2.0 // indirect
+	github.com/BobuSumisu/aho-corasick v1.0.3 // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/Songmu/wrapcommander v0.1.0 // indirect
-	github.com/alecthomas/participle v0.4.1 // indirect
+	github.com/alecthomas/participle v0.7.1 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
@@ -131,6 +135,7 @@ require (
 	github.com/leaanthony/slicer v1.6.0 // indirect
 	github.com/leaanthony/u v1.1.1 // indirect
 	github.com/lufia/plan9stats v0.0.0-20250317134145-8bc96cf8fc35 // indirect
+	github.com/magefile/mage v1.15.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
@@ -215,6 +220,5 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )

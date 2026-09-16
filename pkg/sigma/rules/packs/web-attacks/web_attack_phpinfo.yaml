@@ -1,0 +1,22 @@
+title: PHP Information Disclosure Access (phpinfo)
+id: c5d625aa-87df-4ea8-b778-65ad6e6fa001
+status: stable
+description: Detects web requests attempting to access phpinfo scripts or files exposing sensitive server environment variables.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.discovery
+    - attack.t1592.002
+logsource:
+    category: webserver
+detection:
+    selection:
+        content|contains:
+            - 'phpinfo.php'
+            - 'php_info.php'
+            - 'info.php'
+            - '?phpinfo='
+    condition: selection
+falsepositives:
+    - Legitimate developer testing in staging environments
+level: low

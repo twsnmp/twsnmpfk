@@ -1,0 +1,20 @@
+title: Potential DCSync Active Directory Replication
+id: 67115858-a53d-4954-a6ec-f7d9a15c3271
+status: stable
+description: Detects directory replication access requests (DS-Replication-Get-Changes) which may indicate DCSync credential dumping attacks.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.credential_access
+    - attack.t1003.006
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4662
+        AccessMask|contains: '0x100'
+    condition: selection
+falsepositives:
+    - Legitimate domain controller synchronization
+level: high

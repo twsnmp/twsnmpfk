@@ -2426,6 +2426,208 @@ export namespace main {
 	        this.Lock = source["Lock"];
 	    }
 	}
+	export class SigmaHitItem {
+	    Time: number;
+	    RuleID: string;
+	    Title: string;
+	    Level: string;
+	    Source: string;
+	    LogSource: string;
+	    Tags: string[];
+	    Host: string;
+	    Tag: string;
+	    Message: string;
+	    Log: string;
+	    IsCompliance: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new SigmaHitItem(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.RuleID = source["RuleID"];
+	        this.Title = source["Title"];
+	        this.Level = source["Level"];
+	        this.Source = source["Source"];
+	        this.LogSource = source["LogSource"];
+	        this.Tags = source["Tags"];
+	        this.Host = source["Host"];
+	        this.Tag = source["Tag"];
+	        this.Message = source["Message"];
+	        this.Log = source["Log"];
+	        this.IsCompliance = source["IsCompliance"];
+	    }
+	}
+	export class SigmaLogSourceCount {
+	    LogSource: string;
+	    Count: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SigmaLogSourceCount(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.LogSource = source["LogSource"];
+	        this.Count = source["Count"];
+	    }
+	}
+	export class SigmaTimelinePoint {
+	    Time: number;
+	    Count: number;
+	    Critical: number;
+	    High: number;
+	    Medium: number;
+	    Low: number;
+	    Info: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SigmaTimelinePoint(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.Count = source["Count"];
+	        this.Critical = source["Critical"];
+	        this.High = source["High"];
+	        this.Medium = source["Medium"];
+	        this.Low = source["Low"];
+	        this.Info = source["Info"];
+	    }
+	}
+	export class SigmaTagCount {
+	    Tag: string;
+	    Category: string;
+	    Count: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SigmaTagCount(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Tag = source["Tag"];
+	        this.Category = source["Category"];
+	        this.Count = source["Count"];
+	    }
+	}
+	export class SigmaRuleCount {
+	    ID: string;
+	    Title: string;
+	    Level: string;
+	    Source: string;
+	    Count: number;
+	    Tags: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new SigmaRuleCount(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Title = source["Title"];
+	        this.Level = source["Level"];
+	        this.Source = source["Source"];
+	        this.Count = source["Count"];
+	        this.Tags = source["Tags"];
+	    }
+	}
+	export class SigmaReportStats {
+	    TotalLogs: number;
+	    HitLogs: number;
+	    TotalDetections: number;
+	    ActiveRules: number;
+	    Critical: number;
+	    High: number;
+	    Medium: number;
+	    Low: number;
+	    Informational: number;
+	    ComplianceHits: number;
+	    TopRules: SigmaRuleCount[];
+	    TopTags: SigmaTagCount[];
+	    LogSources: SigmaLogSourceCount[];
+	    Timeline: SigmaTimelinePoint[];
+	
+	    static createFrom(source: any = {}) {
+	        return new SigmaReportStats(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.TotalLogs = source["TotalLogs"];
+	        this.HitLogs = source["HitLogs"];
+	        this.TotalDetections = source["TotalDetections"];
+	        this.ActiveRules = source["ActiveRules"];
+	        this.Critical = source["Critical"];
+	        this.High = source["High"];
+	        this.Medium = source["Medium"];
+	        this.Low = source["Low"];
+	        this.Informational = source["Informational"];
+	        this.ComplianceHits = source["ComplianceHits"];
+	        this.TopRules = this.convertValues(source["TopRules"], SigmaRuleCount);
+	        this.TopTags = this.convertValues(source["TopTags"], SigmaTagCount);
+	        this.LogSources = this.convertValues(source["LogSources"], SigmaLogSourceCount);
+	        this.Timeline = this.convertValues(source["Timeline"], SigmaTimelinePoint);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class SigmaReportResult {
+	    Stats: SigmaReportStats;
+	    Items: SigmaHitItem[];
+	
+	    static createFrom(source: any = {}) {
+	        return new SigmaReportResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Stats = this.convertValues(source["Stats"], SigmaReportStats);
+	        this.Items = this.convertValues(source["Items"], SigmaHitItem);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	
+	
+	
 	export class StunInfoResult {
 	    IP: string;
 	    Port: number;
@@ -2647,6 +2849,29 @@ export namespace pki {
 	        this.Province = source["Province"];
 	        this.Country = source["Country"];
 	        this.Sans = source["Sans"];
+	    }
+	}
+
+}
+
+export namespace sigma {
+	
+	export class SigmaPackInfo {
+	    name: string;
+	    rule_count: number;
+	    description: string;
+	    rules?: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new SigmaPackInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.rule_count = source["rule_count"];
+	        this.description = source["description"];
+	        this.rules = source["rules"];
 	    }
 	}
 

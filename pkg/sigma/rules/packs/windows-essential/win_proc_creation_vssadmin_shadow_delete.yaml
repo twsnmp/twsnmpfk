@@ -1,0 +1,24 @@
+title: Volume Shadow Copies Deletion Via Vssadmin
+id: c947b15c-16eb-460d-a320-cfc6a0c0db0b
+status: stable
+description: Detects execution of vssadmin.exe with parameters to delete volume shadow copies, typical for ransomware behavior.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.impact
+    - attack.t1490
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        EventID: 4688
+        CommandLine|contains:
+            - 'vssadmin'
+        CommandLine|contains|all:
+            - 'delete'
+            - 'shadows'
+    condition: selection
+falsepositives:
+    - Legitimate administrator or backup tool shadow copy maintenance
+level: critical

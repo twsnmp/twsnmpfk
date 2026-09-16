@@ -1,0 +1,21 @@
+title: Direct SSH Root Login Accepted
+id: fa871b69-8e2a-4ce6-a790-a7d5bc28e285
+status: stable
+description: Detects successful direct SSH login for the root user.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.initial_access
+    - attack.t1078.003
+logsource:
+    product: linux
+    service: sshd
+detection:
+    selection:
+        content|contains:
+            - 'Accepted password for root'
+            - 'Accepted publickey for root'
+    condition: selection
+falsepositives:
+    - Legitimate administrator logins if PermitRootLogin is allowed
+level: medium

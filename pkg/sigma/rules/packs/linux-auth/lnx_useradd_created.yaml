@@ -1,0 +1,21 @@
+title: New Linux User Account Created
+id: c4e18370-13f5-46b2-a429-1a4869c9b139
+status: stable
+description: Detects the creation of a new user account on a Linux system.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.persistence
+    - attack.t1136.001
+logsource:
+    product: linux
+    category: account_management
+detection:
+    selection:
+        content|contains:
+            - 'new user: name='
+            - 'useradd['
+    condition: selection
+falsepositives:
+    - Legitimate user provisioning
+level: medium

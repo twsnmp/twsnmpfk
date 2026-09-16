@@ -1,0 +1,26 @@
+title: Web Vulnerability Scanner User-Agent
+id: dbf49c01-7299-4677-8025-0d6eb3653138
+status: stable
+description: Detects automated vulnerability scanner user-agent strings probing the web server.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.discovery
+    - attack.t1595.002
+logsource:
+    category: webserver
+detection:
+    selection:
+        content|contains:
+            - 'Nikto'
+            - 'sqlmap'
+            - 'gobuster'
+            - 'dirbuster'
+            - 'Acunetix'
+            - 'wpscan'
+            - 'masscan'
+            - 'Nmap Scripting Engine'
+    condition: selection
+falsepositives:
+    - Authorized internal penetration testing or vulnerability scans
+level: medium

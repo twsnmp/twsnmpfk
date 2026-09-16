@@ -210,6 +210,16 @@
     "Descr": "syslog stats"
   },
   {
+    "Name": "Syslog Threat Detection (Sigma)",
+    "Type": "syslog",
+    "Mode": "sigma",
+    "Params": "",
+    "Filter": "all",
+    "Script": "critical == 0 && high == 0",
+    "Level": "warn",
+    "Descr": "Monitor threats and compliance violations in Syslog using Sigma rules. Set pack names or rule names in Filter; checks all rules when empty."
+  },
+  {
     "Name": "SNMP TRAP count",
     "Type": "trap",
     "Mode": "count",

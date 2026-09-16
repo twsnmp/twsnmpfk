@@ -1,0 +1,22 @@
+title: Yamaha Router Authentication Failure
+id: e8a914c2-0199-4d92-913a-cc5562145e12
+status: stable
+description: Detects administrator or user login failures on Yamaha RTX/NVR routers.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.credential_access
+    - attack.t1110
+logsource:
+    product: yamaha
+detection:
+    selection:
+        content|contains:
+            - 'Login failed'
+            - 'Administrator login failed'
+            - 'rejected TELNET'
+            - 'rejected SSH'
+    condition: selection
+falsepositives:
+    - Administrator typo
+level: medium

@@ -1,0 +1,23 @@
+title: LSASS Memory Dump Attempt
+id: a0be37bb-9961-4fa3-b788-b2a637508cb0
+status: stable
+description: Detects command line tools attempting to dump memory of the LSASS process to steal credentials.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.credential_access
+    - attack.t1003.001
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        EventID: 4688
+        CommandLine|contains:
+            - 'lsass'
+        CommandLine|contains|all:
+            - 'dump'
+    condition: selection
+falsepositives:
+    - Authorized administrator troubleshooting with procdump
+level: critical

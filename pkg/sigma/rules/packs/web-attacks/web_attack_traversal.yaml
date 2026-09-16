@@ -1,0 +1,26 @@
+title: Path Traversal Attempt
+id: fd21b2bb-7629-43c7-be6b-e8549ad0e241
+status: stable
+description: Detects directory and path traversal patterns in web request URIs.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.initial_access
+    - attack.t1190
+logsource:
+    category: webserver
+detection:
+    selection:
+        content|contains:
+            - '/../'
+            - '/..\'
+            - '..\..\'
+            - '%2e%2e%2f'
+            - '/etc/passwd'
+            - '/etc/shadow'
+            - 'win.ini'
+            - 'boot.ini'
+    condition: selection
+falsepositives:
+    - Web applications with odd URL paths
+level: high

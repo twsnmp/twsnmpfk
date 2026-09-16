@@ -1,0 +1,23 @@
+title: Palo Alto Networks Threat Detected
+id: e158beea-21b4-4b5b-a6be-389f5bc51590
+status: stable
+description: Detects threat and vulnerability alerts logged by Palo Alto Networks Next-Gen Firewalls.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.initial_access
+    - attack.execution
+logsource:
+    product: paloalto
+    service: threat
+detection:
+    selection:
+        content|contains:
+            - ',THREAT,'
+            - ',vulnerability,'
+            - ',spyware,'
+            - ',virus,'
+    condition: selection
+falsepositives:
+    - Security scanning tools
+level: high

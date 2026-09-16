@@ -1,0 +1,25 @@
+title: Cross Site Scripting (XSS) Pattern
+id: 1ea68370-07e3-469b-9a84-0a37db7f191b
+status: stable
+description: Detects typical cross-site scripting attack vectors in web request paths and parameters.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.initial_access
+    - attack.t1190
+logsource:
+    category: webserver
+detection:
+    selection:
+        content|contains:
+            - '<script>'
+            - '<script '
+            - '</script>'
+            - 'javascript:alert('
+            - 'javascript:eval('
+            - '<svg/onload='
+            - '<img src=x onerror='
+    condition: selection
+falsepositives:
+    - Web requests submitting HTML code snippets intentionally
+level: medium

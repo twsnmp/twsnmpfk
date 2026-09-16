@@ -1,0 +1,23 @@
+title: 'auditd: Linux audit daemon terminated'
+id: wazuh-cmp-auditd-stopped
+status: stable
+description: 'Detects termination of the Linux audit daemon (PCI-DSS 10.2.6, NIST AU-12, CIS 8.5)'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1562.001
+    - wazuh
+    - pci_dss.10.2.6
+    - nist_800_53.au_12
+    - cis.control_8_5
+logsource:
+    product: linux
+    service: auditd
+detection:
+    selection:
+        content|contains:
+            - 'Audit daemon is exiting'
+            - 'audit stopped'
+            - 'auditd: stopped'
+    condition: selection
+level: critical

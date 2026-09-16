@@ -1,0 +1,20 @@
+title: Windows Failed Logon Attempt
+id: 018d9f10-ff31-419b-a36c-941cbfa0451a
+status: stable
+description: Detects failed logon attempts on Windows systems which may indicate a brute force or password spraying attack.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.credential_access
+    - attack.t1110
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4625
+    condition: selection
+falsepositives:
+    - User typo
+    - Misconfigured service account
+level: low

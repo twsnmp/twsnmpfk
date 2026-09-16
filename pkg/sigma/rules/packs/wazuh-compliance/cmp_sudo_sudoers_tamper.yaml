@@ -1,0 +1,24 @@
+title: 'sudo: Privileged sudoers configuration modified'
+id: wazuh-cmp-sudoers-tamper
+status: stable
+description: 'Administrative command executed to edit or modify sudoers configuration (PCI-DSS 10.2.2, NIST CM-5, CIS 5.4)'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1548.003
+    - wazuh
+    - pci_dss.10.2.2
+    - nist_800_53.cm_5
+    - cis.control_5_4
+logsource:
+    product: linux
+    service: sudo
+detection:
+    selection:
+        content|contains:
+            - 'COMMAND=/usr/sbin/visudo'
+            - 'COMMAND=/bin/vi /etc/sudoers'
+            - 'COMMAND=/usr/bin/nano /etc/sudoers'
+            - 'COMMAND=/usr/bin/vim /etc/sudoers'
+    condition: selection
+level: medium

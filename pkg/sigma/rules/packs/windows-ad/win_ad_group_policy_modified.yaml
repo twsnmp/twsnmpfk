@@ -1,0 +1,21 @@
+title: Group Policy Object Modified
+id: 114c9790-256d-476c-8ab8-1647d7a31502
+status: stable
+description: Detects modifications to Group Policy Objects (GPO) in Active Directory which could indicate persistence or privilege escalation.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.t1484.001
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID:
+            - 5136
+            - 5137
+    condition: selection
+falsepositives:
+    - Legitimate administrator GPO editing
+level: medium

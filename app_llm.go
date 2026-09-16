@@ -1746,11 +1746,13 @@ func (a *App) LLMExplainSyslogReport(logs []*datastore.SyslogEnt, tab string) *L
 
 	if tab == "anomaly" {
 		sb.WriteString("\nNote: The user is analyzing the Anomaly Detection tab. Focus on identifying rare/unusual log patterns, suspicious security keywords, unusual hosts/tags, and high anomaly score causes.\n")
+	} else if tab == "sigma" {
+		sb.WriteString("\nNote: The user is analyzing the Sigma Threat & Compliance Detection tab. Focus on explaining matched Sigma rules, threat severity (Critical/High), potential attack techniques (MITRE ATT&CK), compliance violations, and recommended remediation steps.\n")
 	}
 
-	system := "You are a Syslog and server operations expert. Analyze the Syslog report data and explain message severity trends, top logging hosts, anomalous log spikes, and recommended actions."
+	system := "You are a Syslog, cyber threat detection, and server operations expert. Analyze the Syslog report data and explain message severity trends, top logging hosts, threat/anomaly detection results, and recommended actions."
 	if i18n.GetLang() == "ja" {
-		system = "あなたはSyslogおよびサーバー運用の専門家です。提示されたSyslogデータを分析し、重要度（Severity）別の発生傾向、主要送信ホスト、不審なログメッセージ、および運用上の推奨対策について、必ず日本語で分かりやすく解説・回答してください。"
+		system = "あなたはSyslog、サイバー脅威検知、およびサーバー運用の専門家です。提示されたSyslogデータを分析し、重大度別の発生傾向、主要送信ホスト、Sigmaルールによる脅威検知結果やコンプライアンス監査違反、および運用上の推奨対策について、必ず日本語で分かりやすく解説・回答してください。"
 	}
 	return a.llmAsk(sb.String(), system)
 }

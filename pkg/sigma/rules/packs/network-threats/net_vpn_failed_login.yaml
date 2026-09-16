@@ -1,0 +1,23 @@
+title: VPN Authentication Failed
+id: 618a8d11-5369-42b7-a35a-94ef2898cf01
+status: stable
+description: Detects generic VPN authentication failure events which may indicate brute force or credential stuffing attacks.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.credential_access
+    - attack.initial_access
+    - attack.t1110
+logsource:
+    category: vpn
+detection:
+    selection:
+        content|contains:
+            - 'VPN authentication failed'
+            - 'VPN login failed'
+            - 'User authentication failed for VPN'
+            - 'IPsec authentication failed'
+    condition: selection
+falsepositives:
+    - User password mistype
+level: medium

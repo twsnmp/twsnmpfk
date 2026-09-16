@@ -5,6 +5,7 @@
   import * as icons from "@mdi/js";
   import type { datastore } from "wailsjs/go/models";
   import {showSyslogLevelChart,showSyslogHost,showSyslogHost3D,showSyslogFFT3D, getSyslogSummary,showSyslogSummary, showSyslogAnomalyChart } from "./chart/syslog";
+  import { showSigmaSeverityChart, showSigmaTagsChart, showSigmaTimelineChart } from "./chart/sigma";
   import { showLogHeatmap } from "./chart/eventlog";
   import { _ } from "svelte-i18n";
   import {
@@ -14,7 +15,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
 
-  import { GetMapConf, LLMExplainSyslogReport, CalculateSyslogAnomaly } from "../../wailsjs/go/main/App";
+  import { GetMapConf, LLMExplainSyslogReport, CalculateSyslogAnomaly, AnalyzeSigmaLogs, GetSigmaPacks } from "../../wailsjs/go/main/App";
   import ReportAIDialog from "./ReportAIDialog.svelte";
 
   export let show: boolean = false;
@@ -27,6 +28,8 @@
   const onOpen = async () => {
     chart = undefined;
     activeTab = "level";
+    sigmaResult = null;
+    anomalyData = [];
     try {
       const conf = await GetMapConf();
       hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
@@ -223,6 +226,282 @@
     }
   };
 
+  let sigmaMode: "threats" | "compliance" | "all" | "rules" | "tags" = "threats";
+  let sigmaChartType: "severity" | "tags" | "timeline" = "severity";
+  let sigmaPack: string = "all";
+  let sigmaPacksList: any[] = [];
+  let sigmaBusy = false;
+  let sigmaDuration = "";
+  let sigmaResult: any = null;
+  let sigmaTable: any = null;
+
+  const loadSigmaPacks = async () => {
+    if (sigmaPacksList.length === 0) {
+      try {
+        const packs = await GetSigmaPacks();
+        sigmaPacksList = packs || [];
+      } catch (e) {
+        console.warn("GetSigmaPacks err:", e);
+      }
+    }
+  };
+
+  const updateSigmaChart = () => {
+    if (!sigmaResult) return;
+    const isDark = document.documentElement.classList.contains("dark");
+    if (sigmaChartType === "severity") {
+      chart = showSigmaSeverityChart("syslogSigmaChart", sigmaResult.Stats, isDark);
+    } else if (sigmaChartType === "tags") {
+      chart = showSigmaTagsChart("syslogSigmaChart", sigmaResult.Stats.TopTags, isDark, $_('SyslogReport.SigmaTags'));
+    } else if (sigmaChartType === "timeline") {
+      chart = showSigmaTimelineChart("syslogSigmaChart", sigmaResult.Stats.Timeline, isDark);
+    }
+  };
+
+  const renderSigmaTable = () => {
+    const tableEl = document.querySelector("#syslogSigmaTable");
+    if (!tableEl || !sigmaResult) return;
+
+    if (sigmaTable) {
+      try {
+        sigmaTable.off('click', 'tbody td.dt-control');
+        sigmaTable.destroy();
+      } catch (e) {
+        console.warn("destroy sigmaTable err:", e);
+      }
+      sigmaTable = null;
+    }
+
+    let columns: any[] = [];
+    let tableData: any[] = [];
+
+    if (sigmaMode === "threats" || sigmaMode === "compliance" || sigmaMode === "all") {
+      let items = sigmaResult.Items || [];
+      if (sigmaMode === "threats") {
+        items = items.filter((i: any) => !i.IsCompliance);
+      } else if (sigmaMode === "compliance") {
+        items = items.filter((i: any) => i.IsCompliance);
+      }
+      tableData = items;
+
+      columns = [
+        {
+          className: 'dt-control',
+          orderable: false,
+          data: null,
+          defaultContent: '',
+          width: '4%',
+        },
+        {
+          data: "Level",
+          title: $_('SyslogReport.SigmaLevel'),
+          width: "9%",
+          render: (lvl: string) => {
+            const l = (lvl || "medium").toLowerCase();
+            let bg = "#6e7681";
+            if (l === "critical") bg = "#cf222e";
+            else if (l === "high") bg = "#f85149";
+            else if (l === "medium") bg = "#d29922";
+            else if (l === "low") bg = "#58a6ff";
+            return `<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background-color:${bg};color:#fff;text-transform:uppercase;">${l}</span>`;
+          },
+        },
+        {
+          data: "Time",
+          title: $_('SyslogReport.Time'),
+          width: "14%",
+          render: (t: number) => {
+            const ms = t > 1e12 ? Math.floor(t / 1e6) : t * 1000;
+            return new Date(ms).toLocaleString();
+          },
+        },
+        {
+          data: "Title",
+          title: $_('SyslogReport.SigmaRuleTitle'),
+          width: "23%",
+        },
+        {
+          data: "LogSource",
+          title: $_('SyslogReport.SigmaLogSource'),
+          width: "12%",
+        },
+        {
+          data: "Tags",
+          title: $_('SyslogReport.SigmaTag'),
+          width: "15%",
+          render: (tags: string[]) => {
+            if (!tags || tags.length === 0) return "";
+            return tags.slice(0, 3).map((t) => {
+              let color = "#38bdf8";
+              const tl = t.toLowerCase();
+              if (tl.startsWith("attack.")) color = "#f87171";
+              else if (tl.startsWith("pci") || tl.startsWith("nist") || tl.startsWith("cis") || tl.startsWith("gdpr") || tl.startsWith("compliance")) color = "#4ade80";
+              return `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] mr-1 bg-gray-700 text-gray-200 border border-gray-600 font-mono" style="color:${color}">${t}</span>`;
+            }).join("") + (tags.length > 3 ? `<span class="text-xs text-gray-400">+${tags.length - 3}</span>` : "");
+          },
+        },
+        {
+          data: "Message",
+          title: $_('SyslogReport.Message'),
+          width: "23%",
+        },
+      ];
+    } else if (sigmaMode === "rules") {
+      tableData = sigmaResult.Stats.TopRules || [];
+      columns = [
+        {
+          data: "Count",
+          title: $_('SyslogReport.SigmaCount'),
+          width: "10%",
+          render: renderCount,
+          className: "dt-body-right",
+        },
+        {
+          data: "Level",
+          title: $_('SyslogReport.SigmaLevel'),
+          width: "12%",
+          render: (lvl: string) => {
+            const l = (lvl || "medium").toLowerCase();
+            let bg = "#6e7681";
+            if (l === "critical") bg = "#cf222e";
+            else if (l === "high") bg = "#f85149";
+            else if (l === "medium") bg = "#d29922";
+            else if (l === "low") bg = "#58a6ff";
+            return `<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background-color:${bg};color:#fff;text-transform:uppercase;">${l}</span>`;
+          },
+        },
+        {
+          data: "Title",
+          title: $_('SyslogReport.SigmaRuleTitle'),
+          width: "38%",
+        },
+        {
+          data: "Source",
+          title: $_('SyslogReport.SigmaLogSource'),
+          width: "15%",
+          render: (s: string) => s.replace("pack:", ""),
+        },
+        {
+          data: "Tags",
+          title: $_('SyslogReport.SigmaTag'),
+          width: "25%",
+          render: (tags: string[]) => {
+            if (!tags || tags.length === 0) return "";
+            return tags.slice(0, 3).map((t) => `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] mr-1 bg-gray-700 text-gray-300 font-mono">${t}</span>`).join("");
+          },
+        },
+      ];
+    } else if (sigmaMode === "tags") {
+      tableData = sigmaResult.Stats.TopTags || [];
+      columns = [
+        {
+          data: "Count",
+          title: $_('SyslogReport.SigmaCount'),
+          width: "15%",
+          render: renderCount,
+          className: "dt-body-right",
+        },
+        {
+          data: "Category",
+          title: $_('SyslogReport.SigmaCategory'),
+          width: "20%",
+          render: (c: string) => {
+            let label = c;
+            let bg = "#0969da";
+            if (c === "mitre") {
+              label = "MITRE ATT&CK";
+              bg = "#cf222e";
+            } else if (c === "compliance") {
+              label = "Compliance";
+              bg = "#2ea44f";
+            }
+            return `<span style="padding:2px 8px;border-radius:10px;font-size:11px;color:#fff;background:${bg}">${label}</span>`;
+          },
+        },
+        {
+          data: "Tag",
+          title: $_('SyslogReport.SigmaTag'),
+          width: "65%",
+        },
+      ];
+    }
+
+    sigmaTable = new DataTable("#syslogSigmaTable", {
+      destroy: true,
+      pageLength: window.innerHeight > 1000 ? 25 : 10,
+      stateSave: true,
+      data: tableData,
+      language: getTableLang(),
+      order: [[1, "desc"]],
+      columns: columns,
+    });
+
+    if (sigmaMode === "threats" || sigmaMode === "compliance" || sigmaMode === "all") {
+      sigmaTable.on('click', 'tbody td.dt-control', function (this: any, e: any) {
+        let tr = (this as HTMLElement).closest('tr');
+        if (!tr) return;
+        let row = sigmaTable.row(tr);
+        if (row.child.isShown()) {
+          row.child.hide();
+        } else {
+          const d = row.data();
+          row.child(`
+            <div class="p-3 bg-gray-900/90 text-xs rounded border border-gray-700 space-y-1">
+              <div><b class="text-gray-400">Rule ID:</b> <span class="font-mono text-gray-200">${d.RuleID}</span></div>
+              <div><b class="text-gray-400">Source:</b> <span class="font-mono text-gray-200">${d.Source}</span></div>
+              <div><b class="text-gray-400">Tags:</b> <span class="font-mono text-gray-200">${(d.Tags || []).join(", ")}</span></div>
+              <div><b class="text-gray-400">Log Message:</b></div>
+              <pre class="p-2 bg-black/60 rounded text-green-400 overflow-x-auto whitespace-pre-wrap font-mono">${d.Log || d.Message}</pre>
+            </div>
+          `).show();
+        }
+      });
+    }
+  };
+
+  const calcSigma = async () => {
+    if (!logs || logs.length === 0 || sigmaBusy) return;
+    sigmaBusy = true;
+    sigmaDuration = "";
+    const st = Date.now();
+    try {
+      const packs = sigmaPack === "all" ? [] : [sigmaPack];
+      const res = await AnalyzeSigmaLogs(logs, packs, []);
+      if (res) {
+        sigmaDuration = `${Date.now() - st} ms`;
+        sigmaResult = res;
+        await tick();
+        updateSigmaChart();
+        renderSigmaTable();
+      }
+    } catch (e) {
+      console.error("AnalyzeSigmaLogs err:", e);
+    } finally {
+      sigmaBusy = false;
+    }
+  };
+
+  const showSigma = async () => {
+    activeTab = "sigma";
+    await loadSigmaPacks();
+    await tick();
+    if (sigmaResult) {
+      updateSigmaChart();
+      renderSigmaTable();
+    }
+  };
+
+  const handleSigmaModeChange = async () => {
+    await tick();
+    renderSigmaTable();
+  };
+
+  const handleSigmaChartTypeChange = async () => {
+    await tick();
+    updateSigmaChart();
+  };
+
+
   const close = () => {
     show = false;
   };
@@ -245,10 +524,11 @@
   bind:open={show}
   size="xl"
   dismissable={false}
-  class="w-full min-h-[90vh]"
+  class="w-full max-h-[92vh] p-2"
 >
-  <div class="flex flex-col space-y-4">
-    <Tabs style="underline" contentClass="p-1 pt-1">
+  <div class="flex flex-col h-[84vh] max-h-[84vh] overflow-hidden">
+    <div class="flex-1 overflow-y-auto pr-1">
+      <Tabs style="underline" contentClass="p-1 pt-1">
       <TabItem onclick={()=>{showChart("level")}}>
         {#snippet titleSlot()}
         <div class="flex items-center gap-2">
@@ -368,8 +648,114 @@
           </div>
         {/if}
       </TabItem>
+      <TabItem onclick={showSigma}>
+        {#snippet titleSlot()}
+        <div class="flex items-center gap-2">
+          <Icon path={icons.mdiShieldAlert} size={1} />
+          {$_('SyslogReport.Sigma')}
+        </div>
+      {/snippet}
+        <div class="flex items-center gap-3 mt-1 mb-2.5 flex-wrap text-sm">
+          <label class="flex items-center gap-1">
+            <span class="text-xs text-gray-300">{$_('SyslogReport.SigmaMode')}:</span>
+            <select class="bg-gray-700 text-white rounded px-2 py-1 text-xs" bind:value={sigmaMode} onchange={handleSigmaModeChange}>
+              <option value="threats">{$_('SyslogReport.SigmaThreats')}</option>
+              <option value="compliance">{$_('SyslogReport.SigmaCompliance')}</option>
+              <option value="all">{$_('SyslogReport.SigmaAll')}</option>
+              <option value="rules">{$_('SyslogReport.SigmaRules')}</option>
+              <option value="tags">{$_('SyslogReport.SigmaTags')}</option>
+            </select>
+          </label>
+          <label class="flex items-center gap-1">
+            <span class="text-xs text-gray-300">{$_('SyslogReport.SigmaChartType')}:</span>
+            <select class="bg-gray-700 text-white rounded px-2 py-1 text-xs" bind:value={sigmaChartType} onchange={handleSigmaChartTypeChange}>
+              <option value="severity">{$_('SyslogReport.SigmaChartSeverity')}</option>
+              <option value="tags">{$_('SyslogReport.SigmaChartTags')}</option>
+              <option value="timeline">{$_('SyslogReport.SigmaChartTimeline')}</option>
+            </select>
+          </label>
+          <label class="flex items-center gap-1">
+            <span class="text-xs text-gray-300">{$_('SyslogReport.SigmaPacks')}:</span>
+            <select class="bg-gray-700 text-white rounded px-2 py-1 text-xs" bind:value={sigmaPack}>
+              <option value="all">{$_('SyslogReport.SigmaAllPacks')}</option>
+              {#each sigmaPacksList as p}
+                <option value={p.name}>{p.name} ({p.rule_count})</option>
+              {/each}
+            </select>
+          </label>
+          <GradientButton shadow type="button" color="blue" onclick={calcSigma} disabled={sigmaBusy} size="xs">
+            <Icon path={icons.mdiShieldSearch} size={0.8} />
+            {sigmaBusy ? $_('SyslogReport.SigmaDetecting') : $_('SyslogReport.SigmaDetect')}
+          </GradientButton>
+          {#if sigmaDuration}
+            <span class="text-xs text-gray-400">{$_('SyslogReport.Duration')}: {sigmaDuration}</span>
+          {/if}
+        </div>
+
+        {#if sigmaResult}
+          <!-- Overview summary metrics cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-1.5 my-2 text-center">
+            <div class="bg-gray-800/80 p-1.5 rounded border border-gray-700">
+              <div class="text-[10px] text-gray-400">{$_('SyslogReport.SigmaTotalScanned')}</div>
+              <div class="text-sm font-bold text-gray-200">{sigmaResult.Stats.TotalLogs.toLocaleString()}</div>
+            </div>
+            <div class="bg-gray-800/80 p-1.5 rounded border border-gray-700">
+              <div class="text-[10px] text-red-400">{$_('SyslogReport.SigmaTotalHits')}</div>
+              <div class="text-sm font-bold text-red-400">{sigmaResult.Stats.TotalDetections.toLocaleString()}</div>
+            </div>
+            <div class="bg-gray-800/80 p-1.5 rounded border border-gray-700">
+              <div class="text-[10px] text-red-500">Critical</div>
+              <div class="text-sm font-bold text-red-500">{sigmaResult.Stats.Critical.toLocaleString()}</div>
+            </div>
+            <div class="bg-gray-800/80 p-1.5 rounded border border-gray-700">
+              <div class="text-[10px] text-orange-400">High</div>
+              <div class="text-sm font-bold text-orange-400">{sigmaResult.Stats.High.toLocaleString()}</div>
+            </div>
+            <div class="bg-gray-800/80 p-1.5 rounded border border-gray-700">
+              <div class="text-[10px] text-yellow-400">Medium</div>
+              <div class="text-sm font-bold text-yellow-400">{sigmaResult.Stats.Medium.toLocaleString()}</div>
+            </div>
+            <div class="bg-gray-800/80 p-1.5 rounded border border-gray-700">
+              <div class="text-[10px] text-blue-400">Low / Info</div>
+              <div class="text-sm font-bold text-blue-400">{(sigmaResult.Stats.Low + sigmaResult.Stats.Informational).toLocaleString()}</div>
+            </div>
+            <div class="bg-gray-800/80 p-1.5 rounded border border-gray-700">
+              <div class="text-[10px] text-green-400">{$_('SyslogReport.SigmaComplianceHits')}</div>
+              <div class="text-sm font-bold text-green-400">{sigmaResult.Stats.ComplianceHits.toLocaleString()}</div>
+            </div>
+            <div class="bg-gray-800/80 p-1.5 rounded border border-gray-700">
+              <div class="text-[10px] text-gray-400">{$_('SyslogReport.SigmaActiveRules')}</div>
+              <div class="text-sm font-bold text-gray-200">{sigmaResult.Stats.ActiveRules.toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div id="syslogSigmaChart"></div>
+
+          <div class="mt-4">
+            <table
+              id="syslogSigmaTable"
+              class="display compact"
+              style="width:99%"
+            ></table>
+          </div>
+        {:else}
+          <div class="flex flex-col items-center justify-center p-8 bg-gray-800/40 rounded-lg border border-gray-700 text-center my-6">
+            <Icon path={icons.mdiShieldAlert} size={2} class="text-blue-400 mb-3" />
+            <h4 class="text-base font-semibold text-gray-200 mb-2">{$_('SyslogReport.SigmaTitle')}</h4>
+            <p class="text-sm text-gray-400 max-w-lg mb-4">
+              {$_('SyslogReport.SigmaGuideDesc')}
+            </p>
+            <div class="text-xs text-gray-400 space-y-1 text-left bg-gray-900/60 p-4 rounded border border-gray-700/60">
+              <div><b>・{$_('SyslogReport.SigmaPacks')}:</b> {$_('SyslogReport.SigmaAllPacks')} / windows-essential / linux-auth / network-threats / web-attacks / wazuh-compliance ...</div>
+              <div><b>・{$_('SyslogReport.SigmaMode')}:</b> {$_('SyslogReport.SigmaThreats')} / {$_('SyslogReport.SigmaCompliance')} / {$_('SyslogReport.SigmaAll')} / {$_('SyslogReport.SigmaRules')} / {$_('SyslogReport.SigmaTags')}</div>
+              <div><b>・{$_('SyslogReport.SigmaChartType')}:</b> {$_('SyslogReport.SigmaChartSeverity')} / {$_('SyslogReport.SigmaChartTags')} / {$_('SyslogReport.SigmaChartTimeline')}</div>
+            </div>
+          </div>
+        {/if}
+      </TabItem>
     </Tabs>
-    <div class="flex justify-end space-x-2 mr-2">
+    </div>
+    <div class="flex justify-end space-x-2 mr-2 pt-2.5 mt-auto border-t border-gray-700 bg-gray-800 shrink-0">
       {#if hasAI}
         <GradientButton
           shadow
@@ -414,7 +800,8 @@
     width: 98%;
     margin: 0 auto;
   }
-  #syslogAnomalyChart {
+  #syslogAnomalyChart,
+  #syslogSigmaChart {
     min-height: 300px;
     height: 30vh;
     width: 98%;

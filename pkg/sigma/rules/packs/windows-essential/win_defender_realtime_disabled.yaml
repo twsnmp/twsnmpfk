@@ -1,0 +1,19 @@
+title: Windows Defender Real-time Protection Disabled
+id: 1729c153-62ae-4074-a095-236fa7830cb8
+status: stable
+description: Detects when Microsoft Defender Antivirus real-time protection feature has been disabled.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.defense_evasion
+    - attack.t1562.001
+logsource:
+    product: windows
+    service: windefend
+detection:
+    selection:
+        EventID: 5001
+    condition: selection
+falsepositives:
+    - Legitimate administration or third-party antivirus installation
+level: high

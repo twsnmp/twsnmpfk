@@ -1,0 +1,26 @@
+title: 'su: Authentication failure during root privilege escalation'
+id: wazuh-cmp-bad-su
+status: stable
+description: 'User attempted to switch to root using su but authentication failed (PCI-DSS 10.2.4, NIST AC-6, CIS 5.4)'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1548.003
+    - wazuh
+    - pci_dss.10.2.4
+    - nist_800_53.ac_6
+    - nist_800_53.ac_7
+    - gdpr.iv_35_7_d
+    - cis.control_5_4
+logsource:
+    product: linux
+    service: su
+detection:
+    selection:
+        content|contains:
+            - 'BAD SU to root'
+            - 'FAILED SU (to root)'
+            - 'Authentication failure'
+        content|re: 'to root'
+    condition: selection
+level: high

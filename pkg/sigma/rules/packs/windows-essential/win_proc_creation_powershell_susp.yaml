@@ -1,0 +1,26 @@
+title: Suspicious PowerShell Execution
+id: 7b836d7f-179c-4ba4-90a7-a7e60a826476
+status: stable
+description: Detects suspicious PowerShell command line flags and functions often used in malicious scripts and downloaders.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.execution
+    - attack.t1059.001
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        EventID: 4688
+        CommandLine|contains:
+            - '-enc '
+            - '-EncodedCommand '
+            - 'DownloadString'
+            - 'Invoke-Expression'
+            - 'iex '
+            - 'iex('
+    condition: selection
+falsepositives:
+    - Legitimate administrative automation scripts
+level: high

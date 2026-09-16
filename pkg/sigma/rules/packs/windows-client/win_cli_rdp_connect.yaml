@@ -1,0 +1,19 @@
+title: Terminal Services RDP Connection Established
+id: fe7169f4-0c2d-4299-88fa-05188bf0a012
+status: stable
+description: Detects user authentication and connection to Terminal Services / Remote Desktop.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.lateral_movement
+    - attack.t1021.001
+logsource:
+    product: windows
+    service: terminalservices-remoteconnectionmanager
+detection:
+    selection:
+        EventID: 1149
+    condition: selection
+falsepositives:
+    - Legitimate administrative remote desktop connections
+level: low

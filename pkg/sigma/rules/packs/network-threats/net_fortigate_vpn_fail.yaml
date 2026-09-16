@@ -1,0 +1,23 @@
+title: FortiGate SSL VPN Authentication Failure
+id: a742880c-55c3-4d69-b570-5b65f7c32014
+status: stable
+description: Detects failed SSL VPN login attempts on Fortinet FortiGate appliances.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.credential_access
+    - attack.initial_access
+    - attack.t1110
+logsource:
+    product: fortinet
+    service: vpn
+detection:
+    selection:
+        content|contains:
+            - 'action="ssl-login-fail"'
+            - 'action=ssl-login-fail'
+            - 'SSL VPN login fail'
+    condition: selection
+falsepositives:
+    - User typo
+level: medium

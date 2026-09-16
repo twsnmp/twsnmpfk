@@ -1,0 +1,23 @@
+title: Unsigned or Out-of-Tree Kernel Module Loaded
+id: a7812002-38ef-4171-be19-58b21c431002
+status: stable
+description: Detects kernel messages indicating the loading of out-of-tree or unsigned kernel modules (potential rootkit activity).
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.defense_evasion
+    - attack.t1547.006
+logsource:
+    product: linux
+    service: kernel
+detection:
+    selection:
+        content|contains:
+            - 'loading out-of-tree module'
+            - 'module verification failed'
+            - 'disassociating tainted'
+    condition: selection
+falsepositives:
+    - Third party proprietary hardware drivers (e.g. NVIDIA, VirtualBox)
+level: medium

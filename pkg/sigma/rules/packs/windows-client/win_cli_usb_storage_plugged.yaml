@@ -1,0 +1,22 @@
+title: USB Storage Device Plugged In
+id: 5971a620-379e-4c7b-b8c1-f2f63f350812
+status: stable
+description: Detects when a USB mass storage or removable disk is attached to the system.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.initial_access
+    - attack.exfiltration
+    - attack.t1052.001
+logsource:
+    product: windows
+    service: driver-frameworks-usermode
+detection:
+    selection:
+        EventID:
+            - 20001
+            - 20003
+    condition: selection
+falsepositives:
+    - Authorized USB flash drives
+level: low

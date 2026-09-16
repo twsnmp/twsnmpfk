@@ -1,0 +1,21 @@
+title: Spring4Shell Remote Code Execution Attempt
+id: dae6d420-1eb5-4ff1-b295-88bf89ef32e8
+status: stable
+description: Detects attempts to exploit Spring Framework RCE vulnerability (CVE-2022-22965 / Spring4Shell).
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.initial_access
+    - attack.execution
+    - attack.t1190
+logsource:
+    category: webserver
+detection:
+    selection:
+        content|contains:
+            - 'class.module.classLoader'
+            - 'classLoader.resources.context'
+    condition: selection
+falsepositives:
+    - Highly unlikely
+level: critical

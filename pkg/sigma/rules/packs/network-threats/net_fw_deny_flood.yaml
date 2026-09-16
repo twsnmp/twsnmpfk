@@ -1,0 +1,23 @@
+title: Network Scan or Deny Flood
+id: 84a1e944-773a-4467-96a9-83bc7010471b
+status: stable
+description: Detects port scanning or connection flood drop alerts reported by network firewalls.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.discovery
+    - attack.t1046
+logsource:
+    category: firewall
+detection:
+    selection:
+        content|contains:
+            - 'port scan'
+            - 'PortScan'
+            - 'SYN flood'
+            - 'IP spoofing'
+            - 'LAND attack'
+    condition: selection
+falsepositives:
+    - Internal security vulnerability scanners
+level: high

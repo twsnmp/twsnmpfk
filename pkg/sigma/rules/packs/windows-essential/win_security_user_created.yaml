@@ -1,0 +1,19 @@
+title: User Account Created
+id: d9a4a7cf-d166-41ea-bfcf-3b9514e8a49c
+status: stable
+description: Detects the creation of a new Windows user account.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.persistence
+    - attack.t1136.001
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4720
+    condition: selection
+falsepositives:
+    - Legitimate administrative activity
+level: medium

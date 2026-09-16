@@ -1,0 +1,22 @@
+title: Network Device Configuration Changed
+id: 97f394c8-3fa0-482a-a9a3-535d554a938c
+status: stable
+description: Detects when network device configuration is modified or saved by an administrator.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.defense_evasion
+logsource:
+    category: configuration
+detection:
+    selection:
+        content|contains:
+            - 'configuration changed'
+            - 'config commit'
+            - 'save config'
+            - '%SYS-5-CONFIG_I'
+    condition: selection
+falsepositives:
+    - Legitimate administrator maintenance
+level: low

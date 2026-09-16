@@ -1,0 +1,24 @@
+title: 'database: Database authentication failed or access denied'
+id: wazuh-cmp-database-denied
+status: stable
+description: 'Database server rejected authentication or access attempt (PCI-DSS 10.2.4, NIST AC-6, GDPR 35.7.d)'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1110
+    - wazuh
+    - pci_dss.10.2.4
+    - nist_800_53.ac_6
+    - gdpr.iv_35_7_d
+logsource:
+    product: database
+    service: rdbms
+detection:
+    selection:
+        content|contains:
+            - 'Access denied for user'
+            - 'password authentication failed for user'
+            - 'no pg_hba.conf entry for host'
+            - 'ORA-01017: invalid username/password'
+    condition: selection
+level: medium

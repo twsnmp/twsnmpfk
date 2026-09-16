@@ -1,0 +1,19 @@
+title: 'sudo: user NOT in sudoers'
+id: wazuh-5404
+status: stable
+description: 'sudo: user NOT in sudoers file attempted to execute command'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1548.003
+    - wazuh
+    - group.privilege_escalation
+logsource:
+    product: linux
+    service: sudo
+detection:
+    selection:
+        content|contains:
+            - 'NOT in sudoers'
+    condition: selection
+level: high

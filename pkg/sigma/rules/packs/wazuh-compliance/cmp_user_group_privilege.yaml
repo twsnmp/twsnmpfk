@@ -1,0 +1,24 @@
+title: 'group: User added to administrative privileged group'
+id: wazuh-cmp-group-privilege
+status: stable
+description: 'User was added to a privileged administrator group such as wheel, sudo, or adm (PCI-DSS 10.2.5, NIST AC-2, CIS 5.2)'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1098
+    - wazuh
+    - pci_dss.10.2.5
+    - nist_800_53.ac_2
+    - cis.control_5_2
+logsource:
+    product: linux
+    service: usermod
+detection:
+    selection:
+        content|contains:
+            - 'to group sudo'
+            - 'to group wheel'
+            - 'to group adm'
+            - 'groupadd[admin]'
+    condition: selection
+level: high

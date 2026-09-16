@@ -1,0 +1,40 @@
+title: Sigma config for windows event log
+backends:
+  - github.com/bradleyjkemp/sigma-go
+
+fieldmappings:
+  Image: $.Event.EventData.Image
+  CommandLine: $.Event.EventData.CommandLine
+  ParentProcessName: $.Event.EventData.ParentProcessName
+  NewProcessName:  $.Event.EventData.NewProcessName
+  User:  $.Event.EventData.User
+  ParentUser:  $.Event.EventData.ParentUser
+  Channel:  $.Event.System.Channel
+  Computer:  $.Event.System.Computer
+  EventID:  $.Event.System.EventID
+  Level:  $.Event.System.Level
+  Provider.Guid:  $.Event.System.Provider.Guid
+  Provider.Name:  $.Event.System.Provider.Name
+  TargetUserName: $.Event.EventData.TargetUserName
+  TargetDomainName: $.Event.EventData.TargetDomainName
+  SubjectUserName: $.Event.EventData.SubjectUserName
+  SubjectDomainName: $.Event.EventData.SubjectDomainName
+  ServiceName: $.Event.EventData.ServiceName
+  ServiceFileName: $.Event.EventData.ServiceFileName
+  TaskName: $.Event.EventData.TaskName
+  WorkstationName: $.Event.EventData.WorkstationName
+  IpAddress: $.Event.EventData.IpAddress
+  IpPort: $.Event.EventData.IpPort
+  LogonType: $.Event.EventData.LogonType
+  Status: $.Event.EventData.Status
+  SubStatus: $.Event.EventData.SubStatus
+  MemberName: $.Event.EventData.MemberName
+  TargetSid: $.Event.EventData.TargetSid
+  SubjectUserSid: $.Event.EventData.SubjectUserSid
+  AuditSourceName: $.Event.EventData.AuditSourceName
+  TicketEncryptionType: $.Event.EventData.TicketEncryptionType
+  TicketOptions: $.Event.EventData.TicketOptions
+  PreAuthType: $.Event.EventData.PreAuthType
+  AccessMask: $.Event.EventData.AccessMask
+  Properties: $.Event.EventData.Properties
+  ShareName: $.Event.EventData.ShareName

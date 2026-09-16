@@ -1,0 +1,20 @@
+title: User Password Reset Attempt
+id: fd58a8a4-0987-4d92-9118-2e061801e0a2
+status: stable
+description: Detects when a user account password was forcefully reset by an administrator.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.impact
+    - attack.persistence
+    - attack.t1098
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4724
+    condition: selection
+falsepositives:
+    - Helpdesk password reset operations
+level: low

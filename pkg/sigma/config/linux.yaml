@@ -1,0 +1,19 @@
+title: Sigma config for linux syslog
+backends:
+  - github.com/bradleyjkemp/sigma-go
+
+fieldmappings:
+  message: content
+  command: content
+  CommandLine: content
+  Image: content
+  user: user
+  username: user
+  srcuser: user
+  dstuser: user
+  dst_user: user
+  client: client
+  srcip: client
+  src_ip: client
+  dstip: dst_ip
+  program_name: service

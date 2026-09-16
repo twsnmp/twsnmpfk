@@ -1,0 +1,19 @@
+title: Network Share Object Added
+id: ca073994-3e91-4547-8a21-995a8f4c1001
+status: stable
+description: Detects when a new network file share is created on the Windows system.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.lateral_movement
+    - attack.t1021.002
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 5142
+    condition: selection
+falsepositives:
+    - Legitimate administrator creating file shares
+level: low

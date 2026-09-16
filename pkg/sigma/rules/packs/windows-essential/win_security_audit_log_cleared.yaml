@@ -1,0 +1,19 @@
+title: Security Event Log Cleared
+id: a62b4f9c-1c5c-44ef-a6bc-e00f913d8583
+status: stable
+description: Detects clearing of the Windows Security event log which often indicates defense evasion activity by an attacker.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.defense_evasion
+    - attack.t1070.001
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 1102
+    condition: selection
+falsepositives:
+    - Legitimate log rotation or administrative maintenance
+level: high

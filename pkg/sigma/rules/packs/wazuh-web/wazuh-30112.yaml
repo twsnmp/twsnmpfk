@@ -1,0 +1,24 @@
+title: 'apache/nginx: Attack using vulnerability scanner tool'
+id: wazuh-30112
+status: stable
+description: 'Web attack using automated scanner tool (Nikto, sqlmap, dirbuster, gobuster, etc.)'
+author: Wazuh Ruleset / twlogeye converter
+date: '2026-09-09'
+tags:
+    - attack.t1595
+    - wazuh
+    - group.web_scan
+logsource:
+    product: web
+    service: http
+detection:
+    selection:
+        content|contains:
+            - 'Nikto'
+            - 'sqlmap'
+            - 'dirbuster'
+            - 'gobuster'
+            - 'acunetix'
+            - 'wpscan'
+    condition: selection
+level: high

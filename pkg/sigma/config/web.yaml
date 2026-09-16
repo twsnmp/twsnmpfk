@@ -1,0 +1,11 @@
+title: Sigma config for web and proxy logs
+backends:
+  - github.com/bradleyjkemp/sigma-go
+
+fieldmappings:
+  cs-method: method
+  cs-uri-stem: path
+  cs-uri-query: query
+  cs-uri: content
+  c-ip: client
+  cs(User-Agent): user_agent

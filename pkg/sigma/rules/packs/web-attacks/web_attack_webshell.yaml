@@ -1,0 +1,26 @@
+title: WebShell Access or Execution
+id: 489efca1-382a-4a25-a134-8c887ba53344
+status: stable
+description: Detects access to known webshell scripts or typical webshell execution parameters in web logs.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.t1505.003
+logsource:
+    category: webserver
+detection:
+    selection:
+        content|contains:
+            - 'eval(base64_decode'
+            - 'c99.php'
+            - 'r57.php'
+            - 'b374k'
+            - 'wso.php'
+            - 'shell.php'
+            - 'passthru('
+            - 'shell_exec('
+    condition: selection
+falsepositives:
+    - Rarely seen in legitimate web requests
+level: critical

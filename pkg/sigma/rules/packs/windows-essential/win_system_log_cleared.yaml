@@ -1,0 +1,19 @@
+title: System Event Log Cleared
+id: e9be6ea9-72c1-4ff2-8354-1b777a949646
+status: stable
+description: Detects clearing of the Windows System event log.
+author: twlogeye
+date: 2026-09-08
+tags:
+    - attack.defense_evasion
+    - attack.t1070.001
+logsource:
+    product: windows
+    service: system
+detection:
+    selection:
+        EventID: 104
+    condition: selection
+falsepositives:
+    - Legitimate administrative maintenance
+level: high

@@ -1,0 +1,21 @@
+title: UAC Bypass Via Event Viewer
+id: c08be43b-2877-448f-8d2a-89a16f272a08
+status: stable
+description: Detects execution of eventvwr.exe which may be abused to bypass UAC via registry hijacking.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.privilege_escalation
+    - attack.defense_evasion
+    - attack.t1548.002
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        EventID: 4688
+        CommandLine|contains: 'eventvwr.exe'
+    condition: selection
+falsepositives:
+    - Legitimate user opening Event Viewer manually
+level: low

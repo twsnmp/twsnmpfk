@@ -1,0 +1,19 @@
+title: User Account Unlocked
+id: a23bb589-9801-49e0-b6ea-78f912ca87c2
+status: stable
+description: Detects when a locked-out Active Directory user account is unlocked by an administrator.
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.persistence
+    - attack.t1098
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4767
+    condition: selection
+falsepositives:
+    - Legitimate helpdesk support unlock
+level: low

@@ -1,0 +1,21 @@
+title: UAC Bypass Via Fodhelper
+id: 71b3e839-a9a7-47bf-8f2c-5695847e0901
+status: stable
+description: Detects execution of fodhelper.exe which is frequently abused to bypass User Account Control (UAC).
+author: twlogeye
+date: 2026-09-09
+tags:
+    - attack.privilege_escalation
+    - attack.defense_evasion
+    - attack.t1548.002
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        EventID: 4688
+        CommandLine|contains: 'fodhelper'
+    condition: selection
+falsepositives:
+    - Normal user opening optional features manager
+level: high

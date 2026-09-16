@@ -354,6 +354,16 @@
     "Descr": "SYSLOG PRI監視"
   },
   {
+    "Name": "Syslog脅威検知(Sigma)",
+    "Type": "syslog",
+    "Mode": "sigma",
+    "Params": "",
+    "Filter": "all",
+    "Script": "critical == 0 && high == 0",
+    "Level": "warn",
+    "Descr": "SigmaルールによるSyslog脅威検知・コンプライアンス監査監視。Filterにパック名(windows-essential等)またはルール名を指定、未指定時は全ルールを検査。"
+  },
+  {
     "Name": "TWSNMP連携",
     "Type": "twsnmp",
     "Level": "low",
