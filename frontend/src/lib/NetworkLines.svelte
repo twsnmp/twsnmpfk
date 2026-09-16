@@ -158,6 +158,7 @@
   bind:open={show}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   {#if wait}

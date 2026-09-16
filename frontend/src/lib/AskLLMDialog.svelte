@@ -13,7 +13,7 @@
   $: renderedContent = DOMPurify.sanitize(marked.parse(content || "") as string);
 </script>
 
-<Modal bind:open={show} size="lg" dismissable={false} class="w-full">
+<Modal bind:open={show} size="lg" dismissable={false} outsideclose={false} class="w-full">
   <div class="flex flex-col max-h-[70vh]">
     {#if error}
       <Alert color="red" dismissable>

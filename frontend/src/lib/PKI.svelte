@@ -479,6 +479,7 @@
   bind:open={showPKIControlDialog}
   size="sm"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   <form class="flex flex-col space-y-4" action="#">
@@ -591,6 +592,7 @@
   bind:open={showCreateCSRDialog}
   size="sm"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   <form class="flex flex-col space-y-4" action="#">

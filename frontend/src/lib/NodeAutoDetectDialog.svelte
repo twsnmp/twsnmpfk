@@ -76,6 +76,7 @@
   bind:open={show}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   <h3 class="mb-2 text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">

@@ -77,6 +77,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[90vh]"
 >
   <div class="flex flex-col space-y-4">

@@ -503,11 +503,6 @@
 
   const close = () => {
     show = false;
-    dispatch("close", {});
-    if (timer) {
-      clearTimeout(timer);
-      timer = undefined;
-    }
   };
 
   const exportMIB = (t: string) => {
@@ -631,8 +626,18 @@
     waitAnimation("ok");
   };
 
-  $: if (show) {
-    onOpen();
+  let prevShow = false;
+  $: {
+    if (show && !prevShow) {
+      onOpen();
+    } else if (!show && prevShow) {
+      if (timer) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
+      dispatch("close", {});
+    }
+    prevShow = show;
   }
 </script>
 
@@ -640,6 +645,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   <div class="flex flex-col space-y-4 min-h-[70vh] max-h-[80vh]">
@@ -821,6 +827,7 @@
   bind:open={showMIBTree}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
@@ -875,6 +882,7 @@
   bind:open={showLLMMIBSearch}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
@@ -922,6 +930,7 @@
   bind:open={showResultMIBTree}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
@@ -996,6 +1005,7 @@
   bind:open={showMissing}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
@@ -1031,6 +1041,7 @@
   bind:open={showSet}
   size="md"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[20vh]"
 >
   <div class="flex flex-col space-y-4">

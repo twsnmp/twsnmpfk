@@ -474,14 +474,14 @@
   </div>
 </div>
 
-<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full" transitionParams={{ duration: 0 }}>
+<Modal bind:open={showLoading} size="sm" dismissable={false} outsideclose={false} class="w-full" transitionParams={{ duration: 0 }}>
   <div>
     <Spinner />
     <span class="ml-2"> {$_("Syslog.Loading")} </span>
   </div>
 </Modal>
 
-<Modal bind:open={showDAG} size="xl" dismissable={false} class="w-full">
+<Modal bind:open={showDAG} size="xl" dismissable={false} outsideclose={false} class="w-full">
   <div class="flex flex-col space-y-4">
     <div id="dagChart"></div>
     <div class="flex justify-end space-x-2 mr-2">
@@ -505,6 +505,7 @@
   bind:open={showMetricInfoDialog}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   <div class="flex flex-col space-y-4">

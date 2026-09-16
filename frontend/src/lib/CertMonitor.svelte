@@ -251,6 +251,7 @@
   bind:open={showEditDialog}
   size="sm"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   <form class="flex flex-col space-y-4" action="#">

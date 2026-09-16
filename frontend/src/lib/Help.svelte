@@ -52,14 +52,22 @@
 
   const close = () => {
     show = false;
-    dispatch("close", {});
   };
+
+  let prevShow = false;
+  $: {
+    if (!show && prevShow) {
+      dispatch("close", {});
+    }
+    prevShow = show;
+  }
 </script>
 
 <Modal
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full help"
 >
   <div class="flex flex-col h-[70vh]">
@@ -113,7 +121,7 @@
   </div>
 </Modal>
 
-<Modal bind:open={showFeedback} size="md" dismissable={false} class="w-full">
+<Modal bind:open={showFeedback} size="md" dismissable={false} outsideclose={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Help.Feedback")}

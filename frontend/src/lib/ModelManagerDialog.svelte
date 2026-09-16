@@ -215,7 +215,7 @@
   }));
 </script>
 
-<Modal bind:open={show} size="lg" dismissable={false} class="w-full">
+<Modal bind:open={show} size="lg" dismissable={false} outsideclose={false} class="w-full">
   <div class="flex flex-col space-y-4">
     <!-- Header -->
     <div class="flex items-center justify-between border-b pb-2 dark:border-gray-700">

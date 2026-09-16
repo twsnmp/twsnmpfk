@@ -239,7 +239,7 @@
   </div>
 </div>
 
-<Modal bind:open={showForecast} size="xl" dismissable={false} class="w-full">
+<Modal bind:open={showForecast} size="xl" dismissable={false} outsideclose={false} class="w-full">
   <div id="forecast"></div>
   <div class="flex justify-end space-x-2 mr-2">
     <GradientButton
@@ -257,7 +257,7 @@
   </div>
 </Modal>
 
-<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full" transitionParams={{ duration: 0 }}>
+<Modal bind:open={showLoading} size="sm" dismissable={false} outsideclose={false} class="w-full" transitionParams={{ duration: 0 }}>
   <div>
     <Spinner />
     <span class="ml-2"> $_('System.Loading') </span>

@@ -93,7 +93,38 @@
 
   let showGNMITool: boolean = false;
   let showExportModal = false;
+  let showEditBackImage = false;
   let exporting = false;
+
+  $: hasOpenDialog =
+    showEditNode ||
+    showEditLine ||
+    showEditDrawItem ||
+    showEditNetwork ||
+    showNetworkReport ||
+    showNetworkLines ||
+    showNeighborNetworksAndLines ||
+    showNodeReport ||
+    showAIDiagnose ||
+    showPolling ||
+    showPing ||
+    showMibBr ||
+    showGNMITool ||
+    showDiscover ||
+    showGrid ||
+    showExportModal ||
+    showEditBackImage;
+
+  let prevHasOpenDialog = false;
+  $: {
+    if (prevHasOpenDialog && !hasOpenDialog) {
+      setMapReadOnly(false);
+      refreshMap();
+    } else if (!prevHasOpenDialog && hasOpenDialog) {
+      setMapReadOnly(true);
+    }
+    prevHasOpenDialog = hasOpenDialog;
+  }
 
   let timer: any = undefined;
   let urls: any = [];
@@ -299,7 +330,6 @@
     refreshMap();
   };
 
-  let showEditBackImage = false;
   let backImage: datastore.BackImageEnt;
   let image: any = undefined;
   const showEditBackImageDlg = async () => {
@@ -1197,7 +1227,7 @@
   }}
 />
 
-<Modal bind:open={showGrid} size="sm" dismissable={false} class="w-full">
+<Modal bind:open={showGrid} size="sm" dismissable={false} outsideclose={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Map.Grid")}
@@ -1260,6 +1290,7 @@
   bind:open={showEditBackImage}
   size="sm"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   <form class="flex flex-col space-y-4" action="#">
@@ -1370,7 +1401,7 @@
   </form>
 </Modal>
 
-<Modal bind:open={showExportModal} size="md" dismissable={false} class="w-full">
+<Modal bind:open={showExportModal} size="md" dismissable={false} outsideclose={false} class="w-full">
   <div class="p-6">
     <h3 class="text-lg font-bold text-sky-400 mb-2">{$_("Map.ExportTitle")}</h3>
     <p class="text-slate-300 text-sm mb-6">{$_("Map.ExportDesc")}</p>

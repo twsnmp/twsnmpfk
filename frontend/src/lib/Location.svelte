@@ -329,7 +329,7 @@
 <NodePolling bind:show={showPolling} nodeID={selectedNode} />
 
 
-<Modal bind:open={showAddNode} size="sm" dismissable={false}>
+<Modal bind:open={showAddNode} size="sm" dismissable={false} outsideclose={false}>
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">{$_('Location.SelectNode')}</h3>
     <Label class="space-y-2 text-xs">

@@ -244,7 +244,6 @@
 
   const close = () => {
     show = false;
-    dispatch("close", {});
   };
 
   const save = async () => {
@@ -362,8 +361,14 @@
     }
   })();
 
-  $: if (show) {
-    onOpen();
+  let prevShow = false;
+  $: {
+    if (show && !prevShow) {
+      onOpen();
+    } else if (!show && prevShow) {
+      dispatch("close", {});
+    }
+    prevShow = show;
   }
 </script>
 
@@ -371,6 +376,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   {#if !drawItem}

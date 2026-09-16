@@ -154,7 +154,7 @@
   }
 </script>
 
-<Modal bind:open={show} size="xl" dismissable={false} class="w-full">
+<Modal bind:open={show} size="xl" dismissable={false} outsideclose={false} class="w-full">
   <div class="flex flex-col">
     <div class="m-5 grow">
       <table id="tmpTable" class="display compact" style="width:99%"></table>

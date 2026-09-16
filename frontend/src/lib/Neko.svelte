@@ -53,6 +53,7 @@
   bind:open={show}
   size="sm"
   dismissable={false}
+  outsideclose={false}
   class="w-full bg-white bg-opacity-75 dark:bg-white"
 >
   <div class="flex justify-center items-center">

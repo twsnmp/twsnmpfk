@@ -902,7 +902,6 @@
   const close = () => {
     deleteVPanel();
     show = false;
-    dispatch('close');
   };
 
   let pollingTmp: any = undefined;
@@ -1150,8 +1149,15 @@
   }
 
 
-  $: if (show) {
-    onOpen();
+  let prevShow = false;
+  $: {
+    if (show && !prevShow) {
+      onOpen();
+    } else if (!show && prevShow) {
+      deleteVPanel();
+      dispatch('close');
+    }
+    prevShow = show;
   }
 </script>
 
@@ -1161,6 +1167,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[90vh]"
 >
   {#if !node}

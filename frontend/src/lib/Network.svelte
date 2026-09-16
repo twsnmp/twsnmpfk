@@ -71,7 +71,6 @@
 
   const close = () => {
     show = false;
-    dispatch("close", {});
   };
 
   const updateUnmanagedNetworkPort = () => {
@@ -283,8 +282,14 @@
     showTable();
   };
 
-  $: if (show) {
-    onOpen();
+  let prevShow = false;
+  $: {
+    if (show && !prevShow) {
+      onOpen();
+    } else if (!show && prevShow) {
+      dispatch("close", {});
+    }
+    prevShow = show;
   }
 </script>
 
@@ -292,6 +297,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   {#if !network}
@@ -591,7 +597,7 @@
   {/if}
 </Modal>
 
-<Modal bind:open={showEditPort} size="sm" dismissable={false} class="w-full">
+<Modal bind:open={showEditPort} size="sm" dismissable={false} outsideclose={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Network.EditPort")}

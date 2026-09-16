@@ -524,6 +524,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full max-h-[92vh] p-2"
 >
   <div class="flex flex-col h-[84vh] max-h-[84vh] overflow-hidden">

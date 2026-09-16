@@ -77,11 +77,6 @@
   const close = () => {
     show = false;
     showStats = false;
-    dispatch("close", {});
-    if (timer) {
-      clearTimeout(timer);
-      timer = undefined;
-    }
   };
 
   const addSnmpConfig = () => {
@@ -166,8 +161,19 @@
     }
   };
 
-  $: if (show) {
-    onOpen();
+  let prevShow = false;
+  $: {
+    if (show && !prevShow) {
+      onOpen();
+    } else if (!show && prevShow) {
+      showStats = false;
+      if (timer) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
+      dispatch("close", {});
+    }
+    prevShow = show;
   }
 </script>
 
@@ -175,6 +181,7 @@
   bind:open={show}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   {#if !conf}
@@ -431,7 +438,7 @@
     </form>
   {/if}
 </Modal>
-<Modal bind:open={showStats} size="lg" dismissable={false} class="w-full">
+<Modal bind:open={showStats} size="lg" dismissable={false} outsideclose={false} class="w-full">
   <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
     {$_("Discover.Stats")} - {stats.Now - stats.StartTime}Sec
   </h3>

@@ -350,6 +350,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   {#if wait}

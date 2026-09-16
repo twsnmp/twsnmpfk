@@ -258,7 +258,6 @@
   const close = () => {
     deleteVPanel();
     show = false;
-    dispatch('close');
   };
 
   const onOpen = async () => {
@@ -284,8 +283,15 @@
   let copied = false;
 
 
-  $: if (show) {
-    onOpen();
+  let prevShow = false;
+  $: {
+    if (show && !prevShow) {
+      onOpen();
+    } else if (!show && prevShow) {
+      deleteVPanel();
+      dispatch('close');
+    }
+    prevShow = show;
   }
 </script>
 
@@ -295,6 +301,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[90vh]"
 >
   {#if !network}

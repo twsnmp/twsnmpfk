@@ -213,11 +213,6 @@
 
   const close = () => {
     show = false;
-    dispatch("close", {});
-    if (timer) {
-      clearTimeout(timer);
-      timer = undefined;
-    }
   };
 
   const exportMIB = (t: string) => {
@@ -277,8 +272,18 @@ value == "${d[0].Value}";`;
     showPolling = true;
   };
 
-  $: if (show) {
-    onOpen();
+  let prevShow = false;
+  $: {
+    if (show && !prevShow) {
+      onOpen();
+    } else if (!show && prevShow) {
+      if (timer) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
+      dispatch("close", {});
+    }
+    prevShow = show;
   }
 </script>
 
@@ -286,6 +291,7 @@ value == "${d[0].Value}";`;
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   <div class="flex flex-col space-y-4">
@@ -443,6 +449,7 @@ value == "${d[0].Value}";`;
   bind:open={showNeko}
   size="sm"
   dismissable={false}
+  outsideclose={false}
   class="w-full bg-white bg-opacity-75 dark:bg-white"
 >
   <div class="flex justify-center items-center">
@@ -454,6 +461,7 @@ value == "${d[0].Value}";`;
   bind:open={showCap}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">

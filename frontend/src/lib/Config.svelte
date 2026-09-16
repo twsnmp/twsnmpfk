@@ -142,7 +142,6 @@
 
   const close = () => {
     show = false;
-    dispatch("close", {});
   };
 
   const saveMapConf = async () => {
@@ -843,8 +842,14 @@
   }
 
 
-  $: if (show) {
-    onOpen();
+  let prevShow = false;
+  $: {
+    if (show && !prevShow) {
+      onOpen();
+    } else if (!show && prevShow) {
+      dispatch("close", {});
+    }
+    prevShow = show;
   }
 </script>
 
@@ -852,6 +857,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[90vh]"
 >
   {#if !locConf}
@@ -2083,6 +2089,7 @@
   bind:open={showMIBTree}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
@@ -2110,6 +2117,7 @@
   bind:open={showEditIcon}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[80vh]"
 >
   <form class="flex flex-col space-y-4" action="#">
@@ -2180,6 +2188,7 @@
   bind:open={showSSHPublicKey}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full min-h-[80vh]"
 >
   <form class="flex flex-col space-y-4" action="#">

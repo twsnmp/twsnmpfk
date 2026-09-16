@@ -563,7 +563,7 @@
   on:apply={onApplyAIAssist}
 />
 
-<Modal bind:open={showFilter} size="sm" dismissable={false} class="w-full">
+<Modal bind:open={showFilter} size="sm" dismissable={false} outsideclose={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Trap.Filter")}
@@ -784,6 +784,7 @@
   bind:open={showFilterCounter}
   size="sm"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   <form class="flex flex-col space-y-4" action="#">
@@ -870,7 +871,7 @@
   </form>
 </Modal>
 
-<Modal bind:open={showLoading} size="sm" dismissable={false} class="w-full" transitionParams={{ duration: 0 }}>
+<Modal bind:open={showLoading} size="sm" dismissable={false} outsideclose={false} class="w-full" transitionParams={{ duration: 0 }}>
   <div>
     <Spinner />
     <span class="ml-2"> {$_("Syslog.Loading")} </span>

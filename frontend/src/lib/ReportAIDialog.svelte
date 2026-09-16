@@ -104,7 +104,7 @@
   $: renderedContent = DOMPurify.sanitize(marked.parse(content || "") as string);
 </script>
 
-<Modal bind:open={show} size="lg" dismissable={false} class="w-full">
+<Modal bind:open={show} size="lg" dismissable={false} outsideclose={false} class="w-full">
   <div class="flex flex-col max-h-[70vh]">
     <div class="flex items-center space-x-2 border-b pb-2 mb-3 dark:border-gray-700">
       <span class="text-purple-600 dark:text-purple-400">

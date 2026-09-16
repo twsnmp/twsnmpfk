@@ -177,6 +177,7 @@
   bind:open={show}
   size="xl"
   dismissable={false}
+  outsideclose={false}
   class="w-full max-h-[90vh] overflow-y-auto"
 >
   <div class="flex flex-col space-y-2">

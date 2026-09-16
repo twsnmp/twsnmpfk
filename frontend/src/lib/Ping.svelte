@@ -712,9 +712,7 @@
   };
 
   const close = () => {
-    resetState();
     show = false;
-    dispatch("close", {});
   };
   const resizeChart = () => {
     if(reportChart) {
@@ -726,14 +724,21 @@
   }
 
 
-  $: if (show) {
-    onOpen();
+  let prevShow = false;
+  $: {
+    if (show && !prevShow) {
+      onOpen();
+    } else if (!show && prevShow) {
+      resetState();
+      dispatch("close", {});
+    }
+    prevShow = show;
   }
 </script>
 
 <svelte:window onresize={resizeChart} />
 
-<Modal bind:open={show} size="xl" dismissable={false} class="w-full">
+<Modal bind:open={show} size="xl" dismissable={false} outsideclose={false} class="w-full">
   <div class="flex flex-col space-y-4">
     <Tabs style="underline" contentClass="pt-2 bg-transparent">
       <TabItem bind:open={pingTab} onclick={showPing}>

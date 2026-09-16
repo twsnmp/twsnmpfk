@@ -56,6 +56,10 @@
   let oldPage = "";
   let showConfig = false;
   let showHelp = false;
+
+  $: if (!showConfig && !showHelp && page === "") {
+    page = oldPage || "map";
+  }
   let latest = true;
   let lock = "";
   let version = "";

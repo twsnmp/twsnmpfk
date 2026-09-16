@@ -117,7 +117,7 @@
   });
 </script>
 
-<Modal bind:open={show} size="md" dismissable={false} class="w-full">
+<Modal bind:open={show} size="md" dismissable={false} outsideclose={false} class="w-full">
   <div class="flex flex-col space-y-4">
     <div class="flex items-center space-x-2 border-b pb-2 dark:border-gray-700">
       <Icon path={icons.mdiDatabaseArrowRight} size={1.2} class="text-blue-500" />

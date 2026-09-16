@@ -220,6 +220,7 @@
   bind:open={show}
   size="lg"
   dismissable={false}
+  outsideclose={false}
   class="w-full"
 >
   {#if !polling}
@@ -441,7 +442,7 @@
   {/if}
 </Modal>
 
-<Modal bind:open={showList} size="xl" dismissable={false} class="w-full">
+<Modal bind:open={showList} size="xl" dismissable={false} outsideclose={false} class="w-full">
   <div class="flex flex-col space-y-4">
     <table id="pollingTable" class="display compact mt-2" style="width:99%"></table>
     <div class="flex justify-end space-x-2 mr-2">

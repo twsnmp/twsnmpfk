@@ -104,7 +104,7 @@
   $: renderedAdvice = DOMPurify.sanitize(marked.parse(result?.Advice || "") as string);
 </script>
 
-<Modal bind:open={show} size="lg" dismissable={false} class="w-full">
+<Modal bind:open={show} size="lg" dismissable={false} outsideclose={false} class="w-full">
   <div class="flex flex-col max-h-[80vh]">
     <div class="flex items-center space-x-2 border-b pb-2 mb-3 dark:border-gray-700">
       <Icon path={icons.mdiAutoFix} size={1.2} class="text-pink-600 dark:text-pink-400" />
