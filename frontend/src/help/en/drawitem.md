@@ -50,6 +50,13 @@ Edit screen for items used to draw backgrounds or additional information on the 
   * **Gauge label**
     (Gauge, New Gauge, and KPI Card) Label string displayed on or below the item (blank for automatic polling name).
 
+## Editor Features
+
+* **Real-time Preview**
+  Displays an instant live preview of the drawing item (color, geometry, gauge styling, sparkline, KPI card metrics) on the right side of the dialog.
+* **Recommended Size Buttons**
+  One-click presets that automatically set the optimal width and height for KPI cards, gauges, bars, and shapes.
+
 ## Button Descriptions
 
 * **[Save]** : Saves the drawing item settings.

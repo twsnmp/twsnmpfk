@@ -18,6 +18,8 @@ Configuration of the management map, server functions, and data collection servi
   Default number of communication retries.
 * **Log Saving Days**
   Retention period for event logs and statistical data. Expired data is deleted automatically.
+* **Log Storage Format**
+  Storage format for logs (Apache Parquet / bbolt). Parquet format provides high compression, rapid queries, and partition-based daily cleanup. Existing bbolt maps can be safely converted via the `[Migrate to Parquet]` button.
 * **OpenTelemetry Retention**
   Retention time for OpenTelemetry data (hours).
 * **OpenTelemetry Source**
@@ -31,7 +33,7 @@ Configuration of the management map, server functions, and data collection servi
 * **MCP Server Token**
   Access token for MCP server authentication.
 * **AI Provider**
-  LLM (Large Language Model) provider to use.
+  LLM (Large Language Model) provider (OpenAI, Claude, Gemini, Ollama, Local (tensai), etc.). Selecting "Local (tensai)" enables the `[Model Manager]` button to download GGUF models and manage native WebGPU libraries.
 * **AI API Base URL**
   Base URL of the LLM API.
 * **AI API Key**

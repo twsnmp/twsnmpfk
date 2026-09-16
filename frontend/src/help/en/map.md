@@ -23,6 +23,8 @@ Menu displayed when right-clicking on an empty space on the map.
 * **[Import]** : Import a map file from TWSNMP v4.x.
 * **[Export]** : Export the map to image (PNG, SVG, PDF), Draw.io (XML/SVG), or structured data (JSON, CSV, Excel) formats.
 * **[Grid]** : Align icons to the specified grid interval.
+* **[Auto Layout]** : Automatically optimize map positioning based on network topology or node types (Hierarchical / Tree, Cluster / Hub & Spoke, Categorized by device type).
+* **[Undo Auto Layout]** : Restore nodes to their positions prior to auto layout execution (Undo).
 * **[Back Image]** : Open the background image configuration.
 * **[Reload]** : Reload the map to the latest state.
 * **[Normal View / Edit View]** : Toggle between normal view and draw item editing mode.

@@ -20,6 +20,10 @@ Screen for automatically discovering network devices and hosts not yet registere
   Rechecks already registered nodes.
 * **Add Network**
   Automatically generates network elements on the map based on discovered subnets.
+* **Auto Line Connection**
+  Uses the topology discovery engine (LLDP, CDP, STP, FDB, ARP tables) to automatically create physical/logical lines between nodes ("None", "Strict (Certain only)", "Speculative (Infer connections)").
+* **Auto Layout**
+  Automatically organizes map node layout when discovery completes ("None", "Hierarchical (Topology)", "Cluster (Subnet)", "Categorized (Node Type)").
 * **Additional SNMP Settings**
   List of SNMP credentials to try during discovery. If there is no response using the base map SNMP settings, the credentials in this list will be tried in order. If no additional settings are specified, only the map SNMP settings are used.
 

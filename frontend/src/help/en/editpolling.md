@@ -15,6 +15,7 @@ Screen for creating a new polling monitor or editing the settings of an existing
 * **Mode**
   Operation mode based on the selected type.
   * **PING Smokeping Mode (`smoke`)**: Measures statistical metrics (min, max, mean/avg, median response time, packet loss rate %, jitter) by sending continuous PING packets in short intervals.
+  * **Log Sigma Mode (`sigma`)**: Evaluates incoming log streams against Sigma rule detection engines in real-time.
 * **Log mode**
   Method to save and process the results log ("None", "Always", "On change", "Anomaly").
 * **MQTT server URL**
@@ -24,7 +25,7 @@ Screen for creating a new polling monitor or editing the settings of an existing
 * **Sent data columns**
   Comma-separated list of variable names to publish via MQTT.
 * **Anomaly mode**
-  (Visible only when Log mode is "Anomaly") Anomaly detection algorithm type (e.g., "Isolation Forest", "Hotelling's Theory", "k-NN").
+  (Visible only when Log mode is "Anomaly") Anomaly detection algorithm type ("Isolation Forest", "Hotelling's Theory", "k-NN", "Mahalanobis Distance", "Basic Statistics (Z-Score)", "Local Outlier Factor (LOF)", "Autoencoder", "LSTM (Recurrent Neural Network)").
 * **Variables to vectorize**
   (Visible only when Log mode is "Anomaly") Comma-separated variable names of numerical data to analyze.
 * **Parameter**

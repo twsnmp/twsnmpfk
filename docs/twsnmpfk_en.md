@@ -129,6 +129,96 @@ Added support for SHA256/AES128 and SHA512/AES256, providing stronger security f
 
 Added support for opacity (transparency) and improved UI for background images.
 
+### New Features in v2.4.0
+
+- **Sigma Threat Detection & Compliance Auditing**: 75 embedded Sigma rule packs for Syslog threat detection (severity, tags, timeline, AI explanation), Sigma polling monitoring, and custom rule auto-loading.
+- **Embedded Local LLM (tensai)**: Fully offline local LLM execution without external APIs, accompanied by a Local Model & WebGPU library management dialog.
+- **Apache Parquet Log Storage & Migration**: Columnar Parquet format providing high compression, rapid querying, partition-based daily cleanup, and safe bbolt database migration.
+- **twFathom-style KPI Cards & Redesigned Drawing Items**: Sparkline KPI cards, live editor previews, and one-click recommended size buttons.
+- **Topology Discovery, Auto Line Connection & Layouts**: LLDP/CDP/STP/FDB/ARP topology discovery, auto line connection, right-click canvas layout optimization & Undo, and multi-credential SNMP discovery.
+- **Expanded Anomaly Detection**: Autoencoders, LSTM, LOF, Mahalanobis distance algorithms, Syslog Report anomaly analysis, and unified "Anomaly" branding.
+- **Dependency-Aware Alerting**: Automatic identification of root cause vs. impacted downstream nodes to prevent alert storms.
+- **Monitoring Robustness & macOS Optimizations**: Smoothed ARP Watch, decoupled PING/TCP Goroutines, and macOS power-saving guidelines.
+
+---
+
+### Threat Detection with Sigma Rules (v2.4.0)
+
+Automatically detects cyber attacks and compliance violations within Syslog streams.
+
+- **Syslog Report Sigma Detection Tab**:
+  - Severity breakdown counts (Critical, High, Medium, Low)
+  - Top detected rules and tags ranking
+  - Detection timeline trend charts
+  - Detailed per-rule detection log tables
+  - AI (LLM) threat triage and remediation guidance
+- **Sigma Polling Monitor**:
+  - Monitors incoming log streams in real time
+  - Predefined template "Syslog Threat Detection (Sigma)"
+- **Custom Rule Deployment**:
+  - Automatically loads custom Sigma YAML rules placed in `datastore/sigma`
+
+---
+
+![h:400 center](./images/en/syslog_sigma.png)
+
+---
+
+### Local LLM & Apache Parquet Storage (v2.4.0)
+
+- **Local LLM Engine (tensai)**:
+  - Executes LLM models locally on your computer without external cloud APIs or daemons
+  - "Local Model Manager" dialog for downloading and switching GGUF models
+  - Automatic native WebGPU library management for hardware acceleration
+- **Apache Parquet Log Storage**:
+  - Stores Syslog, SNMP Trap, NetFlow, sFlow, ARP, and polling logs in columnar Parquet
+  - Superior compression ratios and faster search performance compared to bbolt
+  - High-speed folder deletion for logs past retention thresholds
+  - Safe, automated batch migration tool from existing bbolt databases
+
+---
+
+![h:400 center](./images/en/llm_local_model.png)
+
+---
+
+![h:400 center](./images/en/log_migration.png)
+
+---
+
+### KPI Cards & Topology Enhancements (v2.4.0)
+
+- **twFathom-style KPI Card Drawing Items**:
+  - Real-time sparklines, status accent bars, and prominent metric values
+  - Drawing item editor features live preview, recommended size buttons, and presets
+- **Topology Discovery & Auto Line Connection**:
+  - Multi-protocol topology engine (LLDP, CDP, STP, FDB, ARP)
+  - Auto line connection options during discovery (strict or speculative)
+  - "Find Neighbors" dialog displays confidence levels, reasoning, and AI inference
+- **Map Layout Optimization & Undo**:
+  - Automatic layout application during discovery (Tree, Cluster, Categorized)
+  - Canvas right-click menu for layout optimization and Undo
+- **Multiple SNMP Credentials**:
+  - Register and try multiple SNMP authentication profiles during discovery
+
+---
+
+![h:400 center](./images/en/map_drawitem_kpi.png)
+
+---
+
+![h:400 center](./images/en/map_discover_v24.png)
+
+---
+
+![h:400 center](./images/en/map_layout_menu.png)
+
+---
+
+![h:400 center](./images/en/node_find_neighbor.png)
+
+---
+
 ### New Features in v2.3.0
 
 - **STUN Global IP Inspection & Monitoring**: Added a `[STUN]` button to Address Management to inspect external global IP, mapped port, reverse DNS, local address, RTT, and GeoIP via STUN (IPv4/IPv6, copy/maps/VirusTotal links). Also added a native `stun` polling type with templates and AI assist support to monitor public IP modifications.
@@ -228,6 +318,14 @@ Right -click the location other than the node and drawing items on the map to di
 
 
 ---
+#### Auto Layout
+
+Right-click empty space on the map and select "Auto Layout" to instantly re-organize and optimize node positions based on network topology hierarchy (Hierarchical Tree), subnet clustering (Cluster / Hub & Spoke), or device categories (Categorized). Use "Undo Layout" to instantly revert to the previous layout state.
+
+![h:400 center](./images/en/map_layout_menu.png)
+
+
+---
 ### Node menu
 Right -click the node on the map to display it.
 
@@ -270,6 +368,14 @@ Right-click a network node on the map to display this menu.
 
 
 ---
+### Find Neighbors
+
+Explores topology data from LLDP, CDP, STP, FDB, and ARP tables to display candidate connections between network devices and nodes. Users can inspect confidence levels (High, Medium, Speculative) and reasoning, run AI connection inferences, and batch-connect all detected links using the "Connect All" button.
+
+![h:400 center](./images/en/node_find_neighbor.png)
+
+
+---
 ### Draw item menu
 Right -click the drawing item on the map to display it.
 
@@ -287,20 +393,27 @@ Right -click the drawing item on the map to display it.
 ### Discover
 Automatic discovery screen.
 
-![h:400 center](./images/en/map_discover.png)
+![h:400 center](./images/en/map_discover_v24.png)
 
 ---
 
 | Items | Contents |
 | ---- | ---- |
-| Start IP | The first IP address range to search.|
-| End IP | The end of the IP address range to search.|
-| Timeout | This is the timeout of ping when searching.|
-| Retry | This is the number of retrys of ping when searching.|
-| Port scan | Perform a port scan on the found node.|
-| add polling| Polling is automatically set on the found node.|
-| <Start>| Start automatic discovery.|
-| <Auto IP range> | Automatically set the search range from the PC IP address.|
+| Start IP | The first IP address range to search. |
+| End IP | The end of the IP address range to search. |
+| Timeout | This is the timeout of ping when searching. |
+| Retry | This is the number of retries of ping when searching. |
+| Port scan | Perform a port scan on the found node. |
+| Automatic Polling Setup | Polling is automatically set on the found node. |
+| Re-check | Re-scans including already registered nodes. |
+| Add network | Automatically generate network elements from discovered subnets. |
+| Auto Detect Node Type | Automatically detect node types (Server, Router, etc.). |
+| Use AI Detection | Use AI (LLM) to infer and classify node types. |
+| Auto Connect Lines | Automatically connect lines between nodes via topology discovery (Strict only / Speculative). |
+| Auto Layout | Automatically optimize node layout upon completion (Hierarchical Tree, Cluster, etc.). |
+| Additional SNMP Settings | Register multiple SNMP authentication profiles and try them by priority. |
+| <Start> | Start automatic discovery. |
+| <Auto IP range> | Automatically set the search range from the PC IP address. |
 
 ---
 #### Automatic discovery is being performed
@@ -431,6 +544,12 @@ It is the editing screen of drawing item (polling result: gauge).It can be used 
 | Magnification | The display rate of drawing items.|
 
 ![h:100 bg right:10%](./images/ja/map_drawitem_gauge_2.png)
+
+---
+### Drawing item (Polling result: KPI card)
+Displays polling results as modern twFathom-style KPI cards. Features sparklines, status accent bars, and prominent metric values, with live preview and recommended size buttons in the editor.
+
+![h:400 center](./images/en/map_drawitem_kpi.png)
 
 ---
 ### Line editing
@@ -1289,6 +1408,20 @@ This is a report that analyzes Syslog for each host and analyzes the number of r
 ![h:400 center](./images/en/syslog_syslog_fft.png)
 
 ---
+### Syslog Sigma Detection
+
+Reports cyber attacks, unauthorized access, and compliance violations detected from Syslog messages based on Sigma rules.
+
+![h:400 center](./images/en/syslog_sigma.png)
+
+---
+### Syslog Anomaly Detection
+
+Analyzes anomaly scores of Syslog messages using machine learning algorithms (Mahalanobis distance, Isolation Forest, etc.) and feature extraction techniques (TF-IDF, Threat keywords, etc.).
+
+![h:400 center](./images/en/syslog_anomaly.png)
+
+---
 ### AI Explanation
 Sends current Syslog reports, severity distributions, and top sender host metrics to AI (LLM) for log spike analysis, anomaly explanation, and actionable remediation steps (only visible when AI integration is enabled).
 
@@ -1816,6 +1949,12 @@ This is the screen to set the management map.
 | SSH Seerver | SSH Server|
 | ARP Watch | Enable ARP monitoring function.|
 
+---
+### Log Storage Migration (bbolt → Parquet)
+
+Safely batch migrates legacy logs (Syslog, TRAP, Polling logs, NetFlow, sFlow, etc.) stored in bbolt databases to high-speed, highly compressed Apache Parquet columnar files.
+
+![h:400 center](./images/en/log_migration.png)
 
 ---
 ### LLM Settings (AI Provider Configuration)
@@ -1836,6 +1975,13 @@ Configuration for setting up the LLM provider used by TWSNMP FK's AI integration
 > **Recommended: Local LLM (Ollama)**
 > When using cloud LLMs (such as OpenAI or Gemini), network topology, hostnames, IP addresses, and Syslog log contents may be sent to external cloud servers.
 > Using a **Local LLM like Ollama (`ollama run gpt-oss`)** allows you to process all AI analysis completely on-premises with **zero external data transmission, full privacy compliance, and zero API usage cost**. Local LLM deployment is strongly recommended for secure network monitoring environments.
+
+---
+### Local LLM Models & GPU Management (tensai)
+
+Integrates a fully local LLM engine (tensai) that runs directly inside the application without requiring an external Ollama server. Supports GPU hardware acceleration via WebGPU and one-click downloading/managing of GGUF models.
+
+![h:400 center](./images/en/llm_local_model.png)
 
 ---
 ### When you want to change the receiving port of syslog, SNMP Trap

@@ -21,6 +21,6 @@ Settings for anomaly detection thresholds.
 * **Execution**
   Triggered when the log mode is set to "Anomaly" in the polling settings.
 * **Methodology**
-  Detects anomalies in numeric polling results using algorithms like "Isolation Forest", "Hotelling's Theory", and "k-NN", and calculates a deviation score.
+  Detects anomalies in numeric polling results using algorithms like "Isolation Forest", "Hotelling's Theory", "k-NN", "Mahalanobis Distance", "Basic Statistics (Z-Score)", "Local Outlier Factor (LOF)", "Autoencoder", and "LSTM (Recurrent Neural Network)", and calculates a deviation score.
 * **Interpretation of Score**
   Indicates how rare the occurrence is. Thresholds are expressed in statistical probabilities (e.g., once in 10,000 times).

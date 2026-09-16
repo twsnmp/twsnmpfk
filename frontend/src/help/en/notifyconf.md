@@ -36,6 +36,8 @@ Configure alert notifications, periodic report schedules, external integrations,
   Enable LLM-based system log summarization inside periodic report emails.
 * **Notify Repair**
   Enable email notifications when a node status returns to normal.
+* **Analyze root cause from topology**
+  Analyzes network connectivity and dependency trees to distinguish the root cause node from impacted downstream nodes in alert messages, suppressing alert storms.
 * **Notification Webhook**
   Webhook URL (HTTP POST) to send JSON payloads upon status alerts.
 * **Report Webhook**

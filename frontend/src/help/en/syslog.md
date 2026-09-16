@@ -56,5 +56,9 @@ Search options in the filter dialog (supports regular expressions).
   3D graph representing Host, Uptime/Time, and Priority distribution.
 * **Periodicity Analysis by FFT**
   Fast Fourier Transform analysis of host log generation cycles.
+* **Sigma Detection**
+  Detects and investigates threats and compliance violations in Syslog streams using the open Sigma standard. Provides severity distribution charts (Critical/High/Medium/Low), top rules/tags ranking, detection timeline charts, detailed detection tables, and AI (LLM) threat explanation.
+* **Anomaly Detection**
+  Calculates anomaly scores for Syslog feature vectors (frequency or keyword occurrences) using machine learning algorithms (Isolation Forest, Hotelling's theory, k-NN, Mahalanobis, LOF, Autoencoder, LSTM), rendering score distribution graphs and anomalous log tables.
 * **[AI Explain]**
   Sends current Syslog entries, top sender hosts, and severity trends to AI (LLM) for automated anomaly explanation and risk assessment (only visible when AI integration is enabled).

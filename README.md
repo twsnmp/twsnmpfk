@@ -197,6 +197,45 @@ Usage of twsnmpfk:
 
 ## History
 
+### v2.4.0
+
+#### Threat Detection & Compliance Auditing with Sigma Rules
+* **Sigma Rule Engine Integration**: Natively integrated the open-standard Sigma rule engine for log threat detection. Comes with 75 embedded rule packs covering Linux authentication/system security, network threats, Windows AD/client attacks, web application attacks, and Wazuh compliance auditing.
+* **Syslog Report Sigma Analysis**: Added a "Sigma Detection" tab to the Syslog Report. Visualizes findings with severity breakdowns (Critical, High, Medium, Low), top detected rules and tags, and timeline trends. Includes a detailed rule detection table and AI (LLM) explanation for threat triage and remediation guidance.
+* **Sigma Polling & Custom Rules**: Added a `sigma` mode to `log` polling along with a predefined "Syslog Threat Detection (Sigma)" template to monitor incoming log streams in real-time. Supports auto-loading custom Sigma rules placed in the data folder (`datastore/sigma`).
+
+#### Embedded Local LLM with tensai & WebGPU Management
+* **Native Local LLM Execution**: Integrated the `tensai` local LLM engine, enabling AI-assisted diagnostics and explanations entirely offline without external cloud APIs (OpenAI, Anthropic, Gemini) or separate server daemons (Ollama).
+* **Model & WebGPU Library Manager**: Added a "Local Model Manager" dialog in settings to download and switch GGUF models and automatically deploy native WebGPU runtime libraries for hardware acceleration.
+
+#### Apache Parquet Log Storage & Migration from bbolt
+* **Columnar Parquet Storage**: Added native support for storing Syslog, SNMP Trap, NetFlow, sFlow, ARP, and polling logs in Apache Parquet format. Delivers superior compression, lightning-fast queries, and high-speed cleanup of expired logs partitioned by daily folders (`date=YYYY-MM-DD`). Parquet is default for newly created maps.
+* **Safe Log Migration**: Introduced a "Log Migration" dialog to safely convert and migrate existing historical logs stored in bbolt databases to Parquet format.
+
+#### Modern Drawing Items & twFathom-style KPI Cards
+* **KPI Card Drawing Item**: Added a new "Polling Result (KPI Card)" drawing item inspired by twFathom. Features real-time sparklines, status-driven accent bars, prominent metric values, and automatic unit formatting for building clean NOC dashboard maps.
+* **Drawing Item Editor Enhancements**: Redesigned drawing items with modern styling, live editor previews, a one-click "Recommended Size" button, size presets, variable autocompletion, and categorized item pickers.
+
+#### Topology Discovery, Auto Line Connection & Layout Optimization
+* **Multi-Protocol Topology Engine**: Overhauled topology discovery using LLDP, CDP, STP, FDB, and ARP. Added an auto line connection option to Discovery (connect on certainty or infer connections). The "Find Neighbors" dialog for nodes and networks now displays confidence scores, reasoning, and AI inference.
+* **Automated Layouts & Right-Click Layout Optimization**: Added layout algorithm selection during auto discovery (Force-directed, Circular, Grid, Tree) and right-click canvas menu options for layout optimization with full Undo support.
+* **Multiple SNMP Credentials & Sensor Auto-Mapping**: Supports registering and testing multiple SNMP credentials (communities and SNMPv3 parameters) during discovery. Improved device type detection (server, router, switch, NAS, etc.) to automatically assign suitable icons and monitoring sensors (pollings).
+
+#### Machine Learning Anomaly Detection Expansion
+* **Expanded Algorithms**: Extended anomaly detection algorithms beyond Isolation Forest and Hotelling's theory to include Mahalanobis distance, basic statistics (Z-Score), Local Outlier Factor (LOF), Autoencoders, and LSTM recurrent neural networks.
+* **Syslog Report Anomaly Detection**: Ported multivariate anomaly detection to Syslog Reports, allowing feature extraction, anomaly score distribution charting, and anomalous log isolation.
+* **Unified "Anomaly" Branding**: Rebranded navigation menus and buttons from "AI" to "Anomaly" with a standard distribution curve icon to clearly distinguish metric outlier detection from conversational generative AI.
+
+#### Enhanced Notifications
+* **Dependency-Aware Alerting**: Analyzes node and network dependency trees to identify the primary root cause node versus impacted downstream nodes, including this context in alert messages to suppress alert fatigue.
+* **Microsoft Email Mode**: Added server-specified mode for Microsoft 365/Exchange environments.
+
+#### Monitoring Robustness & macOS Optimizations
+* **Smooth ARP Watch**: Replaced burst pings with 200ms smoothed fire-and-forget pings, preventing ARP table exhaustion (`no route to host`) on macOS and network switches.
+* **Decoupled PING/TCP Engine**: Separated PING reception into dedicated Goroutines, adopted nanosecond monotonic timing for timeouts, and drained receive queues before timing out to eliminate packet loss race conditions under heavy load.
+* **macOS 24/7 Monitoring Recommendations**: Added system setting guidelines to disable App Nap and power-saving throttling during screen lock.
+* **Security Fixes**: Updated Echo to v4.15.3 and resolved dependencies CVE vulnerabilities.
+
 ### v2.3.0
 
 #### STUN Global IP Inspection & Monitoring
