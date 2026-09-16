@@ -1083,7 +1083,12 @@
     "SigmaDetecting": "Detecting...",
     "SigmaPacks": "Rule Packs",
     "SigmaAllPacks": "All Packs",
-    "SigmaGuideDesc": "Select rule packs and view mode, then click 'Detect' button to evaluate Sigma rules for threat detection and compliance audit."
+    "SigmaGuideDesc": "Select rule packs and view mode, then click 'Detect' button to evaluate Sigma rules for threat detection and compliance audit.",
+    "SigmaChartSeverityTitle": "Detections by Severity",
+    "SigmaChartTagsTitle": "Top Tags / MITRE ATT&CK",
+    "SigmaChartTimelineTitle": "Detection Timeline",
+    "SigmaNoThreat": "No Threats Detected",
+    "SigmaNoData": "No Data"
   },
   "Trap": {
     "FromAddress": "From address",

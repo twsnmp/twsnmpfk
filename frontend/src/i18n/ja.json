@@ -1063,7 +1063,12 @@
     "SigmaDetecting": "検知中...",
     "SigmaPacks": "ルールパック",
     "SigmaAllPacks": "全パック",
-    "SigmaGuideDesc": "ルールパックや表示モードを選択し、「検知」ボタンをクリックしてください。Sigmaルールによる脅威検知・コンプライアンス監査を評価してグラフと一覧を表示します。"
+    "SigmaGuideDesc": "ルールパックや表示モードを選択し、「検知」ボタンをクリックしてください。Sigmaルールによる脅威検知・コンプライアンス監査を評価してグラフと一覧を表示します。",
+    "SigmaChartSeverityTitle": "重大度別検知割合 (Severity)",
+    "SigmaChartTagsTitle": "上位 タグ / MITRE ATT&CK",
+    "SigmaChartTimelineTitle": "脅威検知推移 (Timeline)",
+    "SigmaNoThreat": "検知なし (No Threat)",
+    "SigmaNoData": "データなし"
   },
   "Trap": {
     "Time": "日時",

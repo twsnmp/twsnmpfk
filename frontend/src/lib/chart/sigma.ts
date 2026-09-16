@@ -34,7 +34,9 @@ export interface SigmaTimelineItem {
 export const showSigmaSeverityChart = (
   div: string | HTMLElement,
   stats: SigmaChartStats | undefined,
-  dark: boolean = false
+  dark: boolean = false,
+  title?: string,
+  noThreatText?: string
 ) => {
   const el = getChartElement(div);
   if (!el) return null;
@@ -55,7 +57,7 @@ export const showSigmaSeverityChart = (
   const option: echarts.EChartsOption = {
     backgroundColor: "transparent",
     title: {
-      text: "重大度別検知割合 (Severity)",
+      text: title || "重大度別検知割合 (Severity)",
       left: "center",
       top: 5,
       textStyle: {
@@ -99,7 +101,7 @@ export const showSigmaSeverityChart = (
             fontWeight: "bold",
           },
         },
-        data: data.length > 0 ? data : [{ name: "検知なし (No Threat)", value: 0 }],
+        data: data.length > 0 ? data : [{ name: noThreatText || "検知なし (No Threat)", value: 0 }],
       },
     ],
   };
@@ -112,7 +114,8 @@ export const showSigmaTagsChart = (
   div: string | HTMLElement,
   list: SigmaTagItem[] | undefined,
   dark: boolean = false,
-  title?: string
+  title?: string,
+  noDataText?: string
 ) => {
   const el = getChartElement(div);
   if (!el) return null;
@@ -154,7 +157,7 @@ export const showSigmaTagsChart = (
     },
     yAxis: {
       type: "category",
-      data: names.length > 0 ? names : ["データなし"],
+      data: names.length > 0 ? names : [noDataText || "データなし"],
       axisLabel: {
         color: dark ? "#c9d1d9" : "#24292f",
         fontSize: 11,
@@ -199,7 +202,9 @@ export const showSigmaTagsChart = (
 export const showSigmaTimelineChart = (
   div: string | HTMLElement,
   timeline: SigmaTimelineItem[] | undefined,
-  dark: boolean = false
+  dark: boolean = false,
+  title?: string,
+  noDataText?: string
 ) => {
   const el = getChartElement(div);
   if (!el) return null;
@@ -223,7 +228,7 @@ export const showSigmaTimelineChart = (
   const option: echarts.EChartsOption = {
     backgroundColor: "transparent",
     title: {
-      text: "脅威検知推移 (Timeline)",
+      text: title || "脅威検知推移 (Timeline)",
       left: "center",
       top: 5,
       textStyle: {
@@ -248,7 +253,7 @@ export const showSigmaTimelineChart = (
     },
     xAxis: {
       type: "category",
-      data: times.length > 0 ? times : ["データなし"],
+      data: times.length > 0 ? times : [noDataText || "データなし"],
       axisLabel: {
         color: dark ? "#8b949e" : "#57606a",
         rotate: 30,

@@ -226,7 +226,7 @@
     }
   };
 
-  let sigmaMode: "threats" | "compliance" | "all" | "rules" | "tags" = "threats";
+  let sigmaMode: "threats" | "compliance" | "all" | "rules" | "tags" = "all";
   let sigmaChartType: "severity" | "tags" | "timeline" = "severity";
   let sigmaPack: string = "all";
   let sigmaPacksList: any[] = [];
@@ -234,6 +234,19 @@
   let sigmaDuration = "";
   let sigmaResult: any = null;
   let sigmaTable: any = null;
+
+  const getSigmaLevelWeight = (lvl: string): number => {
+    const l = (lvl || "").toLowerCase();
+    switch (l) {
+      case "critical": return 5;
+      case "high": return 4;
+      case "medium": return 3;
+      case "low": return 2;
+      case "informational":
+      case "info": return 1;
+      default: return 0;
+    }
+  };
 
   const loadSigmaPacks = async () => {
     if (sigmaPacksList.length === 0) {
@@ -250,11 +263,29 @@
     if (!sigmaResult) return;
     const isDark = document.documentElement.classList.contains("dark");
     if (sigmaChartType === "severity") {
-      chart = showSigmaSeverityChart("syslogSigmaChart", sigmaResult.Stats, isDark);
+      chart = showSigmaSeverityChart(
+        "syslogSigmaChart",
+        sigmaResult.Stats,
+        isDark,
+        $_('SyslogReport.SigmaChartSeverityTitle'),
+        $_('SyslogReport.SigmaNoThreat')
+      );
     } else if (sigmaChartType === "tags") {
-      chart = showSigmaTagsChart("syslogSigmaChart", sigmaResult.Stats.TopTags, isDark, $_('SyslogReport.SigmaTags'));
+      chart = showSigmaTagsChart(
+        "syslogSigmaChart",
+        sigmaResult.Stats.TopTags,
+        isDark,
+        $_('SyslogReport.SigmaChartTagsTitle'),
+        $_('SyslogReport.SigmaNoData')
+      );
     } else if (sigmaChartType === "timeline") {
-      chart = showSigmaTimelineChart("syslogSigmaChart", sigmaResult.Stats.Timeline, isDark);
+      chart = showSigmaTimelineChart(
+        "syslogSigmaChart",
+        sigmaResult.Stats.Timeline,
+        isDark,
+        $_('SyslogReport.SigmaChartTimelineTitle'),
+        $_('SyslogReport.SigmaNoData')
+      );
     }
   };
 
@@ -271,6 +302,7 @@
       }
       sigmaTable = null;
     }
+    tableEl.innerHTML = "";
 
     let columns: any[] = [];
     let tableData: any[] = [];
@@ -296,7 +328,10 @@
           data: "Level",
           title: $_('SyslogReport.SigmaLevel'),
           width: "9%",
-          render: (lvl: string) => {
+          render: (lvl: string, type: string) => {
+            if (type === 'sort' || type === 'type') {
+              return getSigmaLevelWeight(lvl);
+            }
             const l = (lvl || "medium").toLowerCase();
             let bg = "#6e7681";
             if (l === "critical") bg = "#cf222e";
@@ -360,7 +395,10 @@
           data: "Level",
           title: $_('SyslogReport.SigmaLevel'),
           width: "12%",
-          render: (lvl: string) => {
+          render: (lvl: string, type: string) => {
+            if (type === 'sort' || type === 'type') {
+              return getSigmaLevelWeight(lvl);
+            }
             const l = (lvl || "medium").toLowerCase();
             let bg = "#6e7681";
             if (l === "critical") bg = "#cf222e";
@@ -426,13 +464,18 @@
       ];
     }
 
+    let defaultOrder: any[] = [[1, "desc"], [2, "desc"]];
+    if (sigmaMode === "rules" || sigmaMode === "tags") {
+      defaultOrder = [[0, "desc"]];
+    }
+
     sigmaTable = new DataTable("#syslogSigmaTable", {
       destroy: true,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
-      stateSave: true,
+      stateSave: false,
       data: tableData,
       language: getTableLang(),
-      order: [[1, "desc"]],
+      order: defaultOrder,
       columns: columns,
     });
 
