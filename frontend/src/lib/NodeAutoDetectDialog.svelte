@@ -108,7 +108,7 @@
           <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
             {$_("Node.RuleID") || "判定ルール"}: <code class="font-mono">{result.RuleID}</code>
             {#if result.Confidence}
-              <span class="ml-3">スコア: {result.Confidence}</span>
+              <span class="ml-3">{$_("Node.Score") || "スコア"}: {result.Confidence}</span>
             {/if}
           </div>
         </div>
@@ -123,10 +123,10 @@
             <table class="w-full text-xs text-left text-gray-500 dark:text-gray-400">
               <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                  <th scope="col" class="py-2 px-3">名前</th>
-                  <th scope="col" class="py-2 px-3">パラメータ(MIBシンボル)</th>
-                  <th scope="col" class="py-2 px-3">判定式</th>
-                  <th scope="col" class="py-2 px-3">重要度</th>
+                  <th scope="col" class="py-2 px-3">{$_("Node.SensorName") || "名前"}</th>
+                  <th scope="col" class="py-2 px-3">{$_("Node.SensorParams") || "パラメータ(MIBシンボル)"}</th>
+                  <th scope="col" class="py-2 px-3">{$_("Node.SensorScript") || "判定式"}</th>
+                  <th scope="col" class="py-2 px-3">{$_("Node.SensorLevel") || "重要度"}</th>
                 </tr>
               </thead>
               <tbody>

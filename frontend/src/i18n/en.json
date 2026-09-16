@@ -410,7 +410,7 @@
   "DrawItem": {
     "Cancel": "Cancel",
     "Color": "Color",
-    "EditDrawItem": "Edit  draw item",
+    "EditDrawItem": "Edit draw item",
     "Ellipse": "Ellipse",
     "FontSize": "Font Size",
     "GaugeLabel": "Gauge label",
@@ -459,11 +459,21 @@
     "PresetNormal": "Normal",
     "PresetLarge": "Large",
     "PresetWide": "Wide",
+    "PresetExtraLarge": "Extra Large",
     "AvailableVars": "Available Variables (click to set format & scale)",
+    "WaitingPollingData": "※ Waiting for latest polling data, or variables will be auto-configured",
+    "SelectNodeAndPolling": "※ Select a node and polling to show available variables here",
+    "NoImageSelected": "No image selected",
+    "NotSelected": "Not selected",
+    "NonEditable": "Non-editable",
+    "ClickToSelect": "Click to select",
     "Preview": "Preview",
+    "PreviewSize": "Size",
+    "SettingValue": "Set value",
     "PreviewDark": "Dark",
     "PreviewLight": "Light",
     "Recommended": "Recommended",
+    "Scale": "Scale",
     "GaugeSize": "Size (Diameter = Value × 10 px)"
   },
   "Discover": {
@@ -682,7 +692,12 @@
     "ApplyDetectPolling": "Add recommended sensor pollings",
     "DetectFailed": "Failed to detect node type.",
     "Apply": "Apply",
-    "ReDetect": "Re-Detect"
+    "ReDetect": "Re-Detect",
+    "Score": "Score",
+    "SensorName": "Name",
+    "SensorParams": "Parameters (MIB Symbol)",
+    "SensorScript": "Script",
+    "SensorLevel": "Level"
   },
   "NodeList": {
     "CheckAll": "Check all",

@@ -446,11 +446,21 @@
     "PresetNormal": "標準",
     "PresetLarge": "大",
     "PresetWide": "ワイド",
+    "PresetExtraLarge": "特大",
     "AvailableVars": "利用可能な変数（クリックで書式・倍率も自動設定）",
+    "WaitingPollingData": "※ ポーリングの最新結果データを待機中、または変数が自動設定されます",
+    "SelectNodeAndPolling": "※ ノードとポーリングを選択すると、利用可能な測定変数がここに表示されます",
+    "NoImageSelected": "画像が未選択です",
+    "NotSelected": "未選択",
+    "NonEditable": "変更不可",
+    "ClickToSelect": "クリックして選択",
     "Preview": "プレビュー",
+    "PreviewSize": "サイズ",
+    "SettingValue": "設定値",
     "PreviewDark": "ダーク",
     "PreviewLight": "ライト",
     "Recommended": "推奨",
+    "Scale": "倍率",
     "GaugeSize": "サイズ (直径 = 設定値 × 10 px)"
   },
   "Discover": {
@@ -669,7 +679,12 @@
     "ApplyDetectPolling": "センサーポーリングを追加する",
     "DetectFailed": "ノード種別の検出に失敗しました。",
     "Apply": "反映する",
-    "ReDetect": "再判定"
+    "ReDetect": "再判定",
+    "Score": "スコア",
+    "SensorName": "名前",
+    "SensorParams": "パラメータ(MIBシンボル)",
+    "SensorScript": "判定式",
+    "SensorLevel": "重要度"
   },
   "NodeList": {
     "State": "状態",

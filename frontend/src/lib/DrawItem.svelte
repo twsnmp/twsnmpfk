@@ -38,7 +38,7 @@
 
   const dispatch = createEventDispatcher();
 
-  const condList = [
+  $: condList = [
     { name: $_("DrawItem.showItemsAllways") || "常に表示", value: 0 },
     { name: $_("DrawItem.showItemsLow") || "マップ状態が軽度以上の時", value: 1 },
     { name: $_("DrawItem.showItemsHigh") || "マップ状態が重度の時", value: 2 },
@@ -187,7 +187,7 @@
           { label: `${$_("DrawItem.PresetSmall") || "小"} (64px)`, h: 64, w: 64 },
           { label: `${$_("DrawItem.PresetNormal") || "標準"} (120px)`, h: 120, w: 120 },
           { label: `${$_("DrawItem.PresetLarge") || "大"} (180px)`, h: 180, w: 180 },
-          { label: "特大 (240px)", h: 240, w: 240 },
+          { label: `${$_("DrawItem.PresetExtraLarge") || "特大"} (240px)`, h: 240, w: 240 },
         ];
       case 7: // Bar
       case 8: // Line
@@ -399,7 +399,7 @@
             <Label class="text-xs font-semibold text-gray-700 dark:text-gray-300">
               {$_("DrawItem.Type") || "種類"}
               {#if id !== ""}
-                <span class="text-xs text-gray-400 ml-1 font-normal">(変更不可)</span>
+                <span class="text-xs text-gray-400 ml-1 font-normal">({$_("DrawItem.NonEditable") || "変更不可"})</span>
               {/if}
             </Label>
             <select
@@ -553,7 +553,7 @@
                         type="button"
                         class="px-2.5 py-1 text-xs rounded-full border transition-all flex items-center gap-1.5 {drawItem.VarName === item.key ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-blue-400'}"
                         onclick={() => selectVariable(item.key, item.val)}
-                        title={item.rec ? `推奨: ${item.rec.format} (倍率: ${item.rec.scale})` : "クリックして選択"}
+                        title={item.rec ? `${$_("DrawItem.Recommended") || "推奨"}: ${item.rec.format} (${$_("DrawItem.Scale") || "倍率"}: ${item.rec.scale})` : ($_("DrawItem.ClickToSelect") || "クリックして選択")}
                       >
                         <span class="font-bold">{item.key}</span>
                         {#if item.val !== undefined}
@@ -569,11 +569,11 @@
                   </div>
                 {:else if drawItem.PollingID}
                   <p class="text-xs text-gray-400 italic">
-                    ※ ポーリングの最新結果データを待機中、または変数が自動設定されます
+                    {$_("DrawItem.WaitingPollingData") || "※ ポーリングの最新結果データを待機中、または変数が自動設定されます"}
                   </p>
                 {:else}
                   <p class="text-xs text-gray-400 italic">
-                    ※ ノードとポーリングを選択すると、利用可能な測定変数がここに表示されます
+                    {$_("DrawItem.SelectNodeAndPolling") || "※ ノードとポーリングを選択すると、利用可能な測定変数がここに表示されます"}
                   </p>
                 {/if}
               </div>
@@ -645,7 +645,7 @@
                     <Icon path={icons.mdiImage} size={1} class="mr-1" />
                     {$_("DrawItem.Select") || "画像ファイルを選択"}
                   </GradientButton>
-                  <span class="text-xs text-gray-500 truncate max-w-xs">{drawItem.Path || "未選択"}</span>
+                  <span class="text-xs text-gray-500 truncate max-w-xs">{drawItem.Path || ($_("DrawItem.NotSelected") || "未選択")}</span>
                 </div>
               {:else}
                 <div class="grid grid-cols-2 gap-3 items-center">
@@ -758,7 +758,7 @@
                 {:else}
                   <div class="text-xs text-gray-400 flex flex-col items-center gap-1">
                     <Icon path={icons.mdiImageOutline} size={2} />
-                    <span>画像が未選択です</span>
+                    <span>{$_("DrawItem.NoImageSelected") || "画像が未選択です"}</span>
                   </div>
                 {/if}
               {:else if drawItem.Type === 4}
@@ -790,15 +790,15 @@
             <!-- Size / Dimension Badge -->
             <div class="absolute bottom-2 left-3 text-[11px] text-gray-400 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded">
               {#if drawItem.Type === 2 || drawItem.Type === 4}
-                サイズ: {drawItem.Size || 16} px
+                {$_("DrawItem.PreviewSize") || "サイズ"}: {drawItem.Size || 16} px
               {:else if drawItem.Type === 5}
-                サイズ: {(drawItem.Size || 16) * 10} × {(drawItem.Size || 16) * 10} px (設定値: {drawItem.Size || 16})
+                {$_("DrawItem.PreviewSize") || "サイズ"}: {(drawItem.Size || 16) * 10} × {(drawItem.Size || 16) * 10} px ({$_("DrawItem.SettingValue") || "設定値"}: {drawItem.Size || 16})
               {:else if drawItem.Type === 6}
-                サイズ: {drawItem.H || 120} × {drawItem.H || 120} px
+                {$_("DrawItem.PreviewSize") || "サイズ"}: {drawItem.H || 120} × {drawItem.H || 120} px
               {:else if drawItem.Type === 7 || drawItem.Type === 8}
-                サイズ: {(drawItem.H || 80) * 4} × {drawItem.H || 80} px
+                {$_("DrawItem.PreviewSize") || "サイズ"}: {(drawItem.H || 80) * 4} × {drawItem.H || 80} px
               {:else}
-                サイズ: {drawItem.W || 220} × {drawItem.H || 84} px
+                {$_("DrawItem.PreviewSize") || "サイズ"}: {drawItem.W || 220} × {drawItem.H || 84} px
               {/if}
             </div>
           </div>
