@@ -94,6 +94,9 @@ func (a *App) shutdown(ctx context.Context) {
 				log.Println("shutdown wait end")
 			case <-time.After(60 * time.Second):
 				log.Println("shutdown timeout (60s): some background tasks failed to finish in time")
+				buf := make([]byte, 1024*1024)
+				n := runtime.Stack(buf, true)
+				log.Printf("=== GOROUTINE DUMP ON SHUTDOWN TIMEOUT ===\n%s\n=== END GOROUTINE DUMP ===", buf[:n])
 				timedOut = true
 			}
 			log.Println("shutdown closing DB")
