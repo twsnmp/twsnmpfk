@@ -293,7 +293,10 @@ type reportInfoEnt struct {
 	Value string
 }
 
-func sendReport() {
+func sendReport(ctx context.Context) {
+	if ctx.Err() != nil {
+		return
+	}
 	info := []reportInfoEnt{}
 	info = append(info, getMapInfo()...)
 	info = append(info, getResInfo()...)
@@ -330,7 +333,7 @@ func sendReport() {
 		"Title":      title,
 		"Info":       info,
 		"AIList":     aiList,
-		"LLMSummary": getLLMSummary(&info),
+		"LLMSummary": getLLMSummary(ctx, &info),
 	}); err != nil {
 		log.Printf("send report mail err=%v", err)
 		datastore.AddEventLog(&datastore.EventLogEnt{
@@ -356,13 +359,13 @@ func sendReport() {
 	}
 }
 
-func getLLMSummary(info *[]reportInfoEnt) string {
-	if !datastore.NotifyConf.LLMSummary {
+func getLLMSummary(ctx context.Context, info *[]reportInfoEnt) string {
+	if !datastore.NotifyConf.LLMSummary || ctx.Err() != nil {
 		return ""
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*10)
+	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute*3)
 	defer cancel()
-	llm, err := datastore.GetLLM(ctx)
+	llm, err := datastore.GetLLM(timeoutCtx)
 	if err != nil {
 		return fmt.Sprintf(i18n.Trans("LLM error err=%v"), err)
 	}
@@ -423,7 +426,7 @@ Do not include symbols such as # at the beginning of your answer.
 		llms.TextParts(llms.ChatMessageTypeSystem, system),
 		llms.TextParts(llms.ChatMessageTypeHuman, strings.Join(prompts, "\n")),
 	}
-	resp, err := llm.GenerateContent(ctx, history)
+	resp, err := llm.GenerateContent(timeoutCtx, history)
 	if err != nil {
 		log.Printf("llmAsk err=%v", err)
 		return fmt.Sprintf(i18n.Trans("An error occurred when contacting AI. err=%v"), err)

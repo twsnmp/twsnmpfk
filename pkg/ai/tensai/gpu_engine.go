@@ -1,6 +1,7 @@
 package tensai
 
 import (
+	"context"
 	"fmt"
 
 	tensai "github.com/mattn/tensai"
@@ -246,7 +247,7 @@ func (gq *gpuQwen) qkvRows(l *gpuLayer, a *gpu.Tensor) (q, k, v *gpu.Tensor) {
 		must(f.SliceCols(hs+kvDim, kvDim))
 }
 
-func (gq *gpuQwen) prefill(tokens []int, startPos int) []float32 {
+func (gq *gpuQwen) prefill(ctx context.Context, tokens []int, startPos int) []float32 {
 	if startPos >= gq.nCtx {
 		return nil
 	}
@@ -265,9 +266,15 @@ func (gq *gpuQwen) prefill(tokens []int, startPos int) []float32 {
 		}
 	}
 	for len(tokens) > chunk {
+		if ctx != nil && ctx.Err() != nil {
+			return nil
+		}
 		gq.prefillChunk(tokens[:chunk], startPos)
 		tokens = tokens[chunk:]
 		startPos += chunk
+	}
+	if ctx != nil && ctx.Err() != nil {
+		return nil
 	}
 	return gq.prefillChunk(tokens, startPos)
 }

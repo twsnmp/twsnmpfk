@@ -53,7 +53,7 @@ func notifyBackend(ctx context.Context, wg *sync.WaitGroup) {
 				lastSendReport.Day() != time.Now().Day() &&
 				len(backend.MonitorDataes) > 1 {
 				lastSendReport = time.Now()
-				sendReport()
+				go sendReport(ctx)
 			}
 		}
 	}

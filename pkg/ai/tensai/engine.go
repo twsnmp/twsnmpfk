@@ -177,7 +177,10 @@ func (e *Engine) GenerateText(ctx context.Context, prompt string, maxTokens int,
 			return "", ctx.Err()
 		default:
 		}
-		logits = e.gpu.prefill(ids, 0)
+		logits = e.gpu.prefill(ctx, ids, 0)
+		if ctx.Err() != nil {
+			return "", ctx.Err()
+		}
 	} else {
 		for pos, id := range ids {
 			select {
