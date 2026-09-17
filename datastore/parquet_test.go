@@ -262,7 +262,7 @@ func TestMigrateBboltToParquet(t *testing.T) {
 	if statsAfter.TotalCount != 0 {
 		t.Errorf("expected 0 records in bbolt after migration, got %d", statsAfter.TotalCount)
 	}
-	_ = wg
+	_ = &wg
 	_ = ctx
 }
 

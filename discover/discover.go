@@ -75,9 +75,14 @@ type discoverInfoEnt struct {
 
 // StopDiscover : 自動発見を停止する
 func StopDiscover() {
+	Stop = true
+	st := time.Now()
 	for Stat.Running {
-		Stop = true
 		time.Sleep(time.Millisecond * 100)
+		if time.Since(st) > 3*time.Second {
+			log.Println("StopDiscover timeout waiting for discover to stop")
+			break
+		}
 	}
 }
 
@@ -141,6 +146,9 @@ func Discover() error {
 				defer func() {
 					<-sem
 				}()
+				if Stop {
+					return
+				}
 				ipstr := ipv4.ToDots(ip)
 				node := datastore.FindNodeFromIP(ipstr)
 				if node != nil && !datastore.DiscoverConf.ReCheck {

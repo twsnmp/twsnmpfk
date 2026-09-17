@@ -195,11 +195,15 @@ func AddPollingLog(p *PollingEnt) error {
 	for k, v := range p.Result {
 		resCopy[k] = v
 	}
-	pollingLogCh <- &PollingLogEnt{
+	select {
+	case pollingLogCh <- &PollingLogEnt{
 		Time:      time.Now().UnixNano(),
 		PollingID: p.ID,
 		State:     p.State,
 		Result:    resCopy,
+	}:
+	default:
+		log.Println("pollingLogCh is full, dropped polling log")
 	}
 	return nil
 }

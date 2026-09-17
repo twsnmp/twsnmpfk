@@ -23,6 +23,7 @@ import (
 
 	"github.com/twsnmp/twsnmpfk/backend"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/discover"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/logger"
 	"github.com/twsnmp/twsnmpfk/notify"
@@ -69,6 +70,9 @@ func (a *App) shutdown(ctx context.Context) {
 	if dataStorePath == "" {
 		return
 	}
+	// 自動発見が実行中の場合は直ちに停止
+	discover.StopDiscover()
+
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "info",
@@ -79,9 +83,26 @@ func (a *App) shutdown(ctx context.Context) {
 		a.cancel()
 		if a.wg != nil {
 			log.Println("shutdown wait start")
-			a.wg.Wait()
-			log.Println("shutdown wait end")
+			done := make(chan struct{})
+			go func() {
+				a.wg.Wait()
+				close(done)
+			}()
+			timedOut := false
+			select {
+			case <-done:
+				log.Println("shutdown wait end")
+			case <-time.After(60 * time.Second):
+				log.Println("shutdown timeout (60s): some background tasks failed to finish in time")
+				timedOut = true
+			}
+			log.Println("shutdown closing DB")
 			datastore.CloseDB()
+			log.Println("shutdown closed DB")
+			if timedOut {
+				log.Println("shutdown force exiting due to previous timeout")
+				os.Exit(0)
+			}
 		}
 	}
 }

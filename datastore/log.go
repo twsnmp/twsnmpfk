@@ -55,7 +55,11 @@ func AddEventLog(e *EventLogEnt) {
 			e.NodeName = n.Name
 		}
 	}
-	eventLogCh <- e
+	select {
+	case eventLogCh <- e:
+	default:
+		log.Println("eventLogCh is full, dropped event log")
+	}
 }
 
 func ForEachEventLog(st, et int64, f func(*EventLogEnt) bool) error {
