@@ -1,6 +1,6 @@
 module github.com/twsnmp/twsnmpfk
 
-go 1.25.0
+go 1.27.1
 
 require (
 	github.com/Cistern/sflow v0.0.0-20240622235316-ed105e3cf9fb
