@@ -18,6 +18,9 @@ func GetCmd(path string, params []string) *exec.Cmd {
 		cmd = exec.Command(path, params...)
 
 	}
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
 	return cmd
 }

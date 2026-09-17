@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -19,6 +18,7 @@ import (
 	"github.com/Songmu/timeout"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/robertkrimen/otto"
+	"github.com/twsnmp/twsnmpfk/cmd"
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
 	"github.com/twsnmp/twsnmpfk/notify"
@@ -510,15 +510,15 @@ func doActionCmd(cl []string) {
 	if filepath.Ext(cl[0]) == ".sh" {
 		cl[0] = filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
 		// #nosec G204
-		tio.Cmd = exec.Command("/bin/sh", cl...)
+		tio.Cmd = cmd.GetCmd("/bin/sh", cl)
 	} else {
 		exe := filepath.Join(datastore.GetDataStorePath(), "cmd", filepath.Base(cl[0]))
 		if len(cl) == 1 {
 			// #nosec G204
-			tio.Cmd = exec.Command(exe)
+			tio.Cmd = cmd.GetCmd(exe, nil)
 		} else {
 			// #nosec G204
-			tio.Cmd = exec.Command(exe, cl[1:]...)
+			tio.Cmd = cmd.GetCmd(exe, cl[1:])
 		}
 	}
 	if _, _, _, err := tio.Run(); err != nil {

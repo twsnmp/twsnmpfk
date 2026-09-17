@@ -67,16 +67,14 @@
     conf.Y = posY;
     if (await updateDiscover()) {
       showStats = true;
-      show = false;
+      showStop = true;
     } else {
       showStats = false;
-      show = true;
     }
   };
 
   const close = () => {
     show = false;
-    showStats = false;
   };
 
   const addSnmpConfig = () => {
@@ -132,10 +130,9 @@
     }
     const r = await StartDiscover(conf);
     if (r) {
-      showStats = true;
-      show = false;
       showStop = true;
-      updateDiscover();
+      await updateDiscover();
+      showStats = true;
     }
   };
 
@@ -184,7 +181,139 @@
   outsideclose={false}
   class="w-full"
 >
-  {#if !conf}
+  {#if showStats}
+    {#if stats}
+      <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
+        {$_("Discover.Stats")} - {stats.Now - stats.StartTime}Sec
+      </h3>
+      <div class="flex flex-col space-y-4">
+        <Progressbar
+          progress={(stats.Total
+            ? ((100 * stats.Sent) / stats.Total).toFixed(2)
+            : 0) + ""}
+          color="blue"
+          size="h-5"
+          labelOutside={
+            $_("Discover.Total") + ' ' +
+            stats.Wait + '/' + stats.Sent + '/' + stats.Total 
+          }
+        />
+        <Progressbar
+          progress={(stats.Total
+            ? ((100 * stats.Found) / stats.Total).toFixed(2)
+            : 0) + ""}
+          color="indigo"
+          size="h-5"
+          labelOutside={
+            $_("Discover.Found")
+            + stats.Found + '/' + stats.Total
+          }
+        />
+        <Progressbar
+          progress={(stats.Found
+            ? ((100 * stats.Snmp) / stats.Found).toFixed(2)
+            : 0) + ""}
+          color="red"
+          size="h-5"
+          labelOutside="SNMP:{stats.Snmp + '/' + stats.Found}"
+        />
+        {#if conf && conf.PortScan}
+          <div class="grid gap-2 grid-cols-2">
+            <div>
+              <Progressbar
+                progress={(stats.Found
+                  ? ((100 * stats.Web) / stats.Found).toFixed(2)
+                  : 0) + ""}
+                color="gray"
+                size="h-5"
+                labelOutside="Web:{stats.Web + '/' + stats.Found}"
+              />
+            </div>
+            <div>
+              <Progressbar
+                progress={(stats.Found
+                  ? ((100 * stats.Mail) / stats.Found).toFixed(2)
+                  : 0) + ""}
+                color="gray"
+                size="h-5"
+                labelOutside="Mail:{stats.Mail + '/' + stats.Found}"
+              />
+            </div>
+          </div>
+          <div class="grid gap-2 grid-cols-2">
+            <div>
+              <Progressbar
+                progress={(stats.Found
+                  ? ((100 * stats.SSH) / stats.Found).toFixed(2)
+                  : 0) + ""}
+                color="gray"
+                size="h-5"
+                labelOutside="SSH:{stats.SSH + '/' + stats.Found}"
+              />
+            </div>
+            <div>
+              <Progressbar
+                progress={(stats.Found
+                  ? ((100 * stats.File) / stats.Found).toFixed(2)
+                  : 0) + ""}
+                color="gray"
+                size="h-5"
+                labelOutside="File:{stats.File + '/' + stats.Found}"
+              />
+            </div>
+          </div>
+          <div class="grid gap-2 grid-cols-2">
+            <div>
+              <Progressbar
+                progress={(stats.Found
+                  ? ((100 * stats.RDP) / stats.Found).toFixed(2)
+                  : 0) + ""}
+                color="gray"
+                size="h-5"
+                labelOutside="RDP/VNC:{stats.RDP + '/' + stats.Found}"
+              />
+            </div>
+            <div>
+              <Progressbar
+                progress={(stats.Found
+                  ? ((100 * stats.LDAP) / stats.Found).toFixed(2)
+                  : 0) + ""}
+                color="gray"
+                size="h-5"
+                labelOutside="LDAP/AD:{stats.SSH + '/' + stats.Found}"
+              />
+            </div>
+          </div>
+        {/if}
+        <div class="flex justify-end space-x-2 mr-2">
+          {#if showStop}
+            <GradientButton
+              shadow
+              type="button"
+              color="red"
+              onclick={stop}
+              size="xs"
+            >
+              <Icon path={icons.mdiStop} size={1} />
+              {$_("Discover.Stop")}
+            </GradientButton>
+          {/if}
+          <GradientButton
+            shadow
+            type="button"
+            color="teal"
+            onclick={close}
+            size="xs"
+          >
+            <Icon path={icons.mdiCancel} size={1} />
+            {$_("Discover.Close")}
+          </GradientButton>
+        </div>
+      </div>
+    {:else}
+      <div class="text-center mt-10"><Spinner size="16" /></div>
+    {/if}
+  {:else if !conf}
     <div class="text-center mt-10"><Spinner size="16" /></div>
   {:else}
     <form class="flex flex-col space-y-4" action="#">
@@ -437,135 +566,6 @@
       </div>
     </form>
   {/if}
-</Modal>
-<Modal bind:open={showStats} size="lg" dismissable={false} outsideclose={false} class="w-full">
-  <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-    {$_("Discover.Stats")} - {stats.Now - stats.StartTime}Sec
-  </h3>
-  <div class="flex flex-col space-y-4">
-    <Progressbar
-      progress={(stats.Total
-        ? ((100 * stats.Sent) / stats.Total).toFixed(2)
-        : 0) + ""}
-      color="blue"
-      size="h-5"
-      labelOutside={
-        $_("Discover.Total") + ' ' +
-        stats.Wait + '/' + stats.Sent + '/' + stats.Total 
-      }
-    />
-    <Progressbar
-      progress={(stats.Total
-        ? ((100 * stats.Found) / stats.Total).toFixed(2)
-        : 0) + ""}
-      color="indigo"
-      size="h-5"
-      labelOutside={
-        $_("Discover.Found")
-        + stats.Found + '/' + stats.Total
-      }
-    />
-    <Progressbar
-      progress={(stats.Found
-        ? ((100 * stats.Snmp) / stats.Found).toFixed(2)
-        : 0) + ""}
-      color="red"
-      size="h-5"
-      labelOutside="SNMP:{stats.Snmp + '/' + stats.Found}"
-    />
-    {#if conf.PortScan}
-      <div class="grid gap-2 grid-cols-2">
-        <div>
-          <Progressbar
-            progress={(stats.Found
-              ? ((100 * stats.Web) / stats.Found).toFixed(2)
-              : 0) + ""}
-            color="gray"
-            size="h-5"
-            labelOutside="Web:{stats.Web + '/' + stats.Found}"
-          />
-        </div>
-        <div>
-          <Progressbar
-            progress={(stats.Found
-              ? ((100 * stats.Mail) / stats.Found).toFixed(2)
-              : 0) + ""}
-            color="gray"
-            size="h-5"
-            labelOutside="Mail:{stats.Mail + '/' + stats.Found}"
-          />
-        </div>
-      </div>
-      <div class="grid gap-2 grid-cols-2">
-        <div>
-          <Progressbar
-            progress={(stats.Found
-              ? ((100 * stats.SSH) / stats.Found).toFixed(2)
-              : 0) + ""}
-            color="gray"
-            size="h-5"
-            labelOutside="SSH:{stats.SSH + '/' + stats.Found}"
-          />
-        </div>
-        <div>
-          <Progressbar
-            progress={(stats.Found
-              ? ((100 * stats.File) / stats.Found).toFixed(2)
-              : 0) + ""}
-            color="gray"
-            size="h-5"
-            labelOutside="File:{stats.File + '/' + stats.Found}"
-          />
-        </div>
-      </div>
-      <div class="grid gap-2 grid-cols-2">
-        <div>
-          <Progressbar
-            progress={(stats.Found
-              ? ((100 * stats.RDP) / stats.Found).toFixed(2)
-              : 0) + ""}
-            color="gray"
-            size="h-5"
-            labelOutside="RDP/VNC:{stats.RDP + '/' + stats.Found}"
-          />
-        </div>
-        <div>
-          <Progressbar
-            progress={(stats.Found
-              ? ((100 * stats.LDAP) / stats.Found).toFixed(2)
-              : 0) + ""}
-            color="gray"
-            size="h-5"
-            labelOutside="LDAP/AD:{stats.SSH + '/' + stats.Found}"
-          />
-        </div>
-      </div>
-    {/if}
-    <div class="flex justify-end space-x-2 mr-2">
-      {#if showStop}
-        <GradientButton
-          shadow
-          type="button"
-          color="red"
-          onclick={stop}
-          size="xs"
-        >
-          <Icon path={icons.mdiStop} size={1} />
-          {$_("Discover.Stop")}
-        </GradientButton>
-      {/if}
-      <GradientButton
-        shadow
-        type="button"
-        color="teal"
-        onclick={close}
-        size="xs"
-      >
-        <Icon path={icons.mdiCancel} size={1} />
-        {$_("Discover.Close")}
-      </GradientButton>
-    </div>
-  </div>
 </Modal>
 
 <Help bind:show={showHelp} page="discover" />
