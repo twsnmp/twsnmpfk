@@ -49,7 +49,7 @@
     UndoAutoLayout,
     HasUndoAutoLayout,
   } from "../../wailsjs/go/main/App";
-  import { BrowserOpenURL,WindowReloadApp } from "../../wailsjs/runtime";
+  import { BrowserOpenURL } from "../../wailsjs/runtime";
   import MIBBrowser from "./MIBBrowser.svelte";
   import GNMITool from "./GNMITool.svelte";
   import NodeDiagnoseDialog from "./NodeDiagnoseDialog.svelte";
@@ -298,7 +298,10 @@
     }
     refreshCount++;
     if(refreshCount > 6+59) {
-      WindowReloadApp();
+      // WindowReloadApp() causes a CVDisplayLink deadlock on macOS (Tahoe/WebKit bug).
+      // Use window.location.reload() instead to reload only the WebKit content layer
+      // without touching the native DisplayLink, avoiding the pthread_cond_wait deadlock.
+      window.location.reload();
       refreshCount = 0;
       return;
     }
