@@ -31,18 +31,24 @@ type LogStoreInfo struct {
 
 // GetLogStoreInfo returns information about current log store.
 func (a *App) GetLogStoreInfo() LogStoreInfo {
-	stats := datastore.GetBboltLogStats()
+	hasBbolt := datastore.HasBboltLogs()
 	format := datastore.MapConf.LogFormat
-	if stats.TotalCount > 0 {
+	if hasBbolt {
 		format = "bbolt"
 		if datastore.MapConf.LogFormat != "bbolt" {
 			datastore.MapConf.LogFormat = "bbolt"
 			_ = datastore.SaveMapConf()
 		}
 	} else if format == "" {
-		format = "bbolt"
+		format = "parquet"
 	}
-	canMigrate := format != "parquet" || stats.TotalCount > 0
+	canMigrate := format != "parquet" || hasBbolt
+
+	var stats datastore.BboltLogStats
+	if hasBbolt {
+		stats = datastore.GetBboltLogStats()
+	}
+
 	return LogStoreInfo{
 		Format:     format,
 		CanMigrate: canMigrate,

@@ -482,6 +482,7 @@ func hasBboltLogs(tx *bbolt.Tx) bool {
 				sk, _ := sub.Cursor().First()
 				if sk != nil {
 					hasLogs = true
+					return fmt.Errorf("found")
 				}
 			}
 			return nil

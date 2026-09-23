@@ -55,7 +55,6 @@
     HasValidNotifyOAuth2Token,
     GetNotifyOAuth2Token,
     GetNotifyOAuth2Info,
-    GetLogStoreInfo,
     GetLocalModels,
     GetAIHardwareStatus,
   } from "../../wailsjs/go/main/App";
@@ -100,16 +99,12 @@
   let sshHostPublicKey = "";
   let sshMyPublicKey = "";
 
-  let logStoreInfo: any = undefined;
   let showMigrationDialog = false;
 
   const onMigrationDone = async () => {
     showMigrationDialog = false;
     mapConf = await GetMapConf();
-    logStoreInfo = await GetLogStoreInfo();
-    if (logStoreInfo?.format) {
-      mapConf = { ...mapConf, LogFormat: logStoreInfo.format };
-    } else if (mapConf) {
+    if (mapConf) {
       mapConf = { ...mapConf, LogFormat: "parquet" };
     }
   };
@@ -118,10 +113,6 @@
 
   const onOpen = async () => {
     mapConf = await GetMapConf();
-    logStoreInfo = await GetLogStoreInfo();
-    if (logStoreInfo && logStoreInfo.format && mapConf) {
-      mapConf.LogFormat = logStoreInfo.format;
-    }
     notifyConf = await GetNotifyConf();
     savedProvider = notifyConf.Provider;
     notifyHasValidToken = await HasValidNotifyOAuth2Token(notifyConf);

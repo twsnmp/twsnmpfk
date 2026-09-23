@@ -64,10 +64,6 @@ func GetBboltLogStats() BboltLogStats {
 	stats.TotalCount = stats.SyslogCount + stats.TrapCount + stats.NetflowCount +
 		stats.SFlowCount + stats.SFlowCounterCount + stats.ArpLogCount + stats.PollingLogCount
 
-	if logStore != nil {
-		stats.ParquetSize = logStore.Size()
-	}
-
 	return stats
 }
 
