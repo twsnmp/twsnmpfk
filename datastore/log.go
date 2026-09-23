@@ -573,6 +573,69 @@ func ForEachLastSyslog(f func(*SyslogEnt) bool) error {
 	})
 }
 
+// ForEachLastOTelLog iterates over OTel syslogs in reverse chronological order (newest first).
+// It searches logs back to start time st, with an inspection limit maxScan to avoid blocking.
+func ForEachLastOTelLog(st int64, maxScan int, f func(*SyslogEnt) bool) error {
+	if UseParquetLog() {
+		scanned := 0
+		logStore.ForEachLastLog("syslog", func(l *LogEnt) bool {
+			if l.Time < st {
+				return false
+			}
+			scanned++
+			if maxScan > 0 && scanned > maxScan {
+				return false
+			}
+			if !strings.Contains(l.Log, "otel") {
+				return true
+			}
+			re := parseSyslogEnt(l)
+			if re == nil || re.Tag != "otel" {
+				return true
+			}
+			return f(re)
+		})
+		return nil
+	}
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	sk := fmt.Sprintf("%016x", st)
+	return db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("syslog"))
+		if b == nil {
+			return nil
+		}
+		c := b.Cursor()
+		scanned := 0
+		for k, v := c.Last(); k != nil; k, v = c.Prev() {
+			if string(k) < sk {
+				break
+			}
+			scanned++
+			if maxScan > 0 && scanned > maxScan {
+				break
+			}
+			v = deCompressLog(v)
+			if !bytes.Contains(v, []byte("otel")) {
+				continue
+			}
+			var l LogEnt
+			if err := json.Unmarshal(v, &l); err != nil {
+				continue
+			}
+			re := parseSyslogEnt(&l)
+			if re == nil || re.Tag != "otel" {
+				continue
+			}
+			if !f(re) {
+				break
+			}
+		}
+		return nil
+	})
+}
+
 func parseSyslogEnt(l *LogEnt) *SyslogEnt {
 	var sl = make(map[string]interface{})
 	if err := json.Unmarshal([]byte(l.Log), &sl); err != nil {

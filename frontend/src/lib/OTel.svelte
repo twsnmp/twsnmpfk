@@ -141,6 +141,13 @@
     if (!document.getElementById("otelSyslogChart")) {
       return;
     }
+    if (!logs || logs.length === 0) {
+      if (chart) {
+        chart.dispose();
+        chart = undefined;
+      }
+      return;
+    }
     chart = showLogLevelChart("otelSyslogChart", logs, undefined);
   };
 

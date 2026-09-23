@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"github.com/twsnmp/twsnmpfk/i18n"
@@ -141,10 +142,16 @@ func (a *App) DeleteAllOTelData() bool {
 // GetLastOTelLogs retunrs last otel syslogs
 func (a *App) GetLastOTelLogs() []*datastore.SyslogEnt {
 	ret := []*datastore.SyslogEnt{}
-	datastore.ForEachLastSyslog(func(l *datastore.SyslogEnt) bool {
-		if l.Tag != "otel" {
-			return true
-		}
+	retention := datastore.MapConf.OTelRetention
+	if retention < 24 {
+		retention = 24
+	}
+	st := time.Now().Add(-time.Hour * time.Duration(retention)).UnixNano()
+	maxScan := 50000
+	if maxScan < maxDispLog {
+		maxScan = maxDispLog
+	}
+	_ = datastore.ForEachLastOTelLog(st, maxScan, func(l *datastore.SyslogEnt) bool {
 		ret = append(ret, l)
 		return len(ret) < maxDispLog
 	})
