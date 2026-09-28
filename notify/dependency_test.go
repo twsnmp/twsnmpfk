@@ -12,7 +12,7 @@ import (
 	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
-func setupTestDB(t *testing.T) (func(), error) {
+func setupTestDB(_ *testing.T) (func(), error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	td, err := os.MkdirTemp("", "twsnmpfk_dep_test")
 	if err != nil {
