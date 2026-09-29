@@ -297,6 +297,10 @@ func (a *App) ImportIcon(codeList []datastore.IconEnt) ImportIconEnt {
 			Name: strings.TrimSpace(a[1]),
 		})
 	}
+	if err := scanner.Err(); err != nil {
+		log.Printf("err=%v", err)
+		return ret
+	}
 	if len(ret.Errors) > 0 {
 		return ret
 	}

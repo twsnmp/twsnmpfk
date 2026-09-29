@@ -549,9 +549,10 @@ Investigate and explain the following in detail:
 
 		maxSyslog := 30
 		maxTrap := 30
-		if l.Type == "syslog" {
+		switch l.Type {
+		case "syslog":
 			maxSyslog = 50
-		} else if l.Type == "trap" || l.Type == "snmp" {
+		case "trap", "snmp":
 			maxTrap = 50
 		}
 
@@ -1288,12 +1289,13 @@ func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
 				var incidentsCount int
 
 				for _, l := range g.logs {
-					if l.Level == "high" || l.Level == "low" || l.Level == "warn" {
+					switch l.Level {
+					case "high", "low", "warn":
 						if !isDown {
 							isDown = true
 							downStart = l.Time
 						}
-					} else if l.Level == "repair" || l.Level == "normal" {
+					case "repair", "normal":
 						if isDown {
 							durSec := float64(l.Time-downStart) / 1e9
 							if durSec < 0 {
@@ -1555,12 +1557,13 @@ func (a *App) LLMExplainEventLogReport(logs []*datastore.EventLogEnt, tab string
 				nKey := g.nodeName
 
 				for _, l := range g.logs {
-					if l.Level == "high" || l.Level == "low" || l.Level == "warn" {
+					switch l.Level {
+					case "high", "low", "warn":
 						if !isDown {
 							isDown = true
 							downStart = l.Time
 						}
-					} else if l.Level == "repair" || l.Level == "normal" {
+					case "repair", "normal":
 						if isDown {
 							dur := float64(l.Time-downStart) / 1e9
 							nodeIntervals[nKey] = append(nodeIntervals[nKey], interval{start: downStart, end: l.Time, ongoing: false})
@@ -1744,9 +1747,10 @@ func (a *App) LLMExplainSyslogReport(logs []*datastore.SyslogEnt, tab string) *L
 		}
 	}
 
-	if tab == "anomaly" {
+	switch tab {
+	case "anomaly":
 		sb.WriteString("\nNote: The user is analyzing the Anomaly Detection tab. Focus on identifying rare/unusual log patterns, suspicious security keywords, unusual hosts/tags, and high anomaly score causes.\n")
-	} else if tab == "sigma" {
+	case "sigma":
 		sb.WriteString("\nNote: The user is analyzing the Sigma Threat & Compliance Detection tab. Focus on explaining matched Sigma rules, threat severity (Critical/High), potential attack techniques (MITRE ATT&CK), compliance violations, and recommended remediation steps.\n")
 	}
 
@@ -2165,8 +2169,3 @@ func (a *App) LLMExplainPingReport(targetIP string, results []PingRes, tab strin
 	}
 	return a.llmAsk(sb.String(), fmt.Sprintf(system, tab))
 }
-
-
-
-
-
