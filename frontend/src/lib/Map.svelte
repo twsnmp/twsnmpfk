@@ -169,10 +169,19 @@
     hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
   };
 
+  const handleVisibilityOrFocus = () => {
+    if (typeof document !== "undefined" && !document.hidden) {
+      refreshCount = 0;
+      refreshMap();
+    }
+  };
+
   onMount(async () => {
     await checkAI();
     refreshCount = 0;
     await initMAP(map, callBack);
+    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+    window.addEventListener("focus", handleVisibilityOrFocus);
     refreshMap();
   });
 
@@ -181,6 +190,8 @@
       clearTimeout(timer);
       timer = undefined;
     }
+    document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
+    window.removeEventListener("focus", handleVisibilityOrFocus);
     deleteMap();
   });
 
@@ -291,28 +302,41 @@
     }
   };
 
+  let isRefreshing = false;
+  let hasPendingRefresh = false;
+
   const refreshMap = async () => {
     if (timer) {
       clearTimeout(timer);
       timer = undefined;
     }
-    refreshCount++;
-    if(refreshCount > 6+59) {
-      // WindowReloadApp() causes a CVDisplayLink deadlock on macOS (Tahoe/WebKit bug).
-      // Use window.location.reload() instead to reload only the WebKit content layer
-      // without touching the native DisplayLink, avoiding the pthread_cond_wait deadlock.
-      window.location.reload();
-      refreshCount = 0;
+    if (isRefreshing) {
+      hasPendingRefresh = true;
       return;
     }
+    isRefreshing = true;
+
+    refreshCount++;
     let t = 10;
     if (refreshCount > 6) {
       t = 60;
     } else if (refreshCount == 1) {
       t = 2;
     }
-    updateMAP();
-    timer = setTimeout(refreshMap, 1000 * t);
+
+    try {
+      await updateMAP();
+    } catch (e) {
+      console.error("refreshMap error:", e);
+    } finally {
+      isRefreshing = false;
+      if (hasPendingRefresh) {
+        hasPendingRefresh = false;
+        timer = setTimeout(refreshMap, 100);
+      } else {
+        timer = setTimeout(refreshMap, 1000 * t);
+      }
+    }
   };
 
   const deleteNodes = async (ids: string[]) => {

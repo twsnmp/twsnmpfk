@@ -100,10 +100,11 @@ export const updateMAP = async () => {
   if (!_mapP5) {
     return;
   }
-  const dark = isDark();
-  if (!mapConf) {
-    mapConf = await GetMapConf();
-  }
+  try {
+    const dark = isDark();
+    if (!mapConf) {
+      mapConf = await GetMapConf();
+    }
   const z = mapConf.IconSize || 3;
   iconSize = 8 + z * 8;
   fontSize = 6 + z * 2;
@@ -260,7 +261,11 @@ export const updateMAP = async () => {
       }
     }
   }
-  mapRedraw = true;
+    mapRedraw = true;
+  } catch (e) {
+    console.error("updateMAP error:", e);
+    mapRedraw = true;
+  }
 };
 
 export const zoom = (zoomin: boolean) => {
@@ -865,32 +870,36 @@ const mapMain = (p5: P5) => {
     if (scale != 1.0) {
       p5.scale(scale);
     }
-    mapRedraw = false;
-    p5.clear();
-    p5.removeElements();
-    drawBackground(p5, dark);
-    drawDrawItems(p5, dark);
-    drawNetworks(p5);
-    drawLines(p5);
-    drawNodes(p5, dark);
-    if (dragMode === 1) {
-      let x = startMouseX;
-      let y = startMouseY;
-      let w = lastMouseX - startMouseX;
-      let h = lastMouseY - startMouseY;
-      if (startMouseX > lastMouseX) {
-        x = lastMouseX;
-        w = startMouseX - lastMouseX;
+    try {
+      mapRedraw = false;
+      p5.clear();
+      p5.removeElements();
+      drawBackground(p5, dark);
+      drawDrawItems(p5, dark);
+      drawNetworks(p5);
+      drawLines(p5);
+      drawNodes(p5, dark);
+      if (dragMode === 1) {
+        let x = startMouseX;
+        let y = startMouseY;
+        let w = lastMouseX - startMouseX;
+        let h = lastMouseY - startMouseY;
+        if (startMouseX > lastMouseX) {
+          x = lastMouseX;
+          w = startMouseX - lastMouseX;
+        }
+        if (startMouseY > lastMouseY) {
+          y = lastMouseY;
+          h = startMouseY - lastMouseY;
+        }
+        p5.push();
+        p5.fill("rgba(250,250,250,0.6)");
+        p5.stroke(0);
+        p5.rect(x, y, w, h);
+        p5.pop();
       }
-      if (startMouseY > lastMouseY) {
-        y = lastMouseY;
-        h = startMouseY - lastMouseY;
-      }
-      p5.push();
-      p5.fill("rgba(250,250,250,0.6)");
-      p5.stroke(0);
-      p5.rect(x, y, w, h);
-      p5.pop();
+    } catch (e) {
+      console.error("p5.draw error:", e);
     }
   };
 
