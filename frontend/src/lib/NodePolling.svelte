@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import "../assets/css/jquery.dataTables.css";
   import { Modal, GradientButton } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -20,6 +21,8 @@
 
   export let show: boolean = false;
   export let nodeID = "";
+
+  const dispatch = createEventDispatcher();
 
   let data: any = [];
   let showEditPolling = false;
