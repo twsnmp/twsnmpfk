@@ -1,20 +1,12 @@
 <script lang="ts">
-  import neko_ng from "../assets/images/neko_ng.png";
-  import neko_ok from "../assets/images/neko_ok.png";
-  import neko1 from "../assets/images/neko_anm1.png";
-  import neko2 from "../assets/images/neko_anm2.png";
-  import neko3 from "../assets/images/neko_anm3.png";
-  import neko4 from "../assets/images/neko_anm4.png";
-  import neko5 from "../assets/images/neko_anm5.png";
-  import neko6 from "../assets/images/neko_anm6.png";
-  import neko7 from "../assets/images/neko_anm7.png";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, tick } from "svelte";
   import {
     Modal,
     GradientButton,
     Search,
     Select,
     Input,
+    Badge,
   } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -32,60 +24,86 @@
   import Polling from "./Polling.svelte";
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
+  import Neko from "./Neko.svelte";
   import { copyText } from "svelte-copy";
-  import { tick } from "svelte";
 
   export let show: boolean = false;
   export let nodeID = "";
 
-  let path = "";
+  let nodeName = "";
+  let path = "/interfaces";
   let target = "";
-  let encoding = "";
-  let history: any = [];
+  let encoding = "json_ietf";
+  const encodingOptions = [
+    { value: "json_ietf", name: "json_ietf" },
+    { value: "json", name: "json" },
+    { value: "proto", name: "proto" },
+    { value: "bytes", name: "bytes" },
+    { value: "ascii", name: "ascii" },
+  ];
+  let history: any = [
+    { value: "/interfaces", name: "/interfaces" },
+    { value: "/system", name: "/system" },
+    { value: "/components", name: "/components" },
+  ];
+  const shortcutPaths = [
+    "/interfaces",
+    "/system",
+    "/components",
+    "/network-instances",
+    "/platform",
+    "/acl",
+    "/qos",
+    "/lldp",
+  ];
   let selected = "";
-  let wait = false;
-  let neko = neko1;
   let showNeko = false;
-  let nekoNo = 0;
-  const nekos: any = [];
+  let nekoStatus: "" | "waiting" | "ok" | "ng" = "";
   let timer: any = undefined;
   let table: any = undefined;
   let data: any = [];
   let selectedCount = 0;
-  
+
   let showCap = false;
   let capTable: any = undefined;
-  let capData : any = [];
-  
+  let capData: any = {};
+  let capModelFilter = "";
+
   let showHelp = false;
 
   const dispatch = createEventDispatcher();
 
+  const waitAnimation = (status: "" | "waiting" | "ok" | "ng") => {
+    nekoStatus = status;
+    if (status === "waiting") {
+      showNeko = true;
+    } else {
+      setTimeout(() => {
+        showNeko = false;
+      }, 1500);
+    }
+  };
+
   const onOpen = async () => {
     const node = await GetNode(nodeID);
     if (node) {
-      if (node.GNMIPort) { 
+      nodeName = node.Name || "";
+      if (node.GNMIPort) {
         target = node.IP + ":" + node.GNMIPort;
       } else {
         target = node.IP + ":57400";
       }
-      encoding = node.GNMIEncoding ? node.GNMIEncoding : "json_ietf"; 
+      encoding = node.GNMIEncoding ? node.GNMIEncoding : "json_ietf";
     }
     data = [];
-    nekos.push(neko1);
-    nekos.push(neko2);
-    nekos.push(neko3);
-    nekos.push(neko4);
-    nekos.push(neko5);
-    nekos.push(neko6);
-    nekos.push(neko7);
+    selectedCount = 0;
   };
 
   const columns = [
     {
       data: "Path",
-      title: "Path",
-      width: "60%",
+      title: $_("GNMITool.Path") || "Path",
+      width: "55%",
       className: "dt-nowrap",
     },
     {
@@ -96,7 +114,7 @@
     {
       data: "Value",
       title: $_("MIBBrowser.Value"),
-      width: "30%",
+      width: "35%",
     },
   ];
 
@@ -108,107 +126,103 @@
       stateSave: true,
       data: data,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
-      order:[[0,"desc"]],
+      order: [[0, "asc"]],
       language: getTableLang(),
       select: {
         style: "multi+shift",
       },
     });
-    table.on("select", () => {
+    table.on("select deselect", () => {
       selectedCount = table.rows({ selected: true }).count();
     });
-    table.on("deselect", () => {
-      selectedCount = table.rows({ selected: true }).count();
+    table.on("dblclick", "tr", function (this: HTMLElement) {
+      const rowData = table.row(this).data();
+      if (rowData && rowData.Path) {
+        path = rowData.Path;
+      }
     });
   };
 
   const get = async () => {
-    wait = true;
-    waitAnimation();
-    data = await GNMIGet(nodeID,target, path, encoding);
+    if (!path) return;
+    waitAnimation("waiting");
+    data = await GNMIGet(nodeID, target, path, encoding);
     if (!data) {
-      neko = neko_ng;
+      waitAnimation("ng");
     } else {
       updateHistory();
-      neko = neko_ok;
+      waitAnimation("ok");
+      await tick();
       showTable();
     }
-    wait = false;
   };
 
   const capColumns = [
     {
       data: "name",
-      title: $_('GNMITool.Name'),
-      width: "60%",
+      title: $_("GNMITool.Name"),
+      width: "55%",
     },
     {
       data: "organization",
-      title: $_('GNMITool.Org'),
+      title: $_("GNMITool.Org"),
       width: "30%",
     },
     {
       data: "version",
-      title: $_('GNMITool.Version'),
-      width: "10%",
+      title: $_("GNMITool.Version"),
+      width: "15%",
     },
   ];
 
+  const showCapabilities = () => {
+    const models = capData?.Models || [];
+    const q = capModelFilter.trim().toLowerCase();
+    const filtered = q
+      ? models.filter(
+          (m: any) =>
+            (m.name && m.name.toLowerCase().includes(q)) ||
+            (m.organization && m.organization.toLowerCase().includes(q)) ||
+            (m.version && m.version.toLowerCase().includes(q))
+        )
+      : models;
 
-  const showCapabilities = async () => {
     capTable = new DataTable("#gnmiCapTable", {
       destroy: true,
       columns: capColumns,
-      data: capData.Models,
+      data: filtered,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
-      order:[[0,"desc"]],
+      order: [[0, "asc"]],
       language: getTableLang(),
     });
-  }
+  };
 
   const cap = async () => {
-    wait = true;
-    waitAnimation();
+    waitAnimation("waiting");
     capData = await GNMICapabilities(nodeID, target);
     if (!capData) {
-      neko = neko_ng;
+      waitAnimation("ng");
     } else {
-      neko = neko_ok;
+      waitAnimation("ok");
+      capModelFilter = "";
       showCap = true;
       await tick();
       showCapabilities();
     }
-    wait = false;
+  };
+
+  const onFilterCapChange = () => {
+    showCapabilities();
   };
 
   const updateHistory = () => {
-    const tmp = [];
-    for (const h of history) {
-      if (h.value != path) {
-        tmp.push(h);
-      }
-    }
+    if (!path) return;
+    const tmp = history.filter((h: any) => h.value !== path);
     tmp.unshift({
-      path: path,
+      name: path,
       value: path,
     });
-    history = tmp;
-  };
-
-  const waitAnimation = () => {
-    if (!wait) {
-      setTimeout(() => {
-        showNeko = false;
-      }, 2000);
-      return;
-    }
-    showNeko = true;
-    neko = nekos[nekoNo];
-    nekoNo++;
-    if (nekoNo >= nekos.length) {
-      nekoNo = 0;
-    }
-    timer = setTimeout(waitAnimation, 200);
+    history = tmp.slice(0, 10);
   };
 
   const close = () => {
@@ -217,7 +231,7 @@
 
   const exportMIB = (t: string) => {
     const ed: any = {
-      Title: "TWSNMP gMMI(" + path + ")",
+      Title: "TWSNMP gNMI(" + path + ")",
       Header: columns.map((e: any) => e.title),
       Data: [],
       Image: "",
@@ -235,14 +249,18 @@
   let copied = false;
 
   const copy = () => {
-    const selected = table.rows({ selected: true }).data();
+    const selectedRows = table?.rows({ selected: true }).data();
+    const rowsToCopy =
+      selectedRows && selectedRows.length > 0 ? selectedRows : data;
+    if (!rowsToCopy || rowsToCopy.length === 0) return;
+
     let s: string[] = [];
     const h = columns.map((e: any) => e.title);
     s.push(h.join("\t"));
-    for (let i = 0; i < selected.length; i++) {
+    for (let i = 0; i < rowsToCopy.length; i++) {
       const row: any = [];
       for (const c of columns) {
-        row.push(selected[i][c.data] || "");
+        row.push(rowsToCopy[i][c.data] || "");
       }
       s.push(row.join("\t"));
     }
@@ -294,42 +312,107 @@ value == "${d[0].Value}";`;
   outsideclose={false}
   class="w-full"
 >
-  <div class="flex flex-col space-y-4">
-    <div class="flex flex-row mb-2">
-      <Input
-        size="sm"
-        class="mr-2 w-96 h-8"
-        type="text"
-        bind:value={target}
-        placeholder={$_('GNMITool.Target')}
-      />
-      <Input
-        size="sm"
-        class="mr-2 w-96 h-8"
-        type="text"
-        bind:value={encoding}
-        placeholder="Encoding"
-      />
-      <Search
-        size="sm"
-        bind:value={path}
-        placeholder="Path"
-      />
-      <Select
-        size="sm"
-        class="ml-2 w-64"
-        items={history}
-        bind:value={selected}
-        placeholder={$_("MIBBrowser.History")}
-        onchange={() => {
-          path = selected;
-        }}
-      />
+  <div class="flex flex-col space-y-2.5 min-h-[70vh] max-h-[85vh]">
+    <div class="flex items-center justify-between pb-1 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center gap-2">
+        <Icon path={icons.mdiRadioTower} size={1} class="text-cyan-500" />
+        <span class="font-bold text-base text-gray-800 dark:text-gray-200">
+          {$_("GNMITool.gNMITool")}{nodeName ? ` - ${nodeName}` : ""}
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[11px] text-gray-400">
+          {$_("GNMITool.DblClickTip")}
+        </span>
+        {#if data && data.length > 0}
+          <Badge color="indigo">
+            {$_("GNMITool.ResultCount", { values: { count: data.length } })}
+          </Badge>
+        {/if}
+      </div>
     </div>
-    <table id="gnmiGetTable" class="display compact" style="width:99%"></table>
-    <div class="flex justify-end space-x-2 mr-2">
-      {#if !wait}
-        {#if selectedCount > 0}
+
+    <!-- Controls Row with unified height -->
+    <div class="flex flex-row items-center gap-2">
+      <div class="w-52 shrink-0">
+        <Input
+          size="sm"
+          class="!h-9 text-xs"
+          type="text"
+          bind:value={target}
+          placeholder={$_("GNMITool.Target")}
+        />
+      </div>
+      <div class="w-36 shrink-0">
+        <Select
+          size="sm"
+          class="!h-9 text-xs"
+          items={encodingOptions}
+          bind:value={encoding}
+          placeholder={$_("GNMITool.Encoding")}
+        />
+      </div>
+      <div class="flex-1 min-w-[200px]">
+        <Search
+          size="sm"
+          class="!h-9 text-xs"
+          bind:value={path}
+          placeholder={$_("GNMITool.Path")}
+          onkeydown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              get();
+            }
+          }}
+        />
+      </div>
+      <div class="w-44 shrink-0">
+        <Select
+          size="sm"
+          class="!h-9 text-xs"
+          items={history}
+          bind:value={selected}
+          placeholder={$_("GNMITool.History")}
+          onchange={() => {
+            if (selected) path = selected;
+          }}
+        />
+      </div>
+    </div>
+
+    <!-- Shortcuts row for quick Path selection -->
+    <div class="flex items-center gap-1.5 overflow-x-auto text-xs py-1 scrollbar-thin">
+      <div class="flex items-center gap-1 text-[11px] font-semibold text-gray-700 dark:text-gray-300 shrink-0">
+        <Icon path={icons.mdiLightningBolt} size={0.75} class="text-amber-500" />
+        <span>{$_("GNMITool.Shortcuts")}:</span>
+      </div>
+      {#each shortcutPaths as p}
+        <button
+          type="button"
+          onclick={() => {
+            path = p;
+          }}
+          ondblclick={() => {
+            path = p;
+            get();
+          }}
+          class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-semibold bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-700/80 text-cyan-600 dark:text-cyan-300 hover:bg-cyan-100 dark:hover:bg-cyan-900 hover:text-cyan-800 dark:hover:text-cyan-100 hover:border-cyan-400 dark:hover:border-cyan-500 transition-colors shadow-xs shrink-0 cursor-pointer"
+          title={`${p} (Click to set, Double click to Get)`}
+        >
+          {p}
+        </button>
+      {/each}
+    </div>
+
+    <!-- DataTables Area wrapped in div to follow AGENTS.md rule -->
+    <div id="gnmiGetTableWrapper" class="flex-1 overflow-auto">
+      <table id="gnmiGetTable" class="display compact" style="width:99%"></table>
+    </div>
+
+    <!-- Bottom Buttons Row -->
+    <div class="flex justify-end items-center space-x-2 mr-2 pt-1">
+      {#if nekoStatus != "waiting"}
+        {#if data && data.length > 0}
           <GradientButton
             shadow
             color="cyan"
@@ -342,7 +425,9 @@ value == "${d[0].Value}";`;
             {:else}
               <Icon path={icons.mdiContentCopy} size={1} />
             {/if}
-            Copy
+            {selectedCount > 0
+              ? $_("GNMITool.CopySelected", { values: { count: selectedCount } })
+              : $_("GNMITool.CopyAll")}
           </GradientButton>
         {/if}
         {#if selectedCount == 1}
@@ -364,20 +449,20 @@ value == "${d[0].Value}";`;
           onclick={cap}
           size="xs"
         >
-          <Icon path={icons.mdiTree} size={1} />
-          Capabilities
+          <Icon path={icons.mdiInformationOutline} size={1} />
+          {$_("GNMITool.Capabilities") || "Capabilities"}
         </GradientButton>
         <GradientButton
           shadow
           color="cyan"
           type="button"
-          onclick={()=>{
+          onclick={() => {
             BrowserOpenURL("https://github.com/YangModels/yang");
           }}
           size="xs"
         >
-          <Icon path={icons.mdiTree} size={1} />
-          {$_('GNMITool.YangInfo')}
+          <Icon path={icons.mdiOpenInNew} size={1} />
+          {$_("GNMITool.YangInfo")}
         </GradientButton>
         <GradientButton
           shadow
@@ -389,7 +474,7 @@ value == "${d[0].Value}";`;
           <Icon path={icons.mdiPlay} size={1} />
           {$_("MIBBrowser.Get")}
         </GradientButton>
-        {#if selectedCount > 0}
+        {#if data && data.length > 0}
           <GradientButton
             shadow
             color="lime"
@@ -445,17 +530,7 @@ value == "${d[0].Value}";`;
   </div>
 </Modal>
 
-<Modal
-  bind:open={showNeko}
-  size="sm"
-  dismissable={false}
-  outsideclose={false}
-  class="w-full bg-white bg-opacity-75 dark:bg-white"
->
-  <div class="flex justify-center items-center">
-    <img src={neko} alt="neko" />
-  </div>
-</Modal>
+<Neko bind:show={showNeko} status={nekoStatus} />
 
 <Modal
   bind:open={showCap}
@@ -465,12 +540,44 @@ value == "${d[0].Value}";`;
   class="w-full min-h-[80vh]"
 >
   <div class="flex flex-col space-y-4">
-    <div>
-      <p>gNMI Version:{ capData.Version }</p>
-      <p>Encodings:{ capData.Encodings }</p>
+    <div class="flex items-center justify-between border-b pb-2 dark:border-gray-700">
+      <div class="flex items-center gap-2">
+        <Icon path={icons.mdiInformationOutline} size={1} class="text-cyan-500" />
+        <span class="font-bold text-lg text-gray-800 dark:text-gray-200">
+          {$_("GNMITool.CapabilitiesTitle") || "Capabilities"}
+        </span>
+      </div>
+      <Badge color="blue">
+        Version: {capData?.Version || "N/A"}
+      </Badge>
     </div>
-    <table id="gnmiCapTable" class="display compact" style="width:99%"></table>
-    <div class="flex justify-end space-x-2 mr-2">
+
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-gray-700 dark:text-gray-300">
+          {$_("GNMITool.Encodings")}:
+        </span>
+        <span class="font-mono text-cyan-600 dark:text-cyan-400">
+          {capData?.Encodings || "N/A"}
+        </span>
+      </div>
+      <div class="w-64">
+        <Search
+          size="sm"
+          class="!h-9 text-xs"
+          bind:value={capModelFilter}
+          oninput={onFilterCapChange}
+          placeholder={$_("GNMITool.SearchModels")}
+        />
+      </div>
+    </div>
+
+    <!-- Capabilities DataTables Area wrapped in div to follow AGENTS.md rule -->
+    <div id="gnmiCapTableWrapper" class="flex-1 overflow-auto max-h-[55vh]">
+      <table id="gnmiCapTable" class="display compact" style="width:99%"></table>
+    </div>
+
+    <div class="flex justify-end space-x-2 mr-2 pt-2">
       <GradientButton
         shadow
         type="button"
@@ -490,4 +597,3 @@ value == "${d[0].Value}";`;
 <Polling bind:show={showPolling} {pollingTmp} />
 
 <Help bind:show={showHelp} page="gnmitool" />
-

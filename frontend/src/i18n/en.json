@@ -1289,9 +1289,23 @@
     "Name": "Name",
     "Org": "Organization",
     "Target": "Target",
+    "Encoding": "Encoding",
+    "Path": "Path",
+    "History": "History",
     "Version": "Version",
     "YangInfo": "YANG Info",
-    "gNMITool": "gNMI Tool"
+    "gNMITool": "gNMI Tool",
+    "ResultCount": "Results: {count}",
+    "SearchModels": "Search model or organization...",
+    "Encodings": "Supported Encodings",
+    "SupportedModels": "Supported Models",
+    "NoModelInfo": "No model information",
+    "CopyAll": "Copy All",
+    "CopySelected": "Copy Selected ({count})",
+    "Capabilities": "Capabilities",
+    "CapabilitiesTitle": "Capabilities Info",
+    "Shortcuts": "Shortcuts",
+    "DblClickTip": "Double-click a row to fill Path"
   },
   "ArpREport": {
     "Size": "Size"

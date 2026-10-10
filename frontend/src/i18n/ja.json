@@ -1283,8 +1283,22 @@
     "Org": "組織",
     "Version": "バージョン",
     "Target": "ターゲット",
+    "Encoding": "エンコード",
+    "Path": "Path",
+    "History": "履歴",
     "YangInfo": "YANG情報",
-    "gNMITool": "gNMIツール"
+    "gNMITool": "gNMIツール",
+    "ResultCount": "取得件数: {count}",
+    "SearchModels": "モデル名や組織で検索...",
+    "Encodings": "エンコード一覧",
+    "SupportedModels": "サポートモデル",
+    "NoModelInfo": "モデル情報がありません",
+    "CopyAll": "すべてコピー",
+    "CopySelected": "選択 ({count}) をコピー",
+    "Capabilities": "Capabilities",
+    "CapabilitiesTitle": "Capabilities 情報",
+    "Shortcuts": "ショートカット",
+    "DblClickTip": "ダブルクリックでPathに入力"
   },
   "ArpREport": {
     "Size": "サイズ"
