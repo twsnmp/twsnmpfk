@@ -128,6 +128,8 @@ export function ExportSyslogs(arg1:string,arg2:main.SyslogFilterEnt,arg3:string)
 
 export function ExportTraps(arg1:string,arg2:main.TrapFilterEnt,arg3:string):Promise<string>;
 
+export function FindMIBInfo(arg1:string):Promise<datastore.MIBInfo>;
+
 export function FindNeighborNetworksAndLines(arg1:string):Promise<backend.FindNeighborNetworksAndLinesResp>;
 
 export function FindNeighborNetworksAndLinesWithAI(arg1:string):Promise<backend.FindNeighborNetworksAndLinesResp>;

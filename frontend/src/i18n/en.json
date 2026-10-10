@@ -654,7 +654,8 @@
     "Type": "Type",
     "AIExplain": "AI explanation",
     "AskAI": "Ask AI",
-    "AskAIQ": "MIB Questions for AI"
+    "AskAIQ": "MIB Questions for AI",
+    "Shortcuts": "Shortcuts"
   },
   "Node": {
     "AddressMode": "Address mode",

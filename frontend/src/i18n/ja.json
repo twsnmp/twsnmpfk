@@ -641,7 +641,8 @@
     "Type": "タイプ",
     "AIExplain": "AIの解説",
     "AskAI": "AIに聞く",
-    "AskAIQ": "AIへのMIBに関する質問"
+    "AskAIQ": "AIへのMIBに関する質問",
+    "Shortcuts": "ショートカット"
   },
   "Node": {
     "NewNode": "新規ノード",

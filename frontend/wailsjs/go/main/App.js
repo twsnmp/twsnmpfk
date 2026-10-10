@@ -242,6 +242,10 @@ export function ExportTraps(arg1, arg2, arg3) {
   return window['go']['main']['App']['ExportTraps'](arg1, arg2, arg3);
 }
 
+export function FindMIBInfo(arg1) {
+  return window['go']['main']['App']['FindMIBInfo'](arg1);
+}
+
 export function FindNeighborNetworksAndLines(arg1) {
   return window['go']['main']['App']['FindNeighborNetworksAndLines'](arg1);
 }

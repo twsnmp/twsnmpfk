@@ -2148,6 +2148,9 @@ export namespace main {
 	export class MibEnt {
 	    Name: string;
 	    Value: string;
+	    OID?: string;
+	    Type?: string;
+	    Description?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new MibEnt(source);
@@ -2157,6 +2160,9 @@ export namespace main {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Name = source["Name"];
 	        this.Value = source["Value"];
+	        this.OID = source["OID"];
+	        this.Type = source["Type"];
+	        this.Description = source["Description"];
 	    }
 	}
 	

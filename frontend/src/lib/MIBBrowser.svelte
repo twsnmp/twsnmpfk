@@ -10,7 +10,7 @@
     Input,
     Label,
   } from "flowbite-svelte";
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount, tick } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
@@ -34,7 +34,6 @@
   import { _ } from "svelte-i18n";
   import Help from "./Help.svelte";
   import { copyText } from "svelte-copy";
-  import { tick } from "svelte";
 
   export let show: boolean = false;
   export let nodeID = "";
@@ -45,13 +44,16 @@
     hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
   };
 
-  onMount(async () => {
-    await checkAI();
-  });
-
-  $: if (show) {
-    checkAI();
-  }
+  const shortcutMibs = [
+    "system",
+    "interfaces",
+    "ifTable",
+    "ifXTable",
+    "ip",
+    "ipAddrTable",
+    "hrStorageTable",
+    "hrDeviceTable",
+  ];
 
   let name = "";
   let raw = false;
@@ -72,6 +74,207 @@
     MIBInfo: null,
     children: undefined,
   };
+
+  // Hover Tooltip state
+  let hoveredInfo: {
+    name: string;
+    oid: string;
+    type?: string;
+    tooltip: string;
+    x: number;
+    y: number;
+  } | null = null;
+
+  // Cache mapping MIB object name or OID to MIB info
+  const mibInfoCache = new Map<string, { oid: string; type?: string; description: string }>();
+
+  const buildMibInfoCache = (nodes: any[]) => {
+    if (!nodes || !Array.isArray(nodes)) return;
+    for (const n of nodes) {
+      const nodeName = n.name || n.Name || "";
+      const oid = n.oid || n.OID || "";
+      const mibInfo = n.MIBInfo || n.mibInfo;
+      if (nodeName && mibInfo) {
+        const desc = mibInfo.Description || mibInfo.description || "";
+        const type = mibInfo.Type || mibInfo.type || "";
+        if (desc) {
+          const entry = { oid, type, description: desc };
+          mibInfoCache.set(nodeName, entry);
+          if (oid) {
+            mibInfoCache.set(oid, entry);
+          }
+        }
+      }
+      const children = n.children || n.Children;
+      if (children && children.length > 0) {
+        buildMibInfoCache(children);
+      }
+    }
+  };
+
+  const getMibInfo = (rawName: string) => {
+    if (!rawName) return null;
+    let name = rawName.trim();
+
+    // 1. Direct match
+    if (mibInfoCache.has(name)) {
+      const entry = mibInfoCache.get(name)!;
+      if (entry.description) return entry;
+    }
+
+    // 2. Strip trailing instance index (e.g. "sysDescr.0" -> "sysDescr", "ifDescr.1" -> "ifDescr")
+    const dot = name.indexOf(".");
+    if (dot > 0) {
+      const base = name.substring(0, dot);
+      if (mibInfoCache.has(base)) {
+        const entry = mibInfoCache.get(base)!;
+        if (entry.description) return entry;
+      }
+    }
+
+    // 3. Strip "Instance" suffix (e.g. "sysUpTimeInstance" -> "sysUpTime")
+    if (name.endsWith("Instance")) {
+      const base = name.replace(/Instance$/, "");
+      if (mibInfoCache.has(base)) {
+        const entry = mibInfoCache.get(base)!;
+        if (entry.description) return entry;
+      }
+    }
+
+    // 4. Match with leading dot for numeric OID (e.g. "1.3.6..." -> ".1.3.6...")
+    const withDot = name.startsWith(".") ? name : "." + name;
+    if (mibInfoCache.has(withDot)) {
+      const entry = mibInfoCache.get(withDot)!;
+      if (entry.description) return entry;
+    }
+
+    // 5. Numeric OID with instance suffix (e.g. .1.3.6.1.2.1.1.1.0 -> .1.3.6.1.2.1.1.1)
+    const lastDot = withDot.lastIndexOf(".");
+    if (lastDot > 0) {
+      const baseOid = withDot.substring(0, lastDot);
+      if (mibInfoCache.has(baseOid)) {
+        const entry = mibInfoCache.get(baseOid)!;
+        if (entry.description) return entry;
+      }
+    }
+
+    return null;
+  };
+
+  const handleTableMouseOver = (e: MouseEvent) => {
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+
+    // 1. Check if hovering over element with [data-name]
+    const namedEl = target.closest("[data-name]") as HTMLElement | null;
+    if (namedEl) {
+      const rawName = namedEl.dataset.name || namedEl.innerText.trim();
+      const info = getMibInfo(rawName);
+      if (info && info.description) {
+        hoveredInfo = {
+          name: rawName,
+          oid: info.oid,
+          type: info.type,
+          tooltip: info.description,
+          x: e.clientX,
+          y: e.clientY,
+        };
+        return;
+      }
+    }
+
+    // 2. Check if hovering over th header (in Table mode or list mode)
+    const th = target.closest("th");
+    if (th) {
+      const colName = th.innerText.trim();
+      if (colName && colName !== "Index" && colName !== "#") {
+        const info = getMibInfo(colName);
+        if (info && info.description) {
+          hoveredInfo = {
+            name: colName,
+            oid: info.oid,
+            type: info.type,
+            tooltip: info.description,
+            x: e.clientX,
+            y: e.clientY,
+          };
+          return;
+        }
+      }
+    }
+
+    // 3. Check if hovering over td cell
+    const td = target.closest("td") as HTMLTableCellElement | null;
+    if (td) {
+      const cellText = td.innerText.trim();
+      if (cellText) {
+        const info = getMibInfo(cellText);
+        if (info && info.description) {
+          hoveredInfo = {
+            name: cellText,
+            oid: info.oid,
+            type: info.type,
+            tooltip: info.description,
+            x: e.clientX,
+            y: e.clientY,
+          };
+          return;
+        }
+      }
+
+      // If in Table mode (e.g. ifTable), cellIndex > 0 maps to columns[cellIndex]
+      const cellIndex = td.cellIndex;
+      if (isTable && cellIndex !== undefined && cellIndex > 0 && columns && columns[cellIndex]) {
+        const colData = columns[cellIndex].data || columns[cellIndex].title;
+        if (colData && typeof colData === "string") {
+          const info = getMibInfo(colData);
+          if (info && info.description) {
+            hoveredInfo = {
+              name: colData,
+              oid: info.oid,
+              type: info.type,
+              tooltip: info.description,
+              x: e.clientX,
+              y: e.clientY,
+            };
+            return;
+          }
+        }
+      }
+    }
+
+    hoveredInfo = null;
+  };
+
+  const handleTableMouseMove = (e: MouseEvent) => {
+    if (hoveredInfo) {
+      hoveredInfo = {
+        ...hoveredInfo,
+        x: e.clientX,
+        y: e.clientY,
+      };
+    }
+  };
+
+  const handleTableMouseLeave = () => {
+    hoveredInfo = null;
+  };
+
+  const loadMibTree = async () => {
+    if (mibInfoCache.size === 0) {
+      const treeData = await GetMIBTree();
+      if (treeData && treeData.length > 0) {
+        mibTree.children = treeData;
+        mibInfoCache.clear();
+        buildMibInfoCache(treeData);
+      }
+    }
+  };
+
+  onMount(async () => {
+    await checkAI();
+    await loadMibTree();
+  });
 
   const filterMIBTree = (node: any, filter: string): any => {
     if (!node) return null;
@@ -130,9 +333,10 @@
 
   const onOpen = async () => {
     selectedCount = 0;
-    mibTree.children = await GetMIBTree();
+    await loadMibTree();
     data = [];
     resultMibTree = {};
+    hoveredInfo = null;
   };
 
   const showTable = () => {
@@ -164,6 +368,13 @@
     table.on("deselect", () => {
       selectedCount = table.rows({ selected: true }).count();
     });
+
+    const wrapper = document.getElementById("mibbrTable");
+    if (wrapper) {
+      wrapper.onmouseover = handleTableMouseOver;
+      wrapper.onmousemove = handleTableMouseMove;
+      wrapper.onmouseleave = handleTableMouseLeave;
+    }
   };
 
   const basicColumns = [
@@ -176,6 +387,9 @@
       data: "Name",
       title: $_("MIBBrowser.ObjectName"),
       width: "30%",
+      render: (data: string) => {
+        return `<span class="cursor-pointer hover:text-cyan-500 hover:underline font-medium select-text" data-name="${data}">${data}</span>`;
+      },
     },
     {
       data: "Value",
@@ -188,6 +402,10 @@
   let scalar = false;
 
   const get = async () => {
+    hoveredInfo = null;
+    if (mibInfoCache.size === 0) {
+      await loadMibTree();
+    }
     waitAnimation("waiting");
     mibs = await SnmpWalk(nodeID, name, raw);
     if (!mibs) {
@@ -195,6 +413,24 @@
     } else {
       updateHistory();
       resultMibTree = [];
+      // Cache MIB info directly from walk results if available
+      for (const item of mibs) {
+        if (item.Name && item.Description) {
+          const entry = {
+            oid: item.OID || "",
+            type: item.Type || "",
+            description: item.Description,
+          };
+          mibInfoCache.set(item.Name, entry);
+          const dot = item.Name.indexOf(".");
+          if (dot > 0) {
+            mibInfoCache.set(item.Name.substring(0, dot), entry);
+          }
+          if (item.OID) {
+            mibInfoCache.set(item.OID, entry);
+          }
+        }
+      }
       waitAnimation("ok");
       refreshTable();
     }
@@ -278,7 +514,7 @@
     ];
     names.forEach((e: any) => {
       columns.push({
-        title: e,
+        title: `<span class="cursor-pointer hover:text-cyan-500 font-semibold" data-name="${e}">${e}</span>`,
         data: e,
       });
     });
@@ -491,7 +727,7 @@
   };
 
   const waitAnimation = (status: "waiting" | "ok" | "ng") => {
-    nekoStatus = status
+    nekoStatus = status;
     if (status == "waiting") {
       showNeko = true;
     } else {
@@ -635,6 +871,7 @@
         clearTimeout(timer);
         timer = undefined;
       }
+      hoveredInfo = null;
       dispatch("close", {});
     }
     prevShow = show;
@@ -648,20 +885,26 @@
   outsideclose={false}
   class="w-full"
 >
-  <div class="flex flex-col space-y-4 min-h-[70vh] max-h-[80vh]">
-    <div class="flex flex-row mb-2">
+  <div class="flex flex-col space-y-3 min-h-[70vh] max-h-[85vh]">
+    <div class="flex flex-row items-center gap-2">
       <div class="flex-auto">
         <Search
           size="sm"
           bind:value={name}
           placeholder={$_("MIBBrowser.ObjectName")}
+          onkeydown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              get();
+            }
+          }}
         />
       </div>
       <GradientButton
         shadow
         color="blue"
         size="xs"
-        class="ml-2"
+        class="shrink-0"
         onclick={() => {
           showMIBTree = true;
         }}
@@ -670,7 +913,7 @@
       </GradientButton>
       <Select
         size="sm"
-        class="ml-2 w-64"
+        class="w-64 shrink-0"
         items={history}
         bind:value={selected}
         placeholder={$_("MIBBrowser.History")}
@@ -679,9 +922,45 @@
         }}
       />
     </div>
-    <div id="mibbrTable" class="flex-1 overflow-auto">
+
+    <!-- Shortcuts row for quick MIB selection (matches GNMITool styling) -->
+    <div class="flex items-center gap-1.5 overflow-x-auto text-xs py-1 scrollbar-thin">
+      <div class="flex items-center gap-1 text-[11px] font-semibold text-gray-700 dark:text-gray-300 shrink-0">
+        <Icon path={icons.mdiLightningBolt} size={0.75} class="text-amber-500" />
+        <span>{$_("MIBBrowser.Shortcuts") || "Shortcuts"}:</span>
+      </div>
+      {#each shortcutMibs as m}
+        <button
+          type="button"
+          onclick={() => {
+            name = m;
+          }}
+          ondblclick={() => {
+            name = m;
+            get();
+          }}
+          class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-semibold bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-700/80 text-cyan-600 dark:text-cyan-300 hover:bg-cyan-100 dark:hover:bg-cyan-900 hover:text-cyan-800 dark:hover:text-cyan-100 hover:border-cyan-400 dark:hover:border-cyan-500 transition-colors shadow-xs shrink-0 cursor-pointer"
+          title={`${m} (Click to set, Double click to Get)`}
+        >
+          {m}
+        </button>
+      {/each}
+    </div>
+
+    <!-- DataTables Area wrapped in div to follow AGENTS.md rule with hover listeners -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <div
+      id="mibbrTable"
+      class="flex-1 overflow-auto"
+      onmouseover={handleTableMouseOver}
+      onmousemove={handleTableMouseMove}
+      onmouseleave={handleTableMouseLeave}
+      role="region"
+      aria-label="MIB Table"
+    >
       <table id="mibTable" class="display compact" style="width:99%"></table>
     </div>
+
     <div class="flex justify-end space-x-2 mr-2">
       {#if nekoStatus != "waiting"}
         {#if selectedCount > 0}
@@ -821,6 +1100,21 @@
       </GradientButton>
     </div>
   </div>
+
+  <!-- Hover Tooltip for MIB Object Info rendered inside Modal context -->
+  {#if hoveredInfo && hoveredInfo.tooltip}
+    <div
+      class="pointer-events-none fixed z-[99999] max-w-lg rounded-xl border border-slate-700 bg-slate-900/95 p-3 text-xs text-slate-100 shadow-2xl backdrop-blur-md"
+      style="left: {Math.max(10, Math.min(hoveredInfo.x + 16, (typeof window !== 'undefined' ? window.innerWidth - 420 : 500)))}px; top: {Math.max(10, Math.min(hoveredInfo.y + 16, (typeof window !== 'undefined' ? window.innerHeight - 260 : 500)))}px;"
+    >
+      <div class="flex items-center gap-1.5 font-mono font-bold text-teal-400 pb-1 mb-1 border-b border-slate-700/80">
+        <Icon path={icons.mdiFolderTree} size={0.75} class="text-teal-400" />
+        <span>{hoveredInfo.name}</span>
+        <span class="text-slate-400 font-normal">({hoveredInfo.oid}{hoveredInfo.type ? `:${hoveredInfo.type}` : ""})</span>
+      </div>
+      <pre class="font-sans whitespace-pre-wrap leading-relaxed text-slate-300 max-h-56 overflow-y-auto text-[11px] select-text">{hoveredInfo.tooltip}</pre>
+    </div>
+  {/if}
 </Modal>
 
 <Modal
@@ -842,6 +1136,10 @@
           tree={filteredMibTree}
           on:select={(e) => {
             name = e.detail;
+            showMIBTree = false;
+          }}
+          onselect={(selectedName) => {
+            name = selectedName;
             showMIBTree = false;
           }}
         />
@@ -965,6 +1263,11 @@
             tree={filteredResultMibTree}
             on:select={(e) => {
               name = e.detail;
+              showResultMIBTree = false;
+              get();
+            }}
+            onselect={(selectedName) => {
+              name = selectedName;
               showResultMIBTree = false;
               get();
             }}
@@ -1111,7 +1414,7 @@
   </div>
 </Modal>
 
-<AskLLMDialog bind:show={askLLMDialog} content={askLLMResult}  error={askLLMError}/>
+<AskLLMDialog bind:show={askLLMDialog} content={askLLMResult} error={askLLMError}/>
 
 <Polling bind:show={showPolling} {pollingTmp} />
 

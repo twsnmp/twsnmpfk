@@ -17,9 +17,17 @@ func (a *App) GetMIBTree() []*datastore.MIBTreeEnt {
 	return datastore.MIBTree
 }
 
+// FindMIBInfo は指定したMIBオブジェクトの情報を返します。
+func (a *App) FindMIBInfo(name string) *datastore.MIBInfo {
+	return datastore.FindMIBInfo(name)
+}
+
 type MibEnt struct {
-	Name  string `json:"Name"`
-	Value string `json:"Value"`
+	Name        string `json:"Name"`
+	Value       string `json:"Value"`
+	OID         string `json:"OID,omitempty"`
+	Type        string `json:"Type,omitempty"`
+	Description string `json:"Description,omitempty"`
 }
 
 func (a *App) SnmpWalk(nodeID, name string, raw bool) []*MibEnt {
@@ -36,9 +44,18 @@ func (a *App) SnmpWalk(nodeID, name string, raw bool) []*MibEnt {
 		}
 		name := datastore.MIBDB.OIDToName(variable.Name)
 		value := datastore.GetMIBValueString(name, &variable, raw)
+		info := datastore.FindMIBInfo(name)
+		var desc, t string
+		if info != nil {
+			desc = info.Description
+			t = info.Type
+		}
 		ret = append(ret, &MibEnt{
-			Name:  name,
-			Value: value,
+			Name:        name,
+			Value:       value,
+			OID:         variable.Name,
+			Type:        t,
+			Description: desc,
 		})
 		return nil
 	})
