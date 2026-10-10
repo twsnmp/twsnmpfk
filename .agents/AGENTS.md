@@ -21,3 +21,9 @@ DataTables（`datatables.net`）を Flowbite の `<TabItem>` や Svelte のス�
 ```
 
 **実例**: `SyslogReport.svelte` の `#syslogSummaryTable` で発生。DataTables の `destroy: true` 再初期化時に兄弟の `<div id="syslogSummary">` (echarts コンテナ) が削除され、他タブのグラフが表示されなくなった。
+
+## ビルド・動作確認およびテストの実行ルール
+
+- **ビルド・動作確認**: このプロジェクトのビルドや全体の動作確認はユーザー自身が `task dev` コマンドで実施するため、エージェントが全体のビルドや動作確認を実行する必要はない。
+- **テストの実行**: 修正対象に関連する「個別のユニットテスト」以外は、エージェント側で実行しないこと。
+
