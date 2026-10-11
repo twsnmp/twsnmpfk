@@ -486,6 +486,7 @@
   {changeIP}
   {changeMAC}
   {ipam}
+  {nodes}
 />
 
 <AddressInfo

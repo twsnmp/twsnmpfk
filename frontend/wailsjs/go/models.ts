@@ -1991,12 +1991,33 @@ export namespace main {
 	        this.Index = source["Index"];
 	    }
 	}
+	export class IPAMSubnetBlock {
+	    Subnet: string;
+	    Size: number;
+	    Used: number;
+	    Usage: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new IPAMSubnetBlock(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Subnet = source["Subnet"];
+	        this.Size = source["Size"];
+	        this.Used = source["Used"];
+	        this.Usage = source["Usage"];
+	    }
+	}
 	export class IPAMRangeEnt {
 	    Range: string;
+	    StartIP: string;
+	    EndIP: string;
 	    Size: number;
 	    Used: number;
 	    Usage: number;
 	    UsedIP: number[];
+	    Subnets?: IPAMSubnetBlock[];
 	
 	    static createFrom(source: any = {}) {
 	        return new IPAMRangeEnt(source);
@@ -2005,12 +2026,34 @@ export namespace main {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Range = source["Range"];
+	        this.StartIP = source["StartIP"];
+	        this.EndIP = source["EndIP"];
 	        this.Size = source["Size"];
 	        this.Used = source["Used"];
 	        this.Usage = source["Usage"];
 	        this.UsedIP = source["UsedIP"];
+	        this.Subnets = this.convertValues(source["Subnets"], IPAMSubnetBlock);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
+	
 	export class ImportIconEnt {
 	    Icons: datastore.IconEnt[];
 	    Errors: string[];

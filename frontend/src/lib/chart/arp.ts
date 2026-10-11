@@ -391,34 +391,47 @@ export const showArpGraph = (
   return chart;
 };
 
-export const showIPAMHeatmap = (div: string, ipam: any) => {
+export const showIPAMHeatmap = (div: string, ipam: any, onSelect?: (idx: number) => void) => {
   if (chart) {
     chart.dispose();
   }
-  chart = echarts.init(document.getElementById(div), "dark");
+  const elem = document.getElementById(div);
+  if (!elem || !ipam || ipam.length === 0) {
+    return undefined;
+  }
+  chart = echarts.init(elem, "dark");
+  const yData = ipam.map((r: any) => r.Range).reverse();
   const option: any = {
     title: {
       show: false,
     },
     grid: {
-      left: "12%",
-      right: "5%",
-      top: 30,
-      bottom: 60,
+      left: "14%",
+      right: "6%",
+      top: 25,
+      bottom: 45,
     },
-    tooltip: {},
+    tooltip: {
+      position: "top",
+      formatter: (params: any) => {
+        const val = params.value;
+        const rangeName = yData[val[1]];
+        return `<b>${rangeName}</b><br/>${$_("ArpReport.IPRange")}: ${val[0]}% 〜 ${val[0] + 1}%<br/>${$_("ArpReport.Used")}: ${val[2]}`;
+      },
+    },
     xAxis: {
       type: "category",
       name: "%",
       nameTextStyle: {
         color: "#ccc",
-        fontSize: 12,
+        fontSize: 11,
         margin: 3,
       },
       axisLabel: {
         color: "#ccc",
-        fontSize: 8,
+        fontSize: 9,
         margin: 3,
+        interval: 9,
       },
       axisLine: {
         lineStyle: {
@@ -429,7 +442,7 @@ export const showIPAMHeatmap = (div: string, ipam: any) => {
     },
     yAxis: {
       type: "category",
-      name: "IP Range",
+      name: $_("ArpReport.IPRange"),
       nameTextStyle: {
         color: "#ccc",
         fontSize: 10,
@@ -445,11 +458,11 @@ export const showIPAMHeatmap = (div: string, ipam: any) => {
           color: "#ccc",
         },
       },
-      data: [],
+      data: yData,
     },
     visualMap: {
       min: 0,
-      max: 0,
+      max: 1,
       textStyle: {
         color: "#ccc",
         fontSize: 8,
@@ -479,8 +492,8 @@ export const showIPAMHeatmap = (div: string, ipam: any) => {
         data: [],
         emphasis: {
           itemStyle: {
-            borderColor: "#ccc",
-            borderWidth: 1,
+            borderColor: "#38bdf8",
+            borderWidth: 1.5,
           },
         },
         progressive: 1000,
@@ -491,18 +504,31 @@ export const showIPAMHeatmap = (div: string, ipam: any) => {
   for (let x = 0; x < 100; x++) {
     option.xAxis.data.push(x);
   }
-  for (let y = ipam.length - 1; y >= 0; y--) {
-    const r = ipam[y];
-    option.yAxis.data.push(r.Range);
+  let maxVal = 1;
+  for (let y = 0; y < ipam.length; y++) {
+    const r = ipam[ipam.length - 1 - y];
     for (let x = 0; x < 100; x++) {
-      const c = r.UsedIP[x];
-      option.series[0].data.push([x, ipam.length - y - 1, c]);
-      if (option.visualMap.max < c) {
-        option.visualMap.max = c;
+      const c = r.UsedIP ? r.UsedIP[x] || 0 : 0;
+      option.series[0].data.push([x, y, c]);
+      if (maxVal < c) {
+        maxVal = c;
       }
     }
   }
+  option.visualMap.max = maxVal;
   chart.setOption(option);
+  if (onSelect) {
+    chart.on("click", (params: any) => {
+      if (params.value && Array.isArray(params.value)) {
+        const yIdx = params.value[1];
+        const clickedRange = yData[yIdx];
+        const origIdx = ipam.findIndex((r: any) => r.Range === clickedRange);
+        if (origIdx !== -1) {
+          onSelect(origIdx);
+        }
+      }
+    });
+  }
   chart.resize();
   return chart;
 };

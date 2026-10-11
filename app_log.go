@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -352,24 +353,95 @@ func (a *App) GetArpTable() []*datastore.ArpEnt {
 	return ret
 }
 
-type IPAMRangeEnt struct {
-	Range  string  `json:"Range"`
-	Size   int     `json:"Size"`
-	Used   int     `json:"Used"`
+// IPAMSubnetBlock represents a /24 subnet block within a larger range.
+type IPAMSubnetBlock struct {
+	Subnet string  `json:"Subnet"`
+	Size   int64   `json:"Size"`
+	Used   int64   `json:"Used"`
 	Usage  float64 `json:"Usage"`
-	UsedIP []int   `json:"UsedIP"`
+}
+
+// IPAMRangeEnt represents the IPAM utilization report for an address range.
+type IPAMRangeEnt struct {
+	Range   string             `json:"Range"`
+	StartIP string             `json:"StartIP"`
+	EndIP   string             `json:"EndIP"`
+	Size    int64              `json:"Size"`
+	Used    int64              `json:"Used"`
+	Usage   float64            `json:"Usage"`
+	UsedIP  []int              `json:"UsedIP"` // 100 slots for heatmap (0..99%)
+	Subnets []*IPAMSubnetBlock `json:"Subnets,omitempty"`
 }
 
 // GetIPAM creates an IPAM report.
 func (a *App) GetIPAM() []*IPAMRangeEnt {
+	now := time.Now().Unix()
+	timeoutSec := int64(datastore.MapConf.ArpTimeout * 3600)
+
+	// Collect used IPs: uint32 -> name/MAC
+	usedIPs := make(map[uint32]string)
+
+	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+		if n.IP != "" {
+			if ip := net.ParseIP(n.IP).To4(); ip != nil {
+				usedIPs[ip2int(ip)] = n.Name
+			}
+		}
+		return true
+	})
+
+	datastore.ForEachArp(func(a *datastore.ArpEnt) bool {
+		if timeoutSec > 0 && now-a.LastTime > timeoutSec {
+			return true
+		}
+		if ip := net.ParseIP(a.IP).To4(); ip != nil {
+			u := ip2int(ip)
+			if _, exists := usedIPs[u]; !exists {
+				usedIPs[u] = a.MAC
+			}
+		}
+		return true
+	})
+
+	// Parse configured ranges
+	rangeStrs := []string{}
+	if datastore.MapConf.ArpWatchRange != "" {
+		for _, r := range strings.Split(datastore.MapConf.ArpWatchRange, ",") {
+			r = strings.TrimSpace(r)
+			if r != "" {
+				rangeStrs = append(rangeStrs, r)
+			}
+		}
+	}
+
+	// Fallback: If no range configured, infer /24 subnets from used IPs
+	if len(rangeStrs) == 0 {
+		subnetSet := make(map[string]bool)
+		for u := range usedIPs {
+			ip := int2ip(u)
+			subnet := fmt.Sprintf("%d.%d.%d.0/24", ip[0], ip[1], ip[2])
+			subnetSet[subnet] = true
+		}
+		for s := range subnetSet {
+			rangeStrs = append(rangeStrs, s)
+		}
+		sort.Strings(rangeStrs)
+		if len(rangeStrs) == 0 {
+			rangeStrs = append(rangeStrs, "192.168.1.0/24")
+		}
+	}
+
 	ret := []*IPAMRangeEnt{}
-	for _, r := range strings.Split(datastore.MapConf.ArpWatchRange, ",") {
-		a := strings.SplitN(r, "-", 2)
-		var sIP uint32
-		var eIP uint32
-		if len(a) == 1 {
-			// CIDR
-			ip, ipnet, err := net.ParseCIDR(r)
+
+	for _, rStr := range rangeStrs {
+		var sIP, eIP uint32
+		var validStart, validEnd uint32
+		var isCIDR bool
+
+		parts := strings.SplitN(rStr, "-", 2)
+		if len(parts) == 1 {
+			// CIDR format
+			ip, ipnet, err := net.ParseCIDR(rStr)
 			if err != nil {
 				continue
 			}
@@ -377,42 +449,133 @@ func (a *App) GetIPAM() []*IPAMRangeEnt {
 			if ipv4 == nil {
 				continue
 			}
-			sIP = ip2int(ipv4)
-			for eIP = sIP; ipnet.Contains(int2ip(eIP)); eIP++ {
+			isCIDR = true
+			mask := binary.BigEndian.Uint32(ipnet.Mask)
+			sIP = ip2int(ipnet.IP.To4())
+			eIP = sIP | (^mask)
+
+			ones, _ := ipnet.Mask.Size()
+			if ones < 31 {
+				validStart = sIP + 1
+				validEnd = eIP - 1
+			} else {
+				validStart = sIP
+				validEnd = eIP
 			}
-			eIP--
 		} else {
-			sIP = ip2int(net.ParseIP(a[0]))
-			eIP = ip2int(net.ParseIP(a[1]))
-		}
-		if sIP >= eIP {
-			continue
-		}
-		e := &IPAMRangeEnt{
-			Range:  r,
-			UsedIP: make([]int, 100),
-		}
-		for nIP := sIP; nIP <= eIP; nIP++ {
-			ip := int2ip(nIP)
-			if !ip.IsGlobalUnicast() || ip.IsMulticast() {
+			// Range format: A.B.C.D-E.F.G.H
+			s := net.ParseIP(strings.TrimSpace(parts[0])).To4()
+			e := net.ParseIP(strings.TrimSpace(parts[1])).To4()
+			if s == nil || e == nil {
 				continue
 			}
-			sa := ip.String()
-			e.Size++
-			if a := datastore.GetArpEnt(sa); a != nil {
-				if datastore.MapConf.ArpTimeout == 0 ||
-					time.Now().Unix()-a.LastTime < int64(datastore.MapConf.ArpTimeout*3600) {
-					e.Used++
-					e.UsedIP[100*(nIP-sIP)/(eIP-sIP)]++
-					continue
+			sIP = ip2int(s)
+			eIP = ip2int(e)
+			if sIP > eIP {
+				sIP, eIP = eIP, sIP
+			}
+			validStart = sIP
+			validEnd = eIP
+		}
+
+		if validStart > validEnd {
+			continue
+		}
+
+		size := int64(validEnd - validStart + 1)
+		ent := &IPAMRangeEnt{
+			Range:   rStr,
+			StartIP: int2ip(validStart).String(),
+			EndIP:   int2ip(validEnd).String(),
+			Size:    size,
+			UsedIP:  make([]int, 100),
+		}
+
+		// Count used IPs in this range
+		var usedCount int64
+		blockMap := make(map[uint32]int64)
+
+		for u := range usedIPs {
+			if u >= validStart && u <= validEnd {
+				usedCount++
+				slot := 0
+				if size > 1 {
+					slot = int((int64(u-validStart) * 100) / size)
+					if slot >= 100 {
+						slot = 99
+					}
+					if slot < 0 {
+						slot = 0
+					}
+				}
+				ent.UsedIP[slot]++
+
+				if size > 256 {
+					blockNet := u & 0xffffff00
+					blockMap[blockNet]++
 				}
 			}
 		}
-		if e.Size > 0 {
-			e.Usage = (100.0 * float64(e.Used)) / float64(e.Size)
+
+		ent.Used = usedCount
+		if size > 0 {
+			ent.Usage = (float64(usedCount) * 100.0) / float64(size)
 		}
-		ret = append(ret, e)
+
+		// If large range, generate /24 subnet blocks
+		if size > 256 {
+			firstBlock := validStart & 0xffffff00
+			lastBlock := validEnd & 0xffffff00
+			totalBlocks := int64((lastBlock-firstBlock)/256 + 1)
+
+			maxBlocks := int64(256)
+			step := int64(1)
+			if totalBlocks > maxBlocks {
+				step = (totalBlocks + maxBlocks - 1) / maxBlocks
+			}
+
+			for b := int64(0); b < totalBlocks; b += step {
+				blockNet := firstBlock + uint32(b*256)
+				blockIP := int2ip(blockNet)
+				bUsed := blockMap[blockNet]
+
+				bStart := blockNet + 1
+				bEnd := blockNet + 254
+				if bStart < validStart {
+					bStart = validStart
+				}
+				if bEnd > validEnd {
+					bEnd = validEnd
+				}
+				bSize := int64(254)
+				if bStart <= bEnd {
+					bSize = int64(bEnd - bStart + 1)
+				}
+
+				bUsage := 0.0
+				if bSize > 0 {
+					bUsage = (float64(bUsed) * 100.0) / float64(bSize)
+				}
+
+				ent.Subnets = append(ent.Subnets, &IPAMSubnetBlock{
+					Subnet: fmt.Sprintf("%d.%d.%d.0/24", blockIP[0], blockIP[1], blockIP[2]),
+					Size:   bSize,
+					Used:   bUsed,
+					Usage:  bUsage,
+				})
+			}
+		} else if isCIDR {
+			ent.Subnets = append(ent.Subnets, &IPAMSubnetBlock{
+				Subnet: rStr,
+				Size:   size,
+				Used:   usedCount,
+				Usage:  ent.Usage,
+			})
+		}
+
+		ret = append(ret, ent)
 	}
+
 	return ret
 }
 
