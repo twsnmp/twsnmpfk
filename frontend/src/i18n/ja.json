@@ -976,7 +976,12 @@
     "VectorColsHelp": "ベクトル化する変数名をカンマ区切りで指定",
     "MqttURL": "MQTTサーバーURL",
     "MqttTopic": "トピック",
-    "MqttCols": "送信するデータ名"
+    "MqttCols": "送信するデータ名",
+    "SelectMode": "モードを選択",
+    "NoModeRequired": "指定なし (通常)",
+    "Custom": "カスタム",
+    "ScriptHelp": "スクリプトのヒント",
+    "FilterHelp": "フィルターのヒント"
   },
   "PollingList": {
     "State": "状態",

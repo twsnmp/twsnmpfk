@@ -996,7 +996,12 @@
     "VectorColsHelp": "Specify variable names to be vectorized separated by commas.",
     "MqttCols": "Data name",
     "MqttTopic": "Topic",
-    "MqttURL": "MQTT server URL"
+    "MqttURL": "MQTT server URL",
+    "SelectMode": "Select mode",
+    "NoModeRequired": "None (Normal)",
+    "Custom": "Custom",
+    "ScriptHelp": "Script hint",
+    "FilterHelp": "Filter hint"
   },
   "PollingList": {
     "Add": "Add",

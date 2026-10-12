@@ -24,6 +24,11 @@
   import CodeJar from "./CodeJar.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
+  import {
+    hasPredefinedModes,
+    getModeList,
+    getPollingGuide,
+  } from "./pollingModes";
 
   Prism.languages.grok = {
     number: /%\{.+?\}/,
@@ -60,7 +65,9 @@
   const nodeList: any = [];
   const dispatch = createEventDispatcher();
 
+  let lastType = "";
   const onOpen = async () => {
+    lastType = "";
     const nodes = await GetNodes();
     nodeList.length = 0;
     for (const k in nodes) {
@@ -210,6 +217,22 @@
     { name: "LSTM", value: "lstm" },
   ];
 
+  $: currentModes = polling ? getModeList(polling.Type, polling.Mode, $_) : [];
+  $: hasModes = polling ? hasPredefinedModes(polling.Type) : false;
+  $: guide = polling ? getPollingGuide(polling.Type, polling.Mode, $_) : { placeholder: "", help: "" };
+  $: if (polling && polling.Type !== lastType) {
+    if (lastType !== "") {
+      const modes = getModeList(polling.Type, "", $_);
+      if (modes.length > 0) {
+        if (!modes.some((m) => m.value === polling.Mode)) {
+          polling.Mode = modes[0].value;
+        }
+      } else {
+        polling.Mode = "";
+      }
+    }
+    lastType = polling.Type;
+  }
 
   $: if (show) {
     onOpen();
@@ -269,7 +292,21 @@
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Mode")}</span>
-          <Input class="h-8" bind:value={polling.Mode} size="sm" />
+          {#if hasModes}
+            <Select
+              items={currentModes}
+              bind:value={polling.Mode}
+              placeholder={$_("Polling.SelectMode")}
+              size="sm"
+            />
+          {:else}
+            <Input
+              class="h-8"
+              bind:value={polling.Mode}
+              placeholder={$_("Polling.NoModeRequired")}
+              size="sm"
+            />
+          {/if}
         </Label>
         <Label class="space-y-2 text-xs">
           <span> {$_("Polling.LogMode")} </span>
@@ -333,19 +370,29 @@
       </div>
       {/if}
       <div class="grid gap-4 mb-4 grid-cols-2">
-          <Label class="space-y-2 text-xs">
+        <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Params")}</span>
           <Input
             class="h-8"
             bind:value={polling.Params}
-            placeholder={$_("Polling.Params")}
+            placeholder={guide.placeholder || $_("Polling.Params")}
             color={paramsColor}
             size="sm"
           />
+          {#if guide.help}
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-normal font-normal">
+              {guide.help}
+            </p>
+          {/if}
         </Label>
         <Label class="space-y-2 text-xs" color={filterColor}>
           <span>{$_("Polling.Filter")}</span>
           <CodeJar syntax="regex" {highlight} bind:value={polling.Filter}/>
+          {#if guide.filterHelp}
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-normal font-normal">
+              {guide.filterHelp}
+            </p>
+          {/if}
         </Label>
       </div>
       <div class="grid gap-4 mb-4 grid-cols-2">
@@ -356,6 +403,11 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Script")}</span>
           <CodeJar syntax="javascript" {highlight} catchTab={true} bind:value={polling.Script}/>
+          {#if guide.scriptHelp}
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-normal font-normal">
+              {guide.scriptHelp}
+            </p>
+          {/if}
         </Label>
       </div>
       <div class="grid gap-4 grid-cols-3">
