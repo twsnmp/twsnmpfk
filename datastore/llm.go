@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/anthropic"
@@ -19,9 +20,15 @@ func GetLLM(ctx context.Context) (llms.Model, error) {
 	case "tensai", "embedded", "local":
 		modelPath, err := model.FindModel("", MapConf.LLMModel)
 		if err != nil {
-			return nil, fmt.Errorf("local model not found: %w", err)
+			log.Printf("GetLLM tensai: local model %q not found: %v", MapConf.LLMModel, err)
+			return nil, fmt.Errorf("local model not found (%s): %w", MapConf.LLMModel, err)
 		}
-		return tensai.NewWithOptions(modelPath, false)
+		llm, err := tensai.NewWithOptions(modelPath, false)
+		if err != nil {
+			log.Printf("GetLLM tensai: failed to load model %s: %v", modelPath, err)
+			return nil, err
+		}
+		return llm, nil
 	case "ollama":
 		baseURL := "http://localhost:11434"
 		if MapConf.LLMBaseURL != "" {

@@ -50,4 +50,21 @@ func TestListAndFindModel(t *testing.T) {
 	if found != mPath {
 		t.Errorf("expected %s, got %s", mPath, found)
 	}
+
+	// Create a dummy cache file to verify it gets cleaned up
+	cachePath := mPath + ".cache"
+	if err := os.WriteFile(cachePath, []byte("dummy cache"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Test RemoveModel
+	if err := RemoveModel(tempDir, "test-model.gguf"); err != nil {
+		t.Fatalf("RemoveModel failed: %v", err)
+	}
+	if _, err := os.Stat(mPath); !os.IsNotExist(err) {
+		t.Errorf("expected model file to be removed, but it still exists")
+	}
+	if _, err := os.Stat(cachePath); !os.IsNotExist(err) {
+		t.Errorf("expected model cache file to be removed, but it still exists")
+	}
 }

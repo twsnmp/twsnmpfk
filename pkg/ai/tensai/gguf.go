@@ -28,7 +28,15 @@ func repackQ8(dst *quant.Q8GMatrix, raw []byte, out, in, colOff int) {
 	}
 }
 
-func loadQwenGGUF(path string, bits int, forGPU bool) (*qwen, *tokenizer.Tokenizer, error) {
+func loadQwenGGUF(path string, bits int, forGPU bool) (qm *qwen, tokm *tokenizer.Tokenizer, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			qm = nil
+			tokm = nil
+			err = fmt.Errorf("loadQwenGGUF panic: %v", r)
+		}
+	}()
+
 	g, err := gguf.Open(path)
 	if err != nil {
 		return nil, nil, err
@@ -62,6 +70,9 @@ func loadQwenGGUF(path string, bits int, forGPU bool) (*qwen, *tokenizer.Tokeniz
 	}
 	if cfg.RMSEps == 0 {
 		cfg.RMSEps = 1e-6
+	}
+	if eos, ok := g.Int("tokenizer.ggml.eos_token_id"); ok {
+		cfg.EOS = int(eos)
 	}
 
 	tok, err := buildGGUFTokenizer(g)

@@ -244,8 +244,8 @@ github.com/mattn/go-colorable v0.1.14/go.mod h1:6LmQG8QLFO4G5z1gPvYEzlUgJ2wF+stg
 github.com/mattn/go-isatty v0.0.22 h1:j8l17JJ9i6VGPUFUYoTUKPSgKe/83EYU2zBC7YNKMw4=
 github.com/mattn/go-isatty v0.0.22/go.mod h1:ZXfXG4SQHsB/w3ZeOYbR0PrPwLy+n6xiMrJlRFqopa4=
 github.com/mattn/go-runewidth v0.0.10/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
-github.com/mattn/tensai v0.0.26 h1:99iew6HT8ixTPlrw8Ce0ahPvaaFhB1Og5MCYanMF8aU=
-github.com/mattn/tensai v0.0.26/go.mod h1:QgtvMRNa1G4BxdrnTTz89dK4s68Ad460IgTU5R7tenM=
+github.com/mattn/tensai v0.0.35 h1:vrMHDmlDwLwx4E4oILwuiMvrMxkn+2UNaexK3UcQbqU=
+github.com/mattn/tensai v0.0.35/go.mod h1:sHRDPvEMjZzXiI1zP2onldVe/3ZtIsvR/rSYoDInyKA=
 github.com/mitchellh/copystructure v1.2.0 h1:vpKXTN4ewci03Vljg/q9QvCGUDttBOGBIa15WveJJGw=
 github.com/mitchellh/copystructure v1.2.0/go.mod h1:qLl+cE2AmVv+CoeAwDPye/v+N2HKCj9FbZEVFJRxO9s=
 github.com/mitchellh/go-homedir v1.1.0 h1:lukF9ziXFxDFPkA1vsr5zpc1XuPDn/wFntq5mG+4E0Y=

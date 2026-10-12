@@ -30,7 +30,14 @@ func LoadEngine(modelPath string) (*Engine, error) {
 }
 
 // LoadEngineWithOptions loads the model with optional GPU disabling
-func LoadEngineWithOptions(modelPath string, noGPU bool) (*Engine, error) {
+func LoadEngineWithOptions(modelPath string, noGPU bool) (eng *Engine, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			eng = nil
+			err = fmt.Errorf("panic during model load: %v", r)
+		}
+	}()
+
 	var useGPU bool
 	var dev *gpu.Device
 	if !noGPU {
@@ -48,12 +55,18 @@ func LoadEngineWithOptions(modelPath string, noGPU bool) (*Engine, error) {
 	}
 
 	imEnd := model.cfg.EOS
-	if id, ok := tok.ID("<|im_end|>"); ok {
-		imEnd = id
+	for _, sym := range []string{"<|im_end|>", "<|eot_id|>", "<end_of_turn>", "</s>"} {
+		if id, ok := tok.ID(sym); ok {
+			imEnd = id
+			break
+		}
 	}
 	eot := model.cfg.EOS
-	if id, ok := tok.ID("<|endoftext|>"); ok {
-		eot = id
+	for _, sym := range []string{"<|endoftext|>", "<|eot_id|>", "</s>"} {
+		if id, ok := tok.ID(sym); ok {
+			eot = id
+			break
+		}
 	}
 
 	engine := &Engine{

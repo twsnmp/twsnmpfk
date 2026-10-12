@@ -1,29 +1,32 @@
 # twsnmpfk Project Rules
 
-## DataTables を Flowbite / Svelte タブコンテンツ内で使用する場合のルール
+## 1. Prohibition of `window.confirm()`
 
-DataTables（`datatables.net`）を Flowbite の `<TabItem>` や Svelte のスロットコンテンツ内で使用する際は、`<table>` 要素を必ず `<div>` で囲むこと。
+Never use JavaScript native `window.confirm()` or `confirm()` in frontend code.
 
-**理由**: DataTables は初期化時に `<table>` の周囲に `<div id="..._wrapper">` を注入する。`<table>` がスロット・タブパネルの直接子要素だと、この DOM 操作が兄弟要素（echarts コンテナ等）を破壊する。
+- **Reason**: In Wails v2 (especially on macOS WKWebView / WebKit), native dialog handlers for JavaScript `confirm()` and `alert()` are not implemented by default. Calling `window.confirm()` silently and immediately returns `false` without presenting any prompt to the user, causing actions (such as deletion or confirmation workflows) to fail silently.
+- **Proper Implementation**: Use inline confirmation buttons (e.g. switching the action button to `[ Delete ] [ Cancel ]` state within the row or component) or custom Flowbite/Svelte modals, instead of native browser dialogs.
 
-**正しい実装**:
-```html
-<!-- ✅ 正しい: div でラップして DataTables の DOM 操作を封じ込める -->
-<div>
+## 2. DataTables Usage inside Flowbite / Svelte Tab Content
+
+When using DataTables (`datatables.net`) inside Flowbite's `<TabItem>` or Svelte slot content, always wrap the `<table>` element with a `<div>`.
+
+- **Reason**: DataTables injects a `<div id="..._wrapper">` around `<table>` during initialization. If `<table>` is a direct child element of a slot or tab panel, this DOM manipulation breaks sibling elements (such as echarts chart containers).
+- **Correct Pattern**:
+  ```html
+  <!-- Wrap in a div to contain DataTables DOM manipulations -->
+  <div>
+    <table id="myTable" class="display">...</table>
+  </div>
+  ```
+- **Incorrect Pattern**:
+  ```html
+  <!-- Direct child of Flowbite/Svelte slot -->
   <table id="myTable" class="display">...</table>
-</div>
-```
+  ```
+- **Real-world Example**: Occurred in `SyslogReport.svelte` (`#syslogSummaryTable`). When DataTables reinitialized with `destroy: true`, its sibling `<div id="syslogSummary">` (echarts container) was destroyed, causing charts in other tabs to disappear.
 
-**間違った実装**:
-```html
-<!-- ❌ 間違い: Flowbite/Svelte スロットの直接子要素として <table> を置く -->
-<table id="myTable" class="display">...</table>
-```
+## 3. Build, Verification, and Testing Rules
 
-**実例**: `SyslogReport.svelte` の `#syslogSummaryTable` で発生。DataTables の `destroy: true` 再初期化時に兄弟の `<div id="syslogSummary">` (echarts コンテナ) が削除され、他タブのグラフが表示されなくなった。
-
-## ビルド・動作確認およびテストの実行ルール
-
-- **ビルド・動作確認**: このプロジェクトのビルドや全体の動作確認はユーザー自身が `task dev` コマンドで実施するため、エージェントが全体のビルドや動作確認を実行する必要はない。
-- **テストの実行**: 修正対象に関連する「個別のユニットテスト」以外は、エージェント側で実行しないこと。
-
+- **Build & Verification**: The user runs full builds and application verification using `task dev`. Agents must not run full builds or application verification.
+- **Test Execution**: Agents must only run individual unit tests directly related to the modified code. Do not run full or unrelated test suites.

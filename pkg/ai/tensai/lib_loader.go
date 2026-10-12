@@ -17,9 +17,11 @@ import (
 type AccelerationType string
 
 const (
-	AccelGPU  AccelerationType = "GPU"
-	AccelSIMD AccelerationType = "SIMD (AVX2)"
-	AccelCPU  AccelerationType = "CPU (Portable)"
+	AccelGPU      AccelerationType = "GPU"
+	AccelSIMD     AccelerationType = "SIMD"
+	AccelSIMDAVX2 AccelerationType = "SIMD (AVX2)"
+	AccelSIMDNEON AccelerationType = "SIMD (NEON)"
+	AccelCPU      AccelerationType = "CPU (Portable)"
 )
 
 var (
@@ -111,6 +113,11 @@ func HasAVX2() bool {
 	return runtime.GOARCH == "amd64" && cpu.X86.HasAVX2
 }
 
+// HasNEON reports whether the current CPU supports NEON instructions (arm64)
+func HasNEON() bool {
+	return runtime.GOARCH == "arm64"
+}
+
 // DetectAcceleration returns the active acceleration type and details string.
 func DetectAcceleration() (AccelerationType, string) {
 	return DetectAccelerationWithOptions(false)
@@ -137,7 +144,10 @@ func DetectAccelerationWithOptions(noGPU bool) (AccelerationType, string) {
 	}
 
 	if HasAVX2() {
-		return AccelSIMD, "AVX2 8-lane FMA Vectorized"
+		return AccelSIMDAVX2, "AVX2 8-lane FMA Vectorized"
+	}
+	if HasNEON() {
+		return AccelSIMDNEON, "NEON 4-lane Advanced SIMD Vectorized"
 	}
 
 	return AccelCPU, fmt.Sprintf("Pure Go (%s/%s)", runtime.GOOS, runtime.GOARCH)

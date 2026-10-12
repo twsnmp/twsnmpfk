@@ -52,6 +52,7 @@
 
   let errorMsg = "";
   let infoMsg = "";
+  let confirmDeleteModel = "";
 
   const refreshData = async () => {
     try {
@@ -155,10 +156,16 @@
     }
   };
 
+  const askDeleteModel = (name: string) => {
+    confirmDeleteModel = name;
+  };
+
+  const cancelDeleteModel = () => {
+    confirmDeleteModel = "";
+  };
+
   const deleteModel = async (name: string) => {
-    if (!confirm($_("ModelManager.DeleteConfirm", { values: { name } }))) {
-      return;
-    }
+    confirmDeleteModel = "";
     errorMsg = "";
     infoMsg = "";
     try {
@@ -362,10 +369,21 @@
                       {new Date(m.mod_time).toLocaleString()}
                     </td>
                     <td class="p-2 text-right whitespace-nowrap">
-                      <Button size="xs" color="red" outline onclick={() => deleteModel(m.name)}>
-                        <span class="mr-1 inline-flex items-center"><Icon path={icons.mdiTrashCan} size={0.8} /></span>
-                        {$_("ModelManager.Delete")}
-                      </Button>
+                      {#if confirmDeleteModel === m.name}
+                        <div class="inline-flex items-center space-x-1">
+                          <Button size="xs" color="red" onclick={() => deleteModel(m.name)}>
+                            {$_("ModelManager.Delete")}
+                          </Button>
+                          <Button size="xs" color="alternative" onclick={cancelDeleteModel}>
+                            {$_("ModelManager.Cancel")}
+                          </Button>
+                        </div>
+                      {:else}
+                        <Button size="xs" color="red" outline onclick={() => askDeleteModel(m.name)}>
+                          <span class="mr-1 inline-flex items-center"><Icon path={icons.mdiTrashCan} size={0.8} /></span>
+                          {$_("ModelManager.Delete")}
+                        </Button>
+                      {/if}
                     </td>
                   </tr>
                 {/each}
