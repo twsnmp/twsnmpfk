@@ -39,7 +39,15 @@ List of IP and MAC addresses detected on the local segment via the ARP watch fun
 
 ## Report Descriptions
 
-* **IP Address Usage Status**
-  Heatmap showing the distribution and usage pattern of IP addresses in the segment.
+* **IP Address Usage Status (IPAM)**
+  Visualizes IP address allocation and pool utilization across subnets.
+  * **Subnet Relative Density Heatmap**: Aggregates all address ranges normalized into 100 buckets, providing a lightweight, high-speed overview of utilization across large-scale networks.
+  * **Subnet Range List Table**: Lists configured address ranges with Start/End IP, pool size, active count, and usage rate. Clicking a row selects and switches the detailed view.
+  * **Hierarchical Drill-Down**: For wide address spaces, displays /24 subnet blocks with aggregated usage. Clicking a block drills down into individual host allocation (1–254).
+  * **Host Search**: Real-time search by hostname, IP address, or MAC address with inline visual highlighting.
 * **[AI Explain]** (Inside Report Dialog)
   Sends current tab data (IPAM / IP-MAC relation) to AI (LLM) for subnet allocation efficiency, IP conflict risk analysis, and recommendations (only visible when AI integration is enabled).
+* **IP-MAC Relationship (Force-directed Model)**
+  Visualizes IP and MAC relationships in a dynamic graph topology. Helps quickly identify abnormal connections (e.g., multiple MACs sharing one IP).
+* **IP-MAC Relationship (Circular Model)**
+  Arranges IP and MAC relationships in a circular layout. Provides a clean overview of 1-to-1 mappings and duplicates even in dense networks.

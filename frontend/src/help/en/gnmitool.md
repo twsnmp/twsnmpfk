@@ -21,7 +21,7 @@ Screen for retrieving management information from nodes using the gNMI (gRPC Net
 * **[Polling]** : Creates a new polling monitor based on the selected result value.
 * **[Capabilities]** : Retrieves and displays the gNMI version, supported encodings, and supported YANG models of the target node.
 * **[YANG Info]** : Opens the YangModels/yang repository on GitHub in a web browser.
-* **[Get]** : Executes the gNMI Get request with the specified path.
+* **[Get]** : Executes the gNMI Get request with the specified path (can also be executed with `Cmd/Ctrl + Enter`).
 * **[CSV]** : Exports the retrieval results to a CSV file.
 * **[Excel]** : Exports the retrieval results to an Excel file.
 * **[Help]** : Displays this help.

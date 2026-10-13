@@ -13,7 +13,7 @@ Screen for creating a new polling monitor or editing the settings of an existing
 * **Type**
   Monitoring method (PING, SNMP, TCP, HTTP, gRPC, TLS, DNS, SSH/SFTP, Command, etc.).
 * **Mode**
-  Operation mode based on the selected type.
+  Operation mode based on the selected type. Selecting a type automatically displays a dynamic dropdown of available modes (supports PING, SNMP, HTTP, TCP, TLS, DNS, SSH, gRPC, Syslog, NTP, STUN, etc.).
   * **PING Smokeping Mode (`smoke`)**: Measures statistical metrics (min, max, mean/avg, median response time, packet loss rate %, jitter) by sending continuous PING packets in short intervals.
   * **Log Sigma Mode (`sigma`)**: Evaluates incoming log streams against Sigma rule detection engines in real-time.
 * **Log mode**
@@ -29,7 +29,7 @@ Screen for creating a new polling monitor or editing the settings of an existing
 * **Variables to vectorize**
   (Visible only when Log mode is "Anomaly") Comma-separated variable names of numerical data to analyze.
 * **Parameter**
-  Configuration parameters depending on type and mode.
+  Configuration parameters depending on type and mode. Dynamic placeholder examples, configuration guidance, and list of usable script variables are automatically displayed below the input field according to the selected type and mode.
   * **PING Smokeping Mode Example**: `count=10,size=64,ttl=64` (`count`: continuous ping count, `size`: packet size, `ttl`: TTL)
   * **Example: Mail Monitoring (IMAP/POP3)**
     * **Mail Server**: Hostname or IP address of the IMAP/POP3 server.

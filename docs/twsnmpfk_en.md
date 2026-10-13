@@ -129,6 +129,66 @@ Added support for SHA256/AES128 and SHA512/AES256, providing stronger security f
 
 Added support for opacity (transparency) and improved UI for background images.
 
+### New Features in v2.5.0
+
+- **PKI Enhancements (EST RFC 7030 & ACME)**: RFC 7030 compliant EST server (cacerts, simpleenroll, simplereenroll), mTLS/Basic auth, node matching, ACME DNS-01, IP-01, and device attestation (Apple / YubiKey PIV).
+- **Local LLM Stability & Preset Models**: tensai v0.0.35 update, ARM64 NEON optimization, Qwen2.5/Qwen3/LLM-jp/Gemma/SmolLM/Phi presets, and GGUF tokenizer inference fixes.
+- **Revamped IPAM Report (Hierarchical Drill-Down)**: Relative density heatmap (0–100%), /24 subnet block aggregation with host-level drill-down, subnet list, and inline host search.
+- **Dynamic Polling Editor UI**: Dynamic mode dropdown by monitoring type, context-aware parameter placeholders, help guides, and script variable documentation.
+- **Enhanced MIB & gNMI Usability**: Single-click selection, expansion persistence, and hover tooltips in MIB Tree; `Cmd/Ctrl + Enter` shortcut execution.
+- **macOS Tahoe Deadlock Fix & Stability**: WebKit/CVDisplayLink deadlock resolution, instant Settings dialog opening, and dependency vulnerability fixes.
+
+---
+
+### PKI Enhancements: EST & Device Attestation (v2.5.0)
+
+- **EST (RFC 7030) Server Integration**:
+  - Automatically hosts EST services on the ACME HTTPS port
+  - Serves `cacerts`, `simpleenroll`, and `simplereenroll` endpoints
+  - Enforces mTLS or registered node credential HTTP Basic authentication
+  - Strictly validates CSR SAN/Subject CN against registered map nodes
+- **Extended ACME Challenges**:
+  - `DNS-01` challenge (supports wildcard `*.example.com` certificates)
+  - `IP-01` challenge (IPv4/IPv6 via `http-01`/`tls-alpn-01`)
+- **Device Attestation**:
+  - Apple Managed Device Attestation (iOS 16+/macOS 14+)
+  - YubiKey PIV / Smallstep Attestation
+  - Embeds RFC 4043 PermanentIdentifier in SAN extensions linked to nodes
+
+---
+
+### IP Address Management (IPAM) Drill-Down (v2.5.0)
+
+- **Subnet Relative Density Heatmap**:
+  - Aggregates the entire address pool into 100 buckets for high-speed wide-area overview
+- **Hierarchical Drill-Down**:
+  - Aggregates wide address spaces into /24 subnet blocks
+  - Click blocks to drill down into 1–254 individual host allocation statuses
+- **Subnet Table & Inline Search**:
+  - Summarizes address count, active count, and utilization percentage per subnet
+  - Real-time search and highlighting by hostname, IP address, or MAC address
+
+---
+
+![h:400 center](./images/en/address_list_ip_address_usage_status.png)
+
+---
+
+### Usability, Polling Editor & Stability (v2.5.0)
+
+- **Dynamic Polling Guidance**:
+  - Dynamically populates available mode choices based on selected monitoring type
+  - Displays contextual parameter examples, hints, and usable script variables
+- **MIB Tree & gNMI Improvements**:
+  - Single-click selection, preserved expansion state, and hover tooltips in MIB Tree
+  - `Cmd/Ctrl + Enter` shortcut execution
+- **macOS Tahoe WebKit Deadlock Fix & Performance**:
+  - Content-layer reloading to eliminate WebKit/CVDisplayLink hangs; reinforced polling loop
+  - Optimized log store format check to remove settings dialog opening latency
+  - Fixed security vulnerabilities in dependencies
+
+---
+
 ### New Features in v2.4.0
 
 - **Sigma Threat Detection & Compliance Auditing**: 75 embedded Sigma rule packs for Syslog threat detection (severity, tags, timeline, AI explanation), Sigma polling monitoring, and custom rule auto-loading.
@@ -687,26 +747,29 @@ This is the screen for executing SNMP Set. Specify the object name, type, and va
 ![h:400 center](./images/en/map_mib_browser_set_dialog.png)
 
 ---
-### GNMI tool
+### gNMI Tool
 
-<!-_class: TinyText->
-This is a screen to acquire management information from Node from GNMI.
-You need to set the GNMI in the node settings.
+<!-- _class: tinytext -->
+This is a screen to acquire management information from a node via gNMI.
+You need to configure gNMI access in the node settings beforehand.
 
+![h:400 center](./images/en/gnmi_tool.png)
+
+---
 | Items | Contents |
 | ---- | ---- |
-| Target | Specify the IP: port to access with GNMI.|
-| Encoding | Specify GNMI encoding.(JSON | JSON_IETF) |
-| PATH | Specify the path to get.|
-| History | Path history acquired so far.You can select and get it again.|
-| Result | This is the result of acquired.|
-| Copy | Copy the acquired results.|
-| Polling | Create a polling from the selected result.|
-| Capabilities | Get Capabilities.|
-| YANG Information | Displays GitHub in the Yang file.|
-| Acquisition | Execute GET under the specified conditions.|
-| CSV | Save the result with CSV.|
-| Excel | Save the result with Excel.|
+| Target | Specify the IP:port to access with gNMI.|
+| Encoding | Specify gNMI encoding (json | json_ietf).|
+| Path | Specify the sensor path to retrieve.|
+| History | History of paths acquired so far. Select to reload.|
+| Result | Table list of acquired gNMI values.|
+| Copy All | Copies the acquired results to the clipboard.|
+| Polling | Create a polling monitor from the selected result.|
+| Capabilities | Get gNMI capabilities and supported models of the target node.|
+| YANG Info | Opens the YangModels GitHub repository in a browser.|
+| Get | Execute GET under the specified path (can also be executed with Cmd/Ctrl + Enter).|
+| CSV | Save the result to a CSV file.|
+| Excel | Save the result to an Excel file.|
 
 ---
 ## Location Map screen
@@ -1009,9 +1072,8 @@ Polling edit can be displayed by clicking the button on the polling list. The AI
 | Name | Polling name.|
 | Level | Pauling disability level.|
 | Type | Polling type.<br> Ping, SNMP, TCP, STUN, etc. |
-| Mode | Operation mode depends on the type of polling.|
-| Log mode | How to save the polling result log ("None", "Always", "On change", "AI analysis").|
-| AI mode | Anomaly detection algorithm used when Log mode is "AI analysis" ("Isolation Forest", "Hotelling's T2", "k-NN").|
+| Mode | Operation mode dynamically populated based on the selected polling type.|
+| Log mode | How to save the polling result log ("None", "Always", "On change", "Anomaly").|
 ---
 | Items | Contents |
 | ---- | ---- |
@@ -1221,7 +1283,7 @@ This is a screen that controls the operation of the PKI server.
 
 |Item|Content|
 |----|---|
-|ACME Server|Start the ACME server.|
+|ACME/EST Server|Start the ACME and EST (RFC 7030) servers.|
 |CRL/OCSP/SCEP Server|Start the CRL/OCSP/SCEP server.|
 |ACME Server Basic URL|Specifies the basic URL that the ACME server responds to.|
 |CRL Update Interval|Specify the CRL update interval in hours.|

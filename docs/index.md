@@ -138,6 +138,46 @@ New features to improve map usability and organization have been added:
 
 Added support for setting the opacity (transparency) of drawing items and improved the user interface for background image settings.
 
+### New Features in v2.5.0
+
+#### Major PKI Enhancements (EST RFC 7030 & ACME Improvements)
+- **Integrated EST (RFC 7030) Server**: When the ACME server is enabled, RFC 7030 compliant EST (Enrollment over Secure Transport) services are automatically served over the same HTTPS port. Supports root CA certificate retrieval (`/.well-known/est/cacerts`), CSR enrollment (`simpleenroll`), and renewal (`simplereenroll`) on standard and labeled endpoints.
+- **mTLS / HTTP Basic Authentication & Node Matching**: EST requires either mTLS with a valid client certificate issued by this CA or HTTP Basic Authentication using the node's password/username. Strictly verifies that CSR SANs (DNS, IP, RFC 4043 PermanentIdentifier), Subject CN, or client IP match a registered node on the map.
+- **Extended ACME Challenge Support**: Added support for `DNS-01` challenges (including wildcard `*.example.com` certificates and base-domain node matching) and `IP-01` challenges (RFC 8738 for IPv4/IPv6 via `http-01` and `tls-alpn-01`).
+- **Device Attestation**: Supports hardware device attestation for Apple Managed Device Attestation (`apple`, iOS 16 / iPadOS 16 / macOS 14+) and YubiKey PIV / Smallstep (`step`). Embeds RFC 4043 `PermanentIdentifier` (OID `1.3.6.1.5.5.7.8.3`) in certificate SANs to correlate with node serial numbers or UDIDs.
+
+![PKI Server Control (ACME/EST)](images/en/pki_server_control.png)
+
+#### Local LLM (tensai v0.0.35) Stability & Expanded Preset Models
+- **Updated Engine & Optimization**: Upgraded `tensai` to v0.0.35 with automatic detection and optimization for ARM64 NEON SIMD environments.
+- **Expanded Preset Models**: Added high-efficiency, lightweight models to the Model Manager presets, including Qwen2.5, Qwen3, LLM-jp, Gemma, SmolLM, and Phi.
+- **Robust Inference & UI Polish**: Fixed type assertions in GGUF tokenizer creation to ensure stable inference, removed pseudo-fallback responses in favor of accurate error reporting, and switched model deletion to an inline confirmation UI.
+
+![Local Model Manager](images/en/llm_local_model.png)
+
+#### Revamped IP Address Management (IPAM) Report
+- **Subnet Relative Density Heatmap**: Introduced a 100-bucket normalized utilization density heatmap (0%–100%) to provide a rapid, lightweight visual overview across large and enterprise-scale networks.
+- **Hierarchical Drill-Down**: In wide address spaces, aggregates utilization into /24 subnet blocks and allows users to click and drill down into individual host assignments (1–254).
+- **Subnet Range Table & Inline Search**: Lists all managed subnet ranges with Start/End IP, pool size, used count, and usage rate. Added real-time search and highlighting by hostname, IP address, or MAC address.
+
+![IP Address Usage Status (IPAM)](images/en/address_list_ip_address_usage_status.png)
+
+#### Polling Editor Improvements
+- **Dynamic Mode Selection**: Automatically presents an interactive dropdown of available modes when selecting a monitoring type (supports PING, SNMP, HTTP, TCP, TLS, DNS, SSH, gRPC, Syslog, NTP, STUN, etc.).
+- **Dynamic Parameter & Script Guidance**: Contextually displays input placeholders, configuration hints, and usable script evaluation variables based on the selected type and mode.
+
+![Polling Editor (Dynamic Mode & Guidance)](images/en/polling_list_edit_polling.png)
+
+#### MIB Browser / Tree & gNMI Tool Usability
+- **Improved MIB Tree Usability**: Supports single-click selection to apply OIDs immediately, preserves tree expansion state, and shows MIB object descriptions on hover via tooltips.
+- **Keyboard Shortcuts**: Added `Cmd/Ctrl + Enter` shortcuts in MIB Browser and gNMI Tool to quickly trigger data retrieval, and `Esc` to close.
+- **gNMI Tool Optimization**: Optimized layout responsiveness and unified multi-language (i18n) terminology.
+
+#### macOS Tahoe / WebKit Deadlock Resolution & Stability
+- **macOS Tahoe WebKit Deadlock Fix**: Replaced native WebView reload with content layer reload (`window.location.reload()`) to prevent deadlock in macOS Tahoe's WebKit/CVDisplayLink, eliminated periodic reloads, and strengthened the map polling loop.
+- **Performance Enhancements**: Optimized log store format checks on settings dialog open by skipping unnecessary bbolt scans, eliminating UI opening delays. Fixed an unresponsive issue when opening the OpenTelemetry log tab.
+- **Security & Vulnerability Fixes**: Resolved CVE vulnerabilities across dependencies including excelize, postcss-selector-parser, devalue, dompurify, and opentelemetry.
+
 ### New Features in v2.4.0
 
 #### Threat Detection & Compliance Auditing with Sigma Rules
@@ -630,26 +670,28 @@ Click to send a Set request.
 
 ![](./images/en/map_mib_browser_set_dialog.png)
 
-### GNMI tool
+### gNMI Tool
 
-<!-_class: TinyText->
-This is a screen to acquire management information from Node from GNMI.
-You need to set the GNMI in the node settings.
+This is a screen to acquire management information from a node via gNMI.
+You need to configure gNMI access in the node settings beforehand.
+
+![](./images/en/gnmi_tool.png)
 
 | Items | Contents |
 | ---- | ---- |
-| Target | Specify the IP: port to access with GNMI.|
-| Encoding | Specify GNMI encoding.(JSON | JSON_IETF) |
-| PATH | Specify the path to get.|
-| History | Path history acquired so far.You can select and get it again.|
-| Result | This is the result of acquired.|
-| Copy | Copy the acquired results.|
-| Polling | Create a polling from the selected result.|
-| Capabilities | Get Capabilities.|
-| YANG Information | Displays GitHub in the Yang file.|
-| Acquisition | Execute GET under the specified conditions.|
-| CSV | Save the result with CSV.|
-| Excel | Save the result with Excel.|
+| Target | Specify the IP:port to access with gNMI.|
+| Encoding | Specify gNMI encoding (json | json_ietf).|
+| Path | Specify the sensor path to retrieve.|
+| History | History of paths acquired so far. Select to reload.|
+| Shortcuts | Quick shortcut buttons (/interfaces, /system, /components, etc.) to set paths with a single click.|
+| Result | Table list of acquired gNMI values.|
+| Copy All | Copies the acquired results to the clipboard.|
+| Polling | Create a polling monitor from the selected result.|
+| Capabilities | Get gNMI capabilities and supported models of the target node.|
+| YANG Info | Opens the YangModels GitHub repository in a browser.|
+| Get | Execute GET under the specified path (can also be executed with Cmd/Ctrl + Enter).|
+| CSV | Save the result to a CSV file.|
+| Excel | Save the result to an Excel file.|
 
 
 ## Location Map screen
@@ -933,10 +975,9 @@ Polling edit can be displayed by clicking the button on the polling list. The AI
 | Name | Polling name.|
 | Level | Pauling disability level.|
 | Type | Polling type.<br> Ping, SNMP, TCP, STUN, Email(IMAP/POP3) etc. |
-| Mode | Operation mode depends on the type of polling.|
-| Log mode | How to save the polling result log ("None", "Always", "On change", "AI analysis").|
-| AI mode | Anomaly detection algorithm used when Log mode is "AI analysis" ("Isolation Forest", "Hotelling's T2", "k-NN").|
-| Parameter | Polling type and mode -dependent parameters.|
+| Mode | Operation mode dynamically populated based on the selected polling type.|
+| Log mode | How to save the polling result log ("None", "Always", "On change", "Anomaly").|
+| Parameter | Contextual configuration parameters with dynamic examples and guides.|
 | Filter | Polling type and filter condition that depends on mode.|
 | Extract pattern | This is a GROK pattern that depends on the type of polling and the mode.Use when extracting data from logs.|
 | Script | Java Script that determines disability and calculates variables.|
@@ -973,9 +1014,11 @@ This is a list of IP address found by TWSNMP.Only the IP address in the same seg
 | Reload | Update the address list to the latest state.|
 
 
-### IP address usage status
+### IP Address Usage Status (IPAM)
 
-This is a report on the status of the set IP address.
+A comprehensive report to visualize and analyze IP address pool utilization across configured subnets.
+The top section displays address space KPI summaries (Target Range Count, Total Pool Addresses, Active IP Count, Average Usage Rate). The middle section features a normalized 100-bucket "Subnet Relative Utilization Density Heatmap (0%–100%)" and a managed subnet range table.
+The bottom section provides detailed host allocation maps, supporting hierarchical drill-downs from /24 subnet blocks into individual host statuses (1–254) for wide-area networks, as well as real-time inline search and highlighting by hostname, IP address, or MAC address.
 
 ![](./images/en/address_list_ip_address_usage_status.png)
 
@@ -1132,7 +1175,7 @@ This is a screen that controls the operation of the PKI server.
 
 |Item|Content|
 |----|---|
-|ACME Server|Start the ACME server.|
+|ACME/EST Server|Start the ACME and EST (RFC 7030) servers.|
 |CRL/OCSP/SCEP Server|Start the CRL/OCSP/SCEP server.|
 |ACME Server Basic URL|Specifies the basic URL that the ACME server responds to.|
 |CRL Update Interval|Specify the CRL update interval in hours.|

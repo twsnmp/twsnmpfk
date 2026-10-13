@@ -33,7 +33,7 @@
 * **MCPサーバーアクセスキー**
   MCPサーバーの認証用アクセスキー。
 * **AIプロバイダー**
-  使用するLLM（大規模言語モデル）のプロバイダー（OpenAI, Claude, Gemini, Ollama, ローカル (tensai) 等）。「ローカル (tensai)」選択時は `[モデル管理]` ボタンからGGUFモデルのダウンロードやWebGPUライブラリ管理が可能。
+  使用するLLM（大規模言語モデル）のプロバイダー（OpenAI, Claude, Gemini, Ollama, ローカル (tensai) 等）。「ローカル (tensai)」選択時は `[モデル管理]` ボタンからプリセットモデル（Qwen2.5, Qwen3, LLM-jp, Gemma, SmolLM, Phi等）やGGUFモデルのダウンロード、WebGPUライブラリ管理が可能。
 * **AI APIベースURL**
   LLM APIのベースURL。
 * **AI APIキー**

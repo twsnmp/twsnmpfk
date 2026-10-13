@@ -33,7 +33,7 @@ Configuration of the management map, server functions, and data collection servi
 * **MCP Server Token**
   Access token for MCP server authentication.
 * **AI Provider**
-  LLM (Large Language Model) provider (OpenAI, Claude, Gemini, Ollama, Local (tensai), etc.). Selecting "Local (tensai)" enables the `[Model Manager]` button to download GGUF models and manage native WebGPU libraries.
+  LLM (Large Language Model) provider (OpenAI, Claude, Gemini, Ollama, Local (tensai), etc.). Selecting "Local (tensai)" enables the `[Model Manager]` button to download preset models (Qwen2.5, Qwen3, LLM-jp, Gemma, SmolLM, Phi, etc.) or custom GGUF models and manage native WebGPU libraries.
 * **AI API Base URL**
   Base URL of the LLM API.
 * **AI API Key**
