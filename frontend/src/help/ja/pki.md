@@ -91,3 +91,18 @@ CA構築完了後に、発行済みデジタル証明書の管理や手動発行
   失効リストの更新間隔（時間単位）。
 * **証明書の期間**
   発行する証明書の有効期間（時間単位）。
+
+## ACMEサーバーの対応チャレンジと端末構成証明（Device Attestation）
+
+ACMEサーバーは以下の識別子（Identifier）と検証方式（Challenge）に対応しています。証明書を発行するには、要求元の対象ホストまたはデバイスがTWSNMP FKのマップ上にノードとして登録されている必要があります。
+
+* **DNS識別子 (`dns`)**
+  * `http-01` / `tls-alpn-01` / `dns-01` に対応。
+  * ワイルドカード証明書（`*.example.com`）の `dns-01` 検証およびノード照合に対応。
+* **IPアドレス識別子 (`ip` / RFC 8738)**
+  * IPv4 / IPv6 アドレスに対する `http-01` および `tls-alpn-01`（`.in-addr.arpa.` / `.ip6.arpa.`）検証に対応。
+* **端末構成証明 (`permanent-identifier` / `hardware-module`、`device-attest-01`)**
+  * Apple Managed Device Attestation（`fmt: "apple"`、iOS 16 / iPadOS 16 / macOS 14以降）および YubiKey PIV / Smallstep（`fmt: "step"`）の構成証明検証に対応。
+  * 発行される証明書のSAN（Subject Alternative Name）拡張には RFC 4043 `PermanentIdentifier`（OID `1.3.6.1.5.5.7.8.3`）が記録されます。
+  * **ノード登録方法** ： デバイスのシリアル番号またはUDID（`PermanentIdentifier`）を、対象ノードの「名前」「説明」「公開鍵」または「メモ」のいずれかに記載しておくことでノードと紐付けられます。
+

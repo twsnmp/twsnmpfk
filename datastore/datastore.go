@@ -286,6 +286,7 @@ func CloseDB() {
 	if err := saveAllPollings(); err != nil {
 		log.Printf("saveAllPollings err=%v", err)
 	}
+	SavePKIConf()
 	saveArpTable()
 	db.Close()
 	db = nil

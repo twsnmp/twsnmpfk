@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -86,7 +87,20 @@ func loadPKIConf() error {
 		if v == nil {
 			return nil
 		}
-		return json.Unmarshal(v, &PKIConf)
+		if err := json.Unmarshal(v, &PKIConf); err != nil {
+			return err
+		}
+		if bc := tx.Bucket([]byte("certs")); bc != nil {
+			bc.ForEach(func(k, _ []byte) error {
+				if sn, err := strconv.ParseInt(string(k), 16, 64); err == nil {
+					if sn >= PKIConf.Serial {
+						PKIConf.Serial = sn + 1
+					}
+				}
+				return nil
+			})
+		}
+		return nil
 	})
 }
 

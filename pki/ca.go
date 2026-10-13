@@ -369,6 +369,7 @@ func getSerial() int64 {
 	defer snMu.Unlock()
 	sn := datastore.PKIConf.Serial
 	datastore.PKIConf.Serial++
+	datastore.SavePKIConf()
 	log.Printf("update ca serial %d", datastore.PKIConf.Serial)
 	return sn
 }
@@ -421,12 +422,40 @@ func createCertificateFromCSR(csrBytes []byte, certType string, info map[string]
 		DNSNames:              csr.DNSNames,
 		EmailAddresses:        csr.EmailAddresses,
 		IPAddresses:           csr.IPAddresses,
+		URIs:                  csr.URIs,
 		ExtraExtensions:       csr.Extensions,
 		IsCA:                  false,
 		MaxPathLen:            0,
 		BasicConstraintsValid: true,
 		CRLDistributionPoints: []string{},
 		OCSPServer:            []string{},
+	}
+	if csr.Subject.CommonName != "" {
+		if ip := net.ParseIP(csr.Subject.CommonName); ip != nil {
+			found := false
+			for _, existing := range tmp.IPAddresses {
+				if existing.Equal(ip) {
+					found = true
+					break
+				}
+			}
+			if !found {
+				tmp.IPAddresses = append(tmp.IPAddresses, ip)
+			}
+		}
+	}
+	if pid, ok := info["PermanentIdentifier"]; ok && pid != "" {
+		if ext, err := buildPermanentIdentifierSANExt(pid, tmp.DNSNames, tmp.IPAddresses); err == nil {
+			oidSAN := asn1.ObjectIdentifier{2, 5, 29, 17}
+			filtered := make([]pkix.Extension, 0, len(tmp.ExtraExtensions)+1)
+			for _, e := range tmp.ExtraExtensions {
+				if !e.Id.Equal(oidSAN) {
+					filtered = append(filtered, e)
+				}
+			}
+			filtered = append(filtered, ext)
+			tmp.ExtraExtensions = filtered
+		}
 	}
 	for _, san := range strings.Split(datastore.PKIConf.SANs, ",") {
 		baseURL := fmt.Sprintf("http://%s:%d/", san, datastore.PKIConf.HTTPPort)
@@ -468,26 +497,167 @@ func createCertificateFromCSR(csrBytes []byte, certType string, info map[string]
 	return ret, certID, nil
 }
 
+// buildPermanentIdentifierSANExt builds a SubjectAlternativeName extension (OID 2.5.29.17)
+// including RFC 4043 PermanentIdentifier (OID 1.3.6.1.5.5.7.8.3) alongside any DNSNames and IPAddresses.
+func buildPermanentIdentifierSANExt(pid string, dnsNames []string, ips []net.IP) (pkix.Extension, error) {
+	type asn1PermanentIdentifier struct {
+		IdentifierValue string                `asn1:"utf8,optional"`
+		Assigner        asn1.ObjectIdentifier `asn1:"optional"`
+	}
+	type otherName struct {
+		TypeID asn1.ObjectIdentifier
+		Value  asn1.RawValue
+	}
+	piBytes, err := asn1.Marshal(asn1PermanentIdentifier{
+		IdentifierValue: pid,
+	})
+	if err != nil {
+		return pkix.Extension{}, err
+	}
+	onBytes, err := asn1.Marshal(otherName{
+		TypeID: asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 8, 3},
+		Value: asn1.RawValue{
+			Class:      asn1.ClassContextSpecific,
+			Tag:        0,
+			IsCompound: true,
+			Bytes:      piBytes,
+		},
+	})
+	if err != nil {
+		return pkix.Extension{}, err
+	}
+	// Replace outer Universal SEQUENCE tag (0x30) with Context-Specific [0] IMPLICIT (0xA0) for GeneralName otherName
+	if len(onBytes) > 0 && onBytes[0] == 0x30 {
+		onBytes[0] = 0xa0
+	}
+	rawValues := []asn1.RawValue{
+		{FullBytes: onBytes},
+	}
+	for _, name := range dnsNames {
+		rawValues = append(rawValues, asn1.RawValue{Tag: 2, Class: asn1.ClassContextSpecific, Bytes: []byte(name)})
+	}
+	for _, ip := range ips {
+		if ip4 := ip.To4(); ip4 != nil {
+			ip = ip4
+		}
+		rawValues = append(rawValues, asn1.RawValue{Tag: 7, Class: asn1.ClassContextSpecific, Bytes: ip})
+	}
+	sanBytes, err := asn1.Marshal(rawValues)
+	if err != nil {
+		return pkix.Extension{}, err
+	}
+	return pkix.Extension{
+		Id:       asn1.ObjectIdentifier{2, 5, 29, 17},
+		Critical: false,
+		Value:    sanBytes,
+	}, nil
+}
+
+func findNodeFromDNSName(name string) *datastore.NodeEnt {
+	if name == "" {
+		return nil
+	}
+	if node := datastore.FindNodeFromName(name); node != nil {
+		return node
+	}
+	// Wildcard domain support (e.g. *.example.com -> match example.com or *.example.com suffix)
+	if strings.HasPrefix(name, "*.") {
+		baseDomain := strings.TrimPrefix(name, "*.")
+		if node := datastore.FindNodeFromName(baseDomain); node != nil {
+			return node
+		}
+		suffix := "." + strings.ToLower(baseDomain)
+		var ret *datastore.NodeEnt
+		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+			if strings.HasSuffix(strings.ToLower(n.Name), suffix) {
+				ret = n
+				return false
+			}
+			return true
+		})
+		return ret
+	}
+	return nil
+}
+
+func findNodeFromIPAddr(ip net.IP) *datastore.NodeEnt {
+	if ip == nil {
+		return nil
+	}
+	if ipv4 := ip.To4(); ipv4 != nil {
+		if node := datastore.FindNodeFromIP(ipv4.String()); node != nil {
+			return node
+		}
+	}
+	if node := datastore.FindNodeFromIP(ip.String()); node != nil {
+		return node
+	}
+	var ret *datastore.NodeEnt
+	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+		if nIP := net.ParseIP(n.IP); nIP != nil && nIP.Equal(ip) {
+			ret = n
+			return false
+		}
+		return true
+	})
+	return ret
+}
+
+func findNodeFromPermanentIdentifier(pid string) *datastore.NodeEnt {
+	if pid == "" {
+		return nil
+	}
+	if node := datastore.FindNodeFromName(pid); node != nil {
+		return node
+	}
+	var ret *datastore.NodeEnt
+	datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+		if strings.EqualFold(n.Name, pid) ||
+			strings.Contains(n.Descr, pid) ||
+			strings.Contains(n.PublicKey, pid) {
+			ret = n
+			return false
+		}
+		if memo := datastore.GetNodeMemo(n.ID); memo != "" && strings.Contains(memo, pid) {
+			ret = n
+			return false
+		}
+		return true
+	})
+	return ret
+}
+
 func checkCSR(certType string, csr *x509.CertificateRequest, info map[string]string) (string, error) {
 	var node *datastore.NodeEnt
-	for _, n := range csr.DNSNames {
-		if node = datastore.FindNodeFromName(n); node != nil {
-			break
+	if pid, ok := info["PermanentIdentifier"]; ok && pid != "" {
+		node = findNodeFromPermanentIdentifier(pid)
+	}
+	if node == nil {
+		for _, n := range csr.DNSNames {
+			if node = findNodeFromDNSName(n); node != nil {
+				break
+			}
 		}
 	}
 	if node == nil {
 		for _, ip := range csr.IPAddresses {
-			if ipv4 := ip.To4(); ipv4 != nil {
-				if node = datastore.FindNodeFromIP(ipv4.String()); node != nil {
-					break
-				}
+			if node = findNodeFromIPAddr(ip); node != nil {
+				break
 			}
 		}
 		if node == nil {
-			node = datastore.FindNodeFromName(csr.Subject.CommonName)
+			if ip := net.ParseIP(csr.Subject.CommonName); ip != nil {
+				node = findNodeFromIPAddr(ip)
+			} else {
+				node = findNodeFromDNSName(csr.Subject.CommonName)
+			}
 			if node == nil {
-				if ip, ok := info["RemoteAddr"]; ok {
-					node = datastore.FindNodeFromIP(ip)
+				if ipStr, ok := info["RemoteAddr"]; ok {
+					if ip := net.ParseIP(ipStr); ip != nil {
+						node = findNodeFromIPAddr(ip)
+					} else {
+						node = datastore.FindNodeFromIP(ipStr)
+					}
 				}
 			}
 		}
@@ -575,6 +745,7 @@ func createCRL() error {
 	crl, err = x509.CreateRevocationList(rand.Reader, tmp, ca, key)
 	if err == nil {
 		datastore.PKIConf.CrlNumber++
+		datastore.SavePKIConf()
 	}
 	return err
 }

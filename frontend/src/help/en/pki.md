@@ -91,3 +91,18 @@ Management screen for issued digital certificates and manual signing operations 
   Interval in hours to update the CRL.
 * **Certificate Period**
   Validity period in hours for newly issued certificates.
+
+## ACME Server Supported Challenges and Device Attestation
+
+The built-in ACME server supports the following identifiers and challenge validation methods. To issue a certificate, the target host or device must be registered as a node on the TWSNMP FK map.
+
+* **DNS Identifier (`dns`)**
+  * Supports `http-01`, `tls-alpn-01`, and `dns-01`.
+  * Supports wildcard domain certificates (`*.example.com`) via `dns-01` validation and base-domain node matching.
+* **IP Address Identifier (`ip` / RFC 8738)**
+  * Supports IPv4 and IPv6 address validation via `http-01` and `tls-alpn-01` (`.in-addr.arpa.` / `.ip6.arpa.`).
+* **Device Attestation (`permanent-identifier` / `hardware-module`, `device-attest-01`)**
+  * Supports Apple Managed Device Attestation (`fmt: "apple"`, iOS 16 / iPadOS 16 / macOS 14+) and YubiKey PIV / Smallstep (`fmt: "step"`) attestation formats.
+  * Issued certificates include the RFC 4043 `PermanentIdentifier` (OID `1.3.6.1.5.5.7.8.3`) in the Subject Alternative Name (SAN) `otherName` extension.
+  * **Node Registration** : Register the device's Serial Number or UDID (`PermanentIdentifier`) in the node's **Name**, **Description**, **Public Key**, or **Memo** so TWSNMP FK can match and authorize the CSR.
+

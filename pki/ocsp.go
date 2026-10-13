@@ -17,17 +17,17 @@ import (
 func ocspFunc(c echo.Context, b []byte) error {
 	req, err := ocsp.ParseRequest(b)
 	if err != nil {
-		log.Printf("err=%v", err)
+		log.Printf("ocsp err=%v", err)
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	key, ok := rootCAPrivateKey.(crypto.Signer)
 	if !ok {
-		log.Printf("err=%v", err)
+		log.Printf("ocsp err=%v", err)
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	ca, err := x509.ParseCertificate(rootCACertificate)
 	if err != nil {
-		log.Printf("err=%v", err)
+		log.Printf("ocsp err=%v", err)
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	res := ocsp.Response{
@@ -50,7 +50,7 @@ func ocspFunc(c echo.Context, b []byte) error {
 	}
 	bres, err := ocsp.CreateResponse(ca, ca, res, key)
 	if err != nil {
-		log.Printf("err=%v", err)
+		log.Printf("ocsp err=%v", err)
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	return c.Blob(http.StatusOK, "application/ocsp-response", bres)

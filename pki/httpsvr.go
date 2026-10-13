@@ -74,7 +74,6 @@ func stopHTTPServer() {
 
 func httpServerFunc(e *echo.Echo) {
 	e.Use(middleware.Recover())
-	e.Use(middleware.Logger())
 	e.GET("/ca.pem", func(c echo.Context) error {
 		c.Response().Header().Add(echo.HeaderCacheControl, "max-age=0, no-cache")
 		return c.Blob(http.StatusOK, "application/x-pem-file", []byte(datastore.PKIConf.RootCACert))
@@ -95,7 +94,7 @@ func httpServerFunc(e *echo.Echo) {
 		req := c.Param("req")
 		b, err := base64.StdEncoding.DecodeString(req)
 		if err != nil {
-			log.Printf("err=%v", err)
+			log.Printf("ocsp err=%v", err)
 			return c.JSON(http.StatusBadRequest, err)
 		}
 		return ocspFunc(c, b)
@@ -103,17 +102,15 @@ func httpServerFunc(e *echo.Echo) {
 	e.POST("/ocsp", func(c echo.Context) error {
 		b, err := io.ReadAll(c.Request().Body)
 		if err != nil {
-			log.Printf("err=%v", err)
+			log.Printf("ocsp err=%v", err)
 			return c.JSON(http.StatusBadRequest, err)
 		}
 		return ocspFunc(c, b)
 	})
 	e.GET("/scep", func(c echo.Context) error {
-		log.Printf("get /scep %+v", c)
 		return scepFunc(c)
 	})
 	e.POST("/scep", func(c echo.Context) error {
-		log.Printf("post /scep %+v", c)
 		return scepFunc(c)
 	})
 	if err := e.Start(fmt.Sprintf(":%d", datastore.PKIConf.HTTPPort)); err != nil {
