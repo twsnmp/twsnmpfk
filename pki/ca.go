@@ -627,7 +627,7 @@ func findNodeFromPermanentIdentifier(pid string) *datastore.NodeEnt {
 	return ret
 }
 
-func checkCSR(certType string, csr *x509.CertificateRequest, info map[string]string) (string, error) {
+func findNodeForCSR(csr *x509.CertificateRequest, info map[string]string) *datastore.NodeEnt {
 	var node *datastore.NodeEnt
 	if pid, ok := info["PermanentIdentifier"]; ok && pid != "" {
 		node = findNodeFromPermanentIdentifier(pid)
@@ -662,6 +662,11 @@ func checkCSR(certType string, csr *x509.CertificateRequest, info map[string]str
 			}
 		}
 	}
+	return node
+}
+
+func checkCSR(certType string, csr *x509.CertificateRequest, info map[string]string) (string, error) {
+	node := findNodeForCSR(csr, info)
 	if node == nil {
 		return "", fmt.Errorf("node not found")
 	}

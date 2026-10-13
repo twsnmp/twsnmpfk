@@ -81,12 +81,12 @@ Management screen for issued digital certificates and manual signing operations 
 
 ## Server Control Parameters
 
-* **ACME Server**
-  Toggle to enable/disable the built-in ACME server.
+* **ACME/EST Server**
+  Toggle to enable/disable the built-in ACME and EST (RFC 7030 / Enrollment over Secure Transport) servers.
 * **CRL/OCSP/SCEP Server**
   Toggle to enable/disable the built-in CRL/OCSP/SCEP server.
 * **ACME Server Basic URL**
-  Response base URL of the ACME server.
+  Response base URL of the ACME and EST servers.
 * **CRL Update Interval**
   Interval in hours to update the CRL.
 * **Certificate Period**
@@ -105,4 +105,21 @@ The built-in ACME server supports the following identifiers and challenge valida
   * Supports Apple Managed Device Attestation (`fmt: "apple"`, iOS 16 / iPadOS 16 / macOS 14+) and YubiKey PIV / Smallstep (`fmt: "step"`) attestation formats.
   * Issued certificates include the RFC 4043 `PermanentIdentifier` (OID `1.3.6.1.5.5.7.8.3`) in the Subject Alternative Name (SAN) `otherName` extension.
   * **Node Registration** : Register the device's Serial Number or UDID (`PermanentIdentifier`) in the node's **Name**, **Description**, **Public Key**, or **Memo** so TWSNMP FK can match and authorize the CSR.
+
+## EST (RFC 7030) Server Features
+
+When the ACME server is enabled, RFC 7030 compliant EST endpoints are automatically served over the same HTTPS port.
+
+* **Supported Endpoints (supports standard and optional path label)**:
+  * `GET /.well-known/est/cacerts` or `GET /.well-known/est/:label/cacerts`
+    * Returns the Root CA certificate in a Base64-encoded PKCS#7 (`certs-only`) structure.
+  * `POST /.well-known/est/simpleenroll` or `POST /.well-known/est/:label/simpleenroll`
+    * Accepts a PKCS#10 CSR, authenticates the client and matches the target node, then returns the signed certificate in Base64-encoded PKCS#7 format.
+  * `POST /.well-known/est/simplereenroll` or `POST /.well-known/est/:label/simplereenroll`
+    * Renews an existing certificate using client certificate authentication or Basic auth.
+* **Authentication Requirements (mTLS or HTTP Basic Auth required)**:
+  * **mTLS (Client Certificate Auth)**: If the client connects using a valid, unrevoked client certificate issued by this CA, certificate issuance or renewal is granted.
+  * **HTTP Basic Auth**: If no client certificate is presented, HTTP Basic Authentication using the matching node's password (`node.Password`) and username (if configured on `node.User`) is required (returns `401 Unauthorized` if unauthenticated).
+* **Node Matching**:
+  * The SANs (DNS names, IP addresses, RFC 4043 PermanentIdentifier), Subject CN, or remote IP address in the CSR must correspond to an active node registered on the map.
 

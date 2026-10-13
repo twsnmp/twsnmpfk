@@ -37,6 +37,7 @@ require (
 	github.com/signalsciences/ipv4 v1.4.0
 	github.com/signintech/gopdf v0.36.2
 	github.com/sleepinggenius2/gosmi v0.3.2
+	github.com/smallstep/pkcs7 v0.2.1
 	github.com/smallstep/scep v0.0.0-20250221100424-171a5fa4fb1b
 	github.com/tehmaze/netflow v0.0.0-20170921210347-852af103667f
 	github.com/tmc/langchaingo v0.1.14
@@ -164,7 +165,6 @@ require (
 	github.com/segmentio/asm v1.1.3 // indirect
 	github.com/segmentio/encoding v0.5.4 // indirect
 	github.com/shoenig/go-m1cpu v0.2.1 // indirect
-	github.com/smallstep/pkcs7 v0.2.1 // indirect
 	github.com/tiendc/go-deepcopy v1.7.2 // indirect
 	github.com/tklauser/go-sysconf v0.3.15 // indirect
 	github.com/tklauser/numcpus v0.10.0 // indirect

@@ -81,12 +81,12 @@ CA構築完了後に、発行済みデジタル証明書の管理や手動発行
 
 ## サーバー制御画面のパラメータ
 
-* **ACMEサーバー**
-  ACME（自動証明書管理環境）プロトコルサーバー機能の有効化。
+* **ACME/ESTサーバー**
+  ACME（自動証明書管理環境）および EST（RFC 7030 / Enrollment over Secure Transport）サーバー機能の有効化。
 * **CRL/OCSP/SCEPサーバー**
   証明書失効リスト（CRL）、OCSP、およびSCEP配信サーバー機能の有効化。
 * **ACMEサーバーの基本URL**
-  ACMEが応答するベースURL。
+  ACMEおよびESTが応答するベースURL。
 * **CRLの更新間隔**
   失効リストの更新間隔（時間単位）。
 * **証明書の期間**
@@ -105,4 +105,21 @@ ACMEサーバーは以下の識別子（Identifier）と検証方式（Challenge
   * Apple Managed Device Attestation（`fmt: "apple"`、iOS 16 / iPadOS 16 / macOS 14以降）および YubiKey PIV / Smallstep（`fmt: "step"`）の構成証明検証に対応。
   * 発行される証明書のSAN（Subject Alternative Name）拡張には RFC 4043 `PermanentIdentifier`（OID `1.3.6.1.5.5.7.8.3`）が記録されます。
   * **ノード登録方法** ： デバイスのシリアル番号またはUDID（`PermanentIdentifier`）を、対象ノードの「名前」「説明」「公開鍵」または「メモ」のいずれかに記載しておくことでノードと紐付けられます。
+
+## EST（RFC 7030）サーバー機能
+
+ACMEサーバーが有効な場合、同一のHTTPSポート上でRFC 7030準拠のESTサービスが自動的に提供されます。
+
+* **対応エンドポイント（標準および任意ラベルに対応）**:
+  * `GET /.well-known/est/cacerts` または `GET /.well-known/est/:label/cacerts`
+    * Root CA証明書を含むPKCS#7 (`certs-only`) をBase64形式で返却します。
+  * `POST /.well-known/est/simpleenroll` または `POST /.well-known/est/:label/simpleenroll`
+    * PKCS#10 CSRを受け取り、認証およびノード照合後に署名済み証明書をPKCS#7 Base64形式で返却します。
+  * `POST /.well-known/est/simplereenroll` または `POST /.well-known/est/:label/simplereenroll`
+    * 既存証明書の更新を行います。
+* **認証方式（mTLS または HTTP Basic認証が必須）**:
+  * **mTLS（クライアント証明書認証）**: 当CAから発行された有効かつ未失効のクライアント証明書を用いたTLS接続の場合、認証が成功し証明書が発行・更新されます。
+  * **HTTP Basic認証**: クライアント証明書がない場合、CSRが対応する対象ノードのパスワード（`node.Password`）およびユーザー名（`node.User` が設定されている場合）によるHTTP Basic認証が必須となります（未認証の場合は `401 Unauthorized` が返されます）。
+* **ノード照合**:
+  * CSR内のSAN（DNS名、IPアドレス、RFC 4043 PermanentIdentifier）、Subject CN、またはアクセス元IPが登録ノードと一致している必要があります。
 

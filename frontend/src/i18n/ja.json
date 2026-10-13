@@ -1389,7 +1389,7 @@
     "DestroyCA": "CA初期化",
     "ServerCtrl": "サーバー制御",
     "HTTPServer": "CRL/OCSP/SCEPサーバー",
-    "ACMEServer": "ACMEサーバー",
+    "ACMEServer": "ACME/ESTサーバー",
     "Set": "設定",
     "Cancel": "キャンセル",
     "CreateCSRTitle": "証明書要求(CSR)の作成",

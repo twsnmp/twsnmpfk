@@ -1372,7 +1372,7 @@
   },
   "PKI": {
     "ACMEPort": "ACME Port",
-    "ACMEServer": "ACME Server",
+    "ACMEServer": "ACME/EST Server",
     "ACMEURL": "ACME Base URL",
     "BuildCA": "Create CA",
     "C": "Country",

@@ -936,7 +936,23 @@ func acmeServerFunc(e *echo.Echo) {
 		datastore.RevokeCert(cert)
 		return c.NoContent(http.StatusOK)
 	})
-	if err := e.StartTLS(fmt.Sprintf(":%d", datastore.PKIConf.AcmePort), acmeServerCertificate, acmeServerPrivateKey); err != http.ErrServerClosed {
+	registerESTRoutes(e)
+	tlsCert, err := tls.X509KeyPair(acmeServerCertificate, acmeServerPrivateKey)
+	if err != nil {
+		acmeServerRunnning = false
+		lastAcmeServerErr = err
+		log.Printf("acme server keypair err=%v", err)
+		return
+	}
+	s := &http.Server{
+		Addr: fmt.Sprintf(":%d", datastore.PKIConf.AcmePort),
+		TLSConfig: &tls.Config{
+			Certificates: []tls.Certificate{tlsCert},
+			ClientAuth:   tls.RequestClientCert,
+			MinVersion:   tls.VersionTLS12,
+		},
+	}
+	if err := e.StartServer(s); err != http.ErrServerClosed {
 		acmeServerRunnning = false
 		lastAcmeServerErr = err
 		log.Printf("acme server startTLS err=%v", err)
