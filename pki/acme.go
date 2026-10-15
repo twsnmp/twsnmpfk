@@ -95,6 +95,7 @@ func stopAcmeServer() {
 	}()
 	if err := acmeServer.Shutdown(ctx); err != nil {
 		log.Printf("shutdown acme server err=%v", err)
+		_ = acmeServer.Close()
 	}
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Time:  time.Now().UnixNano(),
@@ -952,6 +953,7 @@ func acmeServerFunc(e *echo.Echo) {
 			MinVersion:   tls.VersionTLS12,
 		},
 	}
+	e.TLSServer = s
 	if err := e.StartServer(s); err != http.ErrServerClosed {
 		acmeServerRunnning = false
 		lastAcmeServerErr = err

@@ -13,6 +13,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"net"
 	"strings"
@@ -412,3 +413,86 @@ func TestDeviceAttest01Validate_AppleAndStep(t *testing.T) {
 		t.Fatalf("expected issued certificate SAN extension to contain PermanentIdentifier C02APPLE1234")
 	}
 }
+
+func TestAcmeServerStopReleasesPort(t *testing.T) {
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rootCAPrivateKey = priv
+	rootCAPublicKey = &priv.PublicKey
+
+	template := &x509.Certificate{
+		SerialNumber:          big.NewInt(1),
+		Subject:               pkix.Name{CommonName: "Test Root CA"},
+		NotBefore:             time.Now().Add(-1 * time.Hour),
+		NotAfter:              time.Now().Add(24 * time.Hour),
+		IsCA:                  true,
+		BasicConstraintsValid: true,
+	}
+	caDER, err := x509.CreateCertificate(rand.Reader, template, template, &priv.PublicKey, priv)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rootCACertificate = caDER
+
+	testPort := 18083
+	datastore.PKIConf.AcmePort = testPort
+	datastore.PKIConf.Name = "Test"
+
+	if err := createAcmeServerCertificate(); err != nil {
+		t.Fatal(err)
+	}
+
+	startAcmeServer()
+
+	addr := fmt.Sprintf("127.0.0.1:%d", testPort)
+	var connected bool
+	for i := 0; i < 20; i++ {
+		conn, err := net.DialTimeout("tcp", addr, 100*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			connected = true
+			break
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	if !connected {
+		t.Fatalf("ACME server did not start on %s", addr)
+	}
+
+	stopAcmeServer()
+
+	var released bool
+	for i := 0; i < 20; i++ {
+		conn, err := net.DialTimeout("tcp", addr, 100*time.Millisecond)
+		if err != nil {
+			released = true
+			break
+		}
+		conn.Close()
+		time.Sleep(50 * time.Millisecond)
+	}
+
+	if !released {
+		t.Fatalf("ACME server port %d was NOT released after stopAcmeServer()", testPort)
+	}
+
+	// Verify server can be restarted on the same port
+	startAcmeServer()
+	connected = false
+	for i := 0; i < 20; i++ {
+		conn, err := net.DialTimeout("tcp", addr, 100*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			connected = true
+			break
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	if !connected {
+		t.Fatalf("ACME server could not be restarted on %s (port might still be in use: %v)", addr, lastAcmeServerErr)
+	}
+	stopAcmeServer()
+}
+
