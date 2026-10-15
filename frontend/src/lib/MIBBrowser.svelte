@@ -949,6 +949,7 @@
 
     <!-- DataTables Area wrapped in div to follow AGENTS.md rule with hover listeners -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <!-- svelte-ignore a11y_mouse_events_have_key_events -->
     <div
       id="mibbrTable"
       class="flex-1 overflow-auto"
