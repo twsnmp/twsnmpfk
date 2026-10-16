@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -284,10 +285,11 @@ func extractPermanentIdentifierFromCSR(csr *x509.CertificateRequest) string {
 }
 
 func sendESTPKCS7Response(c echo.Context, derBytes []byte) error {
-	b64 := formatBase64Lines(derBytes, 64)
+	b64 := []byte(formatBase64Lines(derBytes, 64))
 	c.Response().Header().Set(echo.HeaderCacheControl, "no-store")
 	c.Response().Header().Set("Content-Transfer-Encoding", "base64")
-	return c.Blob(http.StatusOK, estPKCS7MimeType, []byte(b64))
+	c.Response().Header().Set(echo.HeaderContentLength, strconv.Itoa(len(b64)))
+	return c.Blob(http.StatusOK, estPKCS7MimeType, b64)
 }
 
 func formatBase64Lines(data []byte, lineLen int) string {
