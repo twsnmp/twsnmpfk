@@ -56,6 +56,8 @@ export function DeleteAllPollingLogs():Promise<boolean>;
 
 export function DeleteAllSFlow():Promise<boolean>;
 
+export function DeleteAllSensors():Promise<void>;
+
 export function DeleteAllSyslog():Promise<boolean>;
 
 export function DeleteAllTraps():Promise<boolean>;
@@ -72,6 +74,8 @@ export function DeleteLine(arg1:string):Promise<boolean>;
 
 export function DeleteLocalModel(arg1:string):Promise<string>;
 
+export function DeleteLogReport(arg1:string,arg2:Array<string>):Promise<void>;
+
 export function DeleteMqttStats(arg1:Array<string>):Promise<void>;
 
 export function DeleteNetwork(arg1:string):Promise<void>;
@@ -83,6 +87,8 @@ export function DeleteOTelMetric(arg1:main.OTelMetricEnt):Promise<void>;
 export function DeletePollingLogs(arg1:Array<string>):Promise<void>;
 
 export function DeletePollings(arg1:Array<string>):Promise<void>;
+
+export function DeleteSensors(arg1:Array<string>):Promise<void>;
 
 export function DestroyCA():Promise<void>;
 
@@ -210,6 +216,8 @@ export function GetLocConf():Promise<datastore.LocConfEnt>;
 
 export function GetLocalModels():Promise<Array<model.ModelInfo>>;
 
+export function GetLogReport(arg1:string):Promise<Array<any>>;
+
 export function GetLogStoreInfo():Promise<main.LogStoreInfo>;
 
 export function GetMIBModules():Promise<Array<datastore.MIBModuleEnt>>;
@@ -275,6 +283,10 @@ export function GetPollings(arg1:string):Promise<Array<datastore.PollingEnt>>;
 export function GetSFlow(arg1:main.SFlowFilterEnt):Promise<Array<datastore.SFlowEnt>>;
 
 export function GetSFlowCounter(arg1:main.SFlowCounterFilterEnt):Promise<Array<datastore.SFlowCounterEnt>>;
+
+export function GetSensor(arg1:string):Promise<datastore.SensorEnt>;
+
+export function GetSensors():Promise<Array<datastore.SensorEnt>>;
 
 export function GetSettings():Promise<main.Settings>;
 
@@ -368,6 +380,8 @@ export function Ping(arg1:main.PingReq):Promise<main.PingRes>;
 
 export function ResetArpTable():Promise<boolean>;
 
+export function ResetLogReport(arg1:string):Promise<void>;
+
 export function RevokeCert(arg1:string):Promise<void>;
 
 export function SaveNodeMemo(arg1:string,arg2:string):Promise<boolean>;
@@ -386,6 +400,8 @@ export function SetBackImage(arg1:datastore.BackImageEnt):Promise<boolean>;
 
 export function SetDark(arg1:boolean):Promise<void>;
 
+export function SetLogReportName(arg1:string,arg2:string,arg3:string):Promise<void>;
+
 export function SetPKIControl(arg1:datastore.PKIControlEnt):Promise<void>;
 
 export function SnmpSet(arg1:string,arg2:string,arg3:string,arg4:string):Promise<string>;
@@ -399,6 +415,8 @@ export function StopDiscover():Promise<void>;
 export function TestNotifyConf(arg1:datastore.NotifyConfEnt):Promise<boolean>;
 
 export function TestWebhook(arg1:datastore.NotifyConfEnt):Promise<boolean>;
+
+export function ToggleSensorIgnore(arg1:string):Promise<void>;
 
 export function UndoAutoLayout():Promise<boolean>;
 

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/logreport"
 )
 
 var version string
@@ -20,6 +21,9 @@ var logCh = make(chan *datastore.LogEnt, 5000)
 var flushReqCh = make(chan chan struct{})
 var paused = false
 var pauseMu sync.RWMutex
+
+// ReportEngine is the singleton log report processing engine.
+var ReportEngine *logreport.Engine
 
 // Pause pauses log reception and flushes buffered logs.
 func Pause() {
@@ -47,6 +51,9 @@ func IsPaused() bool {
 
 // Flush flushes buffered logs to datastore.
 func Flush() {
+	if ReportEngine != nil {
+		ReportEngine.Flush()
+	}
 	req := make(chan struct{})
 	select {
 	case flushReqCh <- req:
@@ -55,8 +62,19 @@ func Flush() {
 	}
 }
 
+// FlushReportEngine flushes in-flight log report records.
+func FlushReportEngine() {
+	if ReportEngine != nil {
+		ReportEngine.Flush()
+	}
+}
+
 func Start(ctx context.Context, v string, wg *sync.WaitGroup) error {
 	version = v
+	ReportEngine = logreport.NewEngine(logreport.NewDefaultStore())
+	if err := ReportEngine.Start(ctx); err != nil {
+		log.Printf("start report engine err=%v", err)
+	}
 	wg.Add(1)
 	go logger(ctx, wg)
 	return nil
@@ -121,6 +139,9 @@ func logger(ctx context.Context, wg *sync.WaitGroup) {
 				}
 				if len(logBuffer) > 0 {
 					datastore.SaveLogBuffer(logBuffer)
+				}
+				if ReportEngine != nil {
+					ReportEngine.Stop()
 				}
 				log.Printf("stop logger")
 				return

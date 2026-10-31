@@ -109,6 +109,19 @@ func snmptrapd(stopCh chan bool) {
 			}
 		}
 		record["Variables"] = vbs
+		if ReportEngine != nil {
+			ReportEngine.ProcessTrap(record)
+		}
+		if u != nil {
+			srcIP := u.IP.String()
+			enterprise := fmt.Sprintf("%v", record["Enterprise"])
+			variables := fmt.Sprintf("%v", record["Variables"])
+			if strings.Contains(strings.ToLower(enterprise), "twagentneo") || strings.Contains(variables, "twagentNeo") {
+				datastore.UpdateSensor(srcIP, "twagentneo", enterprise, 1)
+			} else {
+				datastore.UpdateSensor(srcIP, "snmptrap", enterprise, 1)
+			}
+		}
 		js, err := json.Marshal(record)
 		if err == nil {
 			logCh <- &datastore.LogEnt{

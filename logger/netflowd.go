@@ -244,6 +244,9 @@ func logIPFIX(p *ipfix.Message) {
 			if err != nil {
 				continue
 			}
+			if ReportEngine != nil {
+				ReportEngine.ProcessNetFlow(record)
+			}
 			logCh <- &datastore.LogEnt{
 				Time: time.Now().UnixNano(),
 				Type: "netflow",
@@ -273,6 +276,9 @@ func logNetflow(p *netflow5.Packet) {
 		if err != nil {
 			fmt.Println(err)
 			continue
+		}
+		if ReportEngine != nil {
+			ReportEngine.ProcessNetFlow(record)
 		}
 		logCh <- &datastore.LogEnt{
 			Time: time.Now().UnixNano(),
@@ -363,6 +369,9 @@ func logNetflow9(p *netflow9.Packet) {
 			s, err := json.Marshal(record)
 			if err != nil {
 				continue
+			}
+			if ReportEngine != nil {
+				ReportEngine.ProcessNetFlow(record)
 			}
 			logCh <- &datastore.LogEnt{
 				Time: time.Now().UnixNano(),

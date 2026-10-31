@@ -98,6 +98,10 @@ export function DeleteAllSFlow() {
   return window['go']['main']['App']['DeleteAllSFlow']();
 }
 
+export function DeleteAllSensors() {
+  return window['go']['main']['App']['DeleteAllSensors']();
+}
+
 export function DeleteAllSyslog() {
   return window['go']['main']['App']['DeleteAllSyslog']();
 }
@@ -130,6 +134,10 @@ export function DeleteLocalModel(arg1) {
   return window['go']['main']['App']['DeleteLocalModel'](arg1);
 }
 
+export function DeleteLogReport(arg1, arg2) {
+  return window['go']['main']['App']['DeleteLogReport'](arg1, arg2);
+}
+
 export function DeleteMqttStats(arg1) {
   return window['go']['main']['App']['DeleteMqttStats'](arg1);
 }
@@ -152,6 +160,10 @@ export function DeletePollingLogs(arg1) {
 
 export function DeletePollings(arg1) {
   return window['go']['main']['App']['DeletePollings'](arg1);
+}
+
+export function DeleteSensors(arg1) {
+  return window['go']['main']['App']['DeleteSensors'](arg1);
 }
 
 export function DestroyCA() {
@@ -406,6 +418,10 @@ export function GetLocalModels() {
   return window['go']['main']['App']['GetLocalModels']();
 }
 
+export function GetLogReport(arg1) {
+  return window['go']['main']['App']['GetLogReport'](arg1);
+}
+
 export function GetLogStoreInfo() {
   return window['go']['main']['App']['GetLogStoreInfo']();
 }
@@ -536,6 +552,14 @@ export function GetSFlow(arg1) {
 
 export function GetSFlowCounter(arg1) {
   return window['go']['main']['App']['GetSFlowCounter'](arg1);
+}
+
+export function GetSensor(arg1) {
+  return window['go']['main']['App']['GetSensor'](arg1);
+}
+
+export function GetSensors() {
+  return window['go']['main']['App']['GetSensors']();
 }
 
 export function GetSettings() {
@@ -722,6 +746,10 @@ export function ResetArpTable() {
   return window['go']['main']['App']['ResetArpTable']();
 }
 
+export function ResetLogReport(arg1) {
+  return window['go']['main']['App']['ResetLogReport'](arg1);
+}
+
 export function RevokeCert(arg1) {
   return window['go']['main']['App']['RevokeCert'](arg1);
 }
@@ -758,6 +786,10 @@ export function SetDark(arg1) {
   return window['go']['main']['App']['SetDark'](arg1);
 }
 
+export function SetLogReportName(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SetLogReportName'](arg1, arg2, arg3);
+}
+
 export function SetPKIControl(arg1) {
   return window['go']['main']['App']['SetPKIControl'](arg1);
 }
@@ -784,6 +816,10 @@ export function TestNotifyConf(arg1) {
 
 export function TestWebhook(arg1) {
   return window['go']['main']['App']['TestWebhook'](arg1);
+}
+
+export function ToggleSensorIgnore(arg1) {
+  return window['go']['main']['App']['ToggleSensorIgnore'](arg1);
 }
 
 export function UndoAutoLayout() {

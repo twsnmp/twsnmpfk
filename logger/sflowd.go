@@ -228,6 +228,9 @@ func rawPacketFlow(r *sflow.RawPacketFlow, reason int) {
 		log.Println(err)
 		return
 	}
+	if ReportEngine != nil {
+		ReportEngine.ProcessSFlow(&e)
+	}
 	logCh <- &datastore.LogEnt{
 		Time: time.Now().UnixNano(),
 		Type: "sflow",

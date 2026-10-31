@@ -41,6 +41,7 @@
   import OTel from "./OTel.svelte";
   import Mqtt from "./Mqtt.svelte";
   import Help from "./Help.svelte";
+  import ReportView from "./reports/ReportView.svelte";
   import { _ } from "svelte-i18n";
   import Location from "./Location.svelte";
   import type { datastore } from "wailsjs/go/models";
@@ -307,6 +308,16 @@
         {$_("Top.AI")}
       </NavLi>
       <NavLi
+  href="report"
+  onclick={(e) => {
+    e.preventDefault();
+    page = "report";
+  }}
+>
+        <Icon path={icons.mdiChartBoxOutline} size={1.5} />
+        {$_("Top.Report")}
+      </NavLi>
+      <NavLi
   href="system"
   onclick={(e) => {
     e.preventDefault();
@@ -397,6 +408,8 @@
   <Mqtt />
 {:else if page == "cert"}
   <CertMonitor />
+{:else if page == "report"}
+  <ReportView />
 {/if}
 
 <Config

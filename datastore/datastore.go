@@ -246,6 +246,10 @@ func openDB(path string) error {
 	if err = loadCertMonitor(); err != nil {
 		log.Printf("load cert monitor err=%v", err)
 	}
+	log.Println("load sensors")
+	if err = loadSensors(); err != nil {
+		log.Printf("load sensors err=%v", err)
+	}
 	log.Println("end openDB")
 	return nil
 }
@@ -257,6 +261,7 @@ func initDB() error {
 		"ipfix", "netflow",
 		"sflow", "sflowCounter", "certs",
 		"memo", "otelTrace", "certMonitor",
+		"sensors", "logReport",
 	}
 	initConf()
 	return db.Update(func(tx *bbolt.Tx) error {

@@ -190,15 +190,20 @@ func monitor(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	log.Println("start monitor")
 	timer := time.NewTicker(time.Second * 300)
-	updateMonData()
 	defer timer.Stop()
+	sensorTimer := time.NewTicker(time.Minute)
+	defer sensorTimer.Stop()
+	updateMonData()
 	i := 0
 	for {
 		select {
 		case <-ctx.Done():
 			timer.Stop()
+			sensorTimer.Stop()
 			log.Println("stop monitor")
 			return
+		case <-sensorTimer.C:
+			datastore.EvaluateSensorStates(ctx)
 		case <-timer.C:
 			updateMonData()
 			i++

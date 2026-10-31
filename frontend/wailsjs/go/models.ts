@@ -1661,6 +1661,114 @@ export namespace datastore {
 	        this.Reason = source["Reason"];
 	    }
 	}
+	export class SensorMonitorEnt {
+	    Time: number;
+	    CPU: number;
+	    Mem: number;
+	    Load: number;
+	    Process: number;
+	    Recv: number;
+	    Sent: number;
+	    TxSpeed: number;
+	    RxSpeed: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SensorMonitorEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.CPU = source["CPU"];
+	        this.Mem = source["Mem"];
+	        this.Load = source["Load"];
+	        this.Process = source["Process"];
+	        this.Recv = source["Recv"];
+	        this.Sent = source["Sent"];
+	        this.TxSpeed = source["TxSpeed"];
+	        this.RxSpeed = source["RxSpeed"];
+	    }
+	}
+	export class SensorStatsEnt {
+	    Time: number;
+	    Total: number;
+	    Count: number;
+	    PS: number;
+	    Send: number;
+	    LastSend: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SensorStatsEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Time = source["Time"];
+	        this.Total = source["Total"];
+	        this.Count = source["Count"];
+	        this.PS = source["PS"];
+	        this.Send = source["Send"];
+	        this.LastSend = source["LastSend"];
+	    }
+	}
+	export class SensorEnt {
+	    ID: string;
+	    Host: string;
+	    Type: string;
+	    Param: string;
+	    Total: number;
+	    Send: number;
+	    State: string;
+	    Ignore: boolean;
+	    Stats?: SensorStatsEnt[];
+	    Monitors?: SensorMonitorEnt[];
+	    StatsLen: number;
+	    MonitorsLen: number;
+	    FirstTime: number;
+	    LastTime: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SensorEnt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Host = source["Host"];
+	        this.Type = source["Type"];
+	        this.Param = source["Param"];
+	        this.Total = source["Total"];
+	        this.Send = source["Send"];
+	        this.State = source["State"];
+	        this.Ignore = source["Ignore"];
+	        this.Stats = this.convertValues(source["Stats"], SensorStatsEnt);
+	        this.Monitors = this.convertValues(source["Monitors"], SensorMonitorEnt);
+	        this.StatsLen = source["StatsLen"];
+	        this.MonitorsLen = source["MonitorsLen"];
+	        this.FirstTime = source["FirstTime"];
+	        this.LastTime = source["LastTime"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	
 	
 	
 	export class SyslogEnt {
