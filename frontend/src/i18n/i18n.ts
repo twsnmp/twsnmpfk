@@ -11,26 +11,40 @@ import {
 addMessages("en", en);
 addMessages("ja", ja);
 
-let initialLang = "ja";
+// ブラウザ側の OS 言語判定（フォールバック用）
+const getBrowserLang = () => {
+  if (typeof navigator !== "undefined" && navigator.language) {
+    return navigator.language.toLowerCase().startsWith("ja") ? "ja" : "en";
+  }
+  return "en";
+};
+
+let initialLang = "en";
 try {
   const hasParam = await HasLangParam().catch(() => false);
   const backendLang = await GetLang().catch(() => "");
-  const savedLang = typeof localStorage !== "undefined" ? localStorage.getItem("twsnmpfk_lang") : null;
 
-  if (hasParam) {
-    initialLang = backendLang || "ja";
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem("twsnmpfk_lang", initialLang);
-    }
-  } else if (savedLang === "ja" || savedLang === "en") {
-    initialLang = savedLang;
-    SetLang(savedLang).catch(() => {});
+  if (hasParam && backendLang) {
+    // 起動パラメータ(-lang)またはiniで指定された言語
+    initialLang = backendLang;
+  } else if (backendLang === "ja" || backendLang === "en") {
+    // バックエンドで検出したOSの言語設定
+    initialLang = backendLang;
   } else {
-    initialLang = backendLang || "ja";
+    // フォールバック: ブラウザのnavigator.languageから検出
+    initialLang = getBrowserLang();
   }
 } catch (e) {
   console.warn("i18n initialization fallback:", e);
+  initialLang = getBrowserLang();
 }
+
+// 念のため以前の古いキャッシュキーがあれば削除
+try {
+  if (typeof localStorage !== "undefined") {
+    localStorage.removeItem("twsnmpfk_lang");
+  }
+} catch {}
 
 export let lang = initialLang;
 export const currentLang = writable<string>(initialLang);
@@ -48,9 +62,6 @@ export const changeLang = async (newLang: string) => {
   lang = newLang;
   currentLang.set(newLang);
   locale.set(newLang);
-  if (typeof localStorage !== "undefined") {
-    localStorage.setItem("twsnmpfk_lang", newLang);
-  }
   await SetLang(newLang).catch((err) => {
     console.error("SetLang error:", err);
   });

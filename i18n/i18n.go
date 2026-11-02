@@ -2,7 +2,10 @@
 package i18n
 
 import (
+	"bytes"
 	"log"
+	"os/exec"
+	"runtime"
 	"strings"
 
 	"github.com/Xuanwo/go-locale"
@@ -486,16 +489,62 @@ var transMap = map[string]map[string]string{
 }
 
 func init() {
-	t, err := locale.Detect()
-	if err != nil {
-		log.Println(err)
-	}
-	l := t.String()
-	a := strings.SplitN(l, "-", 2)
-	if len(a) == 2 {
-		lang = a[0]
-	}
+	lang = detectOSLang()
 	log.Printf("i18n init lang=%s", lang)
+}
+
+func detectOSLang() string {
+	if runtime.GOOS == "darwin" {
+		if l := detectDarwinLocale(); l != "" {
+			return l
+		}
+	}
+	t, err := locale.Detect()
+	if err == nil {
+		l := t.String()
+		a := strings.FieldsFunc(l, func(r rune) bool {
+			return r == '_' || r == '-'
+		})
+		if len(a) > 0 && a[0] != "" && a[0] != "C" && a[0] != "POSIX" {
+			return a[0]
+		}
+	}
+	return "en"
+}
+
+func detectDarwinLocale() string {
+	cmd := exec.Command("defaults", "read", "-g", "AppleLocale")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		content := strings.TrimSpace(out.String())
+		if content != "" {
+			a := strings.FieldsFunc(content, func(r rune) bool {
+				return r == '_' || r == '-'
+			})
+			if len(a) > 0 && a[0] != "" {
+				return a[0]
+			}
+		}
+	}
+	cmd = exec.Command("defaults", "read", "-g", "AppleLanguages")
+	out.Reset()
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		content := strings.TrimSpace(out.String())
+		for _, line := range strings.Split(content, "\n") {
+			line = strings.Trim(line, " \t\",()")
+			if line != "" {
+				a := strings.FieldsFunc(line, func(r rune) bool {
+					return r == '_' || r == '-'
+				})
+				if len(a) > 0 && a[0] != "" {
+					return a[0]
+				}
+			}
+		}
+	}
+	return ""
 }
 
 // SetLang sets the language.
