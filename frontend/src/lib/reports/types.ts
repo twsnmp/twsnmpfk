@@ -175,11 +175,11 @@ export interface TLSFlowEnt {
 
 export interface WinEventIDEnt {
   ID: string;
-  Computer: string;
+  Level: string;
   Provider: string;
   EventID: number;
+  Computer: string;
   Channel: string;
-  Level: string;
   Count: number;
   FirstTime: number;
   LastTime: number;
@@ -187,44 +187,53 @@ export interface WinEventIDEnt {
 
 export interface WinLogonEnt {
   ID: string;
-  Computer: string;
   Target: string;
-  SrcIP: string;
-  LogonType: number;
-  LogonCount: number;
-  FailedCount: number;
-  LogoffCount: number;
+  Computer: string;
+  IP: string;
+  Count: number;
+  Logon: number;
+  Logoff: number;
+  Failed: number;
+  LogonType?: Record<string, number>;
+  FailedCode?: Record<string, number>;
+  Score?: number;
+  Penalty?: number;
   FirstTime: number;
   LastTime: number;
-  Score: number;
 }
 
 export interface WinAccountEnt {
   ID: string;
-  Computer: string;
   Subject: string;
   Target: string;
-  Type: string;
+  Computer: string;
   Count: number;
+  Edit: number;
+  Password: number;
+  Other: number;
   FirstTime: number;
   LastTime: number;
 }
 
 export interface WinKerberosEnt {
   ID: string;
+  Target: string;
   Computer: string;
-  User: string;
+  IP: string;
   Service: string;
   TicketType: string;
   Count: number;
+  Failed: number;
+  Score?: number;
+  Penalty?: number;
   FirstTime: number;
   LastTime: number;
 }
 
 export interface WinPrivilegeEnt {
   ID: string;
-  Computer: string;
   Subject: string;
+  Computer: string;
   Count: number;
   FirstTime: number;
   LastTime: number;
@@ -232,20 +241,23 @@ export interface WinPrivilegeEnt {
 
 export interface WinProcessEnt {
   ID: string;
-  Computer: string;
   Process: string;
-  Subject: string;
-  Parent: string;
+  Computer: string;
   Count: number;
+  Start: number;
+  Exit: number;
+  LastSubject: string;
+  LastParent: string;
+  LastStatus: string;
   FirstTime: number;
   LastTime: number;
 }
 
 export interface WinTaskEnt {
   ID: string;
+  TaskName: string;
   Computer: string;
-  Task: string;
-  Account: string;
+  Subject: string;
   Count: number;
   FirstTime: number;
   LastTime: number;
