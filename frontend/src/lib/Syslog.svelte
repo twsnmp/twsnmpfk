@@ -44,6 +44,7 @@
   import { _ } from "svelte-i18n";
   import { get } from "svelte/store";
   import CodeJar from "./CodeJar.svelte";
+  import TimeRangeFilter from "./TimeRangeFilter.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
   import { copyText } from "svelte-copy";
@@ -933,76 +934,49 @@
   on:apply={onApplyAIAssist}
 />
 
-<Modal bind:open={showFilter} size="sm" dismissable={false} outsideclose={false} class="w-full">
-  <form class="flex flex-col space-y-4" action="#">
+<Modal bind:open={showFilter} size="md" dismissable={false} outsideclose={false} class="w-full">
+  <form class="flex flex-col space-y-4" action="#" onsubmit={(e) => { e.preventDefault(); showFilter = false; refresh(); }}>
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Syslog.Filter")}
     </h3>
+    <TimeRangeFilter bind:start={filter.Start} bind:end={filter.End} />
     <div class="grid gap-2 grid-cols-3">
-      <Label class="space-y-2 text-xs">
-        <span>{$_("EventLog.Start")}</span>
-        <Input
-          class="h-8"
-          type="datetime-local"
-          bind:value={filter.Start}
-          size="sm"
-        />
-      </Label>
-      <Label class="space-y-2 text-xs">
-        <span>{$_("EventLog.End")}</span>
-        <Input
-          class="h-8"
-          type="datetime-local"
-          bind:value={filter.End}
-          size="sm"
-        />
-      </Label>
-      <div class="flex">
-        <Button
-          class="!p-2 w-8 h-8 mt-6 ml-4"
-          color="red"
-          onclick={() => {
-            filter.Start = "";
-            filter.End = "";
-          }}
-        >
-          <Icon path={icons.mdiCancel} size={1} />
-        </Button>
-      </div>
-    </div>
-    <div class="grid gap-2 grid-cols-3">
-      <Label class="space-y-2 text-xs">
+      <Label class="space-y-1 text-xs">
         <span>{$_("Syslog.Level")}</span>
         <Select
+          classes={{ select: "h-9 py-1 text-xs" }}
           items={levelList}
           bind:value={filter.Severity}
           placeholder={$_("Syslog.SelectLevel")}
           size="sm"
         />
       </Label>
-      <Label class="space-y-2 text-xs">
+      <Label class="space-y-1 text-xs">
         <span>{$_("Syslog.Host")}</span>
         <CodeJar
-          style="padding: 6px;"
+          class="h-9 text-xs"
+          singleLine
           syntax="regex"
           {highlight}
           bind:value={filter.Host}
         />
       </Label>
-      <Label class="space-y-2 text-xs">
+      <Label class="space-y-1 text-xs">
         <span>{$_("Syslog.Tag")}</span>
         <CodeJar
-          style="padding: 6px;"
+          class="h-9 text-xs"
+          singleLine
           syntax="regex"
           {highlight}
           bind:value={filter.Tag}
         />
       </Label>
     </div>
-    <Label class="space-y-2 text-xs">
+    <Label class="space-y-1 text-xs">
       <span>{$_("Syslog.Message")}</span>
       <CodeJar
-        style="padding: 6px;"
+        class="h-9 text-xs"
+        singleLine
         syntax="regex"
         {highlight}
         bind:value={filter.Message}

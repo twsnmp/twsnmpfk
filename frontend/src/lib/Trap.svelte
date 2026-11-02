@@ -30,6 +30,7 @@
   import { _ } from "svelte-i18n";
   import { get } from "svelte/store";
   import CodeJar from "./CodeJar.svelte";
+  import TimeRangeFilter from "./TimeRangeFilter.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
   import { copyText } from "svelte-copy";
@@ -423,40 +424,19 @@
   on:apply={onApplyAIAssist}
 />
 
-<Modal bind:open={showFilter} size="sm" dismissable={false} outsideclose={false} class="w-full">
-  <form class="flex flex-col space-y-4" action="#">
+<Modal bind:open={showFilter} size="md" dismissable={false} outsideclose={false} class="w-full">
+  <form class="flex flex-col space-y-4" action="#" onsubmit={(e) => { e.preventDefault(); showFilter = false; refresh(); }}>
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Trap.Filter")}
     </h3>
-    <div class="grid gap-2 grid-cols-3">
-      <Label class="space-y-2 text-xs">
-        <span>{$_("EventLog.Start")}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.Start} size="sm" />
-      </Label>
-      <Label class="space-y-2 text-xs">
-        <span>{$_("EventLog.End")}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.End} size="sm" />
-      </Label>
-      <div class="flex">
-        <Button
-          class="!p-2 w-8 h-8 mt-6 ml-4"
-          color="red"
-          onclick={() => {
-            filter.Start = "";
-            filter.End = "";
-          }}
-        >
-          <Icon path={icons.mdiCancel} size={1} />
-        </Button>
-      </div>
-    </div>
-    <Label class="space-y-2 text-xs">
+    <TimeRangeFilter bind:start={filter.Start} bind:end={filter.End} />
+    <Label class="space-y-1 text-xs">
       <span>{$_("Trap.FromAddress")} </span>
-      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.From} />
+      <CodeJar class="h-9 text-xs" singleLine syntax="regex" {highlight} bind:value={filter.From} />
     </Label>
-    <Label class="space-y-2 text-xs">
+    <Label class="space-y-1 text-xs">
       <span>{$_("Trap.TrapType")}</span>
-      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Type} />
+      <CodeJar class="h-9 text-xs" singleLine syntax="regex" {highlight} bind:value={filter.Type} />
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton

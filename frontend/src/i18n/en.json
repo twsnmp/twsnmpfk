@@ -2333,5 +2333,19 @@
     "save": "Save",
     "edit": "Edit",
     "reload": "Reload"
+  },
+  "TimeRange": {
+    "TimeRange": "Time Range",
+    "Shortcuts": "Shortcuts",
+    "Last1h": "Last 1h",
+    "Last6h": "Last 6h",
+    "Last24h": "Last 24h",
+    "Today": "Today",
+    "Yesterday": "Yesterday",
+    "Last7d": "Last 7d",
+    "Last30d": "Last 30d",
+    "Clear": "Clear",
+    "Start": "Start Time",
+    "End": "End Time"
   }
 }

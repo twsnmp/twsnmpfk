@@ -27,6 +27,7 @@
   import { _ } from "svelte-i18n";
   import type { main } from "wailsjs/go/models";
   import CodeJar from "./CodeJar.svelte";
+  import TimeRangeFilter from "./TimeRangeFilter.svelte";
   import Prism from "prismjs";
   import "prismjs/components/prism-regex";
 
@@ -299,55 +300,35 @@
   </div>
 </Modal>
 
-<Modal bind:open={showFilter} size="sm" dismissable={false} outsideclose={false} class="w-full">
-  <form class="flex flex-col space-y-2" action="#">
+<Modal bind:open={showFilter} size="md" dismissable={false} outsideclose={false} class="w-full">
+  <form class="flex flex-col space-y-4" action="#" onsubmit={(e) => { e.preventDefault(); showFilter = false; refresh(); }}>
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("EventLog.Filter")}
     </h3>
-    <div class="grid gap-2 grid-cols-3">
-      <Label class="space-y-2 text-xs">
-        <span>{$_('EventLog.Start')}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.Start} size="sm" />
-      </Label>
-      <Label class="space-y-2 text-xs">
-        <span>{$_('EventLog.End')}</span>
-        <Input class="h-8" type="datetime-local" bind:value={filter.End} size="sm" />
-      </Label>
-      <div class="flex">
-        <Button
-          class="!p-2 w-8 h-8 mt-6 ml-4"
-          color="red"
-          onclick={() => {
-            filter.Start = "";
-            filter.End = "";
-          }}
-        >
-          <Icon path={icons.mdiCancel} size={1} />
-        </Button>
-      </div>
-    </div>
+    <TimeRangeFilter bind:start={filter.Start} bind:end={filter.End} />
     <div class="grid gap-2 grid-cols-2">
-      <Label class="space-y-2 text-xs">
+      <Label class="space-y-1 text-xs">
         <span>{$_("EventLog.Level")}</span>
         <Select
+          classes={{ select: "h-9 py-1 text-xs" }}
           items={levelList}
           bind:value={filter.Level}
           placeholder={$_("EventLog.SelectLevel")}
           size="sm"
         />
       </Label>
-      <Label class="space-y-2 text-xs">
+      <Label class="space-y-1 text-xs">
         <span>{$_("EventLog.Type")}</span>
-        <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.EventType}/>
+        <CodeJar class="h-9 text-xs" singleLine syntax="regex" {highlight} bind:value={filter.EventType}/>
       </Label>
     </div>
-    <Label class="space-y-2 text-xs">
+    <Label class="space-y-1 text-xs">
       <span>{$_("EventLog.NodeName")}</span>
-      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.NodeName}/>
+      <CodeJar class="h-9 text-xs" singleLine syntax="regex" {highlight} bind:value={filter.NodeName}/>
     </Label>
-    <Label class="space-y-2 text-xs">
+    <Label class="space-y-1 text-xs">
       <span>{$_("EventLog.Event")}</span>
-      <CodeJar style="padding: 6px;" syntax="regex" {highlight} bind:value={filter.Event}/>
+      <CodeJar class="h-9 text-xs" singleLine syntax="regex" {highlight} bind:value={filter.Event}/>
     </Label>
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton

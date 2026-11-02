@@ -1852,6 +1852,7 @@
               syntax="javascript"
               {highlight}
               catchTab={true}
+              resize="vertical"
               bind:value={locConf.Style}
             />
           </div>

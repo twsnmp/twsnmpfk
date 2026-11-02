@@ -18,6 +18,8 @@
     highlight?: (code: string, syntax?: string) => string;
     syntax?: string;
     value?: string;
+    resize?: "none" | "vertical" | "horizontal" | "both";
+    singleLine?: boolean;
   }
 
   let {
@@ -34,7 +36,9 @@
     withLineNumbers = undefined,
     highlight = undefined,
     syntax = undefined,
-    value = $bindable("")
+    value = $bindable(""),
+    resize = "none",
+    singleLine = false
   }: Props = $props();
 
   let editorElement: HTMLElement;
@@ -52,6 +56,11 @@
 
   function handleKeyDownCapture(e: KeyboardEvent) {
     if (e.isComposing || e.keyCode === 229) {
+      e.stopPropagation();
+      return;
+    }
+    if (singleLine && e.key === "Enter") {
+      e.preventDefault();
       e.stopPropagation();
     }
   }
@@ -79,6 +88,14 @@
 
     jar = CreateCodeJar(editorElement, wrapHighlight(hl, syn, wln), opts);
     
+    // Explicitly apply resize option (overriding codejar's default "vertical")
+    editorElement.style.resize = resize;
+    if (singleLine) {
+      editorElement.style.whiteSpace = "pre";
+      editorElement.style.overflowX = "auto";
+      editorElement.style.overflowY = "hidden";
+    }
+
     // Set initial value
     jar.updateCode(val);
 
@@ -160,6 +177,18 @@
     }
   });
 
+  $effect(() => {
+    // Re-apply resize and singleLine options if they change
+    if (editorElement) {
+      editorElement.style.resize = resize;
+      if (singleLine) {
+        editorElement.style.whiteSpace = "pre";
+        editorElement.style.overflowX = "auto";
+        editorElement.style.overflowY = "hidden";
+      }
+    }
+  });
+
   onDestroy(() => {
     destroyJar();
   });
@@ -167,7 +196,7 @@
 
 <pre
   bind:this={editorElement}
-  class="{syntax ? `language-${syntax}` : ''} {className}"
+  class="{syntax ? `language-${syntax}` : ''} {className} {singleLine ? 'single-line' : ''}"
   style={style ? style : ""}
 ><code class={syntax ? `language-${syntax}` : ''}>{#if highlight}{@html highlight(value, syntax)}{:else}{value}{/if}</code></pre>
 
@@ -177,10 +206,22 @@
     color: #111827 !important; /* text-gray-900 */
     border: 1px solid #d1d5db !important; /* border-gray-300 */
     border-radius: 0.5rem !important; /* rounded-lg */
-    padding: 0.5rem !important; /* p-2 */
-    font-size: 0.875rem !important; /* text-sm */
+    padding: 0.5rem; /* p-2 without !important so caller classes can override */
+    font-size: 0.875rem; /* text-sm without !important so caller classes can override */
     text-shadow: none !important;
     overflow: auto;
+    margin: 0 !important; /* Reset prism.css margin */
+    resize: none;
+    box-sizing: border-box;
+  }
+
+  pre[class*="language-"].single-line {
+    white-space: pre !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+    line-height: 1.25rem;
   }
 
   pre[class*="language-"]:focus {

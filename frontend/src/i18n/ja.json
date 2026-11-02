@@ -2326,5 +2326,19 @@
     "save": "保存",
     "edit": "編集",
     "reload": "更新"
+  },
+  "TimeRange": {
+    "TimeRange": "時間範囲",
+    "Shortcuts": "ショートカット",
+    "Last1h": "直近 1時間",
+    "Last6h": "直近 6時間",
+    "Last24h": "直近 24時間",
+    "Today": "今日",
+    "Yesterday": "昨日",
+    "Last7d": "直近 7日",
+    "Last30d": "直近 30日",
+    "Clear": "クリア",
+    "Start": "開始日時",
+    "End": "終了日時"
   }
 }

@@ -402,7 +402,7 @@
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Script")}</span>
-          <CodeJar syntax="javascript" {highlight} catchTab={true} bind:value={polling.Script}/>
+          <CodeJar syntax="javascript" {highlight} catchTab={true} resize="vertical" bind:value={polling.Script}/>
           {#if guide.scriptHelp}
             <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-normal font-normal">
               {guide.scriptHelp}
@@ -447,11 +447,11 @@
       </div>
       <Label class="space-y-2 text-xs">
         <span>{$_('Polling.FailAction')}</span>
-        <CodeJar syntax="twaction" {highlight} catchTab={true} bind:value={polling.FailAction}/>
+        <CodeJar syntax="twaction" {highlight} catchTab={true} resize="vertical" bind:value={polling.FailAction}/>
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_('Polling.RepairAction')}</span>
-        <CodeJar syntax="twaction" {highlight} catchTab={true} bind:value={polling.RepairAction}/>
+        <CodeJar syntax="twaction" {highlight} catchTab={true} resize="vertical" bind:value={polling.RepairAction}/>
       </Label>
       <div class="flex justify-end space-x-2 mr-2">
         <GradientButton
