@@ -149,6 +149,7 @@ func (s *Session) ProcessTwAgentMQTT(mr *MQTTRecord) bool {
 		}
 		if len(disks) > 0 {
 			info.Disks = disks
+			info.DiskPercent = maxDisk
 			info.DiskUsedPercent = maxDisk
 		}
 

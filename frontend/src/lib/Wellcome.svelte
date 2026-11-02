@@ -5,6 +5,7 @@
   import { Card, GradientButton, Spinner } from "flowbite-svelte";
   import { onMount, createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang, changeLang } from "../i18n/i18n";
   import { GetVersion, SelectDatastore } from "../../wailsjs/go/main/App";
   import { Quit } from "../../wailsjs/runtime/runtime";
   import Help from "./Help.svelte";
@@ -30,6 +31,11 @@
     } else {
       started = false;
     }
+  };
+
+  const toggleLang = () => {
+    const next = $currentLang === "ja" ? "en" : "ja";
+    changeLang(next);
   };
 </script>
 
@@ -97,6 +103,19 @@
         <Icon path={icons.mdiHelp} size={1} />
         <span>
           {$_("Wellcom.Help")}
+        </span>
+      </GradientButton>
+      <GradientButton
+        shadow
+        type="button"
+        size="xl"
+        color="purple"
+        class="ml-2"
+        onclick={toggleLang}
+      >
+        <Icon path={icons.mdiTranslate} size={1} />
+        <span>
+          {$currentLang === "ja" ? "English" : "日本語"}
         </span>
       </GradientButton>
     </div>

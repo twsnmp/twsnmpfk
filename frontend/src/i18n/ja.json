@@ -271,6 +271,7 @@
     "AILevel73": "100回に1回の確率",
     "AILevel62": "10回に1回の確率",
     "Map": "マップ",
+    "Language": "表示言語",
     "MapName": "マップ名",
     "PollingIntSec": "ポーリング間隔(秒)",
     "TimeoutSec": "タイムアウト(秒)",

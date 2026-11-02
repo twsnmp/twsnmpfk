@@ -84,6 +84,7 @@ func main() {
 
 	if lang != "" {
 		i18n.SetLang(lang)
+		datastore.HasLangParam = true
 	}
 
 	// Create an instance of the app structure

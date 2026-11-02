@@ -67,6 +67,7 @@ var (
 	ClientKey  string
 	// from Command Line
 	PingMode    string
+	HasLangParam bool
 	SyslogPort  int
 	TrapPort    int
 	NetFlowPort int

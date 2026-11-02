@@ -602,6 +602,10 @@ export function HasDatastore() {
   return window['go']['main']['App']['HasDatastore']();
 }
 
+export function HasLangParam() {
+  return window['go']['main']['App']['HasLangParam']();
+}
+
 export function HasUndoAutoLayout() {
   return window['go']['main']['App']['HasUndoAutoLayout']();
 }
@@ -784,6 +788,10 @@ export function SetBackImage(arg1) {
 
 export function SetDark(arg1) {
   return window['go']['main']['App']['SetDark'](arg1);
+}
+
+export function SetLang(arg1) {
+  return window['go']['main']['App']['SetLang'](arg1);
 }
 
 export function SetLogReportName(arg1, arg2, arg3) {

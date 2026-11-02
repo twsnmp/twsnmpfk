@@ -7,7 +7,6 @@
     NavUl,
     Button,
     Badge,
-    Tooltip,
   } from "flowbite-svelte";
   import {Icon} from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -43,6 +42,7 @@
   import Help from "./Help.svelte";
   import ReportView from "./reports/ReportView.svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang, changeLang } from "../i18n/i18n";
   import Location from "./Location.svelte";
   import type { datastore } from "wailsjs/go/models";
   import { setIconToList } from "./common";
@@ -116,7 +116,12 @@
       dark = e.classList.contains("dark");
       SetDark(dark);
     };
-    }
+  }
+
+  const toggleLang = () => {
+    const next = $currentLang === "ja" ? "en" : "ja";
+    changeLang(next);
+  };
 </script>
 
 <svelte:window onresize={() => (mainHeight = window.innerHeight - 82)} />
@@ -345,6 +350,14 @@
     {#if !latest}
       <Badge class="mr-0.5 h-8 text-xs px-2.5 py-1 whitespace-nowrap flex items-center justify-center border" color="red">{$_("Top.HasUpdate")}</Badge>
     {/if}
+    <Button
+      class="!px-2 !py-1 h-8 flex items-center justify-center shrink-0 text-xs font-semibold gap-1"
+      color="alternative"
+      onclick={toggleLang}
+    >
+      <Icon path={icons.mdiTranslate} size={0.9} />
+      <span class="text-[11px] font-bold">{$currentLang === "ja" ? "EN" : "JA"}</span>
+    </Button>
     <Button class="!p-1.5 h-8 w-8 flex items-center justify-center shrink-0" color="alternative" onclick={toggleDark}>
       {#if dark}
         <Icon path={icons.mdiWeatherSunny} size={1} />

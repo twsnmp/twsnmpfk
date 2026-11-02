@@ -271,6 +271,21 @@ func (a *App) GetLang() string {
 	return i18n.GetLang()
 }
 
+// HasLangParam returns true if lang is specified by command line or ini.
+func (a *App) HasLangParam() bool {
+	return datastore.HasLangParam
+}
+
+// SetLang sets the current language.
+func (a *App) SetLang(l string) {
+	i18n.SetLang(l)
+	if dataStorePath != "" {
+		if err := datastore.SetLang(l); err != nil {
+			log.Printf("SetLang err=%v", err)
+		}
+	}
+}
+
 // IsDark returns the state of Dark mode.
 func (a *App) IsDark() bool {
 	return datastore.Dark

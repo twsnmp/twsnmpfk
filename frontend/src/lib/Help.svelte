@@ -10,7 +10,7 @@
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
-  import { lang } from "../i18n/i18n";
+  import { currentLang } from "../i18n/i18n";
   import { BrowserOpenURL } from "../../wailsjs/runtime";
   import { marked } from "marked";
   import DOMPurify from "dompurify";
@@ -30,7 +30,7 @@
   const fetchHelp = async () => {
     if (!page) return;
     try {
-      const response = await fetch(`help/${lang}/${page}.md`);
+      const response = await fetch(`help/${$currentLang}/${page}.md`);
       if (response.ok) {
         const text = await response.text();
         markdownContent = text
@@ -44,7 +44,7 @@
     }
   };
 
-  $: if (show && page) {
+  $: if (show && page && $currentLang) {
     fetchHelp();
   }
 

@@ -308,6 +308,8 @@ export function GetVersion():Promise<string>;
 
 export function HasDatastore():Promise<boolean>;
 
+export function HasLangParam():Promise<boolean>;
+
 export function HasUndoAutoLayout():Promise<boolean>;
 
 export function HasValidNotifyOAuth2Token(arg1:datastore.NotifyConfEnt):Promise<boolean>;
@@ -399,6 +401,8 @@ export function SendFeedback(arg1:string):Promise<boolean>;
 export function SetBackImage(arg1:datastore.BackImageEnt):Promise<boolean>;
 
 export function SetDark(arg1:boolean):Promise<void>;
+
+export function SetLang(arg1:string):Promise<void>;
 
 export function SetLogReportName(arg1:string,arg2:string,arg3:string):Promise<void>;
 

@@ -61,6 +61,7 @@
   import LogMigrationDialog from "./LogMigrationDialog.svelte";
   import ModelManagerDialog from "./ModelManagerDialog.svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang, changeLang } from "../i18n/i18n";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import MibTree from "./MIBTree.svelte";
@@ -151,6 +152,12 @@
     { name: "2894x4093 A4P", value: 1 },
     { name: "4093x2894 A4L", value: 2 },
   ];
+  const languageList = [
+    { name: "日本語", value: "ja" },
+    { name: "English", value: "en" },
+  ];
+  let selectedLang = $currentLang;
+  $: selectedLang = $currentLang;
   const notifyLevelList = [
     { name: $_("Config.None"), value: "none" },
     { name: $_("Config.Warn"), value: "warn" },
@@ -863,9 +870,9 @@
         </div>
       {/snippet}
         <form class="flex flex-col gap-2" action="#">
-          <!-- 行1: マップ名 / マップサイズ / アイコンサイズ -->
-          <div class="grid gap-2 grid-cols-5">
-            <Label class="col-span-3 space-y-1 text-xs">
+          <!-- 行1: マップ名 / 言語 / マップサイズ / アイコンサイズ -->
+          <div class="grid gap-2 grid-cols-6">
+            <Label class="col-span-2 space-y-1 text-xs">
               <span>{$_("Config.MapName")}</span>
               <Input
                 class="h-8"
@@ -873,6 +880,19 @@
                 placeholder={$_("Config.MapName")}
                 required
                 size="sm"
+              />
+            </Label>
+            <Label class="space-y-1 text-xs">
+              <span>{$_("Config.Language")}</span>
+              <Select
+                items={languageList}
+                bind:value={selectedLang}
+                size="sm"
+                onchange={() => {
+                  if (selectedLang !== $currentLang) {
+                    changeLang(selectedLang);
+                  }
+                }}
               />
             </Label>
             <Label class="space-y-1 text-xs">
@@ -884,7 +904,7 @@
                 size="sm"
               />
             </Label>
-            <Label class="space-y-1 text-xs">
+            <Label class="col-span-2 space-y-1 text-xs">
               {$_("Config.IconSize")}
               <Range size="sm" min="1" max="5" bind:value={mapConf.IconSize} />
             </Label>

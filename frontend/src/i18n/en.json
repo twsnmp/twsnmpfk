@@ -302,6 +302,7 @@
     "MailTo": "Mail to",
     "MailToAddress": "Mail to address",
     "Map": "Map",
+    "Language": "Language",
     "MapName": "Map Name",
     "NoCheckCert": "Don't check server certificate",
     "None": "Disable",

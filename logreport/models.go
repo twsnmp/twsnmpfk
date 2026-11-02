@@ -573,6 +573,7 @@ type TwAgentInfoEnt struct {
 	NodeID          string             `json:"NodeID"`
 	NodeName        string             `json:"NodeName"`
 	OS              string             `json:"OS"`
+	Arch            string             `json:"Arch"`
 	Version         string             `json:"Version"`
 	Status          string             `json:"Status"` // "online" | "offline"
 	Protocols       []string           `json:"Protocols"`
@@ -585,12 +586,14 @@ type TwAgentInfoEnt struct {
 	MemUsedBytes    uint64             `json:"MemUsedBytes"`
 	MemPercent      float64            `json:"MemPercent"`
 	SwapUsedBytes   uint64             `json:"SwapUsedBytes"`
-	DiskUsedPercent float64            `json:"DiskUsedPercent"`
+	DiskPercent     float64            `json:"DiskPercent"`
+	DiskUsedPercent float64            `json:"DiskUsedPercent,omitempty"`
 	RxMbps          float64            `json:"RxMbps"`
 	TxMbps          float64            `json:"TxMbps"`
 	Disks           []TwAgentDiskEnt   `json:"Disks,omitempty"`
 	Interfaces      []TwAgentIfaceEnt  `json:"Interfaces,omitempty"`
 	Samples         []TwAgentSampleEnt `json:"Samples,omitempty"`
+	History         []TwAgentSampleEnt `json:"History,omitempty"`
 	AlertCount      int                `json:"AlertCount"`
 	ThreatCount     int                `json:"ThreatCount"`
 	FIMCount        int                `json:"FIMCount"`

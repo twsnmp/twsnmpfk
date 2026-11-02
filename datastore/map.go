@@ -167,6 +167,12 @@ func loadConf() error {
 		if v != nil && string(v) == "yes" {
 			Dark = true
 		}
+		v = b.Get([]byte("lang"))
+		if v != nil && string(v) != "" {
+			if !HasLangParam {
+				i18n.SetLang(string(v))
+			}
+		}
 		return nil
 	})
 	if err == nil && bSaveConf {
@@ -302,6 +308,23 @@ func SetDark(dark bool) error {
 			b.Delete([]byte("dark"))
 		}
 		return nil
+	})
+}
+
+// SetLang sets the language in DB.
+func SetLang(lang string) error {
+	if db == nil {
+		return ErrDBNotOpen
+	}
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("config"))
+		if b == nil {
+			return fmt.Errorf("bucket config is nil")
+		}
+		if lang != "" {
+			return b.Put([]byte("lang"), []byte(lang))
+		}
+		return b.Delete([]byte("lang"))
 	})
 }
 
