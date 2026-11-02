@@ -152,15 +152,15 @@
       <div class="grid gap-4 mb-4 md:grid-cols-4">
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Name")}</span>
-          <Input class="h-8" bind:value={node.Name} size="sm" />
+          <Input class="h-9 text-xs" bind:value={node.Name} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.IPAddress")}</span>
-          <Input class="h-8" bind:value={node.IP} size="sm" />
+          <Input class="h-9 text-xs" bind:value={node.IP} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_('Node.MAC')}</span>
-          <Input class="h-8" bind:value={node.MAC} size="sm" />
+          <Input class="h-9 text-xs" bind:value={node.MAC} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span> {$_("Node.AddressMode")} </span>
@@ -168,7 +168,7 @@
             items={addrModeList}
             bind:value={node.AddrMode}
             placeholder={$_("Node.SelectAddressMode")}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
           />
         </Label>
       </div>
@@ -176,6 +176,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_('Config.IconFilter')}</span>
           <Input
+            class="h-9 text-xs"
             bind:value={filterIcon}
             onchange={filterIconList}
             size="sm"
@@ -187,7 +188,7 @@
             items={filteredIconList}
             bind:value={node.Icon}
             placeholder={$_("Node.SelectIcon")}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
           />
         </Label>
         <div class="mt-5 ml-5">
@@ -203,7 +204,7 @@
             bind:value={node.Image}
             onchange={selectImageIcon}
             placeholder={$_('Node.SelectImageIcon')}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
           />
         </Label>
         <div class="mt-5 ml-5">
@@ -212,72 +213,72 @@
           {/if}
         </div>
       </div>
-      <div class="grid gap-4 md:grid-cols-5">
+      <div class="grid gap-4 mb-4 md:grid-cols-5">
         <Label class="space-y-2 text-xs">
           <span> {$_("Node.SNMPMode")} </span>
           <Select
             items={snmpModeList}
             bind:value={node.SnmpMode}
             placeholder={$_("Node.SelectSnmpMode")}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
           />
         </Label>
         {#if node.SnmpMode == "v1" || node.SnmpMode == "v2c"}
           <Label class="space-y-2 text-xs">
             <span>SNMP Community</span>
-            <Input class="h-8" bind:value={node.Community} placeholder="public" size="sm" />
+            <Input class="h-9 text-xs" bind:value={node.Community} placeholder="public" size="sm" />
           </Label>
         {:else}
           <div></div>
         {/if}
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.User")}</span>
-          <Input class="h-8" bind:value={node.User} size="sm" />
+          <Input class="h-9 text-xs" bind:value={node.User} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Password")}</span>
-          <Input class="h-8" type="password" bind:value={node.Password} size="sm" />
+          <Input class="h-9 text-xs" type="password" bind:value={node.Password} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.SnmpPort")}</span>
-          <Input class="h-8" type="number" min="0" max="65535" bind:value={node.SnmpPort} placeholder="161" size="sm" />
+          <Input class="h-9 text-xs" type="number" min="0" max="65535" bind:value={node.SnmpPort} placeholder="161" size="sm" />
         </Label>
     </div>
-      <div class="grid gap-4 md:grid-cols-4">
+      <div class="grid gap-4 mb-4 md:grid-cols-4">
         <Label class="space-y-2 text-xs">
           <span>gNMI Port</span>
-          <Input class="h-8" bind:value={node.GNMIPort} size="sm" />
+          <Input class="h-9 text-xs" bind:value={node.GNMIPort} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>gNMI Encoding</span>
-          <Input class="h-8" bind:value={node.GNMIEncoding} size="sm" />
+          <Input class="h-9 text-xs" bind:value={node.GNMIEncoding} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_('Node.GNMIUser')}</span>
-          <Input class="h-8" bind:value={node.GNMIUser} size="sm" />
+          <Input class="h-9 text-xs" bind:value={node.GNMIUser} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_('Node.GNMIPassword')}</span>
-          <Input class="h-8" type="password" bind:value={node.GNMIPassword} size="sm" />
+          <Input class="h-9 text-xs" type="password" bind:value={node.GNMIPassword} size="sm" />
         </Label>
       </div>
       <Label class="space-y-2 text-xs">
         <span>URL</span>
-        <Input class="h-8" bind:value={node.URL} placeholder="URL" size="sm" />
+        <Input class="h-9 text-xs" bind:value={node.URL} placeholder="URL" size="sm" />
       </Label>
       <div class="grid gap-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>SSH{$_("Node.User")}</span>
-          <Input class="h-8" bind:value={node.SSHUser} size="sm" />
+          <Input class="h-9 text-xs" bind:value={node.SSHUser} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.PublicKey")}</span>
-          <Input class="h-8" bind:value={node.PublicKey} size="sm" />
+          <Input class="h-9 text-xs" bind:value={node.PublicKey} size="sm" />
         </Label>
       </div>
       <Label class="space-y-2">
         <span>{$_("Node.Descr")}</span>
-        <Input class="h-8" bind:value={node.Descr} size="sm" />
+        <Input class="h-9 text-xs" bind:value={node.Descr} size="sm" />
       </Label>
       <div class="flex justify-end space-x-2 mr-2">
         {#if node && node.ID}

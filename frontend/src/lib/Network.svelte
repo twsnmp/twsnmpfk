@@ -318,11 +318,11 @@
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Name")}</span>
-          <Input class="h-8" bind:value={network.Name} size="sm" />
+          <Input class="h-9 text-xs" bind:value={network.Name} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.IPAddress")}</span>
-          <Input class="h-8" bind:value={network.IP} size="sm" />
+          <Input class="h-9 text-xs" bind:value={network.IP} size="sm" />
         </Label>
       </div>
       {#if !id}
@@ -335,7 +335,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_('Network.AllPort')}</span>
             <Input
-              class="h-8 w-24 text-right"
+              class="h-9 w-24 text-right text-xs"
               type="number"
               min="5"
               max="100"
@@ -346,7 +346,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("Network.HPorts")}</span>
             <Input
-              class="h-8 w-24 text-right"
+              class="h-9 w-24 text-right text-xs"
               type="number"
               min="5"
               max="100"
@@ -360,7 +360,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("Network.HPorts")}</span>
             <Input
-              class="h-8 w-24 text-right"
+              class="h-9 w-24 text-right text-xs"
               type="number"
               min="5"
               max="100"
@@ -386,14 +386,14 @@
               items={snmpModeList}
               bind:value={network.SnmpMode}
               placeholder={$_("Node.SelectSnmpMode")}
-              size="sm"
+              classes={{ select: "h-9 py-1 text-xs" }}
             />
           </Label>
           {#if network.SnmpMode == "v1" || network.SnmpMode == "v2c"}
             <Label class="space-y-2 text-xs">
               <span>SNMP Community</span>
               <Input
-                class="h-8"
+                class="h-9 text-xs"
                 bind:value={network.Community}
                 placeholder="public"
                 size="sm"
@@ -403,27 +403,27 @@
           {:else}
             <Label class="space-y-2 text-xs">
               <span>SNMP{$_("Node.User")}</span>
-              <Input class="h-8" bind:value={network.User} size="sm" />
+              <Input class="h-9 text-xs" bind:value={network.User} size="sm" />
             </Label>
             <Label class="space-y-2 text-xs">
               <span>SNMP{$_("Node.Password")}</span>
-              <Input class="h-8" type="password" bind:value={network.Password} size="sm" />
+              <Input class="h-9 text-xs" type="password" bind:value={network.Password} size="sm" />
             </Label>
           {/if}
           <Label class="space-y-2 text-xs">
             <span>{$_("Node.SnmpPort")}</span>
-            <Input class="h-8" type="number" min="0" max="65535" bind:value={network.SnmpPort} placeholder="161" size="sm" />
+            <Input class="h-9 text-xs" type="number" min="0" max="65535" bind:value={network.SnmpPort} placeholder="161" size="sm" />
           </Label>
         </div>
       {/if}
       <div class="grid gap-2 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>URL</span>
-          <Input class="h-8" bind:value={network.URL} placeholder="URL" size="sm" />
+          <Input class="h-9 text-xs" bind:value={network.URL} placeholder="URL" size="sm" />
        </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Node.Descr")}</span>
-          <Input class="h-8" bind:value={network.Descr} size="sm" />
+          <Input class="h-9 text-xs" bind:value={network.Descr} size="sm" />
         </Label>
       </div>
       <div class="m-5 grow">
@@ -597,25 +597,25 @@
   {/if}
 </Modal>
 
-<Modal bind:open={showEditPort} size="sm" dismissable={false} outsideclose={false} class="w-full">
+<Modal bind:open={showEditPort} size="md" dismissable={false} outsideclose={false} class="w-full">
   <form class="flex flex-col space-y-4" action="#">
     <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
       {$_("Network.EditPort")}
     </h3>
     <Label class="space-y-2 text-xs">
       <span>{$_("Node.Name")}</span>
-      <Input class="h-8" bind:value={editPort.Name} size="sm" />
+      <Input class="h-9 text-xs" bind:value={editPort.Name} size="sm" />
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("NodeList.Polling")}</span>
-      <Input class="h-8" bind:value={editPort.Polling} size="sm" />
+      <Input class="h-9 text-xs" bind:value={editPort.Polling} size="sm" />
     </Label>
 
     <div class="grid gap-2 grid-cols-2">
       <Label class="space-y-2 text-xs">
         <span>X</span>
         <Input
-          class="h-8 w-24 text-right"
+          class="h-9 w-24 text-right text-xs"
           type="number"
           min="0"
           max="100"
@@ -626,7 +626,7 @@
       <Label class="space-y-2 text-xs">
         <span>Y</span>
         <Input
-          class="h-8 w-24 text-right"
+          class="h-9 w-24 text-right text-xs"
           type="number"
           min="0"
           max="100"

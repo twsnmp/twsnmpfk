@@ -890,6 +890,7 @@
       <div class="flex-auto">
         <Search
           size="sm"
+          class="!h-9 text-xs"
           bind:value={name}
           placeholder={$_("MIBBrowser.ObjectName")}
           onkeydown={(e) => {
@@ -904,7 +905,7 @@
         shadow
         color="blue"
         size="xs"
-        class="shrink-0"
+        class="!p-0 w-9 h-9 shrink-0 flex items-center justify-center"
         onclick={() => {
           showMIBTree = true;
         }}
@@ -913,7 +914,8 @@
       </GradientButton>
       <Select
         size="sm"
-        class="w-64 shrink-0"
+        class="!h-9 text-xs w-64 shrink-0"
+        classes={{ select: "h-9 py-1 text-xs" }}
         items={history}
         bind:value={selected}
         placeholder={$_("MIBBrowser.History")}
@@ -1361,27 +1363,27 @@
       <Label class="col-span-3 space-y-2 text-xs">
         <span>{$_("MIBBrowser.ObjectName")}</span>
         <Input
-          class="h-8"
+          class="h-9 text-xs"
           bind:value={setName}
           placeholder={$_("MIBBrowser.ObjectName")}
           required
           size="sm"
         />
       </Label>
-      <Label>
-        {$_("MIBBrowser.Type")}
+      <Label class="space-y-2 text-xs">
+        <span>{$_("MIBBrowser.Type")}</span>
         <Select
           items={setTypeList}
           bind:value={setType}
           placeholder={$_("MIBBrowser.Type")}
-          size="sm"
+          classes={{ select: "h-9 py-1 text-xs" }}
         />
       </Label>
     </div>
     <Label class="space-y-2 text-xs">
       <span>{$_("MIBBrowser.Value")}</span>
       <Input
-        class="h-8"
+        class="h-9 text-xs"
         bind:value={setValue}
         placeholder={$_("MIBBrowser.Value")}
         required

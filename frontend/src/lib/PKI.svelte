@@ -273,12 +273,12 @@
         {/if}
         <Label class="space-y-2 text-xs">
           <span>{$_("PKI.Name")}</span>
-          <Input class="h-8" bind:value={caReq.Name} size="sm" />
+          <Input class="h-9 text-xs" bind:value={caReq.Name} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("PKI.DNSName")}</span>
           <Input
-            class="h-8"
+            class="h-9 text-xs"
             bind:value={caReq.SANs}
             placeholder="SANs"
             size="sm"
@@ -287,7 +287,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("PKI.ACMEURL")}</span>
           <Input
-            class="h-8"
+            class="h-9 text-xs"
             bind:value={caReq.AcmeBaseURL}
             placeholder="https://<host|ip>:port"
             size="sm"
@@ -296,7 +296,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("PKI.HTTPURL")}</span>
           <Input
-            class="h-8"
+            class="h-9 text-xs"
             bind:value={caReq.HttpBaseURL}
             placeholder="http://<host|ip>:port"
             size="sm"
@@ -309,13 +309,13 @@
               items={keyTypeList}
               bind:value={caReq.RootCAKeyType}
               placeholder=""
-              size="sm"
+              classes={{ select: "h-9 py-1 text-xs" }}
             />
           </Label>
           <Label class="space-y-2 text-xs">
             <span>{$_("PKI.CATerm")}</span>
             <Input
-              class="h-8 w-24 text-right"
+              class="h-9 w-24 text-right text-xs"
               type="number"
               min="1"
               max="100"
@@ -326,7 +326,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("PKI.CRLInterval")}</span>
             <Input
-              class="h-8 w-24 text-right"
+              class="h-9 w-24 text-right text-xs"
               type="number"
               min="1"
               max="96"
@@ -337,7 +337,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("PKI.CertTerm")}</span>
             <Input
-              class="h-8 w-24 text-right"
+              class="h-9 w-24 text-right text-xs"
               type="number"
               min="1"
               max="87600"
@@ -348,7 +348,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("PKI.HTTPPort")}</span>
             <Input
-              class="h-8 w-24 text-right"
+              class="h-9 w-24 text-right text-xs"
               type="number"
               min="1"
               max="65534"
@@ -359,7 +359,7 @@
           <Label class="space-y-2 text-xs">
             <span>{$_("PKI.ACMEPort")}</span>
             <Input
-              class="h-8 w-24 text-right"
+              class="h-9 w-24 text-right text-xs"
               type="number"
               min="1"
               max="65534"
@@ -477,7 +477,7 @@
 
 <Modal
   bind:open={showPKIControlDialog}
-  size="sm"
+  size="md"
   dismissable={false}
   outsideclose={false}
   class="w-full"
@@ -531,7 +531,7 @@
     <Label class="space-y-2 text-xs">
       <span>{$_("PKI.ACMEURL")}</span>
       <Input
-        class="h-8"
+        class="h-9 text-xs"
         bind:value={pkiControl.AcmeBaseURL}
         placeholder="https://<host|ip>:port"
         size="sm"
@@ -541,7 +541,7 @@
       <Label class="space-y-2 text-xs">
         <span>{$_("PKI.CRLInterval")}</span>
         <Input
-          class="h-8 w-24 text-right"
+          class="h-9 w-24 text-right text-xs"
           type="number"
           min="1"
           max="96"
@@ -552,7 +552,7 @@
       <Label class="space-y-2 text-xs">
         <span>{$_("PKI.CertTerm")}</span>
         <Input
-          class="h-8 w-24 text-right"
+          class="h-9 w-24 text-right text-xs"
           type="number"
           min="1"
           max="87600"
@@ -590,7 +590,7 @@
 
 <Modal
   bind:open={showCreateCSRDialog}
-  size="sm"
+  size="md"
   dismissable={false}
   outsideclose={false}
   class="w-full"
@@ -605,39 +605,39 @@
         items={keyTypeList}
         bind:value={csrReq.KeyType}
         placeholder=""
-        size="sm"
+        classes={{ select: "h-9 py-1 text-xs" }}
       />
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("PKI.CN")}</span>
-      <Input class="h-8" bind:value={csrReq.CommonName} size="sm" />
+      <Input class="h-9 text-xs" bind:value={csrReq.CommonName} size="sm" />
     </Label>
     <Label class="space-y-2 text-xs">
       <span>{$_("PKI.SANs")}</span>
-      <Input class="h-8" bind:value={csrReq.SANs} size="sm" />
+      <Input class="h-9 text-xs" bind:value={csrReq.SANs} size="sm" />
     </Label>
     <div class="grid gap-4 mb-4 grid-cols-2">
       <Label class="space-y-2 text-xs">
         <span>{$_("PKI.O")}</span>
-        <Input class="h-8" bind:value={csrReq.Organization} size="sm" />
+        <Input class="h-9 text-xs" bind:value={csrReq.Organization} size="sm" />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("PKI.OU")}</span>
-        <Input class="h-8" bind:value={csrReq.OrganizationalUnit} size="sm" />
+        <Input class="h-9 text-xs" bind:value={csrReq.OrganizationalUnit} size="sm" />
       </Label>
     </div>
     <div class="grid gap-4 mb-4 grid-cols-3">
       <Label class="space-y-2 text-xs">
         <span>{$_("PKI.C")}</span>
-        <Input class="h-8" bind:value={csrReq.Country} size="sm" />
+        <Input class="h-9 text-xs" bind:value={csrReq.Country} size="sm" />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("PKI.ST")}</span>
-        <Input class="h-8" bind:value={csrReq.Province} size="sm" />
+        <Input class="h-9 text-xs" bind:value={csrReq.Province} size="sm" />
       </Label>
       <Label class="space-y-2 text-xs">
         <span>{$_("PKI.L")}</span>
-        <Input class="h-8" bind:value={csrReq.Locality} size="sm" />
+        <Input class="h-9 text-xs" bind:value={csrReq.Locality} size="sm" />
       </Label>
     </div>
   </form>

@@ -1262,7 +1262,7 @@
     <Label class="space-y-2 text-xs">
       <span>{$_("Map.GridSize")} </span>
       <Input
-        class="h-8 w-24 text-right"
+        class="h-9 w-24 text-right text-xs"
         type="number"
         min={20}
         max={120}
@@ -1315,7 +1315,7 @@
 
 <Modal
   bind:open={showEditBackImage}
-  size="sm"
+  size="md"
   dismissable={false}
   outsideclose={false}
   class="w-full"
@@ -1328,7 +1328,7 @@
       <Label class="space-y-2 text-xs">
         <span>X</span>
         <Input
-          class="h-8 w-24 text-right"
+          class="h-9 w-24 text-right text-xs"
           type="number"
           min={0}
           max={2000}
@@ -1339,7 +1339,7 @@
       <Label class="space-y-2 text-xs">
         <span>Y</span>
         <Input
-          class="h-8 w-24 text-right"
+          class="h-9 w-24 text-right text-xs"
           type="number"
           min={0}
           max={2000}
@@ -1352,8 +1352,8 @@
       <Label class="space-y-2 text-xs">
         <span>{$_("DrawItem.Width")}</span>
         <Input
-        class="h-8 w-24 text-right"
-        type="number"
+          class="h-9 w-24 text-right text-xs"
+          type="number"
           min={10}
           max={1000}
           bind:value={backImage.Width}
@@ -1363,7 +1363,7 @@
       <Label class="space-y-2 text-xs">
         <span>{$_("DrawItem.Height")}</span>
         <Input
-          class="h-8 w-24 text-right"
+          class="h-9 w-24 text-right text-xs"
           type="number"
           min={10}
           max={1000}
@@ -1374,7 +1374,7 @@
     </div>
     <GradientButton
       shadow
-      class="h-8 mt-6 w-20"
+      class="h-9 w-24 flex items-center justify-center gap-1 text-xs"
       type="button"
       size="xs"
       color="blue"

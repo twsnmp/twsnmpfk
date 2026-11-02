@@ -261,13 +261,13 @@
               items={nodeList}
               bind:value={polling.NodeID}
               placeholder={$_("Polling.SelectNode")}
-              size="sm"
+              classes={{ select: "h-9 py-1 text-xs" }}
             />
           </Label>
         {/if}
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Name")}</span>
-          <Input class="h-8" bind:value={polling.Name} required size="sm" />
+          <Input class="h-9 text-xs" bind:value={polling.Name} required size="sm" />
         </Label>
       </div>
       <div class="grid gap-4 mb-4 grid-cols-4">
@@ -277,7 +277,7 @@
             items={levelList}
             bind:value={polling.Level}
             placeholder={$_("Polling.SelectLevel")}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
           />
         </Label>
         <Label class="space-y-2 text-xs">
@@ -286,7 +286,7 @@
             items={typeList}
             bind:value={polling.Type}
             placeholder={$_("Polling.SelectPollingType")}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
             disabled={pollingID != ""}
           />
         </Label>
@@ -297,11 +297,11 @@
               items={currentModes}
               bind:value={polling.Mode}
               placeholder={$_("Polling.SelectMode")}
-              size="sm"
+              classes={{ select: "h-9 py-1 text-xs" }}
             />
           {:else}
             <Input
-              class="h-8"
+              class="h-9 text-xs"
               bind:value={polling.Mode}
               placeholder={$_("Polling.NoModeRequired")}
               size="sm"
@@ -314,7 +314,7 @@
             items={logModeList}
             bind:value={polling.LogMode}
             placeholder={$_("Polling.SelectLogMode")}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
           />
         </Label>
       </div>
@@ -322,7 +322,7 @@
           <Label class="space-y-2 text-xs">
           <span>{$_('Polling.MqttURL')}</span>
           <Input
-            class="h-8"
+            class="h-9 text-xs"
             bind:value={polling.MqttURL}
             placeholder="tcp://localhost:1883"
             size="sm"
@@ -331,7 +331,7 @@
           <Label class="space-y-2 text-xs">
           <span>{$_('Polling.MqttTopic')}</span>
           <Input
-            class="h-8"
+            class="h-9 text-xs"
             bind:value={polling.MqttTopic}
             placeholder="twsnmpfk/polling"
             size="sm"
@@ -340,7 +340,7 @@
           <Label class="space-y-2 text-xs">
           <span>{$_('Polling.MqttCols')}</span>
           <Input
-            class="h-8"
+            class="h-9 text-xs"
             bind:value={polling.MqttCols}
             size="sm"
           />
@@ -354,14 +354,14 @@
             items={aiModeList}
             bind:value={polling.AIMode}
             placeholder={$_('Polling.SelectAIMode')}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
           />
         </Label>
 
         <Label class="space-y-2 text-xs">
           <span>{$_('Polling.VectorCols')}</span>
           <Input
-            class="h-8"
+            class="h-9 text-xs"
             bind:value={polling.VectorCols}
             placeholder={$_('Polling.VectorColsHelp')}
             size="sm"
@@ -373,7 +373,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Params")}</span>
           <Input
-            class="h-8"
+            class="h-9 text-xs"
             bind:value={polling.Params}
             placeholder={guide.placeholder || $_("Polling.Params")}
             color={paramsColor}
@@ -387,7 +387,7 @@
         </Label>
         <Label class="space-y-2 text-xs" color={filterColor}>
           <span>{$_("Polling.Filter")}</span>
-          <CodeJar syntax="regex" {highlight} bind:value={polling.Filter}/>
+          <CodeJar syntax="regex" {highlight} class="h-9 text-xs" singleLine bind:value={polling.Filter}/>
           {#if guide.filterHelp}
             <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-normal font-normal">
               {guide.filterHelp}
@@ -398,7 +398,7 @@
       <div class="grid gap-4 mb-4 grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.GrokPat")}</span>
-          <CodeJar syntax="grok" {highlight} bind:value={polling.Extractor}/>
+          <CodeJar syntax="grok" {highlight} class="h-9 text-xs" singleLine bind:value={polling.Extractor}/>
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Script")}</span>
@@ -414,7 +414,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.IntSec")}</span>
           <Input
-            class="h-8 w-24 text-right"
+            class="h-9 w-24 text-right text-xs"
             type="number"
             min="5"
             max="86400"
@@ -425,7 +425,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.TimeoutSec")}</span>
           <Input
-            class="h-8 w-24 text-right"
+            class="h-9 w-24 text-right text-xs"
             type="number"
             min="0"
             max="3600"
@@ -436,7 +436,7 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Polling.Retry")}</span>
           <Input
-            class="h-8 w-24 text-right"
+            class="h-9 w-24 text-right text-xs"
             type="number"
             min="0"
             max="50"

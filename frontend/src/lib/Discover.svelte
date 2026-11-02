@@ -323,18 +323,18 @@
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span>{$_("Discover.StartIP")}</span>
-          <Input class="h-8" bind:value={conf.StartIP} size="sm" />
+          <Input class="h-9 text-xs" bind:value={conf.StartIP} size="sm" />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Discover.EndIP")}</span>
-          <Input class="h-8" bind:value={conf.EndIP} size="sm" />
+          <Input class="h-9 text-xs" bind:value={conf.EndIP} size="sm" />
         </Label>
       </div>
       <div class="grid gap-4 mb-4 md:grid-cols-2">
         <Label class="space-y-2 text-xs">
           <span> {$_("Discover.Timeout")} </span>
           <Input
-            class="h-8 w-24 text-right"
+            class="h-9 w-24 text-right text-xs"
             type="number"
             min={1}
             max={120}
@@ -346,7 +346,7 @@
         <Label class="space-y-2 text-xs">
           <span> {$_("Discover.Retry")} </span>
           <Input
-            class="h-8 w-24 text-right"
+            class="h-9 w-24 text-right text-xs"
             type="number"
             min={0}
             max={100}
@@ -380,20 +380,18 @@
         <Label class="space-y-2 text-xs">
           <span>{$_("Discover.AutoLine")}</span>
           <Select
-            class="h-8 text-xs"
             items={[
               { value: 0, name: $_("Discover.AutoLineNone") },
               { value: 1, name: $_("Discover.AutoLineStrict") },
               { value: 2, name: $_("Discover.AutoLineSpeculative") },
             ]}
             bind:value={conf.AutoLine}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
           />
         </Label>
         <Label class="space-y-2 text-xs">
           <span>{$_("Discover.AutoLayout")}</span>
           <Select
-            class="h-8 text-xs"
             items={[
               { value: 0, name: $_("Discover.AutoLayoutNone") },
               { value: 1, name: $_("Discover.AutoLayoutHierarchical") },
@@ -401,7 +399,7 @@
               { value: 3, name: $_("Discover.AutoLayoutCategorized") },
             ]}
             bind:value={conf.AutoLayout}
-            size="sm"
+            classes={{ select: "h-9 py-1 text-xs" }}
           />
         </Label>
       </div>
