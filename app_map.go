@@ -74,6 +74,20 @@ func checkDrawItem(di *datastore.DrawItemEnt) {
 	if p == nil {
 		return
 	}
+	title := di.Text
+	if strings.Contains(title, "\t") {
+		title = strings.Split(title, "\t")[0]
+	}
+	if title == "" {
+		if di.VarName != "" {
+			title = fmt.Sprintf("%s (%s)", p.Name, di.VarName)
+		} else {
+			title = p.Name
+		}
+	}
+	if di.Type != datastore.DrawItemTypePollingText {
+		di.Text = title
+	}
 	if di.Type == datastore.DrawItemTypePollingLine {
 		switch p.State {
 		case "high":
@@ -146,18 +160,6 @@ func checkDrawItem(di *datastore.DrawItemEnt) {
 		}
 		di.Value = val
 	case datastore.DrawItemTypePollingKPI:
-		title := di.Text
-		if strings.Contains(title, "\t") {
-			title = strings.Split(title, "\t")[0]
-		}
-		if title == "" {
-			if di.VarName != "" {
-				title = fmt.Sprintf("%s (%s)", p.Name, di.VarName)
-			} else {
-				title = p.Name
-			}
-		}
-		di.Text = title
 		di.FormattedText = text
 		di.Value = val
 		switch p.State {

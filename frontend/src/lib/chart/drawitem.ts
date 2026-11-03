@@ -394,8 +394,8 @@ export const classicGauge = (
 
   const v = Math.min(100, Math.max(0, val || 0))
   const textColor = dark ? '#eee' : '#333'
-  const trackColor = dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)'
-  const arcColor = color || '#00d2ff'
+  const trackColor = dark ? '#eee' : '#333'
+  const arcColor = color || '#1f78b4'
 
   const angleRad = -Math.PI / 4 + (Math.PI / 2 * v) / 100
   const needleTipX = x + r1 * Math.sin(angleRad)
@@ -428,15 +428,14 @@ export const classicGauge = (
   const valuePath = v > 0 ? makeDonutArc(-45, valueEndDeg, r0, r1) : ''
 
   const fontSize = safeSize
-  const valFontSize = Math.max(9, Math.round(safeSize * 0.65))
+  const valFontSize = 8
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
     <path d="${trackPath}" fill="${trackColor}" />
     ${valuePath ? `<path d="${valuePath}" fill="${arcColor}" />` : ''}
-    <text x="${x.toFixed(1)}" y="${(y - 10).toFixed(1)}" fill="${textColor}" font-family="sans-serif" font-size="${valFontSize}" font-weight="bold" text-anchor="middle">${v.toFixed(1)}%</text>
-    <text x="${x.toFixed(1)}" y="${(y + fontSize).toFixed(1)}" fill="${textColor}" font-family="sans-serif" font-size="${fontSize}" font-weight="600" text-anchor="middle">${escapeXml(title || '')}</text>
+    <text x="${x.toFixed(1)}" y="${(y - 10).toFixed(1)}" fill="${textColor}" font-family="sans-serif" font-size="${valFontSize}" text-anchor="middle">${v.toFixed(3)}%</text>
+    <text x="${x.toFixed(1)}" y="${(y + fontSize).toFixed(1)}" fill="${textColor}" font-family="sans-serif" font-size="${fontSize}" text-anchor="middle">${escapeXml(title || '')}</text>
     <polygon points="${needleTipX.toFixed(1)},${needleTipY.toFixed(1)} ${n2x.toFixed(1)},${n2y.toFixed(1)} ${n3x.toFixed(1)},${n3y.toFixed(1)}" fill="#e31a1c" />
-    <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="#e31a1c" />
   </svg>`
 
   return toSvgDataUrl(svg)

@@ -162,13 +162,16 @@ export const updateMAP = async () => {
           items[k].Color = items[k].Color != "#eee" ? items[k].Color : "#333";
         }
         break;
-      case 5:
-        items[k].H = items[k].Size * 10;
-        items[k].W = items[k].Size * 10;
+      case 5: {
+        const size = items[k].Size || 16;
+        items[k].Size = size;
+        items[k].H = size * 10;
+        items[k].W = size * 10;
         if (items[k].Value < 0.001) {
           items[k].Value = 0.0;
         }
         break;
+      }
       case 6: { // New Gauge
         items[k].W = items[k].H;
         const dataUrl = gauge(items[k].Text || "", items[k].Value || 0, backColor);
@@ -688,11 +691,12 @@ const drawDrawItems = (p5: P5, dark: boolean) => {
         break;
       case 5: {
         // Gauge
+        const size = items[k].Size || 16;
         const x = items[k].W / 2;
         const y = items[k].H / 2;
         const r0 = items[k].W;
-        const r1 = items[k].W - items[k].Size;
-        const r2 = items[k].W - items[k].Size * 4;
+        const r1 = items[k].W - size;
+        const r2 = items[k].W - size * 4;
         p5.noStroke();
         p5.fill(dark ? "#eee" : "#333");
         p5.arc(x, y, r0, r0, 5 * p5.QUARTER_PI, -p5.QUARTER_PI);
@@ -714,8 +718,8 @@ const drawDrawItems = (p5: P5, dark: boolean) => {
         p5.textSize(8);
         p5.fill(dark ? "#eee" : "#333");
         p5.text(Number(items[k].Value).toFixed(3) + "%", x, y - 10);
-        p5.textSize(items[k].Size);
-        p5.text(items[k].Text || "", x, y + items[k].Size);
+        p5.textSize(size);
+        p5.text(items[k].Text || "", x, y + size);
         p5.fill("#e31a1c");
         const angle = -p5.QUARTER_PI + (p5.HALF_PI * items[k].Value) / 100;
         const x1 = x + (r1 / 2) * p5.sin(angle);
@@ -725,6 +729,7 @@ const drawDrawItems = (p5: P5, dark: boolean) => {
         const x3 = x + (r2 / 2) * p5.sin(angle) - 5 * p5.cos(angle);
         const y3 = y - (r2 / 2) * p5.cos(angle) - 5 * p5.sin(angle);
         p5.triangle(x1, y1, x2, y2, x3, y3);
+        break;
       }
       case 6: // New Gauge,Line,Bar,KPI
       case 7:
