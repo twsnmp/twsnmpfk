@@ -1362,113 +1362,113 @@
   {:else}
     <div class="flex flex-col space-y-4">
       <!-- Custom Tabs List -->
-      <ul class="flex flex-wrap -mb-px text-sm font-medium text-center border-b border-gray-200 dark:border-gray-700">
-        <li class="mr-2">
+      <ul class="flex flex-wrap -mb-px text-xs font-medium text-center border-b border-gray-200 dark:border-gray-700">
+        <li class="mr-1">
           <button
             type="button"
-            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'basic' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'basic' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
             onclick={() => activeTab = 'basic'}
           >
-            <Icon path={icons.mdiChartPie} size={1} />
+            <Icon path={icons.mdiChartPie} size={0.75} />
             {$_("NodeReport.BasicInfo")}
           </button>
         </li>
-        <li class="mr-2">
+        <li class="mr-1">
           <button
             type="button"
-            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'memo' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'memo' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
             onclick={() => activeTab = 'memo'}
           >
-            <Icon path={icons.mdiNote} size={1} />
+            <Icon path={icons.mdiNote} size={0.75} />
             {$_('NodeReport.Memo')}
           </button>
         </li>
-        <li class="mr-2">
+        <li class="mr-1">
           <button
             type="button"
-            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'downtime' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'downtime' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
             onclick={() => activeTab = 'downtime'}
           >
-            <Icon path={icons.mdiTimerAlertOutline} size={1} />
+            <Icon path={icons.mdiTimerAlertOutline} size={0.75} />
             {$_("EventLogReport.Downtime")}
           </button>
         </li>
-        <li class="mr-2">
+        <li class="mr-1">
           <button
             type="button"
-            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'log' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'log' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
             onclick={() => activeTab = 'log'}
           >
-            <Icon path={icons.mdiCalendarCheck} size={1} />
+            <Icon path={icons.mdiCalendarCheck} size={0.75} />
             {$_("NodeReport.Log")}
           </button>
         </li>
-        <li class="mr-2">
+        <li class="mr-1">
           <button
             type="button"
-            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'panel' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'panel' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
             onclick={() => activeTab = 'panel'}
           >
             {#if waitVPanel}
-              <Spinner color="red" size="6" />
+              <Spinner color="red" size="4" />
             {:else}
-              <Icon path={icons.mdiAppsBox} size={1} />
+              <Icon path={icons.mdiAppsBox} size={0.75} />
             {/if}
             {$_("NodeReport.Panel")}
           </button>
         </li>
-        <li class="mr-2">
+        <li class="mr-1">
           <button
             type="button"
-            class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'hostinfo' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+            class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'hostinfo' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
             onclick={() => activeTab = 'hostinfo'}
           >
             {#if waitHr}
-              <Spinner color="red" size="6" />
+              <Spinner color="red" size="4" />
             {:else}
-              <Icon path={icons.mdiInformation} size={1} />
+              <Icon path={icons.mdiInformation} size={0.75} />
             {/if}
             <span>{$_("NodeReport.HostInfo")}</span>
           </button>
         </li>
         {#if hostResource}
-          <li class="mr-2">
+          <li class="mr-1">
             <button
               type="button"
-              class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'storage' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+              class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'storage' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
               onclick={() => activeTab = 'storage'}
             >
-              <Icon path={icons.mdiDatabase} size={1} />
+              <Icon path={icons.mdiDatabase} size={0.75} />
               {$_("NodeReport.Storage")}
             </button>
           </li>
-          <li class="mr-2">
+          <li class="mr-1">
             <button
               type="button"
-              class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'device' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+              class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'device' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
               onclick={() => activeTab = 'device'}
             >
-              <Icon path={icons.mdiApplicationCog} size={1} />
+              <Icon path={icons.mdiApplicationCog} size={0.75} />
               {$_("NodeReport.Device")}
             </button>
           </li>
-          <li class="mr-2">
+          <li class="mr-1">
             <button
               type="button"
-              class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'filesystem' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+              class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'filesystem' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
               onclick={() => activeTab = 'filesystem'}
             >
-              <Icon path={icons.mdiFileCabinet} size={1} />
+              <Icon path={icons.mdiFileCabinet} size={0.75} />
               {$_('NodeReport.FileSystem')}
             </button>
           </li>
-          <li class="mr-2">
+          <li class="mr-1">
             <button
               type="button"
-              class="inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg gap-2 group {activeTab === 'process' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
+              class="inline-flex items-center justify-center px-2 py-2 border-b-2 rounded-t-lg gap-1.5 group {activeTab === 'process' ? 'border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500' : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'}"
               onclick={() => activeTab = 'process'}
             >
-              <Icon path={icons.mdiViewList} size={1} />
+              <Icon path={icons.mdiViewList} size={0.75} />
               {$_("NodeReport.Process")}
             </button>
           </li>
