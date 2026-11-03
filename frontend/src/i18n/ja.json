@@ -890,7 +890,19 @@
     "Memo": "メモ",
     "MemoPlaceHolder": "ノードに関するメモを記入",
     "Save": "保存",
-    "LastChanged": "最終変化"
+    "LastChanged": "最終変化",
+    "NodeImage": "外観画像",
+    "MemoText": "メモ本文",
+    "DropOrPasteImage": "画像ファイルをドロップ、またはクリップボードから貼り付け (Ctrl+V / ⌘+V)",
+    "SelectImageFile": "画像ファイル選択",
+    "ChangeImage": "画像を変更",
+    "DeleteImage": "画像を削除",
+    "ConfirmDelete": "削除する",
+    "Cancel": "キャンセル",
+    "MaxDimension": "最大解像度",
+    "Original": "原寸",
+    "ImageSize": "画像サイズ",
+    "EnlargeImage": "拡大表示"
   },
   "Ping": {
     "Mode": "動作モード",

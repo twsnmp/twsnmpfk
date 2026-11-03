@@ -478,6 +478,10 @@ export function GetNode(arg1) {
   return window['go']['main']['App']['GetNode'](arg1);
 }
 
+export function GetNodeImage(arg1) {
+  return window['go']['main']['App']['GetNodeImage'](arg1);
+}
+
 export function GetNodeMemo(arg1) {
   return window['go']['main']['App']['GetNodeMemo'](arg1);
 }
@@ -756,6 +760,10 @@ export function ResetLogReport(arg1) {
 
 export function RevokeCert(arg1) {
   return window['go']['main']['App']['RevokeCert'](arg1);
+}
+
+export function SaveNodeImage(arg1, arg2) {
+  return window['go']['main']['App']['SaveNodeImage'](arg1, arg2);
 }
 
 export function SaveNodeMemo(arg1, arg2) {

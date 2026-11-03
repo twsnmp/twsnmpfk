@@ -904,7 +904,19 @@
     "Memo": "Memo",
     "MemoPlaceHolder": "Enter memo about this node",
     "Save": "Save",
-    "LastChanged": "Last changed"
+    "LastChanged": "Last changed",
+    "NodeImage": "Appearance Image",
+    "MemoText": "Notes",
+    "DropOrPasteImage": "Drop image file or paste from clipboard (Ctrl+V / ⌘+V)",
+    "SelectImageFile": "Select Image File",
+    "ChangeImage": "Change Image",
+    "DeleteImage": "Delete Image",
+    "ConfirmDelete": "Confirm Delete",
+    "Cancel": "Cancel",
+    "MaxDimension": "Max Resolution",
+    "Original": "Original",
+    "ImageSize": "Image Size",
+    "EnlargeImage": "Enlarge"
   },
   "Ping": {
     "Mode": "Mode",

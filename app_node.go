@@ -205,6 +205,20 @@ func (a *App) GetNodeMemo(nodeID string) string {
 	return datastore.GetNodeMemo(nodeID)
 }
 
+// SaveNodeImage saves an appearance image related to the node.
+func (a *App) SaveNodeImage(nodeID, img string) bool {
+	if err := datastore.SaveNodeImage(nodeID, img); err != nil {
+		log.Printf("save node image err=%v", err)
+		return false
+	}
+	return true
+}
+
+// GetNodeImage returns an appearance image related to the node.
+func (a *App) GetNodeImage(nodeID string) string {
+	return datastore.GetNodeImage(nodeID)
+}
+
 // DetectNodeType auto-detects the device category, OS, icon, and recommended sensor pollings for a node.
 func (a *App) DetectNodeType(id string) *datastore.DetectResult {
 	n := datastore.GetNode(id)

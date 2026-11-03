@@ -11,7 +11,6 @@
     Spinner,
     Toggle,
     Button,
-    Textarea,
     Select,
   } from "flowbite-svelte";
   import { tick, createEventDispatcher } from "svelte";
@@ -26,6 +25,10 @@
     GetDefaultPolling,
     GetNodeMemo,
     SaveNodeMemo,
+    GetNodeImage,
+    SaveNodeImage,
+    SelectFile,
+    GetImage,
     GetMapConf,
     LLMExplainNodeReport,
   } from "../../wailsjs/go/main/App";
@@ -1050,9 +1053,27 @@
     }
     try {
       node = await GetNode(id);
-      memo = await GetNodeMemo(id)
+      memo = await GetNodeMemo(id);
+      nodeImage = await GetNodeImage(id);
+      rawImageSrc = nodeImage;
+      if (nodeImage) {
+        const img = new Image();
+        img.onload = () => {
+          imgNaturalWidth = img.naturalWidth || img.width;
+          imgNaturalHeight = img.naturalHeight || img.height;
+          imgResizedWidth = imgNaturalWidth;
+          imgResizedHeight = imgNaturalHeight;
+        };
+        img.src = nodeImage;
+      } else {
+        imgNaturalWidth = 0;
+        imgNaturalHeight = 0;
+        imgResizedWidth = 0;
+        imgResizedHeight = 0;
+      }
+      confirmDelete = false;
     } catch (e) {
-      console.error("Error loading node/memo:", e);
+      console.error("Error loading node/memo/image:", e);
       node = {
         ID: id,
         Name: "Unknown Node",
@@ -1134,7 +1155,168 @@
 
   let memo = "";
   let savedMemo = false;
-  let showSaveMemoBtn = false
+  let showSaveMemoBtn = false;
+  $: showSaveMemoBtn = (activeTab === "memo");
+
+  let nodeImage = "";
+  let rawImageSrc = "";
+  let imgNaturalWidth = 0;
+  let imgNaturalHeight = 0;
+  let imgResizedWidth = 0;
+  let imgResizedHeight = 0;
+  let maxDimension = 800;
+  let quality = 0.85;
+  let confirmDelete = false;
+  let showImageEnlargeModal = false;
+  let isDraggingOver = false;
+  let fileInput: HTMLInputElement;
+
+  $: imgDataSizeKB = nodeImage ? Math.max(1, Math.round((nodeImage.length * 3) / 4 / 1024)) : 0;
+
+  const resizeImage = (
+    src: string,
+    maxDim: number,
+    q: number
+  ): Promise<{ dataUrl: string; width: number; height: number; naturalWidth: number; naturalHeight: number }> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const nw = img.naturalWidth || img.width;
+        const nh = img.naturalHeight || img.height;
+        let tw = nw;
+        let th = nh;
+
+        if (maxDim > 0 && (nw > maxDim || nh > maxDim)) {
+          if (nw >= nh) {
+            tw = maxDim;
+            th = Math.round((nh * maxDim) / nw);
+          } else {
+            th = maxDim;
+            tw = Math.round((nw * maxDim) / nh);
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = tw;
+        canvas.height = th;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve({ dataUrl: src, width: tw, height: th, naturalWidth: nw, naturalHeight: nh });
+          return;
+        }
+        ctx.drawImage(img, 0, 0, tw, th);
+        const dataUrl = canvas.toDataURL("image/jpeg", q);
+        resolve({
+          dataUrl,
+          width: tw,
+          height: th,
+          naturalWidth: nw,
+          naturalHeight: nh,
+        });
+      };
+      img.onerror = () => {
+        resolve({ dataUrl: src, width: 0, height: 0, naturalWidth: 0, naturalHeight: 0 });
+      };
+      img.src = src;
+    });
+  };
+
+  const applyImage = async (dataUrl: string, maxDim = maxDimension) => {
+    rawImageSrc = dataUrl;
+    const res = await resizeImage(dataUrl, maxDim, quality);
+    nodeImage = res.dataUrl;
+    imgNaturalWidth = res.naturalWidth;
+    imgNaturalHeight = res.naturalHeight;
+    imgResizedWidth = res.width;
+    imgResizedHeight = res.height;
+    confirmDelete = false;
+  };
+
+  const handleMaxDimensionChange = async (dim: number) => {
+    maxDimension = dim;
+    if (rawImageSrc) {
+      await applyImage(rawImageSrc, dim);
+    }
+  };
+
+  const handlePaste = (e: ClipboardEvent) => {
+    if (activeTab !== "memo") return;
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          e.preventDefault();
+          const reader = new FileReader();
+          reader.onload = async (evt) => {
+            if (evt.target?.result) {
+              await applyImage(String(evt.target.result));
+            }
+          };
+          reader.readAsDataURL(file);
+          return;
+        }
+      }
+    }
+  };
+
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    isDraggingOver = false;
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0 && files[0].type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        if (evt.target?.result) {
+          await applyImage(String(evt.target.result));
+        }
+      };
+      reader.readAsDataURL(files[0]);
+    }
+  };
+
+  const selectImageFile = async () => {
+    try {
+      const p = await SelectFile($_("NodeReport.SelectImageFile") || "画像ファイル選択", true);
+      if (p) {
+        const data = await GetImage(p);
+        if (data) {
+          await applyImage(data);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("SelectFile failed:", e);
+    }
+    fileInput?.click();
+  };
+
+  const handleFileInputChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    if (target?.files && target.files.length > 0) {
+      const file = target.files[0];
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        if (evt.target?.result) {
+          await applyImage(String(evt.target.result));
+        }
+      };
+      reader.readAsDataURL(file);
+      target.value = "";
+    }
+  };
+
+  const removeImage = () => {
+    nodeImage = "";
+    rawImageSrc = "";
+    imgNaturalWidth = 0;
+    imgNaturalHeight = 0;
+    imgResizedWidth = 0;
+    imgResizedHeight = 0;
+    confirmDelete = false;
+  };
+
   const dispatch = createEventDispatcher();
   const showMemo = () => {
     clearSelectedCount();
@@ -1142,7 +1324,12 @@
   }
   const saveMemo = async () => {
     savedMemo = true
-    await SaveNodeMemo(id,memo)
+    try {
+      await SaveNodeMemo(id, memo);
+      await SaveNodeImage(id, nodeImage);
+    } catch (e) {
+      console.error("Failed to save node memo or image:", e);
+    }
     setTimeout(()=> {
       savedMemo = false
     },1000)
@@ -1371,7 +1558,166 @@
             </TableBody>
           </Table>
         {:else if activeTab === 'memo'}
-          <Textarea placeholder={$_('NodeReport.MemoPlaceHolder')} class="w-full h-[55vh]" bind:value={memo} />
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[60vh]"
+            onpaste={handlePaste}
+          >
+            <!-- Left: Text Memo -->
+            <div class="flex flex-col h-full min-h-0">
+              <div class="text-xs font-semibold text-gray-300 mb-1.5 flex items-center justify-between h-5">
+                <span class="flex items-center gap-1.5">
+                  <Icon path={icons.mdiNoteTextOutline} size={0.8} />
+                  {$_("NodeReport.MemoText")}
+                </span>
+              </div>
+              <textarea
+                placeholder={$_('NodeReport.MemoPlaceHolder')}
+                class="w-full flex-1 min-h-0 resize-none font-mono text-sm p-3 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none shadow-sm"
+                bind:value={memo}
+              ></textarea>
+            </div>
+
+            <!-- Right: Node Appearance Image -->
+            <div class="flex flex-col h-full min-h-0">
+              <div class="text-xs font-semibold text-gray-300 mb-1.5 flex items-center justify-between h-5">
+                <span class="flex items-center gap-1.5">
+                  <Icon path={icons.mdiCameraOutline} size={0.8} />
+                  {$_("NodeReport.NodeImage")}
+                </span>
+                {#if nodeImage}
+                  <span class="text-[11px] text-gray-400 font-mono">
+                    {imgResizedWidth} × {imgResizedHeight} px ({imgDataSizeKB} KB)
+                  </span>
+                {/if}
+              </div>
+
+              <div class="flex-1 flex flex-col min-h-0 bg-gray-800/60 rounded-lg p-3 border border-gray-700">
+                {#if nodeImage}
+                  <!-- Image Preview and Controls -->
+                  <div class="flex-1 flex flex-col min-h-0">
+                    <div class="flex-1 relative flex items-center justify-center bg-gray-900/80 rounded border border-gray-700/80 overflow-hidden group">
+                      <img
+                        src={nodeImage}
+                        alt="Node Appearance"
+                        class="max-w-full max-h-[32vh] object-contain cursor-pointer transition-transform duration-200 group-hover:scale-[1.02]"
+                        onclick={() => (showImageEnlargeModal = true)}
+                        title={$_("NodeReport.EnlargeImage")}
+                      />
+                      <button
+                        type="button"
+                        class="absolute top-2 right-2 p-1.5 bg-gray-900/80 hover:bg-gray-800 text-gray-200 rounded-full border border-gray-600 shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                        onclick={() => (showImageEnlargeModal = true)}
+                        title={$_("NodeReport.EnlargeImage")}
+                      >
+                        <Icon path={icons.mdiMagnifyPlusOutline} size={0.8} />
+                      </button>
+                    </div>
+
+                    <!-- Controls below image -->
+                    <div class="mt-2.5 pt-2 border-t border-gray-700 flex flex-col space-y-2">
+                      <div class="flex items-center justify-between text-xs text-gray-400">
+                        <span class="flex items-center gap-1">
+                          <Icon path={icons.mdiArrowExpand} size={0.7} />
+                          {$_("NodeReport.MaxDimension")}:
+                        </span>
+                        <div class="flex items-center gap-1">
+                          {#each [400, 600, 800, 1200, 0] as dim}
+                            <button
+                              type="button"
+                              class="px-2 py-0.5 text-[11px] rounded border transition-colors {maxDimension === dim ? 'bg-blue-600 text-white border-blue-500 font-semibold' : 'bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600'}"
+                              onclick={() => handleMaxDimensionChange(dim)}
+                            >
+                              {dim === 0 ? $_("NodeReport.Original") : `${dim}px`}
+                            </button>
+                          {/each}
+                        </div>
+                      </div>
+
+                      <div class="flex items-center justify-between pt-1">
+                        <div class="flex items-center gap-2">
+                          <Button
+                            size="xs"
+                            color="alternative"
+                            onclick={selectImageFile}
+                          >
+                            <Icon path={icons.mdiImageEditOutline} size={0.8} class="mr-1" />
+                            {$_("NodeReport.ChangeImage")}
+                          </Button>
+                        </div>
+
+                        <div class="flex items-center">
+                          {#if !confirmDelete}
+                            <Button
+                              size="xs"
+                              color="red"
+                              onclick={() => (confirmDelete = true)}
+                            >
+                              <Icon path={icons.mdiDeleteOutline} size={0.8} class="mr-1" />
+                              {$_("NodeReport.DeleteImage")}
+                            </Button>
+                          {:else}
+                            <div class="flex items-center gap-1">
+                              <Button
+                                size="xs"
+                                color="red"
+                                onclick={removeImage}
+                              >
+                                {$_("NodeReport.ConfirmDelete")}
+                              </Button>
+                              <Button
+                                size="xs"
+                                color="alternative"
+                                onclick={() => (confirmDelete = false)}
+                              >
+                                {$_("NodeReport.Cancel")}
+                              </Button>
+                            </div>
+                          {/if}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {:else}
+                  <!-- Dropzone / Empty State -->
+                  <div
+                    class="flex-1 flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 text-center transition-colors {isDraggingOver ? 'border-blue-500 bg-blue-950/20' : 'border-gray-600 hover:border-gray-500 bg-gray-900/40'}"
+                    ondragover={(e) => { e.preventDefault(); isDraggingOver = true; }}
+                    ondragleave={() => (isDraggingOver = false)}
+                    ondrop={handleDrop}
+                    role="region"
+                    aria-label="Image dropzone"
+                  >
+                    <div class="p-3 bg-gray-800 rounded-full mb-3 text-gray-400">
+                      <Icon path={icons.mdiCameraPlusOutline} size={1.8} />
+                    </div>
+                    <p class="text-xs text-gray-300 mb-1 max-w-xs leading-relaxed">
+                      {$_("NodeReport.DropOrPasteImage")}
+                    </p>
+                    <p class="text-[11px] text-gray-500 mb-3">
+                      PNG, JPG, WEBP, SVG
+                    </p>
+                    <Button
+                      size="xs"
+                      color="blue"
+                      onclick={selectImageFile}
+                    >
+                      <Icon path={icons.mdiFolderOpenOutline} size={0.8} class="mr-1" />
+                      {$_("NodeReport.SelectImageFile")}
+                    </Button>
+                  </div>
+                {/if}
+
+                <!-- Hidden input for file selection fallback -->
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  bind:this={fileInput}
+                  onchange={handleFileInputChange}
+                />
+              </div>
+            </div>
+          </div>
         {:else if activeTab === 'downtime'}
           <div class="flex flex-col space-y-3 w-full p-1">
             <!-- Summary Cards (Compact) -->
@@ -1641,6 +1987,24 @@
   exportFilename={`node_${id}_${activeTab}_ai_explanation`}
   analyzeFunc={() => LLMExplainNodeReport(id, activeTab)}
 />
+
+<Modal
+  bind:open={showImageEnlargeModal}
+  size="xl"
+  dismissable={true}
+  outsideclose={true}
+  title={$_("NodeReport.NodeImage")}
+>
+  <div class="flex items-center justify-center p-2 max-h-[75vh] overflow-auto">
+    {#if nodeImage}
+      <img
+        src={nodeImage}
+        alt="Node Appearance Full"
+        class="max-w-full max-h-[70vh] object-contain rounded shadow"
+      />
+    {/if}
+  </div>
+</Modal>
 
 <style>
   #vpanel {

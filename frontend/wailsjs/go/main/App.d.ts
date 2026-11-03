@@ -246,6 +246,8 @@ export function GetNetworks():Promise<Record<string, datastore.NetworkEnt>>;
 
 export function GetNode(arg1:string):Promise<datastore.NodeEnt>;
 
+export function GetNodeImage(arg1:string):Promise<string>;
+
 export function GetNodeMemo(arg1:string):Promise<string>;
 
 export function GetNodes():Promise<Record<string, datastore.NodeEnt>>;
@@ -385,6 +387,8 @@ export function ResetArpTable():Promise<boolean>;
 export function ResetLogReport(arg1:string):Promise<void>;
 
 export function RevokeCert(arg1:string):Promise<void>;
+
+export function SaveNodeImage(arg1:string,arg2:string):Promise<boolean>;
 
 export function SaveNodeMemo(arg1:string,arg2:string):Promise<boolean>;
 

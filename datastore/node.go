@@ -187,10 +187,16 @@ func DeleteNode(nodeID string) error {
 		return ErrInvalidID
 	}
 	db.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("memo"))
-		b.Delete([]byte(nodeID))
-		b = tx.Bucket([]byte("nodes"))
-		return b.Delete([]byte(nodeID))
+		if b := tx.Bucket([]byte("memo")); b != nil {
+			b.Delete([]byte(nodeID))
+		}
+		if b := tx.Bucket([]byte("images")); b != nil {
+			b.Delete([]byte(nodeID))
+		}
+		if b := tx.Bucket([]byte("nodes")); b != nil {
+			return b.Delete([]byte(nodeID))
+		}
+		return nil
 	})
 	nodes.Delete(nodeID)
 	delList := []string{}
@@ -347,4 +353,34 @@ func GetNodeMemo(nodeID string) string {
 		return nil
 	})
 	return memo
+}
+
+// SaveNodeImage saves an appearance image related to the specified node.
+func SaveNodeImage(nodeID, imgData string) error {
+	return db.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("images"))
+		if b == nil {
+			return fmt.Errorf("images bucket not found")
+		}
+		if imgData == "" {
+			return b.Delete([]byte(nodeID))
+		}
+		return b.Put([]byte(nodeID), []byte(imgData))
+	})
+}
+
+// GetNodeImage retrieves an appearance image related to the specified node.
+func GetNodeImage(nodeID string) string {
+	img := ""
+	db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("images"))
+		if b == nil {
+			return fmt.Errorf("images bucket not found")
+		}
+		if v := b.Get([]byte(nodeID)); v != nil {
+			img = strings.Clone(string(v))
+		}
+		return nil
+	})
+	return img
 }
