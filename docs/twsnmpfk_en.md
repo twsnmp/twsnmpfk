@@ -603,7 +603,7 @@ It is the editing screen of drawing item (polling result: gauge).It can be used 
 | Gauge label | This is a character string displayed under the gauge.|
 | Magnification | The display rate of drawing items.|
 
-![h:100 bg right:10%](./images/ja/map_drawitem_gauge_2.png)
+![h:100 bg right:10%](./images/en/map_drawitem_gauge_2.png)
 
 ---
 ### Drawing item (Polling result: KPI card)

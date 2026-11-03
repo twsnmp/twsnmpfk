@@ -532,7 +532,7 @@ It is the editing screen of drawing item (polling result: gauge).It can be used 
 | Gauge label | This is a character string displayed under the gauge.|
 | Magnification | The display rate of drawing items.|
 
-![](./images/ja/map_drawitem_gauge_2.png)
+![](./images/en/map_drawitem_gauge_2.png)
 
 
 ### Line editing
