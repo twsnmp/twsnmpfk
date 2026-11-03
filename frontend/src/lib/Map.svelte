@@ -28,6 +28,7 @@
   import NetworkReport from "./NetworkReport.svelte";
   import NetworkLines from "./NetworkLines.svelte";
   import NeighborNetworksAndLines from "./NeighborNetworksAndLines.svelte";
+  import BackImageModal from "./BackImageModal.svelte";
   import {
     CheckPolling,
     DeleteDrawItems,
@@ -36,10 +37,6 @@
     CopyDrawItem,
     WakeOnLan,
     GetNode,
-    SelectFile,
-    GetImage,
-    GetBackImage,
-    SetBackImage,
     ImportV4Map,
     DeleteNetwork,
     CheckNetwork,
@@ -357,51 +354,9 @@
     refreshMap();
   };
 
-  let backImage: datastore.BackImageEnt;
-  let image: any = undefined;
-  const showEditBackImageDlg = async () => {
-    backImage = await GetBackImage();
-    if (backImage.Path) {
-      image = await GetImage(backImage.Path);
-    }
-    if (backImage.Height < 1) {
-      backImage.Height = 100;
-    }
-    if (backImage.Width < 1) {
-      backImage.Width = 100;
-    }
+  const showEditBackImageDlg = () => {
     showMapMenu = false;
     showEditBackImage = true;
-  };
-
-  const selectImage = async () => {
-    const p = await SelectFile($_("Map.BackImage"), true);
-    if (p) {
-      backImage.Path = p;
-      image = await GetImage(p);
-    }
-  };
-
-  const saveBackImage = async () => {
-    showEditBackImage = false;
-    backImage.Height *=1;
-    backImage.Width *=1;
-    backImage.X *=1;
-    backImage.Y *=1;
-    await SetBackImage(backImage);
-    refreshMap();
-  };
-
-  const clearBackImage = async () => {
-    showEditBackImage = false;
-    backImage.Path = "";
-    image = undefined;
-    backImage.Height *=1;
-    backImage.Width *=1;
-    backImage.X *=1;
-    backImage.Y *=1;
-    await SetBackImage(backImage);
-    refreshMap();
   };
   const saveMap = () => {
     showExportModal = true;
@@ -1313,120 +1268,7 @@
   </form>
 </Modal>
 
-<Modal
-  bind:open={showEditBackImage}
-  size="md"
-  dismissable={false}
-  outsideclose={false}
-  class="w-full"
->
-  <form class="flex flex-col space-y-4" action="#">
-    <h3 class="mb-1 font-medium text-gray-900 dark:text-white">
-      {$_("Map.BackImage")}
-    </h3>
-    <div class="grid gap-4 mb-4 grid-cols-2">
-      <Label class="space-y-2 text-xs">
-        <span>X</span>
-        <Input
-          class="h-9 w-24 text-right text-xs"
-          type="number"
-          min={0}
-          max={2000}
-          bind:value={backImage.X}
-          size="sm"
-        />
-      </Label>
-      <Label class="space-y-2 text-xs">
-        <span>Y</span>
-        <Input
-          class="h-9 w-24 text-right text-xs"
-          type="number"
-          min={0}
-          max={2000}
-          bind:value={backImage.Y}
-          size="sm"
-        />
-      </Label>
-    </div>
-    <div class="grid gap-4 mb-4 grid-cols-2">
-      <Label class="space-y-2 text-xs">
-        <span>{$_("DrawItem.Width")}</span>
-        <Input
-          class="h-9 w-24 text-right text-xs"
-          type="number"
-          min={10}
-          max={1000}
-          bind:value={backImage.Width}
-          size="sm"
-        />
-      </Label>
-      <Label class="space-y-2 text-xs">
-        <span>{$_("DrawItem.Height")}</span>
-        <Input
-          class="h-9 w-24 text-right text-xs"
-          type="number"
-          min={10}
-          max={1000}
-          bind:value={backImage.Height}
-          size="sm"
-        />
-      </Label>
-    </div>
-    <GradientButton
-      shadow
-      class="h-9 w-24 flex items-center justify-center gap-1 text-xs"
-      type="button"
-      size="xs"
-      color="blue"
-      onclick={selectImage}
-    >
-      <Icon path={icons.mdiImage} size={1} />
-      {$_("DrawItem.Select")}
-    </GradientButton>
-    <Label class="space-y-2 text-xs">
-      <span>{$_("DrawItem.Image")}</span>
-      {#if image}
-        <img src={image} alt="" class="h-32" />
-      {:else}
-        <div></div>
-      {/if}
-    </Label>
-    <div class="flex justify-end space-x-2 mr-2">
-      <GradientButton
-        color="blue"
-        type="button"
-        onclick={saveBackImage}
-        size="xs"
-      >
-        <Icon path={icons.mdiContentSave} size={1} />
-        {$_("Map.Save")}
-      </GradientButton>
-      {#if backImage.Path}
-        <GradientButton
-          color="red"
-          type="button"
-          onclick={clearBackImage}
-          size="xs"
-        >
-          <Icon path={icons.mdiDelete} size={1} />
-          {$_("Map.Clear")}
-        </GradientButton>
-      {/if}
-      <GradientButton
-        shadow
-        color="teal"
-        type="button"
-        onclick={() => {
-          showEditBackImage = false;
-        }}
-        size="xs"
-      >
-        <Icon path={icons.mdiCancel} size={1} />
-        {$_("Map.Cancel")}
-      </GradientButton>
-    </div>
-  </form>
-</Modal>
+<BackImageModal bind:show={showEditBackImage} onSave={refreshMap} />
 
 <Modal bind:open={showExportModal} size="md" dismissable={false} outsideclose={false} class="w-full">
   <div class="p-6">
