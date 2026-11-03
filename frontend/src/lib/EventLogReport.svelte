@@ -311,7 +311,7 @@
         {#snippet titleSlot()}
           <div class="flex items-center gap-2">
             <Icon path={icons.mdiChartLine} size={1} />
-            {$_("EventLogREport.Oprate")}
+            {$_("EventLogReport.Oprate")}
           </div>
         {/snippet}
         <div id="oprate"></div>
