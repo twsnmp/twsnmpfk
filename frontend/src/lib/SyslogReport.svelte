@@ -71,6 +71,7 @@
     await tick();
     const table = new DataTable("#syslogSummaryTable", {
       destroy: true,
+      autoWidth: false,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       stateSave: true,
       data: list,
@@ -88,24 +89,26 @@
           data: "Pattern",
           title: $_('SyslogReport.Pattern'),
           width: "80%",
+          className: "pattern-col break-all whitespace-normal",
         },
         {
           data: "Count",
           title: $_('SyslogReport.Count'),
           width: "15%",
           render: renderCount,
-          className: "dt-body-right",
+          className: "count-col dt-body-right whitespace-nowrap",
         },
       ],
     });
-    table.on('click', 'tbody td.dt-control', function (e:any) {
-      let tr = e.target.closest('tr');
+    table.on('click', 'tbody td.dt-control', function (this: any, e:any) {
+      let tr = (this as HTMLElement)?.closest('tr') || e?.target?.closest('tr');
+      if (!tr) return;
       let row = table.row(tr);
       if (row.child.isShown()) {
         row.child.hide();
       } else {
         const d = row.data()
-        row.child(d.Sample).show();
+        row.child(`<div class="p-2 bg-gray-800 text-xs font-mono rounded overflow-auto break-all whitespace-pre-wrap">${d.Sample}</div>`).show();
       }
     });
     chart = showSyslogSummary("syslogSummary",list)
@@ -571,7 +574,7 @@
   class="w-full max-h-[92vh] p-2"
 >
   <div class="flex flex-col h-[84vh] max-h-[84vh] overflow-hidden">
-    <div class="flex-1 overflow-y-auto pr-1">
+    <div class="flex-1 overflow-y-auto overflow-x-hidden pr-1">
       <Tabs style="underline" contentClass="p-1 pt-1">
       <TabItem onclick={()=>{showChart("level")}}>
         {#snippet titleSlot()}
@@ -608,10 +611,10 @@
         </div>
       {/snippet}
         <div id="syslogSummary"></div>
-        <div><table
+        <div class="w-full"><table
           id="syslogSummaryTable"
-          class="display compact mt-5"
-          style="width:99%"></table></div>
+          class="display compact mt-5 w-full table-fixed"
+          style="width:100%; table-layout: fixed;"></table></div>
       </TabItem>
       <TabItem onclick={()=>{showChart("host3D")}}>
         {#snippet titleSlot()}
@@ -850,5 +853,24 @@
     height: 30vh;
     width: 98%;
     margin: 0 auto 1.5rem auto;
+  }
+  :global(#syslogSummaryTable) {
+    table-layout: fixed !important;
+    width: 100% !important;
+  }
+  :global(#syslogSummaryTable th.pattern-col),
+  :global(#syslogSummaryTable td.pattern-col) {
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  :global(#syslogSummaryTable th.count-col),
+  :global(#syslogSummaryTable td.count-col) {
+    white-space: nowrap !important;
+  }
+  :global(#syslogSummaryTable th.dt-control),
+  :global(#syslogSummaryTable td.dt-control) {
+    white-space: nowrap !important;
+    text-align: center;
   }
 </style>
