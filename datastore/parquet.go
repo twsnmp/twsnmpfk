@@ -467,6 +467,9 @@ func (s *ParquetLogDataStore) ForEachLastPollingLog(pollingID string, callBack f
 
 	sort.Sort(sort.Reverse(sort.StringSlice(dateDirs)))
 
+	scannedFiles := 0
+	const maxFiles = 30
+
 	for _, dDir := range dateDirs {
 		files, err := filepath.Glob(filepath.Join(dDir, "*.parquet"))
 		if err != nil || len(files) == 0 {
@@ -477,6 +480,11 @@ func (s *ParquetLogDataStore) ForEachLastPollingLog(pollingID string, callBack f
 		for _, filePath := range files {
 			if strings.HasPrefix(filepath.Base(filePath), "compacting_") {
 				continue
+			}
+
+			scannedFiles++
+			if scannedFiles > maxFiles {
+				return
 			}
 
 			f, err := os.Open(filePath)

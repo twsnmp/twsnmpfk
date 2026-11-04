@@ -33,10 +33,28 @@
   let timer: any = undefined;
   let lock = false;
 
+  $: hasOpenDialog = showEditNode || showNodeReport || showPolling || showAddNode;
+
+  let prevHasOpenDialog = false;
+  $: {
+    if (prevHasOpenDialog && !hasOpenDialog) {
+      refresh();
+    } else if (!prevHasOpenDialog && hasOpenDialog) {
+      if (timer) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
+    }
+    prevHasOpenDialog = hasOpenDialog;
+  }
+
   const refresh = async () => {
     if (timer) {
       clearTimeout(timer);
       timer = undefined;
+    }
+    if (hasOpenDialog) {
+      return;
     }
     if (!map) {
       await makeMap();

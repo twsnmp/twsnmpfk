@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, tick } from "svelte";
   import "../assets/css/jquery.dataTables.css";
   import { Modal, GradientButton } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
@@ -33,6 +33,9 @@
   let selectedCount = 0;
 
   const showTable = () => {
+    if (!document.getElementById("nodePollingTable")) {
+      return;
+    }
     selectedCount = 0;
     table = new DataTable("#nodePollingTable", {
       destroy: true,
@@ -59,6 +62,7 @@
   const refresh = async () => {
     data = [];
     data = await GetPollings(nodeID);
+    await tick();
     showTable();
   };
 

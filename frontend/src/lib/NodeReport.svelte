@@ -1791,7 +1791,9 @@
             </div>
           </div>
         {:else if activeTab === 'log'}
-          <table id="nodeReportLogTable" class="display compact" style="width:99%"></table>
+          <div>
+            <table id="nodeReportLogTable" class="display compact" style="width:99%"></table>
+          </div>
         {:else if activeTab === 'panel'}
           {#if ports && ports.length > 0}
             <div id="vpanel"></div>
@@ -1820,29 +1822,37 @@
           {/if}
         {:else if activeTab === 'storage' && hostResource}
           <div id="hrStorageChart" class="mb-2"></div>
-          <table
-            id="hrStorageTable"
-            class="display compact mt-2"
-            style="width:99%"></table>
+          <div>
+            <table
+              id="hrStorageTable"
+              class="display compact mt-2"
+              style="width:99%"></table>
+          </div>
         {:else if activeTab === 'device' && hostResource}
-          <table
-            id="hrDeviceTable"
-            class="display compact mt-2"
-            style="width:99%"></table>
+          <div>
+            <table
+              id="hrDeviceTable"
+              class="display compact mt-2"
+              style="width:99%"></table>
+          </div>
         {:else if activeTab === 'filesystem' && hostResource}
-          <table
-            id="hrFileSystemTable"
-            class="display compact mt-2"
-            style="width:99%"></table>
+          <div>
+            <table
+              id="hrFileSystemTable"
+              class="display compact mt-2"
+              style="width:99%"></table>
+          </div>
         {:else if activeTab === 'process' && hostResource}
           <div class="grid grid-cols-2 gap-1 mb-2">
             <div id="hrProcessCPUChart"></div>
             <div id="hrProcessMemChart"></div>
           </div>
-          <table
-            id="hrProcessTable"
-            class="display compact mt-2"
-            style="width:99%"></table>
+          <div>
+            <table
+              id="hrProcessTable"
+              class="display compact mt-2"
+              style="width:99%"></table>
+          </div>
         {/if}
       </div>
       <div class="flex justify-end space-x-2 mr-2">

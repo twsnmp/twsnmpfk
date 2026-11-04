@@ -116,9 +116,15 @@
   $: {
     if (prevHasOpenDialog && !hasOpenDialog) {
       setMapReadOnly(false);
+      refreshCount = 0;
       refreshMap();
     } else if (!prevHasOpenDialog && hasOpenDialog) {
       setMapReadOnly(true);
+      if (timer) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
+      hasPendingRefresh = false;
     }
     prevHasOpenDialog = hasOpenDialog;
   }
@@ -166,8 +172,8 @@
     hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
   };
 
-  const handleVisibilityOrFocus = () => {
-    if (typeof document !== "undefined" && !document.hidden) {
+  const handleVisibilityChange = () => {
+    if (typeof document !== "undefined" && !document.hidden && !hasOpenDialog) {
       refreshCount = 0;
       refreshMap();
     }
@@ -177,8 +183,7 @@
     await checkAI();
     refreshCount = 0;
     await initMAP(map, callBack);
-    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
-    window.addEventListener("focus", handleVisibilityOrFocus);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     refreshMap();
   });
 
@@ -187,8 +192,7 @@
       clearTimeout(timer);
       timer = undefined;
     }
-    document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
-    window.removeEventListener("focus", handleVisibilityOrFocus);
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
     deleteMap();
   });
 
@@ -307,6 +311,9 @@
       clearTimeout(timer);
       timer = undefined;
     }
+    if (hasOpenDialog) {
+      return;
+    }
     if (isRefreshing) {
       hasPendingRefresh = true;
       return;
@@ -327,9 +334,13 @@
       console.error("refreshMap error:", e);
     } finally {
       isRefreshing = false;
+      if (hasOpenDialog) {
+        hasPendingRefresh = false;
+        return;
+      }
       if (hasPendingRefresh) {
         hasPendingRefresh = false;
-        timer = setTimeout(refreshMap, 100);
+        timer = setTimeout(refreshMap, Math.max(1000 * t, 2000));
       } else {
         timer = setTimeout(refreshMap, 1000 * t);
       }
