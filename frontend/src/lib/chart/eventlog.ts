@@ -957,6 +957,7 @@ export const showEventLogDowntimeChart = (div: string, logs: any) => {
         color: '#33a02c',
         data: slaData,
         markLine: {
+          symbol: ['none', 'none'],
           data: [{ xAxis: 99.9, name: 'Target 99.9%' }],
           lineStyle: {
             color: '#dfdf22',
@@ -966,6 +967,11 @@ export const showEventLogDowntimeChart = (div: string, logs: any) => {
             formatter: 'Target 99.9%',
             color: '#dfdf22',
             fontSize: 9,
+            position: 'end',
+            distance: -15,
+            align: 'right',
+            verticalAlign: 'top',
+            padding: [0, 4, 0, 0],
           },
         },
       },
@@ -986,31 +992,35 @@ export interface PollingDowntimeStat {
   incidents: DowntimeIncident[];
 }
 
-export const calcNodeDowntimeAndSLA = (logs: any) => {
-  if (!logs || logs.length === 0) {
-    return {
-      totalIncidents: 0,
-      ongoingIncidents: 0,
-      totalDowntimeSec: 0,
-      maxDowntimeSec: 0,
-      mttrSec: 0,
-      overallSLA: 100,
-      pollingStats: [] as PollingDowntimeStat[],
-      incidents: [] as DowntimeIncident[],
-    };
-  }
-
-  // polling タイプのログのみに限定 (unknown レベルのログは除外)
-  const pollingLogs = logs.filter((l: any) => l.Type === 'polling' && l.Level !== 'unknown');
+export const calcNodeDowntimeAndSLA = (logs: any, pollings?: any[]) => {
+  const pollingLogs = (logs || []).filter((l: any) => l.Type === 'polling' && l.Level !== 'unknown');
   if (pollingLogs.length === 0) {
+    const pollingStats: PollingDowntimeStat[] = [];
+    let ongoingPollingCount = 0;
+    if (pollings && pollings.length > 0) {
+      pollings.forEach((p: any) => {
+        const isFail = p.State === 'high' || p.State === 'low' || p.State === 'warn';
+        if (isFail) ongoingPollingCount++;
+        pollingStats.push({
+          event: p.Name,
+          totalDowntimeSec: 0,
+          maxDowntimeSec: 0,
+          count: isFail ? 1 : 0,
+          ongoing: isFail,
+          currentLevel: p.State || 'normal',
+          sla: isFail ? 0 : 100,
+          incidents: [],
+        });
+      });
+    }
     return {
-      totalIncidents: 0,
-      ongoingIncidents: 0,
+      totalIncidents: ongoingPollingCount,
+      ongoingIncidents: ongoingPollingCount,
       totalDowntimeSec: 0,
       maxDowntimeSec: 0,
       mttrSec: 0,
-      overallSLA: 100,
-      pollingStats: [] as PollingDowntimeStat[],
+      overallSLA: ongoingPollingCount > 0 ? 0 : 100,
+      pollingStats,
       incidents: [] as DowntimeIncident[],
     };
   }
@@ -1144,6 +1154,39 @@ export const calcNodeDowntimeAndSLA = (logs: any) => {
     allIncidentsList.push(...incidents);
   });
 
+  if (pollings && pollings.length > 0) {
+    const existingMap = new Map<string, PollingDowntimeStat>();
+    pollingStats.forEach((ps) => existingMap.set(ps.event, ps));
+
+    pollings.forEach((p: any) => {
+      const existing = existingMap.get(p.Name);
+      if (existing) {
+        if (p.State) {
+          existing.currentLevel = p.State;
+          if (p.State === 'high' || p.State === 'low' || p.State === 'warn') {
+            existing.ongoing = true;
+          }
+        }
+      } else {
+        const isFail = p.State === 'high' || p.State === 'low' || p.State === 'warn';
+        if (isFail) {
+          allIncidentsCount++;
+          ongoingPollingCount++;
+        }
+        pollingStats.push({
+          event: p.Name,
+          totalDowntimeSec: 0,
+          maxDowntimeSec: 0,
+          count: isFail ? 1 : 0,
+          ongoing: isFail,
+          currentLevel: p.State || 'normal',
+          sla: isFail ? 0 : 100,
+          incidents: [],
+        });
+      }
+    });
+  }
+
   const { totalSec: nodeTotalDowntimeSec, maxSec: nodeMaxDowntimeSec } = mergeIntervals(nodeAllIntervals);
   const overallSLA = Math.max(0, Math.min(100, (1 - nodeTotalDowntimeSec / totalSpanSec) * 100));
   const mttrSec = recoveredCount > 0 ? totalRecoveredSec / recoveredCount : 0;
@@ -1160,8 +1203,8 @@ export const calcNodeDowntimeAndSLA = (logs: any) => {
   };
 };
 
-export const showNodeDowntimeChart = (div: string, logs: any) => {
-  const stats = calcNodeDowntimeAndSLA(logs);
+export const showNodeDowntimeChart = (div: string, logs: any, pollings?: any[]) => {
+  const stats = calcNodeDowntimeAndSLA(logs, pollings);
   const pollingStats = stats.pollingStats.sort((a, b) => b.totalDowntimeSec - a.totalDowntimeSec);
 
   const categories: string[] = [];
@@ -1279,6 +1322,7 @@ export const showNodeDowntimeChart = (div: string, logs: any) => {
         color: '#33a02c',
         data: slaData,
         markLine: {
+          symbol: ['none', 'none'],
           data: [{ xAxis: 99.9, name: 'Target 99.9%' }],
           lineStyle: {
             color: '#dfdf22',
@@ -1288,6 +1332,11 @@ export const showNodeDowntimeChart = (div: string, logs: any) => {
             formatter: 'Target 99.9%',
             color: '#dfdf22',
             fontSize: 9,
+            position: 'end',
+            distance: -15,
+            align: 'right',
+            verticalAlign: 'top',
+            padding: [0, 4, 0, 0],
           },
         },
       },

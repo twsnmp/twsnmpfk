@@ -1181,6 +1181,7 @@ func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
 	case "downtime":
 		sb.WriteString("## Node Downtime & SLA Analysis (Polling Events)\n")
 		logs := a.GetEventLogs(EventLogFilterEnt{NodeID: nodeID})
+		pollings := a.GetPollings(nodeID)
 		var pollingLogs []*datastore.EventLogEnt
 		for _, l := range logs {
 			if l.Type == "polling" && l.Level != "unknown" {
@@ -1381,13 +1382,62 @@ func (a *App) LLMExplainNodeReport(nodeID, tab string) *LLMResp {
 			sb.WriteString(fmt.Sprintf("Total Incidents: %d (Ongoing Polling Items: %d)\n", allIncidentsCount, ongoingPollingCount))
 			sb.WriteString(fmt.Sprintf("MTTR (Mean Time To Recovery): %.1f sec (%.2f min)\n\n", mttrSec, mttrSec/60.0))
 
+			for _, p := range pollings {
+				if _, ok := pollingMap[p.Name]; !ok {
+					isFail := p.State == "high" || p.State == "low" || p.State == "warn"
+					sla := float64(100)
+					incidents := 0
+					if isFail {
+						sla = 0
+						incidents = 1
+						allIncidentsCount++
+						ongoingPollingCount++
+					}
+					pollingResults = append(pollingResults, pollingResult{
+						event:    p.Name,
+						sla:      sla,
+						downtime: 0,
+						maxSec:   0,
+						count:    incidents,
+						ongoing:  isFail,
+					})
+				}
+			}
+
 			sb.WriteString("Polling Item SLA & Downtime Breakdown:\n")
 			for _, r := range pollingResults {
 				sb.WriteString(fmt.Sprintf("  - Polling '%s': SLA = %.3f%%, Total Downtime = %.1f min, Max Downtime = %.1f min, Incidents = %d (Ongoing: %v)\n",
 					r.event, r.sla, r.downtime/60.0, r.maxSec/60.0, r.count, r.ongoing))
 			}
+		} else if len(pollings) > 0 {
+			allIncidents := 0
+			ongoingCount := 0
+			for _, p := range pollings {
+				if p.State == "high" || p.State == "low" || p.State == "warn" {
+					allIncidents++
+					ongoingCount++
+				}
+			}
+			nodeSLA := float64(100)
+			if ongoingCount > 0 {
+				nodeSLA = 0
+			}
+			sb.WriteString(fmt.Sprintf("Node Overall SLA (Availability): %.3f%%\n", nodeSLA))
+			sb.WriteString(fmt.Sprintf("Total Incidents: %d (Ongoing Polling Items: %d)\n", allIncidents, ongoingCount))
+			sb.WriteString("Polling Item SLA & Downtime Breakdown:\n")
+			for _, p := range pollings {
+				sla := float64(100)
+				isFail := p.State == "high" || p.State == "low" || p.State == "warn"
+				inc := 0
+				if isFail {
+					sla = 0
+					inc = 1
+				}
+				sb.WriteString(fmt.Sprintf("  - Polling '%s': State = %s, SLA = %.3f%%, Total Downtime = 0.0 min, Incidents = %d (Ongoing: %v)\n",
+					p.Name, p.State, sla, inc, isFail))
+			}
 		} else {
-			sb.WriteString("No polling logs found for downtime analysis.\n")
+			sb.WriteString("No polling logs or pollings found for downtime analysis.\n")
 		}
 	default:
 		return &LLMResp{Error: "invalid tab for AI explanation"}

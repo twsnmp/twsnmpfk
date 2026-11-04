@@ -18,6 +18,7 @@
   import * as icons from "@mdi/js";
   import {
     GetNode,
+    GetPollings,
     GetVPanelPorts,
     GetVPanelPowerInfo,
     GetEventLogs,
@@ -244,19 +245,22 @@
 
   const showDowntime = async () => {
     clearSelectedCount();
-    const logs = await GetEventLogs({
-      NodeID: id,
-      Start: "",
-      End: "",
-      Event: "",
-      NodeName: "",
-      EventType: "",
-      Level: 0,
-    });
+    const [logs, pollings] = await Promise.all([
+      GetEventLogs({
+        NodeID: id,
+        Start: "",
+        End: "",
+        Event: "",
+        NodeName: "",
+        EventType: "",
+        Level: 0,
+      }),
+      GetPollings(id),
+    ]);
     if (activeTab !== "downtime") return;
-    downtimeStats = calcNodeDowntimeAndSLA(logs);
+    downtimeStats = calcNodeDowntimeAndSLA(logs, pollings);
     await tick();
-    chart = showNodeDowntimeChart("nodeDowntimeChart", logs);
+    chart = showNodeDowntimeChart("nodeDowntimeChart", logs, pollings);
     await initDowntimeTable();
   };
 
