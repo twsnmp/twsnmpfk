@@ -5,6 +5,9 @@ import (
 	"os"
 	"sync"
 	"testing"
+	"time"
+
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 func TestSensorDataStore(t *testing.T) {
@@ -134,5 +137,74 @@ func TestLogReportDataStore(t *testing.T) {
 	list, _ = ListLogReportData(kind)
 	if len(list) != 0 {
 		t.Fatalf("expected 0 items after reset, got %d", len(list))
+	}
+}
+
+func TestEvaluateSensorStatesI18n(t *testing.T) {
+	origLang := i18n.GetLang()
+	defer i18n.SetLang(origLang)
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	td, err := os.MkdirTemp("", "twsnmpfk_sensor_i18n_test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(td)
+
+	wg := &sync.WaitGroup{}
+	Init(ctx, td, wg)
+
+	// Clear sensors
+	DeleteAllSensors()
+
+	// 1. Test English event log
+	i18n.SetLang("en")
+	UpdateSensor("192.168.1.16", "mqtt", "twBlueScan/Device/test1", 1)
+	sensorsList := ListSensors()
+	if len(sensorsList) != 1 {
+		t.Fatalf("expected 1 sensor, got %d", len(sensorsList))
+	}
+	// Force state change
+	sn := sensorsList[0]
+	sn.LastTime = 0
+	sn.State = "normal"
+	SaveSensor(sn)
+	EvaluateSensorStates(ctx)
+
+	// 2. Test Japanese event log
+	i18n.SetLang("ja")
+	sn.State = "warn"
+	sn.LastTime = 0
+	SaveSensor(sn)
+	EvaluateSensorStates(ctx)
+
+	// Wait for eventLogWorker to receive from channel
+	time.Sleep(50 * time.Millisecond)
+
+	// Cancel context to trigger flush in eventLogWorker
+	cancel()
+	wg.Wait()
+	defer CloseDB()
+
+	var events []string
+	ForEachLastEventLog(func(l *EventLogEnt) bool {
+		if l.Type == "sensor" {
+			events = append(events, l.Event)
+		}
+		return true
+	})
+
+	expectedJa := "センサー状態変化:192.168.1.16,mqtt,twBlueScan/Device/test1"
+	expectedEn := "Change sensor state:192.168.1.16,mqtt,twBlueScan/Device/test1"
+
+	if len(events) < 2 {
+		t.Fatalf("expected at least 2 sensor events, got %d (%v)", len(events), events)
+	}
+	if events[0] != expectedJa {
+		t.Errorf("expected last event %q, got %q", expectedJa, events[0])
+	}
+	if events[1] != expectedEn {
+		t.Errorf("expected previous event %q, got %q", expectedEn, events[1])
 	}
 }

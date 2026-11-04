@@ -222,6 +222,9 @@ var transMap = map[string]map[string]string{
 	"Change polling state:%s(%s)": {
 		"ja": "ポーリング状態変化:%s(%s)",
 	},
+	"Change sensor state:%s,%s,%s": {
+		"ja": "センサー状態変化:%s,%s,%s",
+	},
 	"Select data store path": {
 		"ja": "データストアのパスを選択",
 	},

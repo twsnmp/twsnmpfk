@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/twsnmp/twsnmpfk/i18n"
 	"go.etcd.io/bbolt"
 )
 
@@ -411,7 +412,7 @@ func EvaluateSensorStates(ctx context.Context) {
 		}
 
 		if oldState != sn.State {
-			eventMsg := fmt.Sprintf("センサー状態変化:%s,%s,%s", sn.Host, sn.Type, sn.Param)
+			eventMsg := fmt.Sprintf(i18n.Trans("Change sensor state:%s,%s,%s"), sn.Host, sn.Type, sn.Param)
 			AddEventLog(&EventLogEnt{
 				Type:     "sensor",
 				Level:    sn.State,
