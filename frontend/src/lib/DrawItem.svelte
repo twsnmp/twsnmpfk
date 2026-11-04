@@ -99,6 +99,10 @@
   };
 
   const onOpen = async () => {
+    drawItem = undefined;
+    image = "";
+    nodeID = "";
+    pollingList = [];
     pollings = await GetPollings("");
     const nodes = await GetNodes();
     nodeList.length = 0;
@@ -140,6 +144,8 @@
     }
     if (drawItem.Path) {
       image = await GetImage(drawItem.Path);
+    } else {
+      image = "";
     }
   };
 
@@ -244,6 +250,10 @@
 
   const close = () => {
     show = false;
+    image = "";
+    drawItem = undefined;
+    nodeID = "";
+    pollingList = [];
   };
 
   const save = async () => {
@@ -253,6 +263,9 @@
     drawItem.Scale *= 1;
     drawItem.X *= 1;
     drawItem.Y *= 1;
+    if (drawItem.Type !== 3) {
+      drawItem.Path = "";
+    }
     const a = alpha.toString(16).padStart(2, "0");
     drawItem.Color = drawItem.Color.substring(0, 7) + a;
     const r = await UpdateDrawItem(drawItem);
@@ -267,6 +280,13 @@
       drawItem.Path = p;
       image = await GetImage(p);
     }
+  };
+
+  const clearImage = () => {
+    if (drawItem) {
+      drawItem.Path = "";
+    }
+    image = "";
   };
 
   // Selected polling and available variables
@@ -366,6 +386,10 @@
     if (show && !prevShow) {
       onOpen();
     } else if (!show && prevShow) {
+      image = "";
+      drawItem = undefined;
+      nodeID = "";
+      pollingList = [];
       dispatch("close", {});
     }
     prevShow = show;
@@ -645,6 +669,17 @@
                     <Icon path={icons.mdiImage} size={1} class="mr-1" />
                     {$_("DrawItem.Select") || "画像ファイルを選択"}
                   </GradientButton>
+                  {#if drawItem.Path}
+                    <button
+                      type="button"
+                      class="text-xs text-rose-500 hover:text-rose-400 flex items-center gap-0.5 transition-colors"
+                      onclick={clearImage}
+                      title={$_("DrawItem.Clear") || "解除"}
+                    >
+                      <Icon path={icons.mdiClose} size={0.7} />
+                      {$_("DrawItem.Clear") || "解除"}
+                    </button>
+                  {/if}
                   <span class="text-xs text-gray-500 truncate max-w-xs">{drawItem.Path || ($_("DrawItem.NotSelected") || "未選択")}</span>
                 </div>
               {:else}
@@ -749,7 +784,7 @@
                 </span>
               {:else if drawItem.Type === 3}
                 <!-- Image Preview -->
-                {#if image}
+                {#if drawItem.Path && image}
                   <img
                     src={image}
                     alt="Preview"
