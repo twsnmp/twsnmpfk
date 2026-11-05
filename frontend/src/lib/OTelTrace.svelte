@@ -7,6 +7,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
   import { GetOTelTrace } from "../../wailsjs/go/main/App";
   import {showOTelTimeline  } from "./chart/otel";
 
@@ -36,7 +37,7 @@
     chart = showOTelTimeline("traceTimeline", data);
   }
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Name",
       title: $_('OTel.Name'),
@@ -68,7 +69,7 @@
     },
     {
       data: "SpanID",
-      title: "Span ID",
+      title: $_('OTel.SpanID') || "Span ID",
       width: "12%",
     },
     {
@@ -89,13 +90,22 @@
 
   const showTable = async () => {
     selectedCount = 0;
+    const el = document.querySelector("#traceTable");
+    if (!el) {
+      return;
+    }
+    if (table && DataTable.isDataTable("#traceTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     table = new DataTable("#traceTable", {
       destroy: true,
       paging: false,
       searching: false,
       info: false,
       scrollY: "20vh",
-      columns: columns,
+      columns: getColumns(),
       data: spans,
       order: [[2, "asc"]],
       language: getTableLang(),
@@ -122,8 +132,15 @@
   }
 
 
+  let prevLang = "";
   $: if (show) {
+    prevLang = $currentLang;
     onOpen();
+  }
+
+  $: if (show && prevLang && prevLang !== $currentLang && spans.length > 0) {
+    prevLang = $currentLang;
+    showTable();
   }
 </script>
 
@@ -147,7 +164,7 @@
     <div class="flex justify-end space-x-2 mr-2">
       <GradientButton shadow type="button" color="teal" onclick={close} size="xs">
         <Icon path={icons.mdiCancel} size={1} />
-        {$_('SyslogReport.Close')}
+        {$_('OTel.Close') || $_('SyslogReport.Close')}
       </GradientButton>
     </div>
   </div>

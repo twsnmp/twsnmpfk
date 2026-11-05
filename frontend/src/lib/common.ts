@@ -2,7 +2,8 @@ import * as echarts from 'echarts';
 import numeral from 'numeral';
 import ja from "datatables.net-plugins/i18n/ja.json";
 import { _,unwrapFunctionStore } from 'svelte-i18n';
-import {lang} from '../i18n/i18n';
+import { get } from 'svelte/store';
+import { lang, currentLang } from '../i18n/i18n';
 const $_ = unwrapFunctionStore(_);
 
 
@@ -351,7 +352,8 @@ export const getLogModeName = (m:any) => {
 
 
 export const getTableLang = () => {
-  if (lang != "ja") {
+  const curLang = get(currentLang) || lang;
+  if (curLang != "ja") {
     return undefined;
   }
   const r : any = ja;

@@ -1444,7 +1444,7 @@
   "OTel": {
     "Attributes": "Attributes",
     "Count": "Count",
-    "Dur": "Time",
+    "Dur": "Duration",
     "End": "End",
     "EndTime": "End",
     "First": "First",
@@ -1455,7 +1455,7 @@
     "Metric": "Metric",
     "Min": "Min",
     "Name": "Name",
-    "PSpanID": "ParentSpanID",
+    "PSpanID": "Parent Span ID",
     "Scope": "Scope",
     "Service": "Service",
     "Start": "Start",
@@ -1464,7 +1464,7 @@
     "Sum": "Sum",
     "Time": "Time",
     "Trace": "Trace",
-    "TraceID": "TraceID",
+    "TraceID": "Trace ID",
     "Type": "Type",
     "Close": "Close",
     "Content": "Content",
@@ -1485,7 +1485,11 @@
     "SetLatest1h": "Set Latest 1h",
     "Apply": "Apply",
     "NoTraceData": "No trace data",
-    "NoMatchingData": "No matching data"
+    "NoMatchingData": "No matching data",
+    "Span": "Span",
+    "SpanID": "Span ID",
+    "Minutes": "min",
+    "CountUnit": " items"
   },
   "CertMonitor": {
     "Add": "Add",

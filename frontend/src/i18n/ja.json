@@ -1478,7 +1478,11 @@
     "SetLatest1h": "最新1時間をセット",
     "Apply": "適用",
     "NoTraceData": "トレースデータなし",
-    "NoMatchingData": "該当データなし"
+    "NoMatchingData": "該当データなし",
+    "Span": "Span",
+    "SpanID": "Span ID",
+    "Minutes": "分間",
+    "CountUnit": "件"
   },
   "CertMonitor": {
     "State": "状態",

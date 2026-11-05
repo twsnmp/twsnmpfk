@@ -4,6 +4,7 @@
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
   import { GetOTelMetric } from "../../wailsjs/go/main/App";
   import { showOTelTimeChart, showOTelHistogram } from "./chart/otel";
   import DataTable from "datatables.net-dt";
@@ -68,7 +69,7 @@
     chart = showOTelHistogram("metricChart", d[0]);
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Time",
       title: $_('OTel.Time'),
@@ -124,13 +125,22 @@
 
   const showTable = async () => {
     selectedCount = 0;
+    const el = document.querySelector("#metricTable");
+    if (!el) {
+      return;
+    }
+    if (table && DataTable.isDataTable("#metricTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     table = new DataTable("#metricTable", {
       destroy: true,
       paging: false,
       searching: false,
       info: false,
       scrollY: "20vh",
-      columns: columns,
+      columns: getColumns(),
       data: data,
       order: [[0, "asc"]],
       language: getTableLang(),
@@ -163,8 +173,15 @@
   };
 
 
+  let prevLang = "";
   $: if (show) {
+    prevLang = $currentLang;
     onOpen();
+  }
+
+  $: if (show && prevLang && prevLang !== $currentLang && data.length > 0) {
+    prevLang = $currentLang;
+    showTable();
   }
 </script>
 
@@ -200,7 +217,7 @@
         size="xs"
       >
         <Icon path={icons.mdiCancel} size={1} />
-        {$_("SyslogReport.Close")}
+        {$_("OTel.Close") || $_("SyslogReport.Close")}
       </GradientButton>
     </div>
   </div>

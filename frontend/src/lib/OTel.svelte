@@ -37,6 +37,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
   import OTelMetric from "./OTelMetric.svelte";
   import OTelTrace from "./OTelTrace.svelte";
   import TimeRangeFilter from "./TimeRangeFilter.svelte";
@@ -58,7 +59,7 @@
   let modalEnd = $state("");
   let showMetricReport = $state(false);
   let showTraceReport = $state(false);
-  let table: any = $state(undefined);
+  let table: any = undefined;
   let selectedCount = $state(0);
   let showLoading = $state(false);
 
@@ -90,10 +91,11 @@
     }
     const first = selectedTraceBuckets[0];
     const last = selectedTraceBuckets[selectedTraceBuckets.length - 1];
+    const unit = $_("OTel.CountUnit") || "件";
     if (first === last) {
-      return `${first} (${traces.length}件)`;
+      return `${first} (${traces.length}${unit})`;
     }
-    return `${first} 〜 ${last} (${traces.length}件)`;
+    return `${first} 〜 ${last} (${traces.length}${unit})`;
   });
 
   const resolveSelectedBuckets = (bks: string[]) => {
@@ -193,9 +195,15 @@
 
   const showTable = async (div: string, columns: any, data: any, scol: number) => {
     await tick();
-    if (!document.querySelector(div)) {
+    const el = document.querySelector(div);
+    if (!el) {
       return;
     }
+    if (table && DataTable.isDataTable(div)) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     selectedCount = 0;
     table = new DataTable(div, {
       destroy: true,
@@ -224,7 +232,7 @@
       switch (tab) {
         case "metric":
           metrics = await GetOTelMetrics();
-          await showTable("#otelMetricTable", columnsMetric, metrics, 0);
+          await showTable("#otelMetricTable", getColumnsMetric(), metrics, 0);
           break;
         case "trace":
           const bks = await GetOTelTraceBucketList();
@@ -236,12 +244,12 @@
             traces = [];
           }
           displayTraces = [...traces];
-          await showTable("#otelTraceTable", columnsTrace, displayTraces, 0);
+          await showTable("#otelTraceTable", getColumnsTrace(), displayTraces, 0);
           await showTraceChart();
           break;
         case "log":
           logs = await GetLastOTelLogs();
-          await showTable("#otelLogTable", columnsLog, logs, 1);
+          await showTable("#otelLogTable", getColumnsLog(), logs, 1);
           await showSyslogChart();
           break;
       }
@@ -265,7 +273,7 @@
       } else {
         displayTraces = traces.filter((t: any) => t.Start >= st && t.Start <= et);
       }
-      await showTable("#otelTraceTable", columnsTrace, displayTraces, 0);
+      await showTable("#otelTraceTable", getColumnsTrace(), displayTraces, 0);
     }, 150);
   };
 
@@ -319,7 +327,7 @@
     }
   };
 
-  const columnsMetric = [
+  const getColumnsMetric = () => [
     {
       data: "Host",
       title: $_("OTel.Host"),
@@ -366,7 +374,7 @@
     },
   ];
 
-  const columnsTrace = [
+  const getColumnsTrace = () => [
     {
       data: "Start",
       title: $_("OTel.Start"),
@@ -402,7 +410,7 @@
     },
     {
       data: "NumSpan",
-      title: "Span",
+      title: $_("OTel.Span") || "Span",
       width: "5%",
     },
     {
@@ -412,7 +420,7 @@
     },
   ];
 
-  const columnsLog = [
+  const getColumnsLog = () => [
     {
       data: "Level",
       title: $_("Syslog.Level"),
@@ -447,8 +455,19 @@
     },
   ];
 
+  let prevLang = "";
   onMount(() => {
+    prevLang = $currentLang;
     refresh();
+    const unsubscribe = currentLang.subscribe((l) => {
+      if (prevLang && prevLang !== l) {
+        prevLang = l;
+        refresh();
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
   });
 
   const deleteAll = async () => {
@@ -655,7 +674,7 @@
       <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 p-2 text-xs text-gray-600 dark:text-gray-300 flex flex-col gap-1.5">
         <div class="flex items-center justify-between">
           <span class="font-medium">{$_("OTel.AvailableRange") || "記録データ期間"}:</span>
-          <span class="font-mono">{allTraceBuckets[0]} 〜 {allTraceBuckets[allTraceBuckets.length - 1]} ({allTraceBuckets.length}分間)</span>
+          <span class="font-mono">{allTraceBuckets[0]} 〜 {allTraceBuckets[allTraceBuckets.length - 1]} ({allTraceBuckets.length} {$_("OTel.Minutes") || "分間"})</span>
         </div>
         <div class="flex items-center gap-2 pt-1">
           <button
