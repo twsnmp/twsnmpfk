@@ -6,6 +6,8 @@ Configuration of the management map, server functions, and data collection servi
 
 * **Map Name**
   Name of the map, displayed in the upper-left corner of the screen.
+* **Language**
+  UI display language (Japanese / English). Can also be switched instantly from the header language button.
 * **Map Size**
   Canvas size for the map (Auto, A4 Portrait, A4 Landscape).
 * **Icon Size**

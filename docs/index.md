@@ -138,6 +138,51 @@ New features to improve map usability and organization have been added:
 
 Added support for setting the opacity (transparency) of drawing items and improved the user interface for background image settings.
 
+### New Features in v2.6.0
+
+#### Comprehensive Report Suite & Sensor Monitoring (Ported from TWSNMP NEO)
+- **Integrated Report View (Report)**: Ported the comprehensive report engine and data models (`logreport` package) from TWSNMP NEO, adding a new "Report" item to the top navigation. Aggregates, visualizes, and analyzes data collected from diverse sensors and endpoint agents across dedicated tabs.
+- **Sensor Collection & Health Monitoring (Sensors Tab)**: Supports health state tracking, sensor types, sent/received message statistics, and last seen timestamps for external sensors including `twWifiScan`, `twBlueScan`, `twpcap`, `twwinlog`, and `twagentneo`. Includes telemetry and resource monitor modals, with full i18n support for sensor state change event logs.
+- **Wi-Fi AP Report (Wi-Fi AP Tab)**: Displays detected Wi-Fi access points (SSID, BSSID, RSSI, channel, vendor) and channel distribution charts.
+- **Bluetooth Report (Bluetooth (BLE) Tab)**: Displays BLE beacon/device discovery lists, vendor share pie charts, and RSSI signal strength distribution graphs.
+- **Environmental Sensors Report (Environmental Sensors Tab)**: Aggregates and charts readings from SwitchBot and other environmental sensors (temperature, humidity, pressure, CO2), smart power plugs, and motion sensors.
+- **Pcap Packet Analysis Report (Pcap Packet Analysis Tab)**: Analyzes packet captures from twpcap, providing breakdown statistics for EtherTypes, DNS queries and responses (with cached reverse lookup), RADIUS authentication flows, and TLS encrypted session flows.
+- **Windows Events Report (Windows Events Tab)**: Aggregates and audits Windows security event logs (Event ID, logon/logoff, account management, Kerberos authentication) from twwinlog, featuring KPI cards and detailed event modals.
+- **twagentneo Agent Report (twagentneo Tab)**: Monitors operational status, system resources, AI threat detection (via tensai), File Integrity Monitoring (FIM), Security Configuration Assessment (SCA), and process TCP communication flows from twagentneo agents.
+
+![Comprehensive Report (Sensors & Health Monitoring)](images/en/sensor_report.png)
+
+#### In-App GUI Language Switching (Japanese / English)
+- **Instant Reactive Switching**: Added language switching buttons to the Top navigation bar, Welcome screen, and Map Config dialog. Instantly toggles between Japanese and English across all UI components without requiring application restarts or reloads.
+- **Persistence & CLI Priority**: Persists the selected language in local storage and the map database (bbolt config bucket). The `-lang` command-line flag takes highest priority when specified, falling back to the OS locale if omitted.
+- **Comprehensive Multi-Language Coverage**: Expanded multi-language (i18n) localization to newly added report screens and OpenTelemetry tables and DataTables.
+
+#### OpenTelemetry (OTel) Trace Time Range & UI Enhancements
+- **Presets & Time Range Modal**: Added quick time range presets (e.g. 1h, 6h, 24h) and an interactive custom date/time range modal to the OTel Trace screen.
+- **Chart-Linked Filtering**: Supports interactive time range filtering synchronized with the trace latency time-series chart.
+
+![OpenTelemetry Traces](images/en/otel_4.png)
+
+#### Node Memo Appearance Images
+- **Device Appearance Photos**: Added the ability to register and preview photos and appearance images in node memos, enabling fast physical device identification directly from node reports.
+
+#### Map & Drawing Item Improvements & Stability
+- **Background Image Dialog Enhancements**: Added aspect ratio locking, size presets, and live placement preview.
+- **Drawing Item Fixes**: Resolved an issue where previously added images reappeared when creating new drawing items, fixed gauge title visibility bugs, and improved editor preview consistency.
+- **Freeze Prevention & Update Throttling**: Eliminated screen freezing during map interactions and properly throttled/paused periodic map refreshes while dialogs are open.
+- **Availability & SLA Display**: Improved Node Report SLA/Availability tab to display pollings without failure history and resolved overlapping text on SLA target lines.
+
+#### UI Standardization & Polish
+- **Standardized Dialogs & Input Heights**: Widened configuration dialogs and unified input/select heights (`h-9 text-xs`) for enhanced readability and ease of use.
+- **Log Search Dialog Overhaul**: Widened the modal, unified control heights, prevented window resizing glitches, and added quick time range buttons.
+- **Table Layout Polish**: Optimized Syslog Normalized Analysis table with text wrapping to eliminate horizontal scrolling, and adjusted Node Report tab styling to fit neatly on a single line.
+
+#### Security, Upgrades & Bug Fixes
+- **Server Port Release**: Fixed an issue where the port was not properly released upon stopping the ACME server.
+- **PKI Fix**: Corrected Base64 encoding in EST certificate response handling (`sendESTPKCS7Response`).
+- **Accessibility (a11y) Fixes**: Resolved accessibility warnings on node image previews and MIB browser tables.
+- **Dependency Upgrades**: Upgraded Wails to v2.17.1, gosnmp to v1.47.0, Echo to v4.16.1, go-jose to v4.1.6, vite, and dompurify to address known vulnerabilities.
+
 ### New Features in v2.5.0
 
 #### Major PKI Enhancements (EST RFC 7030 & ACME Improvements)

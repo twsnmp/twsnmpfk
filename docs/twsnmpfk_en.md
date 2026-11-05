@@ -129,6 +129,49 @@ Added support for SHA256/AES128 and SHA512/AES256, providing stronger security f
 
 Added support for opacity (transparency) and improved UI for background images.
 
+### New Features in v2.6.0
+
+- **Comprehensive Report Suite & Sensors**: Ported from TWSNMP NEO. 7 dedicated tabs for Sensors, Wi-Fi AP, Bluetooth (BLE), Environmental, Pcap Packets, Windows Events, and twagentneo.
+- **In-App GUI Language Switching**: Instant reactive switching between Japanese and English from the header/config. Persistent settings and OS locale auto-detection.
+- **OTel Trace Time Range Enhancements**: Quick presets, custom date/time range modal, and latency chart-linked filtering.
+- **Node Memo Appearance Images**: Attach and preview physical device appearance photos directly in node reports.
+- **Map & Drawing Item Improvements**: Background image dialog (aspect lock, presets), freeze prevention, update throttling, and SLA chart display fixes.
+- **UI Standardization & Upgrades**: Unified input/select heights (`h-9 text-xs`), widened modals, log search improvements, and Wails v2.17.1 upgrade.
+
+---
+
+### Comprehensive Report Suite (v2.6.0)
+
+- **Sensor Monitoring & Detailed Reporting (7 Tabs)**:
+  - **Sensors**: Health tracking, message counts, last seen, and telemetry modals for twWifiScan, twBlueScan, twpcap, twwinlog, twagentneo, etc.
+  - **Wi-Fi AP**: Access point listings and channel distribution charts
+  - **Bluetooth (BLE)**: Device discovery, vendor share, and RSSI distribution
+  - **Environmental Sensors**: Real-time & history charts for SwitchBot/environmental/power/motion
+  - **Pcap Packet Analysis**: EtherType, DNS, RADIUS, and TLS flow breakdowns
+  - **Windows Events**: Security audit metrics, KPI cards, and detailed event modals
+  - **twagentneo**: Host telemetry, AI threat alerts, FIM, SCA, and TCP flows
+- **ECharts lifecycle cleanup & full CSV/Excel export support**
+
+---
+
+![h:400 center](./images/en/sensor_report.png)
+
+---
+
+### GUI Language Switching & OTel Enhancements (v2.6.0)
+
+- **In-App Language Switching (Japanese / English)**:
+  - Instant toggle button in header, welcome screen, and map settings
+  - Seamless reactive update without reloads; persistent storage in DB
+  - Priority handling for `-lang` flag, comprehensive multi-language coverage
+- **OpenTelemetry (OTel) Trace Time Range Enhancements**:
+  - Quick presets (1h, 6h, 24h) and custom date/time range picker modal
+  - Interactive filtering synchronized with the trace latency chart
+- **Node Memo Appearance Images**:
+  - Physical equipment photo attachment and preview for rapid hardware identification
+
+---
+
 ### New Features in v2.5.0
 
 - **PKI Enhancements (EST RFC 7030 & ACME)**: RFC 7030 compliant EST server (cacerts, simpleenroll, simplereenroll), mTLS/Basic auth, node matching, ACME DNS-01, IP-01, and device attestation (Apple / YubiKey PIV).
