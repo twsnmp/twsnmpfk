@@ -284,6 +284,8 @@ Significant AI-powered features have been added:
 
 A function has been added to visualize MAC addresses, IP addresses, and other information of devices connected to each port from the FDB (Forwarding Database) table information of network switches, allowing you to grasp the overall connection status of the network. This helps in identifying suspicious connections and fault locations.
 
+![](./images/en/network_report.png)
+
 ### MIB Browser Enhancements
 
 A filtering function has been added to the MIB tree, allowing you to quickly find the desired MIB information. You can search by OID, MIB name, description, and more. Also, the display of TimeTicks and MacAddress MIB values has been improved for better readability.
@@ -954,6 +956,13 @@ In the log of the polling result, the numerical data is displayed in a chronolog
 The numerical data in the log of the polling result is displayed on the histogram.The displayed items can be selected at the top of the graph.It is displayed only when the log mode is not output.
 
 ![](./images/en/polling_list_histogram.png)
+
+
+### QQ Plot
+
+Displays a Quantile-Quantile (Q-Q) plot to evaluate whether the numerical data in the polling logs follows a theoretical normal distribution, plotting sample quantiles against theoretical quantiles along with the fitted line and estimated parameters ($\mu$ and $\sigma$). It is displayed only when the log mode is not output.
+
+![](./images/en/polling_list_qq_plot.png)
 
 
 ### AI analysis
@@ -1683,7 +1692,7 @@ Select a metric and click the Report button to display the time chart.
 #### histogram
 
 If the metric is a histogram, selecting a row in the table displays the histogram for that time.
-![](./images/ja/otel_3.png)
+![](./images/en/otel_3.png)
 
 
 ### trace
@@ -1717,13 +1726,13 @@ This is the screen for the received trace.At the top there is a graph showing th
 
 Graphically displays relationships between services from traces in the selected time range.
 
-![](./images/ja/otel_dag.png)
+![](./images/en/otel_dag.png)
 
 #### Timeline
 
 Displays a graphical view of the selected Torres timeline.
 
-![](./images/ja/otel_5.png)
+![](./images/en/otel_5.png)
 
 
 ### log
@@ -1731,7 +1740,7 @@ Displays a graphical view of the selected Torres timeline.
 This is a screen to search for the received OpenTelemetry logs from syslog.
 At the top, you will see a graph by log level.
 
-![](./images/ja/otel_6.png)
+![](./images/en/otel_6.png)
 
 |Item|Content|
 |----|---|
@@ -1753,7 +1762,7 @@ At the top, you will see a graph by log level.
 
 The OpenTelemetry-related settings in the map settings are in the yellow box.
 
-![](./images/ja/otel_opentelemetry.png)
+![](./images/en/otel_opentelemetry.png)
 
 |Item|Content|
 |----|---|
@@ -1916,6 +1925,66 @@ This is a report that displays an anomaly score in chronological order.
 
 ![](./images/en/ai_ai_anomaly_score_time_chart.png)
 
+## Report
+
+This is the comprehensive sensor and agent report screen (menu "Report").
+It aggregates and visualizes data collected from various sensors and agents such as syslog, twpcap, twBlueScan, twWifiScan, twwinlog, MQTT, and SNMP TRAP, across dedicated tabs for Wi-Fi APs, Bluetooth (BLE), Environmental Sensors, Packet Analysis (Pcap), Windows Security Events, and twagentneo agents.
+
+![](./images/en/sensor_report.png)
+
+| Tab | Contents |
+| ---- | ---- |
+| Sensors | List of all registered sensors, state, type, sent/received message counts, last seen timestamp, and monitoring status. |
+| Wi-Fi AP | Report of Wi-Fi access points detected via twWifiScan (SSID, BSSID, RSSI, channel, encryption). |
+| Bluetooth (BLE) | Proximity detection report for Bluetooth / BLE beacons and devices (smartwatches, tags, etc.) detected via twBlueScan. |
+| Environmental Sensors | List and time-series reports for environmental sensors (temperature, humidity, pressure, CO2, etc.). |
+| Pcap Packet Analysis | Traffic analysis and protocol breakdown from packets captured via twpcap. |
+| Windows Events | Audit aggregation and trust score analysis of Windows security event logs (logon/logoff, account management, process tracking) via twwinlog. |
+| twagentneo | Operational status, resource utilization, and monitored processes for twagentneo agent hosts. |
+
+| Action Button | Action |
+| ---- | ---- |
+| Clear All | Clears all report data in the currently selected tab. |
+| CSV | Exports the displayed report data in CSV format. |
+| Excel | Exports the displayed report data in Excel (.xlsx) format. |
+| Reload | Reloads report data with the latest state. |
+
+### Wi-Fi AP Report
+
+Displays a list of nearby Wi-Fi access points (SSID, BSSID, RSSI, channel, vendor) detected via twWifiScan, along with a channel distribution graph.
+
+![](./images/en/report_wifi.png)
+
+### Bluetooth (BLE) Report
+
+Detection report for Bluetooth / BLE beacons and devices (smartwatches, tags, etc.) detected via twBlueScan, showing vendor share pie chart, signal strength (RSSI) distribution, and detected device list.
+
+![](./images/en/report_bluetooth.png)
+
+### Environmental Sensors Report
+
+Aggregates and visualizes measurements from environmental sensors (temperature, humidity, atmospheric pressure, CO2), power monitors, and motion/light sensors. Supports sub-tabs for "Environmental Sensors", "Power Sensors", and "Motion Sensors".
+
+![](./images/en/report_env.png)
+
+### Pcap Packet Analysis Report
+
+Analyzes network packet captures from twpcap, providing breakdown statistics for EtherTypes, DNS queries and responses, RADIUS authentication flows, and TLS encrypted session flows.
+
+![](./images/en/report_pcap.png)
+
+### Windows Events Report
+
+Aggregates and audits Windows security event logs collected via twwinlog (Event ID, logon/logoff, account management, Kerberos authentication, privilege use, process creation, scheduled tasks).
+
+![](./images/en/report_winlog.png)
+
+### twagentneo Report
+
+Monitors operational status, AI threat analysis (via tensai), file integrity monitoring (FIM), security configuration assessment (SCA), and process TCP flows from twagentneo agents.
+
+![](./images/en/report_agent.png)
+
 ## System
 
 System information screen.At the top, there is a graph showing log resources and communication information in a chronological order.
@@ -1986,6 +2055,12 @@ Configuration for setting up the LLM provider used by TWSNMP FK's AI integration
 > **Recommended: Local LLM (Ollama)**
 > When using cloud LLMs (such as OpenAI or Gemini), network topology, hostnames, IP addresses, and Syslog log contents may be sent to external cloud servers.
 > Using a **Local LLM like Ollama (`ollama run gpt-oss`)** allows you to process all AI analysis completely on-premises with **zero external data transmission, full privacy compliance, and zero API usage cost**. Local LLM deployment is strongly recommended for secure network monitoring environments.
+
+### Local LLM Models & GPU Management (tensai)
+
+Integrates a fully local LLM engine (tensai) that runs directly inside the application without requiring an external Ollama server. Supports GPU hardware acceleration via WebGPU and one-click downloading/managing of GGUF models.
+
+![](./images/en/llm_local_model.png)
 
 
 ### When you want to change the receiving port of syslog, SNMP Trap

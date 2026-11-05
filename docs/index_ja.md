@@ -151,7 +151,7 @@ TWSNMP FKは、継続的に機能強化を行っています。v2.5.0に加わ�
 - **ACMEサーバーの検証方式拡充**: `DNS-01` 検証（ワイルドカード証明書 `*.example.com` の検証・ノード照合）、`IP-01`（RFC 8738、IPv4/IPv6の `http-01`/`tls-alpn-01`）に対応しました。
 - **端末構成証明（Device Attestation）**: Apple Managed Device Attestation（`apple`、iOS 16 / iPadOS 16 / macOS 14以降）および YubiKey PIV / Smallstep（`step`）の端末構成証明に対応しました。発行証明書のSAN拡張に RFC 4043 `PermanentIdentifier`（OID `1.3.6.1.5.5.7.8.3`）を記録し、ノードのシリアル番号やUDIDと確実に紐付けます。
 
-![PKI サーバー制御（ACME/EST）](images/ja/pki_3.png)
+![PKI サーバー制御（ACME/EST）](images/ja/pki_server_control.png)
 
 #### ローカルLLM（tensai v0.0.35）の推論安定化とプリセットモデル拡充
 - **最新エンジンと最適化**: `tensai` パッケージを v0.0.35 に更新し、ARM64 NEON SIMD環境の自動検出・最適化に対応しました。
@@ -165,7 +165,7 @@ TWSNMP FKは、継続的に機能強化を行っています。v2.5.0に加わ�
 - **階層化ドリルダウン表示**: 広域アドレス空間において /24 サブネットブロック単位の集約表示から、クリックにより各ブロック内（1〜254）の個別ホスト割当状況へシームレスにドリルダウンできます。
 - **サブネット範囲一覧テーブルとインライン検索**: 各サブネットの開始/終了IP、アドレス数、使用数、利用率を一覧表示し、ホスト名/IP/MACによるリアルタイム検索・ハイライト表示に対応しました。
 
-![IPアドレス使用状況 (IPAM)](images/ja/address_list_ip.png)
+![IPアドレス使用状況 (IPAM)](images/ja/address_list_ip_address_usage_status.png)
 
 #### ポーリング編集画面の操作性向上
 - **動的モード選択肢**: ポーリング種別（PING, SNMP, HTTP, TCP, TLS, DNS, SSH, gRPC, Syslog, NTP, STUN等）の変更に応じて、利用可能な動作モードの一覧をドロップダウンで即座に提示します。
@@ -318,7 +318,9 @@ AIを活用した強力な機能が大幅に追加されました。
 
 ### ネットワークレポート機能
 
-ネットワークスイッチのFDBテーブル情報から、各ポートに接続されている端末のMACアドレス、IPアドレスなどを可視化し、ネットワーク全体の接続状況を把握できる機能が追加されました。不審な接続や障害箇所の特定に役立ちます。
+ネットワークスイッチのFDBテーブル情報から、各ポートに接続されている端末のMACアドレス、IPアドレスなどを可視化し、ネットワーク全体の接続状況を把握できる機能です。不審な接続や障害箇所の特定に役立ちます。
+
+![](./images/ja/network_report.png)
 
 ### MIBブラウザの強化
 
@@ -638,14 +640,14 @@ MTRの経路情報、ホップ毎の遅延・パケットロス統計データ�
 
 応答時間のヒストグラムです。
 
-![](./images/ja/map_ping_ping_2.png)
+![](./images/ja/map_ping_ping_histogram.png)
 
 
 ####  PING３D分析
 
 応答時間、サイズ、実施日時を３Dのグラフで表示したものです。
 
-![](./images/ja/map_ping_ping_d.png)
+![](./images/ja/map_ping_ping_3d_analysis.png)
 
 #### PING 回線予測
 
@@ -690,7 +692,7 @@ MTRの経路情報、ホップ毎の遅延・パケットロス統計データ�
 
 取得するMIBのオブジェクト名を選択するための画面です。ツリーを開いてオブジェクト名をクリック（シングルクリック）するだけで選択・入力欄へ即座に反映され、ツリー展開状態も保持されます。
 
-![](./images/ja/map_mib_browser_mib.png)
+![](./images/ja/map_mib_browser_mib_tree.png)
 
 #### Setダイアログ
 
@@ -698,7 +700,7 @@ SNMP Setを実施するための画面です。オブジェクト名、タイプ
 クリックするとSetリクエストを送信します。
 
 
-![](./images/ja/map_mib_browser_set.png)
+![](./images/ja/map_mib_browser_set_dialog.png)
 
 
 ### gNMIツール
@@ -743,7 +745,7 @@ SNMP Setを実施するための画面です。オブジェクト名、タイプ
 
 地図上のノードを配置したい場所を右クリックすると追加するためのダイアログが表示されます。ノードを選択すれば追加できます。
 
-![](./images/ja/loc_map_2.png)
+![](./images/ja/loc_map_loc_add_node.png)
 
 
 ## ノードリスト
@@ -775,7 +777,7 @@ SNMP Setを実施するための画面です。オブジェクト名、タイプ
 
 ノードに関連したポーリングのリストです。
 
-![](./images/ja/node_list_2.png)
+![](./images/ja/node_list_node_polling_list.png)
 
 |項目|内容|
 |----|----|
@@ -832,35 +834,35 @@ AI（LLM）を活用して、選択したノードの現在の状態、対応プ
 
 ノードに関連するイベントログです。
 
-![](./images/ja/node_list_3.png)
+![](./images/ja/node_list_node_eventlog.png)
 
 ### パネル
 
 ノードの外観を表示します。SNMPによるinterface MIBの取得か、ライン接続の情報からポートを表示します。
 ＜物理ポート＞スイッチで、物理ポートだけ表示できます。＜回転＞スイッチでパネルの表示を回転します。
 
-![](./images/ja/node_list_4.png)
+![](./images/ja/node_list_panel.png)
 
 
 ### ホスト情報
 
 SNMPのホストリソースMIBの情報を表示します。ホストリソースMIBに対応していない場合は表示できません。
 
-![](./images/ja/node_list_5.png)
+![](./images/ja/node_list_host_information.png)
 
 
 ### ストレージ
 
 SNMPのホストリソースMIBのストレージ情報を表示します。選択するとポーリングの追加ボタンが表示されます。ホストリソースMIBに対応していない場合は表示できません。
 
-![](./images/ja/node_list_7.png)
+![](./images/ja/node_list_storage.png)
 
 
 ### デバイス
 
 SNMPのホストリソースMIBのデバイス情報を表示します。ホストリソースMIBに対応していない場合は表示できません。
 
-![](./images/ja/node_list_6.png)
+![](./images/ja/node_list_device.png)
 
 
 ### File System
@@ -874,7 +876,7 @@ SNMPのホストリソースMIBのFile System,情報を表示します。ホス�
 
 SNMPのホストリソースMIBのプロセス情報を表示します。選択するとポーリングの追加ボタンが表示されます。ホストリソースMIBに対応していない場合は表示できません。
 
-![](./images/ja/node_list_8.png)
+![](./images/ja/node_list_process.png)
 
 
 ## ポーリングリスト
@@ -906,7 +908,7 @@ SNMPのホストリソースMIBのプロセス情報を表示します。選択�
 
 ポーリングを追加する時に表示されるテンプレートの選択画面です。
 
-![](./images/ja/polling_list_2.png)
+![](./images/ja/polling_list_polling_template_selection.png)
 
 |項目|内容|
 |----|----|
@@ -945,7 +947,7 @@ AI（LLM）を活用して、自然言語のプロンプト（監視目的や判
 
 ポーリングに関する基本的な情報です。
 
-![](./images/ja/polling_list_3.png)
+![](./images/ja/polling_list_basic_information.png)
 
 ### ダウンタイム・SLA
 
@@ -965,14 +967,28 @@ AI（LLM）を活用して、自然言語のプロンプト（監視目的や判
 ポーリング結果のログの中で数値データを時系列のグラフで表示します。
 表示する項目は、グラフの上部で選択できます。ログモードを出力しない以外に設定した場合のみ表示されます。
 
-![](./images/ja/polling_list_4.png)
+![](./images/ja/polling_list_time_chart.png)
 
 ### ヒストグラム
 
 ポーリング結果のログの中の数値データをヒストグラムで表示します。
 表示する項目は、グラフの上部で選択できます。ログモードを出力しない以外に設定した場合のみ表示されます。
 
-![](./images/ja/polling_list_5.png)
+![](./images/ja/polling_list_histogram.png)
+
+
+### QQプロット
+
+ポーリング結果のログの数値データが正規分布に従うかを視覚的に確認するためのQ-Qプロット（Quantile-Quantile Plot）を表示します。理論正規分布に対する観測値の分布およびフィッティング直線、推定平均（$\mu$）と標準偏差（$\sigma$）がプロットされます。ログモードを出力しない以外に設定した場合のみ表示されます。
+
+![](./images/ja/polling_list_qq_plot.png)
+
+
+### AI分析
+
+ポーリング結果のログの中の数値データをAI分析した結果です。ログモードをAI分析に設定して十分なデータが得られた場合のみ表示されます。
+
+![](./images/ja/polling_list_ai.png)
 
 
 ## OpenTelemetry
@@ -1170,7 +1186,7 @@ otelCAにクライアント証明書を発行したCAの証明書を指定すれ
 
 マップ設定のMQTT関連の設定は、黄色の矢印の部分です。
 
-![](./images/ja/mqtt_mqtt.png)
+![](./images/ja/mqtt_mqtt_settings.png)
 
 
 有効無効の切り替えと、MQTTで受信したデータをsyslogに記録する設定があります。
@@ -1200,7 +1216,7 @@ AIがTWSNMP FKを利用するためのMCPサーバー機能があります。
 
 マップ設定のMCPサーバー関連の設定は、黄色い枠の部分です。
 
-![](./images/ja/mcp_mcp.png)
+![](./images/ja/mcp_mcp_server_settings.png)
 
 |項目|内容|
 |----|----|
@@ -1289,7 +1305,7 @@ ARP監視機能で見つけた同じセグメントにあるIPアドレスだけ
 上部にアドレス空間サマリー（対象範囲数、全空間アドレス総数、使用中IP総数、全体平均利用率）、中央に全空間を100分割集約した「サブネット相対利用密度ヒートマップ（0%〜100%）」、およびサブネット一覧テーブルを表示します。
 下部には選択したサブネットの詳細割当状況が表示され、広域空間では /24 ブロック集約表示から個別ホスト割当状況（1〜254）へドリルダウンして確認できます。ホスト名/IP/MACによるリアルタイム検索・ハイライトにも対応しています。
 
-![](./images/ja/address_list_ip.png)
+![](./images/ja/address_list_ip_address_usage_status.png)
 
 
 ### IPとMACアドレスの関係（力学モデル）
@@ -1298,7 +1314,7 @@ IPアドレスとMACアドレスの関係を力学モデルで図示したレポ
 正常なアドレスはIPアドレスとMACアドレスが１対１になります。
 同じIPアドレスを複数のMACで使っていたり、複数のIPアドレスをもつ、MACアドレスを検知できます。
 
-![](./images/ja/address_list_ip_mac.png)
+![](./images/ja/address_list_relationship_between_ip_and_mac_address_force_model.png)
 
 ### IPとMACアドレスの関係（円形モデル）
 
@@ -1306,7 +1322,7 @@ IPアドレスとMACアドレスの関係を円形モデルで図示したレポ
 正常なアドレスはIPアドレスとMACアドレスが１対１になります。
 同じIPアドレスを複数のMACで使っていたり、複数のIPアドレスをもつMACアドレスを検知できます。
 
-![](./images/ja/address_list_ip_mac_2.png)
+![](./images/ja/address_list_relationship_between_ip_and_mac_address_circular_model.png)
 
 
 ### STUN グローバルIP情報
@@ -1370,7 +1386,7 @@ TWSNMPからモニターするサーバー証明書のリストです。
 
 モニター対象の編集画面です。
 
-![](./images/ja/cert_list_2.png)
+![](./images/ja/cert_list_edit_to_monitor.png)
 
 対象にIPアドレスまたはホスト名かIPアドレスを指定します。
 ポートには、モニターしたポートの番号を指定します。
@@ -1379,7 +1395,7 @@ TWSNMPからモニターするサーバー証明書のリストです。
 
 PKI機能のCAを構築する前の画面です。
 
-![](./images/ja/pki_2.png)
+![](./images/ja/pki_certificate_list.png)
 
 設定項目は次の表です。
 
@@ -1431,7 +1447,7 @@ CA構築後は、証明書の一覧画面を表示します。発行した証明
 
 証明書要求(CSR)を作成する画面です。
 
-![](./images/ja/pki_csr.png)
+![](./images/ja/pki_certificate_list_create_csr.png)
 
 |項目|内容|
 |----|----|
@@ -1448,7 +1464,7 @@ CA構築後は、証明書の一覧画面を表示します。発行した証明
 
 PKIサーバーの動作を制御する画面です。
 
-![](./images/ja/pki_3.png)
+![](./images/ja/pki_server_control.png)
 
 |項目|内容|
 |----|----|
@@ -1498,7 +1514,7 @@ AI（LLM）を活用して、記録されたシステムイベントや警告ロ
 
 イベントログの検索条件を指定するダイアログです。
 
-![](./images/ja/eventlog_2.png)
+![](./images/ja/eventlog_event_log_filter.png)
 
 
 |項目|内容|
@@ -1522,35 +1538,35 @@ AI（LLM）を活用して、記録されたシステムイベントや警告ロ
 
 イベントログの件数を状態（レベル）別に集計したレポートです。
 
-![](./images/ja/eventlog_3.png)
+![](./images/ja/eventlog_event_log_count_by_state.png)
 
 
 ### イベントログ ヒートマップ
 
 イベントログの時間毎の件数をヒートマップで集計したレポートです。
 
-![](./images/ja/eventlog_4.png)
+![](./images/ja/eventlog_event_log_heatmap.png)
 
 
 ### イベントログ ノード別
 
 イベントログの件数をノード別に集計したレポートです。
 
-![](./images/ja/eventlog_5.png)
+![](./images/ja/eventlog_event_log_count_by_node.png)
 
 
 ### 稼働率
 
 イベントログの中の稼働率(oprate)の値を時系列グラフにしたレポートです。
 
-![](./images/ja/eventlog_6.png)
+![](./images/ja/eventlog_operating_rate.png)
 
 
 ### ARP監視
 
 イベントログの中のアドレス使用率(arpwatch)の値を時系列グラフにしたレポートです。
 
-![](./images/ja/eventlog_arp.png)
+![](./images/ja/eventlog_arp_watch.png)
 
 ### AI解説
 
@@ -1587,7 +1603,7 @@ Syslogの画面です。上部にログの発生件数を時系列で示した�
 
 Syslogの検索条件を指定するダイアログです。
 
-![](./images/ja/syslog_syslog.png)
+![](./images/ja/syslog_syslog_filter.png)
 
 |項目|内容|
 |----|----|
@@ -1602,34 +1618,34 @@ Syslogの検索条件を指定するダイアログです。
 
 Syslogの件数を状態別に集計したレポートです。
 
-![](./images/ja/syslog_syslog_2.png)
+![](./images/ja/syslog_syslog_count_by_state.png)
 
 
 ### Syslog ヒートマップ
 
 Syslogの時間毎の件数をヒートマップで集計したレポートです。
 
-![](./images/ja/syslog_syslog_3.png)
+![](./images/ja/syslog_syslog_heatmap.png)
 
 
 ### Syslog ホスト別
 
 Syslogの件数を送信元ホスト別に集計したレポートです。
 
-![](./images/ja/syslog_syslog_4.png)
+![](./images/ja/syslog_syslog_count_by_host.png)
 
 ### 正規化分析
 
 syslogを正規化して集計したレポートです。
 数値、IPアドレス、メールアドレスなどを共通の文字に置き換えてカウントするものです。
 
-![](./images/ja/syslog_2.png)
+![](./images/ja/syslog_normalization_analysis.png)
 
 ### Syslog ホスト別(3D)
 
 Syslogを送信元ホスト、プライオリティー、時刻の３次元グラフで表示したレポートです。
 
-![](./images/ja/syslog_syslog_3d.png)
+![](./images/ja/syslog_syslog_count_by_host_3d.png)
 
 ### Syslog FFTによる周期分析
 
@@ -1664,7 +1680,7 @@ SNMP TRAPログの画面です。上部にログの発生件数を時系列で�
 
 SNMP TRAPの検索条件を指定するダイアログです。
 
-![](./images/ja/trap_snmp_trap.png)
+![](./images/ja/trap_snmp_trap_filter.png)
 
 |項目|内容|
 |----|----|
@@ -1677,25 +1693,25 @@ SNMP TRAPの検索条件を指定するダイアログです。
 
  SNMP TRAPの件数を種類別に集計したレポートです。
 
-![](./images/ja/trap_snmp_trap_2.png)
+![](./images/ja/trap_snmp_trap_count_by_trap_type.png)
 
 ### SNMP TRAP ヒートマップ
 
 SNMP TRAPの時間毎の件数をヒートマップで集計したレポートです。
 
-![](./images/ja/trap_snmp_trap_3.png)
+![](./images/ja/trap_snmp_trap_heatmap.png)
 
 ### SNMP TRAP ホスト別
 
 SNMP TRAPの受信件数を送信元ホスト別に集計したレポートです。
 
-![](./images/ja/trap_snmp_trap_4.png)
+![](./images/ja/trap_snmp_trap_count_by_host.png)
 
 ### SNMP TRAP 送信元と種別(3D)
 
 SNMP TRAPの受信ログを送信元ホスト、種別、時刻の３次元グラフで表示したレポートです。
 
-![](./images/ja/trap_snmp_trap_3d.png)
+![](./images/ja/trap_snmp_trap_send_source_and_type_3d.png)
 
 ### AI解説
 
@@ -1740,7 +1756,7 @@ NetFlowの分析画面です。
 
 NetFlow検索のためのフィルターです。
 
-![](./images/ja/trap_netflow_2.png)
+![](./images/ja/trap_netflow_filter_item.png)
 
 |項目|内容|
 |----|----|
@@ -1909,14 +1925,14 @@ ARP監視ログの画面です。
 
 IPアドレス別にログの件数を集計したレポートです。変化が多いIPアドレスが一目瞭然です。
 
-![](./images/ja/arp_arp_ip.png)
+![](./images/ja/arp_arp_watch_log_count_by_ip_address.png)
 
 ### ARP監視ログ IPアドレス別(3D)
 
 IPアドレスと時系列の両面からARP監視ログを集計したレポートです。
 新規発見や変化の時期が一目瞭然です。
 
-![](./images/ja/arp_arp_ip_3d.png)
+![](./images/ja/arp_arp_watch_log_count_by_ip_address_3d.png)
 
 
 
@@ -1943,19 +1959,79 @@ IPアドレスと時系列の両面からARP監視ログを集計したレポー
 
 異常スコアを一日単位のヒートマップで示したレポートです。赤い色ほど異常が発生した時間帯であることを示しています。
 
-![](./images/ja/ai_list_ai.png)
+![](./images/ja/ai_ai_anomaly_score_heatmap.png)
 
 ### AI異常スコアの割合
 
 異常スコアを全期間で集計した割合を円グラフで示しています。
 
-![](./images/ja/ai_list_ai_2.png)
+![](./images/ja/ai_ai_anomaly_score_percentage.png)
 
 ### AI異常スコアのタイムチャート
 
 異常スコアを時系列で表示したレポートです。
 
-![](./images/ja/ai_list_ai_3.png)
+![](./images/ja/ai_ai_anomaly_score_time_chart.png)
+
+## レポート
+
+各種センサーやエージェントから収集されたデータの総合レポート（メニュー「Report」）の画面です。
+syslog、twpcap、twBlueScan、twWifiScan、twwinlog、MQTT、SNMP TRAP などのセンサー端末から受信したメッセージ状況や、Wi-Fi/Bluetoothスキャン、環境センサー、パケット解析、Windowsイベントログ、twagentneoエージェントの稼働状況をタブ別に可視化・集計します。
+
+![](./images/ja/sensor_report.png)
+
+|タブ|内容|
+|----|----|
+|Sensors|登録されている全センサーの状態、種別、送受信メッセージ数、最終確認日時（Last Seen）の一覧と監視設定です。|
+|Wi-Fi AP|twWifiScan等によって検出されたWi-Fiアクセスポイント（SSID, BSSID, RSSI, チャンネル, 暗号化方式）のレポートです。|
+|Bluetooth (BLE)|twBlueScan等によって検出されたBluetooth / BLEビーコンや端末（スマートウォッチ、タグ等）の近傍検出レポートです。|
+|Environmental Sensors|温度、湿度、気圧、CO2などの環境センサーデータの一覧と推移レポートです。|
+|Pcap Packet Analysis|twpcap等によってキャプチャされたパケットデータから、プロトコル別トラフィックや通信傾向を分析するレポートです。|
+|Windows Events|twwinlog等から収集されたWindowsセキュリティイベント（ログオン/ログオフ、アカウント操作、プロセス起動など）の集計と信用スコア分析です。|
+|twagentneo|twagentneoエージェント端末の稼働状態、リソース使用状況、監視プロセス一覧を表示します。|
+
+|操作ボタン|動作|
+|----|----|
+|Clear All|現在選択しているタブのレポートデータを全消去します。|
+|CSV|表示中のレポートデータをCSV形式でエクスポートします。|
+|Excel|表示中のレポートデータをExcel形式（.xlsx）でエクスポートします。|
+|Reload|レポートデータを最新の状態に再読み込みします。|
+
+### Wi-Fi AP レポート
+
+twWifiScan 等によって検出された近傍の Wi-Fi アクセスポイント（SSID, BSSID, RSSI, チャンネル, ベンダー等）の一覧と、チャンネル別の AP 分布グラフを表示します。
+
+![](./images/ja/report_wifi.png)
+
+### Bluetooth (BLE) レポート
+
+twBlueScan 等によって検出された Bluetooth / BLE ビーコンや端末（スマートウォッチ、タグ等）の検出レポートです。ベンダー割合の円グラフや受信信号強度（RSSI）の分布グラフ、検知端末一覧を表示します。
+
+![](./images/ja/report_bluetooth.png)
+
+### 環境センサー レポート
+
+SwitchBot等の各種環境センサー（温度、湿度、気圧、CO2等）、電力モニター、人感・照度センサーの測定値を集計・可視化するレポートです。サブタブで「環境センサー」「電力センサー」「人感センサー」を切り替え可能です。
+
+![](./images/ja/report_env.png)
+
+### Pcap パケット分析 レポート
+
+twpcap 等でキャプチャされたパケットデータを解析し、EtherType別フレーム数、DNSクエリ/応答統計、RADIUS認証フロー、TLS暗号化通信フローの集計・分析結果を表示します。
+
+![](./images/ja/report_pcap.png)
+
+### Windows イベント レポート
+
+twwinlog 等から収集されたWindowsセキュリティイベントログ（Event ID、ログオン/ログオフ、アカウント操作、Kerberos認証、特権利用、プロセス起動、タスクスケジューラ）を集計・分析するレポートです。
+
+![](./images/ja/report_winlog.png)
+
+### twagentneo レポート
+
+twagentneo エージェント端末から収集された稼働状態、AI脅威判定（tensai連携）、ファイル整合性監視（FIM）、セキュリティ構成評価（SCA）、およびプロセスTCP通信フローを集計・表示するレポートです。
+
+![](./images/ja/report_agent.png)
 
 ## System
 
@@ -1982,7 +2058,7 @@ System情報の画面です。上部にログのリソースと通信の情報�
 
 データベースサイズとディスク使用率の１年間の予測です。
 
-![](./images/ja/system_system.png)
+![](./images/ja/system_size_prediction.png)
 
 
 ## マップ設定
@@ -2026,6 +2102,12 @@ TWSNMP FK のAI連携機能（ノードAI総合診断、ログ解説、AIポー�
 > **ローカルLLM（Ollama等）の利用推奨**
 > クラウドAI（OpenAIやGemini等）を利用する場合、ネットワーク構成情報やSyslog・IPアドレス等のログデータが外部クラウドへ送信される可能性があります。
 > **Ollama + `gpt-oss`** などのローカルLLM環境を利用することで、**ネットワーク構成やログ情報を外部に一切送信することなく、完全オンプレミス・オフライン環境で安全かつ無料**でAIアシスタント機能を運用できるため、ローカルLLMの活用を強くおすすめします。
+
+### ローカルLLMモデル & GPU管理 (tensai)
+
+Ollama等の外部サーバーを別途用意することなく、アプリ単体で完全ローカル動作するLLMエンジン（tensai）を統合しています。WebGPUによるGPU高速推論およびGGUFモデルのダウンロード・管理に対応しています。
+
+![](./images/ja/llm_local_model.png)
 
 
 ### Syslog,SNMP TRAPの受信ポートを変えたい時
@@ -2171,7 +2253,7 @@ https://tile.openstreetmap.jp/styles/osm-bright-ja/style.json
 
 ### アイコン編集画面
 
-![](./images/ja/icon_conf_2.png)
+![](./images/ja/icon_conf_icon_editing_screen.png)
 
 |項目|内容|
 |----|----|
@@ -2199,7 +2281,7 @@ SNMPのMIBを管理する画面です。
 
 ### MIBツリー画面
 
-![](./images/ja/mib_conf_mib.png)
+![](./images/ja/mib_conf_mib_tree_screen.png)
 
 ## データストア内のファイル
 

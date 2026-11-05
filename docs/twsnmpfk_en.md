@@ -323,6 +323,8 @@ TWSNMP FK provides a "Network Report" function that visualizes MAC addresses, IP
 
 By clicking on the network icon on the map displayed on the "Network" screen, a detailed report of that network will be displayed. This report includes the FDB table, last change time of each port, and so on.
 
+![h:400 center](./images/en/network_report.png)
+
 ### FDB Table Visualization
 
 Based on the FDB table information, a list of which MAC addresses are connected to each port, and the corresponding IP addresses and hostnames for those MAC addresses, is displayed. This allows you to see at a glance which device in the network is connected to which port.
@@ -1051,6 +1053,13 @@ The numerical data in the log of the polling result is displayed on the histogra
 <!-- _class: tinytext -->
 
 ![h:400 center](./images/en/polling_list_histogram.png)
+
+---
+### QQ Plot
+Displays a Quantile-Quantile (Q-Q) plot to evaluate whether the numerical data in the polling logs follows a theoretical normal distribution, plotting sample quantiles against theoretical quantiles along with the fitted line and estimated parameters. It is displayed only when the log mode is not output.
+<!-- _class: tinytext -->
+
+![h:400 center](./images/en/polling_list_qq_plot.png)
 
 ---
 ### AI analysis
@@ -1856,13 +1865,13 @@ Time charts and histograms are available for visualization.
 ### Traces
 Displays DAG (relationships between services) and timeline graphs.
 
-![h:400 center](./images/ja/otel_dag.png)
+![h:400 center](./images/en/otel_dag.png)
 
 ---
 ### Settings
 Retention Time, Source IP limits, and reception ON/OFF.
 
-![h:400 center](./images/ja/otel_opentelemetry.png)
+![h:400 center](./images/en/otel_opentelemetry.png)
 
 ---
 ## MQTT
@@ -1950,6 +1959,63 @@ The percentage of the anomaly score in the entire period is shown in a circular 
 This is a report that displays an anomaly score in chronological order.
 
 ![h:400 center](./images/en/ai_ai_anomaly_score_time_chart.png)
+
+---
+## Report
+Comprehensive sensor and agent report screen (menu "Report").
+Aggregates and visualizes messages from syslog, twpcap, twBlueScan, twWifiScan, twwinlog, MQTT, and SNMP TRAP, with dedicated views for Wi-Fi, Bluetooth, environmental data, packet analysis, Windows event logs, and twagentneo agents.
+
+![h:400 center](./images/en/sensor_report.png)
+
+---
+### Report Tabs Breakdown
+<!-- _class: tinytext -->
+
+| Tab | Contents |
+| ---- | ---- |
+| Sensors | Registered sensors state, type, message statistics, last seen timestamp, and monitoring controls. |
+| Wi-Fi AP | Wi-Fi access points detected by twWifiScan (SSID, BSSID, RSSI, channel, encryption). |
+| Bluetooth (BLE) | Proximity detection report for BLE beacons and wearables detected by twBlueScan. |
+| Environmental Sensors | Environmental sensor values (temperature, humidity, atmospheric pressure, CO2, etc.). |
+| Pcap Packet Analysis | Traffic flow and protocol statistics from packet captures via twpcap. |
+| Windows Events | Windows security log aggregation (logon/logoff, user actions, process activity) and trust scoring. |
+| twagentneo | Operational metrics, system resources, and active monitored processes on twagentneo agents. |
+
+---
+### Wi-Fi AP Report
+Displays detected Wi-Fi access points and channel distribution graph.
+
+![h:400 center](./images/en/report_wifi.png)
+
+---
+### Bluetooth (BLE) Report
+Displays detected Bluetooth / BLE devices, vendor breakdown, and signal strength distribution.
+
+![h:400 center](./images/en/report_bluetooth.png)
+
+---
+### Environmental Sensors Report
+Displays environmental sensor telemetry (temperature, humidity, CO2), power monitors, and motion sensors.
+
+![h:400 center](./images/en/report_env.png)
+
+---
+### Pcap Packet Analysis Report
+Provides detailed breakdown of EtherTypes, DNS queries, RADIUS flows, and TLS encrypted flows.
+
+![h:400 center](./images/en/report_pcap.png)
+
+---
+### Windows Events Report
+Aggregates and audits Windows security logs (Event ID, logon/logoff, account operations, process activity).
+
+![h:400 center](./images/en/report_winlog.png)
+
+---
+### twagentneo Report
+Monitors agent operational status, AI threat classification, file integrity (FIM), security configuration assessment (SCA), and process TCP flows.
+
+![h:400 center](./images/en/report_agent.png)
 
 ---
 ## System
