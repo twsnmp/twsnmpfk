@@ -1472,7 +1472,20 @@
     "Item": "Item",
     "MetricInfo": "Metric Info",
     "Unit": "Unit",
-    "Report": "Report"
+    "Report": "Report",
+    "Last15m": "Last 15m",
+    "Last30m": "Last 30m",
+    "Last1h": "Last 1h",
+    "Last3h": "Last 3h",
+    "AllPeriod": "All Period",
+    "CustomRange": "Custom Range...",
+    "TimeRangeFilter": "Trace Time Range Filter",
+    "AvailableRange": "Recorded Data Range",
+    "SetAllRange": "Set All Range",
+    "SetLatest1h": "Set Latest 1h",
+    "Apply": "Apply",
+    "NoTraceData": "No trace data",
+    "NoMatchingData": "No matching data"
   },
   "CertMonitor": {
     "Add": "Add",

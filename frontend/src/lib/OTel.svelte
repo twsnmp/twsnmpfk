@@ -7,7 +7,7 @@
     Spinner,
     Tabs,
     TabItem,
-    MultiSelect,
+    Select,
     Table,
     TableBody,
     TableHead,
@@ -39,20 +39,157 @@
   import { _ } from "svelte-i18n";
   import OTelMetric from "./OTelMetric.svelte";
   import OTelTrace from "./OTelTrace.svelte";
+  import TimeRangeFilter from "./TimeRangeFilter.svelte";
   import { showOTelTrace, showOTelDAG } from "./chart/otel";
   import { showLogLevelChart } from "./chart/loglevel";
 
   let metrics: any = $state([]);
   let traces: any = $state([]);
+  let displayTraces: any = $state([]);
   let logs: any = $state([]);
   let tab = $state("metric");
-  let traceBuckets: any = $state([]);
-  let selectedTraceBuckets: any = $state([]);
+  let allTraceBuckets: string[] = $state([]);
+  let selectedTraceBuckets: string[] = $state([]);
+  let tracePreset = $state("1h");
+  let filterStart = $state("");
+  let filterEnd = $state("");
+  let showTimeRangeModal = $state(false);
+  let modalStart = $state("");
+  let modalEnd = $state("");
   let showMetricReport = $state(false);
   let showTraceReport = $state(false);
   let table: any = $state(undefined);
   let selectedCount = $state(0);
   let showLoading = $state(false);
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const formatLocalIso = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  let presetOptions = $derived([
+    { value: "15m", name: $_("OTel.Last15m") || "直近 15分" },
+    { value: "30m", name: $_("OTel.Last30m") || "直近 30分" },
+    { value: "1h", name: $_("OTel.Last1h") || "直近 1時間" },
+    { value: "3h", name: $_("OTel.Last3h") || "直近 3時間" },
+    { value: "all", name: $_("OTel.AllPeriod") || "全記録期間" },
+    { value: "custom", name: $_("OTel.CustomRange") || "指定日時範囲..." },
+  ]);
+
+  let timeRangeSummary = $derived.by(() => {
+    if (allTraceBuckets.length === 0) {
+      return $_("OTel.NoTraceData") || "トレースなし";
+    }
+    if (selectedTraceBuckets.length === 0) {
+      return $_("OTel.NoMatchingData") || "該当なし";
+    }
+    const first = selectedTraceBuckets[0];
+    const last = selectedTraceBuckets[selectedTraceBuckets.length - 1];
+    if (first === last) {
+      return `${first} (${traces.length}件)`;
+    }
+    return `${first} 〜 ${last} (${traces.length}件)`;
+  });
+
+  const resolveSelectedBuckets = (bks: string[]) => {
+    if (bks.length === 0) {
+      selectedTraceBuckets = [];
+      return;
+    }
+    if (tracePreset === "all") {
+      selectedTraceBuckets = [...bks];
+      return;
+    }
+    if (tracePreset === "custom") {
+      selectedTraceBuckets = bks.filter(
+        (b: string) => (!filterStart || b >= filterStart) && (!filterEnd || b <= filterEnd)
+      );
+      return;
+    }
+    const now = new Date();
+    let mins = 60;
+    if (tracePreset === "15m") mins = 15;
+    else if (tracePreset === "30m") mins = 30;
+    else if (tracePreset === "1h") mins = 60;
+    else if (tracePreset === "3h") mins = 180;
+
+    const s = formatLocalIso(new Date(now.getTime() - mins * 60 * 1000));
+    const e = formatLocalIso(now);
+    let matched = bks.filter((b: string) => b >= s && b <= e);
+
+    if (matched.length === 0 && bks.length > 0) {
+      const latestBucket = bks[bks.length - 1];
+      const latestDate = new Date(latestBucket);
+      if (!isNaN(latestDate.getTime())) {
+        const fallbackS = formatLocalIso(new Date(latestDate.getTime() - mins * 60 * 1000));
+        const fallbackE = latestBucket;
+        const fallbackMatched = bks.filter((b: string) => b >= fallbackS && b <= fallbackE);
+        if (fallbackMatched.length > 0) {
+          matched = fallbackMatched;
+          filterStart = fallbackS;
+          filterEnd = fallbackE;
+        }
+      }
+    } else {
+      filterStart = s;
+      filterEnd = e;
+    }
+
+    selectedTraceBuckets = matched;
+  };
+
+  const openTimeRangeModal = () => {
+    modalStart = filterStart;
+    modalEnd = filterEnd;
+    if (!modalStart && allTraceBuckets.length > 0) {
+      modalStart = allTraceBuckets[0];
+    }
+    if (!modalEnd && allTraceBuckets.length > 0) {
+      modalEnd = allTraceBuckets[allTraceBuckets.length - 1];
+    }
+    showTimeRangeModal = true;
+  };
+
+  const onPresetChange = async (e: Event) => {
+    const val = (e.target as HTMLSelectElement).value;
+    tracePreset = val;
+    if (val === "custom") {
+      openTimeRangeModal();
+      return;
+    }
+    await refresh();
+  };
+
+  const applyCustomTimeRange = async () => {
+    filterStart = modalStart;
+    filterEnd = modalEnd;
+    tracePreset = "custom";
+    showTimeRangeModal = false;
+    await refresh();
+  };
+
+  const setAllRangeModal = () => {
+    if (allTraceBuckets.length > 0) {
+      modalStart = allTraceBuckets[0];
+      modalEnd = allTraceBuckets[allTraceBuckets.length - 1];
+    }
+  };
+
+  const setLatest1hModal = () => {
+    if (allTraceBuckets.length > 0) {
+      const latest = allTraceBuckets[allTraceBuckets.length - 1];
+      const latestDate = new Date(latest);
+      if (!isNaN(latestDate.getTime())) {
+        modalStart = formatLocalIso(new Date(latestDate.getTime() - 60 * 60 * 1000));
+        modalEnd = latest;
+      }
+    }
+  };
 
   const showTable = async (div: string, columns: any, data: any, scol: number) => {
     await tick();
@@ -91,26 +228,15 @@
           break;
         case "trace":
           const bks = await GetOTelTraceBucketList();
-          const sel: any = [];
-          selectedTraceBuckets.forEach((t: any) => {
-            if (bks.includes(t)) {
-              sel.push(t);
-            }
-          });
-          selectedTraceBuckets = sel;
-          traceBuckets = [];
-          bks.forEach((b: string) => {
-            traceBuckets.push({ name: b, value: b });
-          });
-          if (selectedTraceBuckets.length < 1 && bks.length > 0) {
-            selectedTraceBuckets.push(bks[bks.length - 1]);
-          }
+          allTraceBuckets = bks;
+          resolveSelectedBuckets(bks);
           if (selectedTraceBuckets.length > 0) {
             traces = await GetOTelTraces(selectedTraceBuckets);
           } else {
             traces = [];
           }
-          await showTable("#otelTraceTable", columnsTrace, traces, 0);
+          displayTraces = [...traces];
+          await showTable("#otelTraceTable", columnsTrace, displayTraces, 0);
           await showTraceChart();
           break;
         case "log":
@@ -127,13 +253,32 @@
   };
 
   let chart: any = undefined;
+  let zoomTimer: any = undefined;
+
+  const onTraceZoom = (st: any, et: any) => {
+    if (zoomTimer) {
+      clearTimeout(zoomTimer);
+    }
+    zoomTimer = setTimeout(async () => {
+      if (st === false && et === false) {
+        displayTraces = [...traces];
+      } else {
+        displayTraces = traces.filter((t: any) => t.Start >= st && t.Start <= et);
+      }
+      await showTable("#otelTraceTable", columnsTrace, displayTraces, 0);
+    }, 150);
+  };
 
   const showTraceChart = async () => {
     await tick();
     if (!document.getElementById("otelTraceChart")) {
       return;
     }
-    chart = showOTelTrace("otelTraceChart", traces);
+    if (chart) {
+      chart.dispose();
+      chart = undefined;
+    }
+    chart = showOTelTrace("otelTraceChart", traces, onTraceZoom);
   };
 
   const showSyslogChart = async () => {
@@ -449,13 +594,24 @@
         <Icon path={icons.mdiGraph} size={1} />
         DAG
       </GradientButton>
-      <MultiSelect
-        items={traceBuckets}
-        bind:value={selectedTraceBuckets}
-        placeholder="Date and Time"
-        class="h-8 w-96"
+      <Select
+        items={presetOptions}
+        bind:value={tracePreset}
+        onchange={onPresetChange}
         size="sm"
+        class="h-8 w-36 text-xs"
       />
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        onclick={openTimeRangeModal}
+        size="xs"
+        title={$_("TimeRange.TimeRange")}
+      >
+        <Icon path={icons.mdiClockOutline} size={1} />
+        <span class="ml-1 text-xs whitespace-nowrap">{timeRangeSummary}</span>
+      </GradientButton>
     {/if}
     <GradientButton
       shadow
@@ -486,6 +642,66 @@
     <Spinner />
     <span class="ml-2"> {$_("Syslog.Loading")} </span>
   </div>
+</Modal>
+
+<Modal bind:open={showTimeRangeModal} size="md" dismissable={false} outsideclose={false} class="w-full">
+  <form class="flex flex-col space-y-4" action="#" onsubmit={(e) => { e.preventDefault(); applyCustomTimeRange(); }}>
+    <h3 class="mb-1 font-medium text-gray-900 dark:text-white flex items-center gap-2">
+      <Icon path={icons.mdiClockOutline} size={1} />
+      {$_("OTel.TimeRangeFilter") || "トレース時間範囲指定"}
+    </h3>
+
+    {#if allTraceBuckets.length > 0}
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 p-2 text-xs text-gray-600 dark:text-gray-300 flex flex-col gap-1.5">
+        <div class="flex items-center justify-between">
+          <span class="font-medium">{$_("OTel.AvailableRange") || "記録データ期間"}:</span>
+          <span class="font-mono">{allTraceBuckets[0]} 〜 {allTraceBuckets[allTraceBuckets.length - 1]} ({allTraceBuckets.length}分間)</span>
+        </div>
+        <div class="flex items-center gap-2 pt-1">
+          <button
+            type="button"
+            onclick={setAllRangeModal}
+            class="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-0.5 text-[11px] font-medium text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+          >
+            {$_("OTel.SetAllRange") || "全期間をセット"}
+          </button>
+          <button
+            type="button"
+            onclick={setLatest1hModal}
+            class="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-0.5 text-[11px] font-medium text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+          >
+            {$_("OTel.SetLatest1h") || "最新1時間をセット"}
+          </button>
+        </div>
+      </div>
+    {/if}
+
+    <TimeRangeFilter bind:start={modalStart} bind:end={modalEnd} />
+
+    <div class="flex justify-end space-x-2 mr-2">
+      <GradientButton
+        shadow
+        type="button"
+        color="teal"
+        onclick={() => {
+          showTimeRangeModal = false;
+        }}
+        size="xs"
+      >
+        <Icon path={icons.mdiCancel} size={1} />
+        {$_("OTel.Close")}
+      </GradientButton>
+      <GradientButton
+        shadow
+        type="submit"
+        color="blue"
+        size="xs"
+      >
+        <Icon path={icons.mdiCheck} size={1} />
+        {$_("OTel.Apply") || "適用"}
+      </GradientButton>
+    </div>
+  </form>
 </Modal>
 
 <Modal bind:open={showDAG} size="xl" dismissable={false} outsideclose={false} class="w-full">

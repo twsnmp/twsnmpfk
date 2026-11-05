@@ -3,6 +3,7 @@ import "echarts-gl";
 import { options } from "numeral";
 import { _, unwrapFunctionStore } from "svelte-i18n";
 import { zoom } from "../map";
+import { setZoomCallback } from "./utils.js";
 const $_ = unwrapFunctionStore(_);
 
 export const showOTelTimeline = (div: string, data: any) => {
@@ -120,7 +121,7 @@ export const showOTelTimeline = (div: string, data: any) => {
   return chart;
 };
 
-export const showOTelTrace = (div: string, traces: any) => {
+export const showOTelTrace = (div: string, traces: any, zoomCallback?: any) => {
   const chart = echarts.init(document.getElementById(div), "dark");
   const option :any = {
     title: {
@@ -245,15 +246,26 @@ export const showOTelTrace = (div: string, traces: any) => {
       },
     ],
   };
+  let st = 0;
+  let lt = 0;
   traces.forEach((t:any)=>{
     const ts = new Date(t.Start / (1000 * 1000));
     if(option.visualMap.max < t.Dur) {
       option.visualMap.max = t.Dur;
     }
     option.series[0].data.push([ts,t.Dur,t.NumSpan,t.TraceID]);
+    if (st === 0 || t.Start < st) {
+      st = t.Start;
+    }
+    if (lt === 0 || t.Start > lt) {
+      lt = t.Start;
+    }
   });
   chart.setOption(option);
   chart.resize();
+  if (zoomCallback && traces.length > 0) {
+    setZoomCallback(chart, zoomCallback, st, lt);
+  }
   return chart;
 };
 

@@ -1465,7 +1465,20 @@
     "Content": "内容",
     "Unit": "単位",
     "Descr": "説明",
-    "Report": "レポート"
+    "Report": "レポート",
+    "Last15m": "直近 15分",
+    "Last30m": "直近 30分",
+    "Last1h": "直近 1時間",
+    "Last3h": "直近 3時間",
+    "AllPeriod": "全記録期間",
+    "CustomRange": "指定日時範囲...",
+    "TimeRangeFilter": "トレース時間範囲指定",
+    "AvailableRange": "記録データ期間",
+    "SetAllRange": "全期間をセット",
+    "SetLatest1h": "最新1時間をセット",
+    "Apply": "適用",
+    "NoTraceData": "トレースデータなし",
+    "NoMatchingData": "該当データなし"
   },
   "CertMonitor": {
     "State": "状態",
