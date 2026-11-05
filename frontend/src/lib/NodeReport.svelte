@@ -1600,20 +1600,23 @@
                   <!-- Image Preview and Controls -->
                   <div class="flex-1 flex flex-col min-h-0">
                     <div class="flex-1 relative flex items-center justify-center bg-gray-900/80 rounded border border-gray-700/80 overflow-hidden group">
-                      <img
-                        src={nodeImage}
-                        alt="Node Appearance"
-                        class="max-w-full max-h-[32vh] object-contain cursor-pointer transition-transform duration-200 group-hover:scale-[1.02]"
-                        onclick={() => (showImageEnlargeModal = true)}
-                        title={$_("NodeReport.EnlargeImage")}
-                      />
                       <button
                         type="button"
-                        class="absolute top-2 right-2 p-1.5 bg-gray-900/80 hover:bg-gray-800 text-gray-200 rounded-full border border-gray-600 shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                        class="flex items-center justify-center w-full h-full p-0 bg-transparent border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded"
                         onclick={() => (showImageEnlargeModal = true)}
                         title={$_("NodeReport.EnlargeImage")}
                       >
-                        <Icon path={icons.mdiMagnifyPlusOutline} size={0.8} />
+                        <img
+                          src={nodeImage}
+                          alt="Node Appearance"
+                          class="max-w-full max-h-[32vh] object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+                        />
+                        <span
+                          class="absolute top-2 right-2 p-1.5 bg-gray-900/80 group-hover:bg-gray-800 text-gray-200 rounded-full border border-gray-600 shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                          aria-hidden="true"
+                        >
+                          <Icon path={icons.mdiMagnifyPlusOutline} size={0.8} />
+                        </span>
                       </button>
                     </div>
 
