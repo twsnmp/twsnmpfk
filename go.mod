@@ -21,7 +21,7 @@ require (
 	github.com/gliderlabs/ssh v0.3.8
 	github.com/go-jose/go-jose/v4 v4.1.6
 	github.com/google/gopacket v1.1.19
-	github.com/gosnmp/gosnmp v1.45.0
+	github.com/gosnmp/gosnmp v1.47.0
 	github.com/knadh/go-pop3 v1.0.0
 	github.com/labstack/echo/v4 v4.16.2
 	github.com/labstack/gommon v0.5.0
