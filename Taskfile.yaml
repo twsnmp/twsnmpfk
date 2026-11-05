@@ -6,9 +6,6 @@ vars:
     sh: git rev-parse --short HEAD
   TAGS: wgpu24
 
-env:
-  GOEXPERIMENT: simd
-
 tasks:
   default:
     cmds:

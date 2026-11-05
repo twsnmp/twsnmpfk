@@ -13,9 +13,6 @@ jobs:
     permissions:
       contents: write
 
-    env:
-      GOEXPERIMENT: simd
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
