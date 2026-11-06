@@ -83,9 +83,15 @@ func (a *App) MigrateLogStoreToParquet() error {
 		percent := 0
 		if total > 0 {
 			percent = (current * 100) / total
+			if percent > 100 {
+				percent = 100
+			}
 		}
 		status := "migrating"
-		msg := fmt.Sprintf("%s (%d / %d)", bucket, current, total)
+		msg := fmt.Sprintf("%s (%d)", bucket, current)
+		if total > 0 {
+			msg = fmt.Sprintf("%s (%d / %d)", bucket, current, total)
+		}
 		if bucket == "done" {
 			status = "done"
 			percent = 100

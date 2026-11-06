@@ -315,3 +315,70 @@ func TestBboltLogDetection(t *testing.T) {
 	}
 }
 
+func TestMigrateBboltToParquet_MultiBatch(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("", "migrate_multibatch_*")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	dbPath := filepath.Join(tmpDir, "twsnmpfk.db")
+	dspath = tmpDir
+
+	if err := openDB(dbPath); err != nil {
+		t.Fatalf("openDB failed: %v", err)
+	}
+	defer CloseDB()
+
+	// Insert 4500 syslogs (greater than batchSize of 2000)
+	now := time.Now().UnixNano()
+	const count = 4500
+	_ = db.Batch(func(tx *bbolt.Tx) error {
+		sb := tx.Bucket([]byte("syslog"))
+		for i := 0; i < count; i++ {
+			l := LogEnt{
+				Time: now + int64(i),
+				Type: "syslog",
+				Log:  fmt.Sprintf(`{"hostname":"host-%d","severity":6,"facility":1,"tag":"batch","content":"msg-%d"}`, i, i),
+			}
+			b, _ := json.Marshal(l)
+			_ = sb.Put([]byte(fmt.Sprintf("%016x", l.Time)), b)
+		}
+		return nil
+	})
+
+	statsBefore := GetBboltLogStats()
+	if statsBefore.SyslogCount != count {
+		t.Fatalf("expected %d syslogs before migration, got %d", count, statsBefore.SyslogCount)
+	}
+
+	callCount := 0
+	err = MigrateBboltToParquet(func(bucket string, current, total int) {
+		callCount++
+	})
+	if err != nil {
+		t.Fatalf("MigrateBboltToParquet failed: %v", err)
+	}
+
+	// Should have multiple progress callbacks (2000, 4000, 4500, done)
+	if callCount < 3 {
+		t.Errorf("expected at least 3 callbacks for 4500 items, got %d", callCount)
+	}
+
+	// Verify all 4500 records in parquet
+	var foundCount int
+	_ = ForEachSyslog(now-1000, now+int64(count)+1000, func(s *SyslogEnt) bool {
+		foundCount++
+		return true
+	})
+	if foundCount != count {
+		t.Errorf("expected %d migrated syslogs in parquet, got %d", count, foundCount)
+	}
+
+	// Verify bbolt bucket is empty
+	statsAfter := GetBboltLogStats()
+	if statsAfter.SyslogCount != 0 {
+		t.Errorf("expected 0 syslogs in bbolt, got %d", statsAfter.SyslogCount)
+	}
+}
+

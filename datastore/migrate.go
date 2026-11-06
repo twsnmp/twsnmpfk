@@ -24,6 +24,7 @@ type BboltLogStats struct {
 }
 
 // GetBboltLogStats counts the log records stored in bbolt.
+// For databases larger than 50MB, it avoids expensive recursive page traversals.
 func GetBboltLogStats() BboltLogStats {
 	stats := BboltLogStats{}
 	if db == nil {
@@ -33,9 +34,18 @@ func GetBboltLogStats() BboltLogStats {
 	_ = db.View(func(tx *bbolt.Tx) error {
 		stats.BboltSize = tx.Size()
 
+		// For large databases (>50MB), skip b.Stats() to prevent millions of page faults
+		if stats.BboltSize > 50*1024*1024 {
+			return nil
+		}
+
 		countBucket := func(name string) int {
 			b := tx.Bucket([]byte(name))
 			if b == nil {
+				return 0
+			}
+			c := b.Cursor()
+			if k, _ := c.First(); k == nil {
 				return 0
 			}
 			return b.Stats().KeyN
@@ -53,7 +63,10 @@ func GetBboltLogStats() BboltLogStats {
 			_ = pb.ForEachBucket(func(k []byte) error {
 				sub := pb.Bucket(k)
 				if sub != nil {
-					stats.PollingLogCount += sub.Stats().KeyN
+					sc := sub.Cursor()
+					if sk, _ := sc.First(); sk != nil {
+						stats.PollingLogCount += sub.Stats().KeyN
+					}
 				}
 				return nil
 			})
@@ -67,7 +80,7 @@ func GetBboltLogStats() BboltLogStats {
 	return stats
 }
 
-// MigrateBboltToParquet migrates all log data from bbolt to the Parquet log store.
+// MigrateBboltToParquet migrates all log data from bbolt to the Parquet log store using streaming batches.
 func MigrateBboltToParquet(progressCb func(bucket string, current, total int)) error {
 	if db == nil {
 		return ErrDBNotOpen
@@ -83,55 +96,71 @@ func MigrateBboltToParquet(progressCb func(bucket string, current, total int)) e
 		}
 	}
 
-	stats := GetBboltLogStats()
-	total := stats.TotalCount
+	total := 0
 	processed := 0
+	batchSize := 2000
 
 	generalBuckets := []string{"syslog", "trap", "netflow", "sflow", "sflowCounter", "arplog"}
 
 	for _, bucketName := range generalBuckets {
-		var entries []*LogEnt
-		err := db.View(func(tx *bbolt.Tx) error {
-			b := tx.Bucket([]byte(bucketName))
-			if b == nil {
+		if progressCb != nil {
+			progressCb(bucketName, processed, total)
+		}
+		for {
+			var batch []*LogEnt
+			var keys [][]byte
+
+			err := db.View(func(tx *bbolt.Tx) error {
+				b := tx.Bucket([]byte(bucketName))
+				if b == nil {
+					return nil
+				}
+				c := b.Cursor()
+				for k, v := c.First(); k != nil && len(batch) < batchSize; k, v = c.Next() {
+					v = deCompressLog(v)
+					var l LogEnt
+					if err := json.Unmarshal(v, &l); err != nil {
+						continue
+					}
+					batch = append(batch, &l)
+					keys = append(keys, append([]byte(nil), k...))
+				}
 				return nil
+			})
+			if err != nil {
+				return fmt.Errorf("read bucket %s: %w", bucketName, err)
 			}
-			c := b.Cursor()
-			for k, v := c.First(); k != nil; k, v = c.Next() {
-				v = deCompressLog(v)
-				var l LogEnt
-				if err := json.Unmarshal(v, &l); err != nil {
-					continue
+
+			if len(batch) == 0 {
+				break
+			}
+
+			if err := logStore.SaveLogs(bucketName, batch); err != nil {
+				return fmt.Errorf("save parquet logs %s: %w", bucketName, err)
+			}
+
+			err = db.Update(func(tx *bbolt.Tx) error {
+				b := tx.Bucket([]byte(bucketName))
+				if b == nil {
+					return nil
 				}
-				entries = append(entries, &l)
+				for _, k := range keys {
+					_ = b.Delete(k)
+				}
+				return nil
+			})
+			if err != nil {
+				return fmt.Errorf("delete migrated keys %s: %w", bucketName, err)
 			}
-			return nil
-		})
-		if err != nil {
-			return fmt.Errorf("read bucket %s: %w", bucketName, err)
+
+			processed += len(batch)
+			if progressCb != nil {
+				progressCb(bucketName, processed, total)
+			}
 		}
 
-		if len(entries) > 0 {
-			// Write to parquet in batches of 5000
-			batchSize := 5000
-			for i := 0; i < len(entries); i += batchSize {
-				end := i + batchSize
-				if end > len(entries) {
-					end = len(entries)
-				}
-				batch := entries[i:end]
-				if err := logStore.SaveLogs(bucketName, batch); err != nil {
-					return fmt.Errorf("save parquet logs %s: %w", bucketName, err)
-				}
-				processed += len(batch)
-				if progressCb != nil {
-					progressCb(bucketName, processed, total)
-				}
-			}
-		}
-
-		// Empty bbolt bucket after successful parquet write
-		_ = db.Batch(func(tx *bbolt.Tx) error {
+		// Ensure bucket is recreated empty in bbolt
+		_ = db.Update(func(tx *bbolt.Tx) error {
 			_ = tx.DeleteBucket([]byte(bucketName))
 			_, _ = tx.CreateBucketIfNotExists([]byte(bucketName))
 			return nil
@@ -139,52 +168,95 @@ func MigrateBboltToParquet(progressCb func(bucket string, current, total int)) e
 	}
 
 	// Migrate pollingLogs
-	var pEntries []*PollingLogEnt
-	err := db.View(func(tx *bbolt.Tx) error {
-		pb := tx.Bucket([]byte("pollingLogs"))
-		if pb == nil {
-			return nil
-		}
-		return pb.ForEachBucket(func(k []byte) error {
-			sub := pb.Bucket(k)
-			if sub == nil {
+	for {
+		var subBucketName []byte
+		var pBatch []*PollingLogEnt
+		var pKeys [][]byte
+
+		err := db.View(func(tx *bbolt.Tx) error {
+			pb := tx.Bucket([]byte("pollingLogs"))
+			if pb == nil {
 				return nil
 			}
-			c := sub.Cursor()
-			for sk, sv := c.First(); sk != nil; sk, sv = c.Next() {
-				var pe PollingLogEnt
-				if err := json.Unmarshal(sv, &pe); err != nil {
-					continue
+			c := pb.Cursor()
+			for k, v := c.First(); k != nil; k, v = c.Next() {
+				if v == nil { // sub-bucket
+					sub := pb.Bucket(k)
+					if sub == nil {
+						continue
+					}
+					sc := sub.Cursor()
+					fk, _ := sc.First()
+					if fk == nil {
+						subBucketName = append([]byte(nil), k...)
+						return nil
+					}
+					subBucketName = append([]byte(nil), k...)
+					for sk, sv := sc.First(); sk != nil && len(pBatch) < batchSize; sk, sv = sc.Next() {
+						var pe PollingLogEnt
+						if err := json.Unmarshal(sv, &pe); err != nil {
+							continue
+						}
+						pBatch = append(pBatch, &pe)
+						pKeys = append(pKeys, append([]byte(nil), sk...))
+					}
+					return nil
 				}
-				pEntries = append(pEntries, &pe)
 			}
 			return nil
 		})
-	})
-	if err != nil {
-		return fmt.Errorf("read pollingLogs: %w", err)
-	}
+		if err != nil {
+			return fmt.Errorf("read pollingLogs: %w", err)
+		}
 
-	if len(pEntries) > 0 {
-		batchSize := 5000
-		for i := 0; i < len(pEntries); i += batchSize {
-			end := i + batchSize
-			if end > len(pEntries) {
-				end = len(pEntries)
-			}
-			batch := pEntries[i:end]
-			if err := logStore.SavePollingLogs(batch); err != nil {
+		if subBucketName == nil {
+			break
+		}
+
+		if len(pBatch) > 0 {
+			if err := logStore.SavePollingLogs(pBatch); err != nil {
 				return fmt.Errorf("save parquet polling logs: %w", err)
 			}
-			processed += len(batch)
+			processed += len(pBatch)
 			if progressCb != nil {
 				progressCb("pollingLogs", processed, total)
 			}
+
+			err = db.Update(func(tx *bbolt.Tx) error {
+				pb := tx.Bucket([]byte("pollingLogs"))
+				if pb == nil {
+					return nil
+				}
+				sub := pb.Bucket(subBucketName)
+				if sub == nil {
+					return nil
+				}
+				for _, k := range pKeys {
+					_ = sub.Delete(k)
+				}
+				sc := sub.Cursor()
+				if k, _ := sc.First(); k == nil {
+					_ = pb.DeleteBucket(subBucketName)
+				}
+				return nil
+			})
+			if err != nil {
+				return fmt.Errorf("delete migrated polling keys: %w", err)
+			}
+		} else {
+			// Sub-bucket is empty, delete it
+			_ = db.Update(func(tx *bbolt.Tx) error {
+				pb := tx.Bucket([]byte("pollingLogs"))
+				if pb != nil {
+					_ = pb.DeleteBucket(subBucketName)
+				}
+				return nil
+			})
 		}
 	}
 
-	// Empty pollingLogs bucket in bbolt
-	_ = db.Batch(func(tx *bbolt.Tx) error {
+	// Recreate empty pollingLogs bucket in bbolt
+	_ = db.Update(func(tx *bbolt.Tx) error {
 		_ = tx.DeleteBucket([]byte("pollingLogs"))
 		_, _ = tx.CreateBucketIfNotExists([]byte("pollingLogs"))
 		return nil

@@ -145,7 +145,15 @@
           <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border dark:border-gray-700 text-xs space-y-1">
             <div class="flex justify-between font-semibold text-sm border-b pb-1 dark:border-gray-700">
               <span>{$_("Migration.TotalRecords")}</span>
-              <span class="text-blue-600 dark:text-blue-400 font-mono">{stats.totalCount.toLocaleString()}</span>
+              <span class="text-blue-600 dark:text-blue-400 font-mono">
+                {#if stats.totalCount > 0}
+                  {stats.totalCount.toLocaleString()}
+                {:else if stats.bboltSize > 0}
+                  {(stats.bboltSize / (1024 * 1024 * 1024)).toFixed(1)} GB
+                {:else}
+                  -
+                {/if}
+              </span>
             </div>
             {#if stats.syslogCount > 0}
               <div class="flex justify-between text-gray-600 dark:text-gray-400">
@@ -222,14 +230,16 @@
           </span>
           {#if progress.total > 0}
             <span>{progress.current.toLocaleString()} / {progress.total.toLocaleString()}</span>
+          {:else if progress.current > 0}
+            <span>{progress.current.toLocaleString()}</span>
           {/if}
         </div>
 
         <Progressbar
-          progress={progress.percent}
+          progress={progress.status === "done" ? 100 : (progress.percent || (progress.current > 0 ? 50 : 0))}
           size="h-5"
           color={progress.status === "error" ? "red" : progress.status === "done" ? "green" : "blue"}
-          labelInside
+          labelInside={progress.percent > 0 || progress.status === "done"}
         />
 
         {#if progress.bucket && progress.bucket !== "done" && progress.bucket !== "init"}
