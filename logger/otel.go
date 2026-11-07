@@ -266,12 +266,19 @@ func handleTraces(ctx context.Context, td ptrace.Traces) error {
 				st := s.StartTimestamp().AsTime().UnixNano()
 				et := s.EndTimestamp().AsTime().UnixNano()
 				dur := float64(et-st) / (1000.0 * 1000.0 * 1000.0)
+				attrs := getAttributes(s.Attributes().AsRaw())
+				if s.Status().Code() != ptrace.StatusCodeUnset {
+					attrs = append(attrs, fmt.Sprintf("status_code=%s", s.Status().Code().String()))
+					if s.Status().Message() != "" {
+						attrs = append(attrs, fmt.Sprintf("status_message=%s", s.Status().Message()))
+					}
+				}
 				trace.Spans = append(trace.Spans, datastore.OTelTraceSpanEnt{
 					Name:         s.Name(),
 					Service:      service,
 					Host:         host,
 					Scope:        scope,
-					Attributes:   getAttributes(s.Attributes().AsRaw()),
+					Attributes:   attrs,
 					SpanID:       s.SpanID().String(),
 					ParentSpanID: s.ParentSpanID().String(),
 					Start:        st,

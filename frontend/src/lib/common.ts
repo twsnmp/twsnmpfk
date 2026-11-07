@@ -89,6 +89,7 @@ export const typeList = [
   { name: 'MQTT', value: 'mqtt' },
   { name: 'EMAIL', value: 'email' },
   { name: 'STUN', value: 'stun' },
+  { name: 'OpenTelemetry', value: 'otel' },
 ]
 
 const pollingTypeMap = new Map();

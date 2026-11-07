@@ -197,6 +197,25 @@ Usage of twsnmpfk:
 
 ## History
 
+### v2.7.0 (In Development)
+
+#### OpenTelemetry (APM) Telemetry Polling
+* **New `otel` Polling Type**: Added support for polling and alerting directly on received OpenTelemetry telemetry (metrics, trace spans, heartbeats) with automatic node state and event log integration.
+  * `metric` mode: Monitor application metrics (Gauge, Sum, Count, Min, Max) and elapsed time against thresholds.
+  * `trace` mode: Monitor error rate (%), average duration, and P95 duration per service/span, detecting span errors.
+  * `heartbeat` mode: Detect telemetry reception stoppage/timeout from microservices and OTel agents.
+* **UI Guides & Preset Modes**: Added OpenTelemetry option in polling settings dialog with full input guides and script examples. Also added a **direct "Add Polling" action button in the OpenTelemetry screen**, allowing users to select any metric (or trace) row and create a pre-populated polling item with one click (similar to Syslog/Trap views).
+
+#### AI / LLM Operational Monitoring
+* **LLM Modes for HTTP Polling**: Added `llm/openai` (OpenAI/vLLM `/v1/models`) and `llm/ollama` (Ollama `/api/tags`) modes to HTTP polling, supporting API authentication, available model counts, and latency (`rtt_ms`) health checks.
+
+#### MCP Server Tool Expansion
+* **New Tools for AI Agents**:
+  * `get_otel_metrics`: Retrieve OTel metrics and latest data points.
+  * `get_otel_traces`: Retrieve OTel trace summaries and error traces.
+  * `get_sensor_list`: Retrieve connected sensor status (Wi-Fi, BLE, PCAP, WinLog, twagentneo).
+  * `get_report_summary`: Retrieve summary data for report kinds (Wi-Fi APs, BLE devices, environmental sensors, DNS queries, Windows events, twagent threats, etc.).
+
 ### v2.6.0
 
 #### Comprehensive Report Suite & Sensor Monitoring (Ported from TWSNMP NEO)

@@ -26,6 +26,7 @@
     GetOTelTraces,
     DeleteAllOTelData,
     GetOTelTraceDAG,
+    GetDefaultPolling,
   } from "../../wailsjs/go/main/App";
   import {
     renderTime,
@@ -40,6 +41,7 @@
   import { currentLang } from "../i18n/i18n";
   import OTelMetric from "./OTelMetric.svelte";
   import OTelTrace from "./OTelTrace.svelte";
+  import Polling from "./Polling.svelte";
   import TimeRangeFilter from "./TimeRangeFilter.svelte";
   import { showOTelTrace, showOTelDAG } from "./chart/otel";
   import { showLogLevelChart } from "./chart/loglevel";
@@ -59,6 +61,8 @@
   let modalEnd = $state("");
   let showMetricReport = $state(false);
   let showTraceReport = $state(false);
+  let showPolling = $state(false);
+  let polling: any = $state(undefined);
   let table: any = undefined;
   let selectedCount = $state(0);
   let showLoading = $state(false);
@@ -517,6 +521,38 @@
     }
     showMetricInfoDialog = true;
   };
+
+  const addPolling = async () => {
+    const d = table.rows({ selected: true }).data();
+    if (!d || d.length != 1) {
+      return;
+    }
+    if (tab === "metric") {
+      const m = d[0];
+      polling = await GetDefaultPolling(m.Host);
+      polling.Name = `OTel:${m.Service}:${m.Name}`;
+      polling.Type = "otel";
+      polling.Mode = "metric";
+      polling.Params = `service=${m.Service},name=${m.Name},scope=${m.Scope},host=${m.Host}`;
+      if (m.Type === "Gauge") {
+        polling.Script = "gauge < 80.0";
+      } else {
+        polling.Script = "count > 0";
+      }
+      showPolling = true;
+    } else if (tab === "trace") {
+      const t = d[0];
+      const host = t.Hosts ? t.Hosts.split(" ")[0] : "";
+      const svc = t.Services ? t.Services.split(" ")[0] : "";
+      polling = await GetDefaultPolling(host);
+      polling.Name = `OTelTrace:${svc}`;
+      polling.Type = "otel";
+      polling.Mode = "trace";
+      polling.Params = `service=${svc}`;
+      polling.Script = "errorRate < 5.0 && p95Dur < 1.0";
+      showPolling = true;
+    }
+  };
 </script>
 
 <svelte:window onresize={resizeChart} />
@@ -591,6 +627,16 @@
           {$_('OTel.MetricInfo')}
         </GradientButton>
       {/if}
+      <GradientButton
+        shadow
+        color="blue"
+        type="button"
+        onclick={addPolling}
+        size="xs"
+      >
+        <Icon path={icons.mdiPlusCircle} size={1} />
+        {$_("OTel.Polling")}
+      </GradientButton>
       <GradientButton
         shadow
         color="green"
@@ -818,6 +864,7 @@
 
 <OTelMetric bind:show={showMetricReport} metric={selectedMetric} />
 <OTelTrace bind:show={showTraceReport} trace={selectedTrace} />
+<Polling bind:show={showPolling} pollingTmp={polling} />
 
 <style>
   #otelTraceChart,

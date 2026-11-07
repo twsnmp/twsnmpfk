@@ -252,5 +252,44 @@ MCPサーバーへのアクセスは、以下の2つのメカニズムによっ�
   - `mac` (string, 必須): 問い合わせるMACアドレス。
 - **戻り値**: MACアドレスに関する集約された情報を含むJSONオブジェクト。
 
+---
+
+### `get_otel_metrics`
+- **説明**: TWSNMPが受信したOpenTelemetryメトリクスの一覧および最新値を取得します。
+- **パラメータ**:
+  - `host_filter` (string, 任意): ホスト名の正規表現フィルター。
+  - `service_filter` (string, 任意): サービス名の正規表現フィルター。
+  - `name_filter` (string, 任意): メトリクス名の正規表現フィルター。
+  - `limit` (int, 任意): 取得件数（1〜500、デフォルト100）。
+- **戻り値**: メトリクス情報のJSON配列。
+
+---
+
+### `get_otel_traces`
+- **説明**: TWSNMPが受信したOpenTelemetryトレースの一覧またはエラーを含むトレースを取得します。
+- **パラメータ**:
+  - `service_filter` (string, 任意): サービス名の正規表現フィルター。
+  - `error_only` (bool, 任意): trueの場合、エラーを含むトレースのみを抽出。
+  - `limit` (int, 任意): 取得件数（1〜200、デフォルト50）。
+- **戻り値**: トレースサマリー情報のJSON配列。
+
+---
+
+### `get_sensor_list`
+- **説明**: TWSNMPに接続されている各種センサー（twWifiScan、twBlueScan、twpcap、twwinlog、twagentneo等）の稼働一覧を取得します。
+- **パラメータ**:
+  - `type_filter` (string, 任意): センサー種別の正規表現フィルター。
+  - `state_filter` (string, 任意): 状態（normal、warn、error）の正規表現フィルター。
+- **戻り値**: センサー情報のJSON配列。
+
+---
+
+### `get_report_summary`
+- **説明**: 総合レポート（Wi-Fi AP、Bluetooth端末、環境センサー、DNSクエリ、Windowsイベント、twagent脅威アラート等）の集計データを取得します。
+- **パラメータ**:
+  - `report_type` (string, 必須): レポート種別（`wifiAP`, `blueDevice`, `envMonitor`, `dnsq`, `winEventID`, `twAgentAlert`, `twAgentInfo` 等）。
+  - `limit` (int, 任意): 取得件数（1〜200、デフォルト50）。
+- **戻り値**: レポートレコードのJSON配列。
+
 ## 5. プロンプト
 

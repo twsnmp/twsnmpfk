@@ -52,6 +52,8 @@ export const getPredefinedModes = (type: string, isJa: boolean): PollingModeOpti
         { name: isJa ? "hash (SHA256 改ざん検知)" : "hash (SHA256 Hash check)", value: "hash" },
         { name: isJa ? "metrics (サーバーメトリクス解析)" : "metrics (Server metrics)", value: "metrics" },
         { name: isJa ? "metrics/json (JSONメトリクス)" : "metrics/json (JSON metrics)", value: "metrics/json" },
+        { name: isJa ? "llm/openai (OpenAI/vLLM /v1/models)" : "llm/openai (OpenAI/vLLM /v1/models)", value: "llm/openai" },
+        { name: isJa ? "llm/ollama (Ollama /api/tags)" : "llm/ollama (Ollama /api/tags)", value: "llm/ollama" },
       ];
     case "tcp":
       return [
@@ -116,6 +118,12 @@ export const getPredefinedModes = (type: string, isJa: boolean): PollingModeOpti
       return [
         { name: isJa ? "stats (メール件数・サイズ)" : "stats (Mail count & size)", value: "stats" },
         { name: isJa ? "login (接続確認・RTT)" : "login (Login connect & RTT)", value: "login" },
+      ];
+    case "otel":
+      return [
+        { name: isJa ? "metric (メトリクス値監視)" : "metric (Metric value)", value: "metric" },
+        { name: isJa ? "trace (トレース・エラー率・遅延)" : "trace (Trace / error rate / latency)", value: "trace" },
+        { name: isJa ? "heartbeat (受信途絶検知)" : "heartbeat (Heartbeat / stoppage)", value: "heartbeat" },
       ];
     case "twlogeye":
       return [
@@ -267,6 +275,31 @@ export const getPollingGuide = (type: string, mode: string, t?: (k: string) => s
           help: isJa
             ? "改ざん・更新検知対象のURL (コンテンツSHA256ハッシュの変化を検知)"
             : "Target URL to monitor content SHA256 hash changes",
+        };
+      }
+      if (m === "llm/openai") {
+        return {
+          placeholder: "https://api.openai.com/v1/models または http://localhost:8000/v1/models",
+          help: isJa
+            ? "OpenAI互換モデル一覧APIのURL (フィルター欄に APIキー または Bearer トークンを指定可)"
+            : "OpenAI-compatible models API URL (can specify API Key or Bearer token in filter field)",
+          filterHelp: isJa
+            ? "API Key (例: sk-... または Bearer ...)"
+            : "API Key (e.g. sk-... or Bearer ...)",
+          scriptHelp: isJa
+            ? "判定スクリプト例: code == 200 && models > 0 && rtt_ms < 3000 (変数: code, status, models, rtt, rtt_ms)"
+            : "Script example: code == 200 && models > 0 && rtt_ms < 3000 (vars: code, status, models, rtt, rtt_ms)",
+        };
+      }
+      if (m === "llm/ollama") {
+        return {
+          placeholder: "http://localhost:11434/api/tags",
+          help: isJa
+            ? "Ollama タグ一覧APIのURL"
+            : "Ollama tags API URL",
+          scriptHelp: isJa
+            ? "判定スクリプト例: code == 200 && models > 0 (変数: code, status, models, rtt, rtt_ms)"
+            : "Script example: code == 200 && models > 0 (vars: code, status, models, rtt, rtt_ms)",
         };
       }
       if (m === "https") {
@@ -455,6 +488,42 @@ export const getPollingGuide = (type: string, mode: string, t?: (k: string) => s
       return {
         placeholder: isJa ? "(空欄可)" : "(Blank)",
         help: isJa ? "TwLogEye連携設定" : "TwLogEye integration settings",
+      };
+
+    case "otel":
+      if (m === "trace") {
+        return {
+          placeholder: "service=frontend,name=/checkout",
+          help: isJa
+            ? "service: サービス名, name: スパン名, scope: スコープ名"
+            : "service: service name, name: span name, scope: scope name",
+          scriptHelp: isJa
+            ? "判定スクリプト例: errorRate < 5.0 && p95Dur < 0.5 (変数: count, error, errorRate, avgDur, maxDur, p95Dur, interval)"
+            : "Script example: errorRate < 5.0 && p95Dur < 0.5 (vars: count, error, errorRate, avgDur, maxDur, p95Dur, interval)",
+        };
+      }
+      if (m === "heartbeat" || m === "last") {
+        return {
+          placeholder: isJa ? "service=frontend または host=web01" : "service=frontend or host=web01",
+          help: isJa
+            ? "service: サービス名 または host: ホスト名"
+            : "service: service name or host: host name",
+          filterHelp: isJa
+            ? "許容停止秒数 (例: 300。未指定時はポーリング間隔の2倍)"
+            : "Threshold in seconds (e.g. 300. Defaults to 2x interval)",
+          scriptHelp: isJa
+            ? "判定スクリプト例: elapsed < threshold (変数: elapsed, threshold, interval)"
+            : "Script example: elapsed < threshold (vars: elapsed, threshold, interval)",
+        };
+      }
+      return {
+        placeholder: "service=frontend,name=http_requests_total",
+        help: isJa
+          ? "service, name, host, scope を指定 (カンマ区切りまたは key=val)"
+          : "service, name, host, scope (comma separated or key=val)",
+        scriptHelp: isJa
+          ? "判定スクリプト例: gauge < 80.0 (変数: gauge, sum, min, max, count, elapsed, interval)"
+          : "Script example: gauge < 80.0 (vars: gauge, sum, min, max, count, elapsed, interval)",
       };
 
     default:

@@ -605,5 +605,52 @@
     "Script": "ssCpuIdle > 10.0",
     "Level": "low",
     "Descr": "Net-SNMP CPU idle percentage (%)"
+  },
+  {
+    "Name": "OTel Metric Monitor",
+    "Type": "otel",
+    "Mode": "metric",
+    "Params": "service=app,name=jvm_memory_used",
+    "Script": "gauge < 80.0",
+    "Level": "warn",
+    "Descr": "Monitor OpenTelemetry metrics (Gauge, Count, etc.)"
+  },
+  {
+    "Name": "OTel Trace Error Rate",
+    "Type": "otel",
+    "Mode": "trace",
+    "Params": "service=frontend",
+    "Script": "errorRate < 5.0 && p95Dur < 1.0",
+    "Level": "high",
+    "Descr": "Monitor OpenTelemetry trace error rate (%) and P95 latency (sec)"
+  },
+  {
+    "Name": "OTel Telemetry Heartbeat",
+    "Type": "otel",
+    "Mode": "heartbeat",
+    "Params": "service=backend",
+    "Filter": "300",
+    "Script": "elapsed < threshold",
+    "Level": "high",
+    "Descr": "Detect stoppage or timeout of OpenTelemetry telemetry"
+  },
+  {
+    "Name": "LLM API Monitor (OpenAI)",
+    "Type": "http",
+    "Mode": "llm/openai",
+    "Params": "http://localhost:8000/v1/models",
+    "Filter": "Bearer your-api-key",
+    "Script": "code == 200 && models > 0 && rtt_ms < 3000",
+    "Level": "warn",
+    "Descr": "Monitor OpenAI/vLLM/LocalAI /v1/models API health and latency"
+  },
+  {
+    "Name": "LLM API Monitor (Ollama)",
+    "Type": "http",
+    "Mode": "llm/ollama",
+    "Params": "http://localhost:11434/api/tags",
+    "Script": "code == 200 && models > 0 && rtt_ms < 2000",
+    "Level": "warn",
+    "Descr": "Monitor local Ollama API health and loaded models"
   }
 ]

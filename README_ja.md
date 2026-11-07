@@ -195,6 +195,25 @@ Usage of twsnmpfk:
 
 ## History
 
+### v2.7.0 (開発中)
+
+#### OpenTelemetry (APM) テレメトリ監視ポーリング機能の追加
+* **OTelポーリング種別 (`otel`) の新設**: 受信したOpenTelemetryテレメトリ（メトリクス、トレーススパン、ハートビート）を監視項目として直接定期評価し、障害検知・イベントログ・マップ状態と連動する機能を追加しました。
+  * `metric` モード: アプリケーションメトリクス（Gauge, Sum, Count, Min, Max）の最新値および経過時間の閾値監視。
+  * `trace` モード: サービス/スパン別のエラー率（%）、平均所要時間、P95所要時間の監視およびエラースパン検知。
+  * `heartbeat` モード: マイクロサービスやOTelエージェントからのテレメトリ受信途絶（タイムアウト）の監視。
+* **GUIおよびポーリングガイド対応**: ポーリング設定画面にOpenTelemetryを追加し、プレースホルダー、入力ガイド、判定スクリプト例を整備しました。また、Syslog等と同様に**OpenTelemetry画面のメトリック一覧（およびトレース一覧）で対象行を選択し、ワンクリックでポーリング作成ダイアログを開いて設定・登録できる機能**を追加しました。
+
+#### AI/LLM 運用監視機能の追加
+* **HTTPポーリングのLLM対応**: HTTPポーリングに `llm/openai`（OpenAI/vLLM互換 `/v1/models`）および `llm/ollama`（Ollama `/api/tags`）モードを追加しました。APIキー認証、利用可能モデル数、レスポンス所要時間（`rtt_ms`）の健全性監視に対応しました。
+
+#### MCP サーバーツールの拡充
+* **AIエージェント向け新ツールの追加**:
+  * `get_otel_metrics`: OTelメトリクス一覧・最新値の取得。
+  * `get_otel_traces`: OTelトレース一覧およびエラートレース情報の検索。
+  * `get_sensor_list`: 各種センサー（Wi-Fi, BLE, PCAP, WinLog, twagentneo）の稼働・死活状態取得。
+  * `get_report_summary`: 総合レポート（Wi-Fi AP, BLE端末, 環境センサー, DNSクエリ, Windowsイベント, twagent脅威等）の集計データ取得。
+
 ### v2.6.0
 
 #### 総合レポート機能の統合とセンサー連携（TWSNMP NEOより移植）

@@ -1471,6 +1471,7 @@
     "Descr": "Description",
     "Item": "Item",
     "MetricInfo": "Metric Info",
+    "Polling": "Add Polling",
     "Unit": "Unit",
     "Report": "Report",
     "Last15m": "Last 15m",

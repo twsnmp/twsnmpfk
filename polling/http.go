@@ -87,6 +87,22 @@ func checkHTTPResp(pe *datastore.PollingEnt, status, body string, code int, rTim
 		} else {
 			return false, err
 		}
+	} else if strings.HasPrefix(pe.Mode, "llm") {
+		var jsonMap map[string]any
+		if err := json.Unmarshal([]byte(body), &jsonMap); err == nil {
+			var modelCount float64
+			if dataList, ok := jsonMap["data"].([]any); ok {
+				// OpenAI compatible format: {"data": [...]}
+				modelCount = float64(len(dataList))
+			} else if modelsList, ok := jsonMap["models"].([]any); ok {
+				// Ollama format: {"models": [...]}
+				modelCount = float64(len(modelsList))
+			}
+			pe.Result["models"] = modelCount
+			vm.Set("models", modelCount)
+		}
+		pe.Result["rtt_ms"] = float64(rTime) / 1e6
+		vm.Set("rtt_ms", float64(rTime)/1e6)
 	} else if pe.Mode == "hash" {
 		nh := getHash(body)
 		if oh, ok := pe.Result["sha256"]; !ok {
@@ -280,8 +296,18 @@ func doHTTPGet(pe *datastore.PollingEnt, url string) (string, string, int, error
 	if err != nil {
 		return "", "", 0, err
 	}
-	if pe.Mode == "metrics/json" {
+	if pe.Mode == "metrics/json" || strings.HasPrefix(pe.Mode, "llm") {
 		req.Header.Set("Accept", "application/json")
+	}
+	if pe.Filter != "" {
+		if strings.HasPrefix(pe.Filter, "Bearer ") || strings.HasPrefix(pe.Filter, "token ") {
+			req.Header.Set("Authorization", pe.Filter)
+		} else if strings.HasPrefix(pe.Filter, "sk-") {
+			req.Header.Set("Authorization", "Bearer "+pe.Filter)
+		} else if strings.Contains(pe.Filter, ":") {
+			parts := strings.SplitN(pe.Filter, ":", 2)
+			req.Header.Set(strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1]))
+		}
 	}
 	if pe.Mode == "https" {
 		resp, err := http.DefaultClient.Do(req.WithContext(ctx))

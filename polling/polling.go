@@ -272,6 +272,8 @@ func doPolling(pe *datastore.PollingEnt) {
 		doPollingEMail(pe)
 	case "stun":
 		doPollingSTUN(pe)
+	case "otel":
+		doPollingOTel(pe)
 	}
 	datastore.UpdatePolling(pe, false)
 	if pe.LogMode == datastore.LogModeAlways || pe.LogMode == datastore.LogModeAI || (pe.LogMode == datastore.LogModeOnChange && oldState != pe.State) {

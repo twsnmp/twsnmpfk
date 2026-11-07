@@ -729,5 +729,52 @@
     "Script": "ssCpuIdle > 10.0",
     "Level": "low",
     "Descr": "Net-SNMP CPUアイドル率(%)"
+  },
+  {
+    "Name": "OTel メトリクス監視",
+    "Type": "otel",
+    "Mode": "metric",
+    "Params": "service=app,name=jvm_memory_used",
+    "Script": "gauge < 80.0",
+    "Level": "warn",
+    "Descr": "OpenTelemetryで収集されたメトリクス値（Gauge/Count等）を監視"
+  },
+  {
+    "Name": "OTel トレースエラー率監視",
+    "Type": "otel",
+    "Mode": "trace",
+    "Params": "service=frontend",
+    "Script": "errorRate < 5.0 && p95Dur < 1.0",
+    "Level": "high",
+    "Descr": "OpenTelemetryトレースのエラー率(%)およびP95レイテンシ(秒)を監視"
+  },
+  {
+    "Name": "OTel ハートビート監視",
+    "Type": "otel",
+    "Mode": "heartbeat",
+    "Params": "service=backend",
+    "Filter": "300",
+    "Script": "elapsed < threshold",
+    "Level": "high",
+    "Descr": "OpenTelemetryテレメトリの受信途絶（タイムアウト）を検知"
+  },
+  {
+    "Name": "LLM API監視 (OpenAI互換)",
+    "Type": "http",
+    "Mode": "llm/openai",
+    "Params": "http://localhost:8000/v1/models",
+    "Filter": "Bearer your-api-key",
+    "Script": "code == 200 && models > 0 && rtt_ms < 3000",
+    "Level": "warn",
+    "Descr": "OpenAI/vLLM/LocalAIのモデル一覧APIの応答とレイテンシを監視"
+  },
+  {
+    "Name": "LLM API監視 (Ollama)",
+    "Type": "http",
+    "Mode": "llm/ollama",
+    "Params": "http://localhost:11434/api/tags",
+    "Script": "code == 200 && models > 0 && rtt_ms < 2000",
+    "Level": "warn",
+    "Descr": "ローカルOllamaの死活とモデル応答を監視"
   }
 ]

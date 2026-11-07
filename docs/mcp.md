@@ -251,4 +251,44 @@ The server exposes the following tools for agents.
   - `mac` (string, required): The MAC address to query.
 - **Returns**: A JSON object containing aggregated information about the MAC address.
 
+---
+
+### `get_otel_metrics`
+- **Description**: Get OpenTelemetry metrics list or details from TWSNMP.
+- **Parameters**:
+  - `host_filter` (string, optional): Regex filter for host name.
+  - `service_filter` (string, optional): Regex filter for service name.
+  - `name_filter` (string, optional): Regex filter for metric name.
+  - `limit` (int, optional): Maximum number of entries (1-500, default 100).
+- **Returns**: JSON array of metric entities.
+
+---
+
+### `get_otel_traces`
+- **Description**: Get OpenTelemetry trace summary list or error traces from TWSNMP.
+- **Parameters**:
+  - `service_filter` (string, optional): Regex filter for service name.
+  - `error_only` (bool, optional): If true, return only traces containing errors.
+  - `limit` (int, optional): Maximum number of entries (1-200, default 50).
+- **Returns**: JSON array of trace summary entities.
+
+---
+
+### `get_sensor_list`
+- **Description**: Get connected sensor list and health status from TWSNMP (twWifiScan, twBlueScan, twpcap, twwinlog, twagentneo, etc.).
+- **Parameters**:
+  - `type_filter` (string, optional): Regex filter for sensor type.
+  - `state_filter` (string, optional): Regex filter for sensor state (normal, warn, error).
+- **Returns**: JSON array of sensor entities.
+
+---
+
+### `get_report_summary`
+- **Description**: Get report dataset summary (wifiAP, blueDevice, envMonitor, dnsq, winEventID, twAgentAlert, twAgentInfo, etc.) from TWSNMP.
+- **Parameters**:
+  - `report_type` (string, required): Report kind name (`wifiAP`, `blueDevice`, `envMonitor`, `dnsq`, `winEventID`, `twAgentAlert`, `twAgentInfo`, etc.).
+  - `limit` (int, optional): Maximum number of records (1-200, default 50).
+- **Returns**: JSON array of report objects.
+
+
 

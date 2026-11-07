@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/flate"
 	"context"
+	"encoding/json"
 	"os"
 	"sync"
 	"testing"
@@ -117,6 +118,37 @@ func TestSaveAndRetrieveSyslog(t *testing.T) {
 	}
 	if count != 2 {
 		t.Fatalf("Expected 2 logs, got %d", count)
+	}
+}
+
+func TestPollingTemplateFiles(t *testing.T) {
+	for _, lang := range []string{"ja", "en"} {
+		r, err := conf.Open("conf/polling_" + lang + ".json")
+		if err != nil {
+			t.Fatalf("failed to open polling_%s.json: %v", lang, err)
+		}
+		defer r.Close()
+		var list []PollingTemplateEnt
+		dec := json.NewDecoder(r)
+		if err := dec.Decode(&list); err != nil {
+			t.Fatalf("failed to decode polling_%s.json: %v", lang, err)
+		}
+		hasOTel := false
+		hasLLM := false
+		for _, pt := range list {
+			if pt.Type == "otel" {
+				hasOTel = true
+			}
+			if pt.Type == "http" && (pt.Mode == "llm/openai" || pt.Mode == "llm/ollama") {
+				hasLLM = true
+			}
+		}
+		if !hasOTel {
+			t.Errorf("polling_%s.json does not contain otel template", lang)
+		}
+		if !hasLLM {
+			t.Errorf("polling_%s.json does not contain llm template", lang)
+		}
 	}
 }
 

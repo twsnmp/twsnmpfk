@@ -210,6 +210,9 @@ func GetOTelTrace(bucket, tid string) *OTelTraceEnt {
 }
 
 func ForEachOTelTrace(tbk string, f func(t *OTelTraceEnt) bool) {
+	if db == nil {
+		return
+	}
 	db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("otelTrace"))
 		if b == nil {
@@ -234,6 +237,9 @@ func ForEachOTelTrace(tbk string, f func(t *OTelTraceEnt) bool) {
 
 func GetOTelTraceBucketList() []string {
 	ret := []string{}
+	if db == nil {
+		return ret
+	}
 	db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("otelTrace"))
 		if b == nil {

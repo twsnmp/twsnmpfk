@@ -109,6 +109,22 @@ func addTools(s *mcp.Server) {
 		Name:        "get_mac_address_info",
 		Description: "get mac address info.(IP,Managed node,Vendor)",
 	}, getMACInfo)
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "get_otel_metrics",
+		Description: "get OpenTelemetry metrics list or details from TWSNMP",
+	}, getOTelMetrics)
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "get_otel_traces",
+		Description: "get OpenTelemetry trace list or error traces from TWSNMP",
+	}, getOTelTraces)
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "get_sensor_list",
+		Description: "get connected sensor list and health status from TWSNMP",
+	}, getSensorList)
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "get_report_summary",
+		Description: "get report summary (wifiAP, blueDevice, envMonitor, dnsq, winEventID, twAgentAlert, etc.) from TWSNMP",
+	}, getReportSummary)
 }
 
 // get_node_list tool
@@ -1569,4 +1585,272 @@ func makeRegexFilter(s string) *regexp.Regexp {
 		}
 	}
 	return nil
+}
+
+// get_otel_metrics tool
+type mcpOTelMetricEnt struct {
+	Host        string  `json:"Host"`
+	Service     string  `json:"Service"`
+	Scope       string  `json:"Scope"`
+	Name        string  `json:"Name"`
+	Type        string  `json:"Type"`
+	Count       int     `json:"Count"`
+	LatestGauge float64 `json:"LatestGauge,omitempty"`
+	LatestSum   float64 `json:"LatestSum,omitempty"`
+	First       int64   `json:"First"`
+	Last        int64   `json:"Last"`
+}
+
+type getOTelMetricsParams struct {
+	HostFilter    string `json:"host_filter" jsonschema:"Host name regex filter. If blank, all hosts are searched."`
+	ServiceFilter string `json:"service_filter" jsonschema:"Service name regex filter. If blank, all services are searched."`
+	NameFilter    string `json:"name_filter" jsonschema:"Metric name regex filter. If blank, all metric names are searched."`
+	Limit         int    `json:"limit" jsonschema:"Maximum number of metrics to return (1-500, default 100)."`
+}
+
+func getOTelMetrics(ctx context.Context, req *mcp.CallToolRequest, args getOTelMetricsParams) (*mcp.CallToolResult, any, error) {
+	hostF := makeRegexFilter(args.HostFilter)
+	svcF := makeRegexFilter(args.ServiceFilter)
+	nameF := makeRegexFilter(args.NameFilter)
+	limit := args.Limit
+	if limit <= 0 || limit > 500 {
+		limit = 100
+	}
+
+	list := []mcpOTelMetricEnt{}
+	datastore.ForEachOTelMetric(func(m *datastore.OTelMetricEnt) bool {
+		if hostF != nil && !hostF.MatchString(m.Host) {
+			return true
+		}
+		if svcF != nil && !svcF.MatchString(m.Service) {
+			return true
+		}
+		if nameF != nil && !nameF.MatchString(m.Name) {
+			return true
+		}
+		ent := mcpOTelMetricEnt{
+			Host:    m.Host,
+			Service: m.Service,
+			Scope:   m.Scope,
+			Name:    m.Name,
+			Type:    m.Type,
+			Count:   m.Count,
+			First:   m.First,
+			Last:    m.Last,
+		}
+		if len(m.DataPoints) > 0 {
+			dp := m.DataPoints[len(m.DataPoints)-1]
+			ent.LatestGauge = dp.Gauge
+			ent.LatestSum = dp.Sum
+		}
+		list = append(list, ent)
+		return len(list) < limit
+	})
+
+	j, err := json.Marshal(&list)
+	if err != nil {
+		j = []byte(err.Error())
+	}
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{Text: string(j)},
+		},
+	}, nil, nil
+}
+
+// get_otel_traces tool
+type mcpOTelTraceEnt struct {
+	TraceID    string  `json:"TraceID"`
+	Bucket     string  `json:"Bucket"`
+	Start      int64   `json:"Start"`
+	End        int64   `json:"End"`
+	Dur        float64 `json:"Dur"`
+	NumSpans   int     `json:"NumSpans"`
+	NumErrors  int     `json:"NumErrors"`
+	Services   string  `json:"Services"`
+	Hosts      string  `json:"Hosts"`
+	ErrorSpans []string `json:"ErrorSpans,omitempty"`
+}
+
+type getOTelTracesParams struct {
+	ServiceFilter string `json:"service_filter" jsonschema:"Service name regex filter. If blank, all services are searched."`
+	ErrorOnly     bool   `json:"error_only" jsonschema:"If true, only return traces containing errors."`
+	Limit         int    `json:"limit" jsonschema:"Maximum number of traces to return (1-200, default 50)."`
+}
+
+func getOTelTraces(ctx context.Context, req *mcp.CallToolRequest, args getOTelTracesParams) (*mcp.CallToolResult, any, error) {
+	svcF := makeRegexFilter(args.ServiceFilter)
+	limit := args.Limit
+	if limit <= 0 || limit > 200 {
+		limit = 50
+	}
+
+	buckets := datastore.GetOTelTraceBucketList()
+	list := []mcpOTelTraceEnt{}
+
+	// Search from most recent buckets
+	for i := len(buckets) - 1; i >= 0 && len(list) < limit; i-- {
+		datastore.ForEachOTelTrace(buckets[i], func(t *datastore.OTelTraceEnt) bool {
+			services := make(map[string]bool)
+			hosts := make(map[string]bool)
+			errorSpans := []string{}
+			hasServiceMatch := (svcF == nil)
+
+			for _, span := range t.Spans {
+				services[span.Service] = true
+				hosts[span.Host] = true
+				if svcF != nil && svcF.MatchString(span.Service) {
+					hasServiceMatch = true
+				}
+				isErr := false
+				for _, attr := range span.Attributes {
+					lower := strings.ToLower(attr)
+					if strings.Contains(lower, "error=true") ||
+						strings.Contains(lower, "status_code=status_code_error") ||
+						strings.Contains(lower, "status.code=status_code_error") ||
+						strings.Contains(lower, "status.code=error") {
+						isErr = true
+						break
+					}
+					if strings.HasPrefix(lower, "http.status_code=") || strings.HasPrefix(lower, "http.response.status_code=") {
+						parts := strings.Split(lower, "=")
+						if len(parts) == 2 {
+							if code, err := strconv.Atoi(parts[1]); err == nil && code >= 400 {
+								isErr = true
+								break
+							}
+						}
+					}
+				}
+				if isErr {
+					errorSpans = append(errorSpans, fmt.Sprintf("%s:%s", span.Service, span.Name))
+				}
+			}
+
+			if !hasServiceMatch {
+				return true
+			}
+			if args.ErrorOnly && len(errorSpans) == 0 {
+				return true
+			}
+
+			svcList := []string{}
+			for s := range services {
+				svcList = append(svcList, s)
+			}
+			hostList := []string{}
+			for h := range hosts {
+				hostList = append(hostList, h)
+			}
+
+			list = append(list, mcpOTelTraceEnt{
+				TraceID:    t.TraceID,
+				Bucket:     t.Bucket,
+				Start:      t.Start,
+				End:        t.End,
+				Dur:        t.Dur,
+				NumSpans:   len(t.Spans),
+				NumErrors:  len(errorSpans),
+				Services:   strings.Join(svcList, ", "),
+				Hosts:      strings.Join(hostList, ", "),
+				ErrorSpans: errorSpans,
+			})
+			return len(list) < limit
+		})
+	}
+
+	j, err := json.Marshal(&list)
+	if err != nil {
+		j = []byte(err.Error())
+	}
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{Text: string(j)},
+		},
+	}, nil, nil
+}
+
+// get_sensor_list tool
+type getSensorListParams struct {
+	TypeFilter  string `json:"type_filter" jsonschema:"Sensor type regex filter (e.g. twWifiScan, twBlueScan, twpcap, twwinlog, twagentneo). If blank, all sensors are returned."`
+	StateFilter string `json:"state_filter" jsonschema:"Sensor state regex filter (normal, warn, error). If blank, all sensors are returned."`
+}
+
+func getSensorList(ctx context.Context, req *mcp.CallToolRequest, args getSensorListParams) (*mcp.CallToolResult, any, error) {
+	typeF := makeRegexFilter(args.TypeFilter)
+	stateF := makeRegexFilter(args.StateFilter)
+
+	all := datastore.ListSensors()
+	filtered := []*datastore.SensorEnt{}
+	for _, sn := range all {
+		if typeF != nil && !typeF.MatchString(sn.Type) {
+			continue
+		}
+		if stateF != nil && !stateF.MatchString(sn.State) {
+			continue
+		}
+		filtered = append(filtered, sn)
+	}
+
+	j, err := json.Marshal(&filtered)
+	if err != nil {
+		j = []byte(err.Error())
+	}
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{Text: string(j)},
+		},
+	}, nil, nil
+}
+
+// get_report_summary tool
+type getReportSummaryParams struct {
+	ReportType string `json:"report_type" jsonschema:"Report kind name (e.g. wifiAP, blueDevice, envMonitor, dnsq, winEventID, twAgentAlert, twAgentInfo)."`
+	Limit      int    `json:"limit" jsonschema:"Maximum number of records to return (1-200, default 50)."`
+}
+
+func getReportSummary(ctx context.Context, req *mcp.CallToolRequest, args getReportSummaryParams) (*mcp.CallToolResult, any, error) {
+	if args.ReportType == "" {
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{
+				&mcp.TextContent{Text: "report_type is required (e.g. wifiAP, blueDevice, envMonitor, dnsq, winEventID, twAgentAlert, twAgentInfo)"},
+			},
+		}, nil, nil
+	}
+	limit := args.Limit
+	if limit <= 0 || limit > 200 {
+		limit = 50
+	}
+
+	rawItems, err := datastore.ListLogReportData(args.ReportType)
+	if err != nil {
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{
+				&mcp.TextContent{Text: fmt.Sprintf("failed to get report data: %v", err)},
+			},
+		}, nil, nil
+	}
+
+	list := make([]any, 0, limit)
+	count := 0
+	for _, b := range rawItems {
+		var obj any
+		if err := json.Unmarshal(b, &obj); err == nil {
+			list = append(list, obj)
+			count++
+			if count >= limit {
+				break
+			}
+		}
+	}
+
+	j, err := json.Marshal(&list)
+	if err != nil {
+		j = []byte(err.Error())
+	}
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{Text: string(j)},
+		},
+	}, nil, nil
 }
