@@ -356,7 +356,7 @@
       onclick={toggleLang}
     >
       <Icon path={icons.mdiTranslate} size={0.9} />
-      <span class="text-[11px] font-bold">{$currentLang === "ja" ? "EN" : "JA"}</span>
+      <span class="text-[11px] font-bold">{$currentLang === "ja" ? "JA" : "EN"}</span>
     </Button>
     <Button class="!p-1.5 h-8 w-8 flex items-center justify-center shrink-0" color="alternative" onclick={toggleDark}>
       {#if dark}
