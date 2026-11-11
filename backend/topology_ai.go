@@ -59,7 +59,7 @@ func InferRemainingLinesWithAI() ([]NeighborLineEnt, error) {
 	}
 
 	// 4. Try LLM first if available
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	llm, err := datastore.GetLLM(ctx)

@@ -363,10 +363,11 @@ func getLLMSummary(ctx context.Context, info *[]reportInfoEnt) string {
 	if !datastore.NotifyConf.LLMSummary || ctx.Err() != nil {
 		return ""
 	}
-	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute*3)
+	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute*10)
 	defer cancel()
 	llm, err := datastore.GetLLM(timeoutCtx)
 	if err != nil {
+		log.Printf("LLM report summary init failed: err=%v", err)
 		return fmt.Sprintf(i18n.Trans("LLM error err=%v"), err)
 	}
 	prompts := []string{}
@@ -376,16 +377,43 @@ func getLLMSummary(ctx context.Context, info *[]reportInfoEnt) string {
 	prompts = append(prompts, i18n.Trans("Attached below is the event log with more than a warning"))
 	prompts = append(prompts, i18n.Trans("Time,Level,Type,Node,Event"))
 	st := time.Now().Add(time.Duration(-24) * time.Hour).UnixNano()
+	targetLogs := []*datastore.EventLogEnt{}
 	datastore.ForEachLastEventLog(func(l *datastore.EventLogEnt) bool {
 		if l.Time < st {
 			return false
 		}
 		switch l.Level {
 		case "high", "low", "warn":
-			prompts = append(prompts, fmt.Sprintf("%s,%s,%s,%s,%s", time.Unix(0, l.Time).Format(time.RFC3339), l.Level, l.Type, l.NodeName, l.Event))
+			targetLogs = append(targetLogs, l)
 		}
 		return true
 	})
+	levelWeight := func(level string) int {
+		switch level {
+		case "high":
+			return 3
+		case "low":
+			return 2
+		case "warn":
+			return 1
+		default:
+			return 0
+		}
+	}
+	sort.Slice(targetLogs, func(i, j int) bool {
+		wi := levelWeight(targetLogs[i].Level)
+		wj := levelWeight(targetLogs[j].Level)
+		if wi != wj {
+			return wi > wj
+		}
+		return targetLogs[i].Time > targetLogs[j].Time
+	})
+	if len(targetLogs) > 100 {
+		targetLogs = targetLogs[:100]
+	}
+	for _, l := range targetLogs {
+		prompts = append(prompts, fmt.Sprintf("%s,%s,%s,%s,%s", time.Unix(0, l.Time).Format(time.RFC3339), l.Level, l.Type, l.NodeName, l.Event))
+	}
 	system := `You are an expert in network management.
 Analyze and summarize the information provided by users in a way that is easy to understand.
 
@@ -426,13 +454,33 @@ Do not include symbols such as # at the beginning of your answer.
 		llms.TextParts(llms.ChatMessageTypeSystem, system),
 		llms.TextParts(llms.ChatMessageTypeHuman, strings.Join(prompts, "\n")),
 	}
+	startTime := time.Now()
+	promptText := strings.Join(prompts, "\n")
+	log.Printf("start LLM report summary: provider=%s, model=%s, url=%s, logCount=%d, promptLen=%d",
+		datastore.MapConf.LLMProvider,
+		datastore.MapConf.LLMModel,
+		datastore.MapConf.LLMBaseURL,
+		len(targetLogs),
+		len(promptText),
+	)
 	resp, err := llm.GenerateContent(timeoutCtx, history)
-	if err != nil {
-		log.Printf("llmAsk err=%v", err)
+	dur := time.Since(startTime)
+	if err != nil || timeoutCtx.Err() != nil {
+		if err == nil {
+			err = timeoutCtx.Err()
+		}
+		log.Printf("LLM report summary failed: dur=%v, err=%v", dur, err)
 		return fmt.Sprintf(i18n.Trans("An error occurred when contacting AI. err=%v"), err)
 	}
 	if len(resp.Choices) < 1 {
+		log.Printf("LLM report summary no choices: dur=%v", dur)
 		return i18n.Trans("No answer from AI.")
 	}
-	return strings.TrimSpace(resp.Choices[0].Content)
+	content := strings.TrimSpace(resp.Choices[0].Content)
+	if content == "" {
+		log.Printf("LLM report summary empty content: dur=%v, choices=%d", dur, len(resp.Choices))
+		return i18n.Trans("No answer from AI.")
+	}
+	log.Printf("LLM report summary completed: dur=%v, respLen=%d", dur, len(content))
+	return content
 }
