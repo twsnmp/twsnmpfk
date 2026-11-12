@@ -131,15 +131,52 @@ func snmptrapd(stopCh chan bool) {
 			}
 		}
 	}
+	testConn, err := net.ListenPacket("udp", fmt.Sprintf("0.0.0.0:%d", datastore.TrapPort))
+	if err != nil {
+		log.Printf("snmp trap bind error: %v", err)
+		SetReceiverStatus("trap", ReceiverStatus{
+			Status: "error",
+			Port:   fmt.Sprintf("UDP :%d (v1/v2c/v3)", datastore.TrapPort),
+			Error:  err.Error(),
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf(i18n.Trans("SNMP trap bind error: %v"), err),
+		})
+		<-stopCh
+		log.Printf("stop snmp trapd")
+		SetReceiverStatus("trap", ReceiverStatus{
+			Status: "stopped",
+			Port:   fmt.Sprintf("UDP :%d (v1/v2c/v3)", datastore.TrapPort),
+		})
+		return
+	}
+	_ = testConn.Close()
+
+	SetReceiverStatus("trap", ReceiverStatus{
+		Status: "running",
+		Port:   fmt.Sprintf("UDP :%d (v1/v2c/v3)", datastore.TrapPort),
+	})
+
 	defer tl.Close()
 	go func() {
 		if err := tl.Listen(fmt.Sprintf("0.0.0.0:%d", datastore.TrapPort)); err != nil {
 			log.Printf("snmp trap listen err=%v", err)
+			SetReceiverStatus("trap", ReceiverStatus{
+				Status: "error",
+				Port:   fmt.Sprintf("UDP :%d (v1/v2c/v3)", datastore.TrapPort),
+				Error:  err.Error(),
+			})
 		}
 		log.Printf("close snmp trapd")
 	}()
 	<-stopCh
 	log.Printf("stop snmp trapd")
+	SetReceiverStatus("trap", ReceiverStatus{
+		Status: "stopped",
+		Port:   fmt.Sprintf("UDP :%d (v1/v2c/v3)", datastore.TrapPort),
+	})
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "info",

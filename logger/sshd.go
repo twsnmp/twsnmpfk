@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"sort"
 	"strconv"
 	"strings"
@@ -24,13 +25,49 @@ import (
 
 func sshd(stopCh chan bool) {
 	log.Printf("start sshd")
+	portStr := fmt.Sprintf("TCP :%d", datastore.SSHdPort)
 	signer, err := gossh.ParsePrivateKey([]byte(datastore.GetPrivateKey(true)))
 	if err != nil {
 		log.Println("sshd", err)
+		SetReceiverStatus("sshd", ReceiverStatus{
+			Status: "error",
+			Port:   portStr,
+			Error:  err.Error(),
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf("sshd start failed: %v", err),
+		})
 		<-stopCh
+		ClearReceiverStatus("sshd")
 		log.Printf("stop sshd err=%v", err)
 		return
 	}
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", datastore.SSHdPort))
+	if err != nil {
+		log.Printf("sshd listen err=%v", err)
+		SetReceiverStatus("sshd", ReceiverStatus{
+			Status: "error",
+			Port:   portStr,
+			Error:  err.Error(),
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf("sshd listen failed: %v", err),
+		})
+		<-stopCh
+		ClearReceiverStatus("sshd")
+		return
+	}
+	defer ln.Close()
+	SetReceiverStatus("sshd", ReceiverStatus{
+		Status: "running",
+		Port:   portStr,
+	})
+	defer ClearReceiverStatus("sshd")
+
 	sv := ssh.Server{
 		Addr:             fmt.Sprintf(":%d", datastore.SSHdPort),
 		Version:          "TWSNNMP FK " + version,
@@ -41,7 +78,7 @@ func sshd(stopCh chan bool) {
 		PublicKeyHandler: sshdPublicKeyHandler,
 	}
 	go func() {
-		if err := sv.ListenAndServe(); err != nil {
+		if err := sv.Serve(ln); err != nil && err != ssh.ErrServerClosed && !strings.Contains(err.Error(), "use of closed network connection") {
 			log.Printf("sshd err=%v", err)
 		}
 	}()

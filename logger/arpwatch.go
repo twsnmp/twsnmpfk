@@ -35,6 +35,10 @@ func UpdateArpTable(ip, mac string) {
 func arpWatch(stopCh chan bool) {
 	log.Println("start arp")
 	setLocalSegment()
+	SetReceiverStatus("arp", ReceiverStatus{
+		Status: "running",
+	})
+	defer ClearReceiverStatus("arp")
 	datastore.AddEventLog(&datastore.EventLogEnt{
 		Type:  "system",
 		Level: "info",

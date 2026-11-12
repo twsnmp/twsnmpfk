@@ -23,11 +23,38 @@ import (
 var stopMCPCh = make(chan bool)
 var mcpAllow sync.Map
 
+type mcpStatus struct {
+	status string
+	errStr string
+}
+
+var (
+	mcpStatusLock sync.RWMutex
+	currMCPStatus mcpStatus
+)
+
+// GetMCPStatus returns the current runtime status of the MCP server ("running", "error", "stopped") and error string if any.
+func GetMCPStatus() (string, string) {
+	mcpStatusLock.RLock()
+	defer mcpStatusLock.RUnlock()
+	return currMCPStatus.status, currMCPStatus.errStr
+}
+
+func setMCPStatus(status, errStr string) {
+	mcpStatusLock.Lock()
+	defer mcpStatusLock.Unlock()
+	currMCPStatus = mcpStatus{
+		status: status,
+		errStr: errStr,
+	}
+}
+
 func mcpServer(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	timer := time.NewTicker(time.Second * 5)
 	var e *echo.Echo
 	stopMCPServer := func() {
+		setMCPStatus("stopped", "")
 		if e == nil {
 			return
 		}
@@ -52,14 +79,16 @@ func mcpServer(ctx context.Context, wg *sync.WaitGroup) {
 			stopMCPServer()
 		case <-timer.C:
 			if datastore.MapConf.MCPTransport != "off" && e == nil {
-				log.Println("start mcp server")
 				setMCPAllow()
 				e = startMCPServer()
-				datastore.AddEventLog(&datastore.EventLogEnt{
-					Type:  "system",
-					Level: "info",
-					Event: fmt.Sprintf(i18n.Trans("Start MCP server: transport=%s endpoint=%s"), datastore.MapConf.MCPTransport, datastore.MapConf.MCPEndpoint),
-				})
+				if e != nil {
+					log.Println("start mcp server")
+					datastore.AddEventLog(&datastore.EventLogEnt{
+						Type:  "system",
+						Level: "info",
+						Event: fmt.Sprintf(i18n.Trans("Start MCP server: transport=%s endpoint=%s"), datastore.MapConf.MCPTransport, datastore.MapConf.MCPEndpoint),
+					})
+				}
 			} else if datastore.MapConf.MCPTransport == "off" && e != nil {
 				stopMCPServer()
 			}
@@ -87,6 +116,22 @@ func startMCPServer() *echo.Echo {
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 	sv.Addr = datastore.MapConf.MCPEndpoint
+
+	// Test endpoint listen
+	ln, err := net.Listen("tcp", sv.Addr)
+	if err != nil {
+		log.Printf("start mcp server bind err=%v", err)
+		setMCPStatus("error", err.Error())
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf("MCP server start failed: %v", err),
+		})
+		return nil
+	}
+	ln.Close()
+	setMCPStatus("running", "")
+
 	if cert, err := getMCPServerCert(); err == nil {
 		if cert != nil {
 			sv.TLSConfig = &tls.Config{
@@ -141,8 +186,9 @@ func startMCPServer() *echo.Echo {
 		log.Printf("streamable HTTP server listening on %s", datastore.MapConf.MCPEndpoint)
 	}
 	go func() {
-		if err := e.StartServer(sv); err != nil {
+		if err := e.StartServer(sv); err != nil && err != http.ErrServerClosed {
 			log.Printf("start mcp server err=%v", err)
+			setMCPStatus("error", err.Error())
 		}
 	}()
 	return e

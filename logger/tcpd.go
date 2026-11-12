@@ -13,13 +13,30 @@ import (
 
 func tcpd(stopCh chan bool) {
 	log.Printf("start tcpd")
+	portStr := fmt.Sprintf("TCP :%d", datastore.TCPPort)
 	sv, err := net.Listen("tcp", fmt.Sprintf(":%d", datastore.TCPPort))
 	if err != nil {
 		log.Printf("tcpd err=%v", err)
+		SetReceiverStatus("tcpd", ReceiverStatus{
+			Status: "error",
+			Port:   portStr,
+			Error:  err.Error(),
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf("tcp server start failed: %v", err),
+		})
 		<-stopCh
+		ClearReceiverStatus("tcpd")
 		return
 	}
 	defer sv.Close()
+	SetReceiverStatus("tcpd", ReceiverStatus{
+		Status: "running",
+		Port:   portStr,
+	})
+	defer ClearReceiverStatus("tcpd")
 	connList := []net.Conn{}
 	go func() {
 		for {

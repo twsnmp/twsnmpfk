@@ -313,6 +313,205 @@ func (a *App) GetMonitorDatas() []*backend.MonitorDataEnt {
 	return backend.MonitorDataes
 }
 
+// ReceiverStatusInfo represents status and configuration of a protocol receiver.
+type ReceiverStatusInfo struct {
+	Port   string `json:"port"`
+	Status string `json:"status"` // "running", "stopped", "disabled", "error"
+	Error  string `json:"error,omitempty"`
+	Range  string `json:"range,omitempty"`
+}
+
+// SystemInfo represents high-level system KPIs and receiver statuses.
+type SystemInfo struct {
+	Version   string                        `json:"version"`
+	Commit    string                        `json:"commit"`
+	Status    string                        `json:"status"`
+	Time      string                        `json:"time"`
+	Uptime    string                        `json:"uptime"`
+	NumCPU    int                           `json:"num_cpu"`
+	NodeCount int                           `json:"node_count"`
+	PollCount int                           `json:"poll_count"`
+	PingMode  string                        `json:"ping_mode"`
+	Receivers map[string]ReceiverStatusInfo `json:"receivers"`
+	HasUpdate bool                          `json:"has_update"`
+}
+
+var appStartTime = time.Now()
+
+// GetSystemInfo returns system overview information and receiver states.
+func (a *App) GetSystemInfo() *SystemInfo {
+	uptime := time.Since(appStartTime).Truncate(time.Second).String()
+	nodeCount := 0
+	pollCount := 0
+	if dataStorePath != "" {
+		datastore.ForEachNodes(func(n *datastore.NodeEnt) bool {
+			nodeCount++
+			return true
+		})
+		datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
+			pollCount++
+			return true
+		})
+	}
+
+	receivers := make(map[string]ReceiverStatusInfo)
+
+	checkReceiver := func(name string, defaultPort string, enabled bool) ReceiverStatusInfo {
+		if !enabled {
+			return ReceiverStatusInfo{
+				Port:   "-",
+				Status: "disabled",
+			}
+		}
+		st, ok := logger.GetReceiverStatus(name)
+		if !ok {
+			return ReceiverStatusInfo{
+				Port:   defaultPort,
+				Status: "stopped",
+			}
+		}
+		port := defaultPort
+		if st.Port != "" {
+			port = st.Port
+		}
+		return ReceiverStatusInfo{
+			Port:   port,
+			Status: st.Status,
+			Error:  st.Error,
+		}
+	}
+
+	// Syslog
+	syslogPort := datastore.SyslogPort
+	if syslogPort == 0 {
+		syslogPort = 514
+	}
+	receivers["syslog"] = checkReceiver("syslog", fmt.Sprintf("UDP/TCP :%d", syslogPort), datastore.MapConf.EnableSyslogd)
+
+	// SNMP Trap
+	trapPort := datastore.TrapPort
+	if trapPort == 0 {
+		trapPort = 162
+	}
+	receivers["trap"] = checkReceiver("trap", fmt.Sprintf("UDP :%d (v1/v2c/v3)", trapPort), datastore.MapConf.EnableTrapd)
+
+	// NetFlow / IPFIX
+	netflowPort := datastore.NetFlowPort
+	if netflowPort == 0 {
+		netflowPort = 2055
+	}
+	receivers["netflow"] = checkReceiver("netflow", fmt.Sprintf("UDP :%d", netflowPort), datastore.MapConf.EnableNetflowd)
+
+	// sFlow
+	sflowPort := datastore.SFlowPort
+	if sflowPort == 0 {
+		sflowPort = 6343
+	}
+	receivers["sflow"] = checkReceiver("sflow", fmt.Sprintf("UDP :%d", sflowPort), datastore.MapConf.EnableSFlowd)
+
+	// OpenTelemetry
+	grpcPort := datastore.OTelgRPCPort
+	if grpcPort == 0 {
+		grpcPort = 4317
+	}
+	httpPort := datastore.OTelHTTPPort
+	if httpPort == 0 {
+		httpPort = 4318
+	}
+	receivers["otel"] = checkReceiver("otel", fmt.Sprintf("gRPC :%d / HTTP :%d", grpcPort, httpPort), datastore.MapConf.EnableOTel)
+
+	// MQTT Broker
+	mqttTCP := datastore.MqttTCPPort
+	if mqttTCP == 0 {
+		mqttTCP = 1883
+	}
+	mqttWS := datastore.MqttWSPort
+	if mqttWS == 0 {
+		mqttWS = 1884
+	}
+	receivers["mqtt"] = checkReceiver("mqtt", fmt.Sprintf("TCP :%d / WS :%d", mqttTCP, mqttWS), datastore.MapConf.EnableMqtt)
+
+	// MCP Server
+	if datastore.MapConf.MCPTransport == "" || datastore.MapConf.MCPTransport == "off" {
+		receivers["mcp"] = ReceiverStatusInfo{
+			Port:   "-",
+			Status: "disabled",
+		}
+	} else {
+		endpoint := datastore.MapConf.MCPEndpoint
+		if endpoint == "" {
+			endpoint = "127.0.0.1:8089"
+		}
+		portStr := fmt.Sprintf("%s (%s)", endpoint, datastore.MapConf.MCPTransport)
+		mcpStatus, mcpErr := backend.GetMCPStatus()
+		if mcpStatus == "" {
+			mcpStatus = "stopped"
+		}
+		receivers["mcp"] = ReceiverStatusInfo{
+			Port:   portStr,
+			Status: mcpStatus,
+			Error:  mcpErr,
+		}
+	}
+
+	// ARP Watch
+	if !datastore.MapConf.EnableArpWatch {
+		receivers["arp"] = ReceiverStatusInfo{
+			Status: "disabled",
+			Range:  "",
+		}
+	} else {
+		arpStatus := "stopped"
+		if st, ok := logger.GetReceiverStatus("arp"); ok {
+			arpStatus = st.Status
+		}
+		receivers["arp"] = ReceiverStatusInfo{
+			Status: arpStatus,
+			Range:  datastore.MapConf.ArpWatchRange,
+		}
+	}
+
+	// SSH Server
+	sshdPort := datastore.SSHdPort
+	if sshdPort == 0 {
+		sshdPort = 2022
+	}
+	receivers["sshd"] = checkReceiver("sshd", fmt.Sprintf("TCP :%d", sshdPort), datastore.MapConf.EnableSshd)
+
+	// TCP Server
+	tcpPort := datastore.TCPPort
+	if tcpPort == 0 {
+		tcpPort = 8086
+	}
+	receivers["tcpd"] = checkReceiver("tcpd", fmt.Sprintf("TCP :%d", tcpPort), datastore.MapConf.EnableTcpd)
+
+	status := "ok"
+	if dataStorePath == "" {
+		status = "idle"
+	} else {
+		for _, r := range receivers {
+			if r.Status == "error" {
+				status = "error"
+				break
+			}
+		}
+	}
+
+	return &SystemInfo{
+		Version:   version,
+		Commit:    commit,
+		Status:    status,
+		Time:      time.Now().Format(time.RFC3339),
+		Uptime:    uptime,
+		NumCPU:    runtime.NumCPU(),
+		NodeCount: nodeCount,
+		PollCount: pollCount,
+		PingMode:  ping.GetPingMode(),
+		Receivers: receivers,
+		HasUpdate: !backend.IsLatest(),
+	}
+}
+
 // SelectDatastore は、データストアのディレクトリを選択してサービスを起動します。
 func (a *App) SelectDatastore() bool {
 	if dataStorePath != "" {

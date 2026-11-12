@@ -21,6 +21,7 @@ import (
 	"github.com/tehmaze/netflow/read"
 	"github.com/tehmaze/netflow/session"
 	"github.com/twsnmp/twsnmpfk/datastore"
+	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
 func netflowd(stopCh chan bool) {
@@ -30,18 +31,46 @@ func netflowd(stopCh chan bool) {
 	log.Println("start netflowd ")
 	port := fmt.Sprintf(":%d", datastore.NetFlowPort)
 	if addr, err = net.ResolveUDPAddr("udp", port); err != nil {
-		log.Printf("netflowd err=%v", err)
+		log.Printf("netflowd resolve err=%v", err)
+		SetReceiverStatus("netflow", ReceiverStatus{
+			Status: "error",
+			Port:   fmt.Sprintf("UDP :%d", datastore.NetFlowPort),
+			Error:  err.Error(),
+		})
+		<-stopCh
+		SetReceiverStatus("netflow", ReceiverStatus{
+			Status: "stopped",
+			Port:   fmt.Sprintf("UDP :%d", datastore.NetFlowPort),
+		})
 		return
 	}
 	var server *net.UDPConn
 	if server, err = net.ListenUDP("udp", addr); err != nil {
-		log.Printf("netflowd err=%v", err)
+		log.Printf("netflowd bind err=%v", err)
+		SetReceiverStatus("netflow", ReceiverStatus{
+			Status: "error",
+			Port:   fmt.Sprintf("UDP :%d", datastore.NetFlowPort),
+			Error:  err.Error(),
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf(i18n.Trans("NetFlow receiver bind error: %v"), err),
+		})
+		<-stopCh
+		SetReceiverStatus("netflow", ReceiverStatus{
+			Status: "stopped",
+			Port:   fmt.Sprintf("UDP :%d", datastore.NetFlowPort),
+		})
 		return
 	}
 	defer server.Close()
+	SetReceiverStatus("netflow", ReceiverStatus{
+		Status: "running",
+		Port:   fmt.Sprintf("UDP :%d", datastore.NetFlowPort),
+	})
 	if err = server.SetReadBuffer(readSize); err != nil {
 		log.Printf("netflowd err=%v", err)
-		return
 	}
 	decoders := make(map[string]*netflow.Decoder)
 	buf := make([]byte, 8192)
@@ -50,6 +79,10 @@ func netflowd(stopCh chan bool) {
 		case <-stopCh:
 			{
 				log.Printf("stop netflowd")
+				SetReceiverStatus("netflow", ReceiverStatus{
+					Status: "stopped",
+					Port:   fmt.Sprintf("UDP :%d", datastore.NetFlowPort),
+				})
 				return
 			}
 		default:

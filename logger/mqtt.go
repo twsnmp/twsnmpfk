@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"net"
 	"strings"
 	"time"
 
@@ -20,7 +21,29 @@ import (
 func mqttd(stopCh chan bool) {
 	log.Printf("start mqttd")
 	datastore.LoadMqttStat()
-	s := startMqttServer()
+	portStr := fmt.Sprintf("TCP :%d / WS :%d", datastore.MqttTCPPort, datastore.MqttWSPort)
+	s, err := startMqttServer()
+	if err != nil {
+		log.Printf("mqttd err=%v", err)
+		SetReceiverStatus("mqtt", ReceiverStatus{
+			Status: "error",
+			Port:   portStr,
+			Error:  err.Error(),
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf("mqtt server start failed: %v", err),
+		})
+		<-stopCh
+		ClearReceiverStatus("mqtt")
+		return
+	}
+	SetReceiverStatus("mqtt", ReceiverStatus{
+		Status: "running",
+		Port:   portStr,
+	})
+	defer ClearReceiverStatus("mqtt")
 	<-stopCh
 	if s != nil {
 		s.Close()
@@ -29,7 +52,23 @@ func mqttd(stopCh chan bool) {
 	log.Printf("stop mqttd")
 }
 
-func startMqttServer() *mqtt.Server {
+func startMqttServer() (*mqtt.Server, error) {
+	// Probe ports first
+	if datastore.MqttTCPPort > 0 {
+		ln, err := net.Listen("tcp", fmt.Sprintf(":%d", datastore.MqttTCPPort))
+		if err != nil {
+			return nil, err
+		}
+		ln.Close()
+	}
+	if datastore.MqttWSPort > 0 {
+		ln, err := net.Listen("tcp", fmt.Sprintf(":%d", datastore.MqttWSPort))
+		if err != nil {
+			return nil, err
+		}
+		ln.Close()
+	}
+
 	// Create the new MQTT Server.
 	server := mqtt.New(&mqtt.Options{
 		Logger: slog.New(slog.DiscardHandler),
@@ -37,13 +76,13 @@ func startMqttServer() *mqtt.Server {
 	err := server.AddHook(new(mqttHook), nil)
 	if err != nil {
 		log.Println(err)
-		return nil
+		return nil, err
 	}
 	if datastore.MqttFrom == "" && datastore.MqttUsers == "" {
 		// Allow all connections.
 		if err := server.AddHook(new(auth.AllowHook), nil); err != nil {
 			log.Println(err)
-			return nil
+			return nil, err
 		}
 	} else {
 		authRules := &auth.Ledger{}
@@ -67,7 +106,7 @@ func startMqttServer() *mqtt.Server {
 			Ledger: authRules,
 		}); err != nil {
 			log.Println(err)
-			return nil
+			return nil, err
 		}
 	}
 	var tlsConfig *tls.Config
@@ -75,7 +114,7 @@ func startMqttServer() *mqtt.Server {
 		cert, err := tls.LoadX509KeyPair(datastore.MqttCert, datastore.MqttKey)
 		if err != nil {
 			log.Println(err)
-			return nil
+			return nil, err
 		}
 		tlsConfig = &tls.Config{
 			Certificates: []tls.Certificate{cert},
@@ -89,7 +128,7 @@ func startMqttServer() *mqtt.Server {
 		})
 		if err := server.AddListener(tcp); err != nil {
 			log.Println(err)
-			return nil
+			return nil, err
 		}
 	}
 	if datastore.MqttWSPort > 0 {
@@ -100,7 +139,7 @@ func startMqttServer() *mqtt.Server {
 		})
 		if err := server.AddListener(ws); err != nil {
 			log.Println(err)
-			return nil
+			return nil, err
 		}
 	}
 	go func() {
@@ -109,7 +148,7 @@ func startMqttServer() *mqtt.Server {
 			log.Println(err)
 		}
 	}()
-	return server
+	return server, nil
 }
 
 type mqttHook struct {

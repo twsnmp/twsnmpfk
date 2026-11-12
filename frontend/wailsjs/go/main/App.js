@@ -586,6 +586,10 @@ export function GetSyslogs(arg1) {
   return window['go']['main']['App']['GetSyslogs'](arg1);
 }
 
+export function GetSystemInfo() {
+  return window['go']['main']['App']['GetSystemInfo']();
+}
+
 export function GetTraps(arg1) {
   return window['go']['main']['App']['GetTraps'](arg1);
 }

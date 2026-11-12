@@ -30,14 +30,83 @@ func syslogd(stopCh chan bool) {
 	server := syslog.NewServer()
 	server.SetFormat(syslog.Automatic)
 	server.SetHandler(syslog.NewChannelHandler(syslogCh))
-	_ = server.ListenUDP(fmt.Sprintf("0.0.0.0:%d", datastore.SyslogPort))
-	_ = server.ListenTCP(fmt.Sprintf("0.0.0.0:%d", datastore.SyslogPort))
-	_ = server.Boot()
+
+	var udpErr, tcpErr error
+	udpErr = server.ListenUDP(fmt.Sprintf("0.0.0.0:%d", datastore.SyslogPort))
+	tcpErr = server.ListenTCP(fmt.Sprintf("0.0.0.0:%d", datastore.SyslogPort))
+
+	if udpErr != nil && tcpErr != nil {
+		errStr := fmt.Sprintf("UDP: %v / TCP: %v", udpErr, tcpErr)
+		log.Printf("syslogd bind error: %s", errStr)
+		SetReceiverStatus("syslog", ReceiverStatus{
+			Status: "error",
+			Port:   fmt.Sprintf("UDP/TCP :%d", datastore.SyslogPort),
+			Error:  errStr,
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf(i18n.Trans("Syslog receiver bind error: %s"), errStr),
+		})
+		<-stopCh
+		log.Printf("stop syslogd")
+		SetReceiverStatus("syslog", ReceiverStatus{
+			Status: "stopped",
+			Port:   fmt.Sprintf("UDP/TCP :%d", datastore.SyslogPort),
+		})
+		return
+	}
+
+	if udpErr != nil {
+		log.Printf("syslogd UDP bind error: %v", udpErr)
+		SetReceiverStatus("syslog", ReceiverStatus{
+			Status: "running",
+			Port:   fmt.Sprintf("TCP :%d (UDP failed)", datastore.SyslogPort),
+			Error:  fmt.Sprintf("UDP: %v", udpErr),
+		})
+	} else if tcpErr != nil {
+		log.Printf("syslogd TCP bind error: %v", tcpErr)
+		SetReceiverStatus("syslog", ReceiverStatus{
+			Status: "running",
+			Port:   fmt.Sprintf("UDP :%d (TCP failed)", datastore.SyslogPort),
+			Error:  fmt.Sprintf("TCP: %v", tcpErr),
+		})
+	} else {
+		SetReceiverStatus("syslog", ReceiverStatus{
+			Status: "running",
+			Port:   fmt.Sprintf("UDP/TCP :%d", datastore.SyslogPort),
+		})
+	}
+
+	if err := server.Boot(); err != nil {
+		log.Printf("syslogd boot error: %v", err)
+		SetReceiverStatus("syslog", ReceiverStatus{
+			Status: "error",
+			Port:   fmt.Sprintf("UDP/TCP :%d", datastore.SyslogPort),
+			Error:  err.Error(),
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf(i18n.Trans("Syslog receiver boot error: %v"), err),
+		})
+		<-stopCh
+		log.Printf("stop syslogd")
+		SetReceiverStatus("syslog", ReceiverStatus{
+			Status: "stopped",
+			Port:   fmt.Sprintf("UDP/TCP :%d", datastore.SyslogPort),
+		})
+		return
+	}
 	for {
 		select {
 		case <-stopCh:
 			{
 				log.Printf("stop syslogd")
+				SetReceiverStatus("syslog", ReceiverStatus{
+					Status: "stopped",
+					Port:   fmt.Sprintf("UDP/TCP :%d", datastore.SyslogPort),
+				})
 				datastore.AddEventLog(&datastore.EventLogEnt{
 					Type:  "system",
 					Level: "info",

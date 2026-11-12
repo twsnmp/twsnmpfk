@@ -25,6 +25,41 @@ var pauseMu sync.RWMutex
 // ReportEngine is the singleton log report processing engine.
 var ReportEngine *logreport.Engine
 
+// ReceiverStatus holds the runtime health of a receiver server.
+type ReceiverStatus struct {
+	Status string // "running", "error", "disabled", "stopped"
+	Port   string
+	Error  string
+	Range  string
+}
+
+var (
+	receiverMu       sync.RWMutex
+	receiverStatuses = make(map[string]ReceiverStatus)
+)
+
+// SetReceiverStatus sets runtime status of a receiver.
+func SetReceiverStatus(name string, st ReceiverStatus) {
+	receiverMu.Lock()
+	defer receiverMu.Unlock()
+	receiverStatuses[name] = st
+}
+
+// GetReceiverStatus gets runtime status of a receiver.
+func GetReceiverStatus(name string) (ReceiverStatus, bool) {
+	receiverMu.RLock()
+	defer receiverMu.RUnlock()
+	st, ok := receiverStatuses[name]
+	return st, ok
+}
+
+// ClearReceiverStatus removes or resets status of a receiver.
+func ClearReceiverStatus(name string) {
+	receiverMu.Lock()
+	defer receiverMu.Unlock()
+	delete(receiverStatuses, name)
+}
+
 // Pause pauses log reception and flushes buffered logs.
 func Pause() {
 	pauseMu.Lock()

@@ -95,6 +95,20 @@ func (s PingStat) String() string {
 	}
 }
 
+// GetPingMode returns the active ping mode ("icmp" or "udp").
+func GetPingMode() string {
+	if pingMode != "" {
+		return pingMode
+	}
+	if datastore.PingMode != "" {
+		return datastore.PingMode
+	}
+	if runtime.GOOS == "darwin" {
+		return "udp"
+	}
+	return "icmp"
+}
+
 func Start(ctx context.Context, wg *sync.WaitGroup) error {
 	mode := datastore.PingMode
 	if mode == "" {

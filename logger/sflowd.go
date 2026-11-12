@@ -21,13 +21,30 @@ import (
 
 func sflowd(stopCh chan bool) {
 	log.Printf("start sflowd")
+	portStr := fmt.Sprintf("UDP :%d", datastore.SFlowPort)
 	sv, err := net.ListenPacket("udp", fmt.Sprintf(":%d", datastore.SFlowPort))
 	if err != nil {
 		log.Printf("sflowd err=%v", err)
+		SetReceiverStatus("sflow", ReceiverStatus{
+			Status: "error",
+			Port:   portStr,
+			Error:  err.Error(),
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf("sflow server start failed: %v", err),
+		})
 		<-stopCh
+		ClearReceiverStatus("sflow")
 		return
 	}
 	defer sv.Close()
+	SetReceiverStatus("sflow", ReceiverStatus{
+		Status: "running",
+		Port:   portStr,
+	})
+	defer ClearReceiverStatus("sflow")
 	data := make([]byte, 8192)
 	for {
 		select {

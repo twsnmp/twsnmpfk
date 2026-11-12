@@ -110,10 +110,27 @@ func oteld(stopCh chan bool) {
 	if err != nil {
 		log.Printf("Failed to create receiver otlp: %v", err)
 	}
+	portStr := fmt.Sprintf("gRPC :%d / HTTP :%d", datastore.OTelgRPCPort, datastore.OTelHTTPPort)
 	err = logReceiver.Start(ctx, nil)
 	if err != nil {
 		log.Printf("oteld err=%v", err)
+		SetReceiverStatus("otel", ReceiverStatus{
+			Status: "error",
+			Port:   portStr,
+			Error:  err.Error(),
+		})
+		datastore.AddEventLog(&datastore.EventLogEnt{
+			Type:  "system",
+			Level: "warn",
+			Event: fmt.Sprintf("OpenTelemetry server start failed: %v", err),
+		})
+	} else {
+		SetReceiverStatus("otel", ReceiverStatus{
+			Status: "running",
+			Port:   portStr,
+		})
 	}
+	defer ClearReceiverStatus("otel")
 	timer := time.NewTicker(time.Minute)
 	lastSave := int64(0)
 	for {
