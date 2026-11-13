@@ -1921,7 +1921,9 @@ The settings related to MCP server in the map settings are in the yellow box.
 |Item|Content|
 |----|---|
 |MCP Server Transport|Select OFF/SSE/StreamableHTTP.|
-|MCP Server Endpoint|Specify the IP address and port to receive.<br>Local only, 127.0.0.0:8089<br>If you receive at all addresses:8089 |
+|MCP Server Endpoint|Specify the IP address and port to receive.<br>Local only: `127.0.0.1:8089`<br>All addresses: `:8089` |
+|MCP Token|Optional bearer token verified against the HTTP `Authorization` header (`Authorization: Bearer <token>` or `Authorization: <token>`). |
+|MCP Allow IP|Comma-separated list of allowed client IP addresses. |
 
 ### MCP Server Features
 

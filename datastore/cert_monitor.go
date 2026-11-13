@@ -28,7 +28,7 @@ var certMonitors sync.Map
 
 func GetCertMonitor(id string) *CertMonitorEnt {
 	if id != "" {
-		if v, ok := certMonitors.Load(id); !ok {
+		if v, ok := certMonitors.Load(id); ok {
 			return v.(*CertMonitorEnt)
 		}
 	}

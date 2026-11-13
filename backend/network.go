@@ -16,7 +16,7 @@ import (
 	"github.com/twsnmp/twsnmpfk/ping"
 )
 
-var checkNetworkCh = make(chan string)
+var checkNetworkCh = make(chan string, 32)
 
 func networkBackend(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
@@ -409,7 +409,10 @@ func CheckNetwork(id string) {
 	}
 	// Clear Error
 	n.Error = ""
-	checkNetworkCh <- id
+	select {
+	case checkNetworkCh <- id:
+	default:
+	}
 }
 
 // CheckAllNetworks performs a re-check of all network nodes.
@@ -417,7 +420,10 @@ func CheckAllNetworks() {
 	datastore.ForEachNetworks(func(n *datastore.NetworkEnt) bool {
 		if n.Error != "" {
 			n.Error = ""
-			checkNetworkCh <- n.ID
+			select {
+			case checkNetworkCh <- n.ID:
+			default:
+			}
 		}
 		return true
 	})

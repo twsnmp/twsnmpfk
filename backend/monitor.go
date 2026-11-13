@@ -45,7 +45,30 @@ type MonitorDataEnt struct {
 }
 
 // MonitorDataes : モニターデータ
-var MonitorDataes []*MonitorDataEnt
+var (
+	monitorMu     sync.RWMutex
+	MonitorDataes []*MonitorDataEnt
+)
+
+// GetMonitorDataList returns a thread-safe snapshot of recorded resource monitor samples.
+func GetMonitorDataList() []*MonitorDataEnt {
+	monitorMu.RLock()
+	defer monitorMu.RUnlock()
+	ret := make([]*MonitorDataEnt, len(MonitorDataes))
+	copy(ret, MonitorDataes)
+	return ret
+}
+
+// GetLatestMonitorData returns the most recent resource monitor sample, or nil if none exists.
+func GetLatestMonitorData() *MonitorDataEnt {
+	monitorMu.RLock()
+	defer monitorMu.RUnlock()
+	if len(MonitorDataes) == 0 {
+		return nil
+	}
+	cp := *MonitorDataes[len(MonitorDataes)-1]
+	return &cp
+}
 
 func updateMonData() {
 	m := &MonitorDataEnt{}
@@ -112,10 +135,12 @@ func updateMonData() {
 	m.NumGoroutine = runtime.NumGoroutine()
 
 	m.DBSize = datastore.GetDBSize()
+	monitorMu.Lock()
 	for len(MonitorDataes) > maxMonitorData {
 		MonitorDataes = append(MonitorDataes[:0], MonitorDataes[1:]...)
 	}
 	MonitorDataes = append(MonitorDataes, m)
+	monitorMu.Unlock()
 }
 
 func isMonitorIF(n string) bool {

@@ -33,13 +33,14 @@ func (a *App) UpdateMapConf(m datastore.MapConfEnt) bool {
 	if m.OTelRetention < 1 {
 		m.OTelRetention = 24
 	}
-	if m.MCPEndpoint != datastore.MapConf.MCPEndpoint ||
-		m.MCPTransport != datastore.MapConf.MCPEndpoint ||
+	mcpChanged := m.MCPEndpoint != datastore.MapConf.MCPEndpoint ||
+		m.MCPTransport != datastore.MapConf.MCPTransport ||
 		m.MCPFrom != datastore.MapConf.MCPFrom ||
-		m.MCPToken != datastore.MapConf.MCPToken {
+		m.MCPToken != datastore.MapConf.MCPToken
+	datastore.MapConf = m
+	if mcpChanged {
 		backend.NotifyMCPConfigChanged()
 	}
-	datastore.MapConf = m
 
 	return datastore.SaveMapConf() == nil
 }

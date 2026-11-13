@@ -2,6 +2,7 @@ package backend
 
 import (
 	"context"
+	"crypto/subtle"
 	"crypto/tls"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -20,8 +22,30 @@ import (
 	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
-var stopMCPCh = make(chan bool)
-var mcpAllow sync.Map
+// PollingControlHooks decouples backend MCP polling control from the polling package to avoid circular imports.
+type PollingControlHooks struct {
+	CheckPolling func(id string) bool
+	CheckNode    func(nodeID string)
+	CheckAll     func()
+	StopPolling  func(pe *datastore.PollingEnt)
+}
+
+var (
+	stopMCPCh           = make(chan bool, 1)
+	mcpAllow            sync.Map
+	pollingHooks        atomic.Pointer[PollingControlHooks]
+	mcpConfigChangedSeq atomic.Uint64
+)
+
+// MCPConfigChangedSeq returns the monotonically increasing count of NotifyMCPConfigChanged calls.
+func MCPConfigChangedSeq() uint64 {
+	return mcpConfigChangedSeq.Load()
+}
+
+// SetPollingControlHooks registers callbacks to trigger immediate polling checks from backend MCP tools.
+func SetPollingControlHooks(h PollingControlHooks) {
+	pollingHooks.Store(&h)
+}
 
 type mcpStatus struct {
 	status string
@@ -97,7 +121,11 @@ func mcpServer(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 func NotifyMCPConfigChanged() {
-	stopMCPCh <- true
+	mcpConfigChangedSeq.Add(1)
+	select {
+	case stopMCPCh <- true:
+	default:
+	}
 }
 
 func startMCPServer() *echo.Echo {
@@ -212,6 +240,7 @@ func getMCPServerCert() (*tls.Certificate, error) {
 }
 
 func setMCPAllow() {
+	mcpAllow.Clear()
 	for _, ip := range strings.Split(datastore.MapConf.MCPFrom, ",") {
 		ip = strings.TrimSpace(ip)
 		if ip != "" {
@@ -222,8 +251,11 @@ func setMCPAllow() {
 
 func checkMCPACL(c echo.Context) bool {
 	if datastore.MapConf.MCPToken != "" {
-		t := c.Request().Header.Get("Authorization")
-		if !strings.Contains(t, datastore.MapConf.MCPToken) {
+		t := strings.TrimSpace(c.Request().Header.Get("Authorization"))
+		if len(t) >= 7 && strings.EqualFold(t[:7], "Bearer ") {
+			t = strings.TrimSpace(t[7:])
+		}
+		if subtle.ConstantTimeCompare([]byte(t), []byte(datastore.MapConf.MCPToken)) != 1 {
 			return false
 		}
 	}

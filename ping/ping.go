@@ -135,6 +135,11 @@ func DoPing(ip string, timeout, retry, size, ttl int) *PingEnt {
 		pe.Stat = PingOtherError
 		return pe
 	}
+	if pingSendCh == nil {
+		pe.Stat = PingOtherError
+		pe.Error = fmt.Errorf("ping service not started")
+		return pe
+	}
 	pingSendCh <- pe
 	<-pe.done
 	return pe
@@ -158,6 +163,9 @@ func SendPing(ip string, size, ttl int) {
 func newPingEnt(ip string, timeout, retry, size, ttl int) *PingEnt {
 	pingMutex.Lock()
 	defer pingMutex.Unlock()
+	if randGen == nil {
+		randGen = rand.New(rand.NewSource(time.Now().UnixNano()))
+	}
 	return &PingEnt{
 		Target:   ip,
 		Stat:     PingStart,

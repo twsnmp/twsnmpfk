@@ -1,294 +1,413 @@
 # TWSNMP FK MCP Server Specification
 
-This document outlines the specifications for the TWSNMP FK MCP (Model Context Protocol) Server, based on the source code in `backend/mcp.go`, `backend/mcp_tools.go`, and `backend/mcp_prompts.go`.
+## Overview
 
-## 1. Overview
+This document defines the specification for the Model Context Protocol (MCP) server implemented in TWSNMP FK (`backend/mcp.go`, `backend/mcp_tools.go`, `backend/mcp_tools_crud.go`, `backend/mcp_tools_analytics.go`).
 
-The MCP server provides an interface for AI agents to interact with the TWSNMP FK monitoring system. It allows agents to retrieve monitoring data, perform actions, and access system information through a set of defined tools and prompts.
+The MCP server exposes 58 tools and 59 prompts allowing AI agents to query monitoring data, inspect flows/telemetry/logs, manage nodes/pollings/lines/networks/certificates, run live diagnostics, and organize the map.
 
-## 2. Transport and Endpoints
+## Server Endpoint and Transports
 
-The server starts based on the configuration `datastore.MapConf.MCPTransport`. It supports two transport mechanisms:
+The server starts based on `datastore.MapConf.MCPTransport` (`"off"`, `"sse"`, `"stream"`):
+- `"stream"` (Streamable HTTP, default when enabled): serves `/mcp`
+- `"sse"` (Server-Sent Events): serves `/sse` and `/message`
+- `"off"`: MCP server is disabled
 
-- **Server-Sent Events (SSE)**:
-  - Enabled when `MCPTransport` is set to `"sse"`.
-  - Endpoints: `/sse` and `/message`.
-- **Streamable HTTP**:
-  - Enabled for other transport settings (e.g., `"http"`).
-  - Endpoint: `/mcp`.
+The HTTP server binds to `datastore.MapConf.MCPEndpoint` (for example `127.0.0.1:8089` or `:8089`). TLS 1.3 is enabled automatically when `-mcpCert` and `-mcpKey` are provided.
 
-The server listens on the address specified in `datastore.MapConf.MCPEndpoint`.
+## Authentication and Access Control
 
-### TLS Security
+All MCP HTTP endpoints are guarded by `checkMCPACL`. When both token authentication and an IP allowlist are configured, both checks must pass:
 
-TLS is automatically enabled if a server certificate (`datastore.MCPCert`) and private key (`datastore.MCPKey`) are provided. It uses TLS 1.3 with a restricted set of secure cipher suites.
+1. **Token Authentication (`datastore.MapConf.MCPToken`)**:
+   - When non-empty, clients must send an `Authorization` header whose token matches `MCPToken` (constant-time comparison).
+   - Both `Authorization: Bearer <token>` (case-insensitive `Bearer ` prefix) and `Authorization: <token>` are accepted.
+2. **IP Access Control (`datastore.MapConf.MCPFrom`)**:
+   - Comma-separated list of client IP addresses.
+   - Reloaded atomically when MCP configuration changes (stale IPs are removed).
+   - If empty, all client IPs are permitted.
+3. **Credential Masking**:
+   - Secret fields (`Community`, `Password`, `GNMIPassword`, `PublicKey`) returned by `get_node` and `get_network` are masked as `"********"` when set.
 
-## 3. Authentication
-
-Access to the MCP server is controlled by two mechanisms, both of which must be satisfied if configured:
-
-- **Token Authentication**: If `datastore.MapConf.MCPToken` is set, the `Authorization` header of the incoming request must contain this token.
-- **IP Address ACL**: If `datastore.MapConf.MCPFrom` is set (as a comma-separated list of IP addresses), the request's source IP address must be in the allow list.
-
-## 4. Tools (Functions)
-
-The server exposes the following tools for agents.
+For prompt definitions, see [MCP Server Prompt Specifications](./mcp_prompt.md).
 
 ---
 
-### `get_node_list`
-- **Description**: Get a list of nodes from TWSNMP.
-- **Parameters**:
-  - `name_filter` (string, optional): Regex to filter by node name.
-  - `ip_filter` (string, optional): Regex to filter by node IP address.
-  - `state_filter` (string, optional): Regex to filter by node state (`normal`, `warn`, `low`, `high`, `repair`, `unknown`).
-- **Returns**: A JSON array of node objects.
+## Tool Specifications (58 Tools)
+
+### Node Management
+
+#### `get_node_list`
+Get a list of nodes registered in TWSNMP.
+- `name_filter` (string, optional): Regex filter on node name.
+- `ip_filter` (string, optional): Regex filter on node IP address.
+- `state_filter` (string, optional): Regex filter on node state (`normal`, `warn`, `low`, `high`, `repair`, `unknown`).
+
+#### `get_node`
+Get full non-secret configuration details and associated pollings for a single node (`Community`, `Password`, `GNMIPassword`, `PublicKey` are masked).
+- `id` (string, required): Node ID, unique node name, or unique IP address.
+
+#### `add_node`
+Add a new node to TWSNMP.
+- `name` (string, required): Node name.
+- `ip` (string, required): Node IP address.
+- `icon` (string, optional): Icon name (default `desktop`).
+- `description` (string, optional): Node description.
+- `x` (integer, optional): Map X position (`1`–`1000`, default `64`).
+- `y` (integer, optional): Map Y position (`1`–`1000`, default `64`).
+
+#### `update_node`
+Update node metadata or map coordinates (`id` accepts node ID, unique name, or unique IP).
+- `id` (string, required): Node ID, current name, or current IP.
+- `name` (string, optional): New node name.
+- `ip` (string, optional): New IP address.
+- `icon` (string, optional): New icon name.
+- `description` (string, optional): Description text.
+- `x` (integer, optional): X position.
+- `y` (integer, optional): Y position.
+
+#### `delete_node`
+Delete a node along with all of its pollings (stopping active gNMI/MQTT subscriptions) and connected map lines.
+- `id` (string, required): Node ID, unique node name, or unique IP address.
 
 ---
 
-### `get_network_list`
-- **Description**: Get a list of networks from TWSNMP.
-- **Parameters**:
-  - `name_filter` (string, optional): Regex to filter by network name.
-  - `ip_filter` (string, optional): Regex to filter by network IP address.
-- **Returns**: A JSON array of network objects.
+### Polling Management & Execution
+
+#### `get_polling_list`
+Get a list of pollings registered in TWSNMP.
+- `type_filter` (string, optional): Regex filter on polling type (`ping`, `tcp`, `http`, `dns`, `twsnmp`, `syslog`, `stun`, `snmp`, etc.).
+- `name_filter` (string, optional): Regex filter on polling name.
+- `node_name_filter` (string, optional): Regex filter on node name.
+- `state_filter` (string, optional): Regex filter on polling state (`normal`, `warn`, `low`, `high`, `repair`, `unknown`).
+- `node_id` (string, optional): Exact node ID or unique node name filter.
+
+#### `get_polling`
+Get full configuration and latest result for a single polling check.
+- `id` (string, required): Polling ID.
+
+#### `add_polling`
+Add a new polling check to an existing node.
+- `node_id` (string, required): Target node ID, unique node name, or unique IP address.
+- `name` (string, required): Polling name.
+- `type` (string, required): Polling type (`ping`, `tcp`, `http`, `dns`, `tls`, `snmp`, `gnmi`, `mqtt`, `syslog`, `trap`, `netflow`, `sflow`, `twsnmp`, `ntp`, `ssh`, `stun`, `cmd`, `report`, etc.).
+- `mode` (string, optional): Polling sub-mode (`get`, `walk`, `count`, `subscribe`, etc.).
+- `params` (string, optional): Target parameter (port, URL, OID, hostname, etc.).
+- `filter` (string, optional): Filter pattern.
+- `extractor` (string, optional): Grok / value extractor pattern.
+- `script` (string, optional): JavaScript evaluation script.
+- `level` (string, optional): Severity level: `off`, `low` (default), `warn`, `high`.
+- `poll_int` (integer, optional): Interval in seconds (default map `PollInt` or `60`).
+- `timeout` (integer, optional): Timeout in seconds (default map `Timeout` or `3`).
+- `retry` (integer, optional): Retry count (default map `Retry` or `0`).
+- `log_mode` (string, optional): Logging mode: `none` (default), `always`, `on_change`, `ai`.
+- `fail_action` (string, optional): Action on failure.
+- `repair_action` (string, optional): Action on recovery.
+- `ai_mode` (string, optional): AI anomaly detection mode.
+- `vector_cols` (string, optional): Comma-separated vector columns for AI analysis.
+- `mqtt_url` (string, optional): MQTT broker URL.
+- `mqtt_topic` (string, optional): MQTT subscription topic.
+- `mqtt_cols` (string, optional): MQTT JSON field extraction columns.
+
+#### `update_polling`
+Update an existing polling configuration. If target node, mode, type, params, or MQTT settings change while running gNMI/MQTT subscribe, existing subscriptions are stopped cleanly.
+- `id` (string, required): Polling ID.
+- `node_id`, `name`, `type`, `mode`, `params`, `filter`, `extractor`, `script`, `level`, `poll_int` (`>0`), `timeout` (`>0`), `retry` (`>0` to set, `<0` to reset to `0`), `log_mode`, `fail_action`, `repair_action`, `ai_mode`, `vector_cols`, `mqtt_url`, `mqtt_topic`, `mqtt_cols` (all optional).
+
+#### `delete_polling`
+Delete a polling entry and stop any active gNMI/MQTT subscription for it.
+- `id` (string, required): Polling ID.
+
+#### `check_polling`
+Trigger immediate execution of a specific polling check, all pollings on a node, or all pollings across TWSNMP.
+- `polling_id` (string, optional): Specific polling ID.
+- `node_id` (string, optional): Node ID, unique name, or IP.
+- `all` (boolean, optional): Set `true` to check all pollings and networks.
+
+#### `get_polling_log`
+Get historical polling execution logs as JSON.
+- `id` (string, required): Polling ID.
+- `limit` (integer, optional): Max records (`1`–`2000`, default `100`).
+
+#### `get_polling_log_data`
+Get historical polling numeric metrics formatted as CSV with deterministic column order (`time,state,<sorted metric keys>`).
+- `id` (string, required): Polling ID.
+- `limit` (integer, optional): Max rows (`1`–`2000`, default `100`).
 
 ---
 
-### `get_polling_list`
-- **Description**: Get a list of pollings from TWSNMP.
-- **Parameters**:
-  - `type_filter` (string, optional): Regex to filter by polling type (`ping`, `tcp`, `http`, `dns`, `twsnmp`, `syslog`, `stun`, etc.).
-  - `name_filter` (string, optional): Regex to filter by polling name.
-  - `node_name_filter` (string, optional): Regex to filter by the node name associated with the polling.
-  - `state_filter` (string, optional): Regex to filter by polling state (`normal`, `warn`, `low`, `high`, `repair`, `unknown`).
-- **Returns**: A JSON array of polling objects.
+### Map Lines & Network Containers
+
+#### `get_line_list`
+List map topology lines with resolved endpoint names and line state.
+- `node_id` (string, optional): Filter lines touching a specific node or network ID/name/IP.
+- `state_filter` (string, optional): Regex filter on overall line state.
+
+#### `add_line`
+Connect two nodes or networks on the map (`NET:<id>` or unique name/IP is supported for networks). Refreshes line state immediately after creation.
+- `node_id1` (string, required): First endpoint ID, unique name, or unique IP.
+- `node_id2` (string, required): Second endpoint ID, unique name, or unique IP.
+- `polling_id1` (string, optional): Polling ID on endpoint 1 (or port ID if endpoint 1 is a network).
+- `polling_id2` (string, optional): Polling ID on endpoint 2 (or port ID if endpoint 2 is a network).
+- `polling_id` (string, optional): Traffic polling ID for the line.
+- `width` (integer, optional): Line width (`1`–`10`, default `2`).
+- `port` (string, optional): Port label text.
+- `info` (string, optional): Additional info text.
+
+#### `delete_line`
+Delete a map line by ID.
+- `id` (string, required): Line ID.
+
+#### `get_network_list`
+List network containers registered in TWSNMP.
+- `name_filter` (string, optional): Regex filter on network name.
+- `ip_filter` (string, optional): Regex filter on IP address.
+
+#### `get_network`
+Get detailed configuration and port table for a network container (SNMP credentials masked).
+- `id` (string, required): Network ID (with or without `NET:` prefix), unique name, or unique IP.
+
+#### `add_network`
+Add a network/switch container node to the map.
+- `name` (string, required): Network name.
+- `ip` (string, required): Management IP address.
+- `description`, `snmp_mode`, `community`, `user`, `password`, `url` (string, optional).
+- `snmp_port` (integer, optional, default `161`), `h_ports` (integer, optional, default `24`), `x` (optional, default `64`), `y` (optional, default `64`).
+- `arp_watch`, `unmanaged`, `lldp` (boolean, optional).
+
+#### `update_network`
+Update an existing network container.
+- `id` (string, required): Network ID (with or without `NET:` prefix), unique name, or unique IP.
+- `name`, `ip`, `description`, `snmp_mode`, `community`, `user`, `password`, `url` (string, optional).
+- `snmp_port` (`1`–`65535`), `h_ports` (`>0`), `x` (`>0`), `y` (`>0`) (integer, optional).
+- `arp_watch`, `unmanaged`, `lldp` (string, optional: `"true"`, `"false"`, or empty to preserve).
+
+#### `delete_network`
+Delete a network container and any lines connected to it.
+- `id` (string, required): Network ID (with or without `NET:` prefix), unique name, or unique IP.
+
+#### `check_network`
+Trigger SNMP/LLDP status checks for one network container or all network containers.
+- `id` (string, optional): Network ID (with or without `NET:` prefix), unique name, or unique IP.
+- `all` (boolean, optional): Set `true` to check all networks.
+
+#### `auto_connect_lines`
+Automatically infer and connect missing map topology lines.
+- `mode` (string, optional): `"strict"` (default) or `"speculative"`.
+
+#### `auto_layout`
+Automatically arrange map node coordinates or undo the previous auto-layout change.
+- `mode` (string, optional): `"hierarchical"` (default), `"cluster"`, or `"categorized"`.
+- `undo` (boolean, optional): Set `true` to restore node positions from the previous auto-layout.
 
 ---
 
-### `get_polling_log`
-- **Description**: Get the polling log for a specific polling ID.
-- **Parameters**:
-  - `id` (string, required): The ID of the polling.
-  - `limit` (int, optional): The maximum number of log entries to retrieve (1-2000, default 100).
-- **Returns**: A JSON array of polling log entries.
+### Live Diagnostics, SNMP, MIB & gNMI
+
+#### `do_ping`
+Execute an ICMP ping to a target from TWSNMP.
+- `target` (string, required): Target IP, hostname, node ID, or node name.
+- `size` (integer, optional): Packet size (`1`–`1500`, default `64`).
+- `ttl` (integer, optional): IP TTL (`1`–`255`, default `254`).
+- `timeout` (integer, optional): Timeout seconds (`1`–`10`, default `3`).
+
+#### `diagnose_node`
+Run a unified multi-layer diagnostic probe against a target (managed node resolution, currently failing pollings, ICMP ping, SNMP `sysDescr`/`sysObjectID`/`sysUpTime`/`sysName`/`sysLocation`, TCP port scans with banners, and HTTP/HTTPS web signature inspection).
+- `target` (string, required): Node ID, node name, IP address, or hostname.
+- `ports` (string, optional): Comma-separated TCP ports (default `"22,80,443,8080,8443"`, max 32 ports).
+- `timeout` (integer, optional): Probe timeout in seconds (`1`–`10`, default `3`).
+
+#### `get_mib_tree`
+Retrieve the SNMP MIB object tree loaded in TWSNMP.
+- `root_oid` (string, optional): Optional subtree OID or object name (e.g. `.1.3.6.1.2.1.1` or `system`).
+- `max_depth` (integer, optional): Optional max traversal depth (`0` = unlimited).
+
+#### `search_mib`
+Search loaded SNMP MIB definitions by name, OID, or description regex/substring.
+- `query` (string, required): Case-insensitive regex or substring.
+- `limit` (integer, optional): Max results (`1`–`500`, default `50`).
+
+#### `snmpwalk`
+Execute an SNMP walk on a target device. When `target` resolves to a managed node and credentials are omitted, the node's saved SNMP settings and `SnmpPort` are used automatically.
+- `target` (string, required): Target IP, hostname, node ID, or node name.
+- `mib_object_name` (string, required): MIB object name or numeric OID.
+- `snmp_mode` (string, optional): `v2c`, `v3auth`, `v3authpriv`, `v3authprivex`, `v3sha256aes128`, `v3sha512aes256`.
+- `community`, `user`, `password` (string, optional): SNMP credentials override.
+- `port` (integer, optional): SNMP UDP port override (default node `SnmpPort` or `161`).
+- `limit` (integer, optional): Max variables (`1`–`50000`, default unlimited).
+
+#### `snmpset`
+Write a writable SNMP MIB variable (`integer` or `string`) on a target device.
+- `target` (string, required): Target IP, hostname, node ID, or node name.
+- `mib_object_name` (string, required): MIB object name or numeric OID.
+- `type` (string, required): Value type (`"integer"` or `"string"`).
+- `value` (string, required): Value to set.
+- `snmp_mode`, `community`, `user`, `password`, `port` (optional overrides).
+
+#### `gnmi_capabilities`
+Query gNMI capabilities (supported encodings, version, YANG models) for a managed node.
+- `node_id` (string, required): Node ID, unique node name, or unique IP.
+- `target` (string, optional): Optional `host:port` override (default node IP + `GNMIPort` or `57400`).
+
+#### `gnmi_get`
+Fetch gNMI telemetry data at a path from a managed node.
+- `node_id` (string, required): Node ID, unique node name, or unique IP.
+- `path` (string, required): gNMI path (e.g. `/interfaces/interface` or `/system`).
+- `target` (string, optional): Optional `host:port` override.
+- `encoding` (string, optional): `json_ietf` (default unless set on node), `json`, `proto`, `bytes`, `ascii`.
+- `limit` (integer, optional): Max leaf entries (`1`–`5000`, default `500`).
 
 ---
 
-### `get_polling_log_data`
-- **Description**: Get the polling log data for a specific polling ID.
-- **Parameters**:
-  - `id` (string, required): The ID of the polling.
-  - `limit` (int, optional): The maximum number of log entries to retrieve (100-2000, default 100).
-- **Returns**: A CSV of polling log  data entries.
+### IP, MAC, Switch FDB & Wireless Discovery
+
+#### `get_ip_address_list`
+Get IP-to-MAC entries from TWSNMP's ARP/IP table.
+- `ip_filter`, `mac_filter`, `vendor_filter` (string, optional): Regex filters.
+- `limit` (integer, optional): Max entries (`1`–`2000`, default `500`).
+
+#### `get_ip_address_info`
+Inspect a single IP address (MAC, vendor, location, DNS names, node link).
+- `ip` (string, required): IPv4/IPv6 address.
+
+#### `get_mac_address_list`
+List MAC address inventory aggregated from ARP/IP reports.
+- `mac_filter`, `ip_filter`, `vendor_filter` (string, optional): Regex filters.
+- `limit` (integer, optional): Max entries (`1`–`2000`, default `500`).
+
+#### `get_mac_address_info`
+Inspect a single MAC address (associated IPs, node/port links, vendor).
+- `mac` (string, required): MAC address.
+
+#### `get_wifi_ap_list`
+List detected Wi-Fi access points from wireless reports (compact by default).
+- `ssid_filter`, `bssid_filter`, `host_filter`, `vendor_filter` (string, optional): Regex filters.
+- `include_history` (boolean, optional): Include `RSSI` time-series array (default `false`).
+- `limit` (integer, optional): Max entries (`1`–`500`, default `100`).
+
+#### `get_bluetooth_device_list`
+List detected Bluetooth / BLE devices from sensor reports (compact by default).
+- `name_filter`, `address_filter`, `host_filter`, `vendor_filter` (string, optional): Regex filters.
+- `public_address_only` (boolean, optional): Exclude random/private addresses when `true`.
+- `include_history` (boolean, optional): Include `RSSI` time-series array (default `false`).
+- `limit` (integer, optional): Max entries (`1`–`500`, default `100`).
+
+#### `get_fdb_table`
+Fetch the live SNMP bridge Forwarding Database (MAC-to-switch-port mapping) from a network/switch container.
+- `id` (string, required): Network ID (with or without `NET:` prefix), unique name, or unique IP.
 
 ---
 
-### `do_ping`
-- **Description**: Perform a ping to a target.
-- **Parameters**:
-  - `target` (string, required): The target IP address or hostname.
-  - `size` (int, optional): Packet size (1-1500, default 64).
-  - `ttl` (int, optional): IP packet TTL (1-255, default 254).
-  - `timeout` (int, optional): Timeout in seconds (1-10, default 3).
-- **Returns**: A JSON object with the ping result.
+### System Status & Certificates
+
+#### `get_system_status`
+Get TWSNMP FK runtime health, uptime, CPU/goroutines, DB size, datastore path, ping mode, MCP config/status (`MCPTransport`, `MCPEndpoint`, `MCPStatus`, `MCPError`), node/polling/line/network/certificate summary counts, latest resource monitor snapshot, and receiver status map (`syslogd`, `trapd`, `netflowd`, `sflowd`, `otel`, `mqtt`, `arpwatch`, `sshd`, `tcpd`).
+- Parameters: None.
+
+#### `get_resource_monitor_list`
+Get CPU, memory, disk, swap, network, connection, DB size, and process snapshots collected by TWSNMP.
+- `limit` (integer, optional): Max snapshots (`1`–`500`, default `100`).
+
+#### `get_server_certificate_list`
+List all TLS server certificate monitor entries.
+- Parameters: None.
+
+#### `update_server_certificate`
+Create a new TLS server certificate monitor (when `id` is empty) or update an existing entry (`target` / `port`), resetting state and triggering re-verification.
+- `id` (string, optional): Existing entry ID (omit to add new).
+- `target` (string, optional): Hostname or IP (required when adding).
+- `port` (integer, optional): TLS port (`1`–`65535`, default `443` when adding).
+
+#### `delete_server_certificate`
+Delete a TLS server certificate monitor entry by ID.
+- `id` (string, required): Entry ID.
 
 ---
 
-### `get_mib_tree`
-- **Description**: Get the MIB tree from TWSNMP.
-- **Parameters**: None.
-- **Returns**: A JSON object representing the MIB tree structure.
+### Logs, Flows, OpenTelemetry, AI Anomaly & Reports
 
----
+Time-range fields (`start_time`, `end_time`) support relative durations (e.g. `"-1h"`, `"-24h"`), `"now"`, and RFC3339 / common timestamps.
 
-### `snmpwalk`
-- **Description**: Perform an SNMP walk.
-- **Parameters**:
-  - `target` (string, required): The target IP address or node name.
-  - `mib_object_name` (string, required): The MIB object name or OID to start the walk from.
-  - `community` (string, optional): Community string for SNMPv2c. If not provided, the node's configured community is used.
-  - `user` (string, optional): Username for SNMPv3.
-  - `password` (string, optional): Password for SNMPv3.
-  - `snmp_mode` (string, optional): SNMP mode (`v2c`, `v3auth`, `v3authpriv`, `v3authprivex`).
-- **Returns**: A JSON array of MIB objects with their names and values.
+#### `search_event_log`
+Search TWSNMP event logs.
+- `node_filter`, `type_filter`, `level_filter` (`warn`, `low`, `high`, `debug`, `info`), `event_filter` (string, optional): Regex filters.
+- `start_time`, `end_time` (string, optional): Default `-1h` to `now`.
+- `limit` (integer, optional): Max logs (`1`–`10000`, default `100`).
 
----
+#### `add_event_log`
+Append an event log entry (event type is recorded as `"mcp"`).
+- `event` (string, required): Event message.
+- `level` (string, optional): `info` (default), `normal`, `warn`, `low`, `high`.
+- `node` (string, optional): Associated node ID or node name.
 
-### `snmpset`
-- **Description**: SNMP set tool.
-- **Parameters**:
-  - `target` (string, required): The target IP address or node name.
-  - `mib_object_name` (string, required): The MIB object name or OID.
-  - `community` (string, optional): Community string for SNMPv2c. If not provided, the node's configured community is used.
-  - `user` (string, optional): Username for SNMPv3.
-  - `password` (string, optional): Password for SNMPv3.
-  - `snmp_mode` (string, optional): SNMP mode (`v2c`, `v3auth`, `v3authpriv`, `v3authprivex`).
-  - `type` (string, required): Type of set value (`integer` or `string`).
-  - `value` (string, required): The value to set.
-- **Returns**: A JSON array of MIB objects with their names and values.
+#### `search_syslog`
+Search stored syslog messages.
+- `level_filter`, `host_filter`, `tag_filter`, `message_filter` (string, optional): Regex filters.
+- `start_time`, `end_time` (string, optional): Default `-1h` to `now`.
+- `limit` (integer, optional): Max logs (`1`–`10000`, default `100`).
 
----
+#### `get_syslog_summary`
+Aggregate normalized syslog patterns ordered by frequency.
+- `level_filter`, `host_filter`, `tag_filter`, `message_filter` (string, optional): Regex filters.
+- `start_time`, `end_time` (string, optional): Default `-1h` to `now`.
+- `top_n` (integer, optional): Top N patterns (`5`–`500`, default `5`).
+- `max_scan` (integer, optional): Max syslog records to scan (`1000`–`2000000`, default `200000`).
 
-### `add_node`
-- **Description**: Add a new node to TWSNMP.
-- **Parameters**:
-  - `name` (string, required): Node name.
-  - `ip` (string, required): Node IP address.
-  - `icon` (string, optional): Icon for the node (default: `desktop`).
-  - `description` (string, optional): Description of the node.
-  - `x` (int, optional): X position on the map (1-1000, default 64).
-  - `y` (int, optional): Y position on the map (1-1000, default 64).
-- **Returns**: A JSON object of the newly created node. A `PING` polling is automatically added.
+#### `search_snmp_trap_log`
+Search received SNMP traps.
+- `from_filter`, `trap_type_filter`, `variable_filter` (string, optional): Regex filters.
+- `start_time`, `end_time` (string, optional): Default `-1h` to `now`.
+- `limit` (integer, optional): Max traps (`1`–`10000`, default `100`).
 
----
+#### `search_netflow`
+Search NetFlow records.
+- `src_filter`, `dst_filter`, `protocol_filter` (string, optional): Regex filters.
+- `src_port`, `dst_port` (integer, optional): Exact port filter (`>0`).
+- `start_time`, `end_time` (string, optional): Default `-1h` to `now`.
+- `limit` (integer, optional): Max records (`1`–`2000`, default `200`).
 
-### `update_node`
-- **Description**: Update a node's properties (name, IP, position, description, or icon).
-- **Parameters**:
-  - `id` (string, required): The node ID, current name, or current IP address.
-  - `name` (string, optional): New node name.
-  - `ip` (string, optional): New IP address.
-  - `icon` (string, optional): New icon.
-  - `description` (string, optional): New description.
-  - `x` (int, optional): New X position.
-  - `y` (int, optional): New Y position.
-- **Returns**: A JSON object of the updated node.
+#### `search_sflow`
+Search sFlow flow samples.
+- Same parameters as `search_netflow`.
 
----
+#### `search_sflow_counter`
+Search sFlow interface/system counter records.
+- `remote_filter`, `type_filter` (string, optional): Regex filters on exporter IP and counter type.
+- `start_time`, `end_time` (string, optional): Default `-1h` to `now`.
+- `limit` (integer, optional): Max records (`1`–`2000`, default `200`).
 
-### `get_ip_address_list`
-- **Description**: Get a list of IP addresses discovered via ARP.
-- **Parameters**: None.
-- **Returns**: A JSON array of objects, each containing IP, MAC, associated node, vendor, and timestamps.
+#### `get_otel_metrics`
+List OpenTelemetry metrics received by TWSNMP.
+- `host_filter`, `service_filter`, `name_filter` (string, optional): Regex filters.
+- `limit` (integer, optional): Max metrics (`1`–`500`, default `100`).
 
----
+#### `get_otel_traces`
+List OpenTelemetry trace summaries.
+- `service_filter` (string, optional): Regex filter on service name.
+- `error_only` (boolean, optional): Only return traces containing errors when `true`.
+- `limit` (integer, optional): Max traces (`1`–`200`, default `50`).
 
-### `get_resource_monitor_list`
-- **Description**: Get a list of TWSNMP's own resource monitoring data (CPU, memory, etc.).
-- **Parameters**: None.
-- **Returns**: A JSON array of resource usage snapshots.
+#### `get_otel_trace_detail`
+Inspect all spans (parent/child IDs, service, operation, attributes, events, error status) for an OpenTelemetry trace.
+- `trace_id` (string, required): OpenTelemetry `TraceID`.
+- `bucket` (string, optional): Specific OTel bucket timestamp (searches all recent buckets if omitted).
 
----
+#### `get_ai_anomaly_list`
+List AI anomaly detection results and severity classification (`high`, `low`, `warn`, `normal`) based on configured `AIConf` thresholds.
+- `node_id` (string, optional): Node ID, unique name, or IP filter.
+- `min_score` (number, optional): Minimum latest anomaly score threshold.
+- `include_history` (boolean, optional): Include full score time-series (`ScoreData`) when `true` (default `false`).
+- `limit` (integer, optional): Max entries (`1`–`1000`, default `100`).
 
-### `search_event_log`
-- **Description**: Search the event log.
-- **Parameters**:
-  - `node_filter` (string, optional): Regex to filter by node name.
-  - `type_filter` (string, optional): Regex to filter by event type.
-  - `level_filter` (string, optional): Regex to filter by event level (`info`, `warn`, `low`, `high`, `debug`).
-  - `event_filter` (string, optional): Regex to filter by event message content.
-  - `start_time` (string, optional): Start time for the search (e.g., "2023-10-27 00:00:00" or "-1h"). Default is "-1h".
-- `limit` (int, optional): Max number of logs to return (100-10000, default 100).
-- **Returns**: A JSON array of event log entries.
+#### `get_sensor_list`
+List connected telemetry sensors (`twWifiScan`, `twBlueScan`, `twpcap`, `twwinlog`, `twagentneo`, etc.).
+- `type_filter`, `state_filter` (string, optional): Regex filters.
+- `include_history` (boolean, optional): Include `Stats` and `Monitors` time-series arrays (default `false` for compact summaries).
+- `limit` (integer, optional): Max sensors (`1`–`500`, default `100`).
 
----
-
-### `search_syslog`
-- **Description**: Search the syslog.
-- **Parameters**:
-  - `level_filter` (string, optional): Regex to filter by level (`info`, `warn`, `low`, `high`, `debug`).
-  - `host_filter` (string, optional): Regex to filter by hostname.
-  - `tag_filter` (string, optional): Regex to filter by syslog tag.
-  - `message_filter` (string, optional): Regex to filter by message content.
-  - `start_time` (string, optional): Start time (default: "-1h").
-  - `end_time` (string, optional): End time (default: "now").
-  - `limit` (int, optional): Max number of logs to return (100-10000, default 100).
-- **Returns**: A JSON array of syslog entries.
-
----
-
-### `get_syslog_summary`
-- **Description**: Get a summary of syslog patterns.
-- **Parameters**:
-  - `level_filter`, `host_filter`, `tag_filter`, `message_filter`, `start_time`, `end_time`: Same as `search_syslog`.
-  - `top_n` (int, optional): The number of top patterns to return (5-500, default 5).
-- **Returns**: A JSON array of syslog patterns and their counts.
-
----
-
-### `search_snmp_trap_log`
-- **Description**: Search the SNMP trap log.
-- **Parameters**:
-  - `from_filter` (string, optional): Regex to filter by sender address.
-  - `trap_type_filter` (string, optional): Regex to filter by trap type.
-  - `variable_filter` (string, optional): Regex to filter by trap variable content.
-  - `start_time` (string, optional): Start time (default: "-1h").
-  - `end_time` (string, optional): End time (default: "now").
-  - `limit` (int, optional): Max number of logs to return (100-10000, default 100).
-- **Returns**: A JSON array of SNMP trap log entries.
-
----
-
-### `get_server_certificate_list`
-- **Description**: Get a list of monitored server certificates.
-- **Parameters**: None.
-- **Returns**: A JSON array of certificate monitoring entries.
-
----
-
-### `add_event_log`
-- **Description**: Add an event log to TWSNMP.
-- **Parameters**:
-  - `level` (string, optional): Event level (`info`, `normal`, `warn`, `low`, `high`). Default is `info`.
-  - `node` (string, optional): The name of the node associated with the event.
-  - `event` (string, required): The content of the event log.
-- **Returns**: A string "ok" on success.
-
----
-
-### `get_ip_address_info`
-- **Description**: Get information about an IP address (DNS, managed node, Geo location, RDAP).
-- **Parameters**:
-  - `ip` (string, required): The IP address to query.
-- **Returns**: A JSON object containing aggregated information about the IP address.
-
----
-
-### `get_mac_address_info`
-- **Description**: Get information about a MAC address (IP, managed node, vendor).
-- **Parameters**:
-  - `mac` (string, required): The MAC address to query.
-- **Returns**: A JSON object containing aggregated information about the MAC address.
-
----
-
-### `get_otel_metrics`
-- **Description**: Get OpenTelemetry metrics list or details from TWSNMP.
-- **Parameters**:
-  - `host_filter` (string, optional): Regex filter for host name.
-  - `service_filter` (string, optional): Regex filter for service name.
-  - `name_filter` (string, optional): Regex filter for metric name.
-  - `limit` (int, optional): Maximum number of entries (1-500, default 100).
-- **Returns**: JSON array of metric entities.
-
----
-
-### `get_otel_traces`
-- **Description**: Get OpenTelemetry trace summary list or error traces from TWSNMP.
-- **Parameters**:
-  - `service_filter` (string, optional): Regex filter for service name.
-  - `error_only` (bool, optional): If true, return only traces containing errors.
-  - `limit` (int, optional): Maximum number of entries (1-200, default 50).
-- **Returns**: JSON array of trace summary entities.
-
----
-
-### `get_sensor_list`
-- **Description**: Get connected sensor list and health status from TWSNMP (twWifiScan, twBlueScan, twpcap, twwinlog, twagentneo, etc.).
-- **Parameters**:
-  - `type_filter` (string, optional): Regex filter for sensor type.
-  - `state_filter` (string, optional): Regex filter for sensor state (normal, warn, error).
-- **Returns**: JSON array of sensor entities.
-
----
-
-### `get_report_summary`
-- **Description**: Get report dataset summary (wifiAP, blueDevice, envMonitor, dnsq, winEventID, twAgentAlert, twAgentInfo, etc.) from TWSNMP.
-- **Parameters**:
-  - `report_type` (string, required): Report kind name (`wifiAP`, `blueDevice`, `envMonitor`, `dnsq`, `winEventID`, `twAgentAlert`, `twAgentInfo`, etc.).
-  - `limit` (int, optional): Maximum number of records (1-200, default 50).
-- **Returns**: JSON array of report objects.
-
-
-
+#### `get_report_summary`
+Query analytics report entries (`wifiAP`, `blueDevice`, `envMonitor`, `powerMonitor`, `motionSensor`, `etherType`, `dnsq`, `radiusFlow`, `tlsFlow`, `winEventID`, `winLogon`, `winAccount`, `winKerberos`, `winPrivilege`, `winProcess`, `winTask`, `flow`, `server`, `fumble`, `syslogStats`, `trapStats`, `twAgentInfo`, `twAgentAlert`, `twAgentFIM`, `twAgentSCA`, `twAgentTCP`).
+- `report_type` (string, required): Report kind name.
+- `filter` (string, optional): Regex filter applied to the serialized JSON of each record.
+- `include_history` (boolean, optional): Include historical arrays such as `RSSI`, `EnvData`, `Data` (default `false` for compact output).
+- `limit` (integer, optional): Max records (`1`–`200`, default `50`).

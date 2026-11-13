@@ -14,10 +14,13 @@ import (
 	"github.com/twsnmp/twsnmpfk/i18n"
 )
 
-var checkCertCh = make(chan bool)
+var checkCertCh = make(chan bool, 1)
 
 func DoCehckCertMonitor() {
-	checkCertCh <- true
+	select {
+	case checkCertCh <- true:
+	default:
+	}
 }
 
 func certMonitor(ctx context.Context, wg *sync.WaitGroup) {

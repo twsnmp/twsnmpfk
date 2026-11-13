@@ -172,6 +172,12 @@ func addPrompts(s *mcp.Server) {
 				Description: "polling state filter. state is normal,repair,warn,low,high or unknown.",
 				Required:    false,
 			},
+			{
+				Name:        "node_id",
+				Title:       "Node ID or unique name filter",
+				Description: "Optional exact node ID or unique node name.",
+				Required:    false,
+			},
 		},
 	}, getPollingListPrompt)
 
@@ -191,6 +197,18 @@ func addPrompts(s *mcp.Server) {
 				Name:        "limit",
 				Title:       "Max number of logs to get.",
 				Description: "Max number of logs to get.(default 100)",
+				Required:    false,
+			},
+			{
+				Name:        "start_time",
+				Title:       "Start time",
+				Description: "Start time filter (duration like '-24h' or RFC3339).",
+				Required:    false,
+			},
+			{
+				Name:        "end_time",
+				Title:       "End time",
+				Description: "End time filter (default now).",
 				Required:    false,
 			},
 		},
@@ -250,7 +268,7 @@ func addPrompts(s *mcp.Server) {
 			{
 				Name:        "snmp_mode",
 				Title:       "SNMP mode",
-				Description: "SNMP mode(v2c,v3auth,v3authpriv,v3authprivex)",
+				Description: "SNMP mode(v2c,v3auth,v3authpriv,v3authprivex,v3sha256aes128,v3sha512aes256)",
 				Required:    false,
 			},
 			{
@@ -269,6 +287,18 @@ func addPrompts(s *mcp.Server) {
 				Name:        "password",
 				Title:       "Password",
 				Description: "Password for v3 mode.",
+				Required:    false,
+			},
+			{
+				Name:        "port",
+				Title:       "SNMP UDP port",
+				Description: "SNMP UDP port (default node SnmpPort or 161).",
+				Required:    false,
+			},
+			{
+				Name:        "limit",
+				Title:       "Result limit",
+				Description: "Maximum number of variables to return.",
 				Required:    false,
 			},
 		},
@@ -476,14 +506,25 @@ func addPrompts(s *mcp.Server) {
 	s.AddPrompt(&mcp.Prompt{
 		Name:        "get_mib_tree",
 		Title:       "Get MIB tree of TWSNMP.",
-		Description: "Get MIB tree of TWSNMP by using get_mib_tree tool",
+		Description: "Get MIB tree of TWSNMP by using get_mib_tree tool (prefer search_mib for keyword search).",
+		Arguments: []*mcp.PromptArgument{
+			{Name: "oid", Title: "Root OID", Description: "Optional subtree root OID", Required: false},
+			{Name: "name", Title: "Object name", Description: "Optional subtree object name", Required: false},
+			{Name: "depth", Title: "Max depth", Description: "Optional max traversal depth", Required: false},
+		},
 	}, getMIBTreePrompt)
 
 	// get_ip_address_list
 	s.AddPrompt(&mcp.Prompt{
 		Name:        "get_ip_address_list",
 		Title:       "Get the list of IP addresses managed by TWSNMP.",
-		Description: "Get the list of IP addresses managed by TWSNMP by using get_ip_address_list tool",
+		Description: "Get the list of IP addresses managed by TWSNMP by using get_ip_address_list tool.",
+		Arguments: []*mcp.PromptArgument{
+			{Name: "ip_filter", Title: "IP filter", Description: "Regex filter for IP address", Required: false},
+			{Name: "mac_filter", Title: "MAC filter", Description: "Regex filter for MAC address", Required: false},
+			{Name: "vendor_filter", Title: "Vendor filter", Description: "Regex filter for vendor name", Required: false},
+			{Name: "limit", Title: "Limit", Description: "Max entries to return", Required: false},
+		},
 	}, getIPAddressListPrompt)
 
 	// get_resource_monitor_list
@@ -556,6 +597,8 @@ func addPrompts(s *mcp.Server) {
 			},
 		},
 	}, getMACAddressInfoPrompt)
+
+	addExtendedPrompts(s)
 }
 
 // Prompts
@@ -572,7 +615,7 @@ func getNodeListPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.Get
 	}
 	p := "Get a list of nodes registered in TWSNMP by using get_node_list tool"
 	if len(c) > 0 {
-		p = " with following filter.\n" + strings.Join(c, "\n")
+		p += " with following filter.\n" + strings.Join(c, "\n")
 	} else {
 		p += "."
 	}
@@ -664,7 +707,7 @@ func getNetworkListPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.
 	}
 	p := "Get a list of network nodes registered in TWSNMP by using get_network_list tool"
 	if len(c) > 0 {
-		p = " with following filter.\n" + strings.Join(c, "\n")
+		p += " with following filter.\n" + strings.Join(c, "\n")
 	} else {
 		p += "."
 	}
@@ -693,9 +736,12 @@ func getPollingListPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.
 	if name, ok := req.Params.Arguments["state_filter"]; ok {
 		c = append(c, fmt.Sprintf("- State: %s", name))
 	}
+	if nodeID, ok := req.Params.Arguments["node_id"]; ok {
+		c = append(c, fmt.Sprintf("- Node ID: %s", nodeID))
+	}
 	p := "Get a list of polling registered in TWSNMP by using get_polling_list tool"
 	if len(c) > 0 {
-		p = " with following filter.\n" + strings.Join(c, "\n")
+		p += " with following filter.\n" + strings.Join(c, "\n")
 	} else {
 		p += "."
 	}
@@ -719,6 +765,12 @@ func getPollingLogPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.G
 	}
 	if limit, ok := req.Params.Arguments["limit"]; ok {
 		c = append(c, fmt.Sprintf("- Limit: %s", limit))
+	}
+	if st, ok := req.Params.Arguments["start_time"]; ok {
+		c = append(c, fmt.Sprintf("- Start Time: %s", st))
+	}
+	if et, ok := req.Params.Arguments["end_time"]; ok {
+		c = append(c, fmt.Sprintf("- End Time: %s", et))
 	}
 	p := "Get polling log by using get_polling_log tool with the following conditions:\n" + strings.Join(c, "\n")
 	return &mcp.GetPromptResult{
@@ -784,6 +836,12 @@ func doSnmpWalkPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetP
 	if password, ok := req.Params.Arguments["password"]; ok {
 		c = append(c, fmt.Sprintf("- Password: %s", password))
 	}
+	if port, ok := req.Params.Arguments["port"]; ok {
+		c = append(c, fmt.Sprintf("- Port: %s", port))
+	}
+	if limit, ok := req.Params.Arguments["limit"]; ok {
+		c = append(c, fmt.Sprintf("- Limit: %s", limit))
+	}
 	p := "Do snmpwalk to target by using snmpwalk tool with the following conditions:\n" + strings.Join(c, "\n")
 	return &mcp.GetPromptResult{
 		Description: "snmpwalk prompt",
@@ -821,7 +879,7 @@ func searchEventLogPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.
 	}
 	p := "Search event log of TWSNMP by using search_event_log tool"
 	if len(c) > 0 {
-		p = " with following filter.\n" + strings.Join(c, "\n")
+		p += " with following filter.\n" + strings.Join(c, "\n")
 	} else {
 		p += "."
 	}
@@ -861,7 +919,7 @@ func searchSyslogPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.Ge
 	}
 	p := "Search syslog of TWSNMP by using search_syslog tool"
 	if len(c) > 0 {
-		p = " with following filter.\n" + strings.Join(c, "\n")
+		p += " with following filter.\n" + strings.Join(c, "\n")
 	} else {
 		p += "."
 	}
@@ -901,7 +959,7 @@ func getSyslogSummaryPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mc
 	}
 	p := "Get syslog summary of TWSNMP by using get_syslog_summary tool"
 	if len(c) > 0 {
-		p = " with following filter.\n" + strings.Join(c, "\n")
+		p += " with following filter.\n" + strings.Join(c, "\n")
 	} else {
 		p += "."
 	}
@@ -938,7 +996,7 @@ func searchSnmpTrapLogPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*m
 	}
 	p := "Search SNMP trap log of TWSNMP by using search_snmp_trap_log tool"
 	if len(c) > 0 {
-		p = " with following filter.\n" + strings.Join(c, "\n")
+		p += " with following filter.\n" + strings.Join(c, "\n")
 	} else {
 		p += "."
 	}
@@ -954,24 +1012,47 @@ func searchSnmpTrapLogPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*m
 }
 
 func getMIBTreePrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+	c := formatOptionalPromptArgs(req.Params.Arguments, [][2]string{
+		{"oid", "OID"},
+		{"name", "Name"},
+		{"depth", "Depth"},
+	})
+	p := "Get MIB tree of TWSNMP by using get_mib_tree tool"
+	if len(c) > 0 {
+		p += " with following parameters:\n" + strings.Join(c, "\n")
+	} else {
+		p += "."
+	}
 	return &mcp.GetPromptResult{
 		Description: "Get MIB tree of TWSNMP.",
 		Messages: []*mcp.PromptMessage{
 			{
 				Role:    "user",
-				Content: &mcp.TextContent{Text: "Get MIB tree of TWSNMP by using get_mib_tree tool."},
+				Content: &mcp.TextContent{Text: p},
 			},
 		},
 	}, nil
 }
 
 func getIPAddressListPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+	c := formatOptionalPromptArgs(req.Params.Arguments, [][2]string{
+		{"ip_filter", "IP filter"},
+		{"mac_filter", "MAC filter"},
+		{"vendor_filter", "Vendor filter"},
+		{"limit", "Limit"},
+	})
+	p := "Get the list of IP address managed by TWSNMP by using get_ip_address_list tool"
+	if len(c) > 0 {
+		p += " with following filters:\n" + strings.Join(c, "\n")
+	} else {
+		p += "."
+	}
 	return &mcp.GetPromptResult{
 		Description: "Get the list of IP address managed by TWSNMP.",
 		Messages: []*mcp.PromptMessage{
 			{
 				Role:    "user",
-				Content: &mcp.TextContent{Text: "Get the list of IP address managed by TWSNMP by using get_ip_address_list tool."},
+				Content: &mcp.TextContent{Text: p},
 			},
 		},
 	}, nil

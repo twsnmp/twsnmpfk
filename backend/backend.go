@@ -4,17 +4,20 @@ package backend
 import (
 	"context"
 	"sync"
+	"time"
 )
 
 var (
 	versionCheckState int
 	version           string
 	dspath            string
+	backendStartTime  = time.Now()
 )
 
 func Start(ctx context.Context, dsp, v string, wg *sync.WaitGroup) error {
 	dspath = dsp
 	version = v
+	backendStartTime = time.Now()
 	wg.Add(1)
 	go monitor(ctx, wg)
 	wg.Add(1)

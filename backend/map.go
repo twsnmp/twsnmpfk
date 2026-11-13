@@ -144,6 +144,12 @@ func getLineEndState(nodeID, pollingID string) (string, bool) {
 	if strings.HasPrefix(nodeID, "NET:") {
 		n := datastore.GetNetwork(nodeID)
 		if n != nil {
+			if pollingID == "" {
+				if n.Error != "" {
+					return "high", true
+				}
+				return "normal", true
+			}
 			for _, p := range n.Ports {
 				if p.ID == pollingID {
 					return p.State, true

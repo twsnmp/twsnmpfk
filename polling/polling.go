@@ -79,6 +79,68 @@ func GetAutoPollings(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) []*
 	return nil
 }
 
+func enqueuePolling(id string) {
+	if doPollingCh == nil {
+		return
+	}
+	select {
+	case doPollingCh <- id:
+	default:
+	}
+}
+
+// StopPollingSubscription stops active push subscriptions (gNMI/MQTT) associated with pe.
+func StopPollingSubscription(pe *datastore.PollingEnt) {
+	if pe == nil {
+		return
+	}
+	if pe.Type == "gnmi" && pe.Mode == "subscribe" {
+		GNMIStopSubscription(pe.ID)
+		time.Sleep(time.Millisecond * 20)
+	}
+	if pe.Type == "mqtt" && (pe.Mode == "subscribe" || pe.Mode == "") {
+		MqttStopSubscription(pe.ID)
+		time.Sleep(time.Millisecond * 20)
+	}
+}
+
+// PollNow triggers immediate re-evaluation of a single polling entry by ID.
+func PollNow(id string) bool {
+	pe := datastore.GetPolling(id)
+	if pe == nil {
+		return false
+	}
+	n := datastore.GetNode(pe.NodeID)
+	nodeName := ""
+	if n != nil {
+		nodeName = n.Name
+		n.State = "unknown"
+	}
+	pe.State = "unknown"
+	pe.NextTime = 0
+	datastore.AddEventLog(&datastore.EventLogEnt{
+		Type:     "user",
+		Level:    "info",
+		NodeID:   pe.NodeID,
+		NodeName: nodeName,
+		Event:    i18n.Trans("re check polling:") + pe.Name,
+	})
+	if pe.Type == "gnmi" && pe.Mode == "subscribe" {
+		GNMIStopSubscription(pe.ID)
+		time.Sleep(time.Millisecond * 20)
+	}
+	if pe.Type == "mqtt" && pe.Mode == "subscribe" {
+		MqttStopSubscription(pe.ID)
+		time.Sleep(time.Millisecond * 20)
+	}
+	_ = datastore.UpdatePolling(pe, false)
+	if n != nil {
+		datastore.SetNodeStateChanged(n.ID)
+	}
+	enqueuePolling(pe.ID)
+	return true
+}
+
 func PollNowNode(nodeID string) {
 	n := datastore.GetNode(nodeID)
 	if n == nil {
@@ -105,7 +167,7 @@ func PollNowNode(nodeID string) {
 				time.Sleep(time.Millisecond * 20)
 			}
 			datastore.UpdatePolling(pe, false)
-			doPollingCh <- pe.ID
+			enqueuePolling(pe.ID)
 		}
 		return true
 	})
@@ -139,7 +201,7 @@ func CheckAllPoll() {
 				time.Sleep(time.Millisecond * 20)
 			}
 			datastore.UpdatePolling(pe, false)
-			doPollingCh <- pe.ID
+			enqueuePolling(pe.ID)
 		}
 		return true
 	})

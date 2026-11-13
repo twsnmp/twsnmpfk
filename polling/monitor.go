@@ -10,6 +10,15 @@ import (
 	"github.com/twsnmp/twsnmpfk/datastore"
 )
 
+func init() {
+	backend.SetPollingControlHooks(backend.PollingControlHooks{
+		CheckPolling: PollNow,
+		CheckNode:    PollNowNode,
+		CheckAll:     CheckAllPoll,
+		StopPolling:  StopPollingSubscription,
+	})
+}
+
 func doPollingMonitor(pe *datastore.PollingEnt) bool {
 	var err error
 	if len(backend.MonitorDataes) < 1 {
