@@ -783,7 +783,13 @@
     "State": "State",
     "Vendor": "Vendor",
     "Action": "Action",
-    "MapItems": "Map items"
+    "MapItems": "Map items",
+    "TotalNodes": "Total Nodes",
+    "NormalRate": "Healthy Rate",
+    "NormalNodes": "Normal",
+    "AlertNodes": "Alert (High/Low)",
+    "WarnNodes": "Warn / Other",
+    "Unknown": "Unknown"
   },
   "AIDiagnoseDialog": {
     "Title": "Node AI Diagnosis",
