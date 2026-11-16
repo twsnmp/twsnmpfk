@@ -16,6 +16,7 @@
   import "datatables.net-select-dt";
   import type { backend, main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
 
   type TabMode = "status" | "monitor";
 
@@ -66,13 +67,19 @@
 
   const showTable = async () => {
     await tick();
-    if (!document.getElementById("systemTable")) {
+    const el = document.getElementById("systemTable");
+    if (!el) {
       return;
     }
+    if (table && DataTable.isDataTable("#systemTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     table = new DataTable("#systemTable", {
       destroy: true,
       stateSave: true,
-      columns: columns,
+      columns: getColumns(),
       paging: false,
       searching: false,
       info: false,
@@ -131,7 +138,7 @@
     return v.toFixed(2) + "%";
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Time",
       title: $_("System.Time"),
@@ -237,6 +244,16 @@
 
   onMount(() => {
     refresh();
+  });
+
+  let prevLang = "";
+  $effect(() => {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && activeTab === "monitor") {
+      showTable();
+      showChart();
+    }
+    prevLang = lang;
   });
 
   const backup = async () => {
@@ -356,7 +373,7 @@
           </div>
           <div class="my-2 flex items-baseline gap-2">
             <span class="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
-              {sysInfo?.version || "v2.6.0"}
+              {sysInfo?.version || "v2.7.0"}
             </span>
           </div>
           <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">
