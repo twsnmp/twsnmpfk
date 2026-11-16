@@ -42,6 +42,7 @@
   import "datatables.net-select-dt";
   import type { datastore, main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
   import { get } from "svelte/store";
   import CodeJar from "./CodeJar.svelte";
   import TimeRangeFilter from "./TimeRangeFilter.svelte";
@@ -74,7 +75,7 @@
   let showNeko = false;
   let nekoStatus: "" | "waiting" | "ok" | "ng" = "";
 
-  const levelList = [
+  $: levelList = [
     { name: $_("Syslog.All"), value: 7 },
     { name: $_("Syslog.Info"), value: 6 },
     { name: $_("Syslog.Warn"), value: 4 },
@@ -84,13 +85,19 @@
 
   const showTable = async () => {
     await tick();
-    if (!document.getElementById("syslogTable")) {
+    const el = document.getElementById("syslogTable");
+    if (!el) {
       return;
     }
+    if (table && DataTable.isDataTable("#syslogTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     selectedCount = 0;
     table = new DataTable("#syslogTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       data: data,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       stateSave: true,
@@ -184,7 +191,7 @@
     showTable();
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Level",
       title: $_("Syslog.Level"),
@@ -251,6 +258,16 @@
     refresh();
   });
 
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+      showChart();
+    }
+    prevLang = lang;
+  }
+
   const saveCSV = () => {
     ExportSyslogs("csv", filter, "");
   };
@@ -262,12 +279,13 @@
   let copied = false;
   const copy = () => {
     const selected = table.rows({ selected: true }).data();
+    const cols = getColumns();
     let s: string[] = [];
-    const h = columns.map((e: any) => e.title);
+    const h = cols.map((e: any) => e.title);
     s.push(h.join("\t"));
     for (let i = 0; i < selected.length; i++) {
       const row: any = [];
-      for (const c of columns) {
+      for (const c of cols) {
         if (c.data == "Time") {
           row.push(renderTime(selected[i][c.data] || "", ""));
         } else {
@@ -754,12 +772,13 @@
     askLLMError = "";
     askLLMResult = "";
     const selected = table.rows({ selected: true }).data();
+    const cols = getColumns();
     let s: string[] = [];
-    const h = columns.map((e: any) => e.title);
+    const h = cols.map((e: any) => e.title);
     s.push(h.join("\t"));
     for (let i = 0; i < selected.length; i++) {
       const row: any = [];
-      for (const c of columns) {
+      for (const c of cols) {
         if (c.data == "Time") {
           row.push(renderTime(selected[i][c.data] || "", ""));
         } else {
