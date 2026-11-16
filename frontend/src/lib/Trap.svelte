@@ -28,6 +28,7 @@
   import "datatables.net-select-dt";
   import type { datastore, main } from "wailsjs/go/models";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
   import { get } from "svelte/store";
   import CodeJar from "./CodeJar.svelte";
   import TimeRangeFilter from "./TimeRangeFilter.svelte";
@@ -56,13 +57,19 @@
 
   const showTable = async () => {
     await tick();
-    if (!document.getElementById("trapTable")) {
+    const el = document.getElementById("trapTable");
+    if (!el) {
       return;
     }
+    if (table && DataTable.isDataTable("#trapTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     selectedCount = 0;
     table = new DataTable("#trapTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       stateSave: true,
       data: data,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
@@ -117,7 +124,7 @@
     showTable();
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Time",
       title: $_("Trap.Time"),
@@ -149,6 +156,16 @@
     refresh();
   });
 
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+      showChart();
+    }
+    prevLang = lang;
+  }
+
   const saveCSV = () => {
     ExportTraps("csv", filter,"");
   };
@@ -160,12 +177,13 @@
   let copied = false;
   const copy = () => {
     const selected = table.rows({ selected: true }).data();
+    const cols = getColumns();
     let s: string[] = [];
-    const h = columns.map((e: any) => e.title);
+    const h = cols.map((e: any) => e.title);
     s.push(h.join("\t"));
     for (let i = 0; i < selected.length; i++) {
       const row: any = [];
-      for (const c of columns) {
+      for (const c of cols) {
         if (c.data == "Time") {
           row.push(renderTime(selected[i][c.data] || "", ""));
         } else {
@@ -268,12 +286,13 @@
     askLLMError = "";
     askLLMResult = "";
     const selected = table.rows({ selected: true }).data();
+    const cols = getColumns();
     let s: string[] = [];
-    const h = columns.map((e: any) => e.title);
+    const h = cols.map((e: any) => e.title);
     s.push(h.join("\t"));
     for (let i = 0; i < selected.length; i++) {
       const row: any = [];
-      for (const c of columns) {
+      for (const c of cols) {
         if (c.data == "Time") {
           row.push(renderTime(selected[i][c.data] || "", ""));
         } else {
