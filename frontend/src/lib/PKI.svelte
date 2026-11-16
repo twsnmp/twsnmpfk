@@ -30,6 +30,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
 
   let table: any = undefined;
   let data = [];
@@ -141,7 +142,7 @@
     setTimeout(refresh, 1200);
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Status",
       title: $_("PKI.Status"),
@@ -188,20 +189,20 @@
     },
   ];
 
-  const refresh = async () => {
-    if (!caReq) {
-      caReq = await GetDefaultCreateCAReq();
-    }
-    showCreateCA = !(await IsCAValid());
-    if (showCreateCA) {
+  const showTable = () => {
+    const el = document.getElementById("certListTable");
+    if (!el) {
       return;
     }
-    pkiControl = await GetPKIControl();
-    data = await GetCerts();
+    if (table && DataTable.isDataTable("#certListTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     selectedCount = 0;
     table = new DataTable("#certListTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       pageLength: window.innerHeight > 800 ? 25 : 10,
       stateSave: true,
       data: data,
@@ -233,9 +234,31 @@
     });
   };
 
+  const refresh = async () => {
+    if (!caReq) {
+      caReq = await GetDefaultCreateCAReq();
+    }
+    showCreateCA = !(await IsCAValid());
+    if (showCreateCA) {
+      return;
+    }
+    pkiControl = await GetPKIControl();
+    data = await GetCerts();
+    showTable();
+  };
+
   onMount(() => {
     refresh();
   });
+
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+    }
+    prevLang = lang;
+  }
 </script>
 
 <div class="flex flex-col max-h-[calc(100vh-50px)] overflow-y-auto pb-2">

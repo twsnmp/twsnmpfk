@@ -4,6 +4,7 @@
   import "datatables.net-select-dt";
   import { onMount, tick } from "svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../../i18n/i18n";
   import * as echarts from "echarts";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -44,7 +45,7 @@
 
   let showResetModal = $state(false);
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Address",
       title: $_("report.bluetoothAddress") || "アドレス (MAC)",
@@ -52,7 +53,7 @@
     },
     {
       data: "AddressType",
-      title: "種別",
+      title: $_("report.colType") || "種別",
       width: "8%",
       render: (t: string) =>
         t === "public"
@@ -99,24 +100,30 @@
     },
   ];
 
-  const showTable = async () => {
+  const showTable = async (recreate = false) => {
     await tick();
-    if (!document.getElementById("blueDeviceTable")) return;
+    const el = document.getElementById("blueDeviceTable");
+    if (!el) return;
 
     if (table && DataTable.isDataTable("#blueDeviceTable")) {
-      selectedCount = 0;
-      selected = null;
-      table.clear();
-      table.rows.add(devices);
-      table.draw();
-      return;
+      if (!recreate) {
+        selectedCount = 0;
+        selected = null;
+        table.clear();
+        table.rows.add(devices);
+        table.draw();
+        return;
+      }
+      table.destroy();
+      table = undefined;
+      el.innerHTML = "";
     }
 
     selectedCount = 0;
     selected = null;
     table = new DataTable("#blueDeviceTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       data: devices,
       stateSave: true,
       order: [[7, "desc"]],
@@ -162,6 +169,15 @@
   export const refresh = () => {
     loadAll();
   };
+
+  let prevLang = "";
+  $effect(() => {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable(true);
+    }
+    prevLang = lang;
+  });
 
   onMount(() => {
     loadAll();

@@ -4,6 +4,7 @@
   import "datatables.net-select-dt";
   import { onMount, tick } from "svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../../i18n/i18n";
   import * as echarts from "echarts";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -281,6 +282,15 @@
   export const refresh = () => {
     loadAll();
   };
+
+  let prevLang = "";
+  $effect(() => {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+    }
+    prevLang = lang;
+  });
 
   onMount(() => {
     loadAll();

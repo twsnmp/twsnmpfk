@@ -22,6 +22,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
   import { get } from "svelte/store";
   import { copyText } from "svelte-copy";
   import Polling from "./Polling.svelte";
@@ -76,21 +77,27 @@
     return `<div class="p-2 bg-gray-800 text-green-400 rounded font-mono text-xs overflow-x-auto max-h-96"><pre><code>${escaped}</code></pre></div>`;
   };
 
-  const showTable = async () => {
+  const showTable = async (recreate = false) => {
     await tick();
-    if (!document.getElementById("mqttStatTable")) return;
+    const el = document.getElementById("mqttStatTable");
+    if (!el) return;
 
     if (table && DataTable.isDataTable("#mqttStatTable")) {
-      selectedCount = 0;
-      table.clear();
-      table.rows.add(data);
-      table.draw();
-      return;
+      if (!recreate) {
+        selectedCount = 0;
+        table.clear();
+        table.rows.add(data);
+        table.draw();
+        return;
+      }
+      table.destroy();
+      table = undefined;
+      el.innerHTML = "";
     }
 
     selectedCount = 0;
     table = new DataTable("#mqttStatTable", {
-      columns: columns,
+      columns: getColumns(),
       data: data,
       stateSave: true,
       order: [
@@ -239,7 +246,7 @@
     showPolling = true;
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       className: 'dt-control',
       orderable: false,
@@ -303,6 +310,15 @@
     checkAI();
     refresh();
   });
+
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable(true);
+    }
+    prevLang = lang;
+  }
 </script>
 
 <div class="flex flex-col max-h-[calc(100vh-50px)] overflow-y-auto pb-2">

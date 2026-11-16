@@ -4,6 +4,7 @@
   import "datatables.net-select-dt";
   import { onMount, tick } from "svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../../i18n/i18n";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { Modal, Button, ButtonGroup, GradientButton } from "flowbite-svelte";
@@ -188,7 +189,7 @@
         },
         {
           data: "Score",
-          title: "スコア",
+          title: $_("report.pcapColScore"),
           width: "7%",
           render: (score: number) => {
             const s = score != null ? score : 100;
@@ -203,7 +204,7 @@
         },
         {
           data: "ID",
-          title: "マップ登録",
+          title: $_("report.agentColMapReg"),
           width: "9%",
           render: (id: string, type: any, row: any) => {
             const matched = findMatchedNode(row);
@@ -264,13 +265,13 @@
         },
         {
           data: "ActionJa",
-          title: "推奨アクション",
+          title: $_("report.agentColAction"),
           width: "18%",
           render: (action: string, type: any, row: any) => row.ActionJa || row.AiAction || "-",
         },
         {
           data: "Count",
-          title: "件数",
+          title: $_("report.count"),
           width: "8%",
           render: renderCount,
         },
@@ -311,7 +312,7 @@
         },
         {
           data: "Hash",
-          title: "SHA256 ハッシュ",
+          title: $_("report.agentColHash"),
           width: "15%",
           render: (h: string) =>
             h
@@ -323,7 +324,7 @@
         },
         {
           data: "Count",
-          title: "件数",
+          title: $_("report.count"),
           width: "8%",
           render: renderCount,
         },
@@ -353,7 +354,7 @@
         },
         {
           data: "Status",
-          title: "状態 / 深刻度",
+          title: $_("report.agentColStatusSeverity"),
           width: "12%",
           render: (st: string, type: any, row: any) => {
             const sev = row.Severity || (st === "pass" ? "info" : "warn");
@@ -368,7 +369,7 @@
         },
         {
           data: "Remediation",
-          title: "是正推奨手順 / 要約",
+          title: $_("report.agentColRemediation"),
           width: "33%",
           render: (rem: string, type: any, row: any) => {
             const txt = rem || row.ActionJa || row.SummaryJa || row.Description || "-";
@@ -377,7 +378,7 @@
         },
         {
           data: "Count",
-          title: "件数",
+          title: $_("report.count"),
           width: "7%",
           render: renderCount,
         },
@@ -398,20 +399,20 @@
         },
         {
           data: "RemoteIP",
-          title: "通信先 IP:Port",
+          title: $_("report.agentColRemoteIpPort"),
           width: "20%",
           render: (rip: string, type: any, row: any) =>
             `<span class="font-mono">${rip || "-"}:${row.RemotePort || "-"}</span>`,
         },
         {
           data: "RemoteLoc",
-          title: "国 / 地域",
+          title: $_("report.agentColCountryRegion"),
           width: "15%",
           render: (loc: string, type: any, row: any) => loc || row.Location || "-",
         },
         {
           data: "Process",
-          title: "プロセス",
+          title: $_("report.agentColProcess"),
           width: "20%",
           render: (proc: string) =>
             proc
@@ -420,7 +421,7 @@
         },
         {
           data: "Count",
-          title: "累計接続数",
+          title: $_("report.agentColTotalConn"),
           width: "12%",
           render: renderCount,
         },
@@ -538,6 +539,15 @@
   export const refresh = () => {
     loadAll();
   };
+
+  let prevLang = "";
+  $effect(() => {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+    }
+    prevLang = lang;
+  });
 
   onMount(() => {
     loadAll();

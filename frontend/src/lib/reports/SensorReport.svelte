@@ -4,6 +4,7 @@
   import "datatables.net-select-dt";
   import { onMount, tick } from "svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../../i18n/i18n";
   import * as echarts from "echarts";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -70,7 +71,7 @@
   );
   const chartCount = $derived((hasStats ? 1 : 0) + (hasCpuMem ? 1 : 0) + (hasNet ? 1 : 0) + (hasProc ? 1 : 0));
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "State",
       title: $_("report.colState") || "ステート",
@@ -112,12 +113,12 @@
     },
     {
       data: "Ignore",
-      title: "監視",
+      title: $_("report.sensorMonitor") || "監視",
       width: "5%",
       render: (v: boolean) =>
         v
-          ? '<span class="text-gray-400">無視</span>'
-          : '<span class="text-emerald-500 font-semibold">監視</span>',
+          ? `<span class="text-gray-400">${$_("report.sensorIgnore") || "無視"}</span>`
+          : `<span class="text-emerald-500 font-semibold">${$_("report.sensorMonitor") || "監視"}</span>`,
     },
   ];
 
@@ -135,24 +136,30 @@
     return res;
   });
 
-  const showTable = async () => {
+  const showTable = async (recreate = false) => {
     await tick();
-    if (!document.getElementById("sensorTable")) return;
+    const el = document.getElementById("sensorTable");
+    if (!el) return;
 
     if (table && DataTable.isDataTable("#sensorTable")) {
-      selectedCount = 0;
-      selected = null;
-      table.clear();
-      table.rows.add(filteredSensors);
-      table.draw();
-      return;
+      if (!recreate) {
+        selectedCount = 0;
+        selected = null;
+        table.clear();
+        table.rows.add(filteredSensors);
+        table.draw();
+        return;
+      }
+      table.destroy();
+      table = undefined;
+      el.innerHTML = "";
     }
 
     selectedCount = 0;
     selected = null;
     table = new DataTable("#sensorTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       data: filteredSensors,
       stateSave: true,
       order: [[6, "desc"]],
@@ -205,6 +212,15 @@
   export const refresh = () => {
     loadSensors();
   };
+
+  let prevLang = "";
+  $effect(() => {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable(true);
+    }
+    prevLang = lang;
+  });
 
   onMount(() => {
     loadSensors();

@@ -14,6 +14,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from 'svelte-i18n';
+  import { currentLang } from '../i18n/i18n';
 
   let table :any = undefined;
   let data = [];
@@ -64,7 +65,7 @@
     }
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Score",
       title: $_('AIList.AnomaryScore'),
@@ -95,12 +96,20 @@
     },
   ];
 
-  const refresh = async () => {
-    data = await GetAIList();
+  const showTable = () => {
+    const el = document.getElementById("aiListTable");
+    if (!el) {
+      return;
+    }
+    if (table && DataTable.isDataTable("#aiListTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     selectedCount = 0;
     table = new DataTable("#aiListTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       pageLength: window.innerHeight > 800 ? 25 : 10,
       stateSave: true,
       data: data,
@@ -118,9 +127,23 @@
     });
   };
 
+  const refresh = async () => {
+    data = await GetAIList();
+    showTable();
+  };
+
   onMount(() => {
     refresh();
   });
+
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+    }
+    prevLang = lang;
+  }
 
 </script>
 

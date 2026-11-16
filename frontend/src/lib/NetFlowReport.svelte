@@ -245,7 +245,7 @@
     { value: "pps", name: $_('NetFlowReport.PPS') },
   ];
 
-  const columnsTop = [
+  const getColumnsTop = () => [
     {
       data: "Name",
       title: $_('NetFlowReport.Name'),
@@ -283,11 +283,18 @@
   ];
 
   const showTopTable = () => {
+    const el = document.getElementById("topTable");
+    if (!el) return;
+    if (tableTop && DataTable.isDataTable("#topTable")) {
+      tableTop.destroy();
+      tableTop = undefined;
+    }
+    el.innerHTML = "";
     let order = [[1, "desc"]];
     selectedCountTop = 0;
     tableTop = new DataTable("#topTable", {
       destroy: true,
-      columns: columnsTop,
+      columns: getColumnsTop(),
       data: topList,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       order,
@@ -399,7 +406,7 @@
     showFlowTable();
   };
 
-  const columnsFlow = [
+  const getColumnsFlow = () => [
     {
       data: "source",
       title: "Source",
@@ -420,11 +427,18 @@
   ];
  
   const showFlowTable = async () => {
+    const el = document.getElementById("flowTable");
+    if (!el) return;
+    if (tableFlow && DataTable.isDataTable("#flowTable")) {
+      tableFlow.destroy();
+      tableFlow = undefined;
+    }
+    el.innerHTML = "";
     let order = [[1, "desc"]];
     selectedCountFlow = 0;
     tableFlow = new DataTable("#flowTable", {
       destroy: true,
-      columns: columnsFlow,
+      columns: getColumnsFlow(),
       data: flowList,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       order,
@@ -552,12 +566,13 @@
   let copiedTop = false;
   const copyTop = () => {
     const selected = tableTop.rows({ selected: true }).data();
+    const cols = getColumnsTop();
     let s: string[] = [];
-    const h = columnsTop.map((e: any) => e.title);
+    const h = cols.map((e: any) => e.title);
     s.push(h.join("\t"));
     for (let i = 0; i < selected.length; i++) {
       const row: any = [];
-      for (const c of columnsTop) {
+      for (const c of cols) {
         const d = (selected[i][c.data] || "") + "";
         row.push(d.replaceAll("\n", " "));
       }
@@ -571,12 +586,13 @@
   let copiedFlow = false;
   const copyFlow = () => {
     const selected = tableFlow.rows({ selected: true }).data();
+    const cols = getColumnsFlow();
     let s: string[] = [];
-    const h = columnsFlow.map((e: any) => e.title);
+    const h = cols.map((e: any) => e.title);
     s.push(h.join("\t"));
     for (let i = 0; i < selected.length; i++) {
       const row: any = [];
-      for (const c of columnsFlow) {
+      for (const c of cols) {
         const d = (selected[i][c.data] || "") + "";
         row.push(d.replaceAll("\n", " "));
       }

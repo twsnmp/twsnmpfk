@@ -11,6 +11,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
 
   let arpLogs :any = [];
   let arpLogData :any = [];
@@ -18,9 +19,18 @@
   let arpLogTable :any = undefined;
 
   const showArpLogTable = () => {
+    const el = document.getElementById("arpLogTable");
+    if (!el) {
+      return;
+    }
+    if (arpLogTable && DataTable.isDataTable("#arpLogTable")) {
+      arpLogTable.destroy();
+      arpLogTable = undefined;
+    }
+    el.innerHTML = "";
     arpLogTable = new DataTable("#arpLogTable", {
       destroy: true,
-      columns: arpLogColumns,
+      columns: getArpLogColumns(),
       pageLength: window.innerHeight > 1000 ? 25 : 10,
       data: arpLogData,
       stateSave: true,
@@ -42,7 +52,7 @@
   };
 
 
-  const arpLogColumns = [
+  const getArpLogColumns = () => [
     {
       data: "State",
       title: $_("Arp.State"),
@@ -118,6 +128,16 @@
   onMount(() => {
     refresh();
   });
+
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && arpLogTable) {
+      showArpLogTable();
+      showChart();
+    }
+    prevLang = lang;
+  }
 
   const saveCSV = () => {
     ExportArpLogs("csv", "");

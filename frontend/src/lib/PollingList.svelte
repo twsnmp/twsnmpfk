@@ -26,6 +26,7 @@
   import "datatables.net-select-dt";
   import PollingReport from "./PollingReport.svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
 
   let data: any = [];
   let nodes: any = {};
@@ -127,9 +128,18 @@
 
   const showTable = () => {
     selectedCount = 0;
+    const el = document.getElementById("pollingListTable");
+    if (!el) {
+      return;
+    }
+    if (table && DataTable.isDataTable("#pollingListTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     table = new DataTable("#pollingListTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       data: getFilteredData(),
       stateSave: true,
       order: [
@@ -225,7 +235,7 @@
     await DeletePollingLogs(selected.toArray());
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "State",
       title: $_("PollingList.State"),
@@ -287,6 +297,15 @@
   onMount(() => {
     refresh();
   });
+
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+    }
+    prevLang = lang;
+  }
 
   const saveCSV = () => {
     ExportPollings("csv");

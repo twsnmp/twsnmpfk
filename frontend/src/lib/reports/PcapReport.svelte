@@ -4,6 +4,7 @@
   import "datatables.net-select-dt";
   import { onMount, tick } from "svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../../i18n/i18n";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { Modal, Button, ButtonGroup, GradientButton } from "flowbite-svelte";
@@ -87,18 +88,18 @@
         },
         {
           data: "Count",
-          title: "パケット数",
+          title: $_("report.pcapColPackets"),
           width: "15%",
           render: renderCount,
         },
         {
           data: "Host",
-          title: "ホスト",
+          title: $_("report.colHost"),
           width: "20%",
         },
         {
           data: "LastTime",
-          title: "最終確認",
+          title: $_("report.lastSeen"),
           width: "25%",
           render: renderTime,
         },
@@ -107,36 +108,36 @@
       return [
         {
           data: "Name",
-          title: "クエリ名 (FQDN)",
+          title: $_("report.pcapColQueryName"),
           width: "30%",
           render: (n: string) => `<span class="font-medium text-gray-900 dark:text-gray-100">${n}</span>`,
         },
         {
           data: "Type",
-          title: "種別",
+          title: $_("report.colType"),
           width: "10%",
           render: (t: string) => `<span class="inline-flex px-1.5 py-0.5 rounded text-[11px] font-mono font-medium bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">${getDNSTypeLabel(t)}</span>`,
         },
         {
           data: "LastClient",
-          title: "クライアント",
+          title: $_("report.pcapGraphClient"),
           width: "15%",
           render: (c: string, _: any, row: any) => c || row?.Client || "-",
         },
         {
           data: "Server",
-          title: "DNSサーバー",
+          title: $_("report.pcapColDnsServer"),
           width: "15%",
         },
         {
           data: "Count",
-          title: "回数",
+          title: $_("report.count"),
           width: "10%",
           render: renderCount,
         },
         {
           data: "LastTime",
-          title: "最終確認",
+          title: $_("report.lastSeen"),
           width: "20%",
           render: renderTime,
         },
@@ -145,19 +146,19 @@
       return [
         {
           data: "Client",
-          title: "クライアント",
+          title: $_("report.pcapGraphClient"),
           width: "20%",
           render: (c: string, __: string, row: any) => formatHostWithIP(row?.ClientName, c),
         },
         {
           data: "Server",
-          title: "RADIUSサーバー",
+          title: $_("report.pcapColRadiusServer"),
           width: "20%",
           render: (s: string, __: string, row: any) => formatHostWithIP(row?.ServerName, s),
         },
         {
           data: "Count",
-          title: "回数",
+          title: $_("report.count"),
           width: "8%",
           render: renderCount,
         },
@@ -187,13 +188,13 @@
         },
         {
           data: "Score",
-          title: "スコア",
+          title: $_("report.pcapColScore"),
           width: "6%",
           render: (sc: number) => sc !== undefined ? sc.toFixed(1) : "-",
         },
         {
           data: "LastTime",
-          title: "最終確認",
+          title: $_("report.lastSeen"),
           width: "14%",
           render: renderTime,
         },
@@ -202,49 +203,49 @@
       return [
         {
           data: "Client",
-          title: "クライアント",
+          title: $_("report.pcapGraphClient"),
           width: "18%",
           render: (c: string, __: string, row: any) => formatHostWithIP(row?.ClientName, c),
         },
         {
           data: "Server",
-          title: "サーバー",
+          title: $_("report.pcapGraphServer"),
           width: "18%",
           render: (s: string, __: string, row: any) => formatHostWithIP(row?.ServerName, s),
         },
         {
           data: "Service",
-          title: "サービス",
+          title: $_("report.pcapColService"),
           width: "8%",
           render: (sv: string) => sv || "-",
         },
         {
           data: "Version",
-          title: "TLSバージョン",
+          title: $_("report.pcapColTlsVersion"),
           width: "10%",
           render: (v: string) => `<span class="font-mono text-cyan-500">${v || "-"}</span>`,
         },
         {
           data: "Cipher",
-          title: "暗号スイート",
+          title: $_("report.pcapColCipher"),
           width: "20%",
           render: (c: string) => c || '<span class="text-gray-400">-</span>',
         },
         {
           data: "Count",
-          title: "回数",
+          title: $_("report.count"),
           width: "7%",
           render: renderCount,
         },
         {
           data: "Score",
-          title: "スコア",
+          title: $_("report.pcapColScore"),
           width: "6%",
           render: (sc: number) => sc !== undefined ? sc.toFixed(1) : "-",
         },
         {
           data: "LastTime",
-          title: "最終確認",
+          title: $_("report.lastSeen"),
           width: "13%",
           render: renderTime,
         },
@@ -335,6 +336,15 @@
   export const refresh = () => {
     loadAll();
   };
+
+  let prevLang = "";
+  $effect(() => {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+    }
+    prevLang = lang;
+  });
 
   onMount(() => {
     loadAll();

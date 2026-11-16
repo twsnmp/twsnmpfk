@@ -14,6 +14,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from 'svelte-i18n';
+  import { currentLang } from '../i18n/i18n';
   import CertAIDialog from "./CertAIDialog.svelte";
 
   let table :any = undefined;
@@ -25,7 +26,7 @@
   let hasAI = false;
 
 
-  const columns = [
+  const getColumns = () => [
     {
       className: 'dt-control',
       orderable: false,
@@ -122,16 +123,24 @@
     );   
   }
 
-  const refresh = async () => {
-    data = await GetCertMonitorList();
+  const showTable = (recreate = false) => {
+    const el = document.getElementById("certMonitorListTable");
+    if (!el) {
+      return;
+    }
     selectedCount = 0;
-    if (table) {
-      table.clear().rows.add(data).draw();
-      return
+    if (table && DataTable.isDataTable("#certMonitorListTable")) {
+      if (!recreate) {
+        table.clear().rows.add(data).draw();
+        return;
+      }
+      table.destroy();
+      table = undefined;
+      el.innerHTML = "";
     }
     table = new DataTable("#certMonitorListTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       pageLength: window.innerHeight > 800 ? 25 : 10,
       stateSave: true,
       data: data,
@@ -158,11 +167,25 @@
     });
   };
 
+  const refresh = async () => {
+    data = await GetCertMonitorList();
+    showTable();
+  };
+
   onMount(async () => {
     const conf = await GetMapConf();
     hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     refresh();
   });
+
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable(true);
+    }
+    prevLang = lang;
+  }
 
 
   const add = () => {

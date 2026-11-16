@@ -4,6 +4,7 @@
   import "datatables.net-select-dt";
   import { onMount, tick } from "svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../../i18n/i18n";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { Modal, Button, ButtonGroup, GradientButton } from "flowbite-svelte";
@@ -515,6 +516,15 @@
   export const refresh = () => {
     loadAll();
   };
+
+  let prevLang = "";
+  $effect(() => {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+    }
+    prevLang = lang;
+  });
 
   onMount(() => {
     loadAll();

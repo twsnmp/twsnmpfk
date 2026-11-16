@@ -10,18 +10,25 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from 'svelte-i18n';
+  import { currentLang } from '../i18n/i18n';
   let table :any = undefined;
   let data :any = [];
   let timer: any = undefined;
 
   const showTable = () => {
-    if (!document.getElementById("logTable")) {
+    const el = document.getElementById("logTable");
+    if (!el) {
       return;
     }
+    if (table && DataTable.isDataTable("#logTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     table = new DataTable("#logTable", {
       destroy: true,
       stateSave: true,
-      columns: columns,
+      columns: getColumns(),
       paging: false,
       searching:false,
       info:false,
@@ -32,7 +39,7 @@
     });
   }
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Level",
       title: $_('Log.Level'),
@@ -73,6 +80,15 @@
   onMount(() => {
     updateLogs();
   });
+
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+    }
+    prevLang = lang;
+  }
   onDestroy(() => {
     if (timer) {
       clearTimeout(timer);

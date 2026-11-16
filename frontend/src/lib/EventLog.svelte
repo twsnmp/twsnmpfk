@@ -25,6 +25,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
   import type { main } from "wailsjs/go/models";
   import CodeJar from "./CodeJar.svelte";
   import TimeRangeFilter from "./TimeRangeFilter.svelte";
@@ -60,15 +61,21 @@
 
   const showTable = async () => {
     await tick();
-    if (!document.getElementById("eventLogTable")) {
+    const el = document.getElementById("eventLogTable");
+    if (!el) {
       return;
     }
+    if (table && DataTable.isDataTable("#eventLogTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     selectedCount = 0;
     selectedLog = null;
     table = new DataTable("#eventLogTable", {
       destroy: true,
       pageLength: window.innerHeight > 1000 ? 25 : 10,
-      columns: columns,
+      columns: getColumns(),
       stateSave: true,
       data,
       language: getTableLang(),
@@ -140,7 +147,7 @@
     showTable();
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "Level",
       title: $_("EventLog.Level"),
@@ -177,6 +184,16 @@
     hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     refresh();
   });
+
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+      showChart();
+    }
+    prevLang = lang;
+  }
 
   const saveCSV = () => {
     ExportEventLogs("csv", filter,"");

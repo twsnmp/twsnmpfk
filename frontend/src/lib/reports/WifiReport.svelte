@@ -4,6 +4,7 @@
   import "datatables.net-select-dt";
   import { onMount, tick } from "svelte";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../../i18n/i18n";
   import * as echarts from "echarts";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
@@ -31,7 +32,7 @@
 
 
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "SSID",
       title: "SSID",
@@ -82,24 +83,30 @@
     },
   ];
 
-  const showTable = async () => {
+  const showTable = async (recreate = false) => {
     await tick();
-    if (!document.getElementById("wifiAPTable")) return;
+    const el = document.getElementById("wifiAPTable");
+    if (!el) return;
 
     if (table && DataTable.isDataTable("#wifiAPTable")) {
-      selectedCount = 0;
-      selected = null;
-      table.clear();
-      table.rows.add(apList);
-      table.draw();
-      return;
+      if (!recreate) {
+        selectedCount = 0;
+        selected = null;
+        table.clear();
+        table.rows.add(apList);
+        table.draw();
+        return;
+      }
+      table.destroy();
+      table = undefined;
+      el.innerHTML = "";
     }
 
     selectedCount = 0;
     selected = null;
     table = new DataTable("#wifiAPTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       data: apList,
       stateSave: true,
       order: [[7, "desc"]],
@@ -146,6 +153,15 @@
   export const refresh = () => {
     loadAPData();
   };
+
+  let prevLang = "";
+  $effect(() => {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable(true);
+    }
+    prevLang = lang;
+  });
 
   onMount(() => {
     loadAPData();
