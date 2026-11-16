@@ -30,6 +30,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
   import { copyText } from "svelte-copy";
 
   let arp: any = [];
@@ -142,9 +143,18 @@
   const showArpTable = () => {
     selectedIP = selectedNodeID = "";
     selectedCount = 0;
+    const el = document.getElementById("arpTable");
+    if (!el) {
+      return;
+    }
+    if (arpTable && DataTable.isDataTable("#arpTable")) {
+      arpTable.destroy();
+      arpTable = undefined;
+    }
+    el.innerHTML = "";
     arpTable = new DataTable("#arpTable", {
       destroy: true,
-      columns: arpColumns,
+      columns: getArpColumns(),
       pageLength: window.innerHeight > 800 ? 25 : 10,
       stateSave: true,
       data: getFilteredData(),
@@ -265,7 +275,7 @@
     return $_('Address.Normal');
   };
 
-  const arpColumns = [
+  const getArpColumns = () => [
     {
       data: "State",
       title: $_('Address.State'),
@@ -357,6 +367,15 @@
     refresh();
   });
 
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && arpTable) {
+      showArpTable();
+    }
+    prevLang = lang;
+  }
+
   const saveCSV = () => {
     ExportArpTable("csv");
   };
@@ -368,12 +387,13 @@
   let copied = false;
   const copy = () => {
     const selected = arpTable.rows({ selected: true }).data();
+    const cols = getArpColumns();
     let s: string[] = [];
-    const h = arpColumns.map((e: any) => e.title);
+    const h = cols.map((e: any) => e.title);
     s.push(h.join("\t"));
     for (let i = 0; i < selected.length; i++) {
       const row: any = [];
-      for (const c of arpColumns) {
+      for (const c of cols) {
         switch (c.data){
         case "Last":
           row.push(renderTime(selected[i][c.data] || "", ""));
