@@ -1322,7 +1322,12 @@
     "Name": "Name",
     "Search": "Search",
     "Value": "Value",
-    "StunInfo": "STUN"
+    "StunInfo": "STUN",
+    "TotalAddresses": "Total Addresses",
+    "NormalRate": "Healthy Rate",
+    "AlertAddresses": "Alert (Dup/Changed)",
+    "UnregisteredAddresses": "Unregistered",
+    "Registered": "Registered"
   },
   "Stun": {
     "Title": "STUN Global IP Information",

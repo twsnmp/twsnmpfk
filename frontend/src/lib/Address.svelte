@@ -51,15 +51,103 @@
   let showStunInfo = false;
   let showAddressAI = false;
   let hasAI = false;
+  let stateFilter: "all" | "normal" | "alert" | "unregistered" = "all";
+
+  let kpi = {
+    total: 0,
+    normal: 0,
+    dup: 0,
+    ipChange: 0,
+    macChange: 0,
+    alertCount: 0,
+    unregistered: 0,
+    registered: 0,
+    uniqueVendors: 0,
+    normalRate: "0.0",
+  };
+
+  const updateKPI = () => {
+    let normal = 0;
+    let dup = 0;
+    let ipChange = 0;
+    let macChange = 0;
+    let unregistered = 0;
+    let registered = 0;
+    const vendors = new Set<string>();
+
+    for (const e of arp) {
+      switch (Number(e.State)) {
+        case 0:
+          dup++;
+          break;
+        case 1:
+          ipChange++;
+          break;
+        case 2:
+          macChange++;
+          break;
+        default:
+          normal++;
+          break;
+      }
+      if (e.NodeID && nodes && nodes[e.NodeID]) {
+        registered++;
+      } else {
+        unregistered++;
+      }
+      if (e.Vendor) {
+        vendors.add(e.Vendor);
+      }
+    }
+
+    const total = arp.length;
+    kpi = {
+      total,
+      normal,
+      dup,
+      ipChange,
+      macChange,
+      alertCount: dup + ipChange + macChange,
+      unregistered,
+      registered,
+      uniqueVendors: vendors.size,
+      normalRate: total > 0 ? ((normal / total) * 100).toFixed(1) : "0.0",
+    };
+  };
+
+  const getFilteredData = () => {
+    switch (stateFilter) {
+      case "normal":
+        return arp.filter((e: any) => Number(e.State) === 3);
+      case "alert":
+        return arp.filter((e: any) => Number(e.State) !== 3);
+      case "unregistered":
+        return arp.filter((e: any) => !e.NodeID || !nodes || !nodes[e.NodeID]);
+      default:
+        return arp;
+    }
+  };
+
+  const setStateFilter = (
+    next: "all" | "normal" | "alert" | "unregistered"
+  ) => {
+    stateFilter = stateFilter === next ? "all" : next;
+    if (arpTable) {
+      selectedIP = selectedNodeID = "";
+      selectedCount = 0;
+      arpTable.clear().rows.add(getFilteredData()).draw();
+    }
+  };
 
   const showArpTable = () => {
     selectedIP = selectedNodeID = "";
+    selectedCount = 0;
     arpTable = new DataTable("#arpTable", {
       destroy: true,
       columns: arpColumns,
       pageLength: window.innerHeight > 800 ? 25 : 10,
       stateSave: true,
-      data: arp,
+      data: getFilteredData(),
       order: [[0,"asc"]],
       language: getTableLang(),
       select: {
@@ -259,6 +347,7 @@
         ? newIP.get(e.IP)
         : 0;
     });
+    updateKPI();
     showArpTable();
   };
 
@@ -316,7 +405,11 @@
     if (selected.length < 1) {
       return;
     }
-    await DeleteArpEnt(selected.toArray());
+    const ips = selected.toArray();
+    await DeleteArpEnt(ips);
+    const ipSet = new Set(ips);
+    arp = arp.filter((e: any) => !ipSet.has(e.IP));
+    updateKPI();
     arpTable.rows({ selected: true }).remove().draw();
     selectedNodeID = selectedIP = "";
     selectedCount  = 0;
@@ -324,6 +417,88 @@
 </script>
 
 <div class="flex flex-col max-h-[calc(100vh-50px)] overflow-y-auto pb-2">
+  <!-- KPI Summary Cards -->
+  <div class="mx-2 mt-2 grid grid-cols-2 md:grid-cols-4 gap-3">
+    <button
+      type="button"
+      onclick={() => setStateFilter("all")}
+      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-cyan-400 dark:hover:border-cyan-500"
+    >
+      <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <Icon path={icons.mdiIpNetworkOutline} size={0.9} class="text-cyan-500" />
+        {$_("Address.TotalAddresses") || "総アドレス数"}
+      </div>
+      <div class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{kpi.total.toLocaleString()}</div>
+      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+        {$_("Address.NormalRate") || "正常率"}: {kpi.normalRate}%
+      </div>
+    </button>
+
+    <button
+      type="button"
+      onclick={() => setStateFilter("normal")}
+      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-emerald-400 dark:hover:border-emerald-500 {stateFilter === 'normal'
+        ? 'ring-2 ring-emerald-500/80'
+        : ''}"
+    >
+      <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <Icon path={icons.mdiCheckCircleOutline} size={0.9} class="text-emerald-500" />
+        {$_("Address.Normal")}
+      </div>
+      <div class="mt-1 text-2xl font-bold text-emerald-500 dark:text-emerald-400">
+        {kpi.normal.toLocaleString()}
+      </div>
+      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+        {$_("Address.Normal")}: {kpi.normal.toLocaleString()} / {kpi.total.toLocaleString()}
+      </div>
+    </button>
+
+    <button
+      type="button"
+      onclick={() => setStateFilter("alert")}
+      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-red-400 dark:hover:border-red-500 {stateFilter === 'alert'
+        ? 'ring-2 ring-red-500/80'
+        : ''}"
+    >
+      <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <Icon path={icons.mdiAlertCircleOutline} size={0.9} class="text-red-500" />
+        {$_("Address.AlertAddresses") || "異常 (重複/変化)"}
+      </div>
+      <div
+        class="mt-1 text-2xl font-bold {kpi.alertCount > 0
+          ? 'text-red-500 dark:text-red-400'
+          : 'text-emerald-500 dark:text-emerald-400'}"
+      >
+        {kpi.alertCount.toLocaleString()}
+      </div>
+      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+        {$_("Address.Dup")}: {kpi.dup.toLocaleString()} / {$_("Address.IPChange")}: {kpi.ipChange.toLocaleString()} / {$_("Address.MACChange")}: {kpi.macChange.toLocaleString()}
+      </div>
+    </button>
+
+    <button
+      type="button"
+      onclick={() => setStateFilter("unregistered")}
+      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-amber-400 dark:hover:border-amber-500 {stateFilter === 'unregistered'
+        ? 'ring-2 ring-amber-500/80'
+        : ''}"
+    >
+      <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <Icon path={icons.mdiHelpCircleOutline} size={0.9} class="text-amber-500" />
+        {$_("Address.UnregisteredAddresses") || "未登録アドレス"}
+      </div>
+      <div
+        class="mt-1 text-2xl font-bold {kpi.unregistered > 0
+          ? 'text-amber-500 dark:text-amber-400'
+          : 'text-emerald-500 dark:text-emerald-400'}"
+      >
+        {kpi.unregistered.toLocaleString()}
+      </div>
+      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+        {$_("Address.Registered") || "登録済"}: {kpi.registered.toLocaleString()} / {$_("Address.Vendor")}: {kpi.uniqueVendors.toLocaleString()}
+      </div>
+    </button>
+  </div>
   <div class="mx-2 mt-2">
     <div>
       <table id="arpTable" class="display compact" style="width:99%"></table>

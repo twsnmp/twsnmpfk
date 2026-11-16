@@ -1315,7 +1315,12 @@
     "Name": "項目",
     "Value": "値",
     "Search": "調査",
-    "StunInfo": "STUN情報"
+    "StunInfo": "STUN情報",
+    "TotalAddresses": "総アドレス数",
+    "NormalRate": "正常率",
+    "AlertAddresses": "異常 (重複/変化)",
+    "UnregisteredAddresses": "未登録アドレス",
+    "Registered": "登録済"
   },
   "Stun": {
     "Title": "STUN グローバルIP情報",
