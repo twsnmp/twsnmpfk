@@ -31,7 +31,7 @@
   import { showLogHeatmap } from "./chart/eventlog";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
-  import { getTableLang } from "./common";
+  import { getTableLang, renderBytes, renderCount } from "./common";
   import { _ } from "svelte-i18n";
   import { copyText } from "svelte-copy";
   import { GetMapConf, LLMExplainSFlowReport } from "../../wailsjs/go/main/App";
@@ -50,9 +50,112 @@
   let selectedCountTop = 0;
   let tableFlow: any = undefined;
   let selectedCountFlow = 0;
+  let summaryTable: any = undefined;
+
+  let kpi = {
+    totalSamples: 0,
+    totalBytes: 0,
+    reasonCount: 0,
+    uniqueSrcIPs: 0,
+    uniqueDstIPs: 0,
+  };
+  let protoRows: any[] = [];
+
+  const calcSFlowStats = () => {
+    const list = Array.isArray(logs) ? logs : [];
+    let totalBytes = 0;
+    let reasonCount = 0;
+    const srcSet = new Set<string>();
+    const dstSet = new Set<string>();
+    const protoMap = new Map<string, { proto: string; samples: number; bytes: number; reasons: number }>();
+
+    for (const l of list) {
+      const b = l.Bytes || 0;
+      const r = l.Reason || 0;
+      totalBytes += b;
+      if (r !== 0) reasonCount++;
+      if (l.SrcAddr) srcSet.add(l.SrcAddr);
+      if (l.DstAddr) dstSet.add(l.DstAddr);
+
+      const pr = l.Protocol || "-";
+      let pe = protoMap.get(pr);
+      if (!pe) {
+        pe = { proto: pr, samples: 0, bytes: 0, reasons: 0 };
+        protoMap.set(pr, pe);
+      }
+      pe.samples++;
+      pe.bytes += b;
+      if (r !== 0) pe.reasons++;
+    }
+
+    const totalSamples = list.length;
+    protoRows = Array.from(protoMap.values())
+      .map((e) => ({
+        ...e,
+        ratio: totalSamples > 0 ? ((e.samples / totalSamples) * 100).toFixed(1) + "%" : "0.0%",
+      }))
+      .sort((a, b) => b.bytes - a.bytes);
+
+    kpi = {
+      totalSamples,
+      totalBytes,
+      reasonCount,
+      uniqueSrcIPs: srcSet.size,
+      uniqueDstIPs: dstSet.size,
+    };
+  };
+
+  const destroySummaryTable = () => {
+    if (summaryTable) {
+      try {
+        summaryTable.destroy();
+      } catch {
+        // ignore
+      }
+      summaryTable = undefined;
+    }
+  };
+
+  const initSummaryTable = async () => {
+    await tick();
+    if (!document.getElementById("sflowSampleSummaryTable")) return;
+    summaryTable = new DataTable("#sflowSampleSummaryTable", {
+      destroy: true,
+      paging: protoRows.length > 10,
+      pageLength: 10,
+      searching: true,
+      info: false,
+      scrollY: "300px",
+      scrollCollapse: true,
+      language: getTableLang(),
+      data: protoRows,
+      order: [[2, "desc"]],
+      columns: [
+        { data: "proto", title: $_("NetFlowReport.Protocol") || "Protocol" },
+        {
+          data: "samples",
+          title: $_("SFlowReport.Samples") || "Samples",
+          render: renderCount,
+        },
+        {
+          data: "bytes",
+          title: $_("NetFlowReport.Bytes") || "Bytes",
+          render: renderBytes,
+        },
+        {
+          data: "reasons",
+          title: $_("SFlowReport.ReasonNonZero") || "Reason != 0",
+          render: renderCount,
+        },
+        { data: "ratio", title: $_("NetFlowReport.Ratio") || "Ratio" },
+      ],
+    });
+  };
 
   const onOpen = async () => {
     chart = undefined;
+    destroySummaryTable();
+    calcSFlowStats();
     topList = [];
     fftMap = undefined;
     tab = "heatmap";
@@ -71,6 +174,7 @@
   };
 
   const close = () => {
+    destroySummaryTable();
     show = false;
   };
 
@@ -81,9 +185,14 @@
   };
 
   const showHeatmap = async () => {
+    destroySummaryTable();
     await tick();
     tab = "heatmap";
     chart = showLogHeatmap("heatmap", logs);
+    await initSummaryTable();
+    if (chart) {
+      chart.resize();
+    }
   };
 
 
@@ -434,7 +543,66 @@
           {$_("TrapReport.Heatmap")}
         </div>
       {/snippet}
-        <div id="heatmap"></div>
+        <div class="flex flex-col space-y-3">
+          <!-- KPI Summary Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiCounter} size={0.9} class="text-cyan-500" />
+                {$_("SFlowReport.TotalSamples") || "総サンプル数"}
+              </div>
+              <div class="mt-1 text-2xl font-bold">{kpi.totalSamples.toLocaleString()}</div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiDatabaseOutline} size={0.9} class="text-blue-500" />
+                {$_("NetFlowReport.TotalBytes") || "総データ量"}
+              </div>
+              <div class="mt-1 text-2xl font-bold text-blue-500 dark:text-blue-400">
+                {renderBytes(kpi.totalBytes, "")}
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiAlertOutline} size={0.9} class="text-red-500" />
+                {$_("SFlowReport.ReasonNonZero") || "ドロップ/異常理由"}
+              </div>
+              <div
+                class="mt-1 text-2xl font-bold {kpi.reasonCount > 0
+                  ? 'text-red-500 dark:text-red-400'
+                  : 'text-emerald-500 dark:text-emerald-400'}"
+              >
+                {kpi.reasonCount.toLocaleString()}
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiIpNetworkOutline} size={0.9} class="text-amber-500" />
+                {$_("NetFlowReport.UniqueIPs") || "ユニークIP (Src / Dst)"}
+              </div>
+              <div class="mt-1 text-2xl font-bold">
+                {kpi.uniqueSrcIPs.toLocaleString()}
+                <span class="text-xs font-normal text-gray-400">
+                  / {kpi.uniqueDstIPs.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 w-full items-start">
+            <div class="lg:col-span-6 w-full bg-gray-900 rounded-lg p-2 border border-gray-800">
+              <div id="heatmap" class="w-full h-[380px]"></div>
+            </div>
+            <div class="lg:col-span-6 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 overflow-x-auto">
+              <div>
+                <table id="sflowSampleSummaryTable" class="display compact w-full text-xs text-left text-gray-300"></table>
+              </div>
+            </div>
+          </div>
+        </div>
       </TabItem>
       <TabItem
         onclick={() => {
@@ -685,7 +853,6 @@
 />
 
 <style>
-  #heatmap,
   #traffic,
   #topList3D,
   #fft,

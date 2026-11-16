@@ -11,6 +11,8 @@
   import {
     getTableLang,
     renderCount,
+    renderState,
+    renderTime,
   } from "./common";
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
@@ -24,9 +26,186 @@
   let hasAI = false;
   let showAIReport = false;
   let activeTab = "level";
+  let levelTable: any = undefined;
+  let hostTable: any = undefined;
+
+  let kpi = {
+    total: 0,
+    highCount: 0,
+    warnCount: 0,
+    uniqueHosts: 0,
+    topHost: "-",
+    topHostCount: 0,
+  };
+  let levelRows: any[] = [];
+  let hostRows: any[] = [];
+
+  const calcSyslogStats = () => {
+    const list = Array.isArray(logs) ? logs : [];
+    const levelMap = new Map<
+      string,
+      { level: string; count: number; hosts: Set<string>; lastTime: number }
+    >();
+    const hostMap = new Map<
+      string,
+      { host: string; total: number; high: number; warn: number; lastTime: number }
+    >();
+    let highCount = 0;
+    let warnCount = 0;
+
+    for (const l of list) {
+      const lv = l.Level || "info";
+      const h = l.Host || "-";
+      const tm = l.Time || 0;
+
+      if (lv === "high") highCount++;
+      else if (lv === "warn") warnCount++;
+
+      let le = levelMap.get(lv);
+      if (!le) {
+        le = { level: lv, count: 0, hosts: new Set(), lastTime: 0 };
+        levelMap.set(lv, le);
+      }
+      le.count++;
+      le.hosts.add(h);
+      if (tm > le.lastTime) le.lastTime = tm;
+
+      let he = hostMap.get(h);
+      if (!he) {
+        he = { host: h, total: 0, high: 0, warn: 0, lastTime: 0 };
+        hostMap.set(h, he);
+      }
+      he.total++;
+      if (lv === "high") he.high++;
+      else if (lv === "warn") he.warn++;
+      if (tm > he.lastTime) he.lastTime = tm;
+    }
+
+    const total = list.length;
+    levelRows = Array.from(levelMap.values())
+      .map((e) => ({
+        level: e.level,
+        count: e.count,
+        ratio: total > 0 ? ((e.count / total) * 100).toFixed(1) + "%" : "0.0%",
+        hosts: e.hosts.size,
+        lastTime: e.lastTime,
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    hostRows = Array.from(hostMap.values()).sort((a, b) => b.total - a.total);
+
+    kpi = {
+      total,
+      highCount,
+      warnCount,
+      uniqueHosts: hostMap.size,
+      topHost: hostRows[0]?.host || "-",
+      topHostCount: hostRows[0]?.total || 0,
+    };
+  };
+
+  const destroyBasicTables = () => {
+    if (levelTable) {
+      try {
+        levelTable.destroy();
+      } catch {
+        // ignore
+      }
+      levelTable = undefined;
+    }
+    if (hostTable) {
+      try {
+        hostTable.destroy();
+      } catch {
+        // ignore
+      }
+      hostTable = undefined;
+    }
+  };
+
+  const initLevelTable = async () => {
+    await tick();
+    if (!document.getElementById("syslogLevelTable")) return;
+    levelTable = new DataTable("#syslogLevelTable", {
+      destroy: true,
+      paging: false,
+      searching: false,
+      info: false,
+      scrollY: "300px",
+      scrollCollapse: true,
+      language: getTableLang(),
+      data: levelRows,
+      order: [[1, "desc"]],
+      columns: [
+        {
+          data: "level",
+          title: $_("SyslogReport.Level") || "Level",
+          render: renderState,
+        },
+        {
+          data: "count",
+          title: $_("SyslogReport.Count") || "Count",
+          render: renderCount,
+        },
+        { data: "ratio", title: $_("SyslogReport.Ratio") || "Ratio" },
+        {
+          data: "hosts",
+          title: $_("SyslogReport.UniqueHosts") || "Hosts",
+          render: renderCount,
+        },
+        {
+          data: "lastTime",
+          title: $_("SyslogReport.LastTime") || "Last Time",
+          render: renderTime,
+        },
+      ],
+    });
+  };
+
+  const initHostTable = async () => {
+    await tick();
+    if (!document.getElementById("syslogHostTable")) return;
+    hostTable = new DataTable("#syslogHostTable", {
+      destroy: true,
+      paging: hostRows.length > 10,
+      pageLength: 10,
+      searching: true,
+      info: false,
+      scrollY: "300px",
+      scrollCollapse: true,
+      language: getTableLang(),
+      data: hostRows,
+      order: [[1, "desc"]],
+      columns: [
+        { data: "host", title: $_("SyslogReport.Host") || "Host" },
+        {
+          data: "total",
+          title: $_("SyslogReport.Count") || "Total",
+          render: renderCount,
+        },
+        {
+          data: "high",
+          title: $_("SyslogReport.High") || "High",
+          render: renderCount,
+        },
+        {
+          data: "warn",
+          title: $_("SyslogReport.Warn") || "Warn",
+          render: renderCount,
+        },
+        {
+          data: "lastTime",
+          title: $_("SyslogReport.LastTime") || "Last Time",
+          render: renderTime,
+        },
+      ],
+    });
+  };
 
   const onOpen = async () => {
     chart = undefined;
+    destroyBasicTables();
+    calcSyslogStats();
     activeTab = "level";
     sigmaResult = null;
     anomalyData = [];
@@ -42,16 +221,19 @@
   let chart :any  = undefined;
   const showChart = async (t:string) => {
     activeTab = t;
+    destroyBasicTables();
     await tick();
     switch(t) {
       case "level":
         chart = showSyslogLevelChart(t,logs);
+        await initLevelTable();
         break;
       case "heatmap":
         chart = showLogHeatmap(t,logs);
         break;
       case "host":
         chart = showSyslogHost(t,logs);
+        await initHostTable();
         break;
       case "host3D":
         chart = showSyslogHost3D(t,logs);
@@ -62,6 +244,9 @@
       default:
         chart = undefined;
         break;
+    }
+    if (chart) {
+      chart.resize();
     }
   }
 
@@ -549,6 +734,7 @@
 
 
   const close = () => {
+    destroyBasicTables();
     show = false;
   };
 
@@ -576,14 +762,71 @@
   <div class="flex flex-col h-[84vh] max-h-[84vh] overflow-hidden">
     <div class="flex-1 overflow-y-auto overflow-x-hidden pr-1">
       <Tabs style="underline" contentClass="p-1 pt-1">
-      <TabItem onclick={()=>{showChart("level")}}>
+      <TabItem open onclick={()=>{showChart("level")}}>
         {#snippet titleSlot()}
         <div class="flex items-center gap-2">
           <Icon path={icons.mdiChartPie} size={1} />
           {$_('SyslogReport.CountByLevel')}
         </div>
       {/snippet}
-        <div id="level"></div>
+        <div class="flex flex-col space-y-3">
+          <!-- KPI Summary Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiTextBoxMultipleOutline} size={0.9} class="text-cyan-500" />
+                {$_("SyslogReport.TotalLogs") || "総ログ数"}
+              </div>
+              <div class="mt-1 text-2xl font-bold">{kpi.total.toLocaleString()}</div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiAlertCircleOutline} size={0.9} class="text-red-500" />
+                {$_("SyslogReport.HighCount") || "重度 (High)"}
+              </div>
+              <div
+                class="mt-1 text-2xl font-bold {kpi.highCount > 0
+                  ? 'text-red-500 dark:text-red-400'
+                  : 'text-emerald-500 dark:text-emerald-400'}"
+              >
+                {kpi.highCount.toLocaleString()}
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiAlertOutline} size={0.9} class="text-amber-500" />
+                {$_("SyslogReport.WarnCount") || "警告 (Warn)"}
+              </div>
+              <div class="mt-1 text-2xl font-bold text-amber-500 dark:text-amber-400">
+                {kpi.warnCount.toLocaleString()}
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiServerNetwork} size={0.9} class="text-blue-500" />
+                {$_("SyslogReport.UniqueHosts") || "送信ホスト数"}
+              </div>
+              <div class="mt-1 text-2xl font-bold">{kpi.uniqueHosts.toLocaleString()}</div>
+              <div class="text-[11px] text-gray-400 truncate" title={kpi.topHost}>
+                Top: {kpi.topHost} ({kpi.topHostCount.toLocaleString()})
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 w-full items-start">
+            <div class="lg:col-span-5 w-full bg-gray-900 rounded-lg p-2 border border-gray-800">
+              <div id="level" class="w-full h-[380px]"></div>
+            </div>
+            <div class="lg:col-span-7 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 overflow-x-auto">
+              <div>
+                <table id="syslogLevelTable" class="display compact w-full text-xs text-left text-gray-300"></table>
+              </div>
+            </div>
+          </div>
+        </div>
       </TabItem>
       <TabItem onclick={()=>{showChart("heatmap")}}>
         {#snippet titleSlot()}
@@ -601,7 +844,16 @@
           {$_('SyslogReport.CountByHost')}
         </div>
       {/snippet}
-        <div id="host"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 w-full items-start">
+          <div class="lg:col-span-5 w-full bg-gray-900 rounded-lg p-2 border border-gray-800">
+            <div id="host" class="w-full h-[380px]"></div>
+          </div>
+          <div class="lg:col-span-7 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 overflow-x-auto">
+            <div>
+              <table id="syslogHostTable" class="display compact w-full text-xs text-left text-gray-300"></table>
+            </div>
+          </div>
+        </div>
       </TabItem>
       <TabItem onclick={showSummary}>
         {#snippet titleSlot()}
@@ -831,9 +1083,7 @@
 />
 
 <style>
-  #level,
   #heatmap,
-  #host,
   #host3D,
   #fft{
     min-height: 500px;

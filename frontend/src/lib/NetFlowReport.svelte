@@ -51,9 +51,112 @@
   let tableFlow: any = undefined;
   let selectedCountFlow = 0;
   let locConf :any = undefined;
+  let summaryTable: any = undefined;
+
+  let kpi = {
+    totalFlows: 0,
+    totalBytes: 0,
+    totalPackets: 0,
+    uniqueSrcIPs: 0,
+    uniqueDstIPs: 0,
+  };
+  let protoRows: any[] = [];
+
+  const calcNetFlowStats = () => {
+    const list = Array.isArray(logs) ? logs : [];
+    let totalBytes = 0;
+    let totalPackets = 0;
+    const srcSet = new Set<string>();
+    const dstSet = new Set<string>();
+    const protoMap = new Map<string, { proto: string; flows: number; bytes: number; packets: number }>();
+
+    for (const l of list) {
+      const b = l.Bytes || 0;
+      const p = l.Packets || 0;
+      totalBytes += b;
+      totalPackets += p;
+      if (l.SrcAddr) srcSet.add(l.SrcAddr);
+      if (l.DstAddr) dstSet.add(l.DstAddr);
+
+      const pr = l.Protocol || "-";
+      let pe = protoMap.get(pr);
+      if (!pe) {
+        pe = { proto: pr, flows: 0, bytes: 0, packets: 0 };
+        protoMap.set(pr, pe);
+      }
+      pe.flows++;
+      pe.bytes += b;
+      pe.packets += p;
+    }
+
+    const totalFlows = list.length;
+    protoRows = Array.from(protoMap.values())
+      .map((e) => ({
+        ...e,
+        ratio: totalFlows > 0 ? ((e.flows / totalFlows) * 100).toFixed(1) + "%" : "0.0%",
+      }))
+      .sort((a, b) => b.bytes - a.bytes);
+
+    kpi = {
+      totalFlows,
+      totalBytes,
+      totalPackets,
+      uniqueSrcIPs: srcSet.size,
+      uniqueDstIPs: dstSet.size,
+    };
+  };
+
+  const destroySummaryTable = () => {
+    if (summaryTable) {
+      try {
+        summaryTable.destroy();
+      } catch {
+        // ignore
+      }
+      summaryTable = undefined;
+    }
+  };
+
+  const initSummaryTable = async () => {
+    await tick();
+    if (!document.getElementById("netflowSummaryTable")) return;
+    summaryTable = new DataTable("#netflowSummaryTable", {
+      destroy: true,
+      paging: protoRows.length > 10,
+      pageLength: 10,
+      searching: true,
+      info: false,
+      scrollY: "300px",
+      scrollCollapse: true,
+      language: getTableLang(),
+      data: protoRows,
+      order: [[2, "desc"]],
+      columns: [
+        { data: "proto", title: $_("NetFlowReport.Protocol") || "Protocol" },
+        {
+          data: "flows",
+          title: $_("NetFlowReport.Flows") || "Flows",
+          render: renderCount,
+        },
+        {
+          data: "bytes",
+          title: $_("NetFlowReport.Bytes") || "Bytes",
+          render: renderBytes,
+        },
+        {
+          data: "packets",
+          title: $_("NetFlowReport.Packets") || "Packets",
+          render: renderCount,
+        },
+        { data: "ratio", title: $_("NetFlowReport.Ratio") || "Ratio" },
+      ],
+    });
+  };
 
   const onOpen = async () => {
     chart = undefined;
+    destroySummaryTable();
+    calcNetFlowStats();
     topList = [];
     fftMap = undefined;
     tab = "heatmap";
@@ -74,6 +177,7 @@
   };
 
   const close = () => {
+    destroySummaryTable();
     show = false;
   };
 
@@ -84,9 +188,14 @@
   };
 
   const showHeatmap = async () => {
+    destroySummaryTable();
     await tick();
     tab = "heatmap";
     chart = showLogHeatmap("heatmap", logs);
+    await initSummaryTable();
+    if (chart) {
+      chart.resize();
+    }
   };
 
   let histogramType: string = "size";
@@ -506,7 +615,60 @@
           {$_("TrapReport.Heatmap")}
         </div>
       {/snippet}
-        <div id="heatmap"></div>
+        <div class="flex flex-col space-y-3">
+          <!-- KPI Summary Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiLanConnect} size={0.9} class="text-cyan-500" />
+                {$_("NetFlowReport.TotalFlows") || "総フロー数"}
+              </div>
+              <div class="mt-1 text-2xl font-bold">{kpi.totalFlows.toLocaleString()}</div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiDatabaseOutline} size={0.9} class="text-blue-500" />
+                {$_("NetFlowReport.TotalBytes") || "総データ量"}
+              </div>
+              <div class="mt-1 text-2xl font-bold text-blue-500 dark:text-blue-400">
+                {renderBytes(kpi.totalBytes, "")}
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiPackageVariant} size={0.9} class="text-emerald-500" />
+                {$_("NetFlowReport.TotalPackets") || "総パケット数"}
+              </div>
+              <div class="mt-1 text-2xl font-bold">{kpi.totalPackets.toLocaleString()}</div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <Icon path={icons.mdiIpNetworkOutline} size={0.9} class="text-amber-500" />
+                {$_("NetFlowReport.UniqueIPs") || "ユニークIP (Src / Dst)"}
+              </div>
+              <div class="mt-1 text-2xl font-bold">
+                {kpi.uniqueSrcIPs.toLocaleString()}
+                <span class="text-xs font-normal text-gray-400">
+                  / {kpi.uniqueDstIPs.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 w-full items-start">
+            <div class="lg:col-span-6 w-full bg-gray-900 rounded-lg p-2 border border-gray-800">
+              <div id="heatmap" class="w-full h-[380px]"></div>
+            </div>
+            <div class="lg:col-span-6 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 overflow-x-auto">
+              <div>
+                <table id="netflowSummaryTable" class="display compact w-full text-xs text-left text-gray-300"></table>
+              </div>
+            </div>
+          </div>
+        </div>
       </TabItem>
       <TabItem
         onclick={() => {
@@ -816,7 +978,6 @@
 />
 
 <style>
-  #heatmap,
   #histogram,
   #traffic,
   #topList3D,
