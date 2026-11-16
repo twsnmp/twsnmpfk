@@ -1063,7 +1063,13 @@
     "Type": "Type",
     "FailAction": "Fail ",
     "RepairAction": "Repair",
-    "DeleteLogs": "Delete logs"
+    "DeleteLogs": "Delete logs",
+    "TotalPollings": "Total Pollings",
+    "NormalRate": "Healthy Rate",
+    "NormalPollings": "Normal",
+    "AlertPollings": "Alert (High/Low)",
+    "WarnPollings": "Warn / Other",
+    "Unknown": "Unknown"
   },
   "PollingReport": {
     "AI": "Anomaly",

@@ -34,13 +34,103 @@
   let selectedPolling = "";
   let table: any = undefined;
   let selectedCount = 0;
+  let stateFilter: "all" | "normal" | "alert" | "warn" = "all";
+
+  let kpi = {
+    total: 0,
+    normal: 0,
+    high: 0,
+    low: 0,
+    warn: 0,
+    repair: 0,
+    unknown: 0,
+    off: 0,
+    alertCount: 0,
+    warnOtherCount: 0,
+    normalRate: "0.0",
+  };
+
+  const updateKPI = () => {
+    let normal = 0;
+    let high = 0;
+    let low = 0;
+    let warn = 0;
+    let repair = 0;
+    let unknown = 0;
+    let off = 0;
+
+    for (const p of data) {
+      if (p.Level === "off") {
+        off++;
+      }
+      switch (p.State) {
+        case "normal":
+          normal++;
+          break;
+        case "high":
+          high++;
+          break;
+        case "low":
+          low++;
+          break;
+        case "warn":
+          warn++;
+          break;
+        case "repair":
+          repair++;
+          break;
+        default:
+          unknown++;
+          break;
+      }
+    }
+
+    const total = data.length;
+    kpi = {
+      total,
+      normal,
+      high,
+      low,
+      warn,
+      repair,
+      unknown,
+      off,
+      alertCount: high + low,
+      warnOtherCount: warn + repair + unknown,
+      normalRate: total > 0 ? ((normal / total) * 100).toFixed(1) : "0.0",
+    };
+  };
+
+  const getFilteredData = () => {
+    switch (stateFilter) {
+      case "normal":
+        return data.filter((p: any) => p.State === "normal");
+      case "alert":
+        return data.filter((p: any) => p.State === "high" || p.State === "low");
+      case "warn":
+        return data.filter(
+          (p: any) =>
+            p.State !== "normal" && p.State !== "high" && p.State !== "low"
+        );
+      default:
+        return data;
+    }
+  };
+
+  const setStateFilter = (next: "all" | "normal" | "alert" | "warn") => {
+    stateFilter = stateFilter === next ? "all" : next;
+    if (table) {
+      selectedCount = 0;
+      table.clear().rows.add(getFilteredData()).draw();
+    }
+  };
 
   const showTable = () => {
     selectedCount = 0;
     table = new DataTable("#pollingListTable", {
       destroy: true,
       columns: columns,
-      data: data,
+      data: getFilteredData(),
       stateSave: true,
       order: [
         [0, "asc"],
@@ -64,6 +154,7 @@
     data = [];
     nodes = await GetNodes();
     data = await GetPollings("");
+    updateKPI();
     showTable();
   };
 
@@ -117,7 +208,12 @@
     if (selected.length < 1) {
       return;
     }
-    await DeletePollings(selected.toArray());
+    const ids = selected.toArray();
+    await DeletePollings(ids);
+    const idSet = new Set(ids);
+    data = data.filter((p: any) => !idSet.has(p.ID));
+    updateKPI();
+    selectedCount = 0;
     table.rows({ selected: true }).remove().draw();
   };
 
@@ -202,6 +298,91 @@
 </script>
 
 <div class="flex flex-col max-h-[calc(100vh-50px)] overflow-y-auto pb-2">
+  <!-- KPI Summary Cards -->
+  <div class="mx-2 mt-2 grid grid-cols-2 md:grid-cols-4 gap-3">
+    <button
+      type="button"
+      onclick={() => setStateFilter("all")}
+      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-cyan-400 dark:hover:border-cyan-500"
+    >
+      <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <Icon path={icons.mdiLanCheck} size={0.9} class="text-cyan-500" />
+        {$_("PollingList.TotalPollings") || "総ポーリング数"}
+      </div>
+      <div class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{kpi.total.toLocaleString()}</div>
+      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+        {$_("PollingList.NormalRate") || "正常率"}: {kpi.normalRate}%
+        {#if kpi.off > 0}
+          / {$_("Ts.Stop")}: {kpi.off.toLocaleString()}
+        {/if}
+      </div>
+    </button>
+
+    <button
+      type="button"
+      onclick={() => setStateFilter("normal")}
+      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-emerald-400 dark:hover:border-emerald-500 {stateFilter === 'normal'
+        ? 'ring-2 ring-emerald-500/80'
+        : ''}"
+    >
+      <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <Icon path={icons.mdiCheckCircleOutline} size={0.9} class="text-emerald-500" />
+        {$_("PollingList.NormalPollings") || "正常"}
+      </div>
+      <div class="mt-1 text-2xl font-bold text-emerald-500 dark:text-emerald-400">
+        {kpi.normal.toLocaleString()}
+      </div>
+      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+        {$_("Ts.Normal")}: {kpi.normal.toLocaleString()} / {kpi.total.toLocaleString()}
+      </div>
+    </button>
+
+    <button
+      type="button"
+      onclick={() => setStateFilter("alert")}
+      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-red-400 dark:hover:border-red-500 {stateFilter === 'alert'
+        ? 'ring-2 ring-red-500/80'
+        : ''}"
+    >
+      <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <Icon path={icons.mdiAlertCircleOutline} size={0.9} class="text-red-500" />
+        {$_("PollingList.AlertPollings") || "異常 (重度/軽度)"}
+      </div>
+      <div
+        class="mt-1 text-2xl font-bold {kpi.alertCount > 0
+          ? 'text-red-500 dark:text-red-400'
+          : 'text-emerald-500 dark:text-emerald-400'}"
+      >
+        {kpi.alertCount.toLocaleString()}
+      </div>
+      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+        {$_("Ts.High")}: {kpi.high.toLocaleString()} / {$_("Ts.Low")}: {kpi.low.toLocaleString()}
+      </div>
+    </button>
+
+    <button
+      type="button"
+      onclick={() => setStateFilter("warn")}
+      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-amber-400 dark:hover:border-amber-500 {stateFilter === 'warn'
+        ? 'ring-2 ring-amber-500/80'
+        : ''}"
+    >
+      <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <Icon path={icons.mdiAlertOutline} size={0.9} class="text-amber-500" />
+        {$_("PollingList.WarnPollings") || "注意・その他"}
+      </div>
+      <div
+        class="mt-1 text-2xl font-bold {kpi.warnOtherCount > 0
+          ? 'text-amber-500 dark:text-amber-400'
+          : 'text-emerald-500 dark:text-emerald-400'}"
+      >
+        {kpi.warnOtherCount.toLocaleString()}
+      </div>
+      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+        {$_("Ts.Warn")}: {kpi.warn.toLocaleString()} / {$_("Ts.Repair")}: {kpi.repair.toLocaleString()} / {$_("PollingList.Unknown") || "不明"}: {kpi.unknown.toLocaleString()}
+      </div>
+    </button>
+  </div>
   <div class="mx-2 mt-2">
     <div>
       <table id="pollingListTable" class="display compact" style="width:99%"></table>
