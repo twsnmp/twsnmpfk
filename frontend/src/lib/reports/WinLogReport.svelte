@@ -347,7 +347,7 @@
           {
             data: "Process",
             title: $_("report.winColProcessName") || "プロセス",
-            width: "22%",
+            width: "18%",
           },
           {
             data: "LastSubject",
@@ -375,7 +375,8 @@
           {
             data: "LastTime",
             title: $_("report.lastSeen") || "最終",
-            width: "12%",
+            width: "16%",
+            className: "whitespace-nowrap",
             render: renderTime,
           },
         ];
