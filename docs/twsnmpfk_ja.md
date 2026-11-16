@@ -135,6 +135,19 @@ Windowsの場合はスタートメニューからMac OSの場合はランチャ�
 
 TWSNMP FKは、継続的に機能強化を行っています。v1.30.0以降に加わった主な新機能と改善点を紹介します。
 
+### v2.7.0 の新機能
+
+- **OpenTelemetry (APM) テレメトリ監視ポーリング**: 新規 `otel` ポーリング種別（`metric`, `trace`, `heartbeat`）および OpenTelemetry 画面からのワンクリック「ポーリング作成」に対応。
+
+![h:360 center](./images/ja/polling_otel.png)
+- **AI/LLM 運用監視**: HTTPポーリングに `llm/openai`（`/v1/models`）と `llm/ollama`（`/api/tags`）モードを追加。
+- **システム画面の刷新と受信サーバー監視**: ステータス／リソースモニタのタブ分割、各受信サーバーの稼働状態監視とポート競合エラー検知を追加。
+- **KPIサマリーカードと集計表の追加**: ノード・ポーリング・アドレス各リスト画面およびSyslog/Trap/NetFlow/sFlow/ARP/MQTT/AIレポート画面にKPIサマリーや集計表を追加。
+- **MCPサーバー拡充**: `get_otel_metrics`、`get_otel_traces`、`get_sensor_list`、`get_report_summary` やCRUD・分析ツール、拡張プロンプトを追加。
+- **信頼性・UI・セキュリティ向上**: Parquet移行のストリーミング化（OOM解消）、LLMタイムアウト調整、言語切替時のボタン表示およびDataTable/チャート更新修正、`excelize` v2.11.1 更新。
+
+---
+
 ### v2.6.0 の新機能
 
 - **総合レポート統合・センサー連携**: TWSNMP NEOより総合レポート（Report）を移植。センサー死活、Wi-Fi AP、BLE、環境センサー、Pcapパケット、Windowsイベント、twagentneoの全7タブ。
@@ -1839,6 +1852,8 @@ NetFlow検索のためのフィルターです。
 ---
 #### NetFlow レポート
 
+![h:400 center](./images/ja/netflow_report.png)
+
 |レポート名|内容|
 |----|----|
 |ヒートマップ|NetFlowの受信数の時間帯別のヒートマップです。|
@@ -1957,6 +1972,8 @@ sFlowの分析画面です。
 
 ---
 #### フローサンプルのレポート
+
+![h:400 center](./images/ja/sflow_report.png)
 <!-- _class: tinytext -->
 |レポート名|内容|
 |----|----|
@@ -1971,6 +1988,8 @@ sFlowの分析画面です。
 
 ---
 #### カウンターサンプルのレポート
+
+![h:400 center](./images/ja/sflow_counter_report.png)
 <!-- _class: tinytext -->
 
 |レポート名|内容|
@@ -2137,9 +2156,13 @@ twagentneoエージェントの稼働状態、AI脅威判定、ファイル整�
 
 ---
 ## System
-System情報の画面です。上部にログのリソースと通信の情報を時系列で示したグラフがあります。
+System情報の画面です。「ステータス」タブ（デーモンヘルス、KPIカード、受信サーバー稼働状態・ポート競合エラー検知）と「リソースモニタ」タブ（時系列グラフと履歴テーブル）で構成されています。
 
 ![h:400 center](./images/ja/system.png)
+
+---
+### リソースモニター
+![h:400 center](./images/ja/system_monitor.png)
 
 ---
 |項目|内容|

@@ -120,23 +120,41 @@ You can now search for PCs, routers, servers, etc. connected to the managed netw
 
 ## New Features
 
-TWSNMP FK is continuously enhanced with new features. Here are the main new features and improvements added since v1.30.0.
+TWSNMP FK is continuously enhanced with new features. Here are the main new features and improvements added in v2.7.0 and earlier releases.
 
-### SNMPv3 Security Enhancements (v1.33.0)
+### New Features in v2.7.0
 
-Added support for SHA256/AES128 and SHA512/AES256 authentication and encryption modes, providing stronger security for modern network monitoring requirements.
+#### OpenTelemetry (APM) Telemetry Polling
+- **New `otel` Polling Type**: Poll and alert directly on received OpenTelemetry telemetry (metrics, trace spans, heartbeats) with automatic node state and event log integration.
+  - `metric` mode: Monitor application metrics (Gauge, Sum, Count, Min, Max) and elapsed time against thresholds.
+  - `trace` mode: Monitor error rate (%), average duration, and P95 duration per service/span, detecting span errors.
+  - `heartbeat` mode: Detect telemetry reception stoppage/timeout from microservices and OTel agents.
+- **One-Click Polling Creation**: Added a direct **"Add Polling"** action button on the OpenTelemetry screen (Metrics and Traces tabs) to create pre-populated polling items from any selected row.
 
-### Map and UI Improvements (v1.33.0)
+![OpenTelemetry Metrics & Add Polling](images/en/otel.png)
 
-New features to improve map usability and organization have been added:
-- **Node IP Display**: Option to show node IP addresses directly on the map.
-- **Group Drawing Items**: New group (frame/background) drawing items for better node and area organization.
-- **VPanel Enhancements**: Added zoom and port wrap controls for the virtual panel in node and network reports.
-- **Map Aesthetics**: Removed background rectangles for unselected nodes for a cleaner look.
+![OpenTelemetry Polling Settings](images/en/polling_otel.png)
 
-### Drawing Item Enhancements (v1.33.0)
+#### AI / LLM Operational Monitoring
+- **LLM Modes for HTTP Polling**: Added `llm/openai` (OpenAI/vLLM `/v1/models`) and `llm/ollama` (Ollama `/api/tags`) modes to HTTP polling, supporting API authentication, available model counts, and latency (`rtt_ms`) health checks.
 
-Added support for setting the opacity (transparency) of drawing items and improved the user interface for background image settings.
+#### System Screen Overhaul & Receiver Port Monitoring
+- **Status & Resource Monitor Tabs**: Split the System screen into **Status** (daemon health, version, clock, CPU/Memory/Disk KPIs, and receiver status) and **Resource Monitor** (chronological resource charts and history table) tabs.
+- **Receiver Status & Port Conflict Detection**: Added live operational status monitoring (`running`, `stopped`, `error`) and port conflict error detection for built-in receiver servers (Syslog, SNMP Trap, NetFlow, sFlow, MQTT, OpenTelemetry gRPC/HTTP, ARP Watch, SSH, TCP).
+
+![System Status & Receiver Monitoring](images/en/system.png)
+
+#### Unified KPI Summary Cards & Report Summary Tables
+- **List View KPI Cards**: Added unified KPI summary cards at the top of the **Node List**, **Polling List**, and **Address List** screens for instant visibility into operational health and counts.
+- **Report Summary Cards & Tables**: Added KPI summary cards and aggregation tables to graph-based report screens (**Syslog**, **SNMP Trap**, **NetFlow**, **sFlow**, **sFlow Counter**, **ARP**, **MQTT**, and **AI**).
+
+#### MCP Server Tool & Prompt Expansion
+- **Expanded Tools & Prompts**: Added `get_otel_metrics`, `get_otel_traces`, `get_sensor_list`, `get_report_summary`, plus node/polling/line/network CRUD and analytics tools and extended MCP prompt templates.
+
+#### Performance, Reliability & Security Fixes
+- **Streaming Parquet Migration**: Converted log storage Parquet migration to streaming processing to prevent freezes and OOM errors on large databases.
+- **LLM Timeout & Log Sorting**: Extended periodic report AI summary timeout, added log limit sorting, and adjusted topology inference timeout.
+- **UI / i18n & Security**: Fixed navbar language toggle display (`JA`/`EN`), reactive DataTable header/chart updates on language switching across list/report/resource monitor views (plus safe DataTable re-initialization and single-line `Last Seen` in WinLogReport), and upgraded `excelize` to v2.11.1 to resolve GHSA-fq3v-74gv-27gm (CVE-2026-107223).
 
 ### New Features in v2.6.0
 
@@ -1538,6 +1556,8 @@ It is a filter for netflow search.
 
 #### Netflow report
 
+![](./images/en/netflow_report.png)
+
 | Report name | Contents |
 | ---- | ---- |
 | Heat Map | Heat map by time zone of Netflow's receiving number.|
@@ -1631,6 +1651,8 @@ This is the analysis screen of sFLOW.
 
 #### Flow sample report
 
+![](./images/en/sflow_report.png)
+
 | Report name | Contents |
 | ---- | ---- |
 | Heat map | Heat map showing the number of log time.|
@@ -1644,6 +1666,8 @@ This is the analysis screen of sFLOW.
 | AI Explanation | Sends current sFlow sample data to AI (LLM) for flow traffic analysis, heavy talker identification, and anomaly explanations (only visible when AI integration is enabled).|
 
 #### Counter sample report
+
+![](./images/en/sflow_counter_report.png)
 
 | Report name | Contents |
 | ---- | ---- |
@@ -2034,9 +2058,16 @@ Monitors operational status, AI threat analysis (via tensai), file integrity mon
 
 ## System
 
-System information screen.At the top, there is a graph showing log resources and communication information in a chronological order.
+System information screen. It consists of two tabs: **Status** and **Resource Monitor**.
+
+- **Status**: Displays daemon health (HEALTHY/ERROR), uptime, version, server clock, KPI cards for CPU/Memory/Disk/DB Size, and live operational status with port conflict error detection for built-in receiver servers (Syslog, SNMP Trap, NetFlow, sFlow, MQTT, OpenTelemetry gRPC/HTTP, ARP Watch, SSH, TCP, etc.).
+- **Resource Monitor**: Displays chronological resource and network traffic charts along with the system metrics history table.
 
 ![](./images/en/system.png)
+
+### Resource Monitor
+
+![](./images/en/system_monitor.png)
 
 
 | Items | Contents |

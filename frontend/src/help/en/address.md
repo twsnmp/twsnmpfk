@@ -1,6 +1,6 @@
 # Address List
 
-List of IP and MAC addresses detected on the local segment via the ARP watch function. Useful for monitoring address assignments, detecting duplicate IPs, and tracking MAC/IP changes.
+List of IP and MAC addresses detected on the local segment via the ARP watch function. Useful for monitoring address assignments, detecting duplicate IPs, and tracking MAC/IP changes. KPI summary cards at the top display Total Addresses, Normal, Alert (Dup/Changed), and Unregistered counts.
 
 ## Table Columns
 

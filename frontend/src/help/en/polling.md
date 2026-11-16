@@ -1,6 +1,6 @@
 # Polling
 
-Manage active polling tasks (status monitoring and performance data collection) executed against target nodes.
+Manage active polling tasks (status monitoring and performance data collection) executed against target nodes. KPI summary cards at the top display Total Pollings, Normal, Alert (High/Low), and Warn / Other counts.
 
 ## Table Columns
 

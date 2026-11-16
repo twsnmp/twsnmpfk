@@ -1,6 +1,6 @@
 # Node
 
-List of managed nodes, settings parameters, and detailed performance reports.
+List of managed nodes, settings parameters, and detailed performance reports. KPI summary cards at the top display Total Nodes, Normal, Alert (High/Low), and Warn / Other counts.
 
 ## Table Columns
 

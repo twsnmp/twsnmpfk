@@ -1,8 +1,14 @@
-# System Resources
+# System
 
-Monitor the system resources of the host machine and the performance of the TWSNMP FK process itself. Chronological resource utilization charts are displayed at the top.
+Monitor the operational status, system resources, and performance of the host machine and the TWSNMP FK process itself. Switch between the **Status** and **Resource Monitor** tabs.
 
-## Table Columns
+## Status Tab
+
+* **Daemon Health / Uptime / Version / Server Clock**: Displays operational status (HEALTHY / ERROR / IDLE), uptime, version info, and server clock with timezone.
+* **Resource KPI Cards**: Summarizes CPU usage, load average, memory/swap usage, disk usage, DB size, and Go runtime metrics (Goroutines, Heap/Sys memory).
+* **Receiver Server Status**: Displays live operational status (`running` / `stopped` / `error`) and port conflict error detection for built-in receiver servers (Syslog, SNMP Trap, NetFlow, sFlow, MQTT, OpenTelemetry gRPC/HTTP, ARP Watch, SSH, TCP, etc.).
+
+## Resource Monitor Table Columns
 
 * **Time**
   Date and time when the system metrics were recorded.

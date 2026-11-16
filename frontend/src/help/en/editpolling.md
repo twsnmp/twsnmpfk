@@ -11,11 +11,13 @@ Screen for creating a new polling monitor or editing the settings of an existing
 * **Level**
   Severity level when a failure is detected (e.g., Severe, Mild, Warn).
 * **Type**
-  Monitoring method (PING, SNMP, TCP, HTTP, gRPC, TLS, DNS, SSH/SFTP, Command, etc.).
+  Monitoring method (PING, SNMP, TCP, HTTP, gRPC, TLS, DNS, SSH/SFTP, OpenTelemetry, Command, etc.).
 * **Mode**
-  Operation mode based on the selected type. Selecting a type automatically displays a dynamic dropdown of available modes (supports PING, SNMP, HTTP, TCP, TLS, DNS, SSH, gRPC, Syslog, NTP, STUN, etc.).
+  Operation mode based on the selected type. Selecting a type automatically displays a dynamic dropdown of available modes (supports PING, SNMP, HTTP, TCP, TLS, DNS, SSH, gRPC, Syslog, NTP, STUN, OpenTelemetry, etc.).
   * **PING Smokeping Mode (`smoke`)**: Measures statistical metrics (min, max, mean/avg, median response time, packet loss rate %, jitter) by sending continuous PING packets in short intervals.
   * **Log Sigma Mode (`sigma`)**: Evaluates incoming log streams against Sigma rule detection engines in real-time.
+  * **HTTP LLM Mode (`llm/openai`, `llm/ollama`)**: Monitors OpenAI/vLLM (`/v1/models`) or Ollama (`/api/tags`) endpoints with API authentication for available model count and latency (`rtt_ms`).
+  * **OpenTelemetry Mode (`metric`, `trace`, `heartbeat`)**: Evaluates received OTel metric values, trace error rate / duration (avg / P95), or telemetry reception timeout (heartbeat).
 * **Log mode**
   Method to save and process the results log ("None", "Always", "On change", "Anomaly").
 * **MQTT server URL**

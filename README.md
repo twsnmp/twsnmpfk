@@ -197,7 +197,7 @@ Usage of twsnmpfk:
 
 ## History
 
-### v2.7.0 (In Development)
+### v2.7.0
 
 #### OpenTelemetry (APM) Telemetry Polling
 * **New `otel` Polling Type**: Added support for polling and alerting directly on received OpenTelemetry telemetry (metrics, trace spans, heartbeats) with automatic node state and event log integration.
@@ -209,12 +209,30 @@ Usage of twsnmpfk:
 #### AI / LLM Operational Monitoring
 * **LLM Modes for HTTP Polling**: Added `llm/openai` (OpenAI/vLLM `/v1/models`) and `llm/ollama` (Ollama `/api/tags`) modes to HTTP polling, supporting API authentication, available model counts, and latency (`rtt_ms`) health checks.
 
-#### MCP Server Tool Expansion
-* **New Tools for AI Agents**:
+#### System Screen Overhaul & Receiver Port Monitoring
+* **Status & Resource Monitor Tabs**: Split the System screen into **Status** (daemon health, version, clock, CPU/Memory/Disk KPIs, and receiver status) and **Resource Monitor** (chronological resource charts and history table) tabs.
+* **Receiver Status & Port Conflict Detection**: Added live operational status monitoring (`running`, `stopped`, `error`) and port conflict error detection for built-in receiver servers (Syslog, SNMP Trap, NetFlow, sFlow, MQTT, OpenTelemetry gRPC/HTTP, ARP Watch, SSH, TCP).
+
+#### Unified KPI Summary Cards & Report Summary Tables
+* **List View KPI Cards**: Added unified KPI summary cards at the top of the **Node List**, **Polling List**, and **Address List** screens for instant visibility into operational health and counts.
+* **Report Summary Cards & Tables**: Added KPI summary cards and aggregation tables to graph-based report screens (**Syslog**, **SNMP Trap**, **NetFlow**, **sFlow**, **sFlow Counter**, **ARP**, **MQTT**, and **AI**).
+
+#### MCP Server Tool & Prompt Expansion
+* **Expanded Tools & Prompts**: Added CRUD and analytics MCP tools along with extended MCP prompt templates for AI-driven network operations:
   * `get_otel_metrics`: Retrieve OTel metrics and latest data points.
   * `get_otel_traces`: Retrieve OTel trace summaries and error traces.
   * `get_sensor_list`: Retrieve connected sensor status (Wi-Fi, BLE, PCAP, WinLog, twagentneo).
   * `get_report_summary`: Retrieve summary data for report kinds (Wi-Fi APs, BLE devices, environmental sensors, DNS queries, Windows events, twagent threats, etc.).
+  * Additional node/polling/line/network CRUD and analytics tools with updated MCP documentation.
+
+#### Performance, Reliability & Security Fixes
+* **Streaming Parquet Migration**: Converted log storage Parquet migration to streaming processing to eliminate freezes and out-of-memory (OOM) errors on large databases.
+* **LLM Timeout & Log Sorting**: Extended periodic report AI summary timeout, added log limit sorting, and adjusted topology inference timeout.
+* **UI / i18n & Table Fixes**:
+  * Fixed the top navbar language toggle button to display the current language (`JA` / `EN`).
+  * Fixed DataTable column headers, i18n labels, and charts across list, resource monitor, and report views to update reactively on language switching, and prevented undefined table access during DataTable re-initialization.
+  * Kept the `Last Seen` column on a single line in the Windows Events report (`WinLogReport`) process tab.
+* **Security Update**: Upgraded `excelize` to v2.11.1 to resolve GHSA-fq3v-74gv-27gm (CVE-2026-107223).
 
 ### v2.6.0
 

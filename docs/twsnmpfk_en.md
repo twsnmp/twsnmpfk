@@ -129,6 +129,19 @@ Added support for SHA256/AES128 and SHA512/AES256, providing stronger security f
 
 Added support for opacity (transparency) and improved UI for background images.
 
+### New Features in v2.7.0
+
+- **OpenTelemetry (APM) Telemetry Polling**: New `otel` polling type (`metric`, `trace`, `heartbeat` modes) and one-click **"Add Polling"** action from OpenTelemetry Metrics/Traces tables.
+
+![h:360 center](./images/en/polling_otel.png)
+- **AI / LLM Operational Monitoring**: Added `llm/openai` (`/v1/models`) and `llm/ollama` (`/api/tags`) modes to HTTP polling for model count and latency health checks.
+- **System Screen Overhaul & Receiver Monitoring**: Split System screen into **Status** and **Resource Monitor** tabs with live receiver server status and port conflict error detection.
+- **KPI Summary Cards & Report Tables**: Added unified KPI summary cards to **Node List**, **Polling List**, and **Address List**, and KPI summaries/tables to graph-based report screens.
+- **MCP Server Expansion**: Added `get_otel_metrics`, `get_otel_traces`, `get_sensor_list`, `get_report_summary`, plus CRUD/analytics tools and extended prompts.
+- **Reliability, UI & Security**: Streaming Parquet migration (OOM fix), LLM timeout/log sorting improvements, navbar language button & reactive DataTable/chart i18n fixes on language switch, and `excelize` v2.11.1 security upgrade.
+
+---
+
 ### New Features in v2.6.0
 
 - **Comprehensive Report Suite & Sensors**: Ported from TWSNMP NEO. 7 dedicated tabs for Sensors, Wi-Fi AP, Bluetooth (BLE), Environmental, Pcap Packets, Windows Events, and twagentneo.
@@ -1691,6 +1704,8 @@ It is a filter for netflow search.
 ---
 #### Netflow report
 
+![h:400 center](./images/en/netflow_report.png)
+
 | Report name | Contents |
 | ---- | ---- |
 | Heat Map | Heat map by time zone of Netflow's receiving number.|
@@ -1814,6 +1829,8 @@ This is the analysis screen of sFLOW.
 ---
 
 #### Flow sample report
+
+![h:400 center](./images/en/sflow_report.png)
 <!-- _class: tinytext -->
 
 | Report name | Contents |
@@ -1830,6 +1847,8 @@ This is the analysis screen of sFLOW.
 
 ---
 #### Counter sample report
+
+![h:400 center](./images/en/sflow_counter_report.png)
 <!-- _class: tinytext -->
 
 | Report name | Contents |
@@ -2062,10 +2081,14 @@ Monitors agent operational status, AI threat classification, file integrity (FIM
 
 ---
 ## System
-System information screen.At the top, there is a graph showing log resources and communication information in a chronological order.
+System information screen with **Status** (daemon health, KPIs, receiver server status & port conflict detection) and **Resource Monitor** (chronological resource/network charts & history table) tabs.
 <!-- _class: tinytext -->
 
 ![h:400 center](./images/en/system.png)
+
+---
+### Resource Monitor
+![h:400 center](./images/en/system_monitor.png)
 
 ---
 | Items | Contents |

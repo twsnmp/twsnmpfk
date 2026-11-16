@@ -24,6 +24,7 @@ Inspect and analyze metrics, traces, and logs collected via OpenTelemetry. Switc
 ## Metrics Buttons
 
 * **[Report]** : View a performance graph of the selected metric.
+* **[Add Polling]** : Open the polling editor pre-populated with OpenTelemetry (`otel`) settings for the selected metric.
 * **[Delete All]** : Delete all OpenTelemetry data from the database.
 * **[Reload]** : Refresh the metrics list.
 
@@ -51,6 +52,7 @@ Distributed tracing data.
 ## Traces Buttons
 
 * **[Report]** : Open the waterfall trace/span visualizer for the selected trace.
+* **[Add Polling]** : Open the polling editor pre-populated with OpenTelemetry (`otel`) settings for the selected trace service/span.
 * **[DAG]** : Generate and display a Service Dependency Graph (Directed Acyclic Graph) for the selected trace data.
 * **[Delete All]** : Delete all OpenTelemetry data.
 * **[Reload]** : Refresh the trace data and chart.
