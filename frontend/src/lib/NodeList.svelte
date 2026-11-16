@@ -25,6 +25,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import { _ } from "svelte-i18n";
+  import { currentLang } from "../i18n/i18n";
 
   let data: any = [];
   let showEditNode = false;
@@ -128,9 +129,18 @@
 
   const showTable = () => {
     selectedCount = 0;
+    const el = document.getElementById("nodeListTable");
+    if (!el) {
+      return;
+    }
+    if (table && DataTable.isDataTable("#nodeListTable")) {
+      table.destroy();
+      table = undefined;
+    }
+    el.innerHTML = "";
     table = new DataTable("#nodeListTable", {
       destroy: true,
-      columns: columns,
+      columns: getColumns(),
       data: getFilteredData(),
       stateSave: true,
       order: [
@@ -267,7 +277,7 @@
     refresh();
   };
 
-  const columns = [
+  const getColumns = () => [
     {
       data: "State",
       title: $_("NodeList.State"),
@@ -309,6 +319,15 @@
     hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     refresh();
   });
+
+  let prevLang = "";
+  $: {
+    const lang = $currentLang;
+    if (prevLang && prevLang !== lang && table) {
+      showTable();
+    }
+    prevLang = lang;
+  }
 
   const checkAll = async () => {
     await CheckPolling("all");
