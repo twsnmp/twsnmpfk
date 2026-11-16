@@ -303,14 +303,14 @@
     <button
       type="button"
       onclick={() => setStateFilter("all")}
-      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-cyan-400 dark:hover:border-cyan-500"
+      class="text-left text-gray-800 dark:text-gray-100 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:border-cyan-400 dark:hover:border-cyan-500"
     >
       <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
         <Icon path={icons.mdiLanCheck} size={0.9} class="text-cyan-500" />
         {$_("PollingList.TotalPollings") || "総ポーリング数"}
       </div>
-      <div class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{kpi.total.toLocaleString()}</div>
-      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+      <div class="mt-1 text-2xl font-bold text-gray-800 dark:text-gray-100">{kpi.total.toLocaleString()}</div>
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
         {$_("PollingList.NormalRate") || "正常率"}: {kpi.normalRate}%
         {#if kpi.off > 0}
           / {$_("Ts.Stop")}: {kpi.off.toLocaleString()}
@@ -321,7 +321,7 @@
     <button
       type="button"
       onclick={() => setStateFilter("normal")}
-      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-emerald-400 dark:hover:border-emerald-500 {stateFilter === 'normal'
+      class="text-left text-gray-800 dark:text-gray-100 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:border-emerald-400 dark:hover:border-emerald-500 {stateFilter === 'normal'
         ? 'ring-2 ring-emerald-500/80'
         : ''}"
     >
@@ -329,10 +329,10 @@
         <Icon path={icons.mdiCheckCircleOutline} size={0.9} class="text-emerald-500" />
         {$_("PollingList.NormalPollings") || "正常"}
       </div>
-      <div class="mt-1 text-2xl font-bold text-emerald-500 dark:text-emerald-400">
+      <div class="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
         {kpi.normal.toLocaleString()}
       </div>
-      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
         {$_("Ts.Normal")}: {kpi.normal.toLocaleString()} / {kpi.total.toLocaleString()}
       </div>
     </button>
@@ -340,22 +340,22 @@
     <button
       type="button"
       onclick={() => setStateFilter("alert")}
-      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-red-400 dark:hover:border-red-500 {stateFilter === 'alert'
-        ? 'ring-2 ring-red-500/80'
+      class="text-left text-gray-800 dark:text-gray-100 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:border-rose-400 dark:hover:border-rose-500 {stateFilter === 'alert'
+        ? 'ring-2 ring-rose-500/80'
         : ''}"
     >
       <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-        <Icon path={icons.mdiAlertCircleOutline} size={0.9} class="text-red-500" />
+        <Icon path={icons.mdiAlertCircleOutline} size={0.9} class="text-rose-500" />
         {$_("PollingList.AlertPollings") || "異常 (重度/軽度)"}
       </div>
       <div
         class="mt-1 text-2xl font-bold {kpi.alertCount > 0
-          ? 'text-red-500 dark:text-red-400'
-          : 'text-emerald-500 dark:text-emerald-400'}"
+          ? 'text-rose-600 dark:text-rose-400'
+          : 'text-emerald-600 dark:text-emerald-400'}"
       >
         {kpi.alertCount.toLocaleString()}
       </div>
-      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
         {$_("Ts.High")}: {kpi.high.toLocaleString()} / {$_("Ts.Low")}: {kpi.low.toLocaleString()}
       </div>
     </button>
@@ -363,7 +363,7 @@
     <button
       type="button"
       onclick={() => setStateFilter("warn")}
-      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-amber-400 dark:hover:border-amber-500 {stateFilter === 'warn'
+      class="text-left text-gray-800 dark:text-gray-100 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:border-amber-400 dark:hover:border-amber-500 {stateFilter === 'warn'
         ? 'ring-2 ring-amber-500/80'
         : ''}"
     >
@@ -374,11 +374,11 @@
       <div
         class="mt-1 text-2xl font-bold {kpi.warnOtherCount > 0
           ? 'text-amber-500 dark:text-amber-400'
-          : 'text-emerald-500 dark:text-emerald-400'}"
+          : 'text-emerald-600 dark:text-emerald-400'}"
       >
         {kpi.warnOtherCount.toLocaleString()}
       </div>
-      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
         {$_("Ts.Warn")}: {kpi.warn.toLocaleString()} / {$_("Ts.Repair")}: {kpi.repair.toLocaleString()} / {$_("PollingList.Unknown") || "不明"}: {kpi.unknown.toLocaleString()}
       </div>
     </button>

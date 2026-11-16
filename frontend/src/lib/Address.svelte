@@ -422,14 +422,14 @@
     <button
       type="button"
       onclick={() => setStateFilter("all")}
-      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-cyan-400 dark:hover:border-cyan-500"
+      class="text-left text-gray-800 dark:text-gray-100 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:border-cyan-400 dark:hover:border-cyan-500"
     >
       <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
         <Icon path={icons.mdiIpNetworkOutline} size={0.9} class="text-cyan-500" />
         {$_("Address.TotalAddresses") || "総アドレス数"}
       </div>
-      <div class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{kpi.total.toLocaleString()}</div>
-      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+      <div class="mt-1 text-2xl font-bold text-gray-800 dark:text-gray-100">{kpi.total.toLocaleString()}</div>
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
         {$_("Address.NormalRate") || "正常率"}: {kpi.normalRate}%
       </div>
     </button>
@@ -437,7 +437,7 @@
     <button
       type="button"
       onclick={() => setStateFilter("normal")}
-      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-emerald-400 dark:hover:border-emerald-500 {stateFilter === 'normal'
+      class="text-left text-gray-800 dark:text-gray-100 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:border-emerald-400 dark:hover:border-emerald-500 {stateFilter === 'normal'
         ? 'ring-2 ring-emerald-500/80'
         : ''}"
     >
@@ -445,10 +445,10 @@
         <Icon path={icons.mdiCheckCircleOutline} size={0.9} class="text-emerald-500" />
         {$_("Address.Normal")}
       </div>
-      <div class="mt-1 text-2xl font-bold text-emerald-500 dark:text-emerald-400">
+      <div class="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
         {kpi.normal.toLocaleString()}
       </div>
-      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
         {$_("Address.Normal")}: {kpi.normal.toLocaleString()} / {kpi.total.toLocaleString()}
       </div>
     </button>
@@ -456,22 +456,22 @@
     <button
       type="button"
       onclick={() => setStateFilter("alert")}
-      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-red-400 dark:hover:border-red-500 {stateFilter === 'alert'
-        ? 'ring-2 ring-red-500/80'
+      class="text-left text-gray-800 dark:text-gray-100 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:border-rose-400 dark:hover:border-rose-500 {stateFilter === 'alert'
+        ? 'ring-2 ring-rose-500/80'
         : ''}"
     >
       <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-        <Icon path={icons.mdiAlertCircleOutline} size={0.9} class="text-red-500" />
+        <Icon path={icons.mdiAlertCircleOutline} size={0.9} class="text-rose-500" />
         {$_("Address.AlertAddresses") || "異常 (重複/変化)"}
       </div>
       <div
         class="mt-1 text-2xl font-bold {kpi.alertCount > 0
-          ? 'text-red-500 dark:text-red-400'
-          : 'text-emerald-500 dark:text-emerald-400'}"
+          ? 'text-rose-600 dark:text-rose-400'
+          : 'text-emerald-600 dark:text-emerald-400'}"
       >
         {kpi.alertCount.toLocaleString()}
       </div>
-      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
         {$_("Address.Dup")}: {kpi.dup.toLocaleString()} / {$_("Address.IPChange")}: {kpi.ipChange.toLocaleString()} / {$_("Address.MACChange")}: {kpi.macChange.toLocaleString()}
       </div>
     </button>
@@ -479,7 +479,7 @@
     <button
       type="button"
       onclick={() => setStateFilter("unregistered")}
-      class="text-left text-gray-900 dark:text-white cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-2.5 shadow-sm transition hover:border-amber-400 dark:hover:border-amber-500 {stateFilter === 'unregistered'
+      class="text-left text-gray-800 dark:text-gray-100 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:border-amber-400 dark:hover:border-amber-500 {stateFilter === 'unregistered'
         ? 'ring-2 ring-amber-500/80'
         : ''}"
     >
@@ -490,11 +490,11 @@
       <div
         class="mt-1 text-2xl font-bold {kpi.unregistered > 0
           ? 'text-amber-500 dark:text-amber-400'
-          : 'text-emerald-500 dark:text-emerald-400'}"
+          : 'text-emerald-600 dark:text-emerald-400'}"
       >
         {kpi.unregistered.toLocaleString()}
       </div>
-      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
         {$_("Address.Registered") || "登録済"}: {kpi.registered.toLocaleString()} / {$_("Address.Vendor")}: {kpi.uniqueVendors.toLocaleString()}
       </div>
     </button>
