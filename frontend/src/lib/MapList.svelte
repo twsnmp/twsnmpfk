@@ -69,9 +69,11 @@
       ],
     });
     networkTable.on("select", () => {
+      if (!networkTable) return;
       selectedCount = networkTable.rows({ selected: true }).count();
     });
     networkTable.on("deselect", () => {
+      if (!networkTable) return;
       selectedCount = networkTable.rows({ selected: true }).count();
     });
     wait = false;
@@ -150,9 +152,11 @@
       ],
     });
     drawItemTable.on("select", () => {
+      if (!drawItemTable) return;
       selectedCount = drawItemTable.rows({ selected: true }).count();
     });
     drawItemTable.on("deselect", () => {
+      if (!drawItemTable) return;
       selectedCount = drawItemTable.rows({ selected: true }).count();
     });
     wait = false;
@@ -198,6 +202,12 @@
         });
       }
     }
+    if (lineTable && DataTable.isDataTable("#lineTable")) {
+      lineTable.off("select");
+      lineTable.off("deselect");
+      lineTable.destroy();
+      lineTable = undefined;
+    }
     lineTable = new DataTable("#lineTable", {
       destroy: true,
       data: lines,
@@ -229,9 +239,11 @@
       ],
     });
     lineTable.on("select", () => {
+      if (!lineTable) return;
       selectedCount = lineTable.rows({ selected: true }).count();
     });
     lineTable.on("deselect", () => {
+      if (!lineTable) return;
       selectedCount = lineTable.rows({ selected: true }).count();
     });
     wait = false;

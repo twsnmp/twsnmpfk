@@ -130,6 +130,8 @@
       return;
     }
     if (table && DataTable.isDataTable("#metricTable")) {
+      table.off("select");
+      table.off("deselect");
       table.destroy();
       table = undefined;
     }
@@ -149,12 +151,14 @@
       },
     });
     table.on("select", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
       if (selectedCount == 1) {
         showHistogram();
       }
     });
     table.on("deselect", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
       if (selectedCount < 1)  {
         showTimeChart();

@@ -183,6 +183,12 @@
   const showNetworkTable = async () => {
     if (isNodeMode) return;
     await tick();
+    if (networkTable && DataTable.isDataTable("#networkTable")) {
+      networkTable.off("select");
+      networkTable.off("deselect");
+      networkTable.destroy();
+      networkTable = undefined;
+    }
     networkSelectedCount = 0;
     networkTable = new DataTable("#networkTable", {
       destroy: true,
@@ -199,9 +205,11 @@
       },
     });
     networkTable.on("select", () => {
+      if (!networkTable) return;
       networkSelectedCount = networkTable.rows({ selected: true }).count();
     });
     networkTable.on("deselect", () => {
+      if (!networkTable) return;
       networkSelectedCount = networkTable.rows({ selected: true }).count();
     });
   };
@@ -247,6 +255,12 @@
 
   const showLineTable = async () => {
     await tick();
+    if (lineTable && DataTable.isDataTable("#lineTable")) {
+      lineTable.off("select");
+      lineTable.off("deselect");
+      lineTable.destroy();
+      lineTable = undefined;
+    }
     lineSelectedCount = 0;
     lineTable = new DataTable("#lineTable", {
       destroy: true,
@@ -263,9 +277,11 @@
       },
     });
     lineTable.on("select", () => {
+      if (!lineTable) return;
       lineSelectedCount = lineTable.rows({ selected: true }).count();
     });
     lineTable.on("deselect", () => {
+      if (!lineTable) return;
       lineSelectedCount = lineTable.rows({ selected: true }).count();
     });
   };

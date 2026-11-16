@@ -99,6 +99,12 @@
 
   const showTable = async () => {
     await tick();
+    if (table && DataTable.isDataTable("#lineTable")) {
+      table.off("select");
+      table.off("deselect");
+      table.destroy();
+      table = undefined;
+    }
     selectedCount = 0;
     table = new DataTable("#lineTable", {
       destroy: true,
@@ -116,11 +122,14 @@
       },
     });
     table.on("select", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
     });
     table.on("deselect", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
     });
+    selectedCount = table.rows({ selected: true }).count();
   };
   //
   const lineDelete =  async () => {

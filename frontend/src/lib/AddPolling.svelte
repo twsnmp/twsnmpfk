@@ -39,8 +39,15 @@
 
   const showTable = async () => {
     await tick();
+    if (tmpTable && DataTable.isDataTable("#tmpTable")) {
+      tmpTable.off("select");
+      tmpTable.off("deselect");
+      tmpTable.destroy();
+      tmpTable = undefined;
+    }
     selectedCount = 0;
     tmpTable = new DataTable("#tmpTable", {
+      destroy: true,
       columns: columns,
       data: await GetPollingTemplates(),
       stateSave: true,
@@ -51,11 +58,14 @@
       },
     });
     tmpTable.on("select", () => {
+      if (!tmpTable) return;
       selectedCount = tmpTable.rows({ selected: true }).count();
     });
     tmpTable.on("deselect", () => {
+      if (!tmpTable) return;
       selectedCount = tmpTable.rows({ selected: true }).count();
     });
+    selectedCount = tmpTable.rows({ selected: true }).count();
   };
 
   const add = async () => {

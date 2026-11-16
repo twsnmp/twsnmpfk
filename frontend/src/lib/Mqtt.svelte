@@ -90,6 +90,8 @@
         table.draw();
         return;
       }
+      table.off("select");
+      table.off("deselect");
       table.destroy();
       table = undefined;
       el.innerHTML = "";
@@ -111,11 +113,14 @@
       },
     });
     table.on("select", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
     });
     table.on("deselect", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
     });
+    selectedCount = table.rows({ selected: true }).count();
     table.on('click', 'tbody td.dt-control', function (e: any) {
       let tr = e.target.closest('tr');
       let row = table.row(tr);

@@ -102,6 +102,8 @@
       return;
     }
     if (table && DataTable.isDataTable("#aiListTable")) {
+      table.off("select");
+      table.off("deselect");
       table.destroy();
       table = undefined;
     }
@@ -120,11 +122,18 @@
       },
     });
     table.on("select", () => {
+      if (!table) {
+        return;
+      }
       selectedCount = table.rows({ selected: true }).count();
     });
     table.on("deselect", () => {
+      if (!table) {
+        return;
+      }
       selectedCount = table.rows({ selected: true }).count();
     });
+    selectedCount = table.rows({ selected: true }).count();
   };
 
   const refresh = async () => {

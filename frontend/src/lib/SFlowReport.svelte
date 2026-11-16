@@ -234,6 +234,8 @@
     const el = document.getElementById("topTable");
     if (!el) return;
     if (tableTop && DataTable.isDataTable("#topTable")) {
+      tableTop.off("select");
+      tableTop.off("deselect");
       tableTop.destroy();
       tableTop = undefined;
     }
@@ -253,11 +255,14 @@
       },
     });
     tableTop.on("select", () => {
+      if (!tableTop) return;
       selectedCountTop = tableTop.rows({ selected: true }).count();
     });
     tableTop.on("deselect", () => {
+      if (!tableTop) return;
       selectedCountTop = tableTop.rows({ selected: true }).count();
     });
+    selectedCountTop = tableTop.rows({ selected: true }).count();
   };
 
   const showTopList = async () => {
@@ -359,6 +364,8 @@
     const el = document.getElementById("flowTable");
     if (!el) return;
     if (tableFlow && DataTable.isDataTable("#flowTable")) {
+      tableFlow.off("select");
+      tableFlow.off("deselect");
       tableFlow.destroy();
       tableFlow = undefined;
     }
@@ -377,9 +384,11 @@
       },
     });
     tableFlow.on("select", () => {
+      if (!tableFlow) return;
       selectedCountFlow = tableFlow.rows({ selected: true }).count();
     });
     tableFlow.on("deselect", () => {
+      if (!tableFlow) return;
       selectedCountFlow = tableFlow.rows({ selected: true }).count();
     });
   }

@@ -100,6 +100,8 @@
       return;
     }
     if (table && DataTable.isDataTable("#sFlowTable")) {
+      table.off("select");
+      table.off("deselect");
       table.clear();
       table.destroy(true);
       table = undefined;
@@ -122,13 +124,17 @@
       },
     });
     table.on("select", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
       updateAddrList();
     });
     table.on("deselect", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
       updateAddrList();
     });
+    selectedCount = table.rows({ selected: true }).count();
+    updateAddrList();
   };
 
   const updateAddrList = () => {

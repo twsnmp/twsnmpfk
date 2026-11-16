@@ -666,6 +666,12 @@
   const showMissingDialog = async () => {
     showMissing = true;
     await tick();
+    if (missingTable && DataTable.isDataTable("#missingTable")) {
+      missingTable.off("select");
+      missingTable.off("deselect");
+      missingTable.destroy();
+      missingTable = undefined;
+    }
     missingTable = new DataTable("#missingTable", {
       destroy: true,
       pageLength: 10,
@@ -678,11 +684,14 @@
       },
     });
     missingTable.on("select", () => {
+      if (!missingTable) return;
       selectedMissingCount = missingTable.rows({ selected: true }).count();
     });
     missingTable.on("deselect", () => {
+      if (!missingTable) return;
       selectedMissingCount = missingTable.rows({ selected: true }).count();
     });
+    selectedMissingCount = missingTable.rows({ selected: true }).count();
   };
 
   const getTreePath = (name: string, list: any): string[] | undefined => {

@@ -66,6 +66,8 @@
       return;
     }
     if (table && DataTable.isDataTable("#eventLogTable")) {
+      table.off("select");
+      table.off("deselect");
       table.destroy();
       table = undefined;
     }
@@ -84,7 +86,8 @@
         style: "single",
       },
     });
-    table.on("select", () => {
+    const updateSelection = () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
       const selData = table.rows({ selected: true }).data();
       if (selData && selData.length > 0) {
@@ -92,16 +95,10 @@
       } else {
         selectedLog = null;
       }
-    });
-    table.on("deselect", () => {
-      selectedCount = table.rows({ selected: true }).count();
-      const selData = table.rows({ selected: true }).data();
-      if (selData && selData.length > 0) {
-        selectedLog = selData[0];
-      } else {
-        selectedLog = null;
-      }
-    });
+    };
+    table.on("select", updateSelection);
+    table.on("deselect", updateSelection);
+    updateSelection();
   };
 
   const refresh = async () => {

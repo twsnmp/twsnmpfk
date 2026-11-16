@@ -36,6 +36,12 @@
     if (!document.getElementById("nodePollingTable")) {
       return;
     }
+    if (table && DataTable.isDataTable("#nodePollingTable")) {
+      table.off("select");
+      table.off("deselect");
+      table.destroy();
+      table = undefined;
+    }
     selectedCount = 0;
     table = new DataTable("#nodePollingTable", {
       destroy: true,
@@ -52,11 +58,14 @@
       },
     });
     table.on("select", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
     });
     table.on("deselect", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
     });
+    selectedCount = table.rows({ selected: true }).count();
   };
 
   const refresh = async () => {

@@ -148,6 +148,8 @@
       return;
     }
     if (arpTable && DataTable.isDataTable("#arpTable")) {
+      arpTable.off("select");
+      arpTable.off("deselect");
       arpTable.destroy();
       arpTable = undefined;
     }
@@ -164,7 +166,8 @@
         style: "multi+shift",
       },
     });
-    arpTable.on("select", () => {
+    const updateArpSelection = () => {
+      if (!arpTable) return;
       selectedIP = selectedNodeID = "";
       const d = arpTable.rows({ selected: true }).data();
       selectedCount = d.length;
@@ -173,18 +176,14 @@
       }
       if (d[0].NodeID) {
         selectedNodeID = d[0].NodeID;
-      } 
+      }
       if (d[0].IP) {
         selectedIP = d[0].IP;
       }
-    });
-    arpTable.on("deselect", () => {
-      const c = arpTable.rows({ selected: true }).count();
-      if (c != 1) {
-        selectedIP = selectedNodeID = "";
-      }
-      selectedCount = c;
-    });
+    };
+    arpTable.on("select", updateArpSelection);
+    arpTable.on("deselect", updateArpSelection);
+    updateArpSelection();
   };
 
   const renderNode = (id:any) => {

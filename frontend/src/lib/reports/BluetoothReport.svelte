@@ -114,6 +114,8 @@
         table.draw();
         return;
       }
+      table.off("select");
+      table.off("deselect");
       table.destroy();
       table = undefined;
       el.innerHTML = "";
@@ -134,17 +136,18 @@
       },
     });
 
-    table.on("select", () => {
+    const updateSelection = () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
       const selData = table.rows({ selected: true }).data();
       selected = selData && selData.length > 0 ? selData[0] : null;
-    });
+    };
 
-    table.on("deselect", () => {
-      selectedCount = table.rows({ selected: true }).count();
-      const selData = table.rows({ selected: true }).data();
-      selected = selData && selData.length > 0 ? selData[0] : null;
-    });
+    table.on("select", updateSelection);
+
+    table.on("deselect", updateSelection);
+
+    updateSelection();
 
     table.on("dblclick", "tbody tr", () => {
       if (selected) {

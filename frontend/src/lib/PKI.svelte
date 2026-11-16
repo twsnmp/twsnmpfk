@@ -195,6 +195,8 @@
       return;
     }
     if (table && DataTable.isDataTable("#certListTable")) {
+      table.off("select");
+      table.off("deselect");
       table.destroy();
       table = undefined;
     }
@@ -213,25 +215,38 @@
       },
     });
     table.on("select", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
-      const data = table.rows({ selected: true }).data();
+      const selData = table.rows({ selected: true }).data();
       if (
-        data.length == 1 &&
-        data[0].Type != "system" &&
-        data[0].Statue != "revoked"
+        selData.length == 1 &&
+        selData[0].Type != "system" &&
+        selData[0].Statue != "revoked"
       ) {
-        selectedForRevoke = data[0].ID;
+        selectedForRevoke = selData[0].ID;
       } else {
         selectedForRevoke = "";
       }
     });
     table.on("deselect", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
       if (selectedCount != 1) {
         selectedForRevoke = "";
         selectedID = "";
       }
     });
+    selectedCount = table.rows({ selected: true }).count();
+    if (selectedCount == 1) {
+      const selData = table.rows({ selected: true }).data();
+      if (
+        selData.length == 1 &&
+        selData[0].Type != "system" &&
+        selData[0].Statue != "revoked"
+      ) {
+        selectedForRevoke = selData[0].ID;
+      }
+    }
   };
 
   const refresh = async () => {

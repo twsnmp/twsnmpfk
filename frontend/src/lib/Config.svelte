@@ -603,6 +603,12 @@
       makeIconList();
       filterIconList();
     }
+    if (iconTable && DataTable.isDataTable("#iconTable")) {
+      iconTable.off("select");
+      iconTable.off("deselect");
+      iconTable.destroy();
+      iconTable = undefined;
+    }
     selectedIcon = 0;
     iconTable = new DataTable("#iconTable", {
       destroy: true,
@@ -626,11 +632,14 @@
       },
     });
     iconTable.on("select", () => {
+      if (!iconTable) return;
       selectedIcon = iconTable.rows({ selected: true }).count();
     });
     iconTable.on("deselect", () => {
+      if (!iconTable) return;
       selectedIcon = iconTable.rows({ selected: true }).count();
     });
+    selectedIcon = iconTable.rows({ selected: true }).count();
   };
 
   const addIcon = () => {

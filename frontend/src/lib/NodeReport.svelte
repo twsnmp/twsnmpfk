@@ -321,6 +321,12 @@
     if (!document.getElementById("portTable")) {
       return;
     }
+    if (portTable && DataTable.isDataTable("#portTable")) {
+      portTable.off("select");
+      portTable.off("deselect");
+      portTable.destroy();
+      portTable = undefined;
+    }
     portTable = new DataTable("#portTable", {
       destroy: true,
       stateSave: true,
@@ -406,11 +412,14 @@
       ],
     });
     portTable.on("select", () => {
+      if (!portTable) return;
       selectedPortCount = portTable.rows({ selected: true }).count();
     });
     portTable.on("deselect", () => {
+      if (!portTable) return;
       selectedPortCount = portTable.rows({ selected: true }).count();
     });
+    selectedPortCount = portTable.rows({ selected: true }).count();
   };
 
   let ports: any;

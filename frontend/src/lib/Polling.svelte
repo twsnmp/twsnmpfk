@@ -109,6 +109,12 @@
 
   const showPollingList = async () => {
     await tick();
+    if (pollingTable && DataTable.isDataTable("#pollingTable")) {
+      pollingTable.off("select");
+      pollingTable.off("deselect");
+      pollingTable.destroy();
+      pollingTable = undefined;
+    }
     selectedCount = 0;
     pollingTable = new DataTable("#pollingTable", {
       destroy: true,
@@ -148,11 +154,14 @@
       ],
     });
     pollingTable.on("select", () => {
+      if (!pollingTable) return;
       selectedCount = pollingTable.rows({ selected: true }).count();
     });
     pollingTable.on("deselect", () => {
+      if (!pollingTable) return;
       selectedCount = pollingTable.rows({ selected: true }).count();
     });
+    selectedCount = pollingTable.rows({ selected: true }).count();
   };
 
   const select = () => {

@@ -90,6 +90,8 @@
       return;
     }
     if (table && DataTable.isDataTable("#syslogTable")) {
+      table.off("select");
+      table.off("deselect");
       table.destroy();
       table = undefined;
     }
@@ -108,13 +110,17 @@
       },
     });
     table.on("select", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
       updateAddrList();
     });
     table.on("deselect", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
       updateAddrList();
     });
+    selectedCount = table.rows({ selected: true }).count();
+    updateAddrList();
   };
 
   const updateAddrList = () => {

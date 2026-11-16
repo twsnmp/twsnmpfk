@@ -136,6 +136,12 @@
 
   const showTable = async () => {
     await tick();
+    if (table && DataTable.isDataTable("#portTable")) {
+      table.off("select");
+      table.off("deselect");
+      table.destroy();
+      table = undefined;
+    }
     selectedCount = 0;
     data = [];
     for (const p of network.Ports) {
@@ -157,11 +163,14 @@
       },
     });
     table.on("select", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
     });
     table.on("deselect", () => {
+      if (!table) return;
       selectedCount = table.rows({ selected: true }).count();
     });
+    selectedCount = table.rows({ selected: true }).count();
   };
   const portDelete = () => {
     if (selectedCount != 1) {
