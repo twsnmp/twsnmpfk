@@ -449,13 +449,98 @@
     }
 
     let earthAlerts = 0;
+    let latestPressure: string = "-";
+    let latestPressureDiff: string = "-";
+    let maxCAPE: number | null = null;
+    let maxQuakeInt: number | null = null;
+    let maxQuakeMag: number | null = null;
+    let minQuakeDist: number | null = null;
+    let totalStrikes = 0;
+    let totalCloseStrikes = 0;
+    let minLidenDist: number | null = null;
+    let hasLiden = false;
+    let latestFlare = "-";
+    let latestKp: string = "-";
+    let latestGScale = 0;
+    let hasSpace = false;
+
     for (const ea of earths) {
       if (ea.State && ea.State !== "normal" && ea.State !== "repair") {
         earthAlerts++;
       }
+      const last = getLastData(ea);
+      if (!last) continue;
+      if (ea.Mode === "weather") {
+        if (last.Pressure != null && last.Pressure > 0) {
+          latestPressure = last.Pressure.toFixed(1);
+        }
+        if (last.PressureDiff3h != null) {
+          latestPressureDiff = (last.PressureDiff3h >= 0 ? "+" : "") + last.PressureDiff3h.toFixed(1);
+        }
+        if (last.CAPE != null && (maxCAPE === null || last.CAPE > maxCAPE)) {
+          maxCAPE = Math.round(last.CAPE);
+        }
+      } else if (ea.Mode === "quake") {
+        const qInt = last.Intensity ?? 0;
+        const qMag = last.Magnitude ?? 0;
+        if (maxQuakeInt === null || qInt > maxQuakeInt) {
+          maxQuakeInt = qInt;
+        }
+        if (maxQuakeMag === null || qMag > maxQuakeMag) {
+          maxQuakeMag = qMag;
+        }
+        if (last.DistanceKm != null && last.DistanceKm < 9999) {
+          if (minQuakeDist === null || last.DistanceKm < minQuakeDist) {
+            minQuakeDist = last.DistanceKm;
+          }
+        }
+      } else if (ea.Mode === "liden") {
+        hasLiden = true;
+        totalStrikes += last.StrikeCount ?? 0;
+        totalCloseStrikes += last.CloseCount ?? 0;
+        if (last.NearestKm != null && last.NearestKm < 9999) {
+          if (minLidenDist === null || last.NearestKm < minLidenDist) {
+            minLidenDist = last.NearestKm;
+          }
+        }
+      } else if (ea.Mode === "space") {
+        hasSpace = true;
+        if (last.FlareClass) {
+          latestFlare = last.FlareClass;
+        }
+        if (last.KpIndex != null) {
+          latestKp = last.KpIndex.toFixed(1);
+        }
+        if (last.GScale != null) {
+          latestGScale = last.GScale;
+        }
+      }
     }
 
-    return { totalSensors, avgTemp, avgHum, powerOnCount, powerOverCount, movingActive, lightActive, earthAlerts };
+    return {
+      totalSensors,
+      avgTemp,
+      avgHum,
+      powerOnCount,
+      powerOverCount,
+      movingActive,
+      lightActive,
+      earthAlerts,
+      latestPressure,
+      latestPressureDiff,
+      maxCAPE,
+      maxQuakeInt,
+      maxQuakeMag,
+      minQuakeDist,
+      totalStrikes,
+      totalCloseStrikes,
+      minLidenDist,
+      hasLiden,
+      latestFlare,
+      latestKp,
+      latestGScale,
+      hasSpace,
+    };
   });
 
   const detailChartOption = $derived.by((): echarts.EChartsOption | null => {
@@ -781,6 +866,63 @@
       </div>
     </div>
   </div>
+
+  {#if earths.length > 0}
+    <!-- Earth / Disaster / Space Weather KPI Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+          <Icon path={icons.mdiWeatherPartlyCloudy} size={0.9} class="text-sky-500" />
+          {$_("report.earthKpiWeather") || "気象・気圧 / CAPE"}
+        </div>
+        <div class="mt-1 text-xl font-bold text-sky-600 dark:text-sky-400">
+          {stats.latestPressure} hPa
+        </div>
+        <div class="mt-1 text-[11px] text-gray-400">
+          3h: {stats.latestPressureDiff} hPa / CAPE: {stats.maxCAPE ?? "-"} J/kg
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+          <Icon path={icons.mdiPulse} size={0.9} class="text-rose-500" />
+          {$_("report.earthKpiQuake") || "地震 (最大震度 / M)"}
+        </div>
+        <div class="mt-1 text-xl font-bold {(stats.maxQuakeInt ?? 0) >= 3 ? 'text-rose-600 dark:text-rose-400' : 'text-gray-800 dark:text-gray-100'}">
+          {stats.maxQuakeInt != null ? stats.maxQuakeInt.toFixed(1) : "-"} / M{stats.maxQuakeMag != null ? stats.maxQuakeMag.toFixed(1) : "-"}
+        </div>
+        <div class="mt-1 text-[11px] text-gray-400">
+          Min Dist: {stats.minQuakeDist != null ? `${stats.minQuakeDist.toFixed(1)} km` : "-"}
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+          <Icon path={icons.mdiWeatherLightning} size={0.9} class="text-amber-500" />
+          {$_("report.earthKpiLiden") || "落雷 (周辺回数 / 最接近)"}
+        </div>
+        <div class="mt-1 text-xl font-bold {stats.totalCloseStrikes > 0 ? 'text-rose-600 dark:text-rose-400' : stats.totalStrikes > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-800 dark:text-gray-100'}">
+          {stats.hasLiden ? `${stats.totalStrikes} (Close: ${stats.totalCloseStrikes})` : "-"}
+        </div>
+        <div class="mt-1 text-[11px] text-gray-400">
+          Nearest: {stats.minLidenDist != null ? `${stats.minLidenDist.toFixed(1)} km` : "-"}
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+          <Icon path={icons.mdiWhiteBalanceSunny} size={0.9} class="text-purple-500" />
+          {$_("report.earthKpiSpace") || "宇宙天気 (フレア / Kp指数)"}
+        </div>
+        <div class="mt-1 text-xl font-bold text-purple-600 dark:text-purple-400">
+          {stats.hasSpace ? `${stats.latestFlare} / Kp ${stats.latestKp}` : "-"}
+        </div>
+        <div class="mt-1 text-[11px] text-gray-400">
+          Storm Scale: {stats.hasSpace ? `G${stats.latestGScale}` : "-"} / Alerts: {stats.earthAlerts}
+        </div>
+      </div>
+    </div>
+  {/if}
 
   <!-- Sub-Tabs Switcher -->
   <div class="flex items-center gap-2 pb-1">
