@@ -73,6 +73,8 @@ func GetAutoPollings(n *datastore.NodeEnt, pt *datastore.PollingTemplateEnt) []*
 			return getAutoSnmpIFPollings(n, pt)
 		}
 		return getAutoSnmpPollings(n, pt)
+	case "env":
+		return getAutoEnvPollings(n, pt)
 	default:
 		log.Printf("polling not supported type=%s", pt.Type)
 	}
@@ -336,6 +338,8 @@ func doPolling(pe *datastore.PollingEnt) {
 		doPollingSTUN(pe)
 	case "otel":
 		doPollingOTel(pe)
+	case "env":
+		doPollingEnv(pe)
 	}
 	datastore.UpdatePolling(pe, false)
 	if pe.LogMode == datastore.LogModeAlways || pe.LogMode == datastore.LogModeAI || (pe.LogMode == datastore.LogModeOnChange && oldState != pe.State) {
@@ -358,6 +362,13 @@ func setPollingState(pe *datastore.PollingEnt, newState string) {
 			newState = l
 		}
 		delete(pe.Result, "_level")
+	}
+	var summaryStr string
+	if v, ok := pe.Result["_summary"]; ok {
+		if s, ok := v.(string); ok {
+			summaryStr = s
+		}
+		delete(pe.Result, "_summary")
 	}
 	switch newState {
 	case "normal":
@@ -400,6 +411,9 @@ func setPollingState(pe *datastore.PollingEnt, newState string) {
 		}
 		datastore.SetNodeStateChanged(pe.NodeID)
 		eventMsg := fmt.Sprintf(i18n.Trans("Change polling state:%s(%s)"), pe.Name, pe.Type)
+		if summaryStr != "" {
+			eventMsg += fmt.Sprintf(" [%s]", summaryStr)
+		}
 		if pe.State == "repair" && downtimeSec > 0 {
 			eventMsg += fmt.Sprintf(" [%s: %s]", i18n.Trans("Downtime"), formatDowntime(downtimeSec))
 		}

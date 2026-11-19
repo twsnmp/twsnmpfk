@@ -223,6 +223,8 @@ func (a *App) SetLogReportName(kind, id, name string) error {
 		kind = logreport.KindPowerMonitor
 	case "motion":
 		kind = logreport.KindMotionSensor
+	case "earth":
+		kind = logreport.KindEarthEnv
 	case "bluetooth":
 		kind = logreport.KindBlueDevice
 	}

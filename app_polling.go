@@ -178,6 +178,13 @@ func (a *App) GetAutoPollings(node string, id int) []*datastore.PollingEnt {
 	if pt == nil {
 		return nil
 	}
+	if pt.Type == "env" {
+		var n *datastore.NodeEnt
+		if node != "" {
+			n = datastore.GetNode(node)
+		}
+		return polling.GetAutoPollings(n, pt)
+	}
 	if node != "" && pt.AutoParam != "" {
 		n := datastore.GetNode(node)
 		if n == nil {

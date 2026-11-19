@@ -95,6 +95,36 @@
     if (v === "count") {
       return { format: "COUNT=%.0f", scale: 1.0, desc: "回数" };
     }
+    if (v === "pressure" || v === "pressure_msl") {
+      return { format: "%.1f hPa", scale: 1.0, desc: "気圧 (hPa)" };
+    }
+    if (v === "pressure_diff_3h") {
+      return { format: "%+.1f hPa/3h", scale: 1.0, desc: "3時間気圧変化 (hPa)" };
+    }
+    if (v === "cape") {
+      return { format: "%.0f J/kg", scale: 1.0, desc: "大気不安定度 (CAPE)" };
+    }
+    if (v === "wind" || v === "wind_gust") {
+      return { format: "%.1f m/s", scale: 1.0, desc: "風速 (m/s)" };
+    }
+    if (v === "kp_index") {
+      return { format: "Kp %.1f", scale: 1.0, desc: "地磁気嵐 Kp指数" };
+    }
+    if (v === "flare_score") {
+      return { format: "Score %.2f", scale: 1.0, desc: "太陽フレア強度スコア" };
+    }
+    if (v === "strike_count" || v === "close_count") {
+      return { format: "%.0f 回", scale: 1.0, desc: "落雷数" };
+    }
+    if (v === "nearest_km" || v === "distance_km") {
+      return { format: "%.1f km", scale: 1.0, desc: "距離 (km)" };
+    }
+    if (v === "intensity" || v === "max_intensity") {
+      return { format: "震度 %.1f", scale: 1.0, desc: "地震震度" };
+    }
+    if (v === "magnitude") {
+      return { format: "M%.1f", scale: 1.0, desc: "マグニチュード" };
+    }
     return null;
   };
 

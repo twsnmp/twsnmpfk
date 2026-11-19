@@ -45,6 +45,7 @@ const (
 	KindTwAgentFIM   = "twAgentFIM"
 	KindTwAgentSCA   = "twAgentSCA"
 	KindTwAgentTCP   = "twAgentTCP"
+	KindEarthEnv     = "earthEnv"
 )
 
 // SyslogTag returns the syslog tag emitted by the source.
@@ -90,7 +91,7 @@ func AllKinds() []string {
 	for _, s := range []string{SourceWifiScan, SourceBlueScan, SourcePcap, SourceWinLog, SourceTwAgent} {
 		ret = append(ret, KindsOf(s)...)
 	}
-	ret = append(ret, KindFlow, KindServer, KindFumble, KindSyslogStats, KindTrapStats)
+	ret = append(ret, KindFlow, KindServer, KindFumble, KindSyslogStats, KindTrapStats, KindEarthEnv)
 	return ret
 }
 
@@ -178,7 +179,7 @@ type EnvDataEnt struct {
 	Battery            int     `json:"Battery"`
 }
 
-// EnvMonitorEnt is a Bluetooth environment sensor (OMRON / SwitchBot / Inkbird).
+// EnvMonitorEnt is a Bluetooth environment sensor (OMRON / SwitchBot / Inkbird) or Open-Meteo virtual sensor.
 type EnvMonitorEnt struct {
 	ID        string       `json:"ID"`
 	Host      string       `json:"Host"`
@@ -188,6 +189,61 @@ type EnvMonitorEnt struct {
 	EnvData   []EnvDataEnt `json:"EnvData"`
 	FirstTime int64        `json:"FirstTime"`
 	LastTime  int64        `json:"LastTime"`
+}
+
+// EarthEnvDataEnt holds one time-series sample for open environmental/disaster/space API polling.
+type EarthEnvDataEnt struct {
+	Time           int64   `json:"Time"`
+	State          string  `json:"State"`
+	// Weather (Open-Meteo)
+	Temp           float64 `json:"Temp,omitempty"`
+	Humidity       float64 `json:"Humidity,omitempty"`
+	Pressure       float64 `json:"Pressure,omitempty"`
+	PressureMSL    float64 `json:"PressureMSL,omitempty"`
+	PressureDiff3h float64 `json:"PressureDiff3h,omitempty"`
+	CAPE           float64 `json:"CAPE,omitempty"`
+	WindSpeed      float64 `json:"WindSpeed,omitempty"`
+	WindGust       float64 `json:"WindGust,omitempty"`
+	Precipitation  float64 `json:"Precipitation,omitempty"`
+	WeatherCode    int     `json:"WeatherCode,omitempty"`
+	// Quake (P2P / JMA)
+	Intensity      float64 `json:"Intensity,omitempty"`
+	MaxIntensity   float64 `json:"MaxIntensity,omitempty"`
+	Magnitude      float64 `json:"Magnitude,omitempty"`
+	DepthKm        float64 `json:"DepthKm,omitempty"`
+	DistanceKm     float64 `json:"DistanceKm,omitempty"`
+	Hypocenter     string  `json:"Hypocenter,omitempty"`
+	QuakeTime      string  `json:"QuakeTime,omitempty"`
+	// Liden (JMA Lightning)
+	StrikeCount    int     `json:"StrikeCount,omitempty"`
+	CloseCount     int     `json:"CloseCount,omitempty"`
+	CGCount        int     `json:"CGCount,omitempty"`
+	ICCount        int     `json:"ICCount,omitempty"`
+	NearestKm      float64 `json:"NearestKm,omitempty"`
+	// Space Weather (NOAA SWPC)
+	XrayFlux       float64 `json:"XrayFlux,omitempty"`
+	FlareScore     float64 `json:"FlareScore,omitempty"`
+	FlareClass     string  `json:"FlareClass,omitempty"`
+	KpIndex        float64 `json:"KpIndex,omitempty"`
+	GScale         int     `json:"GScale,omitempty"`
+}
+
+// EarthEnvMonitorEnt represents an open API environmental/disaster/space weather monitor instance.
+type EarthEnvMonitorEnt struct {
+	ID        string            `json:"ID"`
+	PollingID string            `json:"PollingID"`
+	NodeID    string            `json:"NodeID"`
+	Host      string            `json:"Host"`
+	Address   string            `json:"Address"`
+	Mode      string            `json:"Mode"` // "quake" | "liden" | "space" | "weather"
+	Name      string            `json:"Name"`
+	Location  string            `json:"Location"`
+	Summary   string            `json:"Summary"`
+	State     string            `json:"State"`
+	Count     int               `json:"Count"`
+	Data      []EarthEnvDataEnt `json:"Data"`
+	FirstTime int64             `json:"FirstTime"`
+	LastTime  int64             `json:"LastTime"`
 }
 
 // PowerMonitorDataEnt is one smart plug sample.

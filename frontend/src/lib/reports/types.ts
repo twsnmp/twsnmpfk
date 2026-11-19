@@ -106,6 +106,55 @@ export interface MotionSensorEnt {
   Count: number;
 }
 
+export interface EarthEnvDataEnt {
+  Time: number;
+  State?: string;
+  Temp?: number;
+  Humidity?: number;
+  Pressure?: number;
+  PressureMSL?: number;
+  PressureDiff3h?: number;
+  CAPE?: number;
+  WindSpeed?: number;
+  WindGust?: number;
+  Precipitation?: number;
+  WeatherCode?: number;
+  Intensity?: number;
+  MaxIntensity?: number;
+  Magnitude?: number;
+  DepthKm?: number;
+  DistanceKm?: number;
+  Hypocenter?: string;
+  QuakeTime?: string;
+  StrikeCount?: number;
+  CloseCount?: number;
+  CGCount?: number;
+  ICCount?: number;
+  NearestKm?: number;
+  XrayFlux?: number;
+  FlareScore?: number;
+  FlareClass?: string;
+  KpIndex?: number;
+  GScale?: number;
+}
+
+export interface EarthEnvMonitorEnt {
+  ID?: string;
+  PollingID?: string;
+  NodeID?: string;
+  Host: string;
+  Address: string;
+  Mode: string;
+  Name: string;
+  Location?: string;
+  Summary?: string;
+  State?: string;
+  Count: number;
+  Data: EarthEnvDataEnt[];
+  FirstTime: number;
+  LastTime: number;
+}
+
 export interface EtherTypeEnt {
   ID?: string;
   Host: string;

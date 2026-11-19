@@ -90,6 +90,7 @@ export const typeList = [
   { name: 'EMAIL', value: 'email' },
   { name: 'STUN', value: 'stun' },
   { name: 'OpenTelemetry', value: 'otel' },
+  { name: 'Env / Disaster API', value: 'env' },
 ]
 
 const pollingTypeMap = new Map();

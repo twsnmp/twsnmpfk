@@ -106,6 +106,20 @@ func formatPollingResultForLLM(res map[string]interface{}) string {
 				formatted = append(formatted, fmt.Sprintf("%s: %.2f Mbps", k, vf))
 			case "days":
 				formatted = append(formatted, fmt.Sprintf("%s: %.0f days", k, vf))
+			case "pressure", "pressure_msl", "pressure_diff_3h":
+				formatted = append(formatted, fmt.Sprintf("%s: %.1f hPa", k, vf))
+			case "temp":
+				formatted = append(formatted, fmt.Sprintf("%s: %.1f C", k, vf))
+			case "humidity":
+				formatted = append(formatted, fmt.Sprintf("%s: %.1f %%", k, vf))
+			case "distance_km", "nearest_km", "depth_km":
+				formatted = append(formatted, fmt.Sprintf("%s: %.1f km", k, vf))
+			case "cape":
+				formatted = append(formatted, fmt.Sprintf("%s: %.0f J/kg", k, vf))
+			case "wind", "wind_gust":
+				formatted = append(formatted, fmt.Sprintf("%s: %.1f m/s", k, vf))
+			case "xray_flux":
+				formatted = append(formatted, fmt.Sprintf("%s: %.2e W/m^2", k, vf))
 			default:
 				formatted = append(formatted, fmt.Sprintf("%s: %v", k, v))
 			}
@@ -682,7 +696,7 @@ func (a *App) LLMAssistPolling(nodeID string, prompt string) *LLMAssistPollingRe
 	var nodeInfoSB strings.Builder
 	if nodeID != "" {
 		if n := datastore.GetNode(nodeID); n != nil {
-			nodeInfoSB.WriteString(fmt.Sprintf("Name: %s, IP: %s, Vendor: %s, Descr: %s, SnmpMode: %s\n", n.Name, n.IP, n.Vendor, n.Descr, n.SnmpMode))
+			nodeInfoSB.WriteString(fmt.Sprintf("Name: %s, IP: %s, Vendor: %s, Descr: %s, SnmpMode: %s, Loc(Lng,Lat): %s\n", n.Name, n.IP, n.Vendor, n.Descr, n.SnmpMode, n.Loc))
 		}
 	}
 
@@ -710,7 +724,12 @@ Select the best polling template and native parameters based on the user's inten
    - 'mqtt': Mode: "subscribe". Params: MQTT Broker URL (e.g. "tcp://localhost:1883"). Filter: Topic path. Script: Evaluation script on payload data.
    - 'netflow': Mode: "traffic" or "count". Filter: Address/Protocol filter (e.g. "SrcAddr = 'x.x.x.x' and DstAddr = 'y.y.y.y'"). Params: "" (empty).
    - 'stun': Mode: "ipv4" (default) or "ipv6". Params: STUN server hostname with optional port (e.g. "stun.cloudflare.com:3478", default is "stun.cloudflare.com:3478"). Available script variables: 'ip' (mapped public IP string), 'oldip' (previously observed IP string), 'port' (mapped port uint16), 'host' (reverse DNS hostname), 'local' (local IP:port string), 'rtt' (response time in ns). Script example for IP change detection: 'oldip == "" || oldip == ip'. Script example for latency: 'rtt < 500 * 1000 * 1000'.
-   - 'command': Use ONLY when native ping, snmp, http, tls, syslog, mqtt, netflow, stun cannot fulfill the goal.
+   - 'env': Open environmental, disaster, and space weather APIs (no API key needed). Modes:
+     * "quake" (P2PQuake / JMA Earthquake): Params: 'source=p2p,max_age=3600' (optional 'lat=...,lon=...,pref=...'). Vars: 'intensity' (0-7), 'max_intensity', 'magnitude', 'distance_km', 'depth_km'. Script example: 'intensity < 3.0'.
+     * "liden" (JMA Lightning GeoJSON): Params: 'radius=20,warn_radius=10' (optional 'lat=...,lon=...'). Vars: 'strike_count', 'close_count', 'nearest_km', 'cg_count', 'ic_count'. Script example: 'close_count == 0 && strike_count == 0'.
+     * "space" (NOAA SWPC Solar Flare & Kp-index): Params: "". Vars: 'flare_score' (A=0.x, B=1.x, C=2.x, M=3.x, X=4.x+), 'xray_flux', 'kp_index' (0-9), 'g_scale' (0-5). Script example: 'flare_score < 3.0 && kp_index < 5.0'.
+     * "weather" (Open-Meteo Barometric Pressure / CAPE / Weather): Params: "" (optional 'lat=...,lon=...'). Vars: 'temp', 'humidity', 'pressure', 'pressure_msl', 'pressure_diff_3h', 'cape', 'wind', 'wind_gust', 'precipitation', 'weather_code'. Script example: 'wind_gust < 15.0 && cape < 1000 && pressure_diff_3h > -5.0'.
+   - 'command': Use ONLY when native ping, snmp, http, tls, syslog, mqtt, netflow, stun, env cannot fulfill the goal.
 
 4. **Log Filter Generalization Rule (CRITICAL)**:
    - When generating Filter regex for syslog or trap, DO NOT hardcode exact dynamic values from a single sample log (such as ephemeral source port numbers, process PIDs, timestamps, or random session IDs).
@@ -764,7 +783,12 @@ Return ONLY a raw JSON object with the following structure:
    - 'mqtt': Mode: "subscribe"。Params: ブローカーURL (例: "tcp://localhost:1883")。Filter: Topic。Script: ペイロードデータの判定式。
    - 'netflow': Mode: "traffic" や "count"。Filter: 送受信フィルタ条件 (例: "SrcAddr = 'x.x.x.x' and DstAddr = 'y.y.y.y'")。Params: "" (空文字)。
    - 'stun': Mode: "ipv4" (デフォルト) または "ipv6"。Params: STUNサーバー名 (例: "stun.cloudflare.com:3478"、空欄時はデフォルトサーバー)。判定スクリプトで利用可能な変数: 'ip' (取得したグローバルIP), 'oldip' (前回検知したIP), 'port' (外側ポート番号), 'host' (逆引きホスト名), 'local' (ローカルアドレス), 'rtt' (応答時間 ナノ秒)。Script例: 'oldip == "" || oldip == ip' (IPアドレス変化検知), 'rtt < 500 * 1000 * 1000' (応答遅延検知)。
-   - 'command': 組み込みの ping, snmp, http, tls, syslog, mqtt, netflow, stun 等で実現不可能な場合のみ使用。
+   - 'env': 地球環境・防災・宇宙天気オープンAPI監視（APIキー不要）。Mode:
+     * "quake" (地震情報 P2P地震情報/気象庁): Params: 'source=p2p,max_age=3600' (任意で 'lat=...,lon=...,pref=東京都')。変数: 'intensity' (対象地域震度 0〜7), 'max_intensity', 'magnitude', 'distance_km', 'depth_km'。Script例: 'intensity < 3.0'。
+     * "liden" (気象庁LIDEN落雷監視): Params: 'radius=20,warn_radius=10' (任意で 'lat=...,lon=...')。変数: 'strike_count' (半径内落雷数), 'close_count' (警戒半径内落雷数), 'nearest_km' (最接近落雷距離km), 'cg_count', 'ic_count'。Script例: 'close_count == 0 && strike_count == 0'。
+     * "space" (NOAA宇宙天気・太陽フレア・地磁気嵐): Params: ""。変数: 'flare_score' (A=0.x, B=1.x, C=2.x, M=3.x, X=4.x+), 'xray_flux' (W/m2), 'kp_index' (0〜9), 'g_scale' (0〜5)。Script例: 'flare_score < 3.0 && kp_index < 5.0'。
+     * "weather" (Open-Meteo気象・気圧変化・大気不安定度): Params: "" (任意で 'lat=...,lon=...')。変数: 'temp' (気温℃), 'humidity' (湿度%), 'pressure' (現地気圧hPa), 'pressure_diff_3h' (3時間気圧変化hPa), 'cape' (J/kg), 'wind' (風速m/s), 'wind_gust' (最大瞬間風速m/s), 'precipitation', 'weather_code'。Script例: 'wind_gust < 15.0 && cape < 1000 && pressure_diff_3h > -5.0'。
+   - 'command': 組み込みの ping, snmp, http, tls, syslog, mqtt, netflow, stun, env 等で実現不可能な場合のみ使用。
 
 4. **ログフィルタ正規表現の汎化・抽象化ルール (最重要)**:
    - SyslogやSNMP Trapのログから 'Filter' (正規表現) を作成する際、単一ログのサンプルに含まれる「送信元ポート番号 (例: port 56332)」、「プロセスPID (例: [1234])」、「タイムスタンプ」、「セッションID」等の動的・可変な数値をそのまま固定値(リテラル)としてハードコードしないでください！

@@ -340,7 +340,7 @@ func getPollingTool(ctx context.Context, req *mcp.CallToolRequest, args getPolli
 type addPollingParams struct {
 	NodeID       string `json:"node_id" jsonschema:"Target node ID, unique node name, or unique IP address"`
 	Name         string `json:"name" jsonschema:"Polling name"`
-	Type         string `json:"type" jsonschema:"Polling type (ping, tcp, http, dns, tls, snmp, gnmi, mqtt, syslog, trap, netflow, sflow, twsnmp, ntp, ssh, stun, cmd, report, etc.)"`
+	Type         string `json:"type" jsonschema:"Polling type (ping, tcp, http, dns, tls, snmp, gnmi, mqtt, syslog, trap, netflow, sflow, twsnmp, ntp, ssh, stun, otel, env, cmd, report, etc.)"`
 	Mode         string `json:"mode,omitempty" jsonschema:"Polling sub-mode (e.g. get, walk, count, subscribe)"`
 	Params       string `json:"params,omitempty" jsonschema:"Polling target parameter (port, URL, OID, hostname, etc.)"`
 	Filter       string `json:"filter,omitempty" jsonschema:"Filter pattern for log/SNMP/HTTP pollings"`

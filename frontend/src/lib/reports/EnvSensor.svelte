@@ -10,7 +10,7 @@
   import * as icons from "@mdi/js";
   import { Modal, Button, ButtonGroup, GradientButton, Input, Label } from "flowbite-svelte";
   import { formatTimeStr, isDarkMode, exportReportData, echartAction } from "./utils";
-  import { getTableLang, renderCount, renderTime } from "../common";
+  import { getTableLang, renderCount, renderTime, renderState } from "../common";
   import {
     GetLogReport,
     ResetLogReport,
@@ -21,6 +21,7 @@
     EnvMonitorEnt,
     PowerMonitorEnt,
     MotionSensorEnt,
+    EarthEnvMonitorEnt,
   } from "./types";
 
   let {
@@ -29,12 +30,13 @@
     onRefresh?: () => void;
   } = $props();
 
-  type TabType = "env" | "power" | "motion";
+  type TabType = "env" | "power" | "motion" | "earth";
   let activeTab = $state<TabType>("env");
 
   let envs = $state<EnvMonitorEnt[]>([]);
   let powers = $state<PowerMonitorEnt[]>([]);
   let motions = $state<MotionSensorEnt[]>([]);
+  let earths = $state<EarthEnvMonitorEnt[]>([]);
   let internalLoading = $state(false);
 
   let table: any = undefined;
@@ -60,17 +62,75 @@
     return list.length > 0 ? list[list.length - 1] : undefined;
   };
 
+  const formatEarthSummary = (row: any): string => {
+    const l = getLastData(row);
+    if (!l) return row?.Summary || "-";
+    switch (row?.Mode) {
+      case "quake":
+        return $_("report.earthSummaryQuake", {
+          values: {
+            hypo: l.Hypocenter || "-",
+            mag: (l.Magnitude ?? 0).toFixed(1),
+            maxI: (l.MaxIntensity ?? 0).toFixed(1),
+            int: (l.Intensity ?? 0).toFixed(1),
+            dist: (l.DistanceKm ?? 0).toFixed(1),
+          },
+        });
+      case "liden":
+        if (String(row?.Location || "").includes("Open-Meteo")) {
+          return $_("report.earthSummaryLidenOpenMeteo", {
+            values: {
+              wmo: l.WeatherCode ?? 0,
+              cape: Math.round(l.CAPE ?? 0),
+              strike: l.StrikeCount ?? 0,
+              close: l.CloseCount ?? 0,
+            },
+          });
+        }
+        return $_("report.earthSummaryLiden", {
+          values: {
+            close: l.CloseCount ?? 0,
+            strike: l.StrikeCount ?? 0,
+            nearest: (l.NearestKm ?? 9999).toFixed(1),
+          },
+        });
+      case "space":
+        return $_("report.earthSummarySpace", {
+          values: {
+            flare: l.FlareClass || "A0.0",
+            flux: (l.XrayFlux ?? 0).toExponential(2),
+            kp: (l.KpIndex ?? 0).toFixed(1),
+            g: l.GScale ?? 0,
+          },
+        });
+      default: {
+        const diff = l.PressureDiff3h ?? 0;
+        const diffStr = diff >= 0 ? `+${diff.toFixed(1)}` : diff.toFixed(1);
+        return $_("report.earthSummaryWeather", {
+          values: {
+            temp: (l.Temp ?? 0).toFixed(1),
+            hum: Math.round(l.Humidity ?? 0),
+            press: (l.Pressure ?? 0).toFixed(1),
+            diff: diffStr,
+            cape: Math.round(l.CAPE ?? 0),
+            wind: (l.WindSpeed ?? 0).toFixed(1),
+          },
+        });
+      }
+    }
+  };
+
   const getColumns = (tab: TabType) => {
     const commonCols = [
       {
         data: "Address",
         title: $_("report.sensorAddress") || "アドレス",
-        width: "15%",
+        width: "14%",
       },
       {
         data: "Name",
         title: $_("report.sensorName") || "名前",
-        width: "18%",
+        width: "16%",
         render: (n: string) => n || '<span class="text-gray-400">-</span>',
       },
     ];
@@ -81,7 +141,7 @@
         {
           data: null,
           title: $_("report.sensorTemp") || "気温",
-          width: "12%",
+          width: "10%",
           render: (_: any, __: string, row: any) => {
             const l = getLastData(row);
             return l?.Temp != null ? `<span class="text-orange-500 font-mono font-medium">${l.Temp.toFixed(1)} °C</span>` : "-";
@@ -90,7 +150,7 @@
         {
           data: null,
           title: $_("report.sensorHumidity") || "湿度",
-          width: "12%",
+          width: "10%",
           render: (_: any, __: string, row: any) => {
             const l = getLastData(row);
             return l?.Humidity != null ? `<span class="text-cyan-500 font-mono font-medium">${l.Humidity.toFixed(1)} %</span>` : "-";
@@ -98,8 +158,18 @@
         },
         {
           data: null,
+          title: $_("report.sensorPressure") || "気圧",
+          width: "11%",
+          render: (_: any, __: string, row: any) => {
+            const l = getLastData(row);
+            const p = l?.BarometricPressure ?? l?.Pressure;
+            return p != null && p > 0 ? `<span class="text-indigo-500 font-mono font-medium">${Number(p).toFixed(1)} hPa</span>` : "-";
+          },
+        },
+        {
+          data: null,
           title: "CO2 / TVOC",
-          width: "12%",
+          width: "11%",
           render: (_: any, __: string, row: any) => {
             const l = getLastData(row);
             if (!l) return "-";
@@ -142,7 +212,7 @@
           },
         },
       ];
-    } else {
+    } else if (tab === "motion") {
       specificCols = [
         {
           data: null,
@@ -172,25 +242,63 @@
           },
         },
       ];
+    } else if (tab === "earth") {
+      specificCols = [
+        {
+          data: "State",
+          title: $_("report.colState") || "状態",
+          width: "8%",
+          render: (s: string) => renderState(s || "normal", ""),
+        },
+        {
+          data: "Mode",
+          title: $_("report.colType") || "種別",
+          width: "10%",
+          render: (m: string) => {
+            switch (m) {
+              case "quake":
+                return `<span class="whitespace-nowrap px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 text-xs font-semibold">${$_("report.earthModeQuake") || "地震 (Quake)"}</span>`;
+              case "liden":
+                return `<span class="whitespace-nowrap px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-semibold">${$_("report.earthModeLiden") || "落雷 (LIDEN)"}</span>`;
+              case "space":
+                return `<span class="whitespace-nowrap px-1.5 py-0.5 rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 text-xs font-semibold">${$_("report.earthModeSpace") || "宇宙天気 (NOAA)"}</span>`;
+              default:
+                return `<span class="whitespace-nowrap px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 text-xs font-semibold">${$_("report.earthModeWeather") || "気象 (Weather)"}</span>`;
+            }
+          },
+        },
+        {
+          data: null,
+          title: $_("report.earthSummary") || "最新観測値サマリ",
+          width: "24%",
+          render: (_: any, __: string, row: any) => `<span class="font-mono text-xs">${formatEarthSummary(row)}</span>`,
+        },
+      ];
     }
 
     const trailingCols = [
       {
         data: "Count",
         title: $_("report.sensorDataCount") || "データ数",
-        width: "10%",
+        width: "6%",
+        className: "whitespace-nowrap text-right",
         render: renderCount,
       },
       {
         data: "Host",
         title: $_("report.scannerHost") || "ホスト",
-        width: "10%",
+        width: "8%",
+        className: "whitespace-nowrap",
       },
       {
         data: "LastTime",
         title: $_("report.lastSeen") || "最終確認",
-        width: "15%",
-        render: renderTime,
+        width: "14%",
+        className: "whitespace-nowrap",
+        render: (t: number, type: string) => {
+          const s = renderTime(t, type);
+          return s ? `<span class="whitespace-nowrap font-mono">${s}</span>` : "-";
+        },
       },
     ];
 
@@ -205,6 +313,8 @@
         return powers;
       case "motion":
         return motions;
+      case "earth":
+        return earths;
     }
   });
 
@@ -263,14 +373,16 @@
   const loadAll = async () => {
     internalLoading = true;
     try {
-      const [e, p, m] = await Promise.all([
+      const [e, p, m, ea] = await Promise.all([
         GetLogReport("envMonitor"),
         GetLogReport("powerMonitor"),
         GetLogReport("motionSensor"),
+        GetLogReport("earthEnv"),
       ]);
       envs = (e || []) as EnvMonitorEnt[];
       powers = (p || []) as PowerMonitorEnt[];
       motions = (m || []) as MotionSensorEnt[];
+      earths = (ea || []) as EarthEnvMonitorEnt[];
       await showTable();
     } catch (err) {
       console.error("Failed to load environment sensors:", err);
@@ -305,7 +417,7 @@
   });
 
   const stats = $derived.by(() => {
-    const totalSensors = envs.length + powers.length + motions.length;
+    const totalSensors = envs.length + powers.length + motions.length + earths.length;
     let sumTemp = 0;
     let sumHum = 0;
     let envCount = 0;
@@ -336,7 +448,14 @@
       if (last?.Light) lightActive++;
     }
 
-    return { totalSensors, avgTemp, avgHum, powerOnCount, powerOverCount, movingActive, lightActive };
+    let earthAlerts = 0;
+    for (const ea of earths) {
+      if (ea.State && ea.State !== "normal" && ea.State !== "repair") {
+        earthAlerts++;
+      }
+    }
+
+    return { totalSensors, avgTemp, avgHum, powerOnCount, powerOverCount, movingActive, lightActive, earthAlerts };
   });
 
   const detailChartOption = $derived.by((): echarts.EChartsOption | null => {
@@ -348,20 +467,28 @@
       const times = data.map((d: any) => formatTimeStr(d.Time));
       const temps = data.map((d: any) => d.Temp);
       const hums = data.map((d: any) => d.Humidity);
+      const press = data.map((d: any) => d.BarometricPressure ?? d.Pressure ?? null);
+      const hasPress = press.some((v: any) => v != null && v > 0);
+      const series: any[] = [
+        { name: "Temperature (°C)", type: "line", smooth: true, data: temps, lineStyle: { color: "#f97316", width: 2 } },
+        { name: "Humidity (%)", type: "line", yAxisIndex: 1, smooth: true, data: hums, lineStyle: { color: "#06b6d4", width: 2 } },
+      ];
+      const legendData = ["Temperature (°C)", "Humidity (%)"];
+      if (hasPress) {
+        legendData.push("Pressure (hPa)");
+        series.push({ name: "Pressure (hPa)", type: "line", yAxisIndex: 1, smooth: true, data: press, lineStyle: { color: "#6366f1", width: 1.5, type: "dashed" } });
+      }
       return {
         backgroundColor: "transparent",
         tooltip: { trigger: "axis" },
-        legend: { top: 0, data: ["Temperature (°C)", "Humidity (%)"], textStyle: { color: dark ? "#cbd5e1" : "#475569", fontSize: 11 } },
+        legend: { top: 0, data: legendData, textStyle: { color: dark ? "#cbd5e1" : "#475569", fontSize: 11 } },
         grid: { top: 34, left: "3%", right: "3%", bottom: 8, containLabel: true },
         xAxis: { type: "category", data: times, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
         yAxis: [
           { type: "value", name: "°C", axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
-          { type: "value", name: "%", max: 100, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 }, splitLine: { show: false } },
+          { type: "value", name: hasPress ? "% / hPa" : "%", scale: true, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 }, splitLine: { show: false } },
         ],
-        series: [
-          { name: "Temperature (°C)", type: "line", smooth: true, data: temps, lineStyle: { color: "#f97316", width: 2 } },
-          { name: "Humidity (%)", type: "line", yAxisIndex: 1, smooth: true, data: hums, lineStyle: { color: "#06b6d4", width: 2 } },
-        ],
+        series,
       };
     } else if (activeTab === "power") {
       const times = data.map((d: any) => formatTimeStr(d.Time));
@@ -376,7 +503,7 @@
           { name: "Power (W)", type: "line", smooth: true, data: pData, lineStyle: { color: "#f59e0b", width: 2 }, areaStyle: { color: "rgba(245, 158, 11, 0.2)" } },
         ],
       };
-    } else {
+    } else if (activeTab === "motion") {
       const times = data.map((d: any) => formatTimeStr(d.Time));
       const movings = data.map((d: any) => (d.Moving ? 1 : 0));
       return {
@@ -387,6 +514,89 @@
         yAxis: { type: "value", min: 0, max: 1, interval: 1, axisLabel: { formatter: (v: number) => (v === 1 ? "MOVE" : "STILL"), color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
         series: [
           { name: "Motion", type: "bar", data: movings, itemStyle: { color: "#10b981" } },
+        ],
+      };
+    } else {
+      // Earth / Disaster / Space Weather API mode-specific charts
+      const times = data.map((d: any) => formatTimeStr(d.Time));
+      const mode = detailItem.Mode || "weather";
+      if (mode === "quake") {
+        const intensities = data.map((d: any) => d.Intensity ?? 0);
+        const mags = data.map((d: any) => d.Magnitude ?? 0);
+        return {
+          backgroundColor: "transparent",
+          tooltip: { trigger: "axis" },
+          legend: { top: 0, data: ["震度 (Intensity)", "Magnitude (M)"], textStyle: { color: dark ? "#cbd5e1" : "#475569", fontSize: 11 } },
+          grid: { top: 34, left: "3%", right: "3%", bottom: 8, containLabel: true },
+          xAxis: { type: "category", data: times, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
+          yAxis: [
+            { type: "value", name: "震度", min: 0, max: 7, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
+            { type: "value", name: "M", min: 0, max: 9, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 }, splitLine: { show: false } },
+          ],
+          series: [
+            { name: "震度 (Intensity)", type: "bar", data: intensities, itemStyle: { color: "#f43f5e" } },
+            { name: "Magnitude (M)", type: "line", yAxisIndex: 1, smooth: true, data: mags, lineStyle: { color: "#fb923c", width: 2 } },
+          ],
+        };
+      }
+      if (mode === "liden") {
+        const strikes = data.map((d: any) => d.StrikeCount ?? 0);
+        const closes = data.map((d: any) => d.CloseCount ?? 0);
+        const nearest = data.map((d: any) => (d.NearestKm != null && d.NearestKm < 1000 ? d.NearestKm : null));
+        return {
+          backgroundColor: "transparent",
+          tooltip: { trigger: "axis" },
+          legend: { top: 0, data: ["半径内落雷数", "至近落雷数", "最接近距離 (km)"], textStyle: { color: dark ? "#cbd5e1" : "#475569", fontSize: 11 } },
+          grid: { top: 34, left: "3%", right: "3%", bottom: 8, containLabel: true },
+          xAxis: { type: "category", data: times, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
+          yAxis: [
+            { type: "value", name: "Strikes", minInterval: 1, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
+            { type: "value", name: "km", axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 }, splitLine: { show: false } },
+          ],
+          series: [
+            { name: "半径内落雷数", type: "bar", data: strikes, itemStyle: { color: "#f59e0b" } },
+            { name: "至近落雷数", type: "bar", data: closes, itemStyle: { color: "#ef4444" } },
+            { name: "最接近距離 (km)", type: "line", yAxisIndex: 1, smooth: true, data: nearest, lineStyle: { color: "#06b6d4", width: 2 } },
+          ],
+        };
+      }
+      if (mode === "space") {
+        const flareScores = data.map((d: any) => d.FlareScore ?? 0);
+        const kpIndices = data.map((d: any) => d.KpIndex ?? 0);
+        return {
+          backgroundColor: "transparent",
+          tooltip: { trigger: "axis" },
+          legend: { top: 0, data: ["太陽フレア強度 (C=2,M=3,X=4)", "地磁気嵐 Kp指数 (0-9)"], textStyle: { color: dark ? "#cbd5e1" : "#475569", fontSize: 11 } },
+          grid: { top: 34, left: "3%", right: "3%", bottom: 8, containLabel: true },
+          xAxis: { type: "category", data: times, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
+          yAxis: [
+            { type: "value", name: "Flare Score", min: 0, max: 6, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
+            { type: "value", name: "Kp Index", min: 0, max: 9, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 }, splitLine: { show: false } },
+          ],
+          series: [
+            { name: "太陽フレア強度 (C=2,M=3,X=4)", type: "line", smooth: true, data: flareScores, lineStyle: { color: "#a855f7", width: 2 } },
+            { name: "地磁気嵐 Kp指数 (0-9)", type: "bar", yAxisIndex: 1, data: kpIndices, itemStyle: { color: "rgba(59, 130, 246, 0.5)" } },
+          ],
+        };
+      }
+      // weather (Open-Meteo)
+      const press = data.map((d: any) => d.Pressure ?? null);
+      const capes = data.map((d: any) => d.CAPE ?? 0);
+      const diffs = data.map((d: any) => d.PressureDiff3h ?? 0);
+      return {
+        backgroundColor: "transparent",
+        tooltip: { trigger: "axis" },
+        legend: { top: 0, data: ["現地気圧 (hPa)", "3h気圧変化 (hPa)", "CAPE (J/kg)"], textStyle: { color: dark ? "#cbd5e1" : "#475569", fontSize: 11 } },
+        grid: { top: 34, left: "3%", right: "3%", bottom: 8, containLabel: true },
+        xAxis: { type: "category", data: times, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
+        yAxis: [
+          { type: "value", name: "hPa", scale: true, axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 } },
+          { type: "value", name: "ΔhPa / CAPE", axisLabel: { color: dark ? "#94a3b8" : "#64748b", fontSize: 10 }, splitLine: { show: false } },
+        ],
+        series: [
+          { name: "現地気圧 (hPa)", type: "line", smooth: true, data: press, lineStyle: { color: "#3b82f6", width: 2 } },
+          { name: "3h気圧変化 (hPa)", type: "line", yAxisIndex: 1, smooth: true, data: diffs, lineStyle: { color: "#f97316", width: 1.5, type: "dashed" } },
+          { name: "CAPE (J/kg)", type: "bar", yAxisIndex: 1, data: capes, itemStyle: { color: "rgba(16, 185, 129, 0.35)" } },
         ],
       };
     }
@@ -426,6 +636,8 @@
         ? "envMonitor"
         : deletingItem.kind === "power"
         ? "powerMonitor"
+        : deletingItem.kind === "earth"
+        ? "earthEnv"
         : "motionSensor";
     try {
       await DeleteLogReport(reportKind, [deletingItem.ID || deletingItem.Address]);
@@ -438,7 +650,7 @@
 
   export function handleExport(format: string = "csv"): void {
     if (activeTab === "env") {
-      const headers = ["Address", "Name", "Host", "Latest Temp", "Latest Hum", "Data Count", "Last Seen"];
+      const headers = ["Address", "Name", "Host", "Latest Temp", "Latest Hum", "Pressure (hPa)", "Data Count", "Last Seen"];
       const rows = envs.map((e) => {
         const last = getLastData(e);
         return [
@@ -447,6 +659,7 @@
           e.Host,
           last?.Temp ?? "-",
           last?.Humidity ?? "-",
+          last?.BarometricPressure ?? last?.Pressure ?? "-",
           e.Count,
           formatTimeStr(e.LastTime),
         ];
@@ -468,6 +681,19 @@
         ];
       });
       exportReportData(format, "TWSNMP_Power_Monitors", headers, rows);
+    } else if (activeTab === "earth") {
+      const headers = ["Address", "Name", "Host", "Mode", "State", "Summary", "Data Count", "Last Seen"];
+      const rows = earths.map((ea) => [
+        ea.Address,
+        ea.Name,
+        ea.Host,
+        ea.Mode,
+        ea.State || "normal",
+        formatEarthSummary(ea),
+        ea.Count,
+        formatTimeStr(ea.LastTime),
+      ]);
+      exportReportData(format, "TWSNMP_Earth_Env_Monitors", headers, rows);
     } else {
       const headers = ["Address", "Name", "Host", "Moving", "Light", "Battery (%)", "Data Count", "Last Seen"];
       const rows = motions.map((m) => {
@@ -498,6 +724,8 @@
         ? "envMonitor"
         : activeTab === "power"
         ? "powerMonitor"
+        : activeTab === "earth"
+        ? "earthEnv"
         : "motionSensor";
     try {
       await ResetLogReport(kind);
@@ -519,7 +747,7 @@
       </div>
       <div class="mt-1 text-2xl font-bold">{stats.totalSensors}</div>
       <div class="mt-1 text-[11px] text-gray-400">
-        Env: {envs.length} / Power: {powers.length} / Motion: {motions.length}
+        Env: {envs.length} / Power: {powers.length} / Motion: {motions.length} / Earth: {earths.length}
       </div>
     </div>
 
@@ -583,6 +811,15 @@
       >
         <Icon path={icons.mdiWalk} size={0.8} />
         {$_("report.tabMotion") || "人感センサー"} ({motions.length})
+      </Button>
+      <Button
+        size="xs"
+        class="!py-1 !px-2.5 text-xs flex items-center gap-1"
+        color={activeTab === 'earth' ? 'blue' : 'alternative'}
+        onclick={() => switchTab('earth')}
+      >
+        <Icon path={icons.mdiEarth} size={0.8} />
+        {$_("report.tabEarthEnv") || "地球環境・防災API"} ({earths.length})
       </Button>
     </ButtonGroup>
   </div>

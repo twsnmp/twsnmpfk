@@ -125,6 +125,13 @@ export const getPredefinedModes = (type: string, isJa: boolean): PollingModeOpti
         { name: isJa ? "trace (トレース・エラー率・遅延)" : "trace (Trace / error rate / latency)", value: "trace" },
         { name: isJa ? "heartbeat (受信途絶検知)" : "heartbeat (Heartbeat / stoppage)", value: "heartbeat" },
       ];
+    case "env":
+      return [
+        { name: isJa ? "weather (気象・気圧・大気不安定度 Open-Meteo)" : "weather (Weather / Pressure / CAPE Open-Meteo)", value: "weather" },
+        { name: isJa ? "quake (地震情報 P2P地震情報 / 気象庁)" : "quake (Earthquake P2PQuake / JMA)", value: "quake" },
+        { name: isJa ? "liden (落雷・雷活動 気象庁LIDEN GeoJSON)" : "liden (Lightning Strikes JMA LIDEN)", value: "liden" },
+        { name: isJa ? "space (宇宙天気・太陽フレア・地磁気嵐 NOAA)" : "space (Space Weather / Solar Flare / Kp NOAA)", value: "space" },
+      ];
     case "twlogeye":
       return [
         { name: isJa ? "notify (通知監視)" : "notify (Notification monitor)", value: "notify" },
@@ -524,6 +531,50 @@ export const getPollingGuide = (type: string, mode: string, t?: (k: string) => s
         scriptHelp: isJa
           ? "判定スクリプト例: gauge < 80.0 (変数: gauge, sum, min, max, count, elapsed, interval)"
           : "Script example: gauge < 80.0 (vars: gauge, sum, min, max, count, elapsed, interval)",
+      };
+
+    case "env":
+      if (m === "quake") {
+        return {
+          placeholder: isJa ? "source=auto,lat=35.68,lon=139.75,radius=300,max_age=3600 (空欄でノード位置)" : "source=auto,lat=35.68,lon=139.75,radius=300,max_age=3600 (blank uses node loc)",
+          help: isJa
+            ? "source=auto(日本:P2P/海外:USGS)|p2p|jma|usgs, lat, lon, radius(USGS半径km:300), pref(都道府県), max_age(秒:3600)"
+            : "source=auto(JP:P2P/Global:USGS)|p2p|jma|usgs, lat, lon, radius(km, default 300), max_age(sec, default 3600)",
+          scriptHelp: isJa
+            ? "スクリプト例: intensity < 3.0 (変数: intensity, max_intensity, mmi, tsunami, magnitude, distance_km, depth_km, elapsed_sec)"
+            : "Script example: intensity < 3.0 (vars: intensity, max_intensity, mmi, tsunami, magnitude, distance_km, depth_km, elapsed_sec)",
+        };
+      }
+      if (m === "liden") {
+        return {
+          placeholder: isJa ? "source=auto,radius=20,warn_radius=10 (lat,lon空欄でノード位置)" : "source=auto,radius=20,warn_radius=10 (blank lat,lon uses node loc)",
+          help: isJa
+            ? "source=auto(日本:気象庁LIDEN/海外:Open-Meteo雷雨)|jma|openmeteo, lat, lon, radius(km:20), warn_radius(km:10)"
+            : "source=auto(JP:JMA LIDEN/Global:Open-Meteo thunderstorm)|jma|openmeteo, lat, lon, radius(km:20), warn_radius(km:10)",
+          scriptHelp: isJa
+            ? "スクリプト例: close_count == 0 && strike_count == 0 (変数: strike_count, close_count, cg_count, ic_count, nearest_km)"
+            : "Script example: close_count == 0 && strike_count == 0 (vars: strike_count, close_count, cg_count, ic_count, nearest_km)",
+        };
+      }
+      if (m === "space") {
+        return {
+          placeholder: isJa ? "(パラメータ指定不要 / target=all)" : "(No parameter required / target=all)",
+          help: isJa
+            ? "NOAA SWPC 太陽X線フラックス(GOES)および地磁気嵐Kp指数を取得 (target=all|xray|kp)"
+            : "Fetches NOAA SWPC GOES X-ray flux and Planetary Kp-index (target=all|xray|kp)",
+          scriptHelp: isJa
+            ? "スクリプト例: flare_score < 3.0 && kp_index < 5.0 (変数: flare_score [C=2,M=3,X=4], xray_flux, kp_index [0-9], g_scale [0-5])"
+            : "Script example: flare_score < 3.0 && kp_index < 5.0 (vars: flare_score [C=2,M=3,X=4], xray_flux, kp_index [0-9], g_scale [0-5])",
+        };
+      }
+      return {
+        placeholder: isJa ? "lat=35.68,lon=139.75 (空欄でノード位置を自動使用)" : "lat=35.68,lon=139.75 (blank uses node location)",
+        help: isJa
+          ? "Open-Meteo APIから気温・湿度・現地気圧・3時間気圧変化・CAPE(発雷リスク)・風速を取得し環境センサーにも記録"
+          : "Fetches temp, humidity, pressure, 3h pressure diff, CAPE, and wind via Open-Meteo",
+        scriptHelp: isJa
+          ? "スクリプト例: wind_gust < 15.0 && cape < 1000 && pressure_diff_3h > -5.0 (変数: temp, humidity, pressure, pressure_msl, pressure_diff_3h, cape, wind, wind_gust, precipitation, weather_code)"
+          : "Script example: wind_gust < 15.0 && cape < 1000 && pressure_diff_3h > -5.0 (vars: temp, humidity, pressure, pressure_msl, pressure_diff_3h, cape, wind, wind_gust, precipitation, weather_code)",
       };
 
     default:

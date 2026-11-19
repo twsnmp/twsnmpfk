@@ -69,6 +69,10 @@
     { label: $_("AIPollingAssist.TagTlsLabel"), text: $_("AIPollingAssist.TagTlsText") },
     { label: $_("AIPollingAssist.TagSyslogLabel"), text: $_("AIPollingAssist.TagSyslogText") },
     { label: $_("AIPollingAssist.TagPingLabel"), text: $_("AIPollingAssist.TagPingText") },
+    {
+      label: $_("AIPollingAssist.TagEnvLabel") || "防災・落雷・気象監視",
+      text: $_("AIPollingAssist.TagEnvText") || "拠点周辺の半径20km以内の落雷(LIDEN)や急激な気圧低下・雷雨リスク(Open-Meteo)、または震度3以上の地震を監視して警告したい",
+    },
   ];
 
   const setQuickTag = (tagText: string) => {

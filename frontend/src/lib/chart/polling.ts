@@ -127,6 +127,70 @@ const chartParams: any = {
     mul: 1.0,
     axis: $_("Ts.Count"),
   },
+  pressure_msl: {
+    mul: 1.0,
+    axis: "MSL Pressure (hPa)",
+  },
+  pressure_diff_3h: {
+    mul: 1.0,
+    axis: "3h Pressure Diff (hPa)",
+  },
+  cape: {
+    mul: 1.0,
+    axis: "CAPE (J/kg)",
+  },
+  wind_gust: {
+    mul: 1.0,
+    axis: "Wind Gust (m/s)",
+  },
+  precipitation: {
+    mul: 1.0,
+    axis: "Precipitation (mm)",
+  },
+  intensity: {
+    mul: 1.0,
+    axis: "Seismic Intensity (JMA 0-7)",
+  },
+  max_intensity: {
+    mul: 1.0,
+    axis: "Max Seismic Intensity (0-7)",
+  },
+  magnitude: {
+    mul: 1.0,
+    axis: "Magnitude (M)",
+  },
+  depth_km: {
+    mul: 1.0,
+    axis: "Hypocenter Depth (km)",
+  },
+  distance_km: {
+    mul: 1.0,
+    axis: "Epicentral Distance (km)",
+  },
+  strike_count: {
+    mul: 1.0,
+    axis: "Lightning Strikes (count)",
+  },
+  close_count: {
+    mul: 1.0,
+    axis: "Close Lightning Strikes (count)",
+  },
+  nearest_km: {
+    mul: 1.0,
+    axis: "Nearest Lightning (km)",
+  },
+  kp_index: {
+    mul: 1.0,
+    axis: "Geomagnetic Kp Index (0-9)",
+  },
+  flare_score: {
+    mul: 1.0,
+    axis: "Solar Flare Class Score (C=2,M=3,X=4)",
+  },
+  g_scale: {
+    mul: 1.0,
+    axis: "NOAA Geomagnetic Storm Scale (G0-G5)",
+  },
 };
 
 export const getChartParams = (ent: any) => {

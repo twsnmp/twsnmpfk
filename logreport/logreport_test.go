@@ -442,6 +442,9 @@ func TestTwpcapSyslogParsing(t *testing.T) {
 	if !IsKind("dnsQ") || !IsKind("dnsq") {
 		t.Fatalf("expected both dnsQ and dnsq to be recognized kinds")
 	}
+	if !IsKind("earthEnv") || NormalizeKind("earthenv") != KindEarthEnv {
+		t.Fatalf("expected earthEnv to be recognized as KindEarthEnv")
+	}
 	if NormalizeKind("dnsQ") != KindDNSQ || NormalizeKind("dnsq") != KindDNSQ {
 		t.Fatalf("expected NormalizeKind to return canonical KindDNSQ ('dnsq')")
 	}
