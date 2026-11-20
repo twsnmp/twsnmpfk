@@ -623,6 +623,11 @@ export const getPollingName = (event: string): string => {
   if (colonIdx >= 0) {
     name = name.substring(colonIdx + 1).trim();
   }
+  // "(type) [summary]" または "(type)" の形式からポーリング名を抽出
+  const typeMatch = name.match(/^(.+?)\(([^\s()[\]]+)\)(?:\s+\[.*\])?$/);
+  if (typeMatch) {
+    return typeMatch[1].trim();
+  }
   const parenIdx = name.lastIndexOf('(');
   if (parenIdx > 0 && name.endsWith(')')) {
     name = name.substring(0, parenIdx).trim();
@@ -1038,9 +1043,28 @@ export const calcNodeDowntimeAndSLA = (logs: any, pollings?: any[]) => {
 
   // ポーリング項目 (Event) でログをグループ化
   const logsByPolling = new Map<string, { event: string; logs: any[] }>();
+  const sortedPollingsForMatch =
+    pollings && pollings.length > 0
+      ? [...pollings].sort((a: any, b: any) => (b.Name?.length || 0) - (a.Name?.length || 0))
+      : [];
+
+  const resolvePollingName = (event: string): string => {
+    if (sortedPollingsForMatch.length > 0 && event) {
+      const colonIdx = event.indexOf(':');
+      const body = colonIdx >= 0 ? event.substring(colonIdx + 1).trim() : event;
+      for (const p of sortedPollingsForMatch) {
+        if (!p.Name) continue;
+        const prefix = p.Type ? `${p.Name}(${p.Type})` : p.Name;
+        if (body === prefix || body.startsWith(`${prefix} `)) {
+          return p.Name;
+        }
+      }
+    }
+    return getPollingName(event) || 'default';
+  };
 
   sortedLogs.forEach((l: any) => {
-    const pName = getPollingName(l.Event) || 'default';
+    const pName = resolvePollingName(l.Event);
     const pKey = pName;
     let group = logsByPolling.get(pKey);
     if (!group) {
@@ -1163,15 +1187,12 @@ export const calcNodeDowntimeAndSLA = (logs: any, pollings?: any[]) => {
       if (existing) {
         if (p.State) {
           existing.currentLevel = p.State;
-          if (p.State === 'high' || p.State === 'low' || p.State === 'warn') {
-            existing.ongoing = true;
-          }
+          existing.ongoing = p.State === 'high' || p.State === 'low' || p.State === 'warn';
         }
       } else {
         const isFail = p.State === 'high' || p.State === 'low' || p.State === 'warn';
         if (isFail) {
           allIncidentsCount++;
-          ongoingPollingCount++;
         }
         pollingStats.push({
           event: p.Name,
@@ -1186,6 +1207,8 @@ export const calcNodeDowntimeAndSLA = (logs: any, pollings?: any[]) => {
       }
     });
   }
+
+  ongoingPollingCount = pollingStats.filter((ps) => ps.ongoing).length;
 
   const { totalSec: nodeTotalDowntimeSec, maxSec: nodeMaxDowntimeSec } = mergeIntervals(nodeAllIntervals);
   const overallSLA = Math.max(0, Math.min(100, (1 - nodeTotalDowntimeSec / totalSpanSec) * 100));
@@ -1214,8 +1237,8 @@ export const showNodeDowntimeChart = (div: string, logs: any, pollings?: any[]) 
   const topItems = pollingStats.slice(0, 15).reverse();
   topItems.forEach((p) => {
     let name = p.event;
-    if (name.length > 20) {
-      name = name.substring(0, 18) + '...';
+    if (name.length > 36) {
+      name = name.substring(0, 34) + '...';
     }
     categories.push(name);
     downtimeData.push(Number((p.totalDowntimeSec / 60).toFixed(1)));

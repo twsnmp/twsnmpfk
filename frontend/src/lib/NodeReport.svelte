@@ -281,8 +281,8 @@
       const totalDurationStr = renderDuration(p.totalDowntimeSec, "");
       const maxDurationStr = renderDuration(p.maxDowntimeSec, "");
       const statusHtml = p.ongoing
-        ? `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-red-900 text-red-200">${ongoingLabel}</span>`
-        : renderState(p.currentLevel);
+        ? `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-red-900 text-red-200 whitespace-nowrap">${ongoingLabel}</span>`
+        : renderState(p.currentLevel, "");
 
       return [
         p.event,
@@ -299,18 +299,47 @@
       paging: false,
       searching: true,
       info: false,
-      scrollY: "300px",
+      scrollY: "220px",
       scrollCollapse: true,
       language: getTableLang(),
       data: tableData,
       order: [[3, "desc"]],
       columns: [
-        { title: $_("NodeReport.PollingName") || "ポーリング名" },
-        { title: $_("EventLogReport.OverallSLA") || "SLA (Availability)" },
-        { title: $_("EventLogReport.TotalIncidents") || "Incidents" },
-        { title: $_("EventLogReport.TotalDowntime") || "Total Downtime" },
-        { title: $_("EventLogReport.MaxDowntime") || "Max Downtime" },
-        { title: $_("EventLogReport.Status") || "Status" },
+        {
+          title: $_("NodeReport.PollingName") || "ポーリング名",
+          className: "max-w-[300px] xl:max-w-[420px]",
+          render: (data: string, type: string) => {
+            if (type === "display" && data) {
+              const escaped = String(data)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+              return `<span class="block truncate max-w-[300px] xl:max-w-[420px]" title="${escaped}">${escaped}</span>`;
+            }
+            return data;
+          },
+        },
+        {
+          title: $_("EventLogReport.OverallSLA") || "SLA (Availability)",
+          className: "whitespace-nowrap text-right",
+        },
+        {
+          title: $_("EventLogReport.TotalIncidents") || "Incidents",
+          className: "whitespace-nowrap text-right",
+        },
+        {
+          title: $_("EventLogReport.TotalDowntime") || "Total Downtime",
+          className: "whitespace-nowrap text-right",
+        },
+        {
+          title: $_("EventLogReport.MaxDowntime") || "Max Downtime",
+          className: "whitespace-nowrap text-right",
+        },
+        {
+          title: $_("EventLogReport.Status") || "Status",
+          className: "whitespace-nowrap",
+        },
       ],
     });
   };
@@ -1373,7 +1402,7 @@
   {#if !node}
     <div class="text-center mt-10"><Spinner size="16" /></div>
   {:else}
-    <div class="flex flex-col space-y-4">
+    <div class="flex flex-col space-y-2">
       <!-- Custom Tabs List -->
       <ul class="flex flex-wrap -mb-px text-xs font-medium text-center border-b border-gray-200 dark:border-gray-700">
         <li class="mr-1">
@@ -1735,10 +1764,10 @@
             </div>
           </div>
         {:else if activeTab === 'downtime'}
-          <div class="flex flex-col space-y-3 w-full p-1">
+          <div class="flex flex-col space-y-2 w-full">
             <!-- Summary Cards (Compact) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-1">
-              <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div class="p-2 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
                 <div class="text-xs text-gray-400 font-semibold mb-0.5">
                   {$_("EventLogReport.OverallSLA")}
                 </div>
@@ -1752,7 +1781,7 @@
                   {downtimeStats.overallSLA.toFixed(3)}%
                 </div>
               </div>
-              <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+              <div class="p-2 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
                 <div class="text-xs text-gray-400 font-semibold mb-0.5">
                   {$_("EventLogReport.TotalIncidents")}
                 </div>
@@ -1763,7 +1792,7 @@
                   </span>
                 </div>
               </div>
-              <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+              <div class="p-2 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
                 <div class="text-xs text-gray-400 font-semibold mb-0.5">
                   {$_("EventLogReport.MTTR")}
                 </div>
@@ -1771,7 +1800,7 @@
                   {renderDuration(downtimeStats.mttrSec)}
                 </div>
               </div>
-              <div class="p-2.5 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
+              <div class="p-2 bg-gray-800 rounded-lg border border-gray-700 text-center shadow-md">
                 <div class="text-xs text-gray-400 font-semibold mb-0.5">
                   {$_("EventLogReport.MaxDowntime")} / {$_("EventLogReport.TotalDowntime")}
                 </div>
@@ -1784,15 +1813,15 @@
               </div>
             </div>
 
-            <!-- 2 Columns Grid: Graph & Table -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 w-full items-start">
-              <!-- Left Column: ECharts Graph (5 cols) -->
-              <div class="lg:col-span-5 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 shadow-inner">
-                <div id="nodeDowntimeChart" class="w-full h-[360px]"></div>
+            <!-- Vertical Stack: Graph & Table -->
+            <div class="flex flex-col space-y-2 w-full">
+              <!-- Top: ECharts Graph -->
+              <div class="w-full bg-gray-900 rounded-lg p-2 border border-gray-800 shadow-inner">
+                <div id="nodeDowntimeChart" class="w-full h-[240px]"></div>
               </div>
 
-              <!-- Right Column: Detailed Table (7 cols) wrapped in div (AGENTS.md Rule) -->
-              <div class="lg:col-span-7 w-full bg-gray-900 rounded-lg p-2 border border-gray-800 overflow-x-auto shadow-inner">
+              <!-- Bottom: Detailed Table wrapped in div (AGENTS.md Rule) -->
+              <div class="w-full bg-gray-900 rounded-lg p-2 border border-gray-800 overflow-x-auto shadow-inner">
                 <div>
                   <table
                     id="nodeDowntimeTable"
