@@ -12,6 +12,7 @@
     vertical,
     circle,
     setMapReadOnly,
+    setMapLoopPaused,
   } from "./map";
   import { onMount, onDestroy } from "svelte";
   import { Modal, GradientButton, Label, Input, Button } from "flowbite-svelte";
@@ -116,10 +117,12 @@
   $: {
     if (prevHasOpenDialog && !hasOpenDialog) {
       setMapReadOnly(false);
+      setMapLoopPaused(typeof document !== "undefined" && document.hidden);
       refreshCount = 0;
       refreshMap();
     } else if (!prevHasOpenDialog && hasOpenDialog) {
       setMapReadOnly(true);
+      setMapLoopPaused(true);
       if (timer) {
         clearTimeout(timer);
         timer = undefined;
@@ -173,9 +176,17 @@
   };
 
   const handleVisibilityChange = () => {
-    if (typeof document !== "undefined" && !document.hidden && !hasOpenDialog) {
-      refreshCount = 0;
-      refreshMap();
+    if (typeof document === "undefined") {
+      return;
+    }
+    if (document.hidden) {
+      setMapLoopPaused(true);
+    } else {
+      setMapLoopPaused(hasOpenDialog);
+      if (!hasOpenDialog) {
+        refreshCount = 0;
+        refreshMap();
+      }
     }
   };
 
@@ -191,6 +202,10 @@
     if (timer) {
       clearTimeout(timer);
       timer = undefined;
+    }
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+      toastTimer = undefined;
     }
     document.removeEventListener("visibilitychange", handleVisibilityChange);
     deleteMap();

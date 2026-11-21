@@ -13,7 +13,7 @@
     Button,
     Select,
   } from "flowbite-svelte";
-  import { tick, createEventDispatcher } from "svelte";
+  import { tick, onDestroy, createEventDispatcher } from "svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import {
@@ -90,6 +90,39 @@
   };
 
 
+  let openSeq = 0;
+  let tabSeq = 0;
+
+  const disposeChartInstance = (c: any) => {
+    if (!c) {
+      return undefined;
+    }
+    try {
+      if (!c.isDisposed?.()) {
+        c.dispose();
+      }
+    } catch (e) {
+      // ignore
+    }
+    return undefined;
+  };
+
+  const destroyDataTable = (table: any, withSelectEvents = false) => {
+    if (!table) {
+      return undefined;
+    }
+    try {
+      if (withSelectEvents && typeof table.off === "function") {
+        table.off("select");
+        table.off("deselect");
+      }
+      table.destroy();
+    } catch (e) {
+      // ignore
+    }
+    return undefined;
+  };
+
   const clearSelectedCount = () => {
     selectedPortCount = 0;
     selectedHrSystemCount = 0;
@@ -98,91 +131,24 @@
     showVPanelBtn = false;
     showSaveMemoBtn = false;
     deleteVPanel();
-    if (chart) {
-      try {
-        chart.dispose();
-      } catch (e) {
-        // ignore
-      }
-      chart = undefined;
-    }
-    if (chartMem) {
-      try {
-        chartMem.dispose();
-      } catch (e) {
-        // ignore
-      }
-      chartMem = undefined;
-    }
-    if (logTable) {
-      try {
-        logTable.destroy();
-      } catch (e) {
-        // ignore
-      }
-      logTable = undefined;
-    }
-    if (downtimeTable) {
-      try {
-        downtimeTable.destroy();
-      } catch (e) {
-        // ignore
-      }
-      downtimeTable = undefined;
-    }
-    if (portTable) {
-      try {
-        portTable.destroy();
-      } catch (e) {
-        // ignore
-      }
-      portTable = undefined;
-    }
-    if (hrSystemTable) {
-      try {
-        hrSystemTable.destroy();
-      } catch (e) {
-        // ignore
-      }
-      hrSystemTable = undefined;
-    }
-    if (hrStorageTable) {
-      try {
-        hrStorageTable.destroy();
-      } catch (e) {
-        // ignore
-      }
-      hrStorageTable = undefined;
-    }
-    if (hrDeviceTable) {
-      try {
-        hrDeviceTable.destroy();
-      } catch (e) {
-        // ignore
-      }
-      hrDeviceTable = undefined;
-    }
-    if (hrFileSystemTable) {
-      try {
-        hrFileSystemTable.destroy();
-      } catch (e) {
-        // ignore
-      }
-      hrFileSystemTable = undefined;
-    }
-    if (hrProcessTable) {
-      try {
-        hrProcessTable.destroy();
-      } catch (e) {
-        // ignore
-      }
-      hrProcessTable = undefined;
-    }
+    chart = disposeChartInstance(chart);
+    chartMem = disposeChartInstance(chartMem);
+    logTable = destroyDataTable(logTable);
+    downtimeTable = destroyDataTable(downtimeTable);
+    portTable = destroyDataTable(portTable, true);
+    hrSystemTable = destroyDataTable(hrSystemTable, true);
+    hrStorageTable = destroyDataTable(hrStorageTable, true);
+    hrDeviceTable = destroyDataTable(hrDeviceTable);
+    hrFileSystemTable = destroyDataTable(hrFileSystemTable);
+    hrProcessTable = destroyDataTable(hrProcessTable, true);
   };
 
-  const safeInit = (selector: string, initFn: () => void) => {
+  const safeInit = (selector: string, initFn: () => void, expectedTabSeq = tabSeq) => {
     let retries = 0;
     const checkAndInit = () => {
+      if (!show || expectedTabSeq !== tabSeq) {
+        return;
+      }
       if (document.querySelector(selector)) {
         try {
           initFn();
@@ -198,6 +164,7 @@
   };
 
   const showLog = async () => {
+    const seq = tabSeq;
     clearSelectedCount();
     const logs = await GetEventLogs({
       NodeID:id,
@@ -208,7 +175,7 @@
       EventType:"",
       Level:0,
     });
-    if (activeTab !== "log") return;
+    if (!show || seq !== tabSeq || activeTab !== "log") return;
     safeInit("#nodeReportLogTable", () => {
       logTable = new DataTable("#nodeReportLogTable", {
         destroy: true,
@@ -240,10 +207,11 @@
           },
         ],
       });
-    });
+    }, seq);
   };
 
   const showDowntime = async () => {
+    const seq = tabSeq;
     clearSelectedCount();
     const [logs, pollings] = await Promise.all([
       GetEventLogs({
@@ -257,15 +225,19 @@
       }),
       GetPollings(id),
     ]);
-    if (activeTab !== "downtime") return;
+    if (!show || seq !== tabSeq || activeTab !== "downtime") return;
     downtimeStats = calcNodeDowntimeAndSLA(logs, pollings);
     await tick();
-    chart = showNodeDowntimeChart("nodeDowntimeChart", logs, pollings);
-    await initDowntimeTable();
+    if (!show || seq !== tabSeq || activeTab !== "downtime") return;
+    chart = showNodeDowntimeChart("nodeDowntimeChart", logs, pollings, downtimeStats);
+    await initDowntimeTable(seq);
   };
 
-  const initDowntimeTable = async () => {
+  const initDowntimeTable = async (expectedTabSeq = tabSeq) => {
     await tick();
+    if (!show || expectedTabSeq !== tabSeq || activeTab !== "downtime") {
+      return;
+    }
     if (!document.getElementById("nodeDowntimeTable")) {
       return;
     }
@@ -460,29 +432,33 @@
   let pVPanel: any = [];
 
   const showVPanel = async () => {
+    const seq = tabSeq;
     clearSelectedCount();
     showVPanelBtn = true;
     if (!ports) {
       waitVPanel = true;
-      const p = await GetVPanelPorts(id);
-      const pow = await GetVPanelPowerInfo(id);
-      if (activeTab !== "panel") return;
-      ports = p;
-      power = pow;
-      waitVPanel = false;
+      try {
+        const p = await GetVPanelPorts(id);
+        const pow = await GetVPanelPowerInfo(id);
+        if (!show || seq !== tabSeq || activeTab !== "panel") return;
+        ports = p;
+        power = pow;
+      } finally {
+        waitVPanel = false;
+      }
     }
-    if (activeTab !== "panel") return;
+    if (!show || seq !== tabSeq || activeTab !== "panel") return;
     const portsList = ports || [];
     pVPanel = physicalPort ? portsList.filter((e: any) => e.Type == 6) : portsList;
 
     if (ports && ports.length > 0) {
       safeInit("#vpanel", () => {
         initVPanel("vpanel");
-      });
+      }, seq);
 
       safeInit("#portTable", () => {
         showPortTable(pVPanel);
-      });
+      }, seq);
     }
   };
 
@@ -589,17 +565,21 @@
   let waitHr = false;
 
   const showHrSystem = async () => {
+    const seq = tabSeq;
     if (!hostResource) {
       waitHr = true;
-      const res = await GetHostResource(id);
-      if (activeTab !== "hostinfo") return;
-      hostResource = res;
-      waitHr = false;
+      try {
+        const res = await GetHostResource(id);
+        if (!show || seq !== tabSeq || activeTab !== "hostinfo") return;
+        hostResource = res;
+      } finally {
+        waitHr = false;
+      }
     }
     if (!hostResource) {
       return;
     }
-    if (activeTab !== "hostinfo") return;
+    if (!show || seq !== tabSeq || activeTab !== "hostinfo") return;
     clearSelectedCount();
     safeInit("#hrSystemTable", () => {
       hrSystemTable = new DataTable("#hrSystemTable", {
@@ -1078,29 +1058,41 @@
   };
 
   const onOpen = async () => {
+    const seq = ++openSeq;
+    tabSeq++;
     node = undefined;
     ports = undefined;
     power = undefined;
     hostResource = undefined;
-    logTable = undefined;
     pollingTmp = undefined;
     memo = "";
+    nodeImage = "";
+    rawImageSrc = "";
     activeTab = "basic";
+    prevActiveTab = "basic";
     clearSelectedCount();
     try {
       const conf = await GetMapConf();
+      if (!show || seq !== openSeq) return;
       hasAI = !!(conf && conf.LLMProvider && conf.LLMProvider !== "none");
     } catch (e) {
       hasAI = false;
     }
     try {
-      node = await GetNode(id);
-      memo = await GetNodeMemo(id);
-      nodeImage = await GetNodeImage(id);
+      const [loadedNode, loadedMemo, loadedImage] = await Promise.all([
+        GetNode(id),
+        GetNodeMemo(id),
+        GetNodeImage(id),
+      ]);
+      if (!show || seq !== openSeq) return;
+      node = loadedNode;
+      memo = loadedMemo;
+      nodeImage = loadedImage;
       rawImageSrc = nodeImage;
       if (nodeImage) {
         const img = new Image();
         img.onload = () => {
+          if (!show || seq !== openSeq) return;
           imgNaturalWidth = img.naturalWidth || img.width;
           imgNaturalHeight = img.naturalHeight || img.height;
           imgResizedWidth = imgNaturalWidth;
@@ -1115,6 +1107,7 @@
       }
       confirmDelete = false;
     } catch (e) {
+      if (!show || seq !== openSeq) return;
       console.error("Error loading node/memo/image:", e);
       node = {
         ID: id,
@@ -1128,6 +1121,7 @@
   };
 
   const handleTabChange = (tab: string) => {
+    tabSeq++;
     switch (tab) {
       case "basic":
         clearSelectedCount();
@@ -1171,19 +1165,21 @@
     }
   };
 
-  $: if (activeTab) {
+  let prevActiveTab = "basic";
+  $: if (show && activeTab && activeTab !== prevActiveTab) {
+    prevActiveTab = activeTab;
     handleTabChange(activeTab);
   }
 
   const resizeChart = () => {
-    if (chart) {
+    if (chart && !chart.isDisposed?.()) {
       try {
         chart.resize();
       } catch (e) {
         // ignore
       }
     }
-    if (chartMem) {
+    if (chartMem && !chartMem.isDisposed?.()) {
       try {
         chartMem.resize();
       } catch (e) {
@@ -1383,11 +1379,21 @@
     if (show && !prevShow) {
       onOpen();
     } else if (!show && prevShow) {
-      deleteVPanel();
+      openSeq++;
+      tabSeq++;
+      activeTab = "basic";
+      prevActiveTab = "basic";
+      clearSelectedCount();
       dispatch('close');
     }
     prevShow = show;
   }
+
+  onDestroy(() => {
+    openSeq++;
+    tabSeq++;
+    clearSelectedCount();
+  });
 </script>
 
 <svelte:window onresize={resizeChart} />

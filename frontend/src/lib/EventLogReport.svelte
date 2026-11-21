@@ -73,7 +73,7 @@
     switch (t) {
       case "downtime":
         downtimeStats = calcEventLogDowntimeAndSLA(logs);
-        chart = showEventLogDowntimeChart("downtimeChart", logs);
+        chart = showEventLogDowntimeChart("downtimeChart", logs, downtimeStats);
         await initDowntimeTable();
         break;
       case "state":
@@ -149,6 +149,16 @@
   };
 
   const close = () => {
+    if (chart) {
+      try {
+        if (!chart.isDisposed?.()) {
+          chart.dispose();
+        }
+      } catch (e) {
+        // ignore
+      }
+      chart = undefined;
+    }
     if (downtimeTable) {
       try {
         downtimeTable.destroy();
@@ -161,7 +171,7 @@
   };
 
   const resizeChart = () => {
-    if (chart) {
+    if (chart && !chart.isDisposed?.()) {
       chart.resize();
     }
   };

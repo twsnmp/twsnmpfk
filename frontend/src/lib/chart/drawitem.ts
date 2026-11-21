@@ -6,17 +6,31 @@ const COLOR_SUCCESS = '#10b981'
 const COLOR_WARNING = '#f59e0b'
 const COLOR_DANGER = '#ef4444'
 
+const renderSvgDataUrl = (
+  width: number,
+  height: number,
+  option: any,
+  backgroundColor: string
+): string => {
+  const chart = echarts.init(null, null, {
+    renderer: 'svg',
+    ssr: true,
+    width,
+    height,
+  })
+  try {
+    chart.setOption(option)
+    return chart.getDataURL({ backgroundColor })
+  } finally {
+    // SSR mode still registers the instance globally; dispose immediately to avoid leaking across map refreshes.
+    chart.dispose()
+  }
+}
+
 /**
  * Modern Ring Gauge (twFathom Style)
  */
 export const gauge = (title: string, val: number, backgroundColor: string): string => {
-  const chart = echarts.init(null, null, {
-    renderer: 'svg',
-    ssr: true,
-    width: 600,
-    height: 600,
-  })
-
   // Determine accent color by threshold
   const accentColor = val >= 90 ? COLOR_DANGER : val >= 80 ? COLOR_WARNING : COLOR_PRIMARY
 
@@ -82,7 +96,7 @@ export const gauge = (title: string, val: number, backgroundColor: string): stri
           fontFamily: 'Outfit, Inter, sans-serif',
         },
         detail: {
-          valueAnimation: true,
+          valueAnimation: false,
           fontSize: 48,
           fontWeight: 800,
           offsetCenter: [0, '5%'],
@@ -99,21 +113,13 @@ export const gauge = (title: string, val: number, backgroundColor: string): stri
       },
     ],
   }
-  chart.setOption(option)
-  return chart.getDataURL({ backgroundColor })
+  return renderSvgDataUrl(600, 600, option, backgroundColor)
 }
 
 /**
  * Modern Area Sparkline (twFathom Style)
  */
 export const line = (title: string, color: string, values: number[], backgroundColor: string): string => {
-  const chart = echarts.init(null, null, {
-    renderer: 'svg',
-    ssr: true,
-    width: 440,
-    height: 120,
-  })
-
   const strokeColor = color && color !== 'white' ? color : COLOR_PRIMARY
   const safeValues = values && values.length > 0 ? values : [0]
   const lastVal = safeValues[safeValues.length - 1]
@@ -191,21 +197,13 @@ export const line = (title: string, color: string, values: number[], backgroundC
       },
     ],
   }
-  chart.setOption(option)
-  return chart.getDataURL({ backgroundColor })
+  return renderSvgDataUrl(440, 120, option, backgroundColor)
 }
 
 /**
  * Modern Capsule Progress Bar (twFathom Style)
  */
 export const bar = (title: string, color: string, value: number, backgroundColor: string): string => {
-  const chart = echarts.init(null, null, {
-    renderer: 'svg',
-    ssr: true,
-    width: 440,
-    height: 90,
-  })
-
   const barColor = color && color !== 'white' ? color : COLOR_PRIMARY
   const safeVal = Math.min(100, Math.max(0, value))
 
@@ -270,8 +268,7 @@ export const bar = (title: string, color: string, value: number, backgroundColor
       },
     ],
   }
-  chart.setOption(option)
-  return chart.getDataURL({ backgroundColor })
+  return renderSvgDataUrl(440, 90, option, backgroundColor)
 }
 
 /**

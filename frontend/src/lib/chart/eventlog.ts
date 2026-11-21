@@ -4,6 +4,29 @@ const $_ = unwrapFunctionStore(_);
 
 let chart:any;
 
+const disposeChartOnElement = (div: string): HTMLElement | null => {
+  const el = document.getElementById(div);
+  if (!el) {
+    return null;
+  }
+  const existing = echarts.getInstanceByDom(el);
+  if (existing && !existing.isDisposed()) {
+    try {
+      existing.dispose();
+    } catch {
+      // ignore
+    }
+  }
+  if (chart && !chart.isDisposed?.()) {
+    try {
+      chart.dispose();
+    } catch {
+      // ignore
+    }
+  }
+  return el;
+};
+
 export const showLogHeatmap = (div:string, logs:any) => {
   if (chart) {
     chart.dispose()
@@ -842,9 +865,13 @@ export const calcEventLogDowntimeAndSLA = (logs: any) => {
   };
 };
 
-export const showEventLogDowntimeChart = (div: string, logs: any) => {
-  const stats = calcEventLogDowntimeAndSLA(logs);
-  const nodeStats = stats.nodeStats.sort((a, b) => b.totalDowntimeSec - a.totalDowntimeSec);
+export const showEventLogDowntimeChart = (
+  div: string,
+  logs: any,
+  precomputedStats?: ReturnType<typeof calcEventLogDowntimeAndSLA>
+) => {
+  const stats = precomputedStats || calcEventLogDowntimeAndSLA(logs);
+  const nodeStats = [...stats.nodeStats].sort((a, b) => b.totalDowntimeSec - a.totalDowntimeSec);
 
   const categories: string[] = [];
   const downtimeData: number[] = [];
@@ -862,10 +889,11 @@ export const showEventLogDowntimeChart = (div: string, logs: any) => {
     slaData.push(Number(n.sla.toFixed(3)));
   });
 
-  if (chart) {
-    chart.dispose();
+  const el = disposeChartOnElement(div);
+  if (!el) {
+    return undefined;
   }
-  chart = echarts.init(document.getElementById(div), 'dark');
+  chart = echarts.init(el, 'dark');
   chart.setOption({
     title: {
       show: false,
@@ -1226,9 +1254,14 @@ export const calcNodeDowntimeAndSLA = (logs: any, pollings?: any[]) => {
   };
 };
 
-export const showNodeDowntimeChart = (div: string, logs: any, pollings?: any[]) => {
-  const stats = calcNodeDowntimeAndSLA(logs, pollings);
-  const pollingStats = stats.pollingStats.sort((a, b) => b.totalDowntimeSec - a.totalDowntimeSec);
+export const showNodeDowntimeChart = (
+  div: string,
+  logs: any,
+  pollings?: any[],
+  precomputedStats?: ReturnType<typeof calcNodeDowntimeAndSLA>
+) => {
+  const stats = precomputedStats || calcNodeDowntimeAndSLA(logs, pollings);
+  const pollingStats = [...stats.pollingStats].sort((a, b) => b.totalDowntimeSec - a.totalDowntimeSec);
 
   const categories: string[] = [];
   const downtimeData: number[] = [];
@@ -1245,10 +1278,11 @@ export const showNodeDowntimeChart = (div: string, logs: any, pollings?: any[]) 
     slaData.push(Number(p.sla.toFixed(3)));
   });
 
-  if (chart) {
-    chart.dispose();
+  const el = disposeChartOnElement(div);
+  if (!el) {
+    return undefined;
   }
-  chart = echarts.init(document.getElementById(div), 'dark');
+  chart = echarts.init(el, 'dark');
   chart.setOption({
     title: {
       show: false,

@@ -49,16 +49,55 @@ const selectedDrawItems: any = [];
 let selectedNetwork = "";
 
 const imageMap = new Map();
+const drawItemRenderCache = new Map<string, string>();
 let mapState = 0;
 let editDrawItems = false;
 let showNodeInfo = false;
 
 let _mapP5: P5 | undefined = undefined;
+let mapLoopPaused = false;
 let beepHigh: any = undefined;
 let beepLow: any = undefined;
 let scale = 1.0;
 let mapConf: any = undefined;
 let portImage: any = undefined;
+
+const releaseP5Image = (img: any) => {
+  if (img && img.canvas) {
+    img.canvas.width = 0;
+    img.canvas.height = 0;
+  }
+};
+
+const updateDrawItemImage = (
+  key: string,
+  cacheKey: string,
+  renderUrl: () => string
+) => {
+  if (!_mapP5) {
+    return;
+  }
+  if (drawItemRenderCache.get(key) === cacheKey && imageMap.has(key)) {
+    return;
+  }
+  drawItemRenderCache.set(key, cacheKey);
+  const dataUrl = renderUrl();
+  const img = _mapP5.loadImage(dataUrl, (loaded) => {
+    if (!_mapP5) {
+      releaseP5Image(loaded);
+      return;
+    }
+    const prev = imageMap.get(key);
+    imageMap.set(key, loaded);
+    if (prev && prev !== loaded) {
+      releaseP5Image(prev);
+    }
+    mapRedraw = true;
+  });
+  if (!imageMap.has(key)) {
+    imageMap.set(key, img);
+  }
+};
 
 export const initMAP = async (div: HTMLElement, cb: any) => {
   const settings = await GetSettings();
@@ -88,6 +127,7 @@ export const initMAP = async (div: HTMLElement, cb: any) => {
   if (_mapP5 != undefined) {
     return;
   }
+  mapLoopPaused = false;
   div.oncontextmenu = (e) => {
     e.preventDefault();
   };
@@ -141,6 +181,15 @@ export const updateMAP = async () => {
       }
     }
   }
+  for (const key of drawItemRenderCache.keys()) {
+    const it = items[key];
+    if (!it || (it.Type !== 6 && it.Type !== 7 && it.Type !== 8 && it.Type !== 11)) {
+      drawItemRenderCache.delete(key);
+      const old = imageMap.get(key);
+      imageMap.delete(key);
+      releaseP5Image(old);
+    }
+  }
   for (const k in items) {
     switch (items[k].Type) {
       case 3:
@@ -174,57 +223,28 @@ export const updateMAP = async () => {
       }
       case 6: { // New Gauge
         items[k].W = items[k].H;
-        const dataUrl = gauge(items[k].Text || "", items[k].Value || 0, backColor);
-        const img = _mapP5.loadImage(
-          dataUrl,
-          (loaded) => {
-            imageMap.set(k, loaded);
-            mapRedraw = true;
-          }
-        );
-        if (!imageMap.has(k)) {
-          imageMap.set(k, img);
-        }
+        const text = items[k].Text || "";
+        const val = items[k].Value || 0;
+        const cacheKey = JSON.stringify([6, text, val, backColor]);
+        updateDrawItemImage(k, cacheKey, () => gauge(text, val, backColor));
         break;
       }
       case 7: { // Bar
         items[k].W = items[k].H * 4;
-        const dataUrl = bar(
-          items[k].Text || "",
-          items[k].Color || "white",
-          items[k].Value || 0,
-          backColor
-        );
-        const img = _mapP5.loadImage(
-          dataUrl,
-          (loaded) => {
-            imageMap.set(k, loaded);
-            mapRedraw = true;
-          }
-        );
-        if (!imageMap.has(k)) {
-          imageMap.set(k, img);
-        }
+        const text = items[k].Text || "";
+        const color = items[k].Color || "white";
+        const val = items[k].Value || 0;
+        const cacheKey = JSON.stringify([7, text, color, val, backColor]);
+        updateDrawItemImage(k, cacheKey, () => bar(text, color, val, backColor));
         break;
       }
       case 8: { // Line
         items[k].W = items[k].H * 4;
-        const dataUrl = line(
-          items[k].Text || "",
-          items[k].Color || "white",
-          items[k].Values || [],
-          backColor
-        );
-        const img = _mapP5.loadImage(
-          dataUrl,
-          (loaded) => {
-            imageMap.set(k, loaded);
-            mapRedraw = true;
-          }
-        );
-        if (!imageMap.has(k)) {
-          imageMap.set(k, img);
-        }
+        const text = items[k].Text || "";
+        const color = items[k].Color || "white";
+        const values = items[k].Values || [];
+        const cacheKey = JSON.stringify([8, text, color, values, backColor]);
+        updateDrawItemImage(k, cacheKey, () => line(text, color, values, backColor));
         break;
       }
       case 11: { // KPI Card
@@ -240,26 +260,13 @@ export const updateMAP = async () => {
         if (!text && items[k].Value !== undefined) {
           text = items[k].Value.toFixed(1);
         }
-        const dataUrl = kpi(
-          title,
-          text,
-          items[k].Value || 0,
-          items[k].Color || "#00d2ff",
-          items[k].Values || [],
-          dark,
-          items[k].W,
-          items[k].H
+        const val = items[k].Value || 0;
+        const color = items[k].Color || "#00d2ff";
+        const values = items[k].Values || [];
+        const cacheKey = JSON.stringify([11, title, text, val, color, values, dark, kpiW, kpiH]);
+        updateDrawItemImage(k, cacheKey, () =>
+          kpi(title, text, val, color, values, dark, kpiW, kpiH)
         );
-        const img = _mapP5.loadImage(
-          dataUrl,
-          (loaded) => {
-            imageMap.set(k, loaded);
-            mapRedraw = true;
-          }
-        );
-        if (!imageMap.has(k)) {
-          imageMap.set(k, img);
-        }
         break;
       }
     }
@@ -300,6 +307,19 @@ export const setMapReadOnly = (ro: boolean) => {
   readOnly = ro || settingsLock;
 };
 
+export const setMapLoopPaused = (paused: boolean) => {
+  mapLoopPaused = paused;
+  if (!_mapP5) {
+    return;
+  }
+  if (paused) {
+    _mapP5.noLoop();
+  } else {
+    mapRedraw = true;
+    _mapP5.loop();
+  }
+};
+
 let player: HTMLAudioElement = new Audio();
 
 const _checkBeep = async () => {
@@ -322,7 +342,11 @@ const _checkBeep = async () => {
 };
 
 export const resetMap = () => {
+  for (const img of imageMap.values()) {
+    releaseP5Image(img);
+  }
   imageMap.clear();
+  drawItemRenderCache.clear();
 };
 
 export const deleteMap = () => {
@@ -330,6 +354,13 @@ export const deleteMap = () => {
     _mapP5.remove();
     _mapP5 = undefined;
   }
+  mapLoopPaused = false;
+  resetMap();
+  releaseP5Image(portImage);
+  portImage = undefined;
+  releaseP5Image(_backImage);
+  _backImage = undefined;
+  lastBackImagePath = "";
 };
 
 export const grid = (g: number, test: boolean) => {
@@ -862,8 +893,15 @@ const mapMain = (p5: P5) => {
   p5.setup = () => {
     const c = p5.createCanvas(mapSizeX, mapSizeY);
     c.mousePressed(canvasMousePressed);
+    p5.frameRate(30);
+    if (mapLoopPaused) {
+      p5.noLoop();
+    }
   };
   p5.draw = () => {
+    if (mapLoopPaused) {
+      return;
+    }
     const dark = isDark();
     if (dark != oldDark) {
       mapRedraw = true;
