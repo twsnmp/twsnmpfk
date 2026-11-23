@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -287,6 +288,81 @@ func GetAllPollingLog(pollingID string) []*PollingLogEnt {
 				continue
 			}
 			ret = append(ret, &l)
+		}
+		return nil
+	})
+	return ret
+}
+
+// GetPollingLogsBatch retrieves polling logs for multiple polling IDs in a single pass
+// filtered by [stSec, etSec] (Unix seconds; 0 means unbounded).
+func GetPollingLogsBatch(
+	ctx context.Context,
+	pollingIDs []string,
+	stSec, etSec int64,
+	progressCb func(done, total int),
+) map[string][]*PollingLogEnt {
+	if UseParquetLog() {
+		return logStore.GetPollingLogsBatch(ctx, pollingIDs, stSec, etSec, progressCb)
+	}
+	ret := make(map[string][]*PollingLogEnt, len(pollingIDs))
+	for _, id := range pollingIDs {
+		ret[id] = []*PollingLogEnt{}
+	}
+	if db == nil || len(pollingIDs) == 0 {
+		return ret
+	}
+	var stNano, etNano int64
+	if stSec > 0 {
+		stNano = stSec * 1e9
+	}
+	if etSec > 0 {
+		etNano = etSec * 1e9
+	}
+	sk := fmt.Sprintf("%016x", stNano)
+	total := len(pollingIDs)
+	if progressCb != nil {
+		progressCb(0, total)
+	}
+	_ = db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte("pollingLogs"))
+		if b == nil {
+			return nil
+		}
+		for idx, id := range pollingIDs {
+			if ctx != nil && ctx.Err() != nil {
+				break
+			}
+			bs := b.Bucket([]byte(id))
+			if bs == nil {
+				if progressCb != nil {
+					progressCb(idx+1, total)
+				}
+				continue
+			}
+			c := bs.Cursor()
+			var k, v []byte
+			if stNano > 0 {
+				k, v = c.Seek([]byte(sk))
+			} else {
+				k, v = c.First()
+			}
+			for ; k != nil; k, v = c.Next() {
+				var l PollingLogEnt
+				if err := json.Unmarshal(v, &l); err != nil {
+					continue
+				}
+				if stNano > 0 && l.Time < stNano {
+					continue
+				}
+				if etNano > 0 && l.Time > etNano {
+					break
+				}
+				ret[id] = append(ret[id], &l)
+			}
+			if progressCb != nil {
+				progressCb(idx+1, total)
+			}
 		}
 		return nil
 	})

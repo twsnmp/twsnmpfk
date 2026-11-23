@@ -24,6 +24,8 @@ export function Backup():Promise<boolean>;
 
 export function CalculateSyslogAnomaly(arg1:Array<datastore.SyslogEnt>,arg2:string,arg3:string):Promise<backend.SyslogAnomalyResponse>;
 
+export function CancelCorrelationDiscovery():Promise<boolean>;
+
 export function CancelGPUDownload():Promise<string>;
 
 export function CancelModelDownload():Promise<string>;

@@ -1,15 +1,18 @@
 package datastore
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/parquet-go/parquet-go"
@@ -608,6 +611,167 @@ func (s *ParquetLogDataStore) GetAllPollingLog(pollingID string) []*PollingLogEn
 			}
 			_ = reader.Close()
 			_ = f.Close()
+		}
+	}
+	return ret
+}
+
+// GetPollingLogsBatch retrieves polling logs for multiple polling IDs in a single pass,
+// filtering by date directories and nanosecond timestamp range [stSec, etSec].
+func (s *ParquetLogDataStore) GetPollingLogsBatch(
+	ctx context.Context,
+	pollingIDs []string,
+	stSec, etSec int64,
+	progressCb func(done, total int),
+) map[string][]*PollingLogEnt {
+	_ = s.Flush()
+
+	ret := make(map[string][]*PollingLogEnt, len(pollingIDs))
+	if len(pollingIDs) == 0 {
+		return ret
+	}
+	idSet := make(map[string]bool, len(pollingIDs))
+	for _, id := range pollingIDs {
+		idSet[id] = true
+		ret[id] = []*PollingLogEnt{}
+	}
+
+	tDir := filepath.Join(s.dirPath, "type=polling")
+	dateDirs, _ := filepath.Glob(filepath.Join(tDir, "date=*"))
+	if len(dateDirs) == 0 {
+		return ret
+	}
+	sort.Strings(dateDirs)
+
+	var stNano, etNano int64
+	startDateStr := ""
+	endDateStr := ""
+	if stSec > 0 {
+		stNano = stSec * 1e9
+		startDateStr = time.Unix(stSec, 0).Format("2006-01-02")
+	}
+	if etSec > 0 {
+		etNano = etSec * 1e9
+		endDateStr = time.Unix(etSec, 0).Format("2006-01-02")
+	} else {
+		etNano = time.Now().UnixNano()
+		endDateStr = time.Unix(0, etNano).Format("2006-01-02")
+	}
+
+	var targetFiles []string
+	for _, dDir := range dateDirs {
+		base := filepath.Base(dDir)
+		dStr := strings.TrimPrefix(base, "date=")
+		if startDateStr != "" && dStr < startDateStr {
+			continue
+		}
+		if endDateStr != "" && dStr > endDateStr {
+			continue
+		}
+		files, err := filepath.Glob(filepath.Join(dDir, "*.parquet"))
+		if err != nil || len(files) == 0 {
+			continue
+		}
+		sort.Strings(files)
+		for _, fp := range files {
+			if !strings.HasPrefix(filepath.Base(fp), "compacting_") {
+				targetFiles = append(targetFiles, fp)
+			}
+		}
+	}
+
+	totalFiles := len(targetFiles)
+	if progressCb != nil {
+		progressCb(0, totalFiles)
+	}
+	if totalFiles == 0 {
+		return ret
+	}
+
+	fileResults := make([]map[string][]*PollingLogEnt, totalFiles)
+	workers := runtime.GOMAXPROCS(0)
+	if workers < 1 {
+		workers = 1
+	}
+	if workers > totalFiles {
+		workers = totalFiles
+	}
+
+	var nextIdx atomic.Int64
+	var doneCount atomic.Int64
+	var wg sync.WaitGroup
+
+	for w := 0; w < workers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				if ctx != nil && ctx.Err() != nil {
+					return
+				}
+				idx := int(nextIdx.Add(1) - 1)
+				if idx >= totalFiles {
+					return
+				}
+				filePath := targetFiles[idx]
+				local := make(map[string][]*PollingLogEnt)
+
+				f, err := os.Open(filePath)
+				if err == nil {
+					if fi, err := f.Stat(); err == nil && fi.Size() > 0 {
+						if pf, err := parquet.OpenFile(f, fi.Size()); err == nil {
+							reader := parquet.NewGenericReader[ParquetLogRecord](pf)
+							buf := make([]ParquetLogRecord, 1024)
+							for {
+								if ctx != nil && ctx.Err() != nil {
+									break
+								}
+								n, err := reader.Read(buf)
+								if n > 0 {
+									for i := 0; i < n; i++ {
+										rec := &buf[i]
+										if !idSet[rec.Src] {
+											continue
+										}
+										if stNano > 0 && rec.Time < stNano {
+											continue
+										}
+										if etNano > 0 && rec.Time > etNano {
+											continue
+										}
+										var payload pollingLogPayload
+										if err := json.Unmarshal([]byte(rec.Log), &payload); err != nil {
+											continue
+										}
+										local[rec.Src] = append(local[rec.Src], &PollingLogEnt{
+											Time:      rec.Time,
+											PollingID: rec.Src,
+											State:     payload.State,
+											Result:    payload.Result,
+										})
+									}
+								}
+								if err != nil {
+									break
+								}
+							}
+							_ = reader.Close()
+						}
+					}
+					_ = f.Close()
+				}
+				fileResults[idx] = local
+				if progressCb != nil {
+					progressCb(int(doneCount.Add(1)), totalFiles)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+
+	for _, local := range fileResults {
+		for id, list := range local {
+			ret[id] = append(ret[id], list...)
 		}
 	}
 	return ret

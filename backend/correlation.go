@@ -10,13 +10,47 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/twsnmp/twsnmpfk/datastore"
 	"gonum.org/v1/gonum/stat/distuv"
 )
 
-var getPollingLogsFunc = datastore.GetAllPollingLog
+var getPollingLogsFunc func(string) []*datastore.PollingLogEnt
+
+func fetchPollingLogsBatch(
+	ctx context.Context,
+	pollingIDs []string,
+	stSec, etSec int64,
+	progressCb func(done, total int),
+) map[string][]*datastore.PollingLogEnt {
+	if getPollingLogsFunc != nil {
+		out := make(map[string][]*datastore.PollingLogEnt, len(pollingIDs))
+		if progressCb != nil {
+			progressCb(0, len(pollingIDs))
+		}
+		for i, id := range pollingIDs {
+			if ctx != nil && ctx.Err() != nil {
+				break
+			}
+			out[id] = getPollingLogsFunc(id)
+			if progressCb != nil {
+				progressCb(i+1, len(pollingIDs))
+			}
+		}
+		return out
+	}
+	return datastore.GetPollingLogsBatch(ctx, pollingIDs, stSec, etSec, progressCb)
+}
+
+// CorrelationProgress reports progress during polling correlation discovery.
+type CorrelationProgress struct {
+	Phase   string `json:"Phase"`
+	Current int    `json:"Current"`
+	Total   int    `json:"Total"`
+	Message string `json:"Message"`
+}
 
 const (
 	corrAlgoPearson   = "pearson"
@@ -1035,8 +1069,13 @@ func AnalyzePollingCorrelation(req CorrelationPairReq) CorrelationPairRes {
 		res.NodeName2 = n2.Name
 	}
 
-	logs1 := getPollingLogsFunc(p1.ID)
-	logs2 := getPollingLogsFunc(p2.ID)
+	ids := []string{p1.ID}
+	if p2.ID != p1.ID {
+		ids = append(ids, p2.ID)
+	}
+	logsMap := fetchPollingLogsBatch(context.Background(), ids, req.StartTime, req.EndTime, nil)
+	logs1 := logsMap[p1.ID]
+	logs2 := logsMap[p2.ID]
 	if len(logs1) == 0 || len(logs2) == 0 {
 		res.Error = "insufficient polling logs"
 		return res
@@ -1272,14 +1311,34 @@ func evaluatePairForDiscovery(bs1, bs2 *pollingBucketSeries, algo string, bucket
 
 // DiscoverPollingCorrelations scans pollings in parallel and ranks correlated pairs.
 func DiscoverPollingCorrelations(ctx context.Context, req CorrelationDiscoverReq) CorrelationDiscoverRes {
+	return DiscoverPollingCorrelationsWithProgress(ctx, req, nil)
+}
+
+// DiscoverPollingCorrelationsWithProgress scans pollings in a single log pass and reports progress.
+func DiscoverPollingCorrelationsWithProgress(
+	ctx context.Context,
+	req CorrelationDiscoverReq,
+	progressCb func(CorrelationProgress),
+) CorrelationDiscoverRes {
 	startTime := time.Now()
 	if ctx == nil {
 		ctx = context.Background()
 	}
+	emit := func(phase string, current, total int, msg string) {
+		if progressCb != nil {
+			progressCb(CorrelationProgress{
+				Phase:   phase,
+				Current: current,
+				Total:   total,
+				Message: msg,
+			})
+		}
+	}
+
 	algo := normalizeAlgorithm(req.Algorithm)
 	minAbs := req.MinAbsScore
-	if minAbs <= 0 {
-		minAbs = 0.7
+	if minAbs < 0 {
+		minAbs = 0
 	}
 	minSamples := req.MinSamples
 	if minSamples < 5 {
@@ -1315,7 +1374,7 @@ func DiscoverPollingCorrelations(ctx context.Context, req CorrelationDiscoverReq
 		}
 	}
 
-	// Gather target pollings and build bucketed series once per polling
+	// Gather target pollings
 	var pollings []*datastore.PollingEnt
 	datastore.ForEachPollings(func(p *datastore.PollingEnt) bool {
 		if p.LogMode == datastore.LogModeNone {
@@ -1332,14 +1391,32 @@ func DiscoverPollingCorrelations(ctx context.Context, req CorrelationDiscoverReq
 		return pollings[i].ID < pollings[j].ID
 	})
 
+	pollingIDs := make([]string, 0, len(pollings))
+	for _, p := range pollings {
+		pollingIDs = append(pollingIDs, p.ID)
+	}
+
+	emit("loading", 0, len(pollingIDs), "")
+	logsMap := fetchPollingLogsBatch(ctx, pollingIDs, req.StartTime, req.EndTime, func(done, total int) {
+		emit("loading", done, total, "")
+	})
+	if ctx.Err() != nil {
+		res.Error = ctx.Err().Error()
+		res.DurationMs = time.Since(startTime).Milliseconds()
+		emit("canceled", 0, 0, res.Error)
+		return res
+	}
+
 	seriesList := make([]*pollingBucketSeries, 0, len(pollings))
 	seriesMap := make(map[string]*pollingBucketSeries, len(pollings))
 	for _, p := range pollings {
 		if ctx.Err() != nil {
 			res.Error = ctx.Err().Error()
+			res.DurationMs = time.Since(startTime).Milliseconds()
+			emit("canceled", 0, 0, res.Error)
 			return res
 		}
-		logs := getPollingLogsFunc(p.ID)
+		logs := logsMap[p.ID]
 		if len(logs) < minSamples {
 			continue
 		}
@@ -1370,6 +1447,7 @@ func DiscoverPollingCorrelations(ctx context.Context, req CorrelationDiscoverReq
 		if !ok {
 			res.Error = "base polling has insufficient logs"
 			res.DurationMs = time.Since(startTime).Milliseconds()
+			emit("done", 0, 0, res.Error)
 			return res
 		}
 		for _, other := range seriesList {
@@ -1394,9 +1472,11 @@ func DiscoverPollingCorrelations(ctx context.Context, req CorrelationDiscoverReq
 	res.EvaluatedPairs = len(pairs)
 	if len(pairs) == 0 {
 		res.DurationMs = time.Since(startTime).Milliseconds()
+		emit("done", 0, 0, "")
 		return res
 	}
 
+	emit("calculating", 0, len(pairs), "")
 	workers := runtime.GOMAXPROCS(0)
 	if workers < 1 {
 		workers = 1
@@ -1408,13 +1488,15 @@ func DiscoverPollingCorrelations(ctx context.Context, req CorrelationDiscoverReq
 	var mu sync.Mutex
 	var found []CorrelationDiscoverItem
 	var wg sync.WaitGroup
-	chunkSize := (len(pairs) + workers - 1) / workers
+	var donePairs atomic.Int64
+	totalPairs := len(pairs)
+	chunkSize := (totalPairs + workers - 1) / workers
 
 	for w := 0; w < workers; w++ {
 		startIdx := w * chunkSize
 		endIdx := startIdx + chunkSize
-		if endIdx > len(pairs) {
-			endIdx = len(pairs)
+		if endIdx > totalPairs {
+			endIdx = totalPairs
 		}
 		if startIdx >= endIdx {
 			continue
@@ -1431,6 +1513,10 @@ func DiscoverPollingCorrelations(ctx context.Context, req CorrelationDiscoverReq
 				if ok && item.AbsScore >= minAbs {
 					local = append(local, item)
 				}
+				c := int(donePairs.Add(1))
+				if c == totalPairs || c%5 == 0 {
+					emit("calculating", c, totalPairs, "")
+				}
 			}
 			if len(local) > 0 {
 				mu.Lock()
@@ -1440,6 +1526,13 @@ func DiscoverPollingCorrelations(ctx context.Context, req CorrelationDiscoverReq
 		}(pairs[startIdx:endIdx])
 	}
 	wg.Wait()
+
+	if ctx.Err() != nil {
+		res.Error = ctx.Err().Error()
+		res.DurationMs = time.Since(startTime).Milliseconds()
+		emit("canceled", int(donePairs.Load()), totalPairs, res.Error)
+		return res
+	}
 
 	sort.Slice(found, func(i, j int) bool {
 		if math.Abs(found[i].AbsScore-found[j].AbsScore) > 1e-12 {
@@ -1459,5 +1552,6 @@ func DiscoverPollingCorrelations(ctx context.Context, req CorrelationDiscoverReq
 	}
 	res.Items = found
 	res.DurationMs = time.Since(startTime).Milliseconds()
+	emit("done", totalPairs, totalPairs, "")
 	return res
 }

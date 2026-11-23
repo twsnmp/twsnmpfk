@@ -34,6 +34,10 @@ export function CalculateSyslogAnomaly(arg1, arg2, arg3) {
   return window['go']['main']['App']['CalculateSyslogAnomaly'](arg1, arg2, arg3);
 }
 
+export function CancelCorrelationDiscovery() {
+  return window['go']['main']['App']['CancelCorrelationDiscovery']();
+}
+
 export function CancelGPUDownload() {
   return window['go']['main']['App']['CancelGPUDownload']();
 }

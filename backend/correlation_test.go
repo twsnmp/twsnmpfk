@@ -366,3 +366,85 @@ func TestMCPCorrelation(t *testing.T) {
 		t.Fatalf("expected error for missing polling ID")
 	}
 }
+
+func TestDiscoverProgressAndCancel(t *testing.T) {
+	setupMCPTestDB(t)
+	_, _, _, _, st, et := setupCorrelationTestEntities(t)
+
+	// 1. Progress phases + MinAbsScore=0 ranking
+	phases := map[string]bool{}
+	res := DiscoverPollingCorrelationsWithProgress(context.Background(), CorrelationDiscoverReq{
+		Algorithm:     "pearson",
+		BucketSec:     60,
+		StartTime:     st,
+		EndTime:       et,
+		MinAbsScore:   0,
+		MinSamples:    10,
+		CrossNodeOnly: true,
+		Limit:         10,
+	}, func(p CorrelationProgress) {
+		phases[p.Phase] = true
+	})
+	if res.Error != "" {
+		t.Fatalf("unexpected error: %s", res.Error)
+	}
+	if !phases["loading"] || !phases["calculating"] || !phases["done"] {
+		t.Fatalf("expected loading/calculating/done phases, got %+v", phases)
+	}
+	if len(res.Items) == 0 {
+		t.Fatalf("expected ranked items with MinAbsScore=0")
+	}
+
+	// 2. Cancellation
+	cctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	cancelPhases := map[string]bool{}
+	resCancel := DiscoverPollingCorrelationsWithProgress(cctx, CorrelationDiscoverReq{
+		Algorithm: "pearson",
+		BucketSec: 60,
+		StartTime: st,
+		EndTime:   et,
+	}, func(p CorrelationProgress) {
+		cancelPhases[p.Phase] = true
+	})
+	if resCancel.Error == "" || !cancelPhases["canceled"] {
+		t.Fatalf("expected canceled error and phase, got err=%q phases=%+v", resCancel.Error, cancelPhases)
+	}
+}
+
+func TestGetPollingLogsBatch(t *testing.T) {
+	_, cancel, wg := setupMCPTestDB(t)
+	n := &datastore.NodeEnt{Name: "BatchNode", IP: "10.0.9.1"}
+	if err := datastore.AddNode(n); err != nil {
+		t.Fatalf("AddNode: %v", err)
+	}
+	p1 := &datastore.PollingEnt{
+		NodeID:  n.ID,
+		Name:    "p1",
+		Type:    "ping",
+		LogMode: datastore.LogModeAlways,
+		Result:  map[string]any{"rtt": 10.0},
+	}
+	p2 := &datastore.PollingEnt{
+		NodeID:  n.ID,
+		Name:    "p2",
+		Type:    "ping",
+		LogMode: datastore.LogModeAlways,
+		Result:  map[string]any{"rtt": 20.0},
+	}
+	_ = datastore.AddPolling(p1)
+	_ = datastore.AddPolling(p2)
+	_ = datastore.AddPollingLog(p1)
+	_ = datastore.AddPollingLog(p2)
+	time.Sleep(10 * time.Millisecond)
+
+	// Flush eventLogger synchronously before querying bbolt
+	cancel()
+	wg.Wait()
+
+	now := time.Now().Unix()
+	batch := datastore.GetPollingLogsBatch(context.Background(), []string{p1.ID, p2.ID}, now-60, now+60, nil)
+	if len(batch[p1.ID]) != 1 || len(batch[p2.ID]) != 1 {
+		t.Fatalf("expected 1 log per polling in batch, got p1=%d p2=%d", len(batch[p1.ID]), len(batch[p2.ID]))
+	}
+}

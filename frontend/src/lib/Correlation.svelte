@@ -21,7 +21,9 @@
     GetCorrelationCandidates,
     AnalyzePollingCorrelation,
     DiscoverPollingCorrelations,
+    CancelCorrelationDiscovery,
   } from "../../wailsjs/go/main/App";
+  import { EventsOn, EventsOff } from "../../wailsjs/runtime/runtime";
   import { getTableLang } from "./common";
   import {
     showCorrelationTimeChart,
@@ -47,13 +49,17 @@
   let discoverAlgo = "pearson";
   let discoverPeriodHours = 168;
   let discoverBucketSec = 0;
-  let minAbsScore = 0.7;
+  let minAbsScore = 0;
   let minSamples = 10;
   let crossNodeOnly = true;
   let discoverIncludeState = false;
   let discoverMaxLag = 6;
-  let discoverLimit = 100;
+  let discoverLimit = 50;
   let discovering = false;
+  let canceling = false;
+  let progressPhase = "";
+  let progressCurrent = 0;
+  let progressTotal = 0;
   let discoverRes: any = null;
   let discoverTable: any = undefined;
   let selectedDiscoverItem: any = null;
@@ -105,13 +111,14 @@
     { value: 3600, name: "1h (3600s)" },
   ]);
 
-  const minScoreItems = [
-    { value: 0.5, name: ">= 0.5" },
+  $: minScoreItems = ($_, $currentLang, [
+    { value: 0, name: $_("Correlation.MinScoreAll") || "すべて表示 (上位ランキング)" },
+    { value: 0.2, name: ">= 0.2" },
+    { value: 0.4, name: ">= 0.4" },
     { value: 0.6, name: ">= 0.6" },
     { value: 0.7, name: ">= 0.7" },
     { value: 0.8, name: ">= 0.8" },
-    { value: 0.9, name: ">= 0.9" },
-  ];
+  ]);
 
   $: nodeOptions = ($_, $currentLang, (() => {
     const map = new Map<string, string>();
@@ -246,8 +253,12 @@
           {
             data: "Score",
             title: $_("Correlation.Score") || "相関係数",
-            width: "12%",
-            render: formatScoreBadge,
+            width: "16%",
+            render: (score: number, type: string) => {
+              if (type === "sort") return Math.abs(score);
+              const meta = getStrengthMeta(score, discoverAlgo, $_);
+              return `${formatScoreBadge(score, type)} <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold ${meta.badgeClass}">${meta.label}</span>`;
+            },
           },
           {
             data: "LagSec",
@@ -296,8 +307,29 @@
     }
   };
 
+  const handleProgress = (p: any) => {
+    if (!p) return;
+    progressPhase = p.Phase || "";
+    progressCurrent = Number(p.Current) || 0;
+    progressTotal = Number(p.Total) || 0;
+  };
+
+  $: progressPercent =
+    progressTotal > 0
+      ? Math.min(100, Math.round((progressCurrent / progressTotal) * 100))
+      : 0;
+
+  const cancelDiscovery = async () => {
+    canceling = true;
+    await CancelCorrelationDiscovery();
+  };
+
   const runDiscovery = async () => {
     discovering = true;
+    canceling = false;
+    progressPhase = "loading";
+    progressCurrent = 0;
+    progressTotal = 0;
     try {
       const { startTime, endTime } = getTimeBounds(discoverPeriodHours);
       discoverRes = await DiscoverPollingCorrelations({
@@ -307,16 +339,19 @@
         BucketSec: Number(discoverBucketSec) || 0,
         StartTime: startTime,
         EndTime: endTime,
-        MinAbsScore: Number(minAbsScore) || 0.7,
+        MinAbsScore: Number(minAbsScore) || 0,
         MinSamples: Number(minSamples) || 10,
         CrossNodeOnly: crossNodeOnly,
         IncludeState: discoverIncludeState,
         MaxLag: Number(discoverMaxLag) || 6,
-        Limit: Number(discoverLimit) || 100,
+        Limit: Number(discoverLimit) || 50,
       } as any);
+      discovering = false;
+      canceling = false;
       await renderDiscoverResults();
     } finally {
       discovering = false;
+      canceling = false;
     }
   };
 
@@ -609,6 +644,7 @@
   };
 
   onMount(async () => {
+    EventsOn("correlation_progress", handleProgress);
     await loadCandidates();
     if (initialMode === "pair" && initialPollingID1 && initialPollingID2) {
       pollingID1 = initialPollingID1;
@@ -626,6 +662,7 @@
   });
 
   onDestroy(() => {
+    EventsOff("correlation_progress");
     destroyDiscoverTable();
     disposeCorrelationChart("corrNetworkChart");
     disposeCorrelationChart("corrPairChart");
@@ -765,10 +802,45 @@
       </div>
     </div>
 
-    {#if discoverRes}
+    {#if discovering}
+      <div class="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/70 dark:bg-blue-900/20 p-3 space-y-2">
+        <div class="flex items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2 text-blue-800 dark:text-blue-200 font-medium">
+            <Spinner size="4" />
+            <span>
+              {progressPhase === "calculating"
+                ? ($_("Correlation.ProgressCalculating") || "相関を計算中...")
+                : ($_("Correlation.ProgressLoading") || "ログを読み込み中...")}
+            </span>
+            {#if progressTotal > 0}
+              <span class="font-mono">({progressCurrent} / {progressTotal} - {progressPercent}%)</span>
+            {/if}
+          </div>
+          <Button
+            size="xs"
+            color="red"
+            disabled={canceling}
+            onclick={cancelDiscovery}
+          >
+            <Icon path={icons.mdiCloseCircleOutline} size={0.85} class="mr-1" />
+            {$_("Correlation.Cancel") || "中止"}
+          </Button>
+        </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+          <div
+            class="bg-blue-600 h-2 rounded-full transition-all duration-150"
+            style="width: {progressTotal > 0 ? progressPercent : 100}%; {progressTotal === 0 ? 'opacity: 0.45;' : ''}"
+          ></div>
+        </div>
+      </div>
+    {/if}
+
+    {#if discoverRes && !discovering}
       {#if discoverRes.Error}
-        <div class="p-2 rounded bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200 text-xs">
-          {discoverRes.Error}
+        <div class="p-2 rounded bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200 text-xs">
+          {discoverRes.Error === "context canceled"
+            ? ($_("Correlation.CanceledMsg") || "探索を中止しました。")
+            : discoverRes.Error}
         </div>
       {/if}
 

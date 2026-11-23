@@ -2634,6 +2634,12 @@
     "AlgoDescSpearman": "順位ベースで外れ値や曲線的な増減に強い",
     "AlgoDescKendall": "順位の一致度を評価（同値・少数に安定）",
     "AlgoDescCrossCorr": "時間を前後にずらして最大の連動を検出",
-    "AlgoDescDCor": "非線形関係や複数変数まとめての関連を検出"
+    "AlgoDescDCor": "非線形関係や複数変数まとめての関連を検出",
+    "MinScoreAll": "すべて表示 (上位ランキング)",
+    "Cancel": "中止",
+    "ProgressLoading": "ログを読み込み中...",
+    "ProgressCalculating": "相関を計算中...",
+    "CanceledMsg": "探索を中止しました。",
+    "StrengthCol": "判定"
   }
 }

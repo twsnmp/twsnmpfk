@@ -2641,6 +2641,12 @@
     "AlgoDescSpearman": "Rank-based; robust to spikes & curves",
     "AlgoDescKendall": "Rank concordance; stable on ties",
     "AlgoDescCrossCorr": "Detects delayed / leading correlation",
-    "AlgoDescDCor": "Detects nonlinear & multi-variable links"
+    "AlgoDescDCor": "Detects nonlinear & multi-variable links",
+    "MinScoreAll": "Show All (Top Ranking)",
+    "Cancel": "Cancel",
+    "ProgressLoading": "Loading polling logs...",
+    "ProgressCalculating": "Calculating correlations...",
+    "CanceledMsg": "Discovery canceled.",
+    "StrengthCol": "Strength"
   }
 }
