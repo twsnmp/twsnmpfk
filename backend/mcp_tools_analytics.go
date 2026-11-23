@@ -84,6 +84,14 @@ func addAnalyticsTools(s *mcp.Server) {
 		Name:        "gnmi_get",
 		Description: "query operational/config telemetry data via gNMI Get from a managed node",
 	}, gnmiGetTool)
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "analyze_polling_correlation",
+		Description: "analyze correlation between two polling log time-series (same or different nodes) using multiple algorithms",
+	}, analyzePollingCorrelationTool)
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "discover_polling_correlations",
+		Description: "automatically discover and rank correlated polling pairs across nodes",
+	}, discoverPollingCorrelationsTool)
 }
 
 // search_netflow tool
@@ -1565,4 +1573,163 @@ func gnmiGetTool(ctx context.Context, req *mcp.CallToolRequest, args gnmiGetPara
 		entries = entries[:limit]
 	}
 	return mcpJSONResult(&entries)
+}
+
+// analyze_polling_correlation tool
+type analyzePollingCorrelationParams struct {
+	PollingID1   string `json:"polling_id_1" jsonschema:"First polling ID"`
+	PollingID2   string `json:"polling_id_2" jsonschema:"Second polling ID"`
+	Vars1        string `json:"vars_1,omitempty" jsonschema:"Comma-separated numeric variable keys for polling 1 (empty for auto)"`
+	Vars2        string `json:"vars_2,omitempty" jsonschema:"Comma-separated numeric variable keys for polling 2 (empty for auto)"`
+	Algorithm    string `json:"algorithm,omitempty" jsonschema:"Primary algorithm: all (default), pearson, spearman, kendall, crosscorr, or dcor"`
+	BucketSec    int64  `json:"bucket_sec,omitempty" jsonschema:"Aggregation time bucket width in seconds (0 for auto)"`
+	PeriodHours  int    `json:"period_hours,omitempty" jsonschema:"Lookback period in hours (default 168, -1 for all logs)"`
+	MaxLag       int    `json:"max_lag,omitempty" jsonschema:"Maximum lag buckets for cross-correlation (default 12, max 60)"`
+	IncludeState bool   `json:"include_state,omitempty" jsonschema:"Include polling state numeric variable (1.0=normal, 0.5=unknown, 0.0=error)"`
+}
+
+type mcpCorrelationPairSummary struct {
+	PollingID1    string                  `json:"PollingID1"`
+	NodeName1     string                  `json:"NodeName1"`
+	PollingName1  string                  `json:"PollingName1"`
+	SelectedVar1  string                  `json:"SelectedVar1"`
+	PollingID2    string                  `json:"PollingID2"`
+	NodeName2     string                  `json:"NodeName2"`
+	PollingName2  string                  `json:"PollingName2"`
+	SelectedVar2  string                  `json:"SelectedVar2"`
+	Vars1         []string                `json:"Vars1"`
+	Vars2         []string                `json:"Vars2"`
+	BucketSec     int64                   `json:"BucketSec"`
+	SampleCount   int                     `json:"SampleCount"`
+	PrimaryScore  float64                 `json:"PrimaryScore"`
+	PrimaryPValue float64                 `json:"PrimaryPValue"`
+	BestLag       int                     `json:"BestLag"`
+	BestLagSec    int64                   `json:"BestLagSec"`
+	Slope         float64                 `json:"Slope"`
+	Intercept     float64                 `json:"Intercept"`
+	Scores        []CorrelationAlgoScore  `json:"Scores"`
+	VarMatrix     []CorrelationMatrixCell `json:"VarMatrix,omitempty"`
+	LagProfile    []CorrelationLagPoint   `json:"LagProfile,omitempty"`
+}
+
+func splitCSVKeys(s string) []string {
+	if strings.TrimSpace(s) == "" {
+		return nil
+	}
+	parts := strings.Split(s, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p != "" {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+func analyzePollingCorrelationTool(ctx context.Context, req *mcp.CallToolRequest, args analyzePollingCorrelationParams) (*mcp.CallToolResult, any, error) {
+	if ctx.Err() != nil {
+		return nil, nil, ctx.Err()
+	}
+	id1 := strings.TrimSpace(args.PollingID1)
+	id2 := strings.TrimSpace(args.PollingID2)
+	if id1 == "" || id2 == "" {
+		return nil, nil, fmt.Errorf("polling_id_1 and polling_id_2 must not be empty")
+	}
+	var startTime, endTime int64
+	if args.PeriodHours >= 0 {
+		hours := args.PeriodHours
+		if hours == 0 {
+			hours = 168
+		}
+		endTime = time.Now().Unix()
+		startTime = endTime - int64(hours)*3600
+	}
+	algo := strings.TrimSpace(args.Algorithm)
+	if algo == "" {
+		algo = "all"
+	}
+	res := AnalyzePollingCorrelation(CorrelationPairReq{
+		PollingID1:   id1,
+		PollingID2:   id2,
+		Vars1:        splitCSVKeys(args.Vars1),
+		Vars2:        splitCSVKeys(args.Vars2),
+		IncludeState: args.IncludeState,
+		Algorithm:    algo,
+		BucketSec:    args.BucketSec,
+		StartTime:    startTime,
+		EndTime:      endTime,
+		MaxLag:       args.MaxLag,
+	})
+	if res.Error != "" {
+		return nil, nil, fmt.Errorf("%s", res.Error)
+	}
+	summary := mcpCorrelationPairSummary{
+		PollingID1:    res.PollingID1,
+		NodeName1:     res.NodeName1,
+		PollingName1:  res.PollingName1,
+		SelectedVar1:  res.SelectedVar1,
+		PollingID2:    res.PollingID2,
+		NodeName2:     res.NodeName2,
+		PollingName2:  res.PollingName2,
+		SelectedVar2:  res.SelectedVar2,
+		Vars1:         res.Vars1,
+		Vars2:         res.Vars2,
+		BucketSec:     res.BucketSec,
+		SampleCount:   res.SampleCount,
+		PrimaryScore:  res.PrimaryScore,
+		PrimaryPValue: res.PrimaryPValue,
+		BestLag:       res.BestLag,
+		BestLagSec:    res.BestLagSec,
+		Slope:         res.Slope,
+		Intercept:     res.Intercept,
+		Scores:        res.Scores,
+		VarMatrix:     res.VarMatrix,
+		LagProfile:    res.LagProfile,
+	}
+	return mcpJSONResult(&summary)
+}
+
+// discover_polling_correlations tool
+type discoverPollingCorrelationsParams struct {
+	BasePollingID string  `json:"base_polling_id,omitempty" jsonschema:"Optional polling ID to find correlations against (empty for all-vs-all)"`
+	Algorithm     string  `json:"algorithm,omitempty" jsonschema:"Correlation algorithm: pearson (default), spearman, kendall, crosscorr, or dcor"`
+	BucketSec     int64   `json:"bucket_sec,omitempty" jsonschema:"Aggregation time bucket width in seconds (0 for auto)"`
+	PeriodHours   int     `json:"period_hours,omitempty" jsonschema:"Lookback period in hours (default 168, -1 for all logs)"`
+	MinAbsScore   float64 `json:"min_abs_score,omitempty" jsonschema:"Minimum absolute correlation threshold (default 0.7)"`
+	MinSamples    int     `json:"min_samples,omitempty" jsonschema:"Minimum overlapping samples required (default 10)"`
+	CrossNodeOnly bool    `json:"cross_node_only,omitempty" jsonschema:"Only return correlated pairs on different nodes"`
+	IncludeState  bool    `json:"include_state,omitempty" jsonschema:"Include polling state numeric variable"`
+	MaxLag        int     `json:"max_lag,omitempty" jsonschema:"Maximum lag buckets when algorithm is crosscorr (default 6)"`
+	Limit         int     `json:"limit,omitempty" jsonschema:"Maximum number of pairs to return (1-500, default 30)"`
+}
+
+func discoverPollingCorrelationsTool(ctx context.Context, req *mcp.CallToolRequest, args discoverPollingCorrelationsParams) (*mcp.CallToolResult, any, error) {
+	var startTime, endTime int64
+	if args.PeriodHours >= 0 {
+		hours := args.PeriodHours
+		if hours == 0 {
+			hours = 168
+		}
+		endTime = time.Now().Unix()
+		startTime = endTime - int64(hours)*3600
+	}
+	limit := clampLimit(args.Limit, 1, 500, 30)
+	res := DiscoverPollingCorrelations(ctx, CorrelationDiscoverReq{
+		BasePollingID: strings.TrimSpace(args.BasePollingID),
+		Algorithm:     args.Algorithm,
+		BucketSec:     args.BucketSec,
+		StartTime:     startTime,
+		EndTime:       endTime,
+		MinAbsScore:   args.MinAbsScore,
+		MinSamples:    args.MinSamples,
+		CrossNodeOnly: args.CrossNodeOnly,
+		IncludeState:  args.IncludeState,
+		MaxLag:        args.MaxLag,
+		Limit:         limit,
+	})
+	if res.Error != "" {
+		return nil, nil, fmt.Errorf("%s", res.Error)
+	}
+	return mcpJSONResult(&res)
 }

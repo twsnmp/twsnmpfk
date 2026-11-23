@@ -217,8 +217,10 @@ func TestMCPServerToolsAndSchemas(t *testing.T) {
 		"get_fdb_table":             {"id"},
 		"auto_connect_lines":        {},
 		"auto_layout":               {},
-		"gnmi_capabilities":         {"node_id"},
-		"gnmi_get":                  {"node_id", "path"},
+		"gnmi_capabilities":            {"node_id"},
+		"gnmi_get":                     {"node_id", "path"},
+		"analyze_polling_correlation":  {"polling_id_1", "polling_id_2"},
+		"discover_polling_correlations": {},
 	}
 
 	gotTools := map[string]*mcp.Tool{}

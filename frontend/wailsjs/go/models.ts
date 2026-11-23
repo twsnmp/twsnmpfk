@@ -1,5 +1,331 @@
 export namespace backend {
 	
+	export class CorrelationAlgoScore {
+	    Algorithm: string;
+	    Score: number;
+	    PValue: number;
+	    Lag: number;
+	    LagSec: number;
+	    SampleCount: number;
+	    Var1: string;
+	    Var2: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationAlgoScore(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Algorithm = source["Algorithm"];
+	        this.Score = source["Score"];
+	        this.PValue = source["PValue"];
+	        this.Lag = source["Lag"];
+	        this.LagSec = source["LagSec"];
+	        this.SampleCount = source["SampleCount"];
+	        this.Var1 = source["Var1"];
+	        this.Var2 = source["Var2"];
+	    }
+	}
+	export class CorrelationCandidate {
+	    PollingID: string;
+	    NodeID: string;
+	    NodeName: string;
+	    PollingName: string;
+	    Type: string;
+	    Mode: string;
+	    PollInt: number;
+	    LogMode: number;
+	    VectorCols: string;
+	    Keys: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationCandidate(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PollingID = source["PollingID"];
+	        this.NodeID = source["NodeID"];
+	        this.NodeName = source["NodeName"];
+	        this.PollingName = source["PollingName"];
+	        this.Type = source["Type"];
+	        this.Mode = source["Mode"];
+	        this.PollInt = source["PollInt"];
+	        this.LogMode = source["LogMode"];
+	        this.VectorCols = source["VectorCols"];
+	        this.Keys = source["Keys"];
+	    }
+	}
+	export class CorrelationDiscoverItem {
+	    PollingID1: string;
+	    NodeID1: string;
+	    NodeName1: string;
+	    PollingName1: string;
+	    Var1: string;
+	    PollingID2: string;
+	    NodeID2: string;
+	    NodeName2: string;
+	    PollingName2: string;
+	    Var2: string;
+	    Algorithm: string;
+	    Score: number;
+	    AbsScore: number;
+	    PValue: number;
+	    Lag: number;
+	    LagSec: number;
+	    SampleCount: number;
+	    CrossNode: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationDiscoverItem(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PollingID1 = source["PollingID1"];
+	        this.NodeID1 = source["NodeID1"];
+	        this.NodeName1 = source["NodeName1"];
+	        this.PollingName1 = source["PollingName1"];
+	        this.Var1 = source["Var1"];
+	        this.PollingID2 = source["PollingID2"];
+	        this.NodeID2 = source["NodeID2"];
+	        this.NodeName2 = source["NodeName2"];
+	        this.PollingName2 = source["PollingName2"];
+	        this.Var2 = source["Var2"];
+	        this.Algorithm = source["Algorithm"];
+	        this.Score = source["Score"];
+	        this.AbsScore = source["AbsScore"];
+	        this.PValue = source["PValue"];
+	        this.Lag = source["Lag"];
+	        this.LagSec = source["LagSec"];
+	        this.SampleCount = source["SampleCount"];
+	        this.CrossNode = source["CrossNode"];
+	    }
+	}
+	export class CorrelationDiscoverReq {
+	    BasePollingID: string;
+	    NodeIDs: string[];
+	    Algorithm: string;
+	    BucketSec: number;
+	    StartTime: number;
+	    EndTime: number;
+	    MinAbsScore: number;
+	    MinSamples: number;
+	    CrossNodeOnly: boolean;
+	    IncludeState: boolean;
+	    MaxLag: number;
+	    Limit: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationDiscoverReq(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.BasePollingID = source["BasePollingID"];
+	        this.NodeIDs = source["NodeIDs"];
+	        this.Algorithm = source["Algorithm"];
+	        this.BucketSec = source["BucketSec"];
+	        this.StartTime = source["StartTime"];
+	        this.EndTime = source["EndTime"];
+	        this.MinAbsScore = source["MinAbsScore"];
+	        this.MinSamples = source["MinSamples"];
+	        this.CrossNodeOnly = source["CrossNodeOnly"];
+	        this.IncludeState = source["IncludeState"];
+	        this.MaxLag = source["MaxLag"];
+	        this.Limit = source["Limit"];
+	    }
+	}
+	export class CorrelationDiscoverRes {
+	    Items: CorrelationDiscoverItem[];
+	    TotalPollings: number;
+	    EvaluatedPairs: number;
+	    DurationMs: number;
+	    BucketSec: number;
+	    Error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationDiscoverRes(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Items = this.convertValues(source["Items"], CorrelationDiscoverItem);
+	        this.TotalPollings = source["TotalPollings"];
+	        this.EvaluatedPairs = source["EvaluatedPairs"];
+	        this.DurationMs = source["DurationMs"];
+	        this.BucketSec = source["BucketSec"];
+	        this.Error = source["Error"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class CorrelationLagPoint {
+	    Lag: number;
+	    LagSec: number;
+	    Score: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationLagPoint(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Lag = source["Lag"];
+	        this.LagSec = source["LagSec"];
+	        this.Score = source["Score"];
+	    }
+	}
+	export class CorrelationMatrixCell {
+	    Var1: string;
+	    Var2: string;
+	    Score: number;
+	    PValue: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationMatrixCell(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Var1 = source["Var1"];
+	        this.Var2 = source["Var2"];
+	        this.Score = source["Score"];
+	        this.PValue = source["PValue"];
+	    }
+	}
+	export class CorrelationPairReq {
+	    PollingID1: string;
+	    PollingID2: string;
+	    Vars1: string[];
+	    Vars2: string[];
+	    IncludeState: boolean;
+	    Algorithm: string;
+	    BucketSec: number;
+	    StartTime: number;
+	    EndTime: number;
+	    MaxLag: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationPairReq(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PollingID1 = source["PollingID1"];
+	        this.PollingID2 = source["PollingID2"];
+	        this.Vars1 = source["Vars1"];
+	        this.Vars2 = source["Vars2"];
+	        this.IncludeState = source["IncludeState"];
+	        this.Algorithm = source["Algorithm"];
+	        this.BucketSec = source["BucketSec"];
+	        this.StartTime = source["StartTime"];
+	        this.EndTime = source["EndTime"];
+	        this.MaxLag = source["MaxLag"];
+	    }
+	}
+	export class CorrelationPairRes {
+	    PollingID1: string;
+	    NodeID1: string;
+	    NodeName1: string;
+	    PollingName1: string;
+	    SelectedVar1: string;
+	    PollingID2: string;
+	    NodeID2: string;
+	    NodeName2: string;
+	    PollingName2: string;
+	    SelectedVar2: string;
+	    Vars1: string[];
+	    Vars2: string[];
+	    BucketSec: number;
+	    SampleCount: number;
+	    Scores: CorrelationAlgoScore[];
+	    PrimaryScore: number;
+	    PrimaryPValue: number;
+	    BestLag: number;
+	    BestLagSec: number;
+	    Slope: number;
+	    Intercept: number;
+	    Timestamps: number[];
+	    Series1: number[];
+	    Series2: number[];
+	    NormSeries1: number[];
+	    NormSeries2: number[];
+	    LagProfile: CorrelationLagPoint[];
+	    VarMatrix: CorrelationMatrixCell[];
+	    Error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationPairRes(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PollingID1 = source["PollingID1"];
+	        this.NodeID1 = source["NodeID1"];
+	        this.NodeName1 = source["NodeName1"];
+	        this.PollingName1 = source["PollingName1"];
+	        this.SelectedVar1 = source["SelectedVar1"];
+	        this.PollingID2 = source["PollingID2"];
+	        this.NodeID2 = source["NodeID2"];
+	        this.NodeName2 = source["NodeName2"];
+	        this.PollingName2 = source["PollingName2"];
+	        this.SelectedVar2 = source["SelectedVar2"];
+	        this.Vars1 = source["Vars1"];
+	        this.Vars2 = source["Vars2"];
+	        this.BucketSec = source["BucketSec"];
+	        this.SampleCount = source["SampleCount"];
+	        this.Scores = this.convertValues(source["Scores"], CorrelationAlgoScore);
+	        this.PrimaryScore = source["PrimaryScore"];
+	        this.PrimaryPValue = source["PrimaryPValue"];
+	        this.BestLag = source["BestLag"];
+	        this.BestLagSec = source["BestLagSec"];
+	        this.Slope = source["Slope"];
+	        this.Intercept = source["Intercept"];
+	        this.Timestamps = source["Timestamps"];
+	        this.Series1 = source["Series1"];
+	        this.Series2 = source["Series2"];
+	        this.NormSeries1 = source["NormSeries1"];
+	        this.NormSeries2 = source["NormSeries2"];
+	        this.LagProfile = this.convertValues(source["LagProfile"], CorrelationLagPoint);
+	        this.VarMatrix = this.convertValues(source["VarMatrix"], CorrelationMatrixCell);
+	        this.Error = source["Error"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class FDBTableEnt {
 	    VLanID: number;
 	    Port: number;
@@ -381,6 +707,333 @@ export namespace backend {
 	        this.MAC = source["MAC"];
 	        this.LastChanged = source["LastChanged"];
 	    }
+	}
+
+	export class CorrelationCandidate {
+	    PollingID: string;
+	    NodeID: string;
+	    NodeName: string;
+	    PollingName: string;
+	    Type: string;
+	    Mode: string;
+	    PollInt: number;
+	    LogMode: number;
+	    VectorCols: string;
+	    Keys: string[];
+
+	    static createFrom(source: any = {}) {
+	        return new CorrelationCandidate(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PollingID = source["PollingID"];
+	        this.NodeID = source["NodeID"];
+	        this.NodeName = source["NodeName"];
+	        this.PollingName = source["PollingName"];
+	        this.Type = source["Type"];
+	        this.Mode = source["Mode"];
+	        this.PollInt = source["PollInt"];
+	        this.LogMode = source["LogMode"];
+	        this.VectorCols = source["VectorCols"];
+	        this.Keys = source["Keys"];
+	    }
+	}
+	export class CorrelationPairReq {
+	    PollingID1: string;
+	    PollingID2: string;
+	    Vars1: string[];
+	    Vars2: string[];
+	    IncludeState: boolean;
+	    Algorithm: string;
+	    BucketSec: number;
+	    StartTime: number;
+	    EndTime: number;
+	    MaxLag: number;
+
+	    static createFrom(source: any = {}) {
+	        return new CorrelationPairReq(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PollingID1 = source["PollingID1"];
+	        this.PollingID2 = source["PollingID2"];
+	        this.Vars1 = source["Vars1"];
+	        this.Vars2 = source["Vars2"];
+	        this.IncludeState = source["IncludeState"];
+	        this.Algorithm = source["Algorithm"];
+	        this.BucketSec = source["BucketSec"];
+	        this.StartTime = source["StartTime"];
+	        this.EndTime = source["EndTime"];
+	        this.MaxLag = source["MaxLag"];
+	    }
+	}
+	export class CorrelationAlgoScore {
+	    Algorithm: string;
+	    Score: number;
+	    PValue: number;
+	    Lag: number;
+	    LagSec: number;
+	    SampleCount: number;
+	    Var1: string;
+	    Var2: string;
+
+	    static createFrom(source: any = {}) {
+	        return new CorrelationAlgoScore(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Algorithm = source["Algorithm"];
+	        this.Score = source["Score"];
+	        this.PValue = source["PValue"];
+	        this.Lag = source["Lag"];
+	        this.LagSec = source["LagSec"];
+	        this.SampleCount = source["SampleCount"];
+	        this.Var1 = source["Var1"];
+	        this.Var2 = source["Var2"];
+	    }
+	}
+	export class CorrelationMatrixCell {
+	    Var1: string;
+	    Var2: string;
+	    Score: number;
+	    PValue: number;
+
+	    static createFrom(source: any = {}) {
+	        return new CorrelationMatrixCell(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Var1 = source["Var1"];
+	        this.Var2 = source["Var2"];
+	        this.Score = source["Score"];
+	        this.PValue = source["PValue"];
+	    }
+	}
+	export class CorrelationLagPoint {
+	    Lag: number;
+	    LagSec: number;
+	    Score: number;
+
+	    static createFrom(source: any = {}) {
+	        return new CorrelationLagPoint(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Lag = source["Lag"];
+	        this.LagSec = source["LagSec"];
+	        this.Score = source["Score"];
+	    }
+	}
+	export class CorrelationPairRes {
+	    PollingID1: string;
+	    NodeID1: string;
+	    NodeName1: string;
+	    PollingName1: string;
+	    SelectedVar1: string;
+	    PollingID2: string;
+	    NodeID2: string;
+	    NodeName2: string;
+	    PollingName2: string;
+	    SelectedVar2: string;
+	    Vars1: string[];
+	    Vars2: string[];
+	    BucketSec: number;
+	    SampleCount: number;
+	    Scores: CorrelationAlgoScore[];
+	    PrimaryScore: number;
+	    PrimaryPValue: number;
+	    BestLag: number;
+	    BestLagSec: number;
+	    Slope: number;
+	    Intercept: number;
+	    Timestamps: number[];
+	    Series1: number[];
+	    Series2: number[];
+	    NormSeries1: number[];
+	    NormSeries2: number[];
+	    LagProfile: CorrelationLagPoint[];
+	    VarMatrix: CorrelationMatrixCell[];
+	    Error: string;
+
+	    static createFrom(source: any = {}) {
+	        return new CorrelationPairRes(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PollingID1 = source["PollingID1"];
+	        this.NodeID1 = source["NodeID1"];
+	        this.NodeName1 = source["NodeName1"];
+	        this.PollingName1 = source["PollingName1"];
+	        this.SelectedVar1 = source["SelectedVar1"];
+	        this.PollingID2 = source["PollingID2"];
+	        this.NodeID2 = source["NodeID2"];
+	        this.NodeName2 = source["NodeName2"];
+	        this.PollingName2 = source["PollingName2"];
+	        this.SelectedVar2 = source["SelectedVar2"];
+	        this.Vars1 = source["Vars1"];
+	        this.Vars2 = source["Vars2"];
+	        this.BucketSec = source["BucketSec"];
+	        this.SampleCount = source["SampleCount"];
+	        this.Scores = this.convertValues(source["Scores"], CorrelationAlgoScore);
+	        this.PrimaryScore = source["PrimaryScore"];
+	        this.PrimaryPValue = source["PrimaryPValue"];
+	        this.BestLag = source["BestLag"];
+	        this.BestLagSec = source["BestLagSec"];
+	        this.Slope = source["Slope"];
+	        this.Intercept = source["Intercept"];
+	        this.Timestamps = source["Timestamps"];
+	        this.Series1 = source["Series1"];
+	        this.Series2 = source["Series2"];
+	        this.NormSeries1 = source["NormSeries1"];
+	        this.NormSeries2 = source["NormSeries2"];
+	        this.LagProfile = this.convertValues(source["LagProfile"], CorrelationLagPoint);
+	        this.VarMatrix = this.convertValues(source["VarMatrix"], CorrelationMatrixCell);
+	        this.Error = source["Error"];
+	    }
+
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class CorrelationDiscoverReq {
+	    BasePollingID: string;
+	    NodeIDs: string[];
+	    Algorithm: string;
+	    BucketSec: number;
+	    StartTime: number;
+	    EndTime: number;
+	    MinAbsScore: number;
+	    MinSamples: number;
+	    CrossNodeOnly: boolean;
+	    IncludeState: boolean;
+	    MaxLag: number;
+	    Limit: number;
+
+	    static createFrom(source: any = {}) {
+	        return new CorrelationDiscoverReq(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.BasePollingID = source["BasePollingID"];
+	        this.NodeIDs = source["NodeIDs"];
+	        this.Algorithm = source["Algorithm"];
+	        this.BucketSec = source["BucketSec"];
+	        this.StartTime = source["StartTime"];
+	        this.EndTime = source["EndTime"];
+	        this.MinAbsScore = source["MinAbsScore"];
+	        this.MinSamples = source["MinSamples"];
+	        this.CrossNodeOnly = source["CrossNodeOnly"];
+	        this.IncludeState = source["IncludeState"];
+	        this.MaxLag = source["MaxLag"];
+	        this.Limit = source["Limit"];
+	    }
+	}
+	export class CorrelationDiscoverItem {
+	    PollingID1: string;
+	    NodeID1: string;
+	    NodeName1: string;
+	    PollingName1: string;
+	    Var1: string;
+	    PollingID2: string;
+	    NodeID2: string;
+	    NodeName2: string;
+	    PollingName2: string;
+	    Var2: string;
+	    Algorithm: string;
+	    Score: number;
+	    AbsScore: number;
+	    PValue: number;
+	    Lag: number;
+	    LagSec: number;
+	    SampleCount: number;
+	    CrossNode: boolean;
+
+	    static createFrom(source: any = {}) {
+	        return new CorrelationDiscoverItem(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.PollingID1 = source["PollingID1"];
+	        this.NodeID1 = source["NodeID1"];
+	        this.NodeName1 = source["NodeName1"];
+	        this.PollingName1 = source["PollingName1"];
+	        this.Var1 = source["Var1"];
+	        this.PollingID2 = source["PollingID2"];
+	        this.NodeID2 = source["NodeID2"];
+	        this.NodeName2 = source["NodeName2"];
+	        this.PollingName2 = source["PollingName2"];
+	        this.Var2 = source["Var2"];
+	        this.Algorithm = source["Algorithm"];
+	        this.Score = source["Score"];
+	        this.AbsScore = source["AbsScore"];
+	        this.PValue = source["PValue"];
+	        this.Lag = source["Lag"];
+	        this.LagSec = source["LagSec"];
+	        this.SampleCount = source["SampleCount"];
+	        this.CrossNode = source["CrossNode"];
+	    }
+	}
+	export class CorrelationDiscoverRes {
+	    Items: CorrelationDiscoverItem[];
+	    TotalPollings: number;
+	    EvaluatedPairs: number;
+	    DurationMs: number;
+	    BucketSec: number;
+	    Error: string;
+
+	    static createFrom(source: any = {}) {
+	        return new CorrelationDiscoverRes(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Items = this.convertValues(source["Items"], CorrelationDiscoverItem);
+	        this.TotalPollings = source["TotalPollings"];
+	        this.EvaluatedPairs = source["EvaluatedPairs"];
+	        this.DurationMs = source["DurationMs"];
+	        this.BucketSec = source["BucketSec"];
+	        this.Error = source["Error"];
+	    }
+
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 
 }

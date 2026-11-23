@@ -1,6 +1,6 @@
 <script lang="ts">
   import "../assets/css/jquery.dataTables.css";
-  import { GradientButton } from "flowbite-svelte";
+  import { GradientButton, Modal } from "flowbite-svelte";
   import { Icon } from "mdi-svelte-ts";
   import * as icons from "@mdi/js";
   import { onMount } from "svelte";
@@ -25,6 +25,7 @@
   import DataTable from "datatables.net-dt";
   import "datatables.net-select-dt";
   import PollingReport from "./PollingReport.svelte";
+  import Correlation from "./Correlation.svelte";
   import { _ } from "svelte-i18n";
   import { currentLang } from "../i18n/i18n";
 
@@ -176,6 +177,32 @@
   let showCopyPolling = false;
   let showAddPolling = false;
   let pollingTmp: any = undefined;
+  let showCorrelationModal = false;
+  let corrMode: "discover" | "pair" = "pair";
+  let corrPollingID1 = "";
+  let corrPollingID2 = "";
+
+  const openCorrelationDiscover = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length !== 1) {
+      return;
+    }
+    corrPollingID1 = selected[0];
+    corrPollingID2 = "";
+    corrMode = "discover";
+    showCorrelationModal = true;
+  };
+
+  const openCorrelationPair = () => {
+    const selected = table.rows({ selected: true }).data().pluck("ID");
+    if (selected.length !== 2) {
+      return;
+    }
+    corrPollingID1 = selected[0];
+    corrPollingID2 = selected[1];
+    corrMode = "pair";
+    showCorrelationModal = true;
+  };
 
   const add = async () => {
     pollingTmp = await GetDefaultPolling("");
@@ -458,6 +485,28 @@
         <Icon path={icons.mdiChartBar} size={1} />
         {$_("PollingList.Report")}
       </GradientButton>
+      <GradientButton
+        shadow
+        color="purple"
+        type="button"
+        onclick={openCorrelationDiscover}
+        size="xs"
+      >
+        <Icon path={icons.mdiMagnifyScan} size={1} />
+        {$_("PollingList.FindCorrelation") || "相関探索"}
+      </GradientButton>
+    {/if}
+    {#if selectedCount == 2}
+      <GradientButton
+        shadow
+        color="purple"
+        type="button"
+        onclick={openCorrelationPair}
+        size="xs"
+      >
+        <Icon path={icons.mdiChartScatterPlot} size={1} />
+        {$_("PollingList.Correlation") || "相関分析"}
+      </GradientButton>
     {/if}
     {#if selectedCount > 0}
       <GradientButton
@@ -542,3 +591,27 @@
 />
 
 <PollingReport bind:show={showPollingReport} id={selectedPolling} />
+
+<Modal
+  bind:open={showCorrelationModal}
+  size="xl"
+  dismissable={true}
+  outsideclose={false}
+  class="w-full"
+>
+  <div class="flex flex-col space-y-2">
+    <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+      <span class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+        {$_("Correlation.ModalTitle") || "ポーリング間相関分析"}
+      </span>
+    </div>
+    {#if showCorrelationModal}
+      <Correlation
+        modalMode={true}
+        initialMode={corrMode}
+        initialPollingID1={corrPollingID1}
+        initialPollingID2={corrPollingID2}
+      />
+    {/if}
+  </div>
+</Modal>
