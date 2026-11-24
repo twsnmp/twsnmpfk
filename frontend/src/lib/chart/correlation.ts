@@ -518,8 +518,13 @@ export const showCorrelationNetworkChart = (
       {
         type: "graph",
         layout: "force",
+        initLayout: "circular",
         roam: true,
         draggable: true,
+        top: 40,
+        bottom: 24,
+        left: 40,
+        right: 40,
         data: Array.from(nodeMap.values()),
         links,
         categories,
@@ -530,8 +535,9 @@ export const showCorrelationNetworkChart = (
           color: textColor,
         },
         force: {
-          repulsion: 220,
-          edgeLength: [70, 160],
+          repulsion: 350,
+          gravity: 0.05,
+          edgeLength: [90, 180],
         },
         emphasis: {
           focus: "adjacency",

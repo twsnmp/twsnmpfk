@@ -1700,6 +1700,7 @@
     "tabArp": "ARP監視分析",
     "tabCert": "サーバー証明書",
     "tabSensor": "センサー",
+    "tabCorrelation": "相関分析",
     "tabEnv": "環境センサー",
     "tabPower": "電力センサー",
     "tabMotion": "人感センサー",

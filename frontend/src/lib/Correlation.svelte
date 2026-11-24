@@ -304,6 +304,7 @@
       networkChart = showCorrelationNetworkChart("corrNetworkChart", items, (it) => {
         openPairFromItem(it);
       });
+      observeChartResize("corrNetworkChart", () => networkChart);
     }
   };
 
@@ -376,6 +377,7 @@
         pairChart = showCorrelationTimeChart("corrPairChart", pairRes, timeNormalized);
         break;
     }
+    observeChartResize("corrPairChart", () => pairChart);
   };
 
   const runPairAnalysis = async () => {
@@ -620,9 +622,25 @@
     }
   };
 
+  let chartObserver: ResizeObserver | null = null;
+
+  const observeChartResize = (elId: string, chartGetter: () => any) => {
+    chartObserver?.disconnect();
+    const el = document.getElementById(elId);
+    if (!el || typeof ResizeObserver === "undefined") return;
+    chartObserver = new ResizeObserver(() => {
+      requestAnimationFrame(() => {
+        chartGetter()?.resize();
+      });
+    });
+    chartObserver.observe(el);
+  };
+
   const handleResize = () => {
-    pairChart?.resize();
-    networkChart?.resize();
+    requestAnimationFrame(() => {
+      pairChart?.resize();
+      networkChart?.resize();
+    });
   };
 
   const loadCandidates = async () => {
@@ -662,6 +680,7 @@
   });
 
   onDestroy(() => {
+    chartObserver?.disconnect();
     EventsOff("correlation_progress");
     destroyDiscoverTable();
     disposeCorrelationChart("corrNetworkChart");
@@ -680,25 +699,27 @@
 
 <svelte:window onresize={handleResize} />
 
-<div class="flex flex-col space-y-3 {modalMode ? '' : 'mx-2 mt-1'}">
+<div class="flex flex-col space-y-3 {modalMode ? '' : 'mx-2 mt-1 pb-4'}">
   <!-- Mode Switcher -->
-  <div class="flex flex-wrap items-center justify-between gap-2">
+  <div class="shrink-0 flex flex-wrap items-center justify-between gap-2">
     <ButtonGroup>
       <Button
         size="xs"
+        class="!py-1.5 !px-2.5 text-xs flex items-center gap-1.5"
         color={activeTab === "discover" ? "blue" : "alternative"}
         onclick={() => switchMainTab("discover")}
       >
-        <Icon path={icons.mdiMagnifyScan} size={0.85} class="mr-1" />
-        {$_("Correlation.TabDiscover") || "自動探索"}
+        <Icon path={icons.mdiMagnifyScan} size={0.8} />
+        <span>{$_("Correlation.TabDiscover") || "自動探索"}</span>
       </Button>
       <Button
         size="xs"
+        class="!py-1.5 !px-2.5 text-xs flex items-center gap-1.5"
         color={activeTab === "pair" ? "blue" : "alternative"}
         onclick={() => switchMainTab("pair")}
       >
-        <Icon path={icons.mdiCompare} size={0.85} class="mr-1" />
-        {$_("Correlation.TabPair") || "2ポーリング比較"}
+        <Icon path={icons.mdiCompare} size={0.8} />
+        <span>{$_("Correlation.TabPair") || "2ポーリング比較"}</span>
       </Button>
     </ButtonGroup>
 
@@ -715,7 +736,7 @@
 
   {#if activeTab === "discover"}
     <!-- Auto Discovery Controls -->
-    <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 space-y-3">
+    <div class="shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 space-y-3">
       <div class="grid grid-cols-2 md:grid-cols-6 gap-3 items-end">
         <Label class="space-y-1 text-xs">
           <span>{$_("Correlation.Scope") || "探索範囲"}</span>
@@ -844,7 +865,7 @@
         </div>
       {/if}
 
-      <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-600 dark:text-gray-300 px-1">
+      <div class="shrink-0 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-600 dark:text-gray-300 px-1">
         <div class="flex flex-wrap items-center gap-3">
           <span>{$_("Correlation.EvaluatedPollings") || "対象ポーリング"}: <b>{discoverRes.TotalPollings}</b></span>
           <span>{$_("Correlation.EvaluatedPairs") || "評価ペア数"}: <b>{discoverRes.EvaluatedPairs}</b></span>
@@ -867,7 +888,7 @@
         {/if}
       </div>
 
-      <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2">
+      <div class="shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2">
         <div>
           <table id="corrDiscoverTable" class="display compact" style="width:99%"></table>
         </div>
@@ -884,7 +905,7 @@
     {/if}
   {:else}
     <!-- Pair Analysis Controls -->
-    <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 space-y-3">
+    <div class="shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 space-y-3">
       <div class="grid grid-cols-1 md:grid-cols-11 gap-2 items-start">
         <!-- Polling 1 -->
         <div class="md:col-span-5 space-y-2 p-2 rounded border border-gray-100 dark:border-gray-800">
@@ -1069,7 +1090,7 @@
         </div>
       {:else}
         <!-- Summary Meta -->
-        <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-300 px-1">
+        <div class="shrink-0 flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-300 px-1">
           <Badge color="blue">{pairRes.NodeName1} / {pairRes.PollingName1} ({pairRes.SelectedVar1})</Badge>
           <span>↔</span>
           <Badge color="green">{pairRes.NodeName2} / {pairRes.PollingName2} ({pairRes.SelectedVar2})</Badge>
@@ -1080,7 +1101,7 @@
 
         <!-- Interpretation Summary Banner -->
         {#if pairSummary}
-          <div class="rounded-lg border p-2.5 text-xs flex flex-col gap-1 {pairSummary.meta.bannerClass}">
+          <div class="shrink-0 rounded-lg border p-2.5 text-xs flex flex-col gap-1 {pairSummary.meta.bannerClass}">
             <div class="flex flex-wrap items-center gap-2">
               <Icon path={pairSummary.meta.icon} size={0.95} />
               <span class="font-bold">
@@ -1101,7 +1122,7 @@
         {/if}
 
         <!-- 5 Algorithm Score Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+        <div class="shrink-0 grid grid-cols-2 md:grid-cols-5 gap-2">
           {#each pairRes.Scores || [] as sc}
             {@const meta = getStrengthMeta(sc.Score, sc.Algorithm, $_)}
             <button

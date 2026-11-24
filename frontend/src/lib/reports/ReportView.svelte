@@ -11,6 +11,7 @@
   import PcapReport from "./PcapReport.svelte";
   import WinLogReport from "./WinLogReport.svelte";
   import AgentReport from "./AgentReport.svelte";
+  import Correlation from "../Correlation.svelte";
 
   type ReportCategory =
     | "sensor"
@@ -19,7 +20,8 @@
     | "env"
     | "pcap"
     | "winlog"
-    | "twagent";
+    | "twagent"
+    | "correlation";
 
   let activeReport = $state<ReportCategory>("sensor");
 
@@ -31,6 +33,7 @@
     { id: "pcap" as const, name: "report.tabPcap", defaultName: "Pcap パケット", icon: icons.mdiEthernet },
     { id: "winlog" as const, name: "report.tabWinlog", defaultName: "Windows ログ", icon: icons.mdiMicrosoftWindows },
     { id: "twagent" as const, name: "report.tabTwagent", defaultName: "twagentneo", icon: icons.mdiRobot },
+    { id: "correlation" as const, name: "report.tabCorrelation", defaultName: "相関分析", icon: icons.mdiChartScatterPlot },
   ];
 </script>
 
@@ -70,6 +73,8 @@
       <WinLogReport />
     {:else if activeReport === "twagent"}
       <AgentReport />
+    {:else if activeReport === "correlation"}
+      <Correlation />
     {/if}
   </div>
 </div>

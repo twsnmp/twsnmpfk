@@ -1707,6 +1707,7 @@
     "tabArp": "ARP Watch Analytics",
     "tabCert": "Server Certificate",
     "tabSensor": "Sensors",
+    "tabCorrelation": "Correlation Analysis",
     "tabEnv": "Environmental Sensors",
     "tabPower": "Power Sensors",
     "tabMotion": "Motion Sensors",
