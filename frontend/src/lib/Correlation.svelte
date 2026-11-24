@@ -88,12 +88,19 @@
     { value: "base", name: $_("Correlation.ScopeBase") || "基準指定 (1対N)" },
   ]);
 
-  $: algoItems = ($_, $currentLang, [
+  $: discoverAlgoItems = ($_, $currentLang, [
     { value: "pearson", name: $_("Correlation.AlgoPearson") || "Pearson (線形)" },
     { value: "spearman", name: $_("Correlation.AlgoSpearman") || "Spearman (順位)" },
     { value: "kendall", name: $_("Correlation.AlgoKendall") || "Kendall (順位τ)" },
     { value: "crosscorr", name: $_("Correlation.AlgoCrossCorr") || "Cross-Corr (ラグ)" },
     { value: "dcor", name: $_("Correlation.AlgoDCor") || "Distance Corr (非線形/多変量)" },
+    { value: "mlp", name: $_("Correlation.AlgoMLP") || "Neural MLP (非線形/ラグ予測)" },
+    { value: "knn", name: $_("Correlation.AlgoKNN") || "kNN Regime (状態パターン分類)" },
+  ]);
+
+  $: algoItems = ($_, $currentLang, [
+    ...discoverAlgoItems,
+    { value: "lstm", name: $_("Correlation.AlgoLSTM") || "LSTM (時系列蓄積予測)" },
   ]);
 
   $: periodItems = ($_, $currentLang, [
@@ -453,9 +460,13 @@
     await onVarsOrPairUpdated();
   };
 
+  const isUnsignedAlgo = (algo: string) =>
+    algo === "dcor" || algo === "mlp" || algo === "lstm" || algo === "knn";
+
   const getScoreTextClass = (score: number, algo: string) => {
-    const abs = algo === "dcor" ? score : Math.abs(score);
-    if (algo !== "dcor" && score <= -0.7) return "text-red-600 dark:text-red-400";
+    const unsigned = isUnsignedAlgo(algo);
+    const abs = unsigned ? score : Math.abs(score);
+    if (!unsigned && score <= -0.7) return "text-red-600 dark:text-red-400";
     if (abs >= 0.7) return "text-blue-600 dark:text-blue-400";
     if (abs >= 0.4) return "text-sky-600 dark:text-sky-400";
     if (abs >= 0.2) return "text-amber-600 dark:text-amber-400";
@@ -463,9 +474,10 @@
   };
 
   const getStrengthMeta = (score: number, algo: string, t: any) => {
-    const abs = algo === "dcor" ? score : Math.abs(score);
+    const unsigned = isUnsignedAlgo(algo);
+    const abs = unsigned ? score : Math.abs(score);
     if (abs >= 0.7) {
-      if (algo === "dcor") {
+      if (unsigned) {
         return {
           level: "strong",
           label: t("Correlation.StrengthStrongDCor") || "強い関連性",
@@ -530,6 +542,12 @@
         return t("Correlation.AlgoDescCrossCorr") || "時間を前後にずらして最大の連動を検出";
       case "dcor":
         return t("Correlation.AlgoDescDCor") || "非線形関係や複数変数まとめての関連を検出";
+      case "mlp":
+        return t("Correlation.AlgoDescMLP") || "過去ラグを含む多層ニューラルネットの非線形予測力";
+      case "lstm":
+        return t("Correlation.AlgoDescLSTM") || "LSTMによる時系列の蓄積・時間遅れ効果の予測力";
+      case "knn":
+        return t("Correlation.AlgoDescKNN") || "XのパターンからYの状態レジーム(Low/Normal/High)を識別";
       default:
         return "";
     }
@@ -540,9 +558,10 @@
     if (scores.length === 0) return null;
     const active = scores.find((s) => s.Algorithm === algo) || scores[0];
     const meta = getStrengthMeta(active.Score, active.Algorithm, t);
+    const unsigned = isUnsignedAlgo(active.Algorithm);
     let summaryText = "";
     if (meta.level === "strong") {
-      if (active.Algorithm === "dcor") {
+      if (unsigned) {
         summaryText = t("Correlation.SummaryStrongDCor") || "";
       } else if (active.Score >= 0) {
         summaryText = t("Correlation.SummaryStrongPos") || "";
@@ -550,7 +569,7 @@
         summaryText = t("Correlation.SummaryStrongNeg") || "";
       }
     } else if (meta.level === "moderate") {
-      if (active.Algorithm === "dcor") {
+      if (unsigned) {
         summaryText = t("Correlation.SummaryModerateDCor") || "";
       } else if (active.Score >= 0) {
         summaryText = t("Correlation.SummaryModeratePos") || "";
@@ -607,6 +626,12 @@
         return "Cross-Corr";
       case "dcor":
         return "Distance (dCor)";
+      case "mlp":
+        return "Neural MLP";
+      case "lstm":
+        return "LSTM (RNN)";
+      case "knn":
+        return "kNN Regime";
       default:
         return algo;
     }
@@ -761,7 +786,7 @@
         <Label class="space-y-1 text-xs">
           <span>{$_("Correlation.Algorithm") || "アルゴリズム"}</span>
           <Select
-            items={algoItems}
+            items={discoverAlgoItems}
             bind:value={discoverAlgo}
             classes={{ select: "h-9 py-1 text-xs" }}
           />
@@ -1121,8 +1146,8 @@
           </div>
         {/if}
 
-        <!-- 5 Algorithm Score Cards -->
-        <div class="shrink-0 grid grid-cols-2 md:grid-cols-5 gap-2">
+        <!-- Algorithm Score Cards -->
+        <div class="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-2">
           {#each pairRes.Scores || [] as sc}
             {@const meta = getStrengthMeta(sc.Score, sc.Algorithm, $_)}
             <button
@@ -1150,7 +1175,14 @@
                 {Number(sc.Score).toFixed(4)}
               </div>
               <div class="text-[10px] text-gray-500 dark:text-gray-400">
-                p={formatPValue(sc.PValue)}
+                {#if sc.Algorithm === "mlp" || sc.Algorithm === "lstm" || sc.Algorithm === "knn"}
+                  tensai ML
+                  {#if sc.Algorithm === "knn" && pairRes.RegimeResult}
+                    | BalAcc={(pairRes.RegimeResult.BalancedAccuracy * 100).toFixed(1)}%
+                  {/if}
+                {:else}
+                  p={formatPValue(sc.PValue)}
+                {/if}
                 {#if sc.Algorithm === "crosscorr"}
                   | lag={sc.Lag > 0 ? `+${sc.Lag}` : sc.Lag} ({sc.LagSec > 0 ? `+${sc.LagSec}` : sc.LagSec}s)
                 {/if}
@@ -1161,6 +1193,77 @@
             </button>
           {/each}
         </div>
+
+        <!-- ML Insights (MLP Feature Importance & kNN Regime Confusion Matrix) -->
+        {#if (pairRes.FeatureImportances && pairRes.FeatureImportances.length > 0) || pairRes.RegimeResult}
+          <div class="shrink-0 grid grid-cols-1 md:grid-cols-2 gap-2">
+            {#if pairRes.FeatureImportances && pairRes.FeatureImportances.length > 0}
+              <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2.5 text-xs space-y-1.5">
+                <div class="font-semibold text-gray-700 dark:text-gray-200">
+                  {$_("Correlation.MLPFeatureImportance") || "MLP 変数・ラグ重要度 (Permutation Importance)"}
+                </div>
+                <div class="space-y-1">
+                  {#each pairRes.FeatureImportances.slice(0, 6) as fi}
+                    <div class="flex items-center gap-2">
+                      <span class="w-32 truncate text-[11px] text-gray-600 dark:text-gray-300" title={fi.Feature}>
+                        {fi.Feature}
+                      </span>
+                      <div class="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded overflow-hidden">
+                        <div
+                          class="h-full bg-blue-500 rounded"
+                          style="width: {Math.min(100, Math.max(2, fi.Importance * 100)).toFixed(1)}%"
+                        ></div>
+                      </div>
+                      <span class="w-12 text-right text-[11px] font-mono text-gray-600 dark:text-gray-300">
+                        {(fi.Importance * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            {/if}
+
+            {#if pairRes.RegimeResult}
+              <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2.5 text-xs space-y-1.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="font-semibold text-gray-700 dark:text-gray-200">
+                    {$_("Correlation.KNNRegimeMatrix") || "kNN レジーム混同行列"} ({pairRes.RegimeResult.TargetVar})
+                  </span>
+                  <span class="text-[11px] text-gray-500 dark:text-gray-400">
+                    Acc: <b>{(pairRes.RegimeResult.Accuracy * 100).toFixed(1)}%</b> |
+                    BalAcc: <b>{(pairRes.RegimeResult.BalancedAccuracy * 100).toFixed(1)}%</b>
+                  </span>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-[11px] border-collapse">
+                    <thead>
+                      <tr class="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                        <th class="py-1 px-2 text-left">{$_("Correlation.ActualPredicted") || "実際 \\ 予測"}</th>
+                        {#each pairRes.RegimeResult.Labels || [] as lbl}
+                          <th class="py-1 px-2 text-center">{lbl}</th>
+                        {/each}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {#each pairRes.RegimeResult.Confusion || [] as row, rIdx}
+                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                          <td class="py-1 px-2 font-medium text-gray-600 dark:text-gray-300">
+                            {pairRes.RegimeResult.Labels?.[rIdx] || rIdx}
+                          </td>
+                          {#each row as cell, cIdx}
+                            <td class="py-1 px-2 text-center font-mono {rIdx === cIdx ? 'font-bold text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-900/20' : 'text-gray-600 dark:text-gray-400'}">
+                              {cell}
+                            </td>
+                          {/each}
+                        </tr>
+                      {/each}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            {/if}
+          </div>
+        {/if}
 
         <!-- Chart Switcher & View -->
         <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2 space-y-2">

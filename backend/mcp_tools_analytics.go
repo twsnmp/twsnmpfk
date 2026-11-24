@@ -1581,7 +1581,7 @@ type analyzePollingCorrelationParams struct {
 	PollingID2   string `json:"polling_id_2" jsonschema:"Second polling ID"`
 	Vars1        string `json:"vars_1,omitempty" jsonschema:"Comma-separated numeric variable keys for polling 1 (empty for auto)"`
 	Vars2        string `json:"vars_2,omitempty" jsonschema:"Comma-separated numeric variable keys for polling 2 (empty for auto)"`
-	Algorithm    string `json:"algorithm,omitempty" jsonschema:"Primary algorithm: all (default), pearson, spearman, kendall, crosscorr, or dcor"`
+	Algorithm    string `json:"algorithm,omitempty" jsonschema:"Primary algorithm: all (default), pearson, spearman, kendall, crosscorr, dcor, mlp, lstm, or knn"`
 	BucketSec    int64  `json:"bucket_sec,omitempty" jsonschema:"Aggregation time bucket width in seconds (0 for auto)"`
 	PeriodHours  int    `json:"period_hours,omitempty" jsonschema:"Lookback period in hours (default 168, -1 for all logs)"`
 	MaxLag       int    `json:"max_lag,omitempty" jsonschema:"Maximum lag buckets for cross-correlation (default 12, max 60)"`
@@ -1607,9 +1607,11 @@ type mcpCorrelationPairSummary struct {
 	BestLagSec    int64                   `json:"BestLagSec"`
 	Slope         float64                 `json:"Slope"`
 	Intercept     float64                 `json:"Intercept"`
-	Scores        []CorrelationAlgoScore  `json:"Scores"`
-	VarMatrix     []CorrelationMatrixCell `json:"VarMatrix,omitempty"`
-	LagProfile    []CorrelationLagPoint   `json:"LagProfile,omitempty"`
+	Scores             []CorrelationAlgoScore         `json:"Scores"`
+	VarMatrix          []CorrelationMatrixCell        `json:"VarMatrix,omitempty"`
+	LagProfile         []CorrelationLagPoint          `json:"LagProfile,omitempty"`
+	FeatureImportances []CorrelationFeatureImportance `json:"FeatureImportances,omitempty"`
+	RegimeResult       *CorrelationRegimeResult       `json:"RegimeResult,omitempty"`
 }
 
 func splitCSVKeys(s string) []string {
@@ -1683,9 +1685,11 @@ func analyzePollingCorrelationTool(ctx context.Context, req *mcp.CallToolRequest
 		BestLagSec:    res.BestLagSec,
 		Slope:         res.Slope,
 		Intercept:     res.Intercept,
-		Scores:        res.Scores,
-		VarMatrix:     res.VarMatrix,
-		LagProfile:    res.LagProfile,
+		Scores:             res.Scores,
+		VarMatrix:          res.VarMatrix,
+		LagProfile:         res.LagProfile,
+		FeatureImportances: res.FeatureImportances,
+		RegimeResult:       res.RegimeResult,
 	}
 	return mcpJSONResult(&summary)
 }
@@ -1693,7 +1697,7 @@ func analyzePollingCorrelationTool(ctx context.Context, req *mcp.CallToolRequest
 // discover_polling_correlations tool
 type discoverPollingCorrelationsParams struct {
 	BasePollingID string  `json:"base_polling_id,omitempty" jsonschema:"Optional polling ID to find correlations against (empty for all-vs-all)"`
-	Algorithm     string  `json:"algorithm,omitempty" jsonschema:"Correlation algorithm: pearson (default), spearman, kendall, crosscorr, or dcor"`
+	Algorithm     string  `json:"algorithm,omitempty" jsonschema:"Correlation algorithm: pearson (default), spearman, kendall, crosscorr, dcor, mlp, or knn"`
 	BucketSec     int64   `json:"bucket_sec,omitempty" jsonschema:"Aggregation time bucket width in seconds (0 for auto)"`
 	PeriodHours   int     `json:"period_hours,omitempty" jsonschema:"Lookback period in hours (default 168, -1 for all logs)"`
 	MinAbsScore   float64 `json:"min_abs_score,omitempty" jsonschema:"Minimum absolute correlation threshold (default 0.7)"`

@@ -3,6 +3,7 @@ package backend
 import (
 	"context"
 	"math"
+	"math/rand"
 	"testing"
 	"time"
 
@@ -446,5 +447,114 @@ func TestGetPollingLogsBatch(t *testing.T) {
 	batch := datastore.GetPollingLogsBatch(context.Background(), []string{p1.ID, p2.ID}, now-60, now+60, nil)
 	if len(batch[p1.ID]) != 1 || len(batch[p2.ID]) != 1 {
 		t.Fatalf("expected 1 log per polling in batch, got p1=%d p2=%d", len(batch[p1.ID]), len(batch[p2.ID]))
+	}
+}
+
+func TestMLCorrelationAlgorithms(t *testing.T) {
+	// 1. Nonlinear + lagged relationship: y[t] = sin(x[t-1]) + 0.5*x[t]^2
+	n := 120
+	x := make([]float64, n)
+	y := make([]float64, n)
+	noise := make([]float64, n)
+	rng := rand.New(rand.NewSource(123))
+	for i := 0; i < n; i++ {
+		x[i] = math.Sin(float64(i)*0.25)*2.0 + rng.NormFloat64()*0.1
+		noise[i] = rng.NormFloat64()
+	}
+	for i := 1; i < n; i++ {
+		y[i] = math.Sin(x[i-1]) + 0.35*x[i]*x[i]
+	}
+
+	mlpScore, _, imps := calcMLPCorrelation([]string{"x"}, [][]float64{x}, []string{"y"}, [][]float64{y}, 3)
+	if mlpScore < 0.7 {
+		t.Fatalf("expected high MLP score for nonlinear lagged relation, got %v", mlpScore)
+	}
+	if len(imps) == 0 {
+		t.Fatalf("expected non-empty feature importances from MLP")
+	}
+
+	mlpNoise, _, _ := calcMLPCorrelation([]string{"x"}, [][]float64{x}, []string{"noise"}, [][]float64{noise}, 3)
+	if mlpNoise > 0.45 {
+		t.Fatalf("expected low MLP score for independent noise, got %v", mlpNoise)
+	}
+
+	// 2. LSTM sequential accumulation: y[t] = 0.5*x[t] + 0.35*x[t-1] + 0.25*x[t-2]
+	ySeq := make([]float64, n)
+	for i := 2; i < n; i++ {
+		ySeq[i] = 0.5*x[i] + 0.35*x[i-1] + 0.25*x[i-2]
+	}
+	lstmScore, _ := calcLSTMCorrelation([]string{"x"}, [][]float64{x}, []string{"ySeq"}, [][]float64{ySeq})
+	if lstmScore < 0.65 {
+		t.Fatalf("expected high LSTM score for sequential accumulation, got %v", lstmScore)
+	}
+	lstmNoise, _ := calcLSTMCorrelation([]string{"x"}, [][]float64{x}, []string{"noise"}, [][]float64{noise})
+	if lstmNoise > 0.45 {
+		t.Fatalf("expected low LSTM score for independent noise, got %v", lstmNoise)
+	}
+
+	// 3. kNN Regime classification: distinct regimes of Y driven by X
+	yReg := make([]float64, n)
+	for i := 0; i < n; i++ {
+		// Nonlinear regime mapping: |x| small -> Low, medium -> Normal, large -> High
+		ax := math.Abs(x[i])
+		if ax < 0.7 {
+			yReg[i] = 10.0 + rng.NormFloat64()*0.5
+		} else if ax < 1.5 {
+			yReg[i] = 50.0 + rng.NormFloat64()*0.5
+		} else {
+			yReg[i] = 90.0 + rng.NormFloat64()*0.5
+		}
+	}
+	knnScore, _, reg := calcKNNRegimeCorrelation([]string{"x"}, [][]float64{x}, []string{"yReg"}, [][]float64{yReg})
+	if knnScore < 0.6 || reg == nil || len(reg.Confusion) == 0 {
+		t.Fatalf("expected high kNN regime score and confusion matrix, got score=%v reg=%+v", knnScore, reg)
+	}
+	knnNoise, _, _ := calcKNNRegimeCorrelation([]string{"x"}, [][]float64{x}, []string{"noise"}, [][]float64{noise})
+	if knnNoise > 0.4 {
+		t.Fatalf("expected low kNN score for independent noise, got %v", knnNoise)
+	}
+}
+
+func BenchmarkMLCorrelationMLP(b *testing.B) {
+	n := 200
+	x := make([]float64, n)
+	y := make([]float64, n)
+	for i := 0; i < n; i++ {
+		x[i] = math.Sin(float64(i) * 0.2)
+		y[i] = x[i]*x[i] + 0.3*x[i]
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		calcMLPCorrelation([]string{"x"}, [][]float64{x}, []string{"y"}, [][]float64{y}, 3)
+	}
+}
+
+func BenchmarkMLCorrelationLSTM(b *testing.B) {
+	n := 200
+	x := make([]float64, n)
+	y := make([]float64, n)
+	for i := 0; i < n; i++ {
+		x[i] = math.Sin(float64(i) * 0.2)
+		if i > 0 {
+			y[i] = 0.6*x[i] + 0.4*x[i-1]
+		}
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		calcLSTMCorrelation([]string{"x"}, [][]float64{x}, []string{"y"}, [][]float64{y})
+	}
+}
+
+func BenchmarkMLCorrelationKNN(b *testing.B) {
+	n := 200
+	x := make([]float64, n)
+	y := make([]float64, n)
+	for i := 0; i < n; i++ {
+		x[i] = math.Sin(float64(i) * 0.2)
+		y[i] = x[i] * x[i]
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		calcKNNRegimeCorrelation([]string{"x"}, [][]float64{x}, []string{"y"}, [][]float64{y})
 	}
 }

@@ -58,6 +58,9 @@ const (
 	corrAlgoKendall   = "kendall"
 	corrAlgoCrossCorr = "crosscorr"
 	corrAlgoDCor      = "dcor"
+	corrAlgoMLP       = "mlp"
+	corrAlgoLSTM      = "lstm"
+	corrAlgoKNN       = "knn"
 )
 
 // CorrelationCandidate describes a polling and its available numeric vector keys.
@@ -115,6 +118,23 @@ type CorrelationLagPoint struct {
 	Score  float64 `json:"Score"`
 }
 
+// CorrelationFeatureImportance represents permutation feature importance from MLP correlation.
+type CorrelationFeatureImportance struct {
+	Feature    string  `json:"Feature"`
+	Var        string  `json:"Var"`
+	Lag        int     `json:"Lag"`
+	Importance float64 `json:"Importance"`
+}
+
+// CorrelationRegimeResult represents kNN regime classification metrics and confusion matrix.
+type CorrelationRegimeResult struct {
+	Accuracy         float64  `json:"Accuracy"`
+	BalancedAccuracy float64  `json:"BalancedAccuracy"`
+	Labels           []string `json:"Labels"`
+	Confusion        [][]int  `json:"Confusion"`
+	TargetVar        string   `json:"TargetVar"`
+}
+
 // CorrelationPairRes returns the detailed correlation analysis result for two pollings.
 type CorrelationPairRes struct {
 	PollingID1    string                  `json:"PollingID1"`
@@ -143,9 +163,11 @@ type CorrelationPairRes struct {
 	Series2       []float64               `json:"Series2"`
 	NormSeries1   []float64               `json:"NormSeries1"`
 	NormSeries2   []float64               `json:"NormSeries2"`
-	LagProfile    []CorrelationLagPoint   `json:"LagProfile"`
-	VarMatrix     []CorrelationMatrixCell `json:"VarMatrix"`
-	Error         string                  `json:"Error"`
+	LagProfile         []CorrelationLagPoint          `json:"LagProfile"`
+	VarMatrix          []CorrelationMatrixCell        `json:"VarMatrix"`
+	FeatureImportances []CorrelationFeatureImportance `json:"FeatureImportances,omitempty"`
+	RegimeResult       *CorrelationRegimeResult       `json:"RegimeResult,omitempty"`
+	Error              string                         `json:"Error"`
 }
 
 // CorrelationDiscoverReq specifies parameters for automatic correlation discovery.
@@ -1014,6 +1036,12 @@ func normalizeAlgorithm(algo string) string {
 		return corrAlgoCrossCorr
 	case "dcor", "distance":
 		return corrAlgoDCor
+	case "mlp", "neural", "tensai":
+		return corrAlgoMLP
+	case "lstm", "rnn":
+		return corrAlgoLSTM
+	case "knn", "regime":
+		return corrAlgoKNN
 	default:
 		return corrAlgoPearson
 	}
@@ -1126,7 +1154,7 @@ func AnalyzePollingCorrelation(req CorrelationPairReq) CorrelationPairRes {
 
 	primaryAlgo := normalizeAlgorithm(req.Algorithm)
 	matrixAlgo := primaryAlgo
-	if matrixAlgo == corrAlgoDCor {
+	if matrixAlgo == corrAlgoDCor || matrixAlgo == corrAlgoMLP || matrixAlgo == corrAlgoLSTM || matrixAlgo == corrAlgoKNN {
 		matrixAlgo = corrAlgoPearson
 	}
 
@@ -1181,6 +1209,15 @@ func AnalyzePollingCorrelation(req CorrelationPairReq) CorrelationPairRes {
 		cols2 = append(cols2, d2[k])
 	}
 	dScore, dP := calcDistanceCorrelation(cols1, cols2, 200, true)
+	mlpScore, mlpP, mlpImps := calcMLPCorrelation(vars1, cols1, vars2, cols2, maxLag)
+	lstmScore, lstmP := calcLSTMCorrelation(vars1, cols1, vars2, cols2)
+	knnScore, knnP, knnRegime := calcKNNRegimeCorrelation(vars1, cols1, vars2, cols2)
+
+	res.FeatureImportances = mlpImps
+	res.RegimeResult = knnRegime
+
+	vars1Joined := strings.Join(vars1, ",")
+	vars2Joined := strings.Join(vars2, ",")
 
 	res.Scores = []CorrelationAlgoScore{
 		{
@@ -1222,8 +1259,32 @@ func AnalyzePollingCorrelation(req CorrelationPairReq) CorrelationPairRes {
 			Score:       dScore,
 			PValue:      dP,
 			SampleCount: len(ts),
-			Var1:        strings.Join(vars1, ","),
-			Var2:        strings.Join(vars2, ","),
+			Var1:        vars1Joined,
+			Var2:        vars2Joined,
+		},
+		{
+			Algorithm:   corrAlgoMLP,
+			Score:       mlpScore,
+			PValue:      mlpP,
+			SampleCount: len(ts),
+			Var1:        vars1Joined,
+			Var2:        vars2Joined,
+		},
+		{
+			Algorithm:   corrAlgoLSTM,
+			Score:       lstmScore,
+			PValue:      lstmP,
+			SampleCount: len(ts),
+			Var1:        vars1Joined,
+			Var2:        vars2Joined,
+		},
+		{
+			Algorithm:   corrAlgoKNN,
+			Score:       knnScore,
+			PValue:      knnP,
+			SampleCount: len(ts),
+			Var1:        vars1Joined,
+			Var2:        vars2Joined,
 		},
 	}
 
@@ -1259,7 +1320,7 @@ func evaluatePairForDiscovery(bs1, bs2 *pollingBucketSeries, algo string, bucket
 		CrossNode:    bs1.NodeID != bs2.NodeID,
 	}
 
-	if algo == corrAlgoDCor {
+	if algo == corrAlgoDCor || algo == corrAlgoKNN || algo == corrAlgoMLP {
 		cols1 := make([][]float64, 0, len(bs1.Vars))
 		for _, k := range bs1.Vars {
 			cols1 = append(cols1, d1[k])
@@ -1268,7 +1329,15 @@ func evaluatePairForDiscovery(bs1, bs2 *pollingBucketSeries, algo string, bucket
 		for _, k := range bs2.Vars {
 			cols2 = append(cols2, d2[k])
 		}
-		s, p := calcDistanceCorrelation(cols1, cols2, 200, false)
+		var s, p float64
+		switch algo {
+		case corrAlgoDCor:
+			s, p = calcDistanceCorrelation(cols1, cols2, 200, false)
+		case corrAlgoKNN:
+			s, p, _ = calcKNNRegimeCorrelation(bs1.Vars, cols1, bs2.Vars, cols2)
+		case corrAlgoMLP:
+			s, p, _ = calcMLPCorrelation(bs1.Vars, cols1, bs2.Vars, cols2, maxLag)
+		}
 		item.Var1 = strings.Join(bs1.Vars, ",")
 		item.Var2 = strings.Join(bs2.Vars, ",")
 		item.Score = s
@@ -1336,6 +1405,13 @@ func DiscoverPollingCorrelationsWithProgress(
 	}
 
 	algo := normalizeAlgorithm(req.Algorithm)
+	if algo == corrAlgoLSTM {
+		return CorrelationDiscoverRes{
+			Items:      []CorrelationDiscoverItem{},
+			DurationMs: time.Since(startTime).Milliseconds(),
+			Error:      "lstm algorithm is only supported for pair correlation analysis",
+		}
+	}
 	minAbs := req.MinAbsScore
 	if minAbs < 0 {
 		minAbs = 0

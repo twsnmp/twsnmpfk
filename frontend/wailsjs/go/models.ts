@@ -176,6 +176,24 @@ export namespace backend {
 		    return a;
 		}
 	}
+	export class CorrelationFeatureImportance {
+	    Feature: string;
+	    Var: string;
+	    Lag: number;
+	    Importance: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationFeatureImportance(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Feature = source["Feature"];
+	        this.Var = source["Var"];
+	        this.Lag = source["Lag"];
+	        this.Importance = source["Importance"];
+	    }
+	}
 	export class CorrelationLagPoint {
 	    Lag: number;
 	    LagSec: number;
@@ -240,6 +258,26 @@ export namespace backend {
 	        this.MaxLag = source["MaxLag"];
 	    }
 	}
+	export class CorrelationRegimeResult {
+	    Accuracy: number;
+	    BalancedAccuracy: number;
+	    Labels: string[];
+	    Confusion: number[][];
+	    TargetVar: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorrelationRegimeResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Accuracy = source["Accuracy"];
+	        this.BalancedAccuracy = source["BalancedAccuracy"];
+	        this.Labels = source["Labels"];
+	        this.Confusion = source["Confusion"];
+	        this.TargetVar = source["TargetVar"];
+	    }
+	}
 	export class CorrelationPairRes {
 	    PollingID1: string;
 	    NodeID1: string;
@@ -269,6 +307,8 @@ export namespace backend {
 	    NormSeries2: number[];
 	    LagProfile: CorrelationLagPoint[];
 	    VarMatrix: CorrelationMatrixCell[];
+	    FeatureImportances?: CorrelationFeatureImportance[];
+	    RegimeResult?: CorrelationRegimeResult;
 	    Error: string;
 	
 	    static createFrom(source: any = {}) {
@@ -305,6 +345,8 @@ export namespace backend {
 	        this.NormSeries2 = source["NormSeries2"];
 	        this.LagProfile = this.convertValues(source["LagProfile"], CorrelationLagPoint);
 	        this.VarMatrix = this.convertValues(source["VarMatrix"], CorrelationMatrixCell);
+	        this.FeatureImportances = this.convertValues(source["FeatureImportances"], CorrelationFeatureImportance);
+	        this.RegimeResult = this.convertValues(source["RegimeResult"], CorrelationRegimeResult);
 	        this.Error = source["Error"];
 	    }
 	
@@ -326,6 +368,7 @@ export namespace backend {
 		    return a;
 		}
 	}
+	
 	export class FDBTableEnt {
 	    VLanID: number;
 	    Port: number;
