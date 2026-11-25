@@ -501,7 +501,7 @@ export const showCorrelationNetworkChart = (
           const it = p.data.rawItem;
           return `${it.NodeName1}/${it.PollingName1} (${it.Var1})<br/>↔ ${it.NodeName2}/${it.PollingName2} (${it.Var2})<br/>Score: <b>${Number(it.Score).toFixed(4)}</b> (n=${it.SampleCount})`;
         }
-        return `${String(p.name || "").replace("\n", " / ")} (${p.value || 0})`;
+        return `${String(p.name || "").replaceAll("\n", " / ")} (${p.value || 0})`;
       },
     },
     legend:
