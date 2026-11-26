@@ -7,10 +7,10 @@ import (
 
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/anthropic"
-	"github.com/tmc/langchaingo/llms/googleai"
 	"github.com/tmc/langchaingo/llms/ollama"
 	"github.com/tmc/langchaingo/llms/openai"
 
+	"github.com/twsnmp/twsnmpfk/pkg/ai/gemini"
 	"github.com/twsnmp/twsnmpfk/pkg/ai/tensai"
 	"github.com/twsnmp/twsnmpfk/pkg/model"
 )
@@ -39,13 +39,16 @@ func GetLLM(ctx context.Context) (llms.Model, error) {
 			ollama.WithServerURL(baseURL),
 		)
 	case "gemini", "googleai":
-		opts := []googleai.Option{
-			googleai.WithAPIKey(MapConf.LLMAPIKey),
+		opts := []gemini.Option{
+			gemini.WithAPIKey(MapConf.LLMAPIKey),
+		}
+		if MapConf.LLMBaseURL != "" {
+			opts = append(opts, gemini.WithBaseURL(MapConf.LLMBaseURL))
 		}
 		if MapConf.LLMModel != "" {
-			opts = append(opts, googleai.WithDefaultModel(MapConf.LLMModel))
+			opts = append(opts, gemini.WithModel(MapConf.LLMModel))
 		}
-		return googleai.New(ctx, opts...)
+		return gemini.New(opts...)
 	case "openai":
 		opts := []openai.Option{}
 		if MapConf.LLMModel != "" {
