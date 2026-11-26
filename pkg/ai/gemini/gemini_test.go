@@ -143,8 +143,10 @@ func TestGenerateContent_GemmaSystemFallbackAndModelPrefix(t *testing.T) {
 }
 
 func TestGenerateContent_APIError(t *testing.T) {
+	attempts := 0
 	httpClient := &http.Client{
 		Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			attempts++
 			return newJSONResponse(http.StatusServiceUnavailable, `{"error":{"code":503,"message":"model overloaded","status":"UNAVAILABLE"}}`), nil
 		}),
 	}
@@ -157,11 +159,86 @@ func TestGenerateContent_APIError(t *testing.T) {
 	if err != nil {
 		t.Fatalf("New: %v", err)
 	}
+	client.retryBaseDelay = 0
 
 	_, err = client.GenerateContent(context.Background(), []llms.MessageContent{
 		llms.TextParts(llms.ChatMessageTypeHuman, "hello"),
 	})
 	if err == nil || !strings.Contains(err.Error(), "503") || !strings.Contains(err.Error(), "model overloaded") {
 		t.Fatalf("expected formatted 503 error, got: %v", err)
+	}
+	if attempts != defaultMaxRetries+1 {
+		t.Fatalf("expected %d attempts, got %d", defaultMaxRetries+1, attempts)
+	}
+}
+
+func TestGenerateContent_RetrySucceeds(t *testing.T) {
+	attempts := 0
+	httpClient := &http.Client{
+		Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			attempts++
+			if attempts < 3 {
+				return newJSONResponse(http.StatusServiceUnavailable, `{"error":{"code":503,"message":"high demand","status":"UNAVAILABLE"}}`), nil
+			}
+			return newJSONResponse(http.StatusOK, `{
+				"candidates": [{
+					"content": {"role": "model", "parts": [{"text": "Recovered"}]},
+					"finishReason": "STOP"
+				}]
+			}`), nil
+		}),
+	}
+
+	client, err := New(
+		WithAPIKey("test-key"),
+		WithBaseURL("https://example.test"),
+		WithHTTPClient(httpClient),
+	)
+	if err != nil {
+		t.Fatalf("New: %v", err)
+	}
+	client.retryBaseDelay = 0
+
+	resp, err := client.GenerateContent(context.Background(), []llms.MessageContent{
+		llms.TextParts(llms.ChatMessageTypeHuman, "hello"),
+	})
+	if err != nil {
+		t.Fatalf("GenerateContent: %v", err)
+	}
+	if attempts != 3 {
+		t.Fatalf("expected 3 attempts, got %d", attempts)
+	}
+	if len(resp.Choices) != 1 || resp.Choices[0].Content != "Recovered" {
+		t.Fatalf("unexpected response: %+v", resp.Choices)
+	}
+}
+
+func TestGenerateContent_NoRetryOn404(t *testing.T) {
+	attempts := 0
+	httpClient := &http.Client{
+		Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			attempts++
+			return newJSONResponse(http.StatusNotFound, `{"error":{"code":404,"message":"not found","status":"NOT_FOUND"}}`), nil
+		}),
+	}
+
+	client, err := New(
+		WithAPIKey("test-key"),
+		WithBaseURL("https://example.test"),
+		WithHTTPClient(httpClient),
+	)
+	if err != nil {
+		t.Fatalf("New: %v", err)
+	}
+	client.retryBaseDelay = 0
+
+	_, err = client.GenerateContent(context.Background(), []llms.MessageContent{
+		llms.TextParts(llms.ChatMessageTypeHuman, "hello"),
+	})
+	if err == nil || !strings.Contains(err.Error(), "404") {
+		t.Fatalf("expected 404 error, got: %v", err)
+	}
+	if attempts != 1 {
+		t.Fatalf("expected 1 attempt without retry, got %d", attempts)
 	}
 }

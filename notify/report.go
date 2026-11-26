@@ -463,7 +463,7 @@ Do not include symbols such as # at the beginning of your answer.
 		len(targetLogs),
 		len(promptText),
 	)
-	resp, err := llm.GenerateContent(timeoutCtx, history)
+	resp, err := generateSummaryWithRetry(timeoutCtx, llm, history, reportLLMRetryDelays, sleepWithContext)
 	dur := time.Since(startTime)
 	if err != nil || timeoutCtx.Err() != nil {
 		if err == nil {
@@ -483,4 +483,78 @@ Do not include symbols such as # at the beginning of your answer.
 	}
 	log.Printf("LLM report summary completed: dur=%v, respLen=%d", dur, len(content))
 	return content
+}
+
+var reportLLMRetryDelays = []time.Duration{
+	1 * time.Minute,
+	2 * time.Minute,
+	3 * time.Minute,
+}
+
+func generateSummaryWithRetry(
+	ctx context.Context,
+	llm llms.Model,
+	history []llms.MessageContent,
+	delays []time.Duration,
+	sleepFn func(context.Context, time.Duration) error,
+) (*llms.ContentResponse, error) {
+	var lastErr error
+	maxAttempts := len(delays) + 1
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		if ctx.Err() != nil {
+			return nil, ctx.Err()
+		}
+		resp, err := llm.GenerateContent(ctx, history)
+		if err == nil {
+			return resp, nil
+		}
+		lastErr = err
+		if attempt >= len(delays) || !isTemporaryLLMError(err) {
+			break
+		}
+		delay := delays[attempt]
+		log.Printf("LLM report summary temporary error (attempt=%d/%d), retrying in %v: %v", attempt+1, maxAttempts, delay, err)
+		if sleepErr := sleepFn(ctx, delay); sleepErr != nil {
+			return nil, lastErr
+		}
+	}
+	return nil, lastErr
+}
+
+func isTemporaryLLMError(err error) bool {
+	if err == nil {
+		return false
+	}
+	msg := strings.ToLower(err.Error())
+	for _, token := range []string{
+		"503",
+		"429",
+		"502",
+		"504",
+		"unavailable",
+		"overloaded",
+		"high demand",
+		"rate limit",
+		"too many requests",
+		"try again later",
+	} {
+		if strings.Contains(msg, token) {
+			return true
+		}
+	}
+	return false
+}
+
+func sleepWithContext(ctx context.Context, d time.Duration) error {
+	if d <= 0 {
+		return nil
+	}
+	timer := time.NewTimer(d)
+	defer timer.Stop()
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-timer.C:
+		return nil
+	}
 }

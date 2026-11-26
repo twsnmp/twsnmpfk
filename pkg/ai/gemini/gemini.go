@@ -8,8 +8,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand/v2"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/tmc/langchaingo/llms"
 )
@@ -20,15 +23,20 @@ const (
 	// DefaultModel is used when no model is explicitly configured.
 	DefaultModel = "gemini-3.5-flash-lite"
 	// maxErrorBodyBytes limits raw response body snippets in error messages.
-	maxErrorBodyBytes = 512
+	maxErrorBodyBytes     = 512
+	defaultMaxRetries     = 3
+	defaultRetryBaseDelay = 2 * time.Second
+	maxRetryDelay         = 30 * time.Second
 )
 
 // Client implements langchaingo's llms.Model using the Gemini REST API.
 type Client struct {
-	apiKey     string
-	baseURL    string
-	model      string
-	httpClient *http.Client
+	apiKey         string
+	baseURL        string
+	model          string
+	httpClient     *http.Client
+	maxRetries     int
+	retryBaseDelay time.Duration
 }
 
 // Option configures a Client.
@@ -71,9 +79,11 @@ func WithHTTPClient(httpClient *http.Client) Option {
 // New creates a new Gemini REST API client.
 func New(opts ...Option) (*Client, error) {
 	c := &Client{
-		baseURL:    DefaultBaseURL,
-		model:      DefaultModel,
-		httpClient: http.DefaultClient,
+		baseURL:        DefaultBaseURL,
+		model:          DefaultModel,
+		httpClient:     http.DefaultClient,
+		maxRetries:     defaultMaxRetries,
+		retryBaseDelay: defaultRetryBaseDelay,
 	}
 	for _, opt := range opts {
 		opt(c)
@@ -121,40 +131,113 @@ func (c *Client) GenerateContent(
 	}
 
 	endpoint := fmt.Sprintf("%s/v1beta/models/%s:generateContent", c.baseURL, modelName)
+
+	var lastErr error
+	for attempt := 0; attempt <= c.maxRetries; attempt++ {
+		if ctx.Err() != nil {
+			return nil, ctx.Err()
+		}
+		resp, statusCode, retryAfter, err := c.doGenerateContentRequest(ctx, endpoint, payload)
+		if err == nil {
+			return resp, nil
+		}
+		lastErr = err
+		if attempt == c.maxRetries || !isRetryableStatus(statusCode) {
+			break
+		}
+		delay := c.computeRetryDelay(attempt, retryAfter)
+		if sleepErr := sleepWithContext(ctx, delay); sleepErr != nil {
+			return nil, lastErr
+		}
+	}
+	return nil, lastErr
+}
+
+func (c *Client) doGenerateContentRequest(ctx context.Context, endpoint string, payload []byte) (*llms.ContentResponse, int, string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(payload))
 	if err != nil {
-		return nil, fmt.Errorf("failed to create gemini request: %w", err)
+		return nil, 0, "", fmt.Errorf("failed to create gemini request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("x-goog-api-key", c.apiKey)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, 0, "", err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read gemini response: %w", err)
+		return nil, resp.StatusCode, "", fmt.Errorf("failed to read gemini response: %w", err)
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, formatAPIError(resp.StatusCode, body)
+		return nil, resp.StatusCode, resp.Header.Get("Retry-After"), formatAPIError(resp.StatusCode, body)
 	}
 
 	var apiResp generateContentResponse
 	if err := json.Unmarshal(body, &apiResp); err != nil {
-		return nil, fmt.Errorf("failed to decode gemini response: %w (body: %s)", err, truncateBody(body))
+		return nil, resp.StatusCode, "", fmt.Errorf("failed to decode gemini response: %w (body: %s)", err, truncateBody(body))
 	}
 	if apiResp.Error != nil {
-		return nil, fmt.Errorf("gemini API error (%d %s): %s", apiResp.Error.Code, apiResp.Error.Status, apiResp.Error.Message)
+		return nil, apiResp.Error.Code, "", fmt.Errorf("gemini API error (%d %s): %s", apiResp.Error.Code, apiResp.Error.Status, apiResp.Error.Message)
 	}
 	if len(apiResp.Candidates) == 0 {
-		return nil, errors.New("no content in gemini response")
+		return nil, resp.StatusCode, "", errors.New("no content in gemini response")
 	}
 
-	return convertResponse(&apiResp), nil
+	return convertResponse(&apiResp), resp.StatusCode, "", nil
+}
+
+func isRetryableStatus(statusCode int) bool {
+	switch statusCode {
+	case http.StatusTooManyRequests,
+		http.StatusInternalServerError,
+		http.StatusBadGateway,
+		http.StatusServiceUnavailable,
+		http.StatusGatewayTimeout:
+		return true
+	default:
+		return false
+	}
+}
+
+func (c *Client) computeRetryDelay(attempt int, retryAfter string) time.Duration {
+	if c.retryBaseDelay <= 0 {
+		return 0
+	}
+	if sec, err := strconv.Atoi(strings.TrimSpace(retryAfter)); err == nil && sec > 0 {
+		d := time.Duration(sec) * time.Second
+		if d > maxRetryDelay {
+			return maxRetryDelay
+		}
+		return d
+	}
+	delay := c.retryBaseDelay << attempt
+	if delay > maxRetryDelay {
+		delay = maxRetryDelay
+	}
+	// Add +/- 20% jitter to avoid synchronized retries.
+	jitterRange := delay / 5
+	if jitterRange > 0 {
+		delay = delay - jitterRange + time.Duration(rand.Int64N(int64(jitterRange*2)+1))
+	}
+	return delay
+}
+
+func sleepWithContext(ctx context.Context, d time.Duration) error {
+	if d <= 0 {
+		return nil
+	}
+	timer := time.NewTimer(d)
+	defer timer.Stop()
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-timer.C:
+		return nil
+	}
 }
 
 func normalizeModelName(model string) string {
