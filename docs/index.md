@@ -120,7 +120,24 @@ You can now search for PCs, routers, servers, etc. connected to the managed netw
 
 ## New Features
 
-TWSNMP FK is continuously enhanced with new features. Here are the main new features and improvements added in v2.7.0 and earlier releases.
+TWSNMP FK is continuously enhanced with new features. Here are the main new features and improvements added in v2.8.0 and earlier releases.
+
+### New Features in v2.8.0
+
+#### Global Environmental, Disaster & Space Weather Monitoring (`env` Polling)
+- **New `env` Polling Type**: Added dedicated open-API polling for `weather` (Open-Meteo temperature, humidity, pressure, 3h pressure diff, CAPE, wind), `quake` (P2PQuake / JMA / USGS earthquakes), `liden` (JMA LIDEN / Open-Meteo lightning strikes), and `space` (NOAA SWPC GOES X-ray solar flares and Planetary Kp-index).
+- **Shared Caching & Coordinate Auto-Resolution**: Implemented `singleflight` request deduplication, per-source TTL caching, stale-if-error fallback, and automatic coordinate resolution from node location, GeoIP, or map center.
+- **Earth & Disaster Report & Map Integration**: Added the **Earth & Disaster** sub-tab with KPI summary cards to the Environmental Sensors report, plus formatting presets for map Drawing Items.
+
+#### Polling Correlation Analysis (Statistics & tensai ML)
+- **Correlation Discovery & Pair Analysis**: Added all-vs-all / 1-vs-N correlation discovery and detailed pair analysis across polling log time-series (same or different nodes).
+- **Algorithms**: Supports **Pearson**, **Spearman**, **Kendall**, **Cross-Correlation**, **Distance Correlation**, and tensai ML algorithms (**Neural MLP**, **LSTM**, **kNN Regime**).
+- **UI & MCP Integration**: Added the **Correlation Analysis** tab in Report (with batch log loading optimization, progress/cancel, correlation network, time-series, scatter, lag profile, and variable matrix charts), **Find Correlation** / **Correlation** buttons in Polling List, and new MCP tools (`analyze_polling_correlation`, `discover_polling_correlations`).
+
+#### Reliability, Performance, LLM & Security Improvements
+- **Long-Running UI & SLA Fixes**: Fixed UI responsiveness degradation and memory leaks during long-running sessions, and improved Node Downtime SLA polling grouping, ongoing status, and layout.
+- **Direct Gemini REST API Client & Retry**: Replaced `langchaingo` googleai with a direct Gemini REST API client with retry logic for transient errors.
+- **Security Fixes**: Addressed CodeQL and Dependabot alerts.
 
 ### New Features in v2.7.0
 
@@ -938,6 +955,8 @@ A list of polling to be managed.
 | Copy | Copy the selected polling.|
 | Export | Export the selected polling settings.|
 | Report | Displays the selected polling analysis report.|
+| Find Correlations | (When 1 polling is selected) Opens the correlation analysis modal in discovery mode.|
+| Correlation | (When 2 pollings are selected) Opens the correlation analysis modal in pair comparison mode.|
 | Delete logs| Delete the selected polling logs.|
 | Delete| Delete the selected polling.|
 | CSV | Export the polling list to the CSV file.|
@@ -2034,9 +2053,11 @@ Detection report for Bluetooth / BLE beacons and devices (smartwatches, tags, et
 
 ### Environmental Sensors Report
 
-Aggregates and visualizes measurements from environmental sensors (temperature, humidity, atmospheric pressure, CO2), power monitors, and motion/light sensors. Supports sub-tabs for "Environmental Sensors", "Power Sensors", and "Motion Sensors".
+Aggregates and visualizes measurements from environmental sensors (temperature, humidity, atmospheric pressure, CO2), power monitors, motion/light sensors, and global environmental / disaster / space weather open APIs (`env` polling). Supports sub-tabs for "Environmental Sensors", "Power Sensors", "Motion Sensors", and "Earth & Disaster" (with KPI summary cards for earthquakes, lightning, space weather, and weather).
 
 ![](./images/en/report_env.png)
+
+![](./images/en/report_earth_env.png)
 
 ### Pcap Packet Analysis Report
 
@@ -2055,6 +2076,14 @@ Aggregates and audits Windows security event logs collected via twwinlog (Event 
 Monitors operational status, AI threat analysis (via tensai), file integrity monitoring (FIM), security configuration assessment (SCA), and process TCP flows from twagentneo agents.
 
 ![](./images/en/report_agent.png)
+
+### Correlation Analysis Report
+
+Discovers and analyzes correlations between polling log time-series across the same or different nodes using statistical methods (Pearson, Spearman, Kendall, Cross-Correlation, Distance Correlation) and tensai ML algorithms (Neural MLP, LSTM, kNN Regime). Supports all-vs-all / 1-vs-N discovery, correlation network graphs, time-series, scatter, lag profile, and variable matrix charts.
+
+![](./images/en/report_correlation_discover.png)
+
+![](./images/en/report_correlation_pair.png)
 
 ## System
 

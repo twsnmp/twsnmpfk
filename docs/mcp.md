@@ -411,3 +411,26 @@ Query analytics report entries (`wifiAP`, `blueDevice`, `envMonitor`, `powerMoni
 - `filter` (string, optional): Regex filter applied to the serialized JSON of each record.
 - `include_history` (boolean, optional): Include historical arrays such as `RSSI`, `EnvData`, `Data` (default `false` for compact output).
 - `limit` (integer, optional): Max records (`1`–`200`, default `50`).
+
+#### `analyze_polling_correlation`
+Analyze correlation between two polling log time-series (same or different nodes) using statistical and ML algorithms.
+- `polling_id_1`, `polling_id_2` (string, required): First and second polling IDs.
+- `vars_1`, `vars_2` (string, optional): Comma-separated numeric variable keys (empty for auto).
+- `algorithm` (string, optional): Primary algorithm: `all` (default), `pearson`, `spearman`, `kendall`, `crosscorr`, `dcor`, `mlp`, `lstm`, or `knn`.
+- `bucket_sec` (integer, optional): Aggregation time bucket width in seconds (`0` for auto).
+- `period_hours` (integer, optional): Lookback period in hours (default `168`, `-1` for all logs).
+- `max_lag` (integer, optional): Maximum lag buckets for cross-correlation (default `12`, max `60`).
+- `include_state` (boolean, optional): Include polling state numeric variable (`1.0`=normal, `0.5`=unknown, `0.0`=error).
+
+#### `discover_polling_correlations`
+Automatically discover and rank correlated polling pairs across nodes.
+- `base_polling_id` (string, optional): Polling ID to find correlations against (empty for all-vs-all).
+- `algorithm` (string, optional): Correlation algorithm: `pearson` (default), `spearman`, `kendall`, `crosscorr`, `dcor`, `mlp`, or `knn`.
+- `bucket_sec` (integer, optional): Aggregation time bucket width in seconds (`0` for auto).
+- `period_hours` (integer, optional): Lookback period in hours (default `168`, `-1` for all logs).
+- `min_abs_score` (number, optional): Minimum absolute correlation threshold (default `0.7`).
+- `min_samples` (integer, optional): Minimum overlapping samples required (default `10`).
+- `cross_node_only` (boolean, optional): Only return correlated pairs on different nodes.
+- `include_state` (boolean, optional): Include polling state numeric variable.
+- `max_lag` (integer, optional): Maximum lag buckets when `algorithm` is `crosscorr` (default `6`).
+- `limit` (integer, optional): Maximum number of pairs to return (`1`–`500`, default `30`).

@@ -135,6 +135,14 @@ Windowsの場合はスタートメニューからMac OSの場合はランチャ�
 
 TWSNMP FKは、継続的に機能強化を行っています。v1.30.0以降に加わった主な新機能と改善点を紹介します。
 
+### v2.8.0 の新機能
+
+- **地球環境・防災・宇宙天気オープンAPI監視 (`env` ポーリング)**: `weather`（Open-Meteo）、`quake`（P2P地震情報/気象庁/USGS）、`liden`（気象庁LIDEN/Open-Meteo）、`space`（NOAA SWPC）の4モード、`singleflight` 共有キャッシュ、座標自動解決、描画アイテム連携、および「環境センサー」内の **「地球環境・防災」サブタブ（KPIサマリー付き）** を追加。
+- **ポーリング相関分析（統計 & tensai ML）**: Pearson、Spearman、Kendall、Cross-Corr、Distance Corr に加え Neural MLP、LSTM、kNN Regime による探索・詳細分析機能を総合レポートの **「相関分析」タブ**、ポーリングリストのモーダル、および MCP ツール（`analyze_polling_correlation`, `discover_polling_correlations`）として追加。
+- **信頼性・AIクライアント・セキュリティ向上**: 長時間稼働時のUI応答遅延・メモリリーク修正、ノードダウンタイムSLA改善、Gemini REST API 直接クライアント移行＋リトライ実装、CodeQL/Dependabot アラート対応を実施。
+
+---
+
 ### v2.7.0 の新機能
 
 - **OpenTelemetry (APM) テレメトリ監視ポーリング**: 新規 `otel` ポーリング種別（`metric`, `trace`, `heartbeat`）および OpenTelemetry 画面からのワンクリック「ポーリング作成」に対応。
@@ -2132,9 +2140,13 @@ twBlueScan等で検出されたBluetooth / BLE端末のベンダー割合、信�
 
 ---
 ### 環境センサー レポート
-温度、湿度、気圧、CO2などの環境センサー測定値、電力モニター、人感センサーデータを集計表示します。
+温度、湿度、気圧、CO2などの環境センサー測定値、電力モニター、人感センサー、および地球環境・防災・宇宙天気データ（「地球環境・防災」サブタブ、KPIサマリーカード付き）を集計表示します。
 
 ![h:400 center](./images/ja/report_env.png)
+
+---
+### 地球環境・防災API レポート
+![h:400 center](./images/ja/report_earth_env.png)
 
 ---
 ### Pcap パケット分析 レポート
@@ -2153,6 +2165,16 @@ twwinlog等から収集されたWindowsセキュリティイベントログ（Ev
 twagentneoエージェントの稼働状態、AI脅威判定、ファイル整合性監視（FIM）、セキュリティ構成評価（SCA）、TCP通信フローを表示します。
 
 ![h:400 center](./images/ja/report_agent.png)
+
+---
+### 相関分析 レポート
+ポーリングログ時系列の相関関係を統計手法（Pearson、Spearman、Kendall、Cross-Corr、Distance Corr）および tensai 機械学習（Neural MLP、LSTM、kNN Regime）で探索・詳細分析し、ネットワーク図・時系列・散布図・ラグ・変数マトリクスで可視化します。
+
+![h:400 center](./images/ja/report_correlation_discover.png)
+
+---
+### 相関分析（2ポーリング比較）
+![h:400 center](./images/ja/report_correlation_pair.png)
 
 ---
 ## System

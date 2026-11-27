@@ -373,7 +373,7 @@
           </div>
           <div class="my-2 flex items-baseline gap-2">
             <span class="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
-              {sysInfo?.version || "v2.7.0"}
+              {sysInfo?.version || "v2.8.0"}
             </span>
           </div>
           <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">

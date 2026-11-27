@@ -352,3 +352,26 @@ AI異常検知スコア一覧と `AIConf` しきい値に基づく判定レベ�
 #### `get_report_summary`
 ログ分析レポート（`wifiAP`, `blueDevice`, `envMonitor`, `powerMonitor`, `motionSensor`, `etherType`, `dnsq`, `radiusFlow`, `tlsFlow`, `winEventID`, `winLogon`, `winAccount`, `winKerberos`, `winPrivilege`, `winProcess`, `winTask`, `flow`, `server`, `fumble`, `syslogStats`, `trapStats`, `twAgentInfo`, `twAgentAlert`, `twAgentFIM`, `twAgentSCA`, `twAgentTCP`）を取得します。
 - `report_type` (string, 必須), `filter` (string, オプション), `include_history` (boolean, デフォルト `false` で `RSSI`/`EnvData`/`Data` 省略), `limit` (`1`〜`200`, デフォルト `50`)。
+
+#### `analyze_polling_correlation`
+同一または異なるノード間の2つのポーリングログ時系列の相関関係を、統計および機械学習アルゴリズムで詳細分析します。
+- `polling_id_1`, `polling_id_2` (string, 必須): 分析対象のポーリングID。
+- `vars_1`, `vars_2` (string, オプション): カンマ区切りの数値変数名（空で自動選択）。
+- `algorithm` (string, オプション): `all`（デフォルト）, `pearson`, `spearman`, `kendall`, `crosscorr`, `dcor`, `mlp`, `lstm`, `knn`。
+- `bucket_sec` (integer, オプション): 集計時間バケット幅（秒、`0` で自動）。
+- `period_hours` (integer, オプション): 集計対象期間（時間、デフォルト `168`、`-1` で全期間）。
+- `max_lag` (integer, オプション): 相互相関の最大ラグ数（デフォルト `12`、最大 `60`）。
+- `include_state` (boolean, オプション): ポーリング状態値（`1.0`=正常, `0.5`=不明, `0.0`=障害）を含めるか。
+
+#### `discover_polling_correlations`
+ノードを横断して相関関係のあるポーリングペアを自動探索・ランキングします。
+- `base_polling_id` (string, オプション): 基準となるポーリングID（空で全体 N対N 探索）。
+- `algorithm` (string, オプション): `pearson`（デフォルト）, `spearman`, `kendall`, `crosscorr`, `dcor`, `mlp`, `knn`。
+- `bucket_sec` (integer, オプション): 集計時間バケット幅（秒、`0` で自動）。
+- `period_hours` (integer, オプション): 集計対象期間（時間、デフォルト `168`、`-1` で全期間）。
+- `min_abs_score` (number, オプション): 最小絶対相関係数しきい値（デフォルト `0.7`）。
+- `min_samples` (integer, オプション): 最小重複サンプル数（デフォルト `10`）。
+- `cross_node_only` (boolean, オプション): 異なるノード間のペアのみ抽出する場合は `true`。
+- `include_state` (boolean, オプション): ポーリング状態値を含めるか。
+- `max_lag` (integer, オプション): `crosscorr` 使用時の最大ラグ数（デフォルト `6`）。
+- `limit` (integer, オプション): 返却ペア数上限（`1`〜`500`, デフォルト `30`）。

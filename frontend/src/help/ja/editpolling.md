@@ -11,13 +11,14 @@
 * **レベル**
   障害発生時のステータスレベル（「重度」、「軽度」、「注意」など）。
 * **種別**
-  監視の方式（PING、SNMP、TCP、HTTP、gRPC、TLS、DNS、SSH/SFTP、OpenTelemetry、Commandなど）。
+  監視の方式（PING、SNMP、TCP、HTTP、gRPC、TLS、DNS、SSH/SFTP、OpenTelemetry、地球環境・防災（Env）、Commandなど）。
 * **モード**
-  選択した種別に応じた動作モード。種別を選択すると、利用可能なモードの一覧がドロップダウンとして動的に表示され選択できます（PING、SNMP、HTTP、TCP、TLS、DNS、SSH、gRPC、Syslog、NTP、STUN、OpenTelemetry等に対応）。
+  選択した種別に応じた動作モード。種別を選択すると、利用可能なモードの一覧がドロップダウンとして動的に表示され選択できます（PING、SNMP、HTTP、TCP、TLS、DNS、SSH、gRPC、Syslog、NTP、STUN、OpenTelemetry、Env等に対応）。
   * **PING Smokepingモード (`smoke`)**: 短周期連続PING送信により統計量（最小/最大/平均/中央値応答時間、パケットロス率、ジッター等）を測定。
   * **Log Sigma検知モード (`sigma`)**: 受信ログストリームに対してSigmaルールエンジンを実行し、脅威や攻撃パターンをリアルタイム検知。
   * **HTTP LLM監視モード (`llm/openai`, `llm/ollama`)**: OpenAI/vLLM互換 (`/v1/models`) または Ollama (`/api/tags`) エンドポイントに対してAPI認証付きでモデル数や応答時間 (`rtt_ms`) を監視。
   * **OpenTelemetryモード (`metric`, `trace`, `heartbeat`)**: 受信したOTelメトリクス値、トレースのエラー率・所要時間（平均/P95）、またはテレメトリ受信途絶（ハートビート）を監視。
+  * **地球環境・防災モード (`weather`, `quake`, `liden`, `space`)**: 気象・気圧・大気不安定度（Open-Meteo）、地震情報（P2P地震情報/気象庁/USGS）、落雷（気象庁LIDEN/Open-Meteo）、宇宙天気・太陽フレア・Kp指数（NOAA SWPC）を共有キャッシュ付きで取得・監視（座標はノード位置を自動利用）。
 * **ログモード**
   結果ログの保存・処理方式（「保存しない」、「常に保存」、「状態変化時のみ保存」、「異常検知」）。
 * **MQTTサーバーURL**

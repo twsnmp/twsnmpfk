@@ -26,6 +26,8 @@ Manage active polling tasks (status monitoring and performance data collection) 
 * **[Copy]** : Duplicate the selected polling.
 * **[Export]** : Export the selected polling configuration as a template JSON file.
 * **[Report]** : Open performance reports, history graphs, and anomaly detection report for the selected polling.
+* **[Find Correlation]** : (Displayed when 1 polling is selected) Opens the Correlation Analysis modal in discovery mode to find correlated pollings across nodes.
+* **[Correlation]** : (Displayed when 2 pollings are selected) Opens the Correlation Analysis modal in pair analysis mode to compare the two selected pollings.
 * **[Delete Logs]** : Delete execution logs of the selected polling.
 * **[Delete]** : Delete the selected polling configuration and its logs.
 * **[CSV]** : Export the polling list to a CSV file.

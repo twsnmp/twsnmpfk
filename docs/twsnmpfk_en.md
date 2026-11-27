@@ -129,6 +129,14 @@ Added support for SHA256/AES128 and SHA512/AES256, providing stronger security f
 
 Added support for opacity (transparency) and improved UI for background images.
 
+### New Features in v2.8.0
+
+- **Global Environmental, Disaster & Space Weather Monitoring (`env` Polling)**: Added `weather` (Open-Meteo), `quake` (P2PQuake/JMA/USGS), `liden` (JMA LIDEN/Open-Meteo), and `space` (NOAA SWPC) modes with `singleflight` shared caching, auto-coordinates, Drawing Item presets, and the **Earth & Disaster** report sub-tab with KPI summary cards.
+- **Polling Correlation Analysis (Statistics & tensai ML)**: Discover and analyze correlations across polling log time-series using Pearson, Spearman, Kendall, Cross-Corr, Distance Corr, Neural MLP, LSTM, and kNN Regime algorithms via the **Correlation Analysis** report tab, Polling List modal, and MCP tools (`analyze_polling_correlation`, `discover_polling_correlations`).
+- **Reliability, LLM & Security**: Fixed long-running UI latency/memory leaks and Node Downtime SLA grouping/layout, migrated to a direct Gemini REST API client with transient error retry logic, and resolved CodeQL/Dependabot security alerts.
+
+---
+
 ### New Features in v2.7.0
 
 - **OpenTelemetry (APM) Telemetry Polling**: New `otel` polling type (`metric`, `trace`, `heartbeat` modes) and one-click **"Add Polling"** action from OpenTelemetry Metrics/Traces tables.
@@ -2057,9 +2065,13 @@ Displays detected Bluetooth / BLE devices, vendor breakdown, and signal strength
 
 ---
 ### Environmental Sensors Report
-Displays environmental sensor telemetry (temperature, humidity, CO2), power monitors, and motion sensors.
+Displays environmental sensor telemetry (temperature, humidity, CO2), power monitors, motion sensors, and global environmental / disaster / space weather data (`Earth & Disaster` sub-tab with KPI summary cards).
 
 ![h:400 center](./images/en/report_env.png)
+
+---
+### Earth & Disaster API Report
+![h:400 center](./images/en/report_earth_env.png)
 
 ---
 ### Pcap Packet Analysis Report
@@ -2078,6 +2090,16 @@ Aggregates and audits Windows security logs (Event ID, logon/logoff, account ope
 Monitors agent operational status, AI threat classification, file integrity (FIM), security configuration assessment (SCA), and process TCP flows.
 
 ![h:400 center](./images/en/report_agent.png)
+
+---
+### Correlation Analysis Report
+Discovers and analyzes correlations across polling log time-series using statistical methods (Pearson, Spearman, Kendall, Cross-Corr, Distance Corr) and tensai ML algorithms (Neural MLP, LSTM, kNN Regime) with network, time-series, scatter, lag, and matrix charts.
+
+![h:400 center](./images/en/report_correlation_discover.png)
+
+---
+### Correlation Analysis (Pair Comparison)
+![h:400 center](./images/en/report_correlation_pair.png)
 
 ---
 ## System

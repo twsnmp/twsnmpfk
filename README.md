@@ -197,6 +197,24 @@ Usage of twsnmpfk:
 
 ## History
 
+### v2.8.0
+
+#### Global Environmental, Disaster & Space Weather Monitoring (`env` Polling)
+* **New `env` Polling Type**: Added dedicated open-API polling for `weather` (Open-Meteo temperature, humidity, pressure, 3h pressure diff, CAPE, wind), `quake` (P2PQuake / JMA / USGS earthquakes), `liden` (JMA LIDEN / Open-Meteo lightning strikes), and `space` (NOAA SWPC GOES X-ray solar flares and Planetary Kp-index).
+* **Shared Caching & Coordinate Auto-Resolution**: Implemented `singleflight` request deduplication, per-source TTL caching, stale-if-error fallback, and automatic `lat`/`lon` resolution from node location, GeoIP, or map center.
+* **Earth & Disaster Report & Map Integration**: Added the **Earth & Disaster** sub-tab with KPI summary cards to the Environmental Sensors report (`EnvSensor`), plus new formatting presets for map Drawing Items (`DrawItem`).
+
+#### Polling Correlation Analysis (Statistics & tensai ML)
+* **Cross-Node & Same-Node Correlation**: Added correlation discovery (all-vs-all and 1-vs-N) and detailed pair analysis across polling log time-series.
+* **Algorithms**: Supports **Pearson**, **Spearman**, **Kendall**, **Cross-Correlation** (lag), **Distance Correlation**, and tensai ML algorithms (**Neural MLP**, **LSTM**, **kNN Regime**).
+* **Report Tab, Polling List Modal & MCP Tools**: Added the **Correlation Analysis** tab in Report (with batch log loading optimization, progress/cancel, correlation network, time-series, scatter, lag profile, and variable matrix charts), **Find Correlation** / **Correlation** buttons in Polling List, and new MCP tools (`analyze_polling_correlation`, `discover_polling_correlations`).
+
+#### Reliability, Performance, LLM & Security Improvements
+* **Long-Running UI Leak & Latency Fixes**: Fixed UI responsiveness degradation and memory leaks during long-running sessions across map, logs, drawing items, and event log reports.
+* **Node Downtime SLA Fixes**: Fixed polling grouping, ongoing incident status handling, and layout in Node Report Downtime & SLA.
+* **Direct Gemini REST API Client & Retry Logic**: Replaced `langchaingo` googleai with a direct Gemini REST API client and added retry logic for transient LLM errors in Gemini calls and periodic reports.
+* **Security Fixes**: Addressed CodeQL and Dependabot alerts.
+
 ### v2.7.0
 
 #### OpenTelemetry (APM) Telemetry Polling
